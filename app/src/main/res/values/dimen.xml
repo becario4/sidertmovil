@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ext_textsize">15sp</dimen>
+    <dimen name="elements_separator">15dp</dimen>
+    <dimen name="etx_padding">10dp</dimen>
+
+    <dimen name="paddingcl">0dp</dimen>
+    <dimen name="drawermenu">290dp</dimen>
+
+    <dimen name="textsize">17sp</dimen>
+
+    <dimen name="et_height">35dp</dimen>
+</resources>

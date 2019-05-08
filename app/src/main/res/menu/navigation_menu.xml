@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/NVorders"
+        android:title="@string/orders"
+        android:icon="@drawable/item_orders" />
+
+    <item
+        android:id="@+id/NVmessages"
+        android:title="@string/messages"
+        android:icon="@drawable/item_messages"/>
+
+    <item
+        android:id="@+id/NVmap"
+        android:title="@string/map"
+        android:icon="@drawable/item_map"/>
+
+    <item
+        android:id="@+id/NVsettings"
+        android:title="@string/settings"
+        android:icon="@drawable/item_settings"/>
+
+    <item
+        android:id="@+id/NVhelp"
+        android:title="@string/help"
+        android:icon="@drawable/item_help"/>
+
+    <item
+        android:id="@+id/NVabout"
+        android:title="@string/about"
+        android:icon="@drawable/item_about"/>
+</menu>

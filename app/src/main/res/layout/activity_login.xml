@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app = "http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bkg_login">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:text="Todos los derechos reservados SIDERT 2019"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:id="@+id/IVheader"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp" />
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginLeft="15dp"
+                        android:id="@+id/IVlogo" />
+
+                    <EditText
+                        android:id="@+id/etUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:textColorHint="@android:color/white"
+                        android:drawableLeft="@drawable/ic_person"
+                        android:drawablePadding="12dp"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@android:color/white"
+                        android:paddingLeft="12dp"
+                        android:hint="@string/user"
+                        android:maxLength="255"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:textSize="14dp"/>
+
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:hint="@string/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:textColorHint="@android:color/white"
+                        android:drawableLeft="@drawable/ic_lock"
+                        android:drawablePadding="12dp"
+                        android:inputType="textPassword"
+                        android:textColor="@android:color/white"
+                        android:paddingLeft="12dp"
+                        android:maxLength="255"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:textSize="14dp"/>
+                    <Button
+                        android:id="@+id/btnLogin"
+                        android:text="@string/login"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_rounded_white"
+                        android:textSize="15dp"
+                        android:layout_marginTop="20dp"/>
+
+                </LinearLayout>
+
+            </ScrollView>
+        </RelativeLayout>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

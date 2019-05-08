@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:background="@color/common_google_signin_btn_text_light_disabled"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/preview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:id="@+id/ivDetails"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_edit_orders"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivClose"
+                android:layout_gravity="center"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_close_blue_grey_500_36dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:paddingLeft="10dp"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:text="Datos del Cliente"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+        <TextView
+            android:textSize="17sp"
+            android:textColor="@android:color/white"
+            android:background="@color/shadowdrawer"
+            android:gravity="center"
+            android:text="201904233485739-L007ri"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+        <LinearLayout
+            android:background="@color/lightGray"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="370dp"
+            android:paddingLeft="10dp">
+            <TextView
+                android:text="Nombre"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text="ALEJANDRO ISAIAS LOPEZ JIMENEZ"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Dirección del Cliente"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text="GUADALUPE VICTORIA 4293-1, COL. ORTIZ RUBIO, 91680, VERACRUZ."
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Número de Prestamo"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text="9348930-L007"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Monto del Préstamo"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text="5000.00"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Fecha de pago establecida"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text="11/04/2019"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Teléfono"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:paddingTop="8dp"
+                android:textStyle="bold"
+                android:text=""
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:background="@android:color/transparent"
+        android:layout_marginTop="-30dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/ibDetails"
+            android:src="@drawable/ic_edit_white"
+            android:background="@drawable/circle_button_green"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+        <ImageButton
+            android:id="@+id/ibClose"
+            android:src="@drawable/ic_close_white"
+            android:layout_marginLeft="50dp"
+            android:background="@drawable/circle_button_red"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,156 @@
+<resources>
+    <string name="app_name">SidertMovil</string>
+
+    <!-- TODO: Etiquetas del menú lateral -->
+    <string name="orders">ÓRDENES</string>
+    <string name="messages">MENSAJES</string>
+    <string name="map">MAPA</string>
+    <string name="settings">AJUSTES</string>
+    <string name="help">AYUDA</string>
+    <string name="about">ACERCA DE</string>
+    <string name="logout">CERRAR SESIÓN</string>
+
+    <!-- TODO: Icono de hamburguesa del menú lateral -->
+    <string name="open">Abrir</string>
+    <string name="close">Cerrar</string>
+
+    <!-- TODO: Títulos de TABS ordenes -->
+    <string name="pendings">Pendientes</string>
+    <string name="route">Ruta</string>
+    <string name="answers">Contestadas</string>
+
+    <!-- TODO: Títulos de TABS recuperación individual -->
+    <string name="ind_recovery">Recuperación \n Individual</string>
+    <string name="ind_management">Gestión de \n Recuperación</string>
+    <string name="payment_log">Bitácora de pagos \n del cliente</string>
+    <string name="financial_info">Información \n Financiera</string>
+
+    <!-- TODO: Etiquetas en general -->
+    <string name="loan_number">Número de préstamo</string>
+    <string name="credit_date_granted">Fecha de Crédito otorgado</string>
+    <string name="client_number">Número de cliente</string>
+    <string name="client_name">Nombre del cliente</string>
+    <string name="call_client_at_home">Llamar al cliente a su domicilio</string>
+    <string name="call">LLAMAR</string>
+    <string name="call_client_at_cellphone">Llamar al cliente a su celular</string>
+    <string name="loan_amount_granted">Monto del préstamo otorgado</string>
+    <string name="total_loan_amount">Monto total del préstamo</string>
+    <string name="amortization_number">Número de amortización</string>
+    <string name="amount_payment_required">Monto del pago requerido</string>
+    <string name="amortization_amount">Monto de amortización</string>
+    <string name="established_payment_date">Fecha de pago establecida</string>
+    <string name="endorsement_data">Datos del aval</string>
+    <string name="fullname_endorsement">Nombre completo del aval</string>
+    <string name="kinship_with_endorsement">Parentesco con el aval</string>
+    <string name="call_endorsement_phone">Llamar al teléfono del aval</string>
+    <string name="recovery_date">Fecha de recuperación</string>
+    <string name="payment_recovery_location">Ubicación de Recuperación de Pago</string>
+    <string name="contacted_client">¿Contactó al cliente?</string>
+    <string name="yes">Si</string>
+    <string name="not">No</string>
+    <string name="management_result">Resultado de la gestión</string>
+    <string name="payment">Pagó</string>
+    <string name="not_pay">No pago</string>
+    <string name="payment_method">Medio de pago</string>
+    <string name="bank">Banco</string>
+    <string name="oxxo">Oxxo</string>
+    <string name="cash">Efectivo</string>
+    <string name="sidert">SIDERT</string>
+    <string name="balance_cutting">Saldo al corte</string>
+    <string name="current_balance">Saldo actual</string>
+    <string name="amount_required_paid">¿Se pagará el monto requerido?</string>
+    <string name="legend_amount_correct">¿El monto es el correcto? (si está correcto, debe de seleccionar Si para seguir con el proceso, de no hacerlo no le permitirá seguir ni guardar la gestión)</string>
+    <string name="selected_option">Seleccione una opción</string>
+    <string name="pay_status">Estatus del pago</string>
+    <string name="amount_payment_made">Monto del pago realizado</string>
+    <string name="legend_amount_made">¿El monto es el correcto? (si está correcto, debe)</string>
+    <string name="deposit_date">Fecha de depósito</string>
+    <string name="selected_date">Seleccionar fecha</string>
+    <string name="question_photo_gallery">¿Tomará fotografía o adjuntará desde galería?</string>
+    <string name="photo_gallery">Fotografía o Galería?</string>
+    <string name="attach_ticket">Adjuntar ticket</string>
+    <string name="photo_voucher">Fotografía del comprobante de pago</string>
+    <string name="is_manager">¿Está el gerente con usted?</string>
+    <string name="remember_printer_turned_on">Colaborador recuerda tener encendida la impresora</string>
+    <string name="payment_receipt_number">Número de recibo de pago</string>
+    <string name="doesnt_battery">No cuenta con batería</string>
+    <string name="receipt_printing">Impresión de recibo</string>
+    <string name="no_contact_comment">Comentario de no contacto</string>
+    <string name="facade_photo">Fotografía de fachada</string>
+    <string name="order">Orden</string>
+    <string name="preview">VISTA PREVIA</string>
+    <string name="reason_no_payment">Motivo de no pago</string>
+    <string name="reason_death">Motivo de defunción</string>
+    <string name="date_death">Fecha de defunción</string>
+    <string name="outdate_info">Información desfasada</string>
+    <string name="specify_cause">Especifica la causa</string>
+    <string name="signature_manager">Firma Gerente</string>
+    <string name="group_name">Nombre del Grupo</string>
+    <string name="group_key">Clave del Grupo</string>
+    <string name="total_members">Total de integrantes</string>
+    <string name="total_amount_group_loan">Monto total del préstamo grupal</string>
+    <string name="treasurer_data">Datos de la tesorera</string>
+    <string name="treasurer_name">Nombre de la tesorera</string>
+    <string name="call_treasurer_phone">Llamar al teléfono de la tesorera</string>
+    <string name="president_data">Datos de la presidenta</string>
+    <string name="president_name">Nombre de la presidenta</string>
+    <string name="call_president_phone">Llamar al teléfono de la presidenta</string>
+    <string name="receptionist_data">Datos de la secretaria</string>
+    <string name="receptionist_name">Nombre de la secretaria</string>
+    <string name="call_receptionist_phone">Llamar al teléfono de la secretaria</string>
+    <string name="solidary_payment">¿Se hizo pago solidario?</string>
+    <string name="user">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="open_pay">OpenPay</string>
+    <string name="members_group">Integrantes del Grupo</string>
+    <string name="member">Integrantes</string>
+    <string name="amount_payment_promise">Monto promesa de pago</string>
+    <string name="payment_promise_date">Fecha de promesa de pago</string>
+
+
+    <!--  TODO: Arrays  -->
+    <string-array name="banks">
+        <item>Banamex</item>
+        <item>Banorte</item>
+        <item>Telecom</item>
+        <item>Bansefi</item>
+        <item>Bancomer</item>
+    </string-array>
+
+    <string-array name="open_pay">
+        <item>Aurrera</item>
+        <item>Farmacia del ahorro</item>
+        <item>Guadalajara</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="files">
+        <item>Fotografía</item>
+        <item>Galería</item>
+    </string-array>
+
+    <string-array name="reason_no_pay">
+        <item>Negación de pago</item>
+        <item>Información Desfasada</item>
+        <item>Fallecimiento</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="outdated_information">
+        <item>Garantía</item>
+        <item>Refinanciamiento</item>
+        <item>Condonación</item>
+        <item>Captura de pago</item>
+    </string-array>
+
+    <string-array name="method_pay">
+        <item>Banco</item>
+        <item>Oxxo</item>
+        <item>Efectivo</item>
+        <item>SIDERT</item>
+    </string-array>
+
+</resources>

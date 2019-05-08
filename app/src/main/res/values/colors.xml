@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1576ba</color>
+    <color name="colorPrimaryDark">#164D74</color>
+    <color name="colorAccent">#1576ba</color>
+    <color name="colorGrayDark">#adafb2</color>
+    <color name="shadowdrawer">#ba6e6d6d</color>
+    <color name="lightGray">#A6DAD7D7</color>
+    <color name="et_bkg">#99FFFFFF</color>
+    <color name="gray_light">#ECECEC</color>
+    <color name="blue_sidert">#1576ba</color>
+    <color name="blue_sidert_push">#3896E0</color>
+    <color name="transparente">#00e1ce2a</color>
+    <color name="blackopacity">#C1918F8F</color>
+    <color name="bkg_transparent">#00FFFFFF</color>
+
+   <!-- <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color> -->
+
+</resources>
