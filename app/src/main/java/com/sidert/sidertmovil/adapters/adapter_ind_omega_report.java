@@ -17,11 +17,9 @@ import java.util.Random;
 public class adapter_ind_omega_report extends RecyclerView.Adapter<adapter_ind_omega_report.ViewHolder>{
 
     private Context ctx;
-    private List<Integer> data;
 
     public adapter_ind_omega_report(Context ctx) {
         this.ctx = ctx;
-
     }
 
     @Override

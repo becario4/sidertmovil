@@ -127,7 +127,6 @@ public class CameraVertical extends AppCompatActivity implements SensorEventList
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-
     }
 
     private void takePicture() {

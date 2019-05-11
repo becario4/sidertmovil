@@ -14,7 +14,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.GroupCollection;
+import com.sidert.sidertmovil.activities.GroupExpiredWallet;
 import com.sidert.sidertmovil.activities.GroupRecovery;
+import com.sidert.sidertmovil.activities.IndividualCollection;
+import com.sidert.sidertmovil.activities.IndividualExpiredWallet;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.utils.Constants;
 
@@ -48,14 +52,31 @@ public class dialog_details_order extends DialogFragment {
     private View.OnClickListener ibOrderDetails_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Intent intent_order = null;
             switch (type){
                 case 0:
-                    Intent single_ri = new Intent(ctx, IndividualRecovery.class);
-                    startActivity(single_ri);
+                    intent_order = new Intent(ctx, IndividualRecovery.class);
+                    startActivity(intent_order);
                     break;
                 case 1:
-                    Intent group_ri = new Intent(ctx, GroupRecovery.class);
-                    startActivity(group_ri);
+                    intent_order = new Intent(ctx, GroupRecovery.class);
+                    startActivity(intent_order);
+                    break;
+                case 2:
+                    intent_order = new Intent(ctx, IndividualCollection.class);
+                    startActivity(intent_order);
+                    break;
+                case 3:
+                    intent_order = new Intent(ctx, GroupCollection.class);
+                    startActivity(intent_order);
+                    break;
+                case 4:
+                    intent_order = new Intent(ctx, IndividualExpiredWallet.class);
+                    startActivity(intent_order);
+                    break;
+                case 5:
+                    intent_order = new Intent(ctx, GroupExpiredWallet.class);
+                    startActivity(intent_order);
                     break;
             }
 

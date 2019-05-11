@@ -25,5 +25,6 @@ public class Constants {
     public final static String uri_signature            = "uri_signature";
 
     public final static String type                     = "type";
+    public final static String client_code              = "clave_cliente";
 
 }

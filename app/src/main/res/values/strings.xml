@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SidertMovil</string>
+    <string name="app_name">Sidert Movil</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
     <string name="orders">ÓRDENES</string>
@@ -109,7 +109,18 @@
     <string name="member">Integrantes</string>
     <string name="amount_payment_promise">Monto promesa de pago</string>
     <string name="payment_promise_date">Fecha de promesa de pago</string>
-
+    <string name="treasurer_address">Dirección de la tesorera</string>
+    <string name="president_address">Dirección de la presidenta</string>
+    <string name="receptionist_address">Dirección de la secretaria</string>
+    <string name="update_phone">¿Actualizar teléfono?</string>
+    <string name="new_phone">Nuevo teléfono de contacto</string>
+    <string name="phone">Teléfono</string>
+    <string name="email">Correo electrónico</string>
+    <string name="department">Departamento</string>
+    <string name="data_person">Datos personales</string>
+    <string name="name">Nombre</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="save">Guardar</string>
 
     <!--  TODO: Arrays  -->
     <string-array name="banks">
@@ -152,5 +163,11 @@
         <item>Efectivo</item>
         <item>SIDERT</item>
     </string-array>
+
+    <string-array name="method_pay_expired">
+        <item>Efectivo</item>
+        <item>Banamex722</item>
+    </string-array>
+
 
 </resources>

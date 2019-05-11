@@ -22,10 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
+import com.sidert.sidertmovil.activities.Profile;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
@@ -49,6 +51,7 @@ public class Home extends AppCompatActivity {
     private CoordinatorLayout CLcontainer;
     private TextView tvNameUser;
     private CircleImageView civAvatar;
+    private LinearLayout llProfile;
     //private FrameLayout FLmain;
     private boolean canExitApp = false;
 
@@ -61,12 +64,15 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_home);
-        ctx                      = getApplicationContext();
-        TBmain                   = findViewById(R.id.TBmain);
-        mDrawerLayout            = findViewById(R.id.mDrawerLayout);
-        NVmenu                   = findViewById(R.id.NVmenu);
-        mTabLayout               = findViewById(R.id.mTabLayout);
-        CLcontainer              = findViewById(R.id.CLcontainer);
+        ctx             = getApplicationContext();
+        TBmain          = findViewById(R.id.TBmain);
+        mDrawerLayout   = findViewById(R.id.mDrawerLayout);
+        NVmenu          = findViewById(R.id.NVmenu);
+        mTabLayout      = findViewById(R.id.mTabLayout);
+        CLcontainer     = findViewById(R.id.CLcontainer);
+        View view       = NVmenu.getHeaderView(0);
+        civAvatar       = view.findViewById(R.id.civAvatar);
+        llProfile       = view.findViewById(R.id.llProfile);
 
         initNavigationDrawer();
         setSupportActionBar(TBmain);
@@ -100,7 +106,9 @@ public class Home extends AppCompatActivity {
             });
         }
         setFragment(NameFragments.ORDERS, null);
+
         NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
+        llProfile.setOnClickListener(LLprofile_OnClick);
 
     }
 
@@ -198,10 +206,6 @@ public class Home extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Funciòn cleandFrsgments
-    /*
-    Limpia todos los fragmentos que estan en la pila
-    */
     public void cleanFragments() {
         FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -245,4 +249,12 @@ public class Home extends AppCompatActivity {
             }
         });
     }
+
+    private View.OnClickListener LLprofile_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(ctx, Profile.class);
+            startActivity(i);
+        }
+    };
 }

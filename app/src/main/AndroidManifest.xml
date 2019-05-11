@@ -5,8 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.hardware.camera2.full" />
+
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
         android:required="true" />
@@ -18,7 +20,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.CameraVertical"/>
+        <activity android:name=".activities.Profile"></activity>
+        <activity android:name=".activities.GroupMembersInfo" />
+        <activity android:name=".activities.GroupExpiredWallet" />
+        <activity android:name=".activities.IndividualExpiredWallet" />
+        <activity android:name=".activities.GroupCollection" />
+        <activity android:name=".activities.IndividualCollection" />
+        <activity android:name=".activities.CameraVertical" />
         <activity
             android:name=".activities.GroupRecovery"
             android:screenOrientation="portrait"
