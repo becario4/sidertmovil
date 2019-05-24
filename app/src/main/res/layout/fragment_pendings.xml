@@ -83,6 +83,7 @@
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <!-- TODO: Item Individual-->
                         <LinearLayout
                             android:id="@+id/llSingle"
@@ -211,6 +212,58 @@
                                 android:paddingRight="3dp"
                                 android:textColor="@android:color/black"
                                 android:text="343254t456434533453-cvg"
+                                android:layout_width="70dp"
+                                android:layout_height="match_parent" />
+                            <TextView
+                                android:gravity="center"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:textColor="@android:color/black"
+                                android:text="Alejandro Isiaias Lopez Jimenez"
+                                android:layout_width="170dp"
+                                android:layout_height="match_parent" />
+                            <TextView
+                                android:gravity="center"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:textColor="@android:color/black"
+                                android:text="Desarrollador AND"
+                                android:layout_width="170dp"
+                                android:layout_height="match_parent" />
+                            <TextView
+                                android:gravity="center"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:textColor="@android:color/black"
+                                android:text="Gpe. Victoria 4293-1, Ortiz Rubio, Veracruz, Veracruz"
+                                android:layout_width="170dp"
+                                android:layout_height="match_parent" />
+                        </LinearLayout>
+
+                        <!-- TODO: Item Cartera Vencida Individual-->
+                        <LinearLayout
+                            android:id="@+id/llCvi"
+                            android:background="@android:color/white"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp">
+                            <View
+                                android:layout_width="30dp"
+                                android:layout_height="match_parent"/>
+                            <TextView
+                                android:gravity="center"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:textColor="@android:color/black"
+                                android:text="Alejandro Isiaias Lopez Jimenez"
+                                android:layout_width="110dp"
+                                android:layout_height="match_parent" />
+                            <TextView
+                                android:gravity="center"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:textColor="@android:color/black"
+                                android:text="343254t456434533453-L007cvi"
                                 android:layout_width="70dp"
                                 android:layout_height="match_parent" />
                             <TextView

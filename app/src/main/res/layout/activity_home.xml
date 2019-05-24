@@ -45,15 +45,32 @@
             </FrameLayout>
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
+
     <android.support.design.widget.NavigationView
         android:id="@+id/NVmenu"
         android:layout_width="@dimen/drawermenu"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/white"
+        android:background="@color/bkg_navigation"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="false"
+        android:visibility="visible"
         app:itemTextAppearance="@style/TextoMenu"
         app:headerLayout="@layout/header_menu"
-        app:itemIconTint="@color/colorGrayDark"
-        app:menu="@menu/navigation_menu"
-        android:fitsSystemWindows="true"/>
+        app:itemIconTint="@android:color/white"
+        app:menu="@menu/navigation_menu" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom">
+            <TextView
+                android:gravity="right"
+                android:text="1.0.0"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </android.support.design.widget.NavigationView>
 </com.sidert.sidertmovil.utils.CustomDrawerLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -14,32 +15,42 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.activities.Profile;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.Popups;
+
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity{
 
     private Context ctx;
     private ActionBarDrawerToggle mToggled;
@@ -52,6 +63,7 @@ public class Home extends AppCompatActivity {
     private TextView tvNameUser;
     private CircleImageView civAvatar;
     private LinearLayout llProfile;
+    private ImageView ivLogout;
     //private FrameLayout FLmain;
     private boolean canExitApp = false;
 
@@ -73,6 +85,7 @@ public class Home extends AppCompatActivity {
         View view       = NVmenu.getHeaderView(0);
         civAvatar       = view.findViewById(R.id.civAvatar);
         llProfile       = view.findViewById(R.id.llProfile);
+        ivLogout        = view.findViewById(R.id.ivLogout);
 
         initNavigationDrawer();
         setSupportActionBar(TBmain);
@@ -109,6 +122,7 @@ public class Home extends AppCompatActivity {
 
         NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
         llProfile.setOnClickListener(LLprofile_OnClick);
+        ivLogout.setOnClickListener(ivLogout_OnClick);
 
     }
 
@@ -128,6 +142,10 @@ public class Home extends AppCompatActivity {
                     break;
                 case R.id.NVsettings:
                     //setFragment(fragments.ORDERS, null);
+                    break;
+                case R.id.NVcomplaint:
+                    dialog_mailbox complaint = new dialog_mailbox();
+                    complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);
                     break;
                 case R.id.NVhelp:
                     //setFragment(fragments.ORDERS, null);
@@ -257,4 +275,16 @@ public class Home extends AppCompatActivity {
             startActivity(i);
         }
     };
+
+    private View.OnClickListener ivLogout_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dialog_logout mess_confirm = new dialog_logout();
+            Bundle b = new Bundle();
+            b.putString(Constants.message, getApplicationContext().getString(R.string.mess_logout));
+            mess_confirm.setArguments(b);
+            mess_confirm.show(getSupportFragmentManager(), NameFragments.DIALOGLOGOUT);
+        }
+    };
+
 }

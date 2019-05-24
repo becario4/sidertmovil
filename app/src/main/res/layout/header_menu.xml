@@ -18,7 +18,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bkg_nv">
+            android:background="@color/bkg_navigation">
 
             <LinearLayout
                 android:layout_weight="1"
@@ -30,9 +30,11 @@
                     android:id="@+id/civAvatar"
                     android:paddingLeft="5dp"
                     app:civ_fill_color="@android:color/secondary_text_dark"
-                    android:src="@drawable/ic_default_user"
+                    android:src="@drawable/avatar_default"
                     android:layout_width="70dp"
-                    android:layout_height="70dp" />
+                    android:layout_height="70dp"
+                    app:civ_border_width="3dp"
+                    app:civ_border_color="@color/colorGrayDark"/>
 
                 <LinearLayout
                     android:layout_gravity="center_vertical"
@@ -41,6 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="8dp"
+                    android:padding="5dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="5dp">
                     <TextView
@@ -85,12 +88,19 @@
                     android:ellipsize="end"/>
 
                 <ImageView
+                    android:id="@+id/ivLogout"
                     android:layout_gravity="right|bottom"
                     android:layout_weight="0"
                     android:src="@drawable/ic_logout_withe"
                     android:layout_width="50dp"
-                    android:layout_height="30dp" />
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="5dp"/>
             </LinearLayout>
+            <View
+                android:layout_marginBottom="1dp"
+                android:background="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"/>
         </LinearLayout>
     </com.sidert.sidertmovil.utils.CustomRelativeLayout>
 </LinearLayout>

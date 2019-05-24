@@ -14,21 +14,22 @@
         android:layout_height="match_parent"
         android:gravity="center">
         <ImageView
+            android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/logo_sidert"
-            android:layout_marginBottom="-5dp"/>
-        <pl.droidsonroids.gif.GifImageView
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:src="@drawable/loader">
-        </pl.droidsonroids.gif.GifImageView>
-        <TextView
-            android:text="Cargando por favor espere . . . "
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="@dimen/textsize"/>
-    </LinearLayout>
+            android:background="@drawable/logo_sidert" />
 
+    </LinearLayout>
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_marginTop="-200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:src="@drawable/loader">
+    </pl.droidsonroids.gif.GifImageView>
+    <TextView
+        android:text="Cargando por favor espere . . . "
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:textSize="@dimen/textsize"/>
 </LinearLayout>

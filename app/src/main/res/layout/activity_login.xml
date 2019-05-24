@@ -59,9 +59,9 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="40dp"
                         android:layout_marginRight="40dp"
-                        android:textSize="14dp"/>
+                        android:textSize="14dp" />
 
-                    <EditText
+                    <com.scottyab.showhidepasswordedittext.ShowHidePasswordEditText
                         android:id="@+id/etPassword"
                         android:hint="@string/password"
                         android:layout_width="match_parent"
@@ -73,11 +73,16 @@
                         android:inputType="textPassword"
                         android:textColor="@android:color/white"
                         android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
                         android:maxLength="255"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="40dp"
                         android:layout_marginRight="40dp"
-                        android:textSize="14dp"/>
+                        android:textSize="14dp"
+                        app:tint_color="@color/shadowdrawer"
+                        app:drawable_hide="@drawable/ic_on"
+                        app:drawable_show="@drawable/ic_off" />
+
                     <Button
                         android:id="@+id/btnLogin"
                         android:text="@string/login"
@@ -85,7 +90,7 @@
                         android:layout_height="40dp"
                         android:background="@drawable/btn_rounded_white"
                         android:textSize="15dp"
-                        android:layout_marginTop="20dp"/>
+                        android:layout_marginTop="20dp" />
 
                 </LinearLayout>
 

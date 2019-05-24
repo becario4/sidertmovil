@@ -6,6 +6,12 @@ public class Constants {
     public final static String TBtitle   = "title";
     public final static String TBhasBack = "hasBack";
 
+    public final static String RECOVERY         = "Recuperacion";
+    public final static String COLLECTION       = "Cobranza";
+    public final static String WALLET_EXPIRED   = "CarteraVencida";
+
+    public final static String ERROR            = "Error";
+
     public final static String negative_payment         = "Negación de pago";
     public final static String outdate_information      = "Información Desfasada";
     public final static String death                    = "Fallecimiento";
@@ -19,12 +25,16 @@ public class Constants {
     public final static String photo                    = "Fotografía";
     public final static String galery                  = "Galería";
 
-
     public final static String message                  = "message";
+    public final static String response                 = "response";
 
     public final static String uri_signature            = "uri_signature";
 
     public final static String type                     = "type";
     public final static String client_code              = "clave_cliente";
+
+    //Iconos para colocar el dialog_message
+    public final static String not_network              = "not_network";
+    public final static String logout                   = "logout";
 
 }

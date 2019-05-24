@@ -16,15 +16,16 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_main);
 
+        Intent i;
 
-        if (false) {
-            Intent home = new Intent(getApplication(), Home.class);
-            startActivity(home);
+        if (true) {
+            i = new Intent(getApplication(), Home.class);
+            startActivity(i);
             finish();
         }
         else{
-            Intent login = new Intent(getApplication(), Login.class);
-            startActivity(login);
+            i = new Intent(getApplication(), Login.class);
+            startActivity(i);
             finish();
         }
     }

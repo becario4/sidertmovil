@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 //import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -33,16 +34,20 @@ public class dialog_ine_photo extends DialogFragment {
     private Context ctx;
     private String clienteCode;
     private ImageView ivIneClient;
+    private ImageView ivClose;
 
     private static final String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "//sidert//ine//";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_ine_photo,container,false);
-        ctx                 = getContext();
+        ctx             = getContext();
         ivIneClient     = view.findViewById(R.id.ivIneClient);
+        ivClose         = view.findViewById(R.id.ivClose);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        setCancelable(false);
         clienteCode = getArguments().getString(Constants.client_code);
         return view;
     }
@@ -60,7 +65,15 @@ public class dialog_ine_photo extends DialogFragment {
         PhotoViewAttacher photo = new PhotoViewAttacher(ivIneClient);
         photo.update();
 
+        ivClose.setOnClickListener(ivClose_OnClick);
     }
+
+    private View.OnClickListener ivClose_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getDialog().dismiss();
+        }
+    };
 
     private String loadSettingFile(String claveCliente) {
         String lastConnAddr = "";
@@ -82,6 +95,5 @@ public class dialog_ine_photo extends DialogFragment {
         }
         return  lastConnAddr;
     }
-
 
 }

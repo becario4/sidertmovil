@@ -6,6 +6,7 @@
     <string name="messages">MENSAJES</string>
     <string name="map">MAPA</string>
     <string name="settings">AJUSTES</string>
+    <string name="complaint">DENUNCIAS SIDERT</string>
     <string name="help">AYUDA</string>
     <string name="about">ACERCA DE</string>
     <string name="logout">CERRAR SESIÓN</string>
@@ -121,6 +122,18 @@
     <string name="name">Nombre</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="save">Guardar</string>
+    <string name="reason">Motivo</string>
+    <string name="subject">Asunto</string>
+    <string name="sent">Enviar</string>
+
+    <!-- TODO: Titles -->
+    <string name="please_wait">Por favor espere . . .</string>
+    <!--  TODO: Mensajes  -->
+    <string name="error_connect_print">Error de conexión, verifica si la impresora está encendida o intenta de nuevo.</string>
+    <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
+    <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
+    <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
+    <string name="loading_info">Cargando información . . .</string>
 
     <!--  TODO: Arrays  -->
     <string-array name="banks">
@@ -168,6 +181,9 @@
         <item>Efectivo</item>
         <item>Banamex722</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

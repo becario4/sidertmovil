@@ -34,6 +34,7 @@ public class pendings_fragment extends Fragment{
     private LinearLayout llSingle;
     private LinearLayout llGpo;
     private LinearLayout llCvg;
+    private LinearLayout llCvi;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class pendings_fragment extends Fragment{
         llSingle    = view.findViewById(R.id.llSingle);
         llGpo       = view.findViewById(R.id.llgpo);
         llCvg       = view.findViewById(R.id.llCvg);
+        llCvi       = view.findViewById(R.id.llCvi);
+
         return view;
     }
 
@@ -53,6 +56,7 @@ public class pendings_fragment extends Fragment{
         llSingle.setOnClickListener(LLsingle_onClick);
         llGpo.setOnClickListener(LLgpo_onClick);
         llCvg.setOnClickListener(LLcvg_OnClick);
+        llCvi.setOnClickListener(LLcvi_OnClick);
     }
 
     private View.OnClickListener LLsingle_onClick = new View.OnClickListener() {
@@ -66,6 +70,13 @@ public class pendings_fragment extends Fragment{
         @Override
         public void onClick(View v) {
             ShowOrderSelected (1);
+        }
+    };
+
+    private View.OnClickListener LLcvi_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ShowOrderSelected (4);
         }
     };
 

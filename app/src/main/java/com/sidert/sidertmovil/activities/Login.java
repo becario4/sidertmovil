@@ -55,10 +55,10 @@ public class Login extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             doLogin();
-            /*if(!validator.validate(etUser, new String[] {validator.REQUIRED}) &&
+            if(!validator.validate(etUser, new String[] {validator.REQUIRED}) &&
                     !validator.validate(etPassword, new String[] {validator.REQUIRED})) {
                 doLogin();
-            }*/
+            }
         }
     };
 

@@ -11,7 +11,7 @@
         android:textColor="@android:color/white"
         android:background="@color/shadowdrawer"
         android:gravity="center"
-        android:text="201904233485739-L007ri"
+        android:text="201904233485739-L007cvi"
         android:layout_width="match_parent"
         android:layout_height="30dp" />
 
@@ -41,7 +41,7 @@
 
                 <EditText
                     android:text="338475"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -63,7 +63,7 @@
 
                 <EditText
                     android:text="04/04/2019"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content" />
                 <EditText
                     android:text="45930"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -105,7 +105,6 @@
                     android:layout_height="wrap_content" />
 
                 <EditText
-                    android:id="@+id/etName"
                     android:focusable="false"
                     android:text="ALEJANDRO ISAIAS LOPEZ JIMENEZ"
                     android:paddingLeft="10dp"
@@ -114,7 +113,7 @@
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Llamer al cliente a su domicilio  -->
+            <!--  Llamar al cliente a su domicilio  -->
             <LinearLayout
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
@@ -139,7 +138,7 @@
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Llamer al cliente a su celular  -->
+            <!--  Llamar al cliente a su celular  -->
             <LinearLayout
                 android:layout_marginTop="12dp"
                 android:orientation="vertical"
@@ -177,7 +176,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:editable="false"
+                    android:focusable="false"
                     android:text="$ 5,000.00"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
@@ -198,7 +197,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:editable="false"
+                    android:focusable="false"
                     android:text="$ 6,340.34"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
@@ -220,7 +219,7 @@
                     android:layout_height="wrap_content" />
 
                 <EditText
-                    android:editable="false"
+                    android:focusable="false"
                     android:text="4"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
@@ -242,7 +241,7 @@
                     android:layout_height="wrap_content" />
                 <EditText
                     android:text="$ 356.23"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -264,7 +263,7 @@
 
                 <EditText
                     android:text="$ 204.45"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -286,7 +285,7 @@
 
                 <EditText
                     android:text="06/04/2019"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -326,7 +325,7 @@
 
                 <EditText
                     android:text="ARTURO LOPEZ JIMENEZ"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -347,14 +346,14 @@
                     android:layout_height="wrap_content" />
                 <EditText
                     android:text="HERMANO"
-                    android:editable="false"
+                    android:focusable="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Llamer al teléfono del aval  -->
+            <!--  Llamar al teléfono del aval  -->
             <LinearLayout
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"

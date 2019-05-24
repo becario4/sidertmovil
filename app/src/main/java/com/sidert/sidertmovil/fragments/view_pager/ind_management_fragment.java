@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -37,6 +38,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
+import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
 import com.sidert.sidertmovil.utils.Constants;
 
@@ -121,6 +123,7 @@ public class ind_management_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view       = inflater.inflate(R.layout.fragment_ind_management, container, false);
         ctx             = getContext();
+
         boostrap        = (IndividualRecovery) getActivity();
         etReasonNoPay   = view.findViewById(R.id.etReasonNoPay);
         etOutDateInfo   = view.findViewById(R.id.etOutDateInfo);

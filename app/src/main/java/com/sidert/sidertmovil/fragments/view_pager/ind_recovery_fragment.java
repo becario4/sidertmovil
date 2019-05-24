@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
@@ -27,6 +28,10 @@ public class ind_recovery_fragment extends Fragment {
     private Button btnCallCell;
     private Button btnCallEndorsement;
 
+    public String test = "Esto es una prueba";
+
+    public EditText etName;
+
     private final int REQUEST_PERMISSION_CALL = 12312;
 
     private IndividualRecovery boostrap;
@@ -36,9 +41,12 @@ public class ind_recovery_fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ind_recovery, container, false);
         ctx                     = getContext();
         boostrap                = (IndividualRecovery) getActivity();
+
+        etName                  = view.findViewById(R.id.etName);
         btnCallHome             = view.findViewById(R.id.btnCallHome);
         btnCallCell             = view.findViewById(R.id.btnCallCell);
         btnCallEndorsement      = view.findViewById(R.id.btnCallEndorsement);
+
         return view;
     }
 
