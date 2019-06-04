@@ -10,6 +10,8 @@ public class NameFragments {
     public final static String HELP                  = "help_fragment";
     public final static String ABOUT                 = "about_fragment";
 
+    public final static String COMPLAINT_TEMP         = "fragment_complaint_temp";
+
     //TODO:   Nombre de fragmentos del viewpager
     public final static String INDRECOVERY          = "ind_recovery_fragment";
     public final static String INDMANAGEMENT        = "ind_management_fragment";

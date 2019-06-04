@@ -22,11 +22,11 @@ public class SessionManager {
     }
 
     // ===================  Count MailBox ==========================
-    public void setMailBox (String date, int count){
+    public void setMailBox (String date, String count){
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
         editor = preferences.edit();
         editor.putString(DATE, date);
-        editor.putInt(MAILBOX, count);
+        editor.putString(MAILBOX, count);
         editor.commit();
     }
 

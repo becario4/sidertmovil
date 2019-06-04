@@ -19,6 +19,9 @@
 
     <color name="bkg_navigation">#071738</color>
 
+    <color name="disable">#60AEAFB1</color>
+    <color name="complaint_bkg">#CB5E8AFF</color>
+
    <!-- <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color> -->
 

@@ -72,7 +72,7 @@ public class Login extends AppCompatActivity {
         else{
             dialog_message popup_message = new dialog_message();
             Bundle b = new Bundle();
-            b.putString(Constants.message,"Usuario y/o contraseña incorrecta, intente de nuevo.");
+            b.putString(Constants.MESSAGE,"Usuario y/o contraseña incorrecta, intente de nuevo.");
             popup_message.setArguments(b);
             popup_message.show(getSupportFragmentManager(), NameFragments.DIALOGMESSAGE);
         }

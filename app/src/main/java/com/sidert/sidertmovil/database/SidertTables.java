@@ -13,7 +13,7 @@ public class SidertTables {
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String FOLIO            = "folio";
-        public static final String ASSESOR_ID       = "asesesor_id";
+        public static final String ASSESOR_ID       = "assesor_id";
         public static final String EXTERNAL_ID      = "external_id";
         public static final String AMOUNT           = "amount";
         public static final String TYPE_IMPRESSION  = "type_impression";
@@ -24,39 +24,39 @@ public class SidertTables {
 
         // == QUERIES CREATE
         static final String CREATE_TABLE_RECOVERY   = "CREATE TABLE " + TABLE_NAME_LOG_R + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT)";
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.FOLIO             + " INTEGER,"
+                + SidertEntry.ASSESOR_ID        + " TEXT,"
+                + SidertEntry.EXTERNAL_ID       + " TEXT,"
+                + SidertEntry.AMOUNT            + " TEXT,"
+                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
+                + SidertEntry.ERRORS            + " TEXT,"
+                + SidertEntry.GENERATED_AT      + " TEXT,"
+                + SidertEntry.SENT_AT           + " TEXT,"
+                + SidertEntry.STATUS            + " TEXT)";
 
         static final String CREATE_TABLE_WALLET_EXPIRED   = "CREATE TABLE " + TABLE_NAME_LOG_CV + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT)";
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.FOLIO             + " INTEGER,"
+                + SidertEntry.ASSESOR_ID        + " TEXT,"
+                + SidertEntry.EXTERNAL_ID       + " TEXT,"
+                + SidertEntry.AMOUNT            + " TEXT,"
+                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
+                + SidertEntry.ERRORS            + " TEXT,"
+                + SidertEntry.GENERATED_AT      + " TEXT,"
+                + SidertEntry.SENT_AT           + " TEXT,"
+                + SidertEntry.STATUS            + " TEXT)";
 
         static final String CREATE_TABLE_COLLECTION   = "CREATE TABLE " + TABLE_NAME_LOG_C + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT)";
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.FOLIO             + " INTEGER,"
+                + SidertEntry.ASSESOR_ID        + " TEXT,"
+                + SidertEntry.EXTERNAL_ID       + " TEXT,"
+                + SidertEntry.AMOUNT            + " TEXT,"
+                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
+                + SidertEntry.ERRORS            + " TEXT,"
+                + SidertEntry.GENERATED_AT      + " TEXT,"
+                + SidertEntry.SENT_AT           + " TEXT,"
+                + SidertEntry.STATUS            + " TEXT)";
     }
 }

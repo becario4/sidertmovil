@@ -17,6 +17,7 @@ import com.sidert.sidertmovil.R;
 public class Popups {
 
     private static int DIALOG_MESSAGE  = R.layout.popup_message;
+    private static int DIALOG_SUCCESS  = R.layout.popup_success;
     private static int DIALOG_LODING   = R.layout.popup_loading;
     private static int DIALOG_PROGRESS = R.layout.popup_progress;
     public interface DialogMessage {
@@ -66,7 +67,6 @@ public class Popups {
     public static AlertDialog showDialogMessage(Context ctx, String message,
                                                 String btnOk, final DialogMessage btnOkClick,
                                                 int btnFail, final DialogMessage btnFailClick) {
-
         // LOADING VIEWS
         View view          = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
         TextView TVmessage = view.findViewById(R.id.TVmessage);
@@ -106,7 +106,6 @@ public class Popups {
     public static AlertDialog showDialogMessage(Context ctx, String icon, String message,
                                                 String btnOk, final DialogMessage btnOkClick,
                                                 String btnFail, final DialogMessage btnFailClick) {
-
         // LOADING VIEWS
         View view           = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
         TextView TVmessage  = view.findViewById(R.id.tvMessage);
@@ -152,10 +151,59 @@ public class Popups {
 
         return dialog;
     }
+
+    public static AlertDialog showDialogSuccess(Context ctx, String icon, String message,
+                                                String btnOk, final DialogMessage btnOkClick,
+                                                String btnFail, final DialogMessage btnFailClick) {
+        // LOADING VIEWS
+        View view           = LayoutInflater.from(ctx).inflate(DIALOG_SUCCESS, null);
+        TextView TVmessage  = view.findViewById(R.id.tvMessage);
+        Button BTNok        = view.findViewById(R.id.btnAccept);
+        Button BTNfail      = view.findViewById(R.id.btnFail);
+        ImageView IVicon    = view.findViewById(R.id.ivIcon);
+
+        switch (icon){
+            case Constants.success:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_done)).into(IVicon);
+                break;
+        }
+        // FILLING VIEWS
+        TVmessage.setText(message);
+
+        BTNfail.setVisibility(View.GONE);
+
+
+        final AlertDialog dialog = new AlertDialog.Builder(ctx)
+                .setCancelable(false)
+                .setView(view).create();
+
+        if(btnOk != null) {
+            BTNok.setText(btnOk);
+            BTNok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnOkClick.OnClickListener(dialog);
+                }
+            });
+        }
+
+        if(btnFail != null) {
+            BTNfail.setVisibility(View.VISIBLE);
+            BTNfail.setText(btnFail);
+            BTNfail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnFailClick.OnClickListener(dialog);
+                }
+            });
+        }
+
+        return dialog;
+    }
+
     public static AlertDialog showDialogMessage(Context ctx, String message,
                                                 int btnOk, final DialogMessage btnOkClick,
                                                 int btnFail, final DialogMessage btnFailClick) {
-
         // LOADING VIEWS
         View view          = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
         TextView TVmessage = view.findViewById(R.id.TVmessage);
@@ -191,7 +239,6 @@ public class Popups {
 
         return dialog;
     }
-
 
     public static AlertDialog showLoadingDialog(Context ctx, int message) {
         View view = LayoutInflater.from(ctx).inflate(DIALOG_LODING, null);

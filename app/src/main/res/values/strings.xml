@@ -2,14 +2,13 @@
     <string name="app_name">Sidert Movil</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
-    <string name="orders">ÓRDENES</string>
-    <string name="messages">MENSAJES</string>
-    <string name="map">MAPA</string>
-    <string name="settings">AJUSTES</string>
-    <string name="complaint">DENUNCIAS SIDERT</string>
-    <string name="help">AYUDA</string>
-    <string name="about">ACERCA DE</string>
-    <string name="logout">CERRAR SESIÓN</string>
+    <string name="orders">Órdenes</string>
+    <string name="messages">Mensajes</string>
+    <string name="map">Mapa</string>
+    <string name="settings">Ajustes</string>
+    <string name="complaint">Denuncias Sidert</string>
+    <string name="help">Ayuda</string>
+    <string name="about">Acerca de</string>
 
     <!-- TODO: Icono de hamburguesa del menú lateral -->
     <string name="open">Abrir</string>
@@ -125,15 +124,23 @@
     <string name="reason">Motivo</string>
     <string name="subject">Asunto</string>
     <string name="sent">Enviar</string>
+    <string name="print_title">Imprimir Recibos</string>
 
-    <!-- TODO: Titles -->
+    <!-- TODO: Titles Messages-->
     <string name="please_wait">Por favor espere . . .</string>
-    <!--  TODO: Mensajes  -->
+
+    <!--  TODO: Messages  -->
     <string name="error_connect_print">Error de conexión, verifica si la impresora está encendida o intenta de nuevo.</string>
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
     <string name="loading_info">Cargando información . . .</string>
+    <string name="not_print">No se ha realizado ninguna impresión</string>
+    <string name="print_original">Solo se ha impreso el recibo original</string>
+    <string name="print_copy">Ya se imprimió el recibo original y la copia</string>
+    <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su deduncia es totalmente anónima.</string>
+    <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
+    <string name="error_mailbox">Ha ocurrido un error, favor de contactar a la persona encarga.</string>
 
     <!--  TODO: Arrays  -->
     <string-array name="banks">

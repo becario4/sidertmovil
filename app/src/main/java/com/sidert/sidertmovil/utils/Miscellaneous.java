@@ -14,8 +14,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Miscellaneous {
 
+    /*Validación de que no sea null ni vacio y colocar primera leta mayúscula*/
     public static String ucFirst(String str) {
         if (str.equals("null") || str.isEmpty()) {
             return "";
@@ -24,16 +29,19 @@ public class Miscellaneous {
         }
     }
 
+    /* Obtener que tipo de orden */
     public static String getTypeOrderValue(String str) {
         String type = "";
-        if (str.indexOf("ri") > -1 || str.indexOf("rg") > -1)
+        if (str.contains("ri") || str.contains("rg"))
         {
             type = Constants.RECOVERY;
         }
-        else if (str.indexOf("cvi") > -1 || str.indexOf("cvg") > -1 || str.indexOf("cci") > -1 || str.indexOf("ccg") > -1){
+        else if (str.contains("cvi") || str.contains("cvg"))
+        {
             type = Constants.WALLET_EXPIRED;
         }
-        else if (str.indexOf("ci") > -1 || str.indexOf("cg") > -1){
+        else if (str.contains("ci") || str.contains("cg"))
+        {
             type = Constants.COLLECTION;
         }
         else{
@@ -43,23 +51,24 @@ public class Miscellaneous {
 
     }
 
+    /* Descomponer json para obteción de registros de DB  */
     public static String readJson (JSONObject json) throws JSONException {
         String conditionals = "";
-        JSONArray jsonWhere =(JSONArray) json.get("where");
-        JSONArray jsonOrder =(JSONArray) json.get("order");
+        JSONArray jsonWhere =(JSONArray) json.get(Constants.WHERE);
+        JSONArray jsonOrder =(JSONArray) json.get(Constants.ORDER);
         if (jsonWhere.length() > 0)
         {
-            conditionals = "WHERE ";
+            conditionals = " WHERE ";
             for (int i = 0; i < jsonWhere.length(); i++)
             {
                 JSONObject item = jsonWhere.getJSONObject(i);
 
                 if (i == 0)
                 {
-                    conditionals +=  item.getString("key")+ " = " + item.getString("value");
+                    conditionals +=  item.getString(Constants.KEY)+ " = " + item.getString(Constants.VALUE);
                 }
                 else {
-                    conditionals += " AND " + item.getString("key")+ " = " + item.getString("value");
+                    conditionals += " AND " + item.getString(Constants.KEY)+ " = " + item.getString(Constants.VALUE);
                 }
             }
         }
@@ -74,13 +83,46 @@ public class Miscellaneous {
                 {
                     conditionals +=  " ORDER BY " + jsonOrder.get(i);
                 }
-                else {
+                else if(i > 0 && i < jsonOrder.length() - 1){
                     conditionals += ", " + jsonOrder.get(i);
+                }
+                else {
+                    conditionals +=  jsonOrder.get(i);
                 }
             }
         }
-
         return conditionals;
     }
+
+
+    /* Obtiene el contenido de un archivo */
+    public static String loadSettingFile(String fileName) {
+        String text = "";
+        int rin = 0;
+        char [] buf = new char[128];
+        try
+        {
+            FileReader fReader = new FileReader(fileName);
+            rin = fReader.read(buf);
+            if(rin > 0)
+            {
+                text = new String(buf,0,rin);
+            }
+            fReader.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            //Log.i(TAG, "Connection history not exists.");
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            //Log.e(TAG, e.getMessage(), e);
+        }
+
+        return text;
+    }
+
 
 }

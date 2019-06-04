@@ -35,7 +35,7 @@ public class dialog_message extends DialogFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tvMessage.setText(getArguments().getString(Constants.message));
+        tvMessage.setText(getArguments().getString(Constants.MESSAGE));
         btnAccept.setOnClickListener(btnAccept_onClick);
     }
 

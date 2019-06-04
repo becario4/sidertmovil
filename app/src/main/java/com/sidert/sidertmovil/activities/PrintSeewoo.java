@@ -1,34 +1,25 @@
 package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
@@ -38,16 +29,11 @@ import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -70,6 +56,7 @@ public class PrintSeewoo extends AppCompatActivity {
     private Thread hThread;
     private Context ctx;
 
+    private Toolbar tbMain;
     private Button btnPrintOriginal;
     private Button btnPrintCopy;
 
@@ -99,15 +86,26 @@ public class PrintSeewoo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         verifyStoragePermissions(this);
         setContentView(R.layout.activity_print_seewoo);
-        Log.v("Tag-Dir",dir);
         ctx = this;
         session = new SessionManager(ctx);
         dBhelper = new DBhelper(ctx);
 
-        btnPrintOriginal                    = findViewById(R.id.btnPrintOriginal);
-        btnPrintCopy                    = findViewById(R.id.btnPrintCopy);
+        tbMain              = findViewById(R.id.tbMain);
+        btnPrintOriginal    = findViewById(R.id.btnPrintOriginal);
+        btnPrintCopy        = findViewById(R.id.btnPrintCopy);
+
+        setSupportActionBar(tbMain);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle(getApplicationContext().getString(R.string.print_title));
+
+        btnPrintCopy.setBackgroundResource(R.drawable.btn_disable);
+        btnPrintOriginal.setBackgroundResource(R.drawable.btn_disable);
+
+
 
         String receivedText = "";
 
@@ -126,6 +124,9 @@ public class PrintSeewoo extends AppCompatActivity {
 
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         addPairedDevices();
+
+        btnPrintOriginal.setEnabled(false);
+        btnPrintCopy.setEnabled(false);
 
         btnPrintOriginal.setOnClickListener(btnPrintOriginal_OnClick);
         btnPrintCopy.setOnClickListener(btnPrintCopy_OnClick);
@@ -374,23 +375,10 @@ public class PrintSeewoo extends AppCompatActivity {
 
     public void sendResponse(boolean success, String print, String mensajeRespuesta){
         saveSettingFile();
-
-        JSONArray updateFieldsValues = new JSONArray();
-        JSONObject updateField = new JSONObject();
-
-        try {
-            updateField.put("Key","ResImpresion");
-            updateField.put("Value",print);
-            updateFieldsValues.put(updateField);
-
-        }catch (JSONException ex){
-            success = false;
-        }
-
         Intent intent = new Intent();
         if(success){
             intent.putExtra("message", mensajeRespuesta);
-            intent.putExtra("UpdateFieldsValues", updateFieldsValues.toString());
+            intent.putExtra("res_print", print);
             setResult(RESULT_OK, intent);
         }else{
             intent.putExtra("message", "Error al procesar información");
@@ -401,19 +389,41 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        String mensaje = "";
-        switch ("") {
-            case "0.0":
-                mensaje = "No se ha realizado ninguna impresión";
-                break;
-            case "1.0":
-                mensaje = "Solo se ha impreso el recibo original";
-                break;
-            case "2.0":
-                mensaje = "Ya se imprimió el recibo original y la copia";
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                String message = "";
+                switch ("2.0") {
+                    case "0.0":
+                        message = ctx.getResources().getString(R.string.not_print);
+                        break;
+                    case "1.0":
+                        message = ctx.getResources().getString(R.string.print_original);
+                        break;
+                    case "2.0":
+                        message = ctx.getResources().getString(R.string.print_copy);
+                        break;
+                }
+                sendResponse(true, "0.0", message);
                 break;
         }
-        sendResponse(true, "res_impresion", mensaje);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        String message = "";
+        switch ("2.0") {
+            case "0.0":
+                message = ctx.getResources().getString(R.string.not_print);
+                break;
+            case "1.0":
+                message = ctx.getResources().getString(R.string.print_original);
+                break;
+            case "2.0":
+                message = ctx.getResources().getString(R.string.print_copy);
+                break;
+        }
+        sendResponse(true, "0.0", message);
     }
 }

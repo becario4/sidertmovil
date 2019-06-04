@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -21,10 +22,13 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_details_order;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.NameFragments;
+
+import java.util.HashMap;
 
 
 public class pendings_fragment extends Fragment{
@@ -53,6 +57,7 @@ public class pendings_fragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //saveRecords ();
         llSingle.setOnClickListener(LLsingle_onClick);
         llGpo.setOnClickListener(LLgpo_onClick);
         llCvg.setOnClickListener(LLcvg_OnClick);
@@ -93,32 +98,169 @@ public class pendings_fragment extends Fragment{
         b.putInt(Constants.type, type);
         detailsOrder.setArguments(b);
         detailsOrder.show(getChildFragmentManager(), NameFragments.DIALOGDETAILSORDER);
-        /*final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ctx);
-        ImageView ivOrderDetails, ivClose;
-        TextView tvNameClient, tvAddress, tvLoanNumber, tvLoanAmount, tvPaymentDate, tvPhone;
-        View parentView     = this.getLayoutInflater().inflate(R.layout.details_order_popup,null);
-        ivOrderDetails      = parentView.findViewById(R.id.ivDetails);
-        ivClose             = parentView.findViewById(R.id.ivClose);
-        bottomSheetDialog.setContentView(parentView);
+    }
 
-        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
-        bottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,700,ctx.getResources().getDisplayMetrics()));
-        bottomSheetDialog.show();
+    private void saveRecords (){
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        ivClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
-            }
-        });
+        HashMap<Integer, String> p = new HashMap<>();
+        p.put(0,"1");
+        p.put(1,"500");
+        p.put(2,"3484181-L007ri");
+        p.put(3,"456");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:15:52");
+        p.put(7,"");
+        p.put(8,"0");
 
-        ivOrderDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ctx, IndividualRecovery.class);
-                startActivity(i);
-            }
-        });*/
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
 
+        p = new HashMap<>();
+        p.put(0,"1");
+        p.put(1,"500");
+        p.put(2,"3484181-L007ri");
+        p.put(3,"456");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:16:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+        //-----------------------------------------------------------------------------------
+        p = new HashMap<>();
+        p.put(0,"2");
+        p.put(1,"500");
+        p.put(2,"348418241-L007ri");
+        p.put(3,"556");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:17:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        p = new HashMap<>();
+        p.put(0,"2");
+        p.put(1,"500");
+        p.put(2,"348418241-L007ri");
+        p.put(3,"556");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:18:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+        //-----------------------------------------------------------------------------------------
+        p = new HashMap<>();
+        p.put(0,"3");
+        p.put(1,"500");
+        p.put(2,"34845618241-L007ri");
+        p.put(3,"656");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:19:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        p = new HashMap<>();
+        p.put(0,"3");
+        p.put(1,"500");
+        p.put(2,"34845618241-L007ri");
+        p.put(3,"656");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:20:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        //-----------------------------------------------------------------------------------------
+        p = new HashMap<>();
+        p.put(0,"4");
+        p.put(1,"500");
+        p.put(2,"3484565418241-L007ri");
+        p.put(3,"100");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:21:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        p = new HashMap<>();
+        p.put(0,"4");
+        p.put(1,"500");
+        p.put(2,"3484565418241-L007ri");
+        p.put(3,"100");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:22:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        //-----------------------------------------------------------------------------------------
+        p = new HashMap<>();
+        p.put(0,"5");
+        p.put(1,"500");
+        p.put(2,"348456554418241-L007ri");
+        p.put(3,"100");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:23:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        p = new HashMap<>();
+        p.put(0,"5");
+        p.put(1,"500");
+        p.put(2,"348456554418241-L007ri");
+        p.put(3,"100");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:24:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        //------------------------------------------------------------------------------------------
+        p = new HashMap<>();
+        p.put(0,"6");
+        p.put(1,"500");
+        p.put(2,"34845654554418241-L007ri");
+        p.put(3,"200");
+        p.put(4,"O");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:25:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
+
+        p = new HashMap<>();
+        p.put(0,"6");
+        p.put(1,"500");
+        p.put(2,"34845654554418241-L007ri");
+        p.put(3,"200");
+        p.put(4,"C");
+        p.put(5,"[]");
+        p.put(6,"2019-05-27 08:26:52");
+        p.put(7,"");
+        p.put(8,"0");
+
+        dBhelper.saveRecordsImpressionsLog(db, "log_impressions_r",p);
     }
 }

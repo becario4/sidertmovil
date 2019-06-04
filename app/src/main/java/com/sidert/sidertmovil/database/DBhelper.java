@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import org.json.JSONArray;
@@ -68,7 +70,27 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Cursor getDataImpresionsLog(String table, JSONObject conditionals) throws JSONException {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from " + table + Miscellaneous.readJson(conditionals), null );
+        Cursor res =  db.rawQuery( "SELECT * FROM " + table + Miscellaneous.readJson(conditionals), null );
         return res;
+    }
+
+    public int updateImpressionsLog(String table, JSONObject params) throws JSONException {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        String conditionals = "";
+
+        JSONArray jsonParams =(JSONArray) params.get(Constants.PARAMS);
+        JSONArray jsonCon =(JSONArray) params.get(Constants.CONDITIONALS);
+
+        for (int i = 0; i < jsonParams.length(); i++){
+            JSONObject item = jsonParams.getJSONObject(i);
+            values.put(item.getString(Constants.KEY),item.getString(Constants.VALUE));
+        }
+
+        for (int j = 0; j < jsonCon.length(); j++){
+            JSONObject item = jsonCon.getJSONObject(j);
+            conditionals += item.getString(Constants.KEY) + item.getString(Constants.VALUE);
+        }
+        return db.update(table, values, conditionals, null);
     }
 }

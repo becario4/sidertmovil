@@ -33,6 +33,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.activities.Profile;
+import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.fragments.orders_fragment;
@@ -64,7 +65,6 @@ public class Home extends AppCompatActivity{
     private CircleImageView civAvatar;
     private LinearLayout llProfile;
     private ImageView ivLogout;
-    //private FrameLayout FLmain;
     private boolean canExitApp = false;
 
     public interface Sidert {
@@ -87,42 +87,50 @@ public class Home extends AppCompatActivity{
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
 
-        initNavigationDrawer();
-        setSupportActionBar(TBmain);
-        final DrawerLayout.LayoutParams CLparams = (DrawerLayout.LayoutParams) CLcontainer.getLayoutParams();
-        if(CLparams.getMarginStart() == (int)getResources().getDimension(R.dimen.drawermenu)) {
-            mDrawerLayout.setLocked(true);
-            mDrawerLayout.setDrawerShadow(ContextCompat.getDrawable(getApplicationContext(), R.drawable.shadow), GravityCompat.START);
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, NVmenu);
-            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
-        }
-        if(!mDrawerLayout.isLocked()) {
-            mToggled = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                }
+        Bundle data = getIntent().getExtras();
+        if (false){
+            initNavigationDrawer();
+            setSupportActionBar(TBmain);
+            final DrawerLayout.LayoutParams CLparams = (DrawerLayout.LayoutParams) CLcontainer.getLayoutParams();
+            if(CLparams.getMarginStart() == (int)getResources().getDimension(R.dimen.drawermenu)) {
+                mDrawerLayout.setLocked(true);
+                mDrawerLayout.setDrawerShadow(ContextCompat.getDrawable(getApplicationContext(), R.drawable.shadow), GravityCompat.START);
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, NVmenu);
+                mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+            }
+            if(!mDrawerLayout.isLocked()) {
+                mToggled = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        super.onDrawerOpened(drawerView);
+                    }
 
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    super.onDrawerClosed(drawerView);
-                }
-            };
-            mDrawerLayout.addDrawerListener(mToggled);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            mDrawerLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mToggled.syncState();
-                }
-            });
-        }
-        setFragment(NameFragments.ORDERS, null);
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        super.onDrawerClosed(drawerView);
+                    }
+                };
+                mDrawerLayout.addDrawerListener(mToggled);
+                getSupportActionBar().setHomeButtonEnabled(true);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                mDrawerLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mToggled.syncState();
+                    }
+                });
+            }
 
-        NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
-        llProfile.setOnClickListener(LLprofile_OnClick);
-        ivLogout.setOnClickListener(ivLogout_OnClick);
+            NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
+            llProfile.setOnClickListener(LLprofile_OnClick);
+            ivLogout.setOnClickListener(ivLogout_OnClick);
+        }
+        else{
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            TBmain.setVisibility(View.GONE);
+            mTabLayout.setVisibility(View.GONE);
+            setFragment(NameFragments.COMPLAINT_TEMP, null);
+        }
 
     }
 
@@ -181,6 +189,16 @@ public class Home extends AppCompatActivity{
                 } else
                     return;;
                 break;
+            case NameFragments.COMPLAINT_TEMP:
+                mTabLayout.setVisibility(View.VISIBLE);
+                if (!(current instanceof orders_fragment)){
+                    ComplaintTemp complaintTemp = new ComplaintTemp();
+                    complaintTemp.setArguments(extras);
+                    transaction.replace(R.id.FLmain, complaintTemp, NameFragments.COMPLAINT_TEMP);
+                    tokenFragment = NameFragments.COMPLAINT_TEMP;
+                } else
+                    return;;
+                break;
             default:
                 if (!(current instanceof orders_fragment)){
                     transaction.replace(R.id.FLmain, new orders_fragment(), NameFragments.ORDERS);
@@ -190,7 +208,7 @@ public class Home extends AppCompatActivity{
                 break;
         }
 
-        if(!tokenFragment.equals(NameFragments.ORDERS)) {
+        if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP)) {
             int count = manager.getBackStackEntryCount();
             if(count > 0) {
                 int index = count - 1;
@@ -281,7 +299,7 @@ public class Home extends AppCompatActivity{
         public void onClick(View v) {
             dialog_logout mess_confirm = new dialog_logout();
             Bundle b = new Bundle();
-            b.putString(Constants.message, getApplicationContext().getString(R.string.mess_logout));
+            b.putString(Constants.MESSAGE, getApplicationContext().getString(R.string.mess_logout));
             mess_confirm.setArguments(b);
             mess_confirm.show(getSupportFragmentManager(), NameFragments.DIALOGLOGOUT);
         }

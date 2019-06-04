@@ -1,13 +1,14 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.hardware.Camera;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -15,12 +16,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,24 +26,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Switch;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.github.angads25.toggle.LabeledSwitch;
-import com.github.angads25.toggle.interfaces.OnToggledListener;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class ind_management_fragment extends Fragment {
 
@@ -112,6 +111,8 @@ public class ind_management_fragment extends Fragment {
     private String[] _payment_method;
     private String[] _photo_galery;
 
+    private Button btnPrint;
+
     private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -124,15 +125,15 @@ public class ind_management_fragment extends Fragment {
         View view       = inflater.inflate(R.layout.fragment_ind_management, container, false);
         ctx             = getContext();
 
-        boostrap        = (IndividualRecovery) getActivity();
-        etReasonNoPay   = view.findViewById(R.id.etReasonNoPay);
-        etOutDateInfo   = view.findViewById(R.id.etOutDateInfo);
-        etBank          = view.findViewById(R.id.etBank);
-        etDateDeath     = view.findViewById(R.id.etDateDeath);
-        etPaymentMethod = view.findViewById(R.id.etPaymentMethod);
+        boostrap            = (IndividualRecovery) getActivity();
+        etReasonNoPay       = view.findViewById(R.id.etReasonNoPay);
+        etOutDateInfo       = view.findViewById(R.id.etOutDateInfo);
+        etBank              = view.findViewById(R.id.etBank);
+        etDateDeath         = view.findViewById(R.id.etDateDeath);
+        etPaymentMethod     = view.findViewById(R.id.etPaymentMethod);
         etAmountPaymentMade = view.findViewById(R.id.etAmountPaymentMade);
         etDepositDate       = view.findViewById(R.id.etDepositDate);
-        etPhotoGallery       = view.findViewById(R.id.etPhotoGallery);
+        etPhotoGallery      = view.findViewById(R.id.etPhotoGallery);
 
         rgClient        = view.findViewById(R.id.rgClient);
         rgPay           = view.findViewById(R.id.rgPay);
@@ -153,12 +154,11 @@ public class ind_management_fragment extends Fragment {
         imbGallery      = view.findViewById(R.id.imbGallery);
         imbSignature    = view.findViewById(R.id.imbSignature);
 
+        btnPrint        = view.findViewById(R.id.btnPrint);
+
         ivSignature     = view.findViewById(R.id.ivSignature);
 
         mapLocation     = view.findViewById(R.id.mapLocation);
-
-        //swContactedClient   = view.findViewById(R.id.swContactedClient);
-        //swPay               = view.findViewById(R.id.swPay);
 
         llCommentNoContac   = view.findViewById(R.id.llCommenNoContac);
         llManagementResult  = view.findViewById(R.id.llManagementResult);
@@ -207,6 +207,8 @@ public class ind_management_fragment extends Fragment {
         imbPhoto.setOnClickListener(imbPhoto_OnClick);
         imbSignature.setOnClickListener(imbSignature_OnClick);
 
+        btnPrint.setOnClickListener(btnPrint_OnClick);
+
         //RadioButton Click
         rbYesClient.setOnClickListener(rbYesClient_OnClick);
         rbNotClient.setOnClickListener(rbNotClient_OnClick);
@@ -218,6 +220,21 @@ public class ind_management_fragment extends Fragment {
         rbNotManager.setOnClickListener(rbNotManager_OnClick);
 
     }
+
+    private View.OnClickListener btnPrint_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DBhelper dBhelper = new DBhelper(ctx);
+
+            //Log.v("Tag-UPdate",String.valueOf(dBhelper.updateImpressionsLog("log_impressions_r",)));
+
+            /*Intent i = new Intent(ctx, PrintSeewoo.class);
+
+            i.putExtra("tag",true);
+
+            startActivityForResult(i,123);*/
+        }
+    };
 
     private View.OnClickListener etReasonNoPay_OnClick = new View.OnClickListener() {
         @Override
@@ -468,6 +485,13 @@ public class ind_management_fragment extends Fragment {
                         Glide.with(ctx)
                              .load(data.getStringExtra(Constants.uri_signature))
                              .into(ivSignature);
+                    }
+                }
+                break;
+            case 123:
+                if (resultCode == boostrap.RESULT_OK){
+                    if (data != null){
+                        Toast.makeText(ctx, data.getStringExtra("message"), Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
