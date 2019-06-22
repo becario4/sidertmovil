@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -15,36 +14,30 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.activities.Profile;
 import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_synchronize_db;
+import com.sidert.sidertmovil.fragments.impression_history_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
-import com.sidert.sidertmovil.utils.Popups;
-
-import org.json.JSONException;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +59,7 @@ public class Home extends AppCompatActivity{
     private LinearLayout llProfile;
     private ImageView ivLogout;
     private boolean canExitApp = false;
+    private SessionManager session;
 
     public interface Sidert {
         void initTabLayout(TabLayout Tabs);
@@ -74,9 +68,11 @@ public class Home extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (Constants.ENVIROMENT)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
+        session         = new SessionManager(ctx);
         TBmain          = findViewById(R.id.TBmain);
         mDrawerLayout   = findViewById(R.id.mDrawerLayout);
         NVmenu          = findViewById(R.id.NVmenu);
@@ -88,7 +84,7 @@ public class Home extends AppCompatActivity{
         ivLogout        = view.findViewById(R.id.ivLogout);
 
         Bundle data = getIntent().getExtras();
-        if (false){
+        if (true){
             initNavigationDrawer();
             setSupportActionBar(TBmain);
             final DrawerLayout.LayoutParams CLparams = (DrawerLayout.LayoutParams) CLcontainer.getLayoutParams();
@@ -121,6 +117,15 @@ public class Home extends AppCompatActivity{
                 });
             }
 
+            if(Integer.parseInt(String.valueOf(session.getUser().get(2))) == 1) {
+                NVmenu.getMenu().clear();
+                NVmenu.inflateMenu(R.menu.navigation_menu_admin);
+                setFragment(NameFragments.IMPRESSION_HISTORY, null);
+            } else {
+                setFragment(NameFragments.ORDERS, null);
+            }
+
+           // setFragment(NameFragments.ORDERS, null);
             NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
             llProfile.setOnClickListener(LLprofile_OnClick);
             ivLogout.setOnClickListener(ivLogout_OnClick);
@@ -161,6 +166,13 @@ public class Home extends AppCompatActivity{
                 case R.id.NVabout:
                     //setFragment(fragments.ORDERS, null);
                     break;
+                case R.id.NVsynchronized:
+                    dialog_synchronize_db synchronize_db = new dialog_synchronize_db();
+                    synchronize_db.show(getSupportFragmentManager(), NameFragments.DIALOGSYNCHRONIZE);
+                    break;
+                case R.id.NVlogPrint:
+                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    break;
                 default:
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
@@ -199,6 +211,15 @@ public class Home extends AppCompatActivity{
                 } else
                     return;;
                 break;
+            case NameFragments.IMPRESSION_HISTORY:
+                if (!(current instanceof orders_fragment)){
+                    impression_history_fragment impression_history = new impression_history_fragment();
+                    impression_history.setArguments(extras);
+                    transaction.replace(R.id.FLmain, impression_history, NameFragments.IMPRESSION_HISTORY);
+                    tokenFragment = NameFragments.IMPRESSION_HISTORY;
+                } else
+                    return;;
+                break;
             default:
                 if (!(current instanceof orders_fragment)){
                     transaction.replace(R.id.FLmain, new orders_fragment(), NameFragments.ORDERS);
@@ -208,7 +229,7 @@ public class Home extends AppCompatActivity{
                 break;
         }
 
-        if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP)) {
+        if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP) && !tokenFragment.equals(NameFragments.IMPRESSION_HISTORY) && !tokenFragment.equals(NameFragments.ORDERS)) {
             int count = manager.getBackStackEntryCount();
             if(count > 0) {
                 int index = count - 1;

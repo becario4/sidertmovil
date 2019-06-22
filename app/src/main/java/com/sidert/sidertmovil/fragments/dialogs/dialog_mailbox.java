@@ -15,14 +15,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
@@ -47,9 +43,6 @@ import java.util.Date;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class dialog_mailbox extends DialogFragment {
 
@@ -57,7 +50,7 @@ public class dialog_mailbox extends DialogFragment {
     private EditText etSubject;
     private MultiAutoCompleteTextView etReason;
     private Button btnSend;
-    private Button btnClose;
+    private ImageView ivClose;
 
     private SessionManager session;
     private Validator validator;
@@ -67,8 +60,7 @@ public class dialog_mailbox extends DialogFragment {
     private SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
     private Calendar calendar;
 
-    private static final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "//temp";
-    private static final String fileName = dir + "//cs.sid";
+    private static final String fileName = Constants.PATH + "//temp//cs.sid";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,11 +69,10 @@ public class dialog_mailbox extends DialogFragment {
         etSubject   = view.findViewById(R.id.etSubject);
         etReason    = view.findViewById(R.id.etReason);
         btnSend     = view.findViewById(R.id.btnSend);
-        btnClose    = view.findViewById(R.id.btnClose);
+        ivClose    = view.findViewById(R.id.ivClose);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        setCancelable(false);
 
         return view;
     }
@@ -96,7 +87,7 @@ public class dialog_mailbox extends DialogFragment {
         today = sdf.format(calendar.getTime());
 
         btnSend.setOnClickListener(btnSend_OnClick);
-        btnClose.setOnClickListener(btnClose_OnClick);
+        ivClose.setOnClickListener(ivClose_OnClick);
     }
 
     private View.OnClickListener btnSend_OnClick = new View.OnClickListener() {
@@ -106,10 +97,25 @@ public class dialog_mailbox extends DialogFragment {
                !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) {
 
                 if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= 2) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= 2))
+                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
+                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
                 {
-                    SendComplaint();
+                    if (!Miscellaneous.loadSettingFile(fileName).isEmpty()){
+                        SendComplaint();
+                    }
+                    else {
+                        final AlertDialog file_not_exist = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_contact_TI), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                                getDialog().dismiss();
+                            }
+                        }, null, null);
+                        file_not_exist.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        file_not_exist.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        file_not_exist.show();
+                    }
+
                 }
                 else{
                     final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.limit_mailbox), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
@@ -128,7 +134,7 @@ public class dialog_mailbox extends DialogFragment {
         }
     };
 
-    private View.OnClickListener btnClose_OnClick = new View.OnClickListener() {
+    private View.OnClickListener ivClose_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             getDialog().dismiss();
@@ -140,7 +146,7 @@ public class dialog_mailbox extends DialogFragment {
             final AlertDialog loading = Popups.showLoadingDialog(ctx,ctx.getResources().getString(R.string.please_wait), ctx.getResources().getString(R.string.loading_info));
             loading.show();
 
-            ManagerInterface api = new RetrofitClient().setMailBox().create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF().create(ManagerInterface.class);
 
             MailBoxPLD obj = new MailBoxPLD(Miscellaneous.loadSettingFile(fileName),
                     sdf.format(calendar.getTime()),
@@ -169,7 +175,7 @@ public class dialog_mailbox extends DialogFragment {
                             success.show();
                             break;
                         case 400:
-                            final AlertDialog error = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_mailbox), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
+                            final AlertDialog error = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_contact_TI), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
                                 @Override
                                 public void OnClickListener(AlertDialog dialog) {
                                     dialog.dismiss();

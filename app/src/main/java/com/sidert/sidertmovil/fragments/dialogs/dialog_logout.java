@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +17,21 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 public class dialog_logout extends DialogFragment {
 
-    private Button btnAccept, btnCancel;
     private Context ctx;
+    private SessionManager session;
+    private Button btnAccept, btnCancel;
+    private Home boostrap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_logout,container,false);
         ctx                  = getContext();
+        boostrap             = (Home) getActivity();
+        session              = new SessionManager(ctx);
         btnAccept            = view.findViewById(R.id.btnAccept);
         btnCancel            = view.findViewById(R.id.btnCancel);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -37,13 +43,15 @@ public class dialog_logout extends DialogFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        btnAccept.setOnClickListener(btnAccept_OnClick);
         btnCancel.setOnClickListener(btnCancel_onClick);
-        btnCancel.setOnClickListener(btnAccept_OnClick);
     }
 
     private View.OnClickListener btnAccept_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            session.deleteUser();
+            triggerRebirth();
             getDialog().dismiss();
         }
     };
@@ -54,4 +62,12 @@ public class dialog_logout extends DialogFragment {
             getDialog().dismiss();
         }
     };
+
+    public void triggerRebirth() {
+        Intent i = boostrap.getPackageManager().getLaunchIntentForPackage(boostrap.getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ActivityCompat.finishAffinity(boostrap);
+        startActivity(i);
+    }
 }

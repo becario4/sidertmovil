@@ -32,7 +32,9 @@ import java.io.OutputStreamWriter;
 public class Signature extends AppCompatActivity {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 2;
     private static String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static String[] PERMISSIONS_READ_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE};
     private SignaturePad mSignaturePad;
 
     private Button btnAccept;
@@ -43,7 +45,8 @@ public class Signature extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (Constants.ENVIROMENT)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_signature);
 
         ctx = getApplicationContext();

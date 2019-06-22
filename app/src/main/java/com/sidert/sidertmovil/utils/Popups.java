@@ -113,6 +113,7 @@ public class Popups {
         Button BTNfail      = view.findViewById(R.id.btnFail);
         ImageView IVicon    = view.findViewById(R.id.ivIcon);
 
+
         switch (icon){
             case Constants.not_network:
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_close_white)).into(IVicon);
@@ -122,7 +123,6 @@ public class Popups {
         TVmessage.setText(message);
 
         BTNfail.setVisibility(View.GONE);
-
 
         final AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setCancelable(false)

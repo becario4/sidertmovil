@@ -15,6 +15,7 @@ import com.sidert.sidertmovil.fragments.view_pager.financial_info_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.group_experid_wallet_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.group_expired_wallet_management;
 import com.sidert.sidertmovil.fragments.view_pager.payment_log_fragment;
+import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 
 public class GroupExpiredWallet extends AppCompatActivity {
@@ -28,7 +29,8 @@ public class GroupExpiredWallet extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (Constants.ENVIROMENT)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_group_expired_wallet);
         ctx             = getApplicationContext();
         TBmain          = findViewById(R.id.TBmain);

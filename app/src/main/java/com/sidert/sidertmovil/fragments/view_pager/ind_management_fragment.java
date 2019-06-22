@@ -35,6 +35,7 @@ import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
 
 import org.json.JSONArray;
@@ -224,15 +225,26 @@ public class ind_management_fragment extends Fragment {
     private View.OnClickListener btnPrint_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            DBhelper dBhelper = new DBhelper(ctx);
+            //DBhelper dBhelper = new DBhelper(ctx);
 
             //Log.v("Tag-UPdate",String.valueOf(dBhelper.updateImpressionsLog("log_impressions_r",)));
 
-            /*Intent i = new Intent(ctx, PrintSeewoo.class);
+            Intent i = new Intent(ctx, PrintSeewoo.class);
+            OrderModel order = new OrderModel("2019062100254789-L007rg",
+                                              "002",
+                                              13542.48f,
+                                              457.15f,
+                                              458,
+                                              "15584",
+                                              "15488-L007",
+                                              "ALEJANDRO ISAIAS LOPEZ",
+                                              "NOMBRE DEL ALGUN ASESOR",
+                                              "0.0");
 
+            i.putExtra("order",order);
             i.putExtra("tag",true);
 
-            startActivityForResult(i,123);*/
+            startActivityForResult(i,123);
         }
     };
 

@@ -2,14 +2,15 @@ package com.sidert.sidertmovil.database;
 
 import android.provider.BaseColumns;
 
+import com.sidert.sidertmovil.utils.Constants;
+
 public class SidertTables {
 
     public static class SidertEntry implements BaseColumns {
 
         // == TABLE
-        public static final String TABLE_NAME_LOG_R    = "log_impressions_r"; //Tabla de Recuperación
-        public static final String TABLE_NAME_LOG_CV   = "log_impressions_cv"; //Tabla de Cartera Vencida
-        public static final String TABLE_NAME_LOG_C   = "log_impressions_c"; //Tabla de Cobranza
+        public static final String TABLE_NAME_LOG_ASESSOR    = Constants.LOG_ASESSOR; //Tabla de Recuperación y Cobranza
+        public static final String TABLE_NAME_LOG_MANAGER   = Constants.LOG_MANAGER; //Tabla de Cartera Vencida
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String FOLIO            = "folio";
@@ -23,7 +24,7 @@ public class SidertTables {
         public static final String STATUS           = "status";
 
         // == QUERIES CREATE
-        static final String CREATE_TABLE_RECOVERY   = "CREATE TABLE " + TABLE_NAME_LOG_R + "("
+        static final String CREATE_TABLE_ASESSORS   = "CREATE TABLE " + TABLE_NAME_LOG_ASESSOR + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.FOLIO             + " INTEGER,"
                 + SidertEntry.ASSESOR_ID        + " TEXT,"
@@ -33,9 +34,9 @@ public class SidertTables {
                 + SidertEntry.ERRORS            + " TEXT,"
                 + SidertEntry.GENERATED_AT      + " TEXT,"
                 + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " TEXT)";
+                + SidertEntry.STATUS            + " INTEGER)";
 
-        static final String CREATE_TABLE_WALLET_EXPIRED   = "CREATE TABLE " + TABLE_NAME_LOG_CV + "("
+        static final String CREATE_TABLE_GESTORS   = "CREATE TABLE " + TABLE_NAME_LOG_MANAGER + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.FOLIO             + " INTEGER,"
                 + SidertEntry.ASSESOR_ID        + " TEXT,"
@@ -45,18 +46,6 @@ public class SidertTables {
                 + SidertEntry.ERRORS            + " TEXT,"
                 + SidertEntry.GENERATED_AT      + " TEXT,"
                 + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " TEXT)";
-
-        static final String CREATE_TABLE_COLLECTION   = "CREATE TABLE " + TABLE_NAME_LOG_C + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO             + " INTEGER,"
-                + SidertEntry.ASSESOR_ID        + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.AMOUNT            + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
-                + SidertEntry.ERRORS            + " TEXT,"
-                + SidertEntry.GENERATED_AT      + " TEXT,"
-                + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " TEXT)";
+                + SidertEntry.STATUS            + " INTEGER)";
     }
 }

@@ -28,9 +28,8 @@ public class DBhelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_RECOVERY);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_WALLET_EXPIRED);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLLECTION);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS);
     }
 
     @Override
@@ -53,24 +52,24 @@ public class DBhelper extends SQLiteOpenHelper {
                 SidertTables.SidertEntry.SENT_AT + ", " +
                 SidertTables.SidertEntry.STATUS + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(0));
-        pInsert.bindLong(2, Integer.parseInt(params.get(1)));
-        pInsert.bindString(3, params.get(2));
-        pInsert.bindString(4, params.get(3));
-        pInsert.bindString(5, params.get(4));
-        pInsert.bindString(6, params.get(5));
-        pInsert.bindString(7, params.get(6));
-        pInsert.bindString(8, params.get(7));
-        pInsert.bindString(9, params.get(8));
+        pInsert.bindLong(1, Integer.parseInt(params.get(0)));   //FOLIO
+        pInsert.bindString(2, params.get(1));                     //ID ASESOR
+        pInsert.bindString(3, params.get(2));                   //ID ORDEN
+        pInsert.bindString(4, params.get(3));                   //MONTO
+        pInsert.bindString(5, params.get(4));                   //TIPO IMPRESION
+        pInsert.bindString(6, params.get(5));                   //ERRORES
+        pInsert.bindString(7, params.get(6));                   //FECHA IMPRESO
+        pInsert.bindString(8, params.get(7));                   //FECHA ENVIADO
+        pInsert.bindLong(9, Integer.parseInt(params.get(8)));   //ESTADO 0=Enviado, 1=NoEnviado
         pInsert.execute();
 
         db.setTransactionSuccessful();
         db.endTransaction();
     }
 
-    public Cursor getDataImpresionsLog(String table, JSONObject conditionals) throws JSONException {
+    public Cursor getDataImpresionsLog(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "SELECT * FROM " + table + Miscellaneous.readJson(conditionals), null );
+        Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
         return res;
     }
 

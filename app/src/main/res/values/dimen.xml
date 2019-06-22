@@ -7,7 +7,8 @@
     <dimen name="paddingcl">0dp</dimen>
     <dimen name="drawermenu">290dp</dimen>
 
-    <dimen name="textsize">17sp</dimen>
+    <dimen name="textsize">14sp</dimen>
 
-    <dimen name="et_height">35dp</dimen>
+    <dimen name="et_height">25dp</dimen>
+
 </resources>

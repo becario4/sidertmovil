@@ -1,6 +1,10 @@
 package com.sidert.sidertmovil.utils;
 
+import android.os.Environment;
+
 public class Constants {
+
+    public final static boolean ENVIROMENT          = false;
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -9,6 +13,9 @@ public class Constants {
     public final static String RECOVERY         = "Recuperacion";
     public final static String COLLECTION       = "Cobranza";
     public final static String WALLET_EXPIRED   = "CarteraVencida";
+
+    public final static String ASESSOR          = "Asesor";
+    public final static String MANNAGER           = "Gestor";
 
     public final static String ERROR            = "Error";
 
@@ -56,6 +63,15 @@ public class Constants {
     public final static String DATE                   = "fecha";
     public final static String ISSUE                  = "asunto";
     public final static String REASON                 = "motivo";
+
+    public final static int LIMIT_COMPLAINTS          = 2;
+
+    public static final String PATH                   = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+    //=========================  Nombre de tablas  =================================================
+    public final static String LOG_ASESSOR          = "log_impressions_asessor";
+    public final static String LOG_MANAGER          = "log_impressions_manager";
+
 
 
 }

@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class Miscellaneous {
 
@@ -48,7 +50,37 @@ public class Miscellaneous {
             type = Constants.ERROR;
         }
         return type;
+    }
 
+    public static int getIndorGpo(String str) {
+        int res = 0;
+
+        if (str.contains("ri") || str.contains("ci") || str.contains("cvi"))
+            res =  1;
+        else if (str.contains("rg") || str.contains("cg") || str.contains("cvg"))
+            res = 2;
+        else
+            res = 0;
+
+        return res;
+
+    }
+
+    /* Obtener que tipo de orden */
+    public static String getTableLog(String str) {
+        String table = "";
+        if (str.contains("ri") || str.contains("rg") || str.contains("ci") || str.contains("cg"))
+        {
+            table = Constants.LOG_ASESSOR;
+        }
+        else if (str.contains("cvi") || str.contains("cvg"))
+        {
+            table = Constants.LOG_MANAGER;
+        }
+        else{
+            table = Constants.ERROR;
+        }
+        return table;
     }
 
     /* Descomponer json para obteción de registros de DB  */
@@ -122,6 +154,19 @@ public class Miscellaneous {
         }
 
         return text;
+    }
+
+    /*Generar formato de moneda*/
+    public static String moneyFormat(String money) {
+        String currency = "$0.00";
+        try {
+            NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+            currency = format.format(Double.parseDouble(money));
+            //System.out.println("Currency in Canada : " + currency);
+        }catch (Exception e){
+
+        }
+        return currency;
     }
 
 

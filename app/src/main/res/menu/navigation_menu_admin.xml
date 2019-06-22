@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <group android:checkableBehavior="single" android:id="@+id/group1">
+            <item
+                android:id="@+id/NVlogPrint"
+                android:title="@string/see_log_print"
+                android:icon="@drawable/item_orders" />
+        </group>
+
+        <group android:checkableBehavior="single" android:id="@+id/group2">
+            <item
+                android:id="@+id/NVsynchronized"
+                android:title="@string/synchronized_db"
+                android:icon="@drawable/item_messages"/>
+        </group>
+
+    </group>
+
+</menu>

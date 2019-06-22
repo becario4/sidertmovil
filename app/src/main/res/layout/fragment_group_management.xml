@@ -493,7 +493,7 @@
             <!-- Fotografia o Galeria Botones-->
             <LinearLayout
                 android:id="@+id/llPhotoGaleryButton"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"

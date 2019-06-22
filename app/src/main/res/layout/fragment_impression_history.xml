@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <RadioButton
+                android:id="@+id/rbRecovery"
+                android:text="Recuperacion"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <View
+                android:background="@color/colorPrimary"
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"/>
+            <RadioButton
+                android:id="@+id/rbWalletExpire"
+                android:text="Cartera Vencida"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <View
+                android:background="@color/colorPrimary"
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"/>
+            <RadioButton
+                android:id="@+id/rbCollect"
+                android:text="Cobranza"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
+        <android.support.v7.widget.RecyclerView
+            android:padding="5dp"
+            android:id="@+id/rvLogImp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</LinearLayout>

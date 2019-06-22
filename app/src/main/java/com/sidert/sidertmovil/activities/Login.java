@@ -17,6 +17,7 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_message;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
 public class Login extends AppCompatActivity {
@@ -26,17 +27,22 @@ public class Login extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private Validator validator;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (Constants.ENVIROMENT)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_login);
-        ctx = getApplicationContext();
-        etUser  = findViewById(R.id.etUser);
-        etPassword  = findViewById(R.id.etPassword);
-        btnLogin    = findViewById(R.id.btnLogin);
+        ctx             = getApplicationContext();
+        session         = new SessionManager(ctx);
+        etUser          = findViewById(R.id.etUser);
+        etPassword      = findViewById(R.id.etPassword);
+        btnLogin        = findViewById(R.id.btnLogin);
 
+        //etUser.setText("administrador");
+        etUser.setText("operador");
         validator = new Validator();
 
         btnLogin.setOnClickListener(btnLogin_OnClick);
@@ -65,6 +71,11 @@ public class Login extends AppCompatActivity {
     private void doLogin (){
         if (true){
         //if (etUser.getText().toString().equals("sidertt/alejandro") && etPassword.getText().toString().equals("4l3j4ndr0")){
+            if (etUser.getText().toString().trim().equals("operador"))
+                session.setUser("1","Operador","0");
+            else
+                session.setUser("2","Administrador","1");
+
             Intent home = new Intent(this, Home.class);
             startActivity(home);
             finish();

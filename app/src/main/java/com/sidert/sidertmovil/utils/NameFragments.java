@@ -18,6 +18,8 @@ public class NameFragments {
 
     public final static String PAYMENTLOG           = "payment_log_fragment";
     public final static String FINANCIALINFO        = "financial_info_fragment";
+    public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
+    public final static String SYNCHRONIZE_DB       = "synchronize_db_fragment";
 
     //TODO: Dialogos
     public final static String DIALOGDETAILSORDER               = "dialog_details_order";
@@ -26,6 +28,7 @@ public class NameFragments {
     public final static String DIALOGMESSAGECONFIRMATION        = "dialog_message_confirmation";
     public final static String DIALOGLOGOUT                     = "dialog_logout";
     public final static String DIALOGMAILBOX                    = "dialog_mailbox";
+    public final static String DIALOGSYNCHRONIZE                = "dialog_synchronize_db";
 
 
 

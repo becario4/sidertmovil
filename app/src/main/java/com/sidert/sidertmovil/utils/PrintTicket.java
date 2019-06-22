@@ -16,6 +16,10 @@ public class PrintTicket {
     private final char LF = ESCPOS.LF;
     private String linea;
 
+    public void WriteTicket () {
+        posPtr = new ESCPOSPrinter();
+    }
+
     public String money(String numero) {
         String currency = "$0.00";
         try {

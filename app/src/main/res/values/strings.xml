@@ -10,6 +10,9 @@
     <string name="help">Ayuda</string>
     <string name="about">Acerca de</string>
 
+    <string name="synchronized_db">Sincronizar BD</string>
+    <string name="see_log_print">Historial de impresiones</string>
+
     <!-- TODO: Icono de hamburguesa del menú lateral -->
     <string name="open">Abrir</string>
     <string name="close">Cerrar</string>
@@ -104,6 +107,7 @@
     <string name="login">Iniciar sesión</string>
     <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
+    <string name="connect">Conectar</string>
     <string name="open_pay">OpenPay</string>
     <string name="members_group">Integrantes del Grupo</string>
     <string name="member">Integrantes</string>
@@ -125,6 +129,15 @@
     <string name="subject">Asunto</string>
     <string name="sent">Enviar</string>
     <string name="print_title">Imprimir Recibos</string>
+    <string name="leyend_complaint">Su denuncia será completamente anónima.</string>
+    <string name = "client_signature">Firma Cliente:</string>
+    <string name = "manager_signature">Firma Gestor:</string>
+    <string name = "treasurer_signature">Firma Tesarera:</string>
+    <string name = "asessor_signature">Firma Asesor:</string>
+    <string name = "name_signature">Nombre y Firma de Tesorera</string>
+    <string name = "loan_amount">Monto del Préstamo</string>
+    <string name = "group_number">Número de Grupo</string>
+    <string name = "amount_total_loan_group">Monto Total Préstamo Grupal</string>
 
     <!-- TODO: Titles Messages-->
     <string name="please_wait">Por favor espere . . .</string>
@@ -134,13 +147,14 @@
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
-    <string name="loading_info">Cargando información . . .</string>
+    <string name="loading_info">Cargando información, por favor espere . . .</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
     <string name="print_original">Solo se ha impreso el recibo original</string>
-    <string name="print_copy">Ya se imprimió el recibo original y la copia</string>
-    <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su deduncia es totalmente anónima.</string>
+    <string name="print_original_copy">Ya se imprimió el recibo original y la copia</string>
+    <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su denuncia es totalmente anónima.</string>
     <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
-    <string name="error_mailbox">Ha ocurrido un error, favor de contactar a la persona encarga.</string>
+    <string name="error_process_info">Error al procesar la información.</string>
+    <string name="error_contact_TI">Ha ocurrido un error, favor de contactar al departamento de TI.</string>
 
     <!--  TODO: Arrays  -->
     <string-array name="banks">
@@ -191,6 +205,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
 </resources>

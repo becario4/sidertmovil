@@ -329,7 +329,7 @@ public class group_management_fragment extends Fragment {
                                     llPhotoGalery.setVisibility(View.VISIBLE);
                                     etPhotoGallery.setText("");
                                     etPhotoGallery.setEnabled(true);
-                                    llPhotoGaleryButton.setVisibility(View.GONE);
+                                    //llPhotoGaleryButton.setVisibility(View.GONE);
                                     llPhoto.setVisibility(View.GONE);
                                     llGallery.setVisibility(View.GONE);
                                     break;
@@ -338,7 +338,7 @@ public class group_management_fragment extends Fragment {
                                     llPhotoGalery.setVisibility(View.VISIBLE);
                                     etPhotoGallery.setText("");
                                     etPhotoGallery.setEnabled(true);
-                                    llPhotoGaleryButton.setVisibility(View.GONE);
+                                    //llPhotoGaleryButton.setVisibility(View.GONE);
                                     llPhoto.setVisibility(View.GONE);
                                     llGallery.setVisibility(View.GONE);
                                     break;
@@ -347,7 +347,7 @@ public class group_management_fragment extends Fragment {
                                     llPhotoGalery.setVisibility(View.VISIBLE);
                                     etPhotoGallery.setText("Fotografía");
                                     etPhotoGallery.setEnabled(false);
-                                    llPhotoGaleryButton.setVisibility(View.VISIBLE);
+                                    //llPhotoGaleryButton.setVisibility(View.VISIBLE);
                                     llPhoto.setVisibility(View.VISIBLE);
                                     llGallery.setVisibility(View.GONE);
                                     break;
@@ -356,7 +356,7 @@ public class group_management_fragment extends Fragment {
                                     llPhotoGalery.setVisibility(View.VISIBLE);
                                     etPhotoGallery.setText("Fotografía");
                                     etPhotoGallery.setEnabled(false);
-                                    llPhotoGaleryButton.setVisibility(View.VISIBLE);
+                                    //llPhotoGaleryButton.setVisibility(View.VISIBLE);
                                     llPhoto.setVisibility(View.VISIBLE);
                                     llGallery.setVisibility(View.GONE);
                                     break;
@@ -414,7 +414,7 @@ public class group_management_fragment extends Fragment {
                     .setItems(R.array.files, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
                             etPhotoGallery.setText(_photo_galery[position]);
-                            llPhotoGaleryButton.setVisibility(View.VISIBLE);
+                            //llPhotoGaleryButton.setVisibility(View.VISIBLE);
                             switch (etPhotoGallery.getText().toString()){
                                 case Constants.photo:
                                     llPhoto.setVisibility(View.VISIBLE);

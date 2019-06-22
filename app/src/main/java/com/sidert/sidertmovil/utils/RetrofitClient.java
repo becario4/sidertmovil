@@ -7,7 +7,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
 
-    public static Retrofit setMailBox() {
+    public static Retrofit generalRF() {
         if (retrofit==null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(WebServicesRoutes.BASE_URL)
@@ -16,4 +16,5 @@ public class RetrofitClient {
         }
         return retrofit;
     }
+
 }

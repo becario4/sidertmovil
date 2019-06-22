@@ -22,12 +22,11 @@
         android:id="@+id/btnComplaint"
         android:layout_marginTop="50dp"
         android:layout_gravity="bottom"
-        android:text="DENUNCIAS"
+        android:text="DENUNCIAR"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:background="@drawable/btn_rounded_white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
 
 </LinearLayout>
