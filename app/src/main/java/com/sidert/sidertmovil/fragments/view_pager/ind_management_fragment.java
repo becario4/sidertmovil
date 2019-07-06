@@ -2,19 +2,15 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 
 import android.app.DatePickerDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,21 +27,17 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.MapView;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.CashRegister;
+import com.sidert.sidertmovil.activities.CierreDia;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
-import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class ind_management_fragment extends Fragment {
 
@@ -113,6 +105,8 @@ public class ind_management_fragment extends Fragment {
     private String[] _photo_galery;
 
     private Button btnPrint;
+    private Button btnArqueoCaja;
+    private Button btnCierreDia;
 
     private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -156,6 +150,8 @@ public class ind_management_fragment extends Fragment {
         imbSignature    = view.findViewById(R.id.imbSignature);
 
         btnPrint        = view.findViewById(R.id.btnPrint);
+        btnArqueoCaja   = view.findViewById(R.id.btnArqueoCaja);
+        btnCierreDia    = view.findViewById(R.id.btnCierreDia);
 
         ivSignature     = view.findViewById(R.id.ivSignature);
 
@@ -209,6 +205,8 @@ public class ind_management_fragment extends Fragment {
         imbSignature.setOnClickListener(imbSignature_OnClick);
 
         btnPrint.setOnClickListener(btnPrint_OnClick);
+        btnArqueoCaja.setOnClickListener(btnArqueoCaja_OnClick);
+        btnCierreDia.setOnClickListener(btnCierreDia_OnClick);
 
         //RadioButton Click
         rbYesClient.setOnClickListener(rbYesClient_OnClick);
@@ -221,6 +219,23 @@ public class ind_management_fragment extends Fragment {
         rbNotManager.setOnClickListener(rbNotManager_OnClick);
 
     }
+
+    private View.OnClickListener btnCierreDia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent cierreDia = new Intent(ctx, CierreDia.class);
+            startActivity(cierreDia);
+        }
+    };
+
+    private View.OnClickListener btnArqueoCaja_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent arqueo = new Intent(ctx, CashRegister.class);
+            arqueo.putExtra("PagoRealizado",13548.24);
+            startActivity(arqueo);
+        }
+    };
 
     private View.OnClickListener btnPrint_OnClick = new View.OnClickListener() {
         @Override

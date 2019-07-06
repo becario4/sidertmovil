@@ -130,14 +130,14 @@
     <string name="sent">Enviar</string>
     <string name="print_title">Imprimir Recibos</string>
     <string name="leyend_complaint">Su denuncia será completamente anónima.</string>
-    <string name = "client_signature">Firma Cliente:</string>
-    <string name = "manager_signature">Firma Gestor:</string>
-    <string name = "treasurer_signature">Firma Tesarera:</string>
-    <string name = "asessor_signature">Firma Asesor:</string>
-    <string name = "name_signature">Nombre y Firma de Tesorera</string>
-    <string name = "loan_amount">Monto del Préstamo</string>
-    <string name = "group_number">Número de Grupo</string>
-    <string name = "amount_total_loan_group">Monto Total Préstamo Grupal</string>
+    <string name="client_signature">Firma Cliente:</string>
+    <string name="manager_signature">Firma Gestor:</string>
+    <string name="treasurer_signature">Firma Tesarera:</string>
+    <string name="asessor_signature">Firma Asesor:</string>
+    <string name="name_signature">Nombre y Firma de Tesorera</string>
+    <string name="loan_amount">Monto del Préstamo</string>
+    <string name="group_number">Número de Grupo</string>
+    <string name="amount_total_loan_group">Monto Total Préstamo Grupal</string>
 
     <!-- TODO: Titles Messages-->
     <string name="please_wait">Por favor espere . . .</string>

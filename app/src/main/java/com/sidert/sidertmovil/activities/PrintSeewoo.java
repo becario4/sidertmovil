@@ -159,7 +159,10 @@ public class PrintSeewoo extends AppCompatActivity {
             }
         }
         else if (item.getResultPrint().equals("1.0")){
-            if (item.getExternalID().contains("ri") || item.getExternalID().contains("ci") || item.getExternalID().contains("rg") || item.getExternalID().contains("cg")){
+            if (item.getExternalID().contains("ri") ||
+                    item.getExternalID().contains("ci") ||
+                    item.getExternalID().contains("rg") ||
+                    item.getExternalID().contains("cg")){
                 tvSignature.setText(ctx.getResources().getString(R.string.asessor_signature));
                 tvNameSignature.setText(item.getNameAsessor());
             }

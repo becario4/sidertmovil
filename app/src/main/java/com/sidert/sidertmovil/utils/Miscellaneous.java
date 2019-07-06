@@ -126,7 +126,6 @@ public class Miscellaneous {
         return conditionals;
     }
 
-
     /* Obtiene el contenido de un archivo */
     public static String loadSettingFile(String fileName) {
         String text = "";
