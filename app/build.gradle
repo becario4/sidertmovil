@@ -48,7 +48,9 @@ dependencies {
     implementation 'com.github.scottyab:showhidepasswordedittext:0.8'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0' //Para servicios
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-    //Para conversiones a JSON en los servicios
+//Para conversiones a JSON en los servicios
+    implementation 'moe.feng:MaterialStepperView:0.2.4.2'
+
     api files('libs/Sewoo_Android_1092.jar') // Libreria para impresión de ticket
     //-----------------------           Fin         ---------------------------------
     testImplementation 'junit:junit:4.12'

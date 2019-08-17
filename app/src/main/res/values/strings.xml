@@ -2,7 +2,7 @@
     <string name="app_name">Sidert Movil</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
-    <string name="orders">Órdenes</string>
+    <string name="orders">Fichas</string>
     <string name="messages">Mensajes</string>
     <string name="map">Mapa</string>
     <string name="settings">Ajustes</string>
@@ -51,11 +51,15 @@
     <string name="contacted_client">¿Contactó al cliente?</string>
     <string name="yes">Si</string>
     <string name="not">No</string>
+    <string name="no_cuenta_bateria">No cuenta con bateria</string>
+    <string name="aclaracion">Aclaración</string>
     <string name="management_result">Resultado de la gestión</string>
     <string name="payment">Pagó</string>
     <string name="not_pay">No pago</string>
     <string name="payment_method">Medio de pago</string>
     <string name="bank">Banco</string>
+    <string name="fecha">Fecha</string>
+    <string name="pago">Pago</string>
     <string name="oxxo">Oxxo</string>
     <string name="cash">Efectivo</string>
     <string name="sidert">SIDERT</string>
@@ -74,11 +78,12 @@
     <string name="attach_ticket">Adjuntar ticket</string>
     <string name="photo_voucher">Fotografía del comprobante de pago</string>
     <string name="is_manager">¿Está el gerente con usted?</string>
-    <string name="remember_printer_turned_on">Colaborador recuerda tener encendida la impresora</string>
+    <string name="imprimir_recibos">¿Imprimir recibos?</string>
     <string name="payment_receipt_number">Número de recibo de pago</string>
     <string name="doesnt_battery">No cuenta con batería</string>
     <string name="receipt_printing">Impresión de recibo</string>
     <string name="no_contact_comment">Comentario de no contacto</string>
+    <string name="comentario_info_desfasada">Describe a detalle</string>
     <string name="facade_photo">Fotografía de fachada</string>
     <string name="order">Orden</string>
     <string name="preview">VISTA PREVIA</string>
@@ -121,9 +126,14 @@
     <string name="phone">Teléfono</string>
     <string name="email">Correo electrónico</string>
     <string name="department">Departamento</string>
+    <string name="monto_correcto">¿El monto es el correcto?</string>
     <string name="data_person">Datos personales</string>
     <string name="name">Nombre</string>
+    <string name="direccion">Dirección</string>
     <string name="edit_profile">Editar perfil</string>
+    <string name="estatus_pago">Estatus del Pago</string>
+    <string name="folio_recibo">Número de recibo de pago</string>
+    <string name="edit">Editar</string>
     <string name="save">Guardar</string>
     <string name="reason">Motivo</string>
     <string name="subject">Asunto</string>
@@ -138,6 +148,8 @@
     <string name="loan_amount">Monto del Préstamo</string>
     <string name="group_number">Número de Grupo</string>
     <string name="amount_total_loan_group">Monto Total Préstamo Grupal</string>
+
+    <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 
     <!-- TODO: Titles Messages-->
     <string name="please_wait">Por favor espere . . .</string>
@@ -155,6 +167,7 @@
     <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
     <string name="error_process_info">Error al procesar la información.</string>
     <string name="error_contact_TI">Ha ocurrido un error, favor de contactar al departamento de TI.</string>
+    <string name="capturar_nueva_firma">¿Desea capturar de nuevo la firma?</string>
 
     <!--  TODO: Arrays  -->
     <string-array name="banks">
@@ -178,8 +191,8 @@
     </string-array>
 
     <string-array name="reason_no_pay">
+        <item>Seleccione una opción</item>
         <item>Negación de pago</item>
-        <item>Información Desfasada</item>
         <item>Fallecimiento</item>
         <item>Otro</item>
     </string-array>
@@ -192,6 +205,7 @@
     </string-array>
 
     <string-array name="method_pay">
+        <item>Seleccione una opción</item>
         <item>Banco</item>
         <item>Oxxo</item>
         <item>Efectivo</item>

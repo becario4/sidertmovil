@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!--  Nombre(s)  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Nombre(s)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Nombre(s)"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Apellido paterno  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Apellido Paterno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Apellido Paterno"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Apellido materno  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Apellido Materno(Opcional)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:inputType="textCapWords"
+                    android:hint="Apellido Materno(Opcional)"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Como se entero de nosotros -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Cómo se enteró de nosotros?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <!-- Radio Television -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="Radio"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:text="Televisión"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Prensa Redes sociales -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="Prensa"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:text="Redes Sociales"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Referidos Otros -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="Referidos"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:text="Otras"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--  Llenar la solicitud en este momento  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Llenar la solicitud en este momento?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:textColor="@color/red"
+                android:text="Se elimina botón de GPS, los datos se obtendrán de forma interna"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!--  Aprueba la pre-evaluacion  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Aprueba la pre-evaluación?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!--  Datos del Prospecto  -->
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Datos del Prospecto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:background="@color/blue_sidert"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+            </LinearLayout>
+
+            <!--  Fecha de nacimiento  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/recovery_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:focusable="false"
+                    android:drawableRight="@drawable/ic_date"
+                    android:inputType="textCapWords"
+                    android:hint="Fecha de nacimineto"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
+            </LinearLayout>
+
+            <!--  Calle y numero  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Calle y Número"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Calle y Número"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Colonia  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Colonia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Colonia"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Municipio  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Municipio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Municipio"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Estado  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Estado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Estado"
+                    android:inputType="textCapWords"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Codigo postal  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Código Postal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Código Postal"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Recibe remesas familiares  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Recibe remesas familiares?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!--  Por que medio recibe las remesas  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Por que medio recibe las remesas?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="¿Por que medio recibe las remesas?"
+                    android:inputType="textCapSentences"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Frecuencia -->
+            <LinearLayout
+                android:id="@+id/llPaymentMethod"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Frecuencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:focusable="false"
+                    android:hint="Frecuencia"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:inputType="" />
+            </LinearLayout>
+
+            <!--  Monto de la remesa  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Monto de la remesa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:hint="Monto de la remesa"
+                    android:inputType="numberDecimal"
+                    android:focusable="false"
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Cuenta con tarjeta de credito y/o debito  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Cuenta con tarjeta de crédito y/o débito?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!--  Ultimos 4 digitos de su tarjeta  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Últimos 4 dÍgitos de su tarjeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Últimos 4 dÍgitos de su tarjeta"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Cuenta con credito automotriz  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Cuenta con Crédito automotriz?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!--  Cuenta con credito hipotecario  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="¿Cuenta con Crédito Hipotecario?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:text="Si"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:text="No"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!-- Firma gerente-->
+            <LinearLayout
+                android:id="@+id/llSignature"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Firma de autorización del cliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/imbSignature"
+                    android:src="@drawable/ic_gesture"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/ivSignature"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:textColor="@color/red"
+                android:text="Duda sobre círculo de crédito"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!--  Observaciones  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/blue_sidert"
+                    android:text="Observaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:hint="Observaciones"
+                    android:inputType="textCapSentences"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnContinuePre"
+                android:paddingBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/btn_rounded_blue"
+                android:text="Continuar"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+
+
+</LinearLayout>

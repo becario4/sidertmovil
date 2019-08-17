@@ -80,8 +80,8 @@
                         android:layout_marginRight="40dp"
                         android:textSize="14dp"
                         app:tint_color="@color/shadowdrawer"
-                        app:drawable_hide="@drawable/ic_on"
-                        app:drawable_show="@drawable/ic_off" />
+                        app:drawable_hide="@drawable/ic_off"
+                        app:drawable_show="@drawable/ic_on" />
 
                     <Button
                         android:id="@+id/btnLogin"

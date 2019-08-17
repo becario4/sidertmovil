@@ -35,6 +35,7 @@ public class Login extends AppCompatActivity {
         if (Constants.ENVIROMENT)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_login);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx             = getApplicationContext();
         session         = new SessionManager(ctx);
         etUser          = findViewById(R.id.etUser);

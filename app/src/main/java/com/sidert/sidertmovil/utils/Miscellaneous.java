@@ -1,14 +1,5 @@
 package com.sidert.sidertmovil.utils;
 
-import android.content.Context;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;

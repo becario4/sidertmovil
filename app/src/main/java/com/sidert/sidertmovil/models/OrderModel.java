@@ -6,16 +6,16 @@ public class OrderModel implements Serializable {
 
     private String externalID;
     private String asessorID;
-    private float amountLoan;
-    private float amountRequired;
-    private float amountMade;
+    private double amountLoan;
+    private double amountRequired;
+    private double amountMade;
     private String numClient;
     private String numLoan;
     private String nameClient;
     private String nameAsessor;
     private String resultPrint;
 
-    public OrderModel(String externalID, String asessorID, float amountLoan, float amountRequired, float amountMade, String numClient, String numLoan, String nameClient, String nameAsessor, String resultPrint) {
+    public OrderModel(String externalID, String asessorID, double amountLoan, double amountRequired, double amountMade, String numClient, String numLoan, String nameClient, String nameAsessor, String resultPrint) {
         this.externalID = externalID;
         this.asessorID = asessorID;
         this.amountLoan = amountLoan;
@@ -36,15 +36,15 @@ public class OrderModel implements Serializable {
         return asessorID;
     }
 
-    public float getAmountLoan() {
+    public double getAmountLoan() {
         return amountLoan;
     }
 
-    public float getAmountRequired() {
+    public double getAmountRequired() {
         return amountRequired;
     }
 
-    public float getAmountMade() {
+    public double getAmountMade() {
         return amountMade;
     }
 
@@ -66,5 +66,9 @@ public class OrderModel implements Serializable {
 
     public String getResultPrint() {
         return resultPrint;
+    }
+
+    public void setResultPrint(String resultPrint) {
+        this.resultPrint = resultPrint;
     }
 }

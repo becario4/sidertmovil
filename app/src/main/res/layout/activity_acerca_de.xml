@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/CLcontainer"
+    android:clipChildren="false"
+    android:background="@android:color/white"
+    android:layout_marginStart="@dimen/paddingcl">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tbMain"
+                app:title="Acerca de SIDERT"
+                app:titleTextColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_weight="0"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/logo_sidert"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="5dp"/>
+                <TextView
+                    android:id="@+id/tvAboutSIDERT"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:layout_gravity="bottom"
+                    android:textSize="12sp"
+                    android:textColor="@color/shadowdrawer"
+                    android:gravity="center"
+                    android:text="© 2019 SIDERT. Derechos reservados."
+                    android:paddingLeft="25dp"
+                    android:paddingRight="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_gravity="bottom"
+                    android:textSize="12sp"
+                    android:textColor="@color/shadowdrawer"
+                    android:gravity="center"
+                    android:text="Diseñado por RUFI"
+                    android:paddingLeft="25dp"
+                    android:paddingRight="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

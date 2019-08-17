@@ -18,6 +18,7 @@ import com.sidert.sidertmovil.fragments.view_pager.financial_info_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ind_management_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ind_recovery_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.payment_log_fragment;
+import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 
@@ -28,6 +29,7 @@ public class IndividualRecovery extends AppCompatActivity {
     private TabLayout mTabLayout;
     private boolean canExitApp = false;
     private CustomViewPager mViewPager;
+    public ModeloIndividual ficha;
 
 
     @Override
@@ -45,6 +47,8 @@ public class IndividualRecovery extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.order));
+        Bundle data = getIntent().getExtras();
+        ficha     = (ModeloIndividual) data.getSerializable(Constants.FICHA);
 
         setUpViewPager();
     }
@@ -62,10 +66,10 @@ public class IndividualRecovery extends AppCompatActivity {
         mTabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         mViewPager.setSwipeable(false);
-        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_single);
-        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_attach_money);
-        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log);
-        mTabLayout.getTabAt(3).setIcon(R.drawable.ic_checklist_white);
+        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_single).setContentDescription("Detalle");
+        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_attach_money).setContentDescription("Gestión");
+        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Tabla de Pagos");
+        mTabLayout.getTabAt(3).setIcon(R.drawable.ic_checklist_white).setContentDescription("Reporte de Omega");
     }
 
     @Override

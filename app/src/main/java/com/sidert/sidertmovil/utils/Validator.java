@@ -21,7 +21,7 @@ public class Validator {
 
     private final String PATTERN_ONLY_TEXT      = "[A-Za-z ÑñÁáÉéÍíÓóÚú]*";
     private final String PATTERN_ONLY_NUMBER    = "[0-9]*";
-    private final String PATTERN_GENERAL        = "[0-9 A-Za-zÑñÁáÉéÍíÓóÚú&]*";
+    private final String PATTERN_GENERAL        = "[0-9 A-Za-zÑñÁáÉéÍíÓóÚú&.,-_]*";
 
     private Pattern pattern;
     private Matcher matcher;

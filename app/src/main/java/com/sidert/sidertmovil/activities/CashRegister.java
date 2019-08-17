@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.sidert.sidertmovil.R;
@@ -105,6 +106,16 @@ public class CashRegister extends AppCompatActivity {
         etCveinte.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etCdiez.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

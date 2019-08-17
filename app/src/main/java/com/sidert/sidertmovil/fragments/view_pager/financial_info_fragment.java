@@ -11,9 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.adapters.adapter_ind_omega_report;
-
-import java.util.zip.Inflater;
 
 
 public class financial_info_fragment extends Fragment{
@@ -21,16 +20,18 @@ public class financial_info_fragment extends Fragment{
     private Context ctx;
     private RecyclerView rvIndOmegaReport;
     private adapter_ind_omega_report adapter;
+    private IndividualRecovery parent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_financial_info, container, false);
         ctx     = getContext();
+        parent  = (IndividualRecovery) getActivity();
         rvIndOmegaReport    = view.findViewById(R.id.rvIndOmegaReport);
         rvIndOmegaReport.setLayoutManager(new LinearLayoutManager(ctx));
         rvIndOmegaReport.setHasFixedSize(false);
 
-        adapter = new adapter_ind_omega_report(ctx);
+        adapter = new adapter_ind_omega_report(ctx, parent.ficha.getReporteAnaliticoOmega());
         rvIndOmegaReport.setAdapter(adapter);
         return view;
     }

@@ -20,30 +20,48 @@ import com.sidert.sidertmovil.activities.GroupRecovery;
 import com.sidert.sidertmovil.activities.IndividualCollection;
 import com.sidert.sidertmovil.activities.IndividualExpiredWallet;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
+import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 
 public class dialog_details_order extends DialogFragment {
 
     private ImageButton ibOrderDetails, ibClose;
-    private  TextView tvNameClient, tvAddress, tvLoanNumber, tvLoanAmount, tvPaymentDate, tvPhone;
+    private  TextView tvExternalID,tvNombre, tvDireccion, tvNumeroPrestamo, tvMontoPrestamo, tvFechaPagoEstablecida, tvTelefono;
     private Context ctx;
-    private int type;
+    ModeloIndividual ficha;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.details_order_popup,container,false);
-        ctx                 = getContext();
-        ibOrderDetails      = view.findViewById(R.id.ibDetails);
-        ibClose             = view.findViewById(R.id.ibClose);
+        ctx                     = getContext();
+        tvExternalID            = view.findViewById(R.id.tvExternalID);
+        tvNombre                = view.findViewById(R.id.tvNombre);
+        tvDireccion             = view.findViewById(R.id.tvDireccion);
+        tvNumeroPrestamo        = view.findViewById(R.id.tvNumeroPrestamo);
+        tvMontoPrestamo         = view.findViewById(R.id.tvMontoPrestamo);
+        tvFechaPagoEstablecida  = view.findViewById(R.id.tvFechaPagoEstablecida);
+        tvTelefono              = view.findViewById(R.id.tvTelefono);
+        ibOrderDetails          = view.findViewById(R.id.ibDetails);
+        ibClose                 = view.findViewById(R.id.ibClose);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        type = getArguments().getInt(Constants.type);
+        ficha = (ModeloIndividual) getArguments().getSerializable(Constants.FICHA);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        tvExternalID.setText(ficha.getId());
+        tvNombre.setText(ficha.getCliente().getNombre());
+        tvDireccion.setText(ficha.getCliente().getDireccion().getCalle() + ", "+
+                ficha.getCliente().getDireccion().getColonia() + ", " +
+                ficha.getCliente().getDireccion().getCiudad());
+        tvNumeroPrestamo.setText(ficha.getPrestamo().getNumeroDePrestamo());
+        tvMontoPrestamo.setText(Miscellaneous.moneyFormat(String.valueOf(ficha.getPrestamo().getMontoPrestamo())));
+        tvFechaPagoEstablecida.setText(ficha.getPrestamo().getFechaPagoEstablecida());
+        tvTelefono.setText(ficha.getCliente().getTelCelular());
 
         ibOrderDetails.setOnClickListener(ibOrderDetails_OnClick);
         ibClose.setOnClickListener(ibClose_OnClick);
@@ -53,29 +71,15 @@ public class dialog_details_order extends DialogFragment {
         @Override
         public void onClick(View v) {
             Intent intent_order = null;
-            switch (type){
-                case 0:
+            switch (ficha.getType()){
+                case Constants.RECUPERACION_INDIVIDUAL:
                     intent_order = new Intent(ctx, IndividualRecovery.class);
+                    intent_order.putExtra(Constants.FICHA, ficha);
                     startActivity(intent_order);
                     break;
-                case 1:
+                case Constants.RECUPERACION_GRUPAL:
                     intent_order = new Intent(ctx, GroupRecovery.class);
-                    startActivity(intent_order);
-                    break;
-                case 2:
-                    intent_order = new Intent(ctx, IndividualCollection.class);
-                    startActivity(intent_order);
-                    break;
-                case 3:
-                    intent_order = new Intent(ctx, GroupCollection.class);
-                    startActivity(intent_order);
-                    break;
-                case 4:
-                    intent_order = new Intent(ctx, IndividualExpiredWallet.class);
-                    startActivity(intent_order);
-                    break;
-                case 5:
-                    intent_order = new Intent(ctx, GroupExpiredWallet.class);
+                    intent_order.putExtra(Constants.FICHA, ficha);
                     startActivity(intent_order);
                     break;
             }

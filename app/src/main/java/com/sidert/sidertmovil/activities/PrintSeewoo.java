@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -226,7 +227,7 @@ public class PrintSeewoo extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
-                Log.v("AddressImpresora",address_print);
+                item.setResultPrint("0.0");
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
             }catch (Exception e){
                 e.printStackTrace();
@@ -238,6 +239,7 @@ public class PrintSeewoo extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
+                item.setResultPrint("1.0");
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
             }catch (Exception e){
                 e.printStackTrace();
@@ -264,7 +266,6 @@ public class PrintSeewoo extends AppCompatActivity {
             Integer retVal = null;
             try
             {
-                Log.v("Tag-Address",params[0].toString());
                 ban = (String) params[1];
                 bluetoothPort.connect((BluetoothDevice)params[0],true);
 
@@ -288,13 +289,13 @@ public class PrintSeewoo extends AppCompatActivity {
                 hThread = new Thread(rh);
                 hThread.start();
 
-                //PrintTicket print = new PrintTicket();
-                //print.WriteTicket();
+                PrintTicket print = new PrintTicket();
+                print.WriteTicket(ctx, item);
                 if (ban.equals("O")){
                     btnPrintOriginal.setVisibility(View.GONE);
                     btnPrintCopy.setVisibility(View.VISIBLE);
                     btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
-
+                    btnPrintCopy.setEnabled(true);
                 }
             }
             else	// Connection failed.
@@ -308,6 +309,13 @@ public class PrintSeewoo extends AppCompatActivity {
                 errorPrint.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                 errorPrint.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 errorPrint.show();
+                try {
+                    bluetoothPort.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -556,6 +564,12 @@ public class PrintSeewoo extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override

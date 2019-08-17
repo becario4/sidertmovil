@@ -5,7 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvFichas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+   <!--  <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <HorizontalScrollView
@@ -19,7 +24,7 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <!-- TODO: Headers-->
+
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
@@ -78,13 +83,13 @@
                             android:layout_width="170dp"
                             android:layout_height="30dp" />
                     </LinearLayout>
-                    <!-- TODO: Body -->
+
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <!-- TODO: Item Individual-->
+
                         <LinearLayout
                             android:id="@+id/llSingle"
                             android:background="@color/common_google_signin_btn_text_light_disabled"
@@ -95,11 +100,11 @@
                                 android:layout_width="30dp"
                                 android:layout_height="match_parent"/>
                             <TextView
+                                android:id="@+id/tvTipo"
                                 android:gravity="center"
                                 android:paddingLeft="3dp"
                                 android:paddingRight="3dp"
                                 android:textColor="@android:color/black"
-                                android:text="Alejandro Isiaias Lopez Jimenez"
                                 android:layout_width="110dp"
                                 android:layout_height="match_parent" />
                             <TextView
@@ -136,7 +141,7 @@
                                 android:layout_height="match_parent" />
                         </LinearLayout>
 
-                        <!-- TODO: Item Grupal-->
+
                         <LinearLayout
                             android:id="@+id/llgpo"
                             android:background="@android:color/white"
@@ -188,7 +193,7 @@
                                 android:layout_height="match_parent" />
                         </LinearLayout>
 
-                        <!-- TODO: Item Cartera Vencida Grupal-->
+
                         <LinearLayout
                             android:id="@+id/llCvg"
                             android:background="@color/common_google_signin_btn_text_light_disabled"
@@ -240,7 +245,7 @@
                                 android:layout_height="match_parent" />
                         </LinearLayout>
 
-                        <!-- TODO: Item Cartera Vencida Individual-->
+
                         <LinearLayout
                             android:id="@+id/llCvi"
                             android:background="@android:color/white"
@@ -297,6 +302,6 @@
             </LinearLayout>
 
         </HorizontalScrollView>
-    </ScrollView>
+    </ScrollView> -->
 
 </LinearLayout>

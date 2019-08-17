@@ -59,7 +59,7 @@ public class orders_fragment extends Fragment {
                 Tabs.setupWithViewPager(mViewPager);
                 Tabs.setVisibility(View.VISIBLE);
                 Tabs.setTabMode(TabLayout.MODE_FIXED);
-                mViewPager.setSwipeable(false);
+                mViewPager.setSwipeable(true);
             }
         });
         boostrap.setTitle(Miscellaneous.ucFirst(ctx.getString(R.string.orders)));

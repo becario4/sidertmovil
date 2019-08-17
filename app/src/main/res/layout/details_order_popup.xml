@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
  <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:minWidth="300dp">
 
     <LinearLayout
         android:background="@android:color/white"
@@ -16,17 +18,16 @@
             android:layout_width="match_parent"
             android:layout_height="60dp">
             <TextView
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
+                android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
                 android:text="@string/preview"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <ImageView
                 android:visibility="gone"
                 android:layout_gravity="center"
                 android:id="@+id/ivDetails"
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_edit_orders"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
@@ -34,24 +35,24 @@
                 android:visibility="gone"
                 android:id="@+id/ivClose"
                 android:layout_gravity="center"
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_close_blue_grey_500_36dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
         <TextView
-            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
             android:textColor="@android:color/black"
             android:gravity="center_vertical"
             android:text="Datos del Cliente"
             android:layout_width="match_parent"
             android:layout_height="30dp" />
         <TextView
+            android:id="@+id/tvExternalID"
             android:textSize="17sp"
             android:textColor="@android:color/white"
             android:background="@color/shadowdrawer"
             android:gravity="center"
-            android:text="201904233485739-L007ri"
             android:layout_width="match_parent"
             android:layout_height="30dp" />
         <LinearLayout
@@ -59,90 +60,93 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="370dp"
-            android:paddingLeft="10dp">
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
             <TextView
-                android:text="Nombre"
+                android:text="@string/name"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvNombre"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
-                android:text="ALEJANDRO ISAIAS LOPEZ JIMENEZ"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Dirección del Cliente"
+                android:text="@string/direccion"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvDireccion"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
-                android:text="GUADALUPE VICTORIA 4293-1, COL. ORTIZ RUBIO, 91680, VERACRUZ."
+                android:layout_gravity="center_vertical"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Número de Prestamo"
+                android:text="@string/loan_number"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvNumeroPrestamo"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
-                android:text="9348930-L007"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Monto del Préstamo"
+                android:text="@string/loan_amount"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvMontoPrestamo"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
-                android:text="5000.00"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Fecha de pago establecida"
+                android:text="@string/established_payment_date"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvFechaPagoEstablecida"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
-                android:text="11/04/2019"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Teléfono"
+                android:text="@string/phone"
                 android:paddingTop="10dp"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/tvTelefono"
                 android:paddingTop="8dp"
                 android:textStyle="bold"
                 android:text=""
@@ -161,6 +165,7 @@
         android:layout_height="wrap_content">
         <ImageButton
             android:id="@+id/ibDetails"
+            android:contentDescription="@string/edit_profile"
             android:src="@drawable/ic_edit_white"
             android:background="@drawable/circle_button_green"
             android:layout_width="60dp"
@@ -168,7 +173,8 @@
         <ImageButton
             android:id="@+id/ibClose"
             android:src="@drawable/ic_close_white"
-            android:layout_marginLeft="50dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/close"
             android:background="@drawable/circle_button_red"
             android:layout_width="60dp"
             android:layout_height="60dp" />

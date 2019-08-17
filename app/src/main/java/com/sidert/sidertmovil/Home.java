@@ -26,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.sidert.sidertmovil.activities.AcercaDe;
+import com.sidert.sidertmovil.activities.OriginacionI;
 import com.sidert.sidertmovil.activities.Profile;
 import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
@@ -147,11 +149,9 @@ public class Home extends AppCompatActivity{
                 case R.id.NVorders:
                     setFragment(NameFragments.ORDERS, null);
                     break;
-                case R.id.NVmessages:
-                    //setFragment(fragments.ORDERS, null);
-                    break;
-                case R.id.NVmap:
-                    //setFragment(fragments.ORDERS, null);
+                case R.id.NVoriginacion:
+                    Intent i_originacion = new Intent(getApplicationContext(), OriginacionI.class);
+                    startActivity(i_originacion);
                     break;
                 case R.id.NVsettings:
                     //setFragment(fragments.ORDERS, null);
@@ -164,7 +164,8 @@ public class Home extends AppCompatActivity{
                     //setFragment(fragments.ORDERS, null);
                     break;
                 case R.id.NVabout:
-                    //setFragment(fragments.ORDERS, null);
+                    Intent i_about = new Intent(getApplicationContext(), AcercaDe.class);
+                    startActivity(i_about);
                     break;
                 case R.id.NVsynchronized:
                     dialog_synchronize_db synchronize_db = new dialog_synchronize_db();

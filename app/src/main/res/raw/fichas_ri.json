@@ -1,0 +1,685 @@
+[
+	{
+		"id": "201931013983541-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente":{
+			"NumeroCliente": "1000991",
+			"Nombre": "MARILU RINCON JACOME",
+			"TelCelular": "2291777371",
+			"TelDomicilio": "2291089935",
+			"Direccion":{
+				"Calle": "U  GALVAN LTE 10 CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91726",
+				"Colonia": "EMANCIPACION CAMPESINA",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval":{
+			"NombreCompletoAval": "VALERIA ORTIZ RINCON",
+			"TelefonoAval": "",
+			"AddressAval": "RIO PARANA 538 RIO MEDIO 4 VERACRUZ",
+			"ParentescoAval": "HIJA"
+		},
+		"Prestamo": {
+			"NumeroDePrestamo": "983541-L007",
+			"FechaDelCreditoOtorgado": "21/03/2019",
+			"MontoTotalPrestamo": 12043.92,
+			"MontoPrestamo": 9000.00,
+			"PagoSemanal": 0,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 19,
+			"MontoAmortizacion": 501.83,
+			"FechaPagoEstablecida": "01/08/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 2508.30,
+			"SumaDePagos": 9535.62,
+			"DiasAtraso": 0,
+			"Frecuencia": "SEMANAL",
+			"DiaSemana": "4. JUEVES",
+			"PerteneceGarantia": "SI",
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL"
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "28-03-2019",
+				"FechaPago": "28-03-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "04-04-2019",
+				"FechaPago": "04-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "11-04-2019",
+				"FechaPago": "11-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "18-04-2019",
+				"FechaPago": "18-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "25-04-2019",
+				"FechaPago": "25-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			}
+		],
+		"TablaPagosCliente": [
+			{
+				"Fecha": "28/03/2019",
+				"Pago": 502.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "04/04/2019",
+				"Pago": 502.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "11/04/2019",
+				"Pago": 501.83,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "18/04/2019",
+				"Pago": 501.83,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "25/04/2019",
+				"Pago": 501.83,
+				"Banco": "0558071000 BANORTE"
+			}
+		]
+		
+	},
+	{
+		"id": "201931013983936-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente": {
+			"NumeroCliente": "1079457",
+			"Nombre": "RAUL RAMZAHUER PAREDES",
+			"TelCelular": "2851046438",
+			"TelDomicilio": "",
+			"Direccion": {
+				"Calle": "RET 194 CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91760",
+				"Colonia": "EL LAGO",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval":{
+			"NombreCompletoAval": "JESSICA MUNGUIA DELFIN",
+			"TelefonoAval": "2297296934",
+			"AddressAval": "GAVIOTA 153 RESERVA TARIMOYA I VERACRUZ",
+			"ParentescoAval": "AMISTAD"
+		},
+		"Prestamo":{
+			"NumeroDePrestamo": "983936-L007",
+			"FechaDelCreditoOtorgado": "05/04/2019",
+			"MontoTotalPrestamo": 12570.00,
+			"MontoPrestamo": 10000.00,
+			"PagoSemanal": 8998.74,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 8,
+			"MontoAmortizacion": 1571.25,
+			"FechaPagoEstablecida": "31/07/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 8998.74,
+			"SumaDePagos": 3571.26,
+			"DiasAtraso": 82,
+			"Frecuencia": "QUINCENAL",
+			"DiaSemana": "3. MIERCOLES",
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL",
+			"PerteneceGarantia": "SI"
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "15-04-2019",
+				"FechaPago": "30-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 15
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "30-04-2019",
+				"FechaPago": "17-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 17
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "15-05-2019",
+				"FechaPago": "17-05-2019",
+				"Estatus": "PARCIAL",
+				"Dias": 2
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "31-05-2019",
+				"FechaPago": "",
+				"Estatus": "VENCIDA",
+				"Dias": 66
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "15-06-2019",
+				"FechaPago": "",
+				"Estatus": "VENCIDA",
+				"Dias": 51
+			}
+		],
+		"TablaPagosCliente": [
+			{
+				"Fecha": "30/04/2019",
+				"Pago": 2000.00,
+				"Banco": "COBRANZA EFECTIVO"
+			},
+			{
+				"Fecha": "17/05/2019",
+				"Pago": 785.63,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "17/05/2019",
+				"Pago": 785.63,
+				"Banco": "0558071000 BANORTE"
+			}
+		]
+	},
+	{
+		"id": "201931013984171-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente": {
+			"NumeroCliente": "1067347",
+			"Nombre": "DARIA LOURDES ORTIZ SOLANO",
+			"TelCelular": "2291241554",
+			"TelDomicilio": " ",
+			"Direccion": {
+				"Calle": "ORIZABA 15 CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91740",
+				"Colonia": "CHAPULTEPEC",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval": {
+			"NombreCompletoAval": "PATRICIA ZAMORANO RODRIGUEZ",
+			"TelefonoAval": "2297814748",
+			"AddressAval": "TRUENO 5 AMAPOLAS I VERACRUZ",
+			"ParentescoAval": "AMISTAD"
+		},
+		"Prestamo": {
+			"NumeroDePrestamo": "984171-L007",
+			"FechaDelCreditoOtorgado": "16/04/2019",
+			"MontoTotalPrestamo": 20112.00,
+			"MontoPrestamo": 16000.00,
+			"PagoSemanal": 0,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 15,
+			"MontoAmortizacion": 1257.00,
+			"FechaPagoEstablecida": "30/07/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 1257.00,
+			"SumaDePagos": 18855.00,
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL",
+			"DiasAtraso": 0,
+			"Frecuencia": "SEMANAL",
+			"DiaSemana": "2. MARTES",
+			"PerteneceGarantia": "SI"
+
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "23-04-2019",
+				"FechaPago": "22-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": -1
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "30-04-2019",
+				"FechaPago": "30-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "07-05-2019",
+				"FechaPago": "09-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 2
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "14-05-2019",
+				"FechaPago": "14-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "21-05-2019",
+				"FechaPago": "21-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 6,
+				"FechaAmortizacion": "28-05-2019",
+				"FechaPago": "29-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 1
+			}
+		],
+		"TablaPagosCliente": [
+			{
+				"Fecha": "22/04/2019",
+				"Pago": 1257.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "30/04/2019",
+				"Pago": 1257.00,
+				"Banco": "05580709991 BANORTE"
+			},
+			{
+				"Fecha": "09/05/2019",
+				"Pago": 1257.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "14/05/2019",
+				"Pago": 1257.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "21/05/2019",
+				"Pago": 1257.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "29/05/2019",
+				"Pago": 1257.00,
+				"Banco": "4289/64730 BANAMEX"
+			}
+		]
+	},
+	{
+		"id": "201931013984244-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente": {
+			"NumeroCliente": "1000960",
+			"Nombre": "LUCIA LANDA MENDEZ",
+			"TelCelular": "2292692846",
+			"TelDomicilio": "2291034084",
+			"Direccion": {
+				"Calle": "PRIV PAPALOAPAN ORIENTE 117 D CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91700",
+				"Colonia": "VERACRUZ CENTRO",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval": {
+			"NombreCompletoAval": "ANA MARIA FABIAN CHAGALA",
+			"TelefonoAval": "2291256791",
+			"AddressAval": "LOS ALMENDROS 10 LAS BAJADAS VERACRUZ",
+			"ParentescoAval": "AMISTAD"
+		},
+		"Prestamo": {
+			"NumeroDePrestamo": "984244-L007",
+			"FechaDelCreditoOtorgado": "22/04/2019",
+			"MontoTotalPrestamo": "42131.44",
+			"MontoPrestamo": 31000.00,
+			"PagoSemanal": 0,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 14,
+			"MontoAmortizacion": 1755.48,
+			"FechaPagoEstablecida": "29/07/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 17554.72,
+			"SumaDePagos": 24576.72,
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL",
+			"DiasAtraso": 0,
+			"Frecuencia": "SEMANAL",
+			"DiaSemana": "1. LUNES",
+			"PerteneceGarantia": "SI"
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "29-04-2019",
+				"FechaPago": "29-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "06-05-2019",
+				"FechaPago": "06-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "13-05-2019",
+				"FechaPago": "13-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "20-05-2019",
+				"FechaPago": "20-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "27-05-2019",
+				"FechaPago": "27-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			}
+		],
+		"TablaPagosCliente": 
+		[
+			{
+				"Fecha": "29/04/2019",
+				"Pago": 1755.48,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "06/05/2019",
+				"Pago": 1755.48,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "13/05/2019",
+				"Pago": 1755.48,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "20/05/2019",
+				"Pago": 1755.48,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "27/05/2019",
+				"Pago": 1755.48,
+				"Banco": "0558071000 BANORTE"
+			}
+		]
+	},
+	{
+		"id": "201931013984430-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente":{
+			"NumeroCliente": "1052414",
+			"Nombre": "LEONOR ATILANO GARCIA",
+			"TelCelular": "2292333420",
+			"TelDomicilio": "",
+			"Direccion": {
+				"Calle": "AV FERROCARRILES L 40 M 31 CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91726",
+				"Colonia": "LAS BAJADAS",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval":{
+			"NombreCompletoAval": "JOSE GUADALUPE ELOTLAN RODRIGUEZ",
+			"TelefonoAval": "2294060580",
+			"AddressAval": "FRANCISCO LAGO CHAZARO 85 MATA DE PITA VERACRUZ",
+			"ParentescoAval": "AMISTAD"
+		},
+		"Prestamo":{
+			"NumeroDePrestamo": "984430-L007",
+			"FechaDelCreditoOtorgado": "30/04/2019",
+			"MontoTotalPrestamo": 12570.08,
+			"MontoPrestamo": 10000.00,
+			"PagoSemanal": 0,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 13,
+			"MontoAmortizacion": 785.63,
+			"FechaPagoEstablecida": "30/07/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 469.53,
+			"SumaDePagos": 12100.55,
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL",
+			"DiasAtraso": 0,
+			"Frecuencia": "SEMANAL",
+			"DiaSemana": "2. MARTES",
+			"PerteneceGarantia": "SI"
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "07-05-2019",
+				"FechaPago": "29-04-2019",
+				"Estatus": "PAGADA",
+				"Dias": -8
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "14-05-2019",
+				"FechaPago": "07-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": -7
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "21-05-2019",
+				"FechaPago": "14-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": -7
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "28-05-2019",
+				"FechaPago": "21-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": -7
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "04-06-2019",
+				"FechaPago": "28-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": -7
+			}
+		],
+		"TablaPagosCliente": [
+			{
+				"Fecha": "29/04/2019",
+				"Pago": 1099.88,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "07/05/2019",
+				"Pago": 786.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "14/05/2019",
+				"Pago": 786.00,
+				"Banco": "05580709991 BANORTE"
+			},
+			{
+				"Fecha": "21/05/2019",
+				"Pago": 786.00,
+				"Banco": "4289/64730 BANAMEX"
+			},
+			{
+				"Fecha": "28/05/2019",
+				"Pago": 785.63,
+				"Banco": "0558071000 BANORTE"
+			}
+		]
+	},
+	{
+		"id": "201931013984470-L007Pri",
+		"type": "RecuperacionIndividual",
+		"assignDate": "08/05/2019 10:08:58",
+		"expirationDate": "09/04/2019 10:09:58",
+		"cancellationDate": "09/05/2019 10:09:58",
+		"Cliente": {
+			"NumeroCliente": "1070503",
+			"Nombre": "MARIA DE LOURDES DOMINGUEZ MARTINEZ",
+			"TelCelular": "2292426111",
+			"TelDomicilio": "",
+			"Direccion": {
+				"Calle": "G DIAZ ORDAZ 296 CAMBIO",
+				"Ciudad": "VERACRUZ",
+				"CodigoPostal": "91778",
+				"Colonia": "ADOLFO LOPEZ MATEOS",
+				"Municipio": "VERACRUZ",
+				"Estado": "VERACRUZ",
+				"latitude": "",
+				"longitude": ""
+			}
+		},
+		"Aval": {
+			"NombreCompletoAval": "MARTHA ESTELA RIVAS MORENO",
+			"TelefonoAval": "2299079321",
+			"AddressAval": "MATEOS 265 VERACRUZ CENTRO VERACRUZ",
+			"ParentescoAval": "AMISTAD"
+		},
+		"Prestamo": {
+			"NumeroDePrestamo": "984470-L007",
+			"FechaDelCreditoOtorgado": "02/05/2019",
+			"MontoTotalPrestamo": 23883.04,
+			"MontoPrestamo": 19000.00,
+			"PagoSemanal": 0,
+			"PagoRealizado": 0,
+			"NumeroAmortizacion": 13,
+			"MontoAmortizacion": 1492.69,
+			"FechaPagoEstablecida": "01/08/2019",
+			"HoraPagoEstablecida": "12:00",
+			"SaldoActual": 4478.07,
+			"SumaDePagos": 19404.97,
+			"CuentaConGarantia": "SI",
+			"TipoGarantia": "AVAL",
+			"DiasAtraso": 0,
+			"Frecuencia": "SEMANAL",
+			"DiaSemana": "4. JUEVES",
+			"PerteneceGarantia": "SI"
+		},
+		"ReporteAnaliticoOmega": [
+			{
+				"No": 1,
+				"FechaAmortizacion": "09-05-2019",
+				"FechaPago": "09-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 2,
+				"FechaAmortizacion": "16-05-2019",
+				"FechaPago": "16-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 3,
+				"FechaAmortizacion": "23-05-2019",
+				"FechaPago": "23-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 4,
+				"FechaAmortizacion": "30-05-2019",
+				"FechaPago": "30-05-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			},
+			{
+				"No": 5,
+				"FechaAmortizacion": "06-06-2019",
+				"FechaPago": "06-06-2019",
+				"Estatus": "PAGADA",
+				"Dias": 0
+			}
+		],
+		"TablaPagosCliente": [
+			{
+				"Fecha": "09/05/2019",
+				"Pago": 1492.69,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "16/05/2019",
+				"Pago": 1492.69,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "23/05/2019",
+				"Pago": 1492.69,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "30/05/2019",
+				"Pago": 1492.69,
+				"Banco": "0558071000 BANORTE"
+			},
+			{
+				"Fecha": "06/06/2019",
+				"Pago": 1492.69,
+				"Banco": "0558071000 BANORTE"
+			}
+		]
+	}
+]
