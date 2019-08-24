@@ -29,6 +29,7 @@ public class NameFragments {
     public final static String DIALOGLOGOUT                     = "dialog_logout";
     public final static String DIALOGMAILBOX                    = "dialog_mailbox";
     public final static String DIALOGSYNCHRONIZE                = "dialog_synchronize_db";
+    public final static String DIALOGINTEGRANTE                 = "dialog_integrante_gpo";
 
 
 

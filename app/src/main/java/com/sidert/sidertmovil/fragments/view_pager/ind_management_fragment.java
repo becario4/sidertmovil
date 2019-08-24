@@ -60,6 +60,7 @@ import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomWatcher;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
@@ -73,13 +74,24 @@ public class ind_management_fragment extends Fragment {
     private Context ctx;
 
     private TextView tvExternalID;
+    private TextView tvContactoCliente;
+    private TextView tvResultadoGestion;
+    private TextView tvMedioPago;
+    private TextView tvPagaraRequerido;
+    private TextView tvMontoCorrecto;
+    private TextView tvInfoDesfasada;
+    private TextView tvEstaGerente;
+    private TextView tvFotoFachada;
+    private TextView tvMotivoNoPago;
 
     private EditText etInfoDesfasada;
     private EditText etComentarioNoContacto;
     private EditText etComentarioInfoDesfa;
     private EditText etMontoPagoRequerido;
     private EditText etSaldoCorte;
+    private EditText etMotivoDefuncion;
     private EditText etFechaDefuncion;
+    private EditText etEspecificaCausa;
     private EditText etBanco;
     private EditText etPagoRealizado;
     private EditText etFechaDeposito;
@@ -102,6 +114,8 @@ public class ind_management_fragment extends Fragment {
     private RadioButton rbAclaracion;
     private RadioButton rbPago;
     private RadioButton rbNoPago;
+    private RadioButton rbSiRequerido;
+    private RadioButton rbNoRequerido;
     private RadioButton rbSiCorrecto;
     private RadioButton rbNoCorrecto;
     private RadioButton rbSiRecibo;
@@ -112,10 +126,8 @@ public class ind_management_fragment extends Fragment {
     private ImageButton imbMap;
     private ImageButton ibFoto;
     private ImageButton imbGallery;
-
     private ImageButton ibFotoCopia;
     private ImageButton ibGaleriaCopia;
-
     private ImageButton ibFirma;
 
     private ImageView ivFirma;
@@ -150,14 +162,8 @@ public class ind_management_fragment extends Fragment {
     private LinearLayout llGaleria;
 
     private String[] _outdate_info;
-    private String[] _reason_not_pay;
     private String[] _banks;
-    private String[] _payment_method;
     private String[] _photo_galery;
-
-    private Button btnPrint;
-    private Button btnArqueoCaja;
-    private Button btnCierreDia;
 
     private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -165,10 +171,13 @@ public class ind_management_fragment extends Fragment {
 
     private final int REQUEST_CODE_SIGNATURE = 456;
 
-    IndividualRecovery boostrap;
+    IndividualRecovery parent;
     private Validator validator;
 
+    private boolean flagUbicacion = false;
+
     private LocationManager locationManager;
+    private MyCurrentListener locationListener;
     double latitud, longitud;
 
     private MapView mapView;
@@ -180,11 +189,19 @@ public class ind_management_fragment extends Fragment {
         View view       = inflater.inflate(R.layout.fragment_ind_management, container, false);
         ctx             = getContext();
 
-        boostrap                = (IndividualRecovery) getActivity();
-        boostrap.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        tvExternalID            = view.findViewById(R.id.tvExternalID);
+        parent                = (IndividualRecovery) getActivity();
+        parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        locationManager = (LocationManager) boostrap.getSystemService(Context.LOCATION_SERVICE);
+        tvExternalID            = view.findViewById(R.id.tvExternalID);
+        tvContactoCliente       = view.findViewById(R.id.tvContactoCliente);
+        tvResultadoGestion      = view.findViewById(R.id.tvResultadoGestion);
+        tvMedioPago             = view.findViewById(R.id.tvMedioPago);
+        tvPagaraRequerido       = view.findViewById(R.id.tvPagaraRequerido);
+        tvMontoCorrecto         = view.findViewById(R.id.tvMontoCorrecto);
+        tvInfoDesfasada         = view.findViewById(R.id.tvInfoDesfasada);
+        tvEstaGerente           = view.findViewById(R.id.tvEstaGerente);
+        tvFotoFachada           = view.findViewById(R.id.tvFotoFachada);
+        tvMotivoNoPago          = view.findViewById(R.id.tvMotivoNoPago);
 
         etInfoDesfasada         = view.findViewById(R.id.etInfoDesfasada);
         etComentarioNoContacto  = view.findViewById(R.id.etComentarioNoContacto);
@@ -192,7 +209,9 @@ public class ind_management_fragment extends Fragment {
         etBanco                 = view.findViewById(R.id.etBanco);
         etMontoPagoRequerido    = view.findViewById(R.id.etMontoPagoRequerido);
         etSaldoCorte            = view.findViewById(R.id.etSaldoCorte);
+        etMotivoDefuncion       = view.findViewById(R.id.etMotivoDefuncion);
         etFechaDefuncion        = view.findViewById(R.id.etFechaDefuncion);
+        etEspecificaCausa       = view.findViewById(R.id.etEspecificaCausa);
         etPagoRealizado         = view.findViewById(R.id.etPagoRealizado);
         etFechaDeposito         = view.findViewById(R.id.etFechaDeposito);
         etEstatusPago           = view.findViewById(R.id.etEstatusPago);
@@ -214,25 +233,21 @@ public class ind_management_fragment extends Fragment {
         rbAclaracion    = view.findViewById(R.id.rbAclaración);
         rbPago          = view.findViewById(R.id.rbPago);
         rbNoPago        = view.findViewById(R.id.rbNoPago);
+        rbSiRequerido   = view.findViewById(R.id.rbSiRequerido);
+        rbNoRequerido   = view.findViewById(R.id.rbNoRequerido);
         rbSiCorrecto    = view.findViewById(R.id.rbSiCorrecto);
         rbNoCorrecto    = view.findViewById(R.id.rbNoCorrecto);
         rbSiRecibo      = view.findViewById(R.id.rbSiRecibo);
         rbNoRecibo      = view.findViewById(R.id.rbNoRecibo);
-        rbSiGerente    = view.findViewById(R.id.rbSiGerente);
-        rbNoGerente    = view.findViewById(R.id.rbNoGerente);
+        rbSiGerente     = view.findViewById(R.id.rbSiGerente);
+        rbNoGerente     = view.findViewById(R.id.rbNoGerente);
 
         imbMap      = view.findViewById(R.id.imbMap);
         ibFoto      = view.findViewById(R.id.ibFoto);
         imbGallery  = view.findViewById(R.id.imbGallery);
-
-        ibFotoCopia      = view.findViewById(R.id.ibFotoCopia);
-        ibGaleriaCopia      = view.findViewById(R.id.ibGaleriaCopia);
-
-        ibFirma     = view.findViewById(R.id.ibFirma);
-
-        btnPrint        = view.findViewById(R.id.btnPrint);
-        btnArqueoCaja   = view.findViewById(R.id.btnArqueoCaja);
-        btnCierreDia    = view.findViewById(R.id.btnCierreDia);
+        ibFotoCopia     = view.findViewById(R.id.ibFotoCopia);
+        ibGaleriaCopia  = view.findViewById(R.id.ibGaleriaCopia);
+        ibFirma         = view.findViewById(R.id.ibFirma);
 
         ivFirma     = view.findViewById(R.id.ivFirma);
 
@@ -269,8 +284,10 @@ public class ind_management_fragment extends Fragment {
         myCalendar      = Calendar.getInstance();
 
         spMedioPago.setPrompt("Medio de pago");
+        spMotivoNoPago.setPrompt("Motivo no pago");
 
         //mapView.onCreate(savedInstanceState);
+        locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
         validator = new Validator();
 
         return view;
@@ -285,38 +302,60 @@ public class ind_management_fragment extends Fragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         _outdate_info = getResources().getStringArray(R.array.outdated_information);
         _banks = getResources().getStringArray(R.array.banks);
-        _payment_method = getResources().getStringArray(R.array.method_pay);
-        _reason_not_pay = getResources().getStringArray(R.array.reason_no_pay);
         _photo_galery = getResources().getStringArray(R.array.files);
 
         etPagoRealizado.addTextChangedListener(new CustomWatcher(etPagoRealizado));
 
+        // EditText Click
         etInfoDesfasada.setOnClickListener(etInfoDesfasada_OnClick);
         etFechaDefuncion.setOnClickListener(etFechaDefuncion_OnClick);
         etBanco.setOnClickListener(etBanco_OnClick);
         etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
         etFotoGaleria.setOnClickListener(etFotoGaleria_onClick);
+
+        // ImageButton Click
         imbMap.setOnClickListener(imbMap_OnClick);
         ibFoto.setOnClickListener(ibFoto_OnClick);
         ibFirma.setOnClickListener(ibFirma_OnClick);
 
-
-        btnArqueoCaja.setOnClickListener(btnArqueoCaja_OnClick);
-        btnCierreDia.setOnClickListener(btnCierreDia_OnClick);
-
-        //RadioButton Click
-
-        rbSiContacto.setOnClickListener(rbSiContacto_OnClick);
-        rbNoContacto.setOnClickListener(rbNoContacto_OnClick);
-        rbAclaracion.setOnClickListener(rbAclaracion_OnClick);
+        // RadioGroup Click
+        rgContactoCliente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvContactoCliente.setError(null);
+                tvInfoDesfasada.setError(null);
+                etInfoDesfasada.setError(null);
+                etComentarioNoContacto.setError(null);
+                tvFotoFachada.setError(null);
+                switch (checkedId) {
+                    case R.id.rbSiContacto:
+                        SelectContactoCliente(1);
+                        break;
+                    case R.id.rbNoContacto:
+                        SelectContactoCliente(0);
+                        break;
+                    case R.id.rbAclaración:
+                        SelectContactoCliente(2);
+                    break;
+                    default:
+                        tvContactoCliente.setError("");
+                        SelectContactoCliente(-1);
+                        break;
+                }
+            }
+        });
 
         rgResultadoPago.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvResultadoGestion.setError(null);
                 switch (checkedId) {
                     case R.id.rbPago:
+                        spMotivoNoPago.setSelection(0);
+                        SelectMotivoNoPago(0);
                         llMedioPago.setVisibility(View.VISIBLE);
                         llMontoPagoRequerido.setVisibility(View.VISIBLE);
                         llSaldoCorte.setVisibility(View.VISIBLE);
@@ -326,6 +365,8 @@ public class ind_management_fragment extends Fragment {
                         llEstaGerente.setVisibility(View.GONE);
                         break;
                     case R.id.rbNoPago:
+                        tvMotivoNoPago.setError("");
+                        tvFotoFachada.setError("");
                         spMedioPago.setSelection(0);
                         SelecteMedioPago(0);
                         rgPagaraRequerido.clearCheck();
@@ -339,6 +380,7 @@ public class ind_management_fragment extends Fragment {
                         llEstaGerente.setVisibility(View.VISIBLE);
                         break;
                     default:
+                        tvResultadoGestion.setError("");
                         spMedioPago.setSelection(0);
                         SelecteMedioPago(0);
                         rgPagaraRequerido.clearCheck();
@@ -355,34 +397,10 @@ public class ind_management_fragment extends Fragment {
             }
         });
 
-
-        spMedioPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SelecteMedioPago(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        spMotivoNoPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SelectMotivoNoPago(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
         rgPagaraRequerido.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvPagaraRequerido.setError(null);
                 switch (checkedId){
                     case R.id.rbSiRequerido:
                         SelectPagoRequerido(1);
@@ -391,6 +409,7 @@ public class ind_management_fragment extends Fragment {
                         SelectPagoRequerido(0);
                         break;
                     default:
+                        tvPagaraRequerido.setError("");
                         SelectPagoRequerido(-1);
                         break;
                 }
@@ -416,6 +435,7 @@ public class ind_management_fragment extends Fragment {
                         }
                     }
                     else{
+                        etFechaDeposito.setError("");
                         rbSiCorrecto.setChecked(false);
                         rbNoCorrecto.setChecked(false);
                         Toast.makeText(ctx, "Complete los campos faltantes", Toast.LENGTH_SHORT).show();
@@ -457,6 +477,7 @@ public class ind_management_fragment extends Fragment {
         rgEstaGerente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvEstaGerente.setError(null);
                 switch (checkedId){
                     case R.id.rbSiGerente:
                         SelectEstaGerente(1);
@@ -465,32 +486,42 @@ public class ind_management_fragment extends Fragment {
                         SelectEstaGerente(0);
                         break;
                     default:
+                        tvEstaGerente.setError("");
                         SelectEstaGerente(-1);
                         break;
                 }
             }
         });
 
+        // Spinner Click
+        spMedioPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SelecteMedioPago(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spMotivoNoPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SelectMotivoNoPago(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // ImageView Click
         ivFirma.setOnClickListener(ivFirma_OnClick);
 
     }
-
-    private View.OnClickListener btnCierreDia_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent cierreDia = new Intent(ctx, CierreDia.class);
-            startActivity(cierreDia);
-        }
-    };
-
-    private View.OnClickListener btnArqueoCaja_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent arqueo = new Intent(ctx, CashRegister.class);
-            arqueo.putExtra("PagoRealizado",13548.24);
-            startActivity(arqueo);
-        }
-    };
 
     private View.OnClickListener ivFirma_OnClick = new View.OnClickListener() {
         @Override
@@ -522,6 +553,7 @@ public class ind_management_fragment extends Fragment {
             builder.setTitle(R.string.selected_option)
                     .setItems(R.array.outdated_information, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
+                            tvInfoDesfasada.setError(null);
                             etInfoDesfasada.setText(_outdate_info[position]);
                         }
                     });
@@ -549,26 +581,21 @@ public class ind_management_fragment extends Fragment {
     private View.OnClickListener imbMap_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //mapLocation.setVisibility(View.VISIBLE);
-            //imbMap.setVisibility(View.GONE);
+            locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
 
-            if (ActivityCompat.checkSelfPermission(boostrap, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(boostrap, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
+                @Override
+                public void onComplete(String latitud, String longitud) {
+                    Toast.makeText(ctx, "Mi ubiciación: " + "lat: " + latitud + "Lon: " + longitud, Toast.LENGTH_SHORT).show();
+                    flagUbicacion = true;
+                    if (flagUbicacion){
+                        CancelUbicacion();
+                    }
+                }
+            });
+            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             }
-            /*locationManager.removeUpdates(locationListenerNetwork);
-            locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 20 * 1000, 10, locationListenerNetwork);
-            Toast.makeText(ctx, "Network provider started running", Toast.LENGTH_LONG).show();*/
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            criteria.setAltitudeRequired(false);
-            criteria.setBearingRequired(false);
-            criteria.setCostAllowed(true);
-            criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
-            String provider = locationManager.getBestProvider(criteria, true);
-            if (provider != null) {
-                locationManager.requestLocationUpdates(provider, 5000, 2, locationListenerBest);
-                Toast.makeText(ctx, "Best Provider is " + provider, Toast.LENGTH_LONG).show();
-            }
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         }
     };
@@ -625,7 +652,7 @@ public class ind_management_fragment extends Fragment {
                     setDatePicked(etFechaDefuncion);
 
                 }
-            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),Calendar.DAY_OF_MONTH);
+            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH));
             dpd.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
             dpd.show();
         }
@@ -680,7 +707,7 @@ public class ind_management_fragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_SIGNATURE:
-                if (resultCode == boostrap.RESULT_OK){
+                if (resultCode == parent.RESULT_OK){
                     if (data != null){
                         ibFirma.setVisibility(View.GONE);
                         ivFirma.setVisibility(View.VISIBLE);
@@ -691,7 +718,7 @@ public class ind_management_fragment extends Fragment {
                 }
                 break;
             case 123:
-                if (resultCode == boostrap.RESULT_OK){
+                if (resultCode == parent.RESULT_OK){
                     if (data != null){
                         Toast.makeText(ctx, data.getStringExtra("message"), Toast.LENGTH_SHORT).show();
                     }
@@ -700,118 +727,76 @@ public class ind_management_fragment extends Fragment {
         }
     }
 
-    /*
-    * Eventos de Click en RadioButton
-    * */
-
-    private View.OnClickListener rbSiContacto_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            etComentarioInfoDesfa.setText("");
-            etInfoDesfasada.setText("");
-            etComentarioNoContacto.setText("");
-            llResultadoGestion.setVisibility(View.VISIBLE);
-            llComentarioNoContacto.setVisibility(View.GONE);
-            llFotoFachada.setVisibility(View.GONE);
-            llEstaGerente.setVisibility(View.GONE);
-            llInfoDesfasada.setVisibility(View.GONE);
-            llComentarioAclaracion.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbNoContacto_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            etComentarioInfoDesfa.setText("");
-            etInfoDesfasada.setText("");
-            etComentarioNoContacto.setText("");
-            rgResultadoPago.clearCheck();
-            llResultadoGestion.setVisibility(View.GONE);
-            llComentarioNoContacto.setVisibility(View.VISIBLE);
-            llFotoFachada.setVisibility(View.VISIBLE);
-            llEstaGerente.setVisibility(View.VISIBLE);
-            llInfoDesfasada.setVisibility(View.GONE);
-            llComentarioAclaracion.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbAclaracion_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            etComentarioInfoDesfa.setText("");
-            etInfoDesfasada.setText("");
-            etComentarioNoContacto.setText("");
-            rgResultadoPago.clearCheck();
-            llResultadoGestion.setVisibility(View.GONE);
-            llComentarioNoContacto.setVisibility(View.GONE);
-            llFotoFachada.setVisibility(View.GONE);
-            llEstaGerente.setVisibility(View.VISIBLE);
-            llInfoDesfasada.setVisibility(View.VISIBLE);
-            llComentarioAclaracion.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rgPago_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llMedioPago.setVisibility(View.VISIBLE);
-            llMontoPagoRequerido.setVisibility(View.VISIBLE);
-            llSaldoCorte.setVisibility(View.VISIBLE);
-            llSaldoActual.setVisibility(View.VISIBLE);
-            llEspecificaCausa.setVisibility(View.GONE);
-            llFotoFachada.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rgNoPago_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llMontoPagoRequerido.setVisibility(View.VISIBLE);
-            llMotivoNoPago.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rbYes_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llMontoPagoRealizado.setVisibility(View.VISIBLE);
-            etPagoRealizado.setEnabled(false);
-        }
-    };
-
-    private View.OnClickListener rbNot_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llMontoPagoRealizado.setVisibility(View.VISIBLE);
-            etPagoRealizado.setEnabled(true);
-        }
-    };
-
-    private View.OnClickListener rbSiGerente_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llFirma.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rbNoGerente_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llFirma.setVisibility(View.GONE);
-        }
-    };
-    // Fin de Click de RadioButon
-
     private void initComponents(){
-        tvExternalID.setText(boostrap.ficha.getId());
-        etMontoPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getPagoSemanal())));
-        etSaldoCorte.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getSaldoActual())));
+        tvExternalID.setText(parent.ficha_ri.getId());
+        tvContactoCliente.setError("");
+        etMontoPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoSemanal())));
+        etSaldoCorte.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getSaldoActual())));
     }
 
     //=========================  Comportamientos  ================================================
+    private void SelectContactoCliente (int pos){
+
+        if (rbSiGerente.isChecked() || rbNoGerente.isChecked()) tvEstaGerente.setError(null);
+        else tvEstaGerente.setError("");
+        switch (pos){
+            case 0: // No contacto cliente
+                etComentarioNoContacto.setError("Este campo es requerido");
+                tvFotoFachada.setError("");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.VISIBLE);
+                llFotoFachada.setVisibility(View.VISIBLE);
+                llEstaGerente.setVisibility(View.VISIBLE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                break;
+            case 1: // Si contacto cliente
+                tvResultadoGestion.setError("");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                llResultadoGestion.setVisibility(View.VISIBLE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                break;
+            case 2: // Aclaración
+                tvInfoDesfasada.setError("");
+                etComentarioInfoDesfa.setError("Este campo es requerido");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.VISIBLE);
+                llInfoDesfasada.setVisibility(View.VISIBLE);
+                llComentarioAclaracion.setVisibility(View.VISIBLE);
+                break;
+            default: //Sin seleccionar una opción o cualquier otro valor
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                etComentarioInfoDesfa.setText("");
+                break;
+        }
+    }
+
     private void SelecteMedioPago (int pos){
-
-
         if (rgContactoCliente.getChildAt(0).isEnabled()){
             rgMontoCorrecto.clearCheck();
             etFechaDeposito.setText("");
@@ -826,35 +811,41 @@ public class ind_management_fragment extends Fragment {
                 etFechaDeposito.setEnabled(true);
             }
         }
+        if (rbSiRequerido.isChecked() || rbNoRequerido.isChecked()) tvPagaraRequerido.setError(null);
+        else tvPagaraRequerido.setError("");
+
+        tvMedioPago.setError(null);
         switch (pos){
-            case 0:
+            case 0: // Opción "Seleccione una opción"
+                tvMedioPago.setError("");
                 rgPagaraRequerido.clearCheck();
                 SelectPagoRequerido(-1);
                 llBanco.setVisibility(View.GONE);
                 llPagaraRequerido.setVisibility(View.GONE);
                 llFechaDeposito.setVisibility(View.GONE);
                 break;
-            case 1:
+            case 1: // Banco
                 llBanco.setVisibility(View.VISIBLE);
                 llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.VISIBLE);
                 break;
-            case 2:
+            case 2: // Oxxo
                 llBanco.setVisibility(View.GONE);
                 llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.VISIBLE);
                 break;
-            case 3:
+            case 3: // Efectivo
                 llBanco.setVisibility(View.GONE);
                 llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.GONE);
                 break;
-            case 4:
+            case 4: // SIDERT
                 llBanco.setVisibility(View.GONE);
                 llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.GONE);
                 break;
-            default:
+            default: //Sin seleccionar una opción o cualquier otro valor
+                tvMedioPago.setError("");
                 rgPagaraRequerido.clearCheck();
                 SelectPagoRequerido(-1);
                 llBanco.setVisibility(View.GONE);
@@ -866,24 +857,30 @@ public class ind_management_fragment extends Fragment {
 
     private void SelectMotivoNoPago (int pos){
 
+        tvMotivoNoPago.setError(null);
         switch (pos){
-            case 0:
+            case 0: // Opción "Seleccione una opcion"
+                tvMotivoNoPago.setError("");
                 llDatosDefuncion.setVisibility(View.GONE);
                 llEspecificaCausa.setVisibility(View.GONE);
                 break;
-            case 1:
+            case 1: // Negación de pago
                 llDatosDefuncion.setVisibility(View.GONE);
                 llEspecificaCausa.setVisibility(View.GONE);
                 break;
-            case 2:
+            case 2: //Fallecimiento
+                etMotivoDefuncion.setError("Este campo es requerido");
+                etFechaDefuncion.setError("");
                 llDatosDefuncion.setVisibility(View.VISIBLE);
                 llEspecificaCausa.setVisibility(View.GONE);
                 break;
-            case 3:
+            case 3: // Otro
+                etEspecificaCausa.setError("Este campo es requerido");
                 llEspecificaCausa.setVisibility(View.VISIBLE);
                 llDatosDefuncion.setVisibility(View.GONE);
                 break;
-            default:
+            default: //Sin seleccionar una opción o cualquier otro valor
+                tvMotivoNoPago.setError("");
                 llDatosDefuncion.setVisibility(View.GONE);
                 llEspecificaCausa.setVisibility(View.GONE);
                 break;
@@ -892,21 +889,23 @@ public class ind_management_fragment extends Fragment {
 
     private void SelectPagoRequerido (int pos){
         switch (pos){
-            case -1:
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getPagoRealizado())));
+            case -1: //Sin seleccionar una opción o cualquier otro valor
+                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado())));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llMontoCorrecto.setVisibility(View.GONE);
                 rgMontoCorrecto.clearCheck();
                 SelectMontoCorrecto(-1);
                 break;
-            case 0:
+            case 0: // No pagará requerido
+                tvMontoCorrecto.setError("");
                 etPagoRealizado.setEnabled(true);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 llMontoCorrecto.setVisibility(View.VISIBLE);
                 break;
-            case 1:
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getPagoRealizado())));
+            case 1: // Si pagará requerido
+                tvMontoCorrecto.setError("");
+                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado())));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 llMontoCorrecto.setVisibility(View.VISIBLE);
@@ -918,6 +917,7 @@ public class ind_management_fragment extends Fragment {
     private void SelectMontoCorrecto(int pos){
         etBanco.setError(null);
         etFechaDeposito.setError(null);
+        tvMontoCorrecto.setError(null);
         switch (pos){
             case 0: //No Es Correcto
                 for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
@@ -942,6 +942,8 @@ public class ind_management_fragment extends Fragment {
                 llFolioRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.GONE);
                 llEstaGerente.setVisibility(View.GONE);
+                rgEstaGerente.clearCheck();
+                SelectEstaGerente(-1);
                 break;
             case 1: //Si es Correcto
                 for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
@@ -980,6 +982,7 @@ public class ind_management_fragment extends Fragment {
                 llEstaGerente.setVisibility(View.VISIBLE);
                 break;
             default: //Sin seleccionar una opción o cualquier otro valor
+                tvMontoCorrecto.setError("");
                 for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
                     rgContactoCliente.getChildAt(i).setEnabled(true);
                 }
@@ -1013,14 +1016,14 @@ public class ind_management_fragment extends Fragment {
                 llFolioRecibo.setVisibility(View.VISIBLE);
                 Log.v("PagoRealizado", etPagoRealizado.getText().toString().trim());
                 Intent i = new Intent(ctx, PrintSeewoo.class);
-                OrderModel order = new OrderModel(boostrap.ficha.getId(),
+                OrderModel order = new OrderModel(parent.ficha_ri.getId(),
                         "002",
-                        boostrap.ficha.getPrestamo().getMontoPrestamo(),
-                        boostrap.ficha.getPrestamo().getPagoSemanal(),
+                        parent.ficha_ri.getPrestamo().getMontoPrestamo(),
+                        parent.ficha_ri.getPrestamo().getPagoSemanal(),
                         300,
-                        boostrap.ficha.getCliente().getNumeroCliente(),
-                        boostrap.ficha.getPrestamo().getNumeroDePrestamo(),
-                        boostrap.ficha.getCliente().getNombre(),
+                        parent.ficha_ri.getCliente().getNumeroCliente(),
+                        parent.ficha_ri.getPrestamo().getNumeroDePrestamo(),
+                        parent.ficha_ri.getCliente().getNombre(),
                         "NOMBRE DEL ALGUN ASESOR",
                         "0.0");
 
@@ -1104,7 +1107,7 @@ public class ind_management_fragment extends Fragment {
     private void ColocarUbicacionGestion (final double lat, final double lon){
         mapView.onResume();
         try {
-            MapsInitializer.initialize(boostrap.getApplicationContext());
+            MapsInitializer.initialize(parent.getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1142,6 +1145,11 @@ public class ind_management_fragment extends Fragment {
         mMap.animateCamera(ubication);
 
 
+    }
+
+    private void CancelUbicacion (){
+        if (flagUbicacion)
+            locationManager.removeUpdates(locationListener);
     }
 
 

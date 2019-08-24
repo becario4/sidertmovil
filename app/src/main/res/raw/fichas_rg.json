@@ -109,13 +109,13 @@
 			"SaldoActual": 49560.14,
 			"DiasAtraso": 19,
 			"Frecuencia": "SEMANAL",
-			"DiaSemana": "3. MIERCOLES",
+			"DiaSemana": "3. MIERCOLES"
 		},
 		"ReporteAnaliticoOmega": [
 			{
 				"No": 1,
 				"Fecha_Amortizacion": "14-05-2019",
-				"Fecha_Pago": "14-05-2019"
+				"Fecha_Pago": "14-05-2019",
 				"Estatus": "PAGADA",
 				"Dias": 0
 			},

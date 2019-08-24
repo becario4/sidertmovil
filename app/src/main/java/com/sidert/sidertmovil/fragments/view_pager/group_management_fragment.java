@@ -1,16 +1,21 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -23,7 +28,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,20 +39,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.Marker;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.GroupRecovery;
+import com.sidert.sidertmovil.activities.IntegrantesGpo;
+import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
+import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomWatcher;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.MyCurrentListener;
+import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.Validator;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -52,244 +74,470 @@ public class group_management_fragment extends Fragment {
 
     private Context ctx;
 
-    private EditText etReasonNoPay;
-    private EditText etOutDateInfo;
-    private EditText etPaymentMethod;
-    private EditText etDateDeath;
-    private EditText etBank;
-    private EditText etAmountPaymentMade;
-    private EditText etDepositDate;
-    private EditText etPhotoGallery;
-    private EditText etCommentNoContact;
-    private EditText etRecoveryDate;
-    private EditText etAmountRequired;
+    private TextView tvExternalID;
+    private TextView tvContactoCliente;
+    private TextView tvResultadoGestion;
+    private TextView tvMedioPago;
+    private TextView tvDetalleFicha;
+    private TextView tvMontoCorrecto;
+    private TextView tvInfoDesfasada;
+    private TextView tvEstaGerente;
+    private TextView tvFotoFachada;
+    private TextView tvMotivoNoPago;
 
-    private RadioGroup rgClient;
-    private RadioGroup rgSolidary;
-    private RadioGroup rgCorrect;
-    private RadioGroup rgIsManager;
-    private RadioGroup rgPay;
+    private EditText etInfoDesfasada;
+    private EditText etFechaDefuncion;
+    private EditText etBanco;
+    private EditText etPagoRealizado;
+    private EditText etFechaDeposito;
+    private EditText etFotoGaleria;
+    private EditText etComentarioNoContacto;
+    private EditText etMontoPagoRequerido;
+    private EditText etComentarioInfoDesfa;
+    private EditText etSaldoCorte;
+    private EditText etMotivoDefuncion;
+    private EditText etEspecificaCausa;
+    private EditText etEstatusPago;
+    private EditText etFolioRecibo;
 
-    private RadioButton rbYesClient;
-    private RadioButton rbNotClient;
-    private RadioButton rbPay;
-    private RadioButton rbNotPay;
-    private RadioButton rbYes;
-    private RadioButton rbNot;
-    private RadioButton rbYesManager;
-    private RadioButton rbNotManager;
+    private Spinner spMotivoNoPago;
+    private Spinner spMedioPago;
 
-    private ImageButton imbMap;
-    private ImageButton imbPhoto;
+    private RadioGroup rgContactoCliente;
+    private RadioGroup rgMontoCorrecto;
+    private RadioGroup rgEstaGerente;
+    private RadioGroup rgResultadoPago;
+    private RadioGroup rgDetalleFicha;
+    private RadioGroup rgRecibos;
+
+    private RadioButton rbSiContacto;
+    private RadioButton rbNoContacto;
+    private RadioButton rbPago;
+    private RadioButton rbNoPago;
+    private RadioButton rbSiDetalle;
+    private RadioButton rbNoDetalle;
+    private RadioButton rbSiGerente;
+    private RadioButton rbNoGerente;
+    private RadioButton rbAclaracion;
+    private RadioButton rbSiCorrecto;
+    private RadioButton rbNoCorrecto;
+    private RadioButton rbSiRecibo;
+    private RadioButton rbNoRecibo;
+
+    private ImageButton ibMap;
+    private ImageButton ibFoto;
     private ImageButton imbGallery;
-    private ImageButton imbSignature;
+    private ImageButton ibFirma;
+    private ImageButton ibFotoCopia;
+    private ImageButton ibGaleriaCopia;
 
-    private ImageView ivSignature;
+    private Button btnIntegrantes;
 
-    private MapView mapLocation;
-
-    private LinearLayout llCommentNoContac;
-    private LinearLayout llphotoFacade;
-    private LinearLayout llDataDeath;
-    private LinearLayout llOutdateInfo;
-    private LinearLayout llReasonNotPay;
-    private LinearLayout llAmountRequired;
-    private LinearLayout llBank;
-    private LinearLayout llPaymentMethod;
-    private LinearLayout llManagementResult;
-    private LinearLayout llspecify_cause;
-    private LinearLayout llBalanceCutting;
-    private LinearLayout llCurrentBalance;
-    private LinearLayout llAmountRequiredPaid;
-    private LinearLayout llAmountPaymentMade;
-    private LinearLayout llDepositDate;
-    private LinearLayout llPhotoGalery;
-    private LinearLayout llIsManager;
-    private LinearLayout llSignature;
-    private LinearLayout llPhotoGallery;
-    private LinearLayout llPhotoGaleryButton;
-    private LinearLayout llPhoto;
-    private LinearLayout llGallery;
-    private LinearLayout llSolidaryPayment;
-    private LinearLayout llMembers;
+    private ImageView ivFirma;
+    
+    private LinearLayout llComentarioNoContacto;
+    private LinearLayout llFotoFachada;
+    private LinearLayout llDatosDefuncion;
+    private LinearLayout llInfoDesfasada;
+    private LinearLayout llMotivoNoPago;
+    private LinearLayout llMontoPagoRequerido;
+    private LinearLayout llBanco;
+    private LinearLayout llMedioPago;
+    private LinearLayout llResultadoGestion;
+    private LinearLayout llEspecificaCausa;
+    private LinearLayout llSaldoCorte;
+    private LinearLayout llSaldoActual;
+    private LinearLayout llFotoGaleria;
+    private LinearLayout llFotoGaleriaBoton;
+    private LinearLayout llFoto;
+    private LinearLayout llGaleria;
+    private LinearLayout llIntegrantes;
+    private LinearLayout llContactoCliente;
+    private LinearLayout llComentarioAclaracion;
+    private LinearLayout llMontoCorrecto;
+    private LinearLayout llEstatusPago;
+    private LinearLayout llDetalleFicha;
+    private LinearLayout llMontoPagoRealizado;
+    private LinearLayout llFechaDeposito;
+    private LinearLayout llImprimirRecibo;
+    private LinearLayout llFolioRecibo;
+    private LinearLayout llEstaGerente;
+    private LinearLayout llFirma;
 
     private String[] _outdate_info;
-    private String[] _reason_not_pay;
     private String[] _banks;
-    private String[] _payment_method;
     private String[] _photo_galery;
 
-    private Calendar myCalendar, currentDate;
+    private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private Date minDate;
 
     private final int REQUEST_CODE_SIGNATURE = 456;
+    
+    private Validator validator;
 
-    GroupRecovery boostrap;
+    private boolean flagUbicacion = false;
+
+    private LocationManager locationManager;
+    private MyCurrentListener locationListener;
+    double latitud, longitud;
+
+    private MapView mapView;
+    private GoogleMap mMap;
+    private Marker mMarker;
+
+    GroupRecovery parent;
+    private final static int REQUEST_INTEGRANTES_GPO = 951;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_group_management, container, false);
-        ctx             = getContext();
-        boostrap        = (GroupRecovery) getActivity();
-        etReasonNoPay   = view.findViewById(R.id.etReasonNoPay);
-        etOutDateInfo   = view.findViewById(R.id.etOutDateInfo);
-        etBank          = view.findViewById(R.id.etBank);
-        etDateDeath     = view.findViewById(R.id.etDateDeath);
-        etPaymentMethod = view.findViewById(R.id.etPaymentMethod);
-        etAmountPaymentMade = view.findViewById(R.id.etAmountPaymentMade);
-        etDepositDate       = view.findViewById(R.id.etDepositDate);
-        etPhotoGallery      = view.findViewById(R.id.etPhotoGallery);
-        etCommentNoContact  = view.findViewById(R.id.etCommentNoContact);
-        etRecoveryDate      = view.findViewById(R.id.etRecoveryDate);
-        etAmountRequired    = view.findViewById(R.id.etAmountRequired);
+        ctx           = getContext();
+        
+        parent        = (GroupRecovery) getActivity();
+        parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        rgClient        = view.findViewById(R.id.rgClient);
-        rgPay           = view.findViewById(R.id.rgPay);
-        rgCorrect       = view.findViewById(R.id.rgCorrect);
-        rgSolidary      = view.findViewById(R.id.rgSolidary);
-        rgIsManager     = view.findViewById(R.id.rgIsManager);
+        tvExternalID            = view.findViewById(R.id.tvExternalID);
+        tvContactoCliente       = view.findViewById(R.id.tvContactoCliente);
+        tvResultadoGestion      = view.findViewById(R.id.tvResultadoGestion);
+        tvMedioPago             = view.findViewById(R.id.tvMedioPago);
+        tvDetalleFicha          = view.findViewById(R.id.tvDetalleFicha);
+        tvMontoCorrecto         = view.findViewById(R.id.tvMontoCorrecto);
+        tvInfoDesfasada         = view.findViewById(R.id.tvInfoDesfasada);
+        tvEstaGerente           = view.findViewById(R.id.tvEstaGerente);
+        tvFotoFachada           = view.findViewById(R.id.tvFotoFachada);
+        tvMotivoNoPago          = view.findViewById(R.id.tvMotivoNoPago);
+        
+        etInfoDesfasada         = view.findViewById(R.id.etInfoDesfasada);
+        etBanco                 = view.findViewById(R.id.etBanco);
+        etFechaDefuncion        = view.findViewById(R.id.etFechaDefuncion);
+        etPagoRealizado         = view.findViewById(R.id.etPagoRealizado);
+        etFechaDeposito         = view.findViewById(R.id.etFechaDeposito);
+        etFotoGaleria           = view.findViewById(R.id.etFotoGaleria);
+        etComentarioNoContacto  = view.findViewById(R.id.etComentarioNoContacto);
+        etMontoPagoRequerido    = view.findViewById(R.id.etMontoPagoRequerido);
+        etComentarioInfoDesfa   = view.findViewById(R.id.etComentarioInfoDesfa);
+        etSaldoCorte            = view.findViewById(R.id.etSaldoCorte);
+        etMotivoDefuncion       = view.findViewById(R.id.etMotivoDefuncion);
+        etEspecificaCausa       = view.findViewById(R.id.etEspecificaCausa);
+        etEstatusPago           = view.findViewById(R.id.etEstatusPago);
+        etFolioRecibo           = view.findViewById(R.id.etFolioRecibo);
+        
+        spMotivoNoPago  = view.findViewById(R.id.spMotivoNoPago);
+        spMedioPago     = view.findViewById(R.id.spMedioPago);
 
-        rbYesClient     = view.findViewById(R.id.rbYesClient);
-        rbNotClient     = view.findViewById(R.id.rbNotClient);
-        rbPay           = view.findViewById(R.id.rbPay);
-        rbNotPay        = view.findViewById(R.id.rbNotPay);
-        rbYes           = view.findViewById(R.id.rbYes);
-        rbNot           = view.findViewById(R.id.rbNot);
-        rbYesManager    = view.findViewById(R.id.rbYesManager);
-        rbNotManager    = view.findViewById(R.id.rbNotManager);
-
-        imbMap          = view.findViewById(R.id.imbMap);
-        imbPhoto        = view.findViewById(R.id.imbPhoto);
+        rgContactoCliente   = view.findViewById(R.id.rgContactoCliente);
+        rgResultadoPago     = view.findViewById(R.id.rgResultadoPago);
+        rgDetalleFicha      = view.findViewById(R.id.rgDetalleFicha);
+        rgMontoCorrecto     = view.findViewById(R.id.rgMontoCorrecto);
+        rgRecibos           = view.findViewById(R.id.rgRecibos);
+        rgEstaGerente       = view.findViewById(R.id.rgEstaGerente);
+        
+        rbSiContacto    = view.findViewById(R.id.rbSiContacto);
+        rbNoContacto    = view.findViewById(R.id.rbNoContacto);
+        rbAclaracion    = view.findViewById(R.id.rbAclaración);
+        rbPago          = view.findViewById(R.id.rbPago);
+        rbNoPago        = view.findViewById(R.id.rbNoPago);
+        rbSiDetalle     = view.findViewById(R.id.rbSiDetalle);
+        rbNoDetalle     = view.findViewById(R.id.rbNoDetalle);
+        rbSiCorrecto    = view.findViewById(R.id.rbSiCorrecto);
+        rbNoCorrecto    = view.findViewById(R.id.rbNoCorrecto);
+        rbSiRecibo      = view.findViewById(R.id.rbSiRecibo);
+        rbNoRecibo      = view.findViewById(R.id.rbNoRecibo);
+        rbSiGerente     = view.findViewById(R.id.rbSiGerente);
+        rbNoGerente     = view.findViewById(R.id.rbNoGerente);
+        
+        ibMap           = view.findViewById(R.id.ibMap);
+        ibFoto          = view.findViewById(R.id.ibFoto);
         imbGallery      = view.findViewById(R.id.imbGallery);
-        imbSignature    = view.findViewById(R.id.imbSignature);
+        ibFotoCopia     = view.findViewById(R.id.ibFotoCopia);
+        ibGaleriaCopia  = view.findViewById(R.id.ibGaleriaCopia);
+        ibFirma         = view.findViewById(R.id.ibFirma);
 
-        ivSignature     = view.findViewById(R.id.ivSignature);
+        btnIntegrantes  = view.findViewById(R.id.btnIntegrantes);
 
-        mapLocation     = view.findViewById(R.id.mapLocation);
+        ivFirma     = view.findViewById(R.id.ivFirma);
 
-        llCommentNoContac   = view.findViewById(R.id.llCommenNoContac);
-        llManagementResult  = view.findViewById(R.id.llManagementResult);
-        llphotoFacade       = view.findViewById(R.id.llPhotoFacade);
-        llDataDeath         = view.findViewById(R.id.llDataDeath);
-        llOutdateInfo       = view.findViewById(R.id.llOutDataInfo);
-        llReasonNotPay      = view.findViewById(R.id.llReasonNotPay);
-        llAmountRequired    = view.findViewById(R.id.llAmountRequired);
-        llBank              = view.findViewById(R.id.llBank);
-        llPaymentMethod     = view.findViewById(R.id.llPaymentMethod);
-        llspecify_cause     = view.findViewById(R.id.llspecify_cause);
-        llBalanceCutting    = view.findViewById(R.id.llBalanceCutting);
-        llCurrentBalance    = view.findViewById(R.id.llCurrentBalance);
-        llAmountRequiredPaid    = view.findViewById(R.id.llAmountRequiredPaid);
-        llAmountPaymentMade     = view.findViewById(R.id.llAmountPaymentMade);
-        llDepositDate           = view.findViewById(R.id.llDepositDate);
-        llPhotoGalery           = view.findViewById(R.id.llPhotoGallery);
-        llIsManager             = view.findViewById(R.id.llIsManager);
-        llSignature             = view.findViewById(R.id.llSignature);
-        llPhotoGaleryButton     = view.findViewById(R.id.llPhotoGaleryButton);
-        llPhoto                 = view.findViewById(R.id.llPhoto);
-        llGallery               = view.findViewById(R.id.llGallery);
-        llSolidaryPayment       = view.findViewById(R.id.llSolidaryPayment);
-        llMembers               = view.findViewById(R.id.llMembers);
+        llIntegrantes           = view.findViewById(R.id.llIntegrantes);
+        llContactoCliente       = view.findViewById(R.id.llContactoCliente);
+        llComentarioNoContacto  = view.findViewById(R.id.llComentarioNoContacto);
+        llComentarioAclaracion  = view.findViewById(R.id.llComentarioAclaracion);
+        llResultadoGestion      = view.findViewById(R.id.llResultadoGestion);
+        llFotoFachada           = view.findViewById(R.id.llFotoFachada);
+        llDatosDefuncion        = view.findViewById(R.id.llDatosDefuncion);
+        llInfoDesfasada         = view.findViewById(R.id.llInfoDesfasada);
+        llMotivoNoPago          = view.findViewById(R.id.llMotivoNoPago);
+        llMontoPagoRequerido    = view.findViewById(R.id.llMontoPagoRequerido);
+        llBanco                 = view.findViewById(R.id.llBanco);
+        llMedioPago             = view.findViewById(R.id.llMedioPago);
+        llEspecificaCausa       = view.findViewById(R.id.llEspecificaCausa);
+        llMontoCorrecto         = view.findViewById(R.id.llMontoCorrecto);
+        llEstatusPago           = view.findViewById(R.id.llEstatusPago);
+        llSaldoCorte            = view.findViewById(R.id.llSaldoCorte);
+        llSaldoActual           = view.findViewById(R.id.llSaldoActual);
+        llDetalleFicha       = view.findViewById(R.id.llDetalleFicha);
+        llMontoPagoRealizado    = view.findViewById(R.id.llMontoPagoRealizado);
+        llImprimirRecibo        = view.findViewById(R.id.llImprimirRecibo);
+        llFolioRecibo           = view.findViewById(R.id.llFolioRecibo);
+        llFechaDeposito         = view.findViewById(R.id.llFechaDeposito);
+        llFotoGaleria           = view.findViewById(R.id.llFotoGaleria);
+        llEstaGerente           = view.findViewById(R.id.llEstaGerente);
+        llFirma                 = view.findViewById(R.id.llFirma);
+        llFotoGaleriaBoton      = view.findViewById(R.id.llFotoGaleriaBoton);
+        llFoto                  = view.findViewById(R.id.llFoto);
+        llGaleria               = view.findViewById(R.id.llGaleria);
 
         myCalendar      = Calendar.getInstance();
-        currentDate     = Calendar.getInstance();
+
+        spMedioPago.setPrompt("Medio de pago");
+        spMotivoNoPago.setPrompt("Motivo no pago");
+
+        //mapView.onCreate(savedInstanceState);
+        locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
+        validator = new Validator();
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        currentDate.set(Calendar.YEAR,currentDate.get(Calendar.YEAR));
-        currentDate.set(Calendar.MONTH,currentDate.get(Calendar.MONTH));
-        currentDate.set(Calendar.DAY_OF_MONTH,(currentDate.get(Calendar.DAY_OF_MONTH)));
-
-        etRecoveryDate.setText(sdf.format(currentDate.getTime()));
-
+        initComponents();
+        try {
+            minDate = sdf.parse("01/01/2019");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        
         _outdate_info = getResources().getStringArray(R.array.outdated_information);
         _banks = getResources().getStringArray(R.array.banks);
-        _payment_method = getResources().getStringArray(R.array.method_pay);
-        _reason_not_pay = getResources().getStringArray(R.array.reason_no_pay);
         _photo_galery = getResources().getStringArray(R.array.files);
 
-        //EditText Click
-        etReasonNoPay.setOnClickListener(etReasonNoPay_OnClick);
-        etOutDateInfo.setOnClickListener(etOutDateInfo_OnClick);
-        etDateDeath.setOnClickListener(etDateDeath_OnClick);
-        etPaymentMethod.setOnClickListener(etPaymentMethod_OnClick);
-        etBank.setOnClickListener(etBank_OnClick);
-        etDepositDate.setOnClickListener(etDepositDate_OnClick);
-        etPhotoGallery.setOnClickListener(etPhotoGallery_OnClick);
+        etPagoRealizado.addTextChangedListener(new CustomWatcher(etPagoRealizado));
 
-        //RadioButton Click
-        rbYesClient.setOnClickListener(rbYesClient_OnClick);
-        rbNotClient.setOnClickListener(rbNotClient_OnClick);
-        rbPay.setOnClickListener(rbPay_OnClick);
-        rbNotPay.setOnClickListener(rbNotPay_OnClick);
-        rbYes.setOnClickListener(rbYes_OnClick);
-        rbNot.setOnClickListener(rbNot_OnClick);
-        rbYesManager.setOnClickListener(rbYesManager_OnClick);
-        rbNotManager.setOnClickListener(rbNotManager_OnClick);
+        //EditText Click
+        etInfoDesfasada.setOnClickListener(etInfoDesfasada_OnClick);
+        etFechaDefuncion.setOnClickListener(etFechaDefuncion_OnClick);
+        etBanco.setOnClickListener(etBanco_OnClick);
+        etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
+        etFotoGaleria.setOnClickListener(etFotoGaleria_onClick);
+
+        // ImageView Click
+        ivFirma.setOnClickListener(ivFirma_OnClick);
 
         //ImageButton Click
-        imbSignature.setOnClickListener(imbSignature_OnClick);
-        imbPhoto.setOnClickListener(imbPhoto_OnClick);
+        ibMap.setOnClickListener(ibMap_OnClick);
+        ibFoto.setOnClickListener(ibFoto_OnClick);
+        ibFirma.setOnClickListener(ibFirma_OnClick);
 
-        etAmountPaymentMade.addTextChangedListener(new CustomWatcher(etAmountPaymentMade));
-        etAmountRequired.addTextChangedListener(new CustomWatcher(etAmountRequired));
+        // Button Click
+        btnIntegrantes.setOnClickListener(btnIntegrantes_OnClick);
+
+        //RadioGroup Click
+        rgContactoCliente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvContactoCliente.setError(null);
+                tvInfoDesfasada.setError(null);
+                etInfoDesfasada.setError(null);
+                etComentarioNoContacto.setError(null);
+                tvFotoFachada.setError(null);
+                switch (checkedId) {
+                    case R.id.rbSiContacto:
+                        SelectContactoCliente(1);
+                        break;
+                    case R.id.rbNoContacto:
+                        SelectContactoCliente(0);
+                        break;
+                    case R.id.rbAclaración:
+                        SelectContactoCliente(2);
+                        break;
+                    default:
+                        tvContactoCliente.setError("");
+                        SelectContactoCliente(-1);
+                        break;
+                }
+            }
+        });
+
+        rgResultadoPago.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvResultadoGestion.setError(null);
+                switch (checkedId) {
+                    case R.id.rbPago:
+                        spMotivoNoPago.setSelection(0);
+                        SelectMotivoNoPago(0);
+                        llMedioPago.setVisibility(View.VISIBLE);
+                        llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                        llSaldoCorte.setVisibility(View.VISIBLE);
+                        llSaldoActual.setVisibility(View.VISIBLE);
+                        llMotivoNoPago.setVisibility(View.GONE);
+                        llFotoFachada.setVisibility(View.GONE);
+                        llEstaGerente.setVisibility(View.GONE);
+                        break;
+                    case R.id.rbNoPago:
+                        tvMotivoNoPago.setError("");
+                        tvFotoFachada.setError("");
+                        spMedioPago.setSelection(0);
+                        SelecteMedioPago(0);
+                        llMedioPago.setVisibility(View.GONE);
+                        llMontoPagoRequerido.setVisibility(View.GONE);
+                        llSaldoCorte.setVisibility(View.GONE);
+                        llSaldoActual.setVisibility(View.GONE);
+                        llMotivoNoPago.setVisibility(View.VISIBLE);
+                        llFotoFachada.setVisibility(View.VISIBLE);
+                        llEstaGerente.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        tvResultadoGestion.setError("");
+                        spMedioPago.setSelection(0);
+                        SelecteMedioPago(0);
+                        llMedioPago.setVisibility(View.GONE);
+                        llMontoPagoRequerido.setVisibility(View.GONE);
+                        llSaldoCorte.setVisibility(View.GONE);
+                        llSaldoActual.setVisibility(View.GONE);
+                        llMotivoNoPago.setVisibility(View.GONE);
+                        llFotoFachada.setVisibility(View.GONE);
+                        llEstaGerente.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+
+        rgDetalleFicha.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvDetalleFicha.setError(null);
+                switch (checkedId){
+                    case R.id.rbSiDetalle:
+                        SelectDetalleFicha(1);
+                        break;
+                    case R.id.rbNoDetalle:
+                        SelectDetalleFicha(0);
+                        break;
+                    default:
+                        tvDetalleFicha.setError("");
+                        SelectDetalleFicha(-1);
+                        break;
+                }
+            }
+        });
+
+        rgMontoCorrecto.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (spMedioPago.getSelectedItemPosition() == 1) {
+                    if(!validator.validate(etBanco, new String[] {validator.REQUIRED}) &&
+                            !validator.validate(etFechaDeposito, new String[] {validator.REQUIRED})) {
+                        switch (checkedId) {
+                            case R.id.rbSiCorrecto:
+                                SelectMontoCorrecto(1);
+                                break;
+                            case R.id.rbNoCorrecto:
+                                SelectMontoCorrecto(0);
+                                break;
+                            default:
+                                SelectMontoCorrecto(-1);
+                                break;
+                        }
+                    }
+                    else{
+                        etFechaDeposito.setError("");
+                        rbSiCorrecto.setChecked(false);
+                        rbNoCorrecto.setChecked(false);
+                        Toast.makeText(ctx, "Complete los campos faltantes", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    switch (checkedId) {
+                        case R.id.rbSiCorrecto:
+                            SelectMontoCorrecto(1);
+                            break;
+                        case R.id.rbNoCorrecto:
+                            SelectMontoCorrecto(0);
+                            break;
+                        default:
+                            SelectMontoCorrecto(-1);
+                            break;
+                    }
+                }
+            }
+        });
+
+        rgRecibos.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.rbSiRecibo:
+                        SelectImprimirRecibos(1);
+                        break;
+                    case R.id.rbNoRecibo:
+                        SelectImprimirRecibos(0);
+                        break;
+                    default:
+                        SelectImprimirRecibos(-1);
+                        break;
+                }
+            }
+        });
+
+        rgEstaGerente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvEstaGerente.setError(null);
+                switch (checkedId){
+                    case R.id.rbSiGerente:
+                        SelectEstaGerente(1);
+                        break;
+                    case R.id.rbNoGerente:
+                        SelectEstaGerente(0);
+                        break;
+                    default:
+                        tvEstaGerente.setError("");
+                        SelectEstaGerente(-1);
+                        break;
+                }
+            }
+        });
+        
+        //Spinner Click
+        spMedioPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SelecteMedioPago(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spMotivoNoPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SelectMotivoNoPago(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     /*
     * Evento click de EditText
     * */
-    private View.OnClickListener etReasonNoPay_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.reason_no_pay, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            etReasonNoPay.setText(_reason_not_pay[position]);
-                            switch(etReasonNoPay.getText().toString()){
-                                case Constants.negative_payment:
-                                    llphotoFacade.setVisibility(View.VISIBLE);
-                                    llDataDeath.setVisibility(View.GONE);
-                                    llOutdateInfo.setVisibility(View.GONE);
-                                    llspecify_cause.setVisibility(View.GONE);
-                                    break;
-                                case Constants.outdate_information:
-                                    llOutdateInfo.setVisibility(View.VISIBLE);
-                                    llphotoFacade.setVisibility(View.GONE);
-                                    llDataDeath.setVisibility(View.GONE);
-                                    llspecify_cause.setVisibility(View.GONE);
-                                    break;
-                                case Constants.death:
-                                    llphotoFacade.setVisibility(View.VISIBLE);
-                                    llDataDeath.setVisibility(View.VISIBLE);
-                                    llOutdateInfo.setVisibility(View.GONE);
-                                    llspecify_cause.setVisibility(View.GONE);
-                                    break;
-                                case Constants.other:
-                                    llspecify_cause.setVisibility(View.VISIBLE);
-                                    llphotoFacade.setVisibility(View.VISIBLE);
-                                    llDataDeath.setVisibility(View.GONE);
-                                    llOutdateInfo.setVisibility(View.GONE);
-                                    break;
-                            }
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
-
-    private View.OnClickListener etOutDateInfo_OnClick = new View.OnClickListener() {
+    private View.OnClickListener etInfoDesfasada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
                     .setItems(R.array.outdated_information, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
-                            etOutDateInfo.setText(_outdate_info[position]);
+                            tvInfoDesfasada.setError(null);
+                            etInfoDesfasada.setText(_outdate_info[position]);
                         }
                     });
             builder.create();
@@ -297,89 +545,34 @@ public class group_management_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener etDateDeath_OnClick = new View.OnClickListener() {
+    private View.OnClickListener etFechaDefuncion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             DatePickerDialog dpd = new DatePickerDialog(ctx, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     myCalendar.set(Calendar.YEAR,year);
                     myCalendar.set(Calendar.MONTH,month);
                     myCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                    setDatePicked(etDateDeath);
+                    setDatePicked(etFechaDefuncion);
 
                 }
-            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),Calendar.DAY_OF_MONTH);
-            dpd.getDatePicker().setMaxDate(currentDate.getTimeInMillis());
+            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH));
+            dpd.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
             dpd.show();
         }
     };
 
-    private View.OnClickListener etPaymentMethod_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.method_pay, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            etPaymentMethod.setText(_payment_method[position]);
-                            switch(etPaymentMethod.getText().toString()){
-                                case Constants.bank:
-                                    llBank.setVisibility(View.VISIBLE);
-                                    llPhotoGalery.setVisibility(View.VISIBLE);
-                                    etPhotoGallery.setText("");
-                                    etPhotoGallery.setEnabled(true);
-                                    //llPhotoGaleryButton.setVisibility(View.GONE);
-                                    llPhoto.setVisibility(View.GONE);
-                                    llGallery.setVisibility(View.GONE);
-                                    break;
-                                case Constants.oxxo:
-                                    llBank.setVisibility(View.GONE);
-                                    llPhotoGalery.setVisibility(View.VISIBLE);
-                                    etPhotoGallery.setText("");
-                                    etPhotoGallery.setEnabled(true);
-                                    //llPhotoGaleryButton.setVisibility(View.GONE);
-                                    llPhoto.setVisibility(View.GONE);
-                                    llGallery.setVisibility(View.GONE);
-                                    break;
-                                case Constants.cash:
-                                    llBank.setVisibility(View.GONE);
-                                    llPhotoGalery.setVisibility(View.VISIBLE);
-                                    etPhotoGallery.setText("Fotografía");
-                                    etPhotoGallery.setEnabled(false);
-                                    //llPhotoGaleryButton.setVisibility(View.VISIBLE);
-                                    llPhoto.setVisibility(View.VISIBLE);
-                                    llGallery.setVisibility(View.GONE);
-                                    break;
-                                case Constants.sidert:
-                                    llBank.setVisibility(View.GONE);
-                                    llPhotoGalery.setVisibility(View.VISIBLE);
-                                    etPhotoGallery.setText("Fotografía");
-                                    etPhotoGallery.setEnabled(false);
-                                    //llPhotoGaleryButton.setVisibility(View.VISIBLE);
-                                    llPhoto.setVisibility(View.VISIBLE);
-                                    llGallery.setVisibility(View.GONE);
-                                    break;
-                            }
-                            llAmountRequired.setVisibility(View.VISIBLE);
-                            llAmountRequiredPaid.setVisibility(View.VISIBLE);
-                            llIsManager.setVisibility(View.VISIBLE);
-
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
-
-    private View.OnClickListener etBank_OnClick = new View.OnClickListener() {
+    private View.OnClickListener etBanco_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
                     .setItems(R.array.banks, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
-                            etBank.setText(_banks[position]);
+                            etBanco.setError(null);
+                            etBanco.setText(_banks[position]);
                         }
                     });
             builder.create();
@@ -387,42 +580,44 @@ public class group_management_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener etDepositDate_OnClick = new View.OnClickListener() {
+    private View.OnClickListener etFechaDeposito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
             DatePickerDialog dpd = new DatePickerDialog(ctx, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
                     myCalendar.set(Calendar.YEAR,year);
                     myCalendar.set(Calendar.MONTH,month);
                     myCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                    setDatePicked(etDepositDate);
+                    setDatePicked(etFechaDeposito);
 
                 }
-            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),Calendar.DAY_OF_MONTH);
-            dpd.getDatePicker().setMaxDate(currentDate.getTimeInMillis());
+            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH));
+            dpd.getDatePicker().setMaxDate(new Date().getTime());
+            dpd.getDatePicker().setMinDate(minDate.getTime());
             dpd.show();
         }
     };
 
-    private View.OnClickListener etPhotoGallery_OnClick = new View.OnClickListener() {
+    private View.OnClickListener etFotoGaleria_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
                     .setItems(R.array.files, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
-                            etPhotoGallery.setText(_photo_galery[position]);
-                            //llPhotoGaleryButton.setVisibility(View.VISIBLE);
-                            switch (etPhotoGallery.getText().toString()){
+                            etFotoGaleria.setText(_photo_galery[position]);
+                            llFotoGaleriaBoton.setVisibility(View.VISIBLE);
+                            switch (etFotoGaleria.getText().toString()){
                                 case Constants.photo:
-                                    llPhoto.setVisibility(View.VISIBLE);
-                                    llGallery.setVisibility(View.GONE);
+                                    llFoto.setVisibility(View.VISIBLE);
+                                    llGaleria.setVisibility(View.GONE);
                                     break;
                                 case Constants.galery:
-                                    llPhoto.setVisibility(View.GONE);
-                                    llGallery.setVisibility(View.VISIBLE);
+                                    llFoto.setVisibility(View.GONE);
+                                    llGaleria.setVisibility(View.VISIBLE);
                                     break;
                             }
                         }
@@ -436,80 +631,7 @@ public class group_management_fragment extends Fragment {
     /*
     * Evento click de RadioButton
     * */
-    private View.OnClickListener rbYesClient_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llManagementResult.setVisibility(View.VISIBLE);
-            llCommentNoContac.setVisibility(View.GONE);
-            llphotoFacade.setVisibility(View.GONE);
-            llPaymentMethod.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbNotClient_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llCommentNoContac.setVisibility(View.VISIBLE);
-            llphotoFacade.setVisibility(View.VISIBLE);
-            llManagementResult.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbPay_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llSolidaryPayment.setVisibility(View.VISIBLE);
-            llPaymentMethod.setVisibility(View.VISIBLE);
-            llBalanceCutting.setVisibility(View.VISIBLE);
-            llCurrentBalance.setVisibility(View.VISIBLE);
-            llDataDeath.setVisibility(View.GONE);
-            llReasonNotPay.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbNotPay_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llReasonNotPay.setVisibility(View.VISIBLE);
-            llSolidaryPayment.setVisibility(View.GONE);
-            llPaymentMethod.setVisibility(View.GONE);
-            llBalanceCutting.setVisibility(View.GONE);
-            llCurrentBalance.setVisibility(View.GONE);
-        }
-    };
-
-    private View.OnClickListener rbYes_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llAmountPaymentMade.setVisibility(View.VISIBLE);
-            llMembers.setVisibility(View.GONE);
-            llDepositDate.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rbNot_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llMembers.setVisibility(View.VISIBLE);
-            llAmountPaymentMade.setVisibility(View.GONE);
-            llDepositDate.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rbYesManager_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.v("Tag-Money",etAmountPaymentMade.getText().toString().replace("$",""));
-            llSignature.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private View.OnClickListener rbNotManager_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            llSignature.setVisibility(View.GONE);
-        }
-    };
+   
     // Fin de RadioButton
 
     /*
@@ -519,9 +641,69 @@ public class group_management_fragment extends Fragment {
     // Fin de Button
 
     /*
+    * Evento click de ImageView
+    * */
+    private View.OnClickListener ivFirma_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final AlertDialog file_not_exist = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.capturar_nueva_firma), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
+                @Override
+                public void OnClickListener(AlertDialog dialog) {
+                    Intent sig = new Intent(ctx, Signature.class);
+                    startActivityForResult(sig, REQUEST_CODE_SIGNATURE);
+                    dialog.dismiss();
+
+                }
+            }, ctx.getResources().getString(R.string.cancel), new Popups.DialogMessage() {
+                @Override
+                public void OnClickListener(AlertDialog dialog) {
+                    dialog.dismiss();
+                }
+            });
+            file_not_exist.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            file_not_exist.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            file_not_exist.show();
+        }
+    };
+    // Fin de ImageView
+
+    /*
     * Evento de ImageButton
     * */
-    private View.OnClickListener imbSignature_OnClick = new View.OnClickListener() {
+    private View.OnClickListener ibMap_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
+            /*locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
+
+            locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
+                @Override
+                public void onComplete(String latitud, String longitud) {
+                    Toast.makeText(ctx, "Mi ubiciación: " + "lat: " + latitud + "Lon: " + longitud, Toast.LENGTH_SHORT).show();
+                    flagUbicacion = true;
+                    if (flagUbicacion){
+                        CancelUbicacion();
+                    }
+                }
+            });
+            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            }
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            */
+        }
+    };
+
+    private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            i.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            //i.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+            startActivityForResult(i, 432);
+        }
+    };
+
+    private View.OnClickListener ibFirma_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent sig = new Intent(ctx, Signature.class);
@@ -529,16 +711,352 @@ public class group_management_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener imbPhoto_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i = new Intent(ctx, CameraVertical.class);
-            startActivityForResult(i, 432);
-            //setCameraDisplayOrientation(boostrap,-1,camera);
-        }
-    };
     //Fin de ImageButton
 
+    /*
+    * Evento de Button
+    * */
+    private View.OnClickListener btnIntegrantes_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            Intent i_integrantes = new Intent(ctx, IntegrantesGpo.class);
+            i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
+            startActivityForResult(i_integrantes, REQUEST_INTEGRANTES_GPO);
+        }
+    };
+    // Fin de Button
+
+    //===================== Comportamientos  ===============================================
+    private void SelectContactoCliente (int pos){
+
+        if (rbSiGerente.isChecked() || rbNoGerente.isChecked()) tvEstaGerente.setError(null);
+        else tvEstaGerente.setError("");
+        switch (pos){
+            case 0: // No contacto cliente
+                etComentarioNoContacto.setError("Este campo es requerido");
+                tvFotoFachada.setError("");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.VISIBLE);
+                llFotoFachada.setVisibility(View.VISIBLE);
+                llEstaGerente.setVisibility(View.VISIBLE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                break;
+            case 1: // Si contacto cliente
+                tvResultadoGestion.setError("");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                llResultadoGestion.setVisibility(View.VISIBLE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                break;
+            case 2: // Aclaración
+                tvInfoDesfasada.setError("");
+                etComentarioInfoDesfa.setError("Este campo es requerido");
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.VISIBLE);
+                llInfoDesfasada.setVisibility(View.VISIBLE);
+                llComentarioAclaracion.setVisibility(View.VISIBLE);
+                break;
+            default: //Sin seleccionar una opción o cualquier otro valor
+                etComentarioInfoDesfa.setText("");
+                etInfoDesfasada.setText("");
+                etComentarioNoContacto.setText("");
+                rgResultadoPago.clearCheck();
+                llResultadoGestion.setVisibility(View.GONE);
+                llComentarioNoContacto.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                llInfoDesfasada.setVisibility(View.GONE);
+                llComentarioAclaracion.setVisibility(View.GONE);
+                etComentarioInfoDesfa.setText("");
+                break;
+        }
+    }
+
+    private void SelecteMedioPago (int pos){
+        if (rgContactoCliente.getChildAt(0).isEnabled()){
+            rgMontoCorrecto.clearCheck();
+            etFechaDeposito.setText("");
+        }
+        else {
+            spMedioPago.setEnabled(false);
+            if (pos == 1) {
+                etBanco.setEnabled(false);
+                etFechaDeposito.setEnabled(false);
+            }else {
+                etBanco.setEnabled(true);
+                etFechaDeposito.setEnabled(true);
+            }
+        }
+        if (rbSiDetalle.isChecked() || rbNoDetalle.isChecked()) tvDetalleFicha.setError(null);
+        else tvDetalleFicha.setError("");
+
+        tvMedioPago.setError(null);
+        switch (pos){
+            case 0: // Opción "Seleccione una opción"
+                tvMedioPago.setError("");
+                rgDetalleFicha.clearCheck();
+                SelectDetalleFicha(-1);
+                llBanco.setVisibility(View.GONE);
+                llDetalleFicha.setVisibility(View.GONE);
+                llFechaDeposito.setVisibility(View.GONE);
+                break;
+            case 1: // Banco
+                llBanco.setVisibility(View.VISIBLE);
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
+                break;
+            case 2: // Oxxo
+                llBanco.setVisibility(View.GONE);
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
+                break;
+            case 3: // Efectivo
+                llBanco.setVisibility(View.GONE);
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.GONE);
+                break;
+            case 4: // SIDERT
+                llBanco.setVisibility(View.GONE);
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.GONE);
+                break;
+            default: //Sin seleccionar una opción o cualquier otro valor
+                tvMedioPago.setError("");
+                rgDetalleFicha.clearCheck();
+                SelectDetalleFicha(-1);
+                llBanco.setVisibility(View.GONE);
+                llDetalleFicha.setVisibility(View.GONE);
+                llFechaDeposito.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void SelectMotivoNoPago (int pos){
+
+        tvMotivoNoPago.setError(null);
+        switch (pos){
+            case 0: // Opción "Seleccione una opcion"
+                tvMotivoNoPago.setError("");
+                llDatosDefuncion.setVisibility(View.GONE);
+                llEspecificaCausa.setVisibility(View.GONE);
+                break;
+            case 1: // Negación de pago
+                llDatosDefuncion.setVisibility(View.GONE);
+                llEspecificaCausa.setVisibility(View.GONE);
+                break;
+            case 2: //Fallecimiento
+                etMotivoDefuncion.setError("Este campo es requerido");
+                etFechaDefuncion.setError("");
+                llDatosDefuncion.setVisibility(View.VISIBLE);
+                llEspecificaCausa.setVisibility(View.GONE);
+                break;
+            case 3: // Otro
+                etEspecificaCausa.setError("Este campo es requerido");
+                llEspecificaCausa.setVisibility(View.VISIBLE);
+                llDatosDefuncion.setVisibility(View.GONE);
+                break;
+            default: //Sin seleccionar una opción o cualquier otro valor
+                tvMotivoNoPago.setError("");
+                llDatosDefuncion.setVisibility(View.GONE);
+                llEspecificaCausa.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void SelectDetalleFicha (int pos){
+        switch (pos){
+            case -1: //Sin seleccionar una opción o cualquier otro valor
+                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setEnabled(false);
+                llIntegrantes.setVisibility(View.GONE);
+                llMontoPagoRealizado.setVisibility(View.GONE);
+                llMontoCorrecto.setVisibility(View.GONE);
+                rgMontoCorrecto.clearCheck();
+                SelectMontoCorrecto(-1);
+                break;
+            case 0: // No cuenta con detalle
+                tvMontoCorrecto.setError("");
+                etPagoRealizado.setEnabled(true);
+                llIntegrantes.setVisibility(View.GONE);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                llMontoCorrecto.setVisibility(View.VISIBLE);
+                break;
+            case 1: // Si cuenta con detalle
+                tvMontoCorrecto.setError("");
+                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setEnabled(false);
+                llIntegrantes.setVisibility(View.VISIBLE);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                llMontoCorrecto.setVisibility(View.VISIBLE);
+                break;
+
+        }
+    }
+
+    private void SelectMontoCorrecto(int pos){
+        etBanco.setError(null);
+        etFechaDeposito.setError(null);
+        tvMontoCorrecto.setError(null);
+        switch (pos){
+            case 0: //No Es Correcto
+                for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
+                    rgContactoCliente.getChildAt(i).setEnabled(true);
+                }
+                for (int i = 0; i < rgResultadoPago.getChildCount(); i++) {
+                    rgResultadoPago.getChildAt(i).setEnabled(true);
+                }
+                spMedioPago.setEnabled(true);
+                if (spMedioPago.getSelectedItemPosition() == 1){
+                    etBanco.setEnabled(true);
+                    etFechaDeposito.setEnabled(true);
+                }
+
+                for (int i = 0; i < rgDetalleFicha.getChildCount(); i++) {
+                    rgDetalleFicha.getChildAt(i).setEnabled(true);
+                }
+                etPagoRealizado.setEnabled(true);
+
+                llEstatusPago.setVisibility(View.GONE);
+                llImprimirRecibo.setVisibility(View.GONE);
+                llFolioRecibo.setVisibility(View.GONE);
+                llFotoGaleria.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                rgEstaGerente.clearCheck();
+                SelectEstaGerente(-1);
+                break;
+            case 1: //Si es Correcto
+                for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
+                    rgContactoCliente.getChildAt(i).setEnabled(false);
+                }
+                for (int i = 0; i < rgResultadoPago.getChildCount(); i++) {
+                    rgResultadoPago.getChildAt(i).setEnabled(false);
+                }
+                spMedioPago.setEnabled(false);
+                if (spMedioPago.getSelectedItemPosition() == 1){
+                    etBanco.setEnabled(false);
+                    etFechaDeposito.setEnabled(false);
+                }
+                for (int i = 0; i < rgDetalleFicha.getChildCount(); i++) {
+                    rgDetalleFicha.getChildAt(i).setEnabled(false);
+                }
+                etPagoRealizado.setEnabled(false);
+                llEstatusPago.setVisibility(View.VISIBLE);
+                if (spMedioPago.getSelectedItemPosition() == 1 || spMedioPago.getSelectedItemPosition() == 2){
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    ibFotoCopia.setEnabled(true);
+                    ibGaleriaCopia.setEnabled(true);
+                    ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_rounded_blue));
+                    //etFotoGaleria.setText("");
+                    //etFotoGaleria.setEnabled(true);
+                }else {
+                    llImprimirRecibo.setVisibility(View.VISIBLE);
+                    llFolioRecibo.setVisibility(View.VISIBLE);
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    ibFotoCopia.setEnabled(true);
+                    ibGaleriaCopia.setEnabled(false);
+                    ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                    //etFotoGaleria.setText(_photo_galery[0]);
+                    //etFotoGaleria.setEnabled(false);
+                }
+                llEstaGerente.setVisibility(View.VISIBLE);
+                break;
+            default: //Sin seleccionar una opción o cualquier otro valor
+                tvMontoCorrecto.setError("");
+                for (int i = 0; i < rgContactoCliente.getChildCount(); i++) {
+                    rgContactoCliente.getChildAt(i).setEnabled(true);
+                }
+                for (int i = 0; i < rgResultadoPago.getChildCount(); i++) {
+                    rgResultadoPago.getChildAt(i).setEnabled(true);
+                }
+                spMedioPago.setEnabled(true);
+                if (spMedioPago.getSelectedItemPosition() == 1){
+                    etBanco.setEnabled(true);
+                    etFechaDeposito.setEnabled(true);
+                }
+                for (int i = 0; i < rgDetalleFicha.getChildCount(); i++) {
+                    rgDetalleFicha.getChildAt(i).setEnabled(true);
+                }
+                etPagoRealizado.setEnabled(true);
+                llEstatusPago.setVisibility(View.GONE);
+                llImprimirRecibo.setVisibility(View.GONE);
+                llFolioRecibo.setVisibility(View.GONE);
+                llFotoGaleria.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void SelectImprimirRecibos(int pos){
+        switch (pos){
+            case 0: //No cuenta con bateria la impresora
+                llFolioRecibo.setVisibility(View.GONE);
+                break;
+            case 1: // Imprimir Recibos
+                llFolioRecibo.setVisibility(View.VISIBLE);
+                Log.v("PagoRealizado", etPagoRealizado.getText().toString().trim());
+                Intent i = new Intent(ctx, PrintSeewoo.class);
+                OrderModel order = new OrderModel(parent.ficha_rg.getId(),
+                        "002",
+                        parent.ficha_rg.getPrestamo().getMontoPrestamo(),
+                        parent.ficha_rg.getPrestamo().getPagoSemanal(),
+                        300,
+                        parent.ficha_rg.getGrupo().getClaveGrupo(),
+                        parent.ficha_rg.getPrestamo().getNumeroDePrestamo(),
+                        parent.ficha_rg.getGrupo().getNombreGrupo(),
+                        "NOMBRE DEL ALGUN ASESOR",
+                        "0.0");
+
+                i.putExtra("order",order);
+                i.putExtra("tag",true);
+
+                startActivityForResult(i,123);
+                break;
+            default: // Sin seleccionar alguna opción o cualquier valor diferente
+                llFolioRecibo.setVisibility(View.GONE);
+                break;
+        }
+
+    }
+
+    private void SelectEstaGerente (int pos){
+        switch (pos){
+            case 0: // No está el gerente
+                llFirma.setVisibility(View.GONE);
+                break;
+            case 1: // Si está el gerente
+                llFirma.setVisibility(View.VISIBLE);
+                break;
+            default: // Sin seleccionar alguna opción o cualquier valor diferente
+                llFirma.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+
+    //======================  Otros Métodos  =================================
+    private void initComponents(){
+        tvExternalID.setText(parent.ficha_rg.getId());
+        tvContactoCliente.setError("");
+        etMontoPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoSemanal())));
+        etSaldoCorte.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getSaldoActual())));
+    }
 
     private void setDatePicked(EditText et){
         sdf.setTimeZone(myCalendar.getTimeZone());
@@ -546,18 +1064,25 @@ public class group_management_fragment extends Fragment {
         et.setText(sdf.format(myCalendar.getTime()));
     }
 
+    private void CancelUbicacion (){
+        if (flagUbicacion)
+            locationManager.removeUpdates(locationListener);
+    }
+
+
+    //==============  Resultado de actividades  ======================================
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_SIGNATURE:
-                if (resultCode == boostrap.RESULT_OK){
+                if (resultCode == parent.RESULT_OK){
                     if (data != null){
-                        imbSignature.setVisibility(View.GONE);
-                        ivSignature.setVisibility(View.VISIBLE);
+                        ibFirma.setVisibility(View.GONE);
+                        ivFirma.setVisibility(View.VISIBLE);
                         Glide.with(ctx)
                                 .load(data.getStringExtra(Constants.uri_signature))
-                                .into(ivSignature);
+                                .into(ivFirma);
                     }
                 }
                 break;

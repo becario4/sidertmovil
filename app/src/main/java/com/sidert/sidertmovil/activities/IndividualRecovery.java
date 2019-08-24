@@ -29,7 +29,7 @@ public class IndividualRecovery extends AppCompatActivity {
     private TabLayout mTabLayout;
     private boolean canExitApp = false;
     private CustomViewPager mViewPager;
-    public ModeloIndividual ficha;
+    public ModeloIndividual ficha_ri;
 
 
     @Override
@@ -48,7 +48,7 @@ public class IndividualRecovery extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.order));
         Bundle data = getIntent().getExtras();
-        ficha     = (ModeloIndividual) data.getSerializable(Constants.FICHA);
+        ficha_ri     = (ModeloIndividual) data.getSerializable(Constants.INDIVIDUAL);
 
         setUpViewPager();
     }
@@ -65,7 +65,7 @@ public class IndividualRecovery extends AppCompatActivity {
         mTabLayout.setVisibility(View.VISIBLE);
         mTabLayout.setTabMode(TabLayout.MODE_FIXED);
 
-        mViewPager.setSwipeable(false);
+        mViewPager.setSwipeable(true);
         mTabLayout.getTabAt(0).setIcon(R.drawable.ic_single).setContentDescription("Detalle");
         mTabLayout.getTabAt(1).setIcon(R.drawable.ic_attach_money).setContentDescription("Gestión");
         mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Tabla de Pagos");

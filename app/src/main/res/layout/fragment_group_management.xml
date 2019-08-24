@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <!--  ID external order -->
     <TextView
+        android:id="@+id/tvExternalID"
         android:textSize="17sp"
         android:textColor="@android:color/white"
         android:background="@color/shadowdrawer"
         android:gravity="center"
-        android:text="201904233485739rg"
         android:layout_width="match_parent"
         android:layout_height="30dp" />
 
@@ -27,32 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--  Fecha de recuperación  -->
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/recovery_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etRecoveryDate"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:drawableRight="@drawable/ic_date"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="3dp"
-                    android:paddingTop="3dp"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
             <!--  GPS recuperacion de pago  -->
             <LinearLayout
                 android:layout_marginTop="15dp"
@@ -67,7 +42,7 @@
                     android:layout_height="wrap_content" />
 
                 <ImageButton
-                    android:id="@+id/imbMap"
+                    android:id="@+id/ibMap"
                     android:src="@drawable/ic_pin"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -82,35 +57,46 @@
 
             <!-- ¿Contactó al cliente?-->
             <LinearLayout
+                android:id="@+id/llContactoCliente"
                 android:layout_marginTop="15dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:layout_gravity="center_vertical"
+                    android:id="@+id/tvContactoCliente"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/contacted_client"
                     android:layout_weight="1"
-                    android:layout_width="0dp"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <RadioGroup
-                    android:id="@+id/rgClient"
-                    android:layout_weight="1"
+                    android:id="@+id/rgContactoCliente"
                     android:orientation="horizontal"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbYesClient"
+                        android:id="@+id/rbSiContacto"
                         android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbNotClient"
+                        android:id="@+id/rbNoContacto"
                         android:text="@string/not"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbAclaración"
+                        android:text="@string/aclaracion"
+                        android:layout_marginLeft="50dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </RadioGroup>
@@ -118,110 +104,81 @@
 
             <!-- Resultado de la gestión -->
             <LinearLayout
-                android:id="@+id/llManagementResult"
+                android:id="@+id/llResultadoGestion"
                 android:visibility="gone"
                 android:layout_marginTop="15dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
+                    android:id="@+id/tvResultadoGestion"
                     android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/management_result"
                     android:layout_weight="1"
-                    android:layout_width="0dp"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <RadioGroup
-                    android:id="@+id/rgPay"
+                    android:id="@+id/rgResultadoPago"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
                     <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbPay"
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/rbPago"
                         android:text="@string/payment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="match_parent" />
                     <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbNotPay"
+                        android:layout_marginLeft="50dp"
+                        android:id="@+id/rbNoPago"
                         android:text="@string/not_pay"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </RadioGroup>
-            </LinearLayout>
-
-            <!-- ¿Se hizo pago solidario? -->
-            <LinearLayout
-                android:id="@+id/llSolidaryPayment"
-                android:visibility="gone"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <TextView
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/solidary_payment"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <RadioGroup
-                    android:id="@+id/rgSolidary"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-                    <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbYesSolidary"
-                        android:text="@string/yes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbNotSolidary"
-                        android:text="@string/not"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="match_parent" />
                 </RadioGroup>
             </LinearLayout>
 
             <!-- Medio de pago -->
             <LinearLayout
-                android:id="@+id/llPaymentMethod"
+                android:id="@+id/llMedioPago"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvMedioPago"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/payment_method"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etPaymentMethod"
+                    android:layout_weight="1"
                     android:focusable="false"
-                    android:hint="@string/payment_method"
-                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spMedioPago"
+                    android:entries="@array/method_pay"
+                    android:spinnerMode="dialog"
                     android:drawableRight="@drawable/ic_drop_down"
-                    android:paddingRight="5dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:inputType="" />
+                    android:layout_height="@dimen/et_height"/>
             </LinearLayout>
 
             <!-- Banco -->
             <LinearLayout
-                android:id="@+id/llBank"
+                android:id="@+id/llBanco"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -234,7 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:id="@+id/etBank"
+                    android:id="@+id/etBanco"
                     android:focusable="false"
                     android:hint="@string/bank"
                     android:drawableRight="@drawable/ic_drop_down"
@@ -245,26 +202,30 @@
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!-- OpenPay -->
+            <!--  Fecha de deposito   -->
             <LinearLayout
-                android:id="@+id/llOpenPay"
-                android:visibility="gone"
+                android:id="@+id/llFechaDeposito"
                 android:layout_marginTop="10dp"
+                android:visibility="gone"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/open_pay"
+                    android:text="@string/deposit_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
                 <EditText
-                    android:id="@+id/etOpenPay"
+                    android:id="@+id/etFechaDeposito"
                     android:focusable="false"
-                    android:hint="@string/open_pay"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:paddingRight="5dp"
+                    android:gravity="center"
+                    android:hint="@string/deposit_date"
+                    android:drawableRight="@drawable/ic_date"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -273,7 +234,7 @@
 
             <!--  Monto del pago requerido  -->
             <LinearLayout
-                android:id="@+id/llAmountRequired"
+                android:id="@+id/llMontoPagoRequerido"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -286,46 +247,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:id="@+id/etAmountRequired"
+                    android:id="@+id/etMontoPagoRequerido"
                     android:enabled="false"
-                    android:text="$ 1234"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Se pagara el monto requerido  -->
+            <!--  ¿Cuenta con el detalle de la ficha?  -->
             <LinearLayout
-                android:id="@+id/llAmountRequiredPaid"
+                android:id="@+id/llDetalleFicha"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvDetalleFicha"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_required_paid"
+                    android:text="@string/detalle_ficha"
                     android:layout_weight="1"
-                    android:layout_gravity="center_vertical"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <RadioGroup
-                    android:id="@+id/rgCorrect"
+                    android:id="@+id/rgDetalleFicha"
                     android:orientation="horizontal"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <RadioButton
                         android:layout_weight="1"
-                        android:id="@+id/rbYes"
+                        android:id="@+id/rbSiDetalle"
                         android:text="@string/yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <RadioButton
                         android:layout_weight="1"
-                        android:id="@+id/rbNot"
+                        android:id="@+id/rbNoDetalle"
                         android:text="@string/not"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -335,7 +300,7 @@
             <!--  Integrantes del grupo  -->
             <LinearLayout
                 android:visibility="gone"
-                android:id="@+id/llMembers"
+                android:id="@+id/llIntegrantes"
                 android:layout_marginTop="5dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -346,7 +311,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <Button
-                    android:id="@+id/btnCallTreasurer"
+                    android:id="@+id/btnIntegrantes"
                     android:drawableRight="@drawable/ic_group"
                     android:paddingRight="10dp"
                     android:paddingTop="5dp"
@@ -361,7 +326,7 @@
 
             <!--  Monto del pago realizado  -->
             <LinearLayout
-                android:id="@+id/llAmountPaymentMade"
+                android:id="@+id/llMontoPagoRealizado"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -374,53 +339,85 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:id="@+id/etAmountPaymentMade"
+                    android:id="@+id/etPagoRealizado"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Fecha de deposito   -->
+            <!-- ¿El monto es el correcto?-->
             <LinearLayout
-                android:layout_marginTop="10dp"
-                android:id="@+id/llDepositDate"
+                android:id="@+id/llMontoCorrecto"
                 android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tvMontoCorrecto"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/monto_correcto"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/rgMontoCorrecto"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSiCorrecto"
+                        android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbNoCorrecto"
+                        android:text="@string/not"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Estatus del pago -->
+            <LinearLayout
+                android:id="@+id/llEstatusPago"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/deposit_date"
+                    android:text="@string/estatus_pago"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
-                <LinearLayout
-                    android:orientation="horizontal"
+                <EditText
+                    android:id="@+id/etEstatusPago"
+                    android:enabled="false"
+                    android:hint="Estatus del pago"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="10dp"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:id="@+id/etDepositDate"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:hint="@string/deposit_date"
-                        android:drawableRight="@drawable/ic_date"
-                        android:paddingRight="10dp"
-                        android:paddingBottom="3dp"
-                        android:paddingTop="3dp"
-                        android:paddingLeft="10dp"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
-                </LinearLayout>
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Saldo al corte  -->
             <LinearLayout
-                android:id="@+id/llBalanceCutting"
+                android:id="@+id/llSaldoCorte"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -433,8 +430,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:text="$ 10234"
-                    android:focusable="false"
+                    android:id="@id/etSaldoCorte"
+                    android:enabled="false"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -443,7 +440,7 @@
 
             <!--  Saldo actual  -->
             <LinearLayout
-                android:id="@+id/llCurrentBalance"
+                android:id="@+id/llSaldoActual"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -456,17 +453,121 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:text="$ 10234"
-                    android:focusable="false"
+                    android:id="@+id/etSaldoActual"
+                    android:enabled="false"
+                    android:hint="Calcular saldo actual"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
+            <!-- ¿Imprimir recibos?-->
+            <LinearLayout
+                android:id="@+id/llImprimirRecibo"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/imprimir_recibos"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/rgRecibos"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSiRecibo"
+                        android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbNoRecibo"
+                        android:text="@string/no_cuenta_bateria"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Folio de recibo -->
+            <LinearLayout
+                android:id="@+id/llFolioRecibo"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/folio_recibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etFolioRecibo"
+                    android:enabled="false"
+                    android:hint="obtener el folio del recibo impreso"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- COPIA Tomara fotografia o adjuntara desde galeria-->
+            <LinearLayout
+                android:id="@+id/llFotoGaleria"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/question_photo_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:id="@+id/ibFotoCopia"
+                        android:layout_weight="1"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/btn_rounded_blue"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:src="@drawable/ic_camera" />
+                    <ImageButton
+                        android:id="@+id/ibGaleriaCopia"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:background="@drawable/btn_rounded_blue"
+                        android:src="@drawable/ic_attach_file" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!--  Tomara fotografia o adjuntara desde galeria  -->
             <LinearLayout
-                android:id="@+id/llPhotoGallery"
+                android:id="@+id/llFotoGaleriaCopia"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -479,7 +580,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:id="@+id/etPhotoGallery"
+                    android:id="@+id/etFotoGaleria"
                     android:focusable="false"
                     android:hint="@string/photo_gallery"
                     android:drawableRight="@drawable/ic_drop_down"
@@ -492,8 +593,8 @@
 
             <!-- Fotografia o Galeria Botones-->
             <LinearLayout
-                android:id="@+id/llPhotoGaleryButton"
-                android:visibility="visible"
+                android:id="@+id/llFotoGaleriaBoton"
+                android:visibility="gone"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -501,7 +602,7 @@
 
                 <!-- Boton de Fotografia -->
                 <LinearLayout
-                    android:id="@+id/llPhoto"
+                    android:id="@+id/llFoto"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -512,7 +613,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                     <ImageButton
-                        android:id="@+id/imbPhoto"
+                        android:id="@+id/ibFoto"
                         android:src="@drawable/ic_camera"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -543,101 +644,172 @@
 
             </LinearLayout>
 
-            <!-- Esta el gerente con usted -->
-            <LinearLayout
-                android:id="@+id/llIsManager"
-                android:visibility="gone"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/is_manager"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <RadioGroup
-                    android:id="@+id/rgIsManager"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbYesManager"
-                        android:text="@string/yes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbNotManager"
-                        android:text="@string/not"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </RadioGroup>
-            </LinearLayout>
-
-            <!-- Firma gerente-->
-            <LinearLayout
-                android:id="@+id/llSignature"
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/signature_manager"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <ImageButton
-                    android:id="@+id/imbSignature"
-                    android:src="@drawable/ic_gesture"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"/>
-                <ImageView
-                    android:visibility="gone"
-                    android:id="@+id/ivSignature"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp" />
-            </LinearLayout>
-
             <!--  Motivo de no pago  -->
             <LinearLayout
-                android:id="@+id/llReasonNotPay"
+                android:id="@+id/llMotivoNoPago"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvMotivoNoPago"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/reason_no_payment"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spMotivoNoPago"
+                    android:entries="@array/reason_no_pay"
+                    android:spinnerMode="dialog"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!--  Información Desfasada  -->
+            <LinearLayout
+                android:id="@+id/llInfoDesfasada"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvInfoDesfasada"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/outdate_info"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etInfoDesfasada"
+                    android:focusable="false"
+                    android:hint="@string/outdate_info"
+                    android:drawableEnd="@drawable/ic_drop_down"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:inputType="text"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Datos de defunción  -->
+            <LinearLayout
+                android:id="@+id/llDatosDefuncion"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/reason_death"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <EditText
-                    android:id="@+id/etReasonNoPay"
+                    android:id="@+id/etMotivoDefuncion"
+                    android:hint="@string/reason_death"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/date_death"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etFechaDefuncion"
+                    android:hint="@string/date_death"
                     android:focusable="false"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:paddingRight="5dp"
-                    android:hint="@string/reason_no_payment"
+                    android:gravity="center"
+                    android:drawableRight="@drawable/ic_date"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
+            <!-- Comentario de no contacto -->
+            <LinearLayout
+                android:id="@+id/llComentarioNoContacto"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/no_contact_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etComentarioNoContacto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <!-- Comentario de aclaracion -->
+            <LinearLayout
+                android:id="@+id/llComentarioAclaracion"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/comentario_info_desfasada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etComentarioInfoDesfa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
             <!-- Especifica la causa -->
             <LinearLayout
-                android:id="@+id/llspecify_cause"
+                android:id="@+id/llEspecificaCausa"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -651,7 +823,7 @@
                     android:layout_height="wrap_content" />
 
                 <EditText
-                    android:id="@+id/etspecify_cause"
+                    android:id="@+id/etEspecificaCausa"
                     android:hint="@string/specify_cause"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -664,31 +836,117 @@
                     android:inputType="textMultiLine" />
             </LinearLayout>
 
-            <!--  Información Desfasada  -->
+            <!--  Fotografía de fachada  -->
             <LinearLayout
-                android:id="@+id/llOutDataInfo"
+                android:id="@+id/llFotoFachada"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvFotoFachada"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/facade_photo"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:id="@+id/ibFotoFachada"
+                        android:src="@drawable/ic_camera"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"/>
+                    <ImageView
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="110dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Esta el gerente con usted -->
+            <LinearLayout
+                android:id="@+id/llEstaGerente"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvEstaGerente"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/is_manager"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgEstaGerente"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbSiGerente"
+                        android:text="@string/yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbNoGerente"
+                        android:text="@string/not"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Firma gerente-->
+            <LinearLayout
+                android:id="@+id/llFirma"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/outdate_info"
+                    android:text="@string/signature_manager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etOutDateInfo"
-                    android:focusable="false"
-                    android:hint="@string/outdate_info"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                <ImageButton
+                    android:id="@+id/ibFirma"
+                    android:src="@drawable/ic_gesture"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="50dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/ivFirma"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp" />
             </LinearLayout>
+
+
 
             <!--  Monto promesa de pago  -->
             <LinearLayout
@@ -746,108 +1004,6 @@
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!--  Datos de defunción  -->
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/llDataDeath"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/reason_death"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etReasonDeath"
-                    android:hint="@string/reason_death"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/date_death"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etDateDeath"
-                    android:hint="@string/date_death"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:drawableRight="@drawable/ic_date"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="3dp"
-                    android:paddingTop="3dp"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!-- Comentario de no contacto -->
-            <LinearLayout
-                android:id="@+id/llCommenNoContac"
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/no_contact_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etCommentNoContact"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:inputType="textMultiLine" />
-            </LinearLayout>
-
-            <!--  Fotografía de fachada  -->
-            <LinearLayout
-                android:id="@+id/llPhotoFacade"
-                android:visibility="gone"
-                android:layout_marginTop="15dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/facade_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageButton
-                        android:src="@drawable/ic_camera"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:paddingTop="3dp"
-                        android:paddingBottom="3dp"/>
-                    <ImageView
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="110dp" />
                 </LinearLayout>
             </LinearLayout>
 

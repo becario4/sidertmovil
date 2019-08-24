@@ -7,7 +7,7 @@
 
     <!--  ID external order -->
     <TextView
-        android:id="@+id/etExternalID"
+        android:id="@+id/tvExternalID"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@color/shadowdrawer"

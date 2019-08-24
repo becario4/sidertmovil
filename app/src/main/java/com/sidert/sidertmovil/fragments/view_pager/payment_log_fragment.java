@@ -30,7 +30,7 @@ public class payment_log_fragment extends Fragment{
         rvPagosCliente.setLayoutManager(new LinearLayoutManager(ctx));
         rvPagosCliente.setHasFixedSize(false);
 
-        adapter = new adapter_pagos_clientes(ctx, parent.ficha.getTablaPagosCliente());
+        adapter = new adapter_pagos_clientes(ctx, parent.ficha_ri.getTablaPagosCliente());
         rvPagosCliente.setAdapter(adapter);
         return view;
     }

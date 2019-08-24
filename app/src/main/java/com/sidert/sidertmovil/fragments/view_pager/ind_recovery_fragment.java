@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,32 +29,33 @@ public class ind_recovery_fragment extends Fragment {
     private Button btnCallCell;
     private Button btnCallEndorsement;
 
-    private final int REQUEST_PERMISSION_CALL = 12312;
+    private final int REQUEST_PERMISSION_CALL = 123;
 
-    private IndividualRecovery boostrap;
+    private IndividualRecovery parent;
     private Context ctx;
 
-    private TextView etExternalID;
-    private TextView etNumeroPrestamo;
-    private TextView etFechaCreditoOtorgado;
-    private TextView etNumeroCliente;
-    private TextView etNombreCliente;
-    private TextView etMontoPrestamoOtorgado;
-    private TextView etMontoTotalPrestamo;
-    private TextView etNumeroAmortizacion;
-    private TextView etPagoRequerido;
-    private TextView etMontoAmortizacion;
-    private TextView etFechaPagoEstablecida;
-    private TextView etNombreAval;
-    private TextView etParentescoAval;
+    private TextView tvExternalID;
+    
+    private EditText etNumeroPrestamo;
+    private EditText etFechaCreditoOtorgado;
+    private EditText etNumeroCliente;
+    private EditText etNombreCliente;
+    private EditText etMontoPrestamoOtorgado;
+    private EditText etMontoTotalPrestamo;
+    private EditText etNumeroAmortizacion;
+    private EditText etPagoRequerido;
+    private EditText etMontoAmortizacion;
+    private EditText etFechaPagoEstablecida;
+    private EditText etNombreAval;
+    private EditText etParentescoAval;
 
 
     @Override
     public View onCreateView(@Nullable LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ind_recovery, container, false);
         ctx                      = getContext();
-        boostrap                 = (IndividualRecovery) getActivity();
-        etExternalID             = view.findViewById(R.id.etExternalID);
+        parent                   = (IndividualRecovery) getActivity();
+        tvExternalID             = view.findViewById(R.id.tvExternalID);
         etNumeroPrestamo         = view.findViewById(R.id.etNumeroPrestamo);
         etFechaCreditoOtorgado   = view.findViewById(R.id.etFechaCreditoOtorgado);
         etNumeroCliente          = view.findViewById(R.id.etNumeroCliente);
@@ -76,19 +78,19 @@ public class ind_recovery_fragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        etExternalID.setText(boostrap.ficha.getId());
-        etNumeroPrestamo.setText(boostrap.ficha.getPrestamo().getNumeroDePrestamo());
-        etFechaCreditoOtorgado.setText(boostrap.ficha.getPrestamo().getFechaDelCreditoOtorgado());
-        etNumeroCliente.setText(boostrap.ficha.getCliente().getNumeroCliente());
-        etNombreCliente.setText(boostrap.ficha.getCliente().getNombre());
-        etMontoPrestamoOtorgado.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getMontoPrestamo())));
-        etMontoTotalPrestamo.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getMontoTotalPrestamo())));
-        etNumeroAmortizacion.setText(String.valueOf(boostrap.ficha.getPrestamo().getNumeroAmortizacion()));
-        etPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getPagoSemanal())));
-        etMontoAmortizacion.setText(Miscellaneous.moneyFormat(String.valueOf(boostrap.ficha.getPrestamo().getMontoAmortizacion())));
-        etFechaPagoEstablecida.setText(boostrap.ficha.getPrestamo().getFechaPagoEstablecida());
-        etNombreAval.setText(boostrap.ficha.getAval().getNombreCompletoAval());
-        etParentescoAval.setText(boostrap.ficha.getAval().getParentescoAval());
+        tvExternalID.setText(parent.ficha_ri.getId());
+        etNumeroPrestamo.setText(parent.ficha_ri.getPrestamo().getNumeroDePrestamo());
+        etFechaCreditoOtorgado.setText(parent.ficha_ri.getPrestamo().getFechaDelCreditoOtorgado());
+        etNumeroCliente.setText(parent.ficha_ri.getCliente().getNumeroCliente());
+        etNombreCliente.setText(parent.ficha_ri.getCliente().getNombre());
+        etMontoPrestamoOtorgado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getMontoPrestamo())));
+        etMontoTotalPrestamo.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getMontoTotalPrestamo())));
+        etNumeroAmortizacion.setText(String.valueOf(parent.ficha_ri.getPrestamo().getNumeroAmortizacion()));
+        etPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoSemanal())));
+        etMontoAmortizacion.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getMontoAmortizacion())));
+        etFechaPagoEstablecida.setText(parent.ficha_ri.getPrestamo().getFechaPagoEstablecida());
+        etNombreAval.setText(parent.ficha_ri.getAval().getNombreCompletoAval());
+        etParentescoAval.setText(parent.ficha_ri.getAval().getParentescoAval());
         btnCallHome.setOnClickListener(btnCallHome_onClick);
         btnCallCell.setOnClickListener(btnCallCell_onClick);
         btnCallEndorsement.setOnClickListener(btnCallEndorsement_onClick);
@@ -99,11 +101,11 @@ public class ind_recovery_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(boostrap, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
+                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
             } else {
-                if (!boostrap.ficha.getCliente().getTelDomicilio().isEmpty()){
+                if (!parent.ficha_ri.getCliente().getTelDomicilio().isEmpty()){
                     Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + boostrap.ficha.getCliente().getTelDomicilio()));
+                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelDomicilio()));
                     startActivity(intent);
                 }
                 else {
@@ -118,11 +120,11 @@ public class ind_recovery_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(boostrap, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
+                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
             } else {
-                if (!boostrap.ficha.getCliente().getTelCelular().isEmpty()) {
+                if (!parent.ficha_ri.getCliente().getTelCelular().isEmpty()) {
                     Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + boostrap.ficha.getCliente().getTelCelular()));
+                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelCelular()));
                     startActivity(intent);
                 }
                 else {
@@ -136,11 +138,11 @@ public class ind_recovery_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(boostrap, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
+                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
             } else {
-                if (!boostrap.ficha.getAval().getTelefonoAval().isEmpty()) {
+                if (!parent.ficha_ri.getAval().getTelefonoAval().isEmpty()) {
                     Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + boostrap.ficha.getAval().getTelefonoAval()));
+                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getAval().getTelefonoAval()));
                     startActivity(intent);
                 }
                 else {

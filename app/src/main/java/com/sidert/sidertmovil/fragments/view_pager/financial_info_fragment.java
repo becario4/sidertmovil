@@ -31,7 +31,7 @@ public class financial_info_fragment extends Fragment{
         rvIndOmegaReport.setLayoutManager(new LinearLayoutManager(ctx));
         rvIndOmegaReport.setHasFixedSize(false);
 
-        adapter = new adapter_ind_omega_report(ctx, parent.ficha.getReporteAnaliticoOmega());
+        adapter = new adapter_ind_omega_report(ctx, parent.ficha_ri.getReporteAnaliticoOmega());
         rvIndOmegaReport.setAdapter(adapter);
         return view;
     }
