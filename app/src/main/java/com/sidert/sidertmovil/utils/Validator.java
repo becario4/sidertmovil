@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.utils;
 
+import android.util.Log;
 import android.widget.EditText;
 
 import java.util.regex.Matcher;
@@ -12,16 +13,19 @@ public class Validator {
     public final String ONLY_NUMBER     = "number";
     public final String GENERAL         = "general";
     public final String PHONE           = "phone";
+    public final String MONEY           = "money";
 
     public  String REQUIRED_MESSAGE       = "Este campo es requerido.";
     public  String ONLY_TEXT_MESSAGE      = "Solo permite letras y espacios.";
     public  String ONLY_NUMBER_MESSAGE    = "Solo permite números.";
     public  String GENERAL_MESSAGE        = "Solo letras y/o números";
     public  String ONLY_TEN_NUMBERS       = "Debe contener 10 carcateres numéricos";
+    public  String MENSAJE_MONEDA         = "Verifique el monto ingresado";
 
     private final String PATTERN_ONLY_TEXT      = "[A-Za-z ÑñÁáÉéÍíÓóÚú]*";
     private final String PATTERN_ONLY_NUMBER    = "[0-9]*";
     private final String PATTERN_GENERAL        = "[0-9 A-Za-zÑñÁáÉéÍíÓóÚú&.,-_]*";
+    private final String PATTERN_MONEY          = "([0-9,]+(.[0-9]{1,2})?)";
 
     private Pattern pattern;
     private Matcher matcher;
@@ -54,6 +58,22 @@ public class Validator {
                         etx.setError(ONLY_NUMBER_MESSAGE);
                         error = true;
                         return error;
+                    }
+                    break;
+                case MONEY:
+                    pattern = Pattern.compile(PATTERN_MONEY);
+                    matcher = pattern.matcher(etx.getText().toString());
+                    if(!matcher.matches()) {
+                        etx.setError(MENSAJE_MONEDA);
+                        error = true;
+                        return error;
+                    }
+                    else {
+                        if (Double.parseDouble(etx.getText().toString()) == 0){
+                            etx.setError("No se permiten cantidades iguales a 0");
+                            error = true;
+                            return error;
+                        }
                     }
                     break;
                 case PHONE:

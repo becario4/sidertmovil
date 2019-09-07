@@ -3,20 +3,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/black">
+
     <TextureView
-        android:id="@+id/texture"
+        android:id="@+id/tvCamera"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_takepicture"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"/>
-    <Button
-        android:id="@+id/btn_takepicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+    <ImageButton
+        android:id="@+id/ibCapture"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/ic_take_photo"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
-        android:text="Tomar foto" />
+        android:background="@drawable/circle_button_white" />
+
+    <FrameLayout
+        android:id="@+id/flBlock"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blocked_camera">
+
+        <ImageView
+            android:id="@+id/ivBlocked"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/llPregunta"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_marginRight="50dp"
+            android:layout_weight="1"
+            android:text="Guardar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnNueva"
+            android:layout_marginLeft="50dp"
+            android:layout_weight="1"
+            android:text="Nueva"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </RelativeLayout>
+

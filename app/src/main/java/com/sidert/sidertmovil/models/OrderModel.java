@@ -13,9 +13,9 @@ public class OrderModel implements Serializable {
     private String numLoan;
     private String nameClient;
     private String nameAsessor;
-    private String resultPrint;
+    private int resultPrint;
 
-    public OrderModel(String externalID, String asessorID, double amountLoan, double amountRequired, double amountMade, String numClient, String numLoan, String nameClient, String nameAsessor, String resultPrint) {
+    public OrderModel(String externalID, String asessorID, double amountLoan, double amountRequired, double amountMade, String numClient, String numLoan, String nameClient, String nameAsessor, int resultPrint) {
         this.externalID = externalID;
         this.asessorID = asessorID;
         this.amountLoan = amountLoan;
@@ -64,11 +64,11 @@ public class OrderModel implements Serializable {
         return nameAsessor;
     }
 
-    public String getResultPrint() {
+    public int getResultPrint() {
         return resultPrint;
     }
 
-    public void setResultPrint(String resultPrint) {
+    public void setResultPrint(int resultPrint) {
         this.resultPrint = resultPrint;
     }
 }

@@ -16,6 +16,7 @@
     <color name="red">#ffff0000</color>
     <color name="red_push">#E94747</color>
     <color name="green">#68C06C</color>
+    <color name="blocked_camera">#C8000000</color>
 
     <color name="bkg_navigation">#071738</color>
 

@@ -142,13 +142,16 @@
     <string name="leyend_complaint">Su denuncia será completamente anónima.</string>
     <string name="client_signature">Firma Cliente:</string>
     <string name="manager_signature">Firma Gestor:</string>
-    <string name="treasurer_signature">Firma Tesarera:</string>
+    <string name="treasurer_signature">Firma Tesorera:</string>
     <string name="asessor_signature">Firma Asesor:</string>
     <string name="name_signature">Nombre y Firma de Tesorera</string>
     <string name="loan_amount">Monto del Préstamo</string>
     <string name="group_number">Número de Grupo</string>
     <string name="detalle_ficha">¿Cuenta con el detalle de la ficha?</string>
     <string name="amount_total_loan_group">Monto Total Préstamo Grupal</string>
+    <string name="pago_parcial">Pago Parcial</string>
+    <string name="pago_completo">Pago Completo</string>
+    <string name="pago_completo_adelanto">Pago Completo + Adelanto</string>
 
     <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 

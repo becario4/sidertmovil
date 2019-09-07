@@ -1,6 +1,8 @@
 package com.sidert.sidertmovil.utils;
 
 
+import android.widget.EditText;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,13 +20,13 @@ public class Miscellaneous {
         if (str.equals("null") || str.isEmpty()) {
             return "";
         } else {
-            return  Character.toUpperCase(str.charAt(0)) + str.substring(1, str.length()).toLowerCase();
+            return  Character.toUpperCase(str.charAt(0)) + str.substring(1).toLowerCase();
         }
     }
 
     /* Obtener que tipo de orden */
     public static String getTypeOrderValue(String str) {
-        String type = "";
+        String type;
         if (str.contains("ri") || str.contains("rg"))
         {
             type = Constants.RECOVERY;
@@ -44,7 +46,7 @@ public class Miscellaneous {
     }
 
     public static int getIndorGpo(String str) {
-        int res = 0;
+        int res;
 
         if (str.contains("ri") || str.contains("ci") || str.contains("cvi"))
             res =  1;
@@ -59,7 +61,7 @@ public class Miscellaneous {
 
     /* Obtener que tipo de orden */
     public static String getTableLog(String str) {
-        String table = "";
+        String table;
         if (str.contains("ri") || str.contains("rg") || str.contains("ci") || str.contains("cg"))
         {
             table = Constants.LOG_ASESSOR;
@@ -120,7 +122,7 @@ public class Miscellaneous {
     /* Obtiene el contenido de un archivo */
     public static String loadSettingFile(String fileName) {
         String text = "";
-        int rin = 0;
+        int rin;
         char [] buf = new char[128];
         try
         {
@@ -148,15 +150,17 @@ public class Miscellaneous {
 
     /*Generar formato de moneda*/
     public static String moneyFormat(String money) {
-        String currency = "$0.00";
-        try {
-            NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-            currency = format.format(Double.parseDouble(money));
-            //System.out.println("Currency in Canada : " + currency);
-        }catch (Exception e){
+        String currency;
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        currency = format.format(Double.parseDouble(money));
 
-        }
         return currency;
+    }
+
+    /*Generar a formato double*/
+    public static  double doubleFormat (EditText et){
+        String money = et.getText().toString();
+        return Double.parseDouble(money.replace("$","").replace(",",""));
     }
 
 

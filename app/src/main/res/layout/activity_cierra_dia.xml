@@ -242,6 +242,7 @@
                         android:layout_height="wrap_content" />
                     <EditText
                         android:id="@+id/etMontoDepositado"
+                        android:drawableStart="@drawable/ic_money"
                         android:inputType="numberDecimal"
                         android:hint="Monto Depositado"
                         android:paddingLeft="10dp"

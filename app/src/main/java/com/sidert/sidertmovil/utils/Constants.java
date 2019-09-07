@@ -2,10 +2,6 @@ package com.sidert.sidertmovil.utils;
 
 import android.os.Environment;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Constants {
 
     public final static boolean ENVIROMENT          = false;
@@ -52,6 +48,8 @@ public class Constants {
     public final static String MESSAGE                  = "message";
     public final static String RESPONSE                 = "response";
     public final static String CODE                     = "code";
+
+    public final static String RES_PRINT                = "res_print";
 
     public final static String uri_signature            = "uri_signature";
 
@@ -150,6 +148,15 @@ public class Constants {
     public final static String TABLA_PAGOS_GRUPO            = "TablaPagosGrupo";
     public final static String FECHA_AMORTIZACION_GPO       = "Fecha_Amortizacion";
     public final static String FECHA_PAGO_GPO               = "Fecha_Pago";
+
+    public final static String PICTURE                      = "picture";
+
+    //==========================   REQUEST CODE   ==================================================
+    public final static int REQUEST_CODE_FIRMA                     = 456;
+    public final static int REQUEST_CODE_IMPRESORA                 = 963;
+    public final static int REQUEST_INTEGRANTES_GPO                = 951;
+    public final static int REQUEST_CODE_GALERIA                   = 852;
+    public final static int REQUEST_CODE_CAMARA                    = 753;
 
     //===========================   TIPOS FICHAS  ==================================================
     public final static String RECUPERACION_INDIVIDUAL  = "RecuperacionIndividual";

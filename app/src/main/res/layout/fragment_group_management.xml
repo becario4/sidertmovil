@@ -249,6 +249,7 @@
                 <EditText
                     android:id="@+id/etMontoPagoRequerido"
                     android:enabled="false"
+                    android:drawableStart="@drawable/ic_money"
                     android:paddingLeft="10dp"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
@@ -341,6 +342,7 @@
                 <EditText
                     android:id="@+id/etPagoRealizado"
                     android:paddingLeft="10dp"
+                    android:drawableStart="@drawable/ic_money"
                     android:background="@drawable/et_rounded_edges"
                     android:inputType="numberDecimal"
                     android:layout_width="match_parent"

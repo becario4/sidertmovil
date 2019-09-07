@@ -1,31 +1,20 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
-import android.hardware.Camera;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -44,31 +33,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.model.Marker;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.GroupRecovery;
 import com.sidert.sidertmovil.activities.IntegrantesGpo;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
 import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.CustomWatcher;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-
+import java.util.Locale;
+import java.util.Objects;
 
 public class group_management_fragment extends Fragment {
 
@@ -90,15 +72,14 @@ public class group_management_fragment extends Fragment {
     private EditText etBanco;
     private EditText etPagoRealizado;
     private EditText etFechaDeposito;
-    private EditText etFotoGaleria;
     private EditText etComentarioNoContacto;
     private EditText etMontoPagoRequerido;
     private EditText etComentarioInfoDesfa;
     private EditText etSaldoCorte;
+    private EditText etSaldoActual;
     private EditText etMotivoDefuncion;
     private EditText etEspecificaCausa;
     private EditText etEstatusPago;
-    private EditText etFolioRecibo;
 
     private Spinner spMotivoNoPago;
     private Spinner spMedioPago;
@@ -110,19 +91,12 @@ public class group_management_fragment extends Fragment {
     private RadioGroup rgDetalleFicha;
     private RadioGroup rgRecibos;
 
-    private RadioButton rbSiContacto;
-    private RadioButton rbNoContacto;
-    private RadioButton rbPago;
-    private RadioButton rbNoPago;
     private RadioButton rbSiDetalle;
     private RadioButton rbNoDetalle;
     private RadioButton rbSiGerente;
     private RadioButton rbNoGerente;
-    private RadioButton rbAclaracion;
     private RadioButton rbSiCorrecto;
     private RadioButton rbNoCorrecto;
-    private RadioButton rbSiRecibo;
-    private RadioButton rbNoRecibo;
 
     private ImageButton ibMap;
     private ImageButton ibFoto;
@@ -149,10 +123,7 @@ public class group_management_fragment extends Fragment {
     private LinearLayout llSaldoActual;
     private LinearLayout llFotoGaleria;
     private LinearLayout llFotoGaleriaBoton;
-    private LinearLayout llFoto;
-    private LinearLayout llGaleria;
     private LinearLayout llIntegrantes;
-    private LinearLayout llContactoCliente;
     private LinearLayout llComentarioAclaracion;
     private LinearLayout llMontoCorrecto;
     private LinearLayout llEstatusPago;
@@ -169,32 +140,27 @@ public class group_management_fragment extends Fragment {
     private String[] _photo_galery;
 
     private Calendar myCalendar;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
     private Date minDate;
 
-    private final int REQUEST_CODE_SIGNATURE = 456;
-    
     private Validator validator;
 
     private boolean flagUbicacion = false;
 
     private LocationManager locationManager;
     private MyCurrentListener locationListener;
-    double latitud, longitud;
 
-    private MapView mapView;
-    private GoogleMap mMap;
-    private Marker mMarker;
+
 
     GroupRecovery parent;
-    private final static int REQUEST_INTEGRANTES_GPO = 951;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_group_management, container, false);
         ctx           = getContext();
         
         parent        = (GroupRecovery) getActivity();
+        assert parent != null;
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         tvExternalID            = view.findViewById(R.id.tvExternalID);
@@ -213,15 +179,14 @@ public class group_management_fragment extends Fragment {
         etFechaDefuncion        = view.findViewById(R.id.etFechaDefuncion);
         etPagoRealizado         = view.findViewById(R.id.etPagoRealizado);
         etFechaDeposito         = view.findViewById(R.id.etFechaDeposito);
-        etFotoGaleria           = view.findViewById(R.id.etFotoGaleria);
         etComentarioNoContacto  = view.findViewById(R.id.etComentarioNoContacto);
         etMontoPagoRequerido    = view.findViewById(R.id.etMontoPagoRequerido);
         etComentarioInfoDesfa   = view.findViewById(R.id.etComentarioInfoDesfa);
         etSaldoCorte            = view.findViewById(R.id.etSaldoCorte);
+        etSaldoActual           = view.findViewById(R.id.etSaldoActual);
         etMotivoDefuncion       = view.findViewById(R.id.etMotivoDefuncion);
         etEspecificaCausa       = view.findViewById(R.id.etEspecificaCausa);
         etEstatusPago           = view.findViewById(R.id.etEstatusPago);
-        etFolioRecibo           = view.findViewById(R.id.etFolioRecibo);
         
         spMotivoNoPago  = view.findViewById(R.id.spMotivoNoPago);
         spMedioPago     = view.findViewById(R.id.spMedioPago);
@@ -232,18 +197,11 @@ public class group_management_fragment extends Fragment {
         rgMontoCorrecto     = view.findViewById(R.id.rgMontoCorrecto);
         rgRecibos           = view.findViewById(R.id.rgRecibos);
         rgEstaGerente       = view.findViewById(R.id.rgEstaGerente);
-        
-        rbSiContacto    = view.findViewById(R.id.rbSiContacto);
-        rbNoContacto    = view.findViewById(R.id.rbNoContacto);
-        rbAclaracion    = view.findViewById(R.id.rbAclaración);
-        rbPago          = view.findViewById(R.id.rbPago);
-        rbNoPago        = view.findViewById(R.id.rbNoPago);
+
         rbSiDetalle     = view.findViewById(R.id.rbSiDetalle);
         rbNoDetalle     = view.findViewById(R.id.rbNoDetalle);
         rbSiCorrecto    = view.findViewById(R.id.rbSiCorrecto);
         rbNoCorrecto    = view.findViewById(R.id.rbNoCorrecto);
-        rbSiRecibo      = view.findViewById(R.id.rbSiRecibo);
-        rbNoRecibo      = view.findViewById(R.id.rbNoRecibo);
         rbSiGerente     = view.findViewById(R.id.rbSiGerente);
         rbNoGerente     = view.findViewById(R.id.rbNoGerente);
         
@@ -259,7 +217,6 @@ public class group_management_fragment extends Fragment {
         ivFirma     = view.findViewById(R.id.ivFirma);
 
         llIntegrantes           = view.findViewById(R.id.llIntegrantes);
-        llContactoCliente       = view.findViewById(R.id.llContactoCliente);
         llComentarioNoContacto  = view.findViewById(R.id.llComentarioNoContacto);
         llComentarioAclaracion  = view.findViewById(R.id.llComentarioAclaracion);
         llResultadoGestion      = view.findViewById(R.id.llResultadoGestion);
@@ -284,8 +241,6 @@ public class group_management_fragment extends Fragment {
         llEstaGerente           = view.findViewById(R.id.llEstaGerente);
         llFirma                 = view.findViewById(R.id.llFirma);
         llFotoGaleriaBoton      = view.findViewById(R.id.llFotoGaleriaBoton);
-        llFoto                  = view.findViewById(R.id.llFoto);
-        llGaleria               = view.findViewById(R.id.llGaleria);
 
         myCalendar      = Calendar.getInstance();
 
@@ -312,14 +267,13 @@ public class group_management_fragment extends Fragment {
         _banks = getResources().getStringArray(R.array.banks);
         _photo_galery = getResources().getStringArray(R.array.files);
 
-        etPagoRealizado.addTextChangedListener(new CustomWatcher(etPagoRealizado));
+        //etPagoRealizado.addTextChangedListener(new CustomWatcher(etPagoRealizado));
 
         //EditText Click
         etInfoDesfasada.setOnClickListener(etInfoDesfasada_OnClick);
         etFechaDefuncion.setOnClickListener(etFechaDefuncion_OnClick);
         etBanco.setOnClickListener(etBanco_OnClick);
         etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
-        etFotoGaleria.setOnClickListener(etFotoGaleria_onClick);
 
         // ImageView Click
         ivFirma.setOnClickListener(ivFirma_OnClick);
@@ -426,9 +380,10 @@ public class group_management_fragment extends Fragment {
         rgMontoCorrecto.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (spMedioPago.getSelectedItemPosition() == 1) {
+                if (spMedioPago.getSelectedItemPosition() == 1 || spMedioPago.getSelectedItemPosition() == 2 ) {
                     if(!validator.validate(etBanco, new String[] {validator.REQUIRED}) &&
-                            !validator.validate(etFechaDeposito, new String[] {validator.REQUIRED})) {
+                       !validator.validate(etFechaDeposito, new String[] {validator.REQUIRED}) &&
+                       !validator.validate(etPagoRealizado, new String[] {validator.REQUIRED, validator.MONEY})) {
                         switch (checkedId) {
                             case R.id.rbSiCorrecto:
                                 SelectMontoCorrecto(1);
@@ -449,16 +404,22 @@ public class group_management_fragment extends Fragment {
                     }
                 }
                 else {
-                    switch (checkedId) {
-                        case R.id.rbSiCorrecto:
-                            SelectMontoCorrecto(1);
-                            break;
-                        case R.id.rbNoCorrecto:
-                            SelectMontoCorrecto(0);
-                            break;
-                        default:
-                            SelectMontoCorrecto(-1);
-                            break;
+                    if (!validator.validate(etPagoRealizado, new String[] {validator.REQUIRED,validator.MONEY})){
+                        switch (checkedId) {
+                            case R.id.rbSiCorrecto:
+                                SelectMontoCorrecto(1);
+                                break;
+                            case R.id.rbNoCorrecto:
+                                SelectMontoCorrecto(0);
+                                break;
+                            default:
+                                SelectMontoCorrecto(-1);
+                                break;
+                        }
+                    }
+                    else {
+                        rbSiCorrecto.setChecked(false);
+                        rbNoCorrecto.setChecked(false);
                     }
                 }
             }
@@ -601,31 +562,7 @@ public class group_management_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener etFotoGaleria_onClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.files, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            etFotoGaleria.setText(_photo_galery[position]);
-                            llFotoGaleriaBoton.setVisibility(View.VISIBLE);
-                            switch (etFotoGaleria.getText().toString()){
-                                case Constants.photo:
-                                    llFoto.setVisibility(View.VISIBLE);
-                                    llGaleria.setVisibility(View.GONE);
-                                    break;
-                                case Constants.galery:
-                                    llFoto.setVisibility(View.GONE);
-                                    llGaleria.setVisibility(View.VISIBLE);
-                                    break;
-                            }
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+
     // Fin de EditText
 
     /*
@@ -650,7 +587,7 @@ public class group_management_fragment extends Fragment {
                 @Override
                 public void OnClickListener(AlertDialog dialog) {
                     Intent sig = new Intent(ctx, Signature.class);
-                    startActivityForResult(sig, REQUEST_CODE_SIGNATURE);
+                    startActivityForResult(sig, Constants.REQUEST_CODE_FIRMA);
                     dialog.dismiss();
 
                 }
@@ -660,7 +597,7 @@ public class group_management_fragment extends Fragment {
                     dialog.dismiss();
                 }
             });
-            file_not_exist.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            Objects.requireNonNull(file_not_exist.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
             file_not_exist.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             file_not_exist.show();
         }
@@ -707,7 +644,7 @@ public class group_management_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent sig = new Intent(ctx, Signature.class);
-            startActivityForResult(sig, REQUEST_CODE_SIGNATURE);
+            startActivityForResult(sig, Constants.REQUEST_CODE_FIRMA);
         }
     };
 
@@ -722,7 +659,7 @@ public class group_management_fragment extends Fragment {
 
             Intent i_integrantes = new Intent(ctx, IntegrantesGpo.class);
             i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
-            startActivityForResult(i_integrantes, REQUEST_INTEGRANTES_GPO);
+            startActivityForResult(i_integrantes, Constants.REQUEST_INTEGRANTES_GPO);
         }
     };
     // Fin de Button
@@ -883,7 +820,8 @@ public class group_management_fragment extends Fragment {
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                //etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.GONE);
                 llMontoPagoRealizado.setVisibility(View.GONE);
@@ -900,7 +838,8 @@ public class group_management_fragment extends Fragment {
                 break;
             case 1: // Si cuenta con detalle
                 tvMontoCorrecto.setError("");
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                //etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.VISIBLE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
@@ -957,14 +896,24 @@ public class group_management_fragment extends Fragment {
                     rgDetalleFicha.getChildAt(i).setEnabled(false);
                 }
                 etPagoRealizado.setEnabled(false);
+                if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) == 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo));
+                else if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) < 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo_adelanto));
+                else if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) > 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_parcial));
+                else
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pay_status));
                 llEstatusPago.setVisibility(View.VISIBLE);
+
+                etSaldoActual.setText(Miscellaneous.moneyFormat(String.valueOf(Miscellaneous.doubleFormat(etSaldoCorte) - Miscellaneous.doubleFormat(etPagoRealizado))
+                ));
+
                 if (spMedioPago.getSelectedItemPosition() == 1 || spMedioPago.getSelectedItemPosition() == 2){
                     llFotoGaleria.setVisibility(View.VISIBLE);
                     ibFotoCopia.setEnabled(true);
                     ibGaleriaCopia.setEnabled(true);
                     ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_rounded_blue));
-                    //etFotoGaleria.setText("");
-                    //etFotoGaleria.setEnabled(true);
                 }else {
                     llImprimirRecibo.setVisibility(View.VISIBLE);
                     llFolioRecibo.setVisibility(View.VISIBLE);
@@ -972,8 +921,6 @@ public class group_management_fragment extends Fragment {
                     ibFotoCopia.setEnabled(true);
                     ibGaleriaCopia.setEnabled(false);
                     ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                    //etFotoGaleria.setText(_photo_galery[0]);
-                    //etFotoGaleria.setEnabled(false);
                 }
                 llEstaGerente.setVisibility(View.VISIBLE);
                 break;
@@ -1010,23 +957,22 @@ public class group_management_fragment extends Fragment {
                 break;
             case 1: // Imprimir Recibos
                 llFolioRecibo.setVisibility(View.VISIBLE);
-                Log.v("PagoRealizado", etPagoRealizado.getText().toString().trim());
                 Intent i = new Intent(ctx, PrintSeewoo.class);
                 OrderModel order = new OrderModel(parent.ficha_rg.getId(),
                         "002",
                         parent.ficha_rg.getPrestamo().getMontoPrestamo(),
                         parent.ficha_rg.getPrestamo().getPagoSemanal(),
-                        300,
+                        Miscellaneous.doubleFormat(etPagoRealizado),
                         parent.ficha_rg.getGrupo().getClaveGrupo(),
                         parent.ficha_rg.getPrestamo().getNumeroDePrestamo(),
                         parent.ficha_rg.getGrupo().getNombreGrupo(),
                         "NOMBRE DEL ALGUN ASESOR",
-                        "0.0");
+                        0);
 
                 i.putExtra("order",order);
                 i.putExtra("tag",true);
 
-                startActivityForResult(i,123);
+                startActivityForResult(i,Constants.REQUEST_CODE_IMPRESORA);
                 break;
             default: // Sin seleccionar alguna opción o cualquier valor diferente
                 llFolioRecibo.setVisibility(View.GONE);
@@ -1054,7 +1000,7 @@ public class group_management_fragment extends Fragment {
     private void initComponents(){
         tvExternalID.setText(parent.ficha_rg.getId());
         tvContactoCliente.setError("");
-        etMontoPagoRequerido.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getPagoSemanal())));
+        etMontoPagoRequerido.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoSemanal()));
         etSaldoCorte.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_rg.getPrestamo().getSaldoActual())));
     }
 
@@ -1075,7 +1021,7 @@ public class group_management_fragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case REQUEST_CODE_SIGNATURE:
+            case Constants.REQUEST_CODE_FIRMA:
                 if (resultCode == parent.RESULT_OK){
                     if (data != null){
                         ibFirma.setVisibility(View.GONE);
@@ -1086,6 +1032,22 @@ public class group_management_fragment extends Fragment {
                     }
                 }
                 break;
+            case Constants.REQUEST_INTEGRANTES_GPO:
+                if (resultCode == parent.RESULT_OK){
+                    if (data != null){
+                        //etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(data.getDoubleExtra(Constants.RESPONSE,(double) 0))));
+                        etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
+                    }
+                }
+                break;
+            case Constants.REQUEST_CODE_IMPRESORA:
+                if (resultCode == parent.RESULT_OK){
+                    if (data != null){
+                        Toast.makeText(ctx, data.getStringExtra(Constants.MESSAGE), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+
         }
     }
 }

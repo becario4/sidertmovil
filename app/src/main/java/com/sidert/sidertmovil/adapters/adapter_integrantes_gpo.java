@@ -5,12 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -18,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
+
 import com.sidert.sidertmovil.models.ModeloGrupal;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -31,7 +28,7 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
     private Event evento;
 
     public interface Event {
-        void Integrante(ModeloGrupal.IntegrantesDelGrupo item);
+        void Integrante(ModeloGrupal.IntegrantesDelGrupo item, int position);
     }
 
     public adapter_integrantes_gpo(Context ctx, List<ModeloGrupal.IntegrantesDelGrupo> data, Event evento) {
@@ -224,7 +221,7 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
                     etPagoRealizado.setEnabled(false);
                     etPagoSolidario.setEnabled(false);
                     cbPagoCompleto.setEnabled(false);
-                    evento.Integrante(item);
+                    evento.Integrante(item, position);
                 }
             });
 

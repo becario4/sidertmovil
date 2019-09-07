@@ -2,19 +2,24 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,8 +31,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -51,14 +54,12 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CashRegister;
-import com.sidert.sidertmovil.activities.CierreDia;
+import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.IndividualRecovery;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.Signature;
 import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.CustomWatcher;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.Popups;
@@ -68,6 +69,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 
 public class ind_management_fragment extends Fragment {
 
@@ -89,6 +92,7 @@ public class ind_management_fragment extends Fragment {
     private EditText etComentarioInfoDesfa;
     private EditText etMontoPagoRequerido;
     private EditText etSaldoCorte;
+    private EditText etSaldoActual;
     private EditText etMotivoDefuncion;
     private EditText etFechaDefuncion;
     private EditText etEspecificaCausa;
@@ -96,8 +100,6 @@ public class ind_management_fragment extends Fragment {
     private EditText etPagoRealizado;
     private EditText etFechaDeposito;
     private EditText etEstatusPago;
-    private EditText etFolioRecibo;
-    private EditText etFotoGaleria;
 
     private Spinner spMotivoNoPago;
     private Spinner spMedioPago;
@@ -109,30 +111,23 @@ public class ind_management_fragment extends Fragment {
     private RadioGroup rgRecibos;
     private RadioGroup rgEstaGerente;
 
-    private RadioButton rbSiContacto;
-    private RadioButton rbNoContacto;
-    private RadioButton rbAclaracion;
-    private RadioButton rbPago;
-    private RadioButton rbNoPago;
+
     private RadioButton rbSiRequerido;
     private RadioButton rbNoRequerido;
     private RadioButton rbSiCorrecto;
     private RadioButton rbNoCorrecto;
-    private RadioButton rbSiRecibo;
-    private RadioButton rbNoRecibo;
+
     private RadioButton rbSiGerente;
     private RadioButton rbNoGerente;
 
     private ImageButton imbMap;
     private ImageButton ibFoto;
-    private ImageButton imbGallery;
-    private ImageButton ibFotoCopia;
-    private ImageButton ibGaleriaCopia;
+    private ImageButton ibGaleria;
     private ImageButton ibFirma;
 
     private ImageView ivFirma;
+    private ImageView ivEvidencia;
 
-    private LinearLayout llContactoCliente;
     private LinearLayout llComentarioNoContacto;
     private LinearLayout llComentarioAclaracion;
     private LinearLayout llFotoFachada;
@@ -156,17 +151,12 @@ public class ind_management_fragment extends Fragment {
     private LinearLayout llFotoGaleria;
     private LinearLayout llEstaGerente;
     private LinearLayout llFirma;
-    private LinearLayout llFotoGallery;
-    private LinearLayout llFotoGaleriaBoton;
-    private LinearLayout llFoto;
-    private LinearLayout llGaleria;
 
     private String[] _outdate_info;
     private String[] _banks;
-    private String[] _photo_galery;
 
     private Calendar myCalendar;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
     private Date minDate;
 
     private final int REQUEST_CODE_SIGNATURE = 456;
@@ -184,12 +174,16 @@ public class ind_management_fragment extends Fragment {
     private GoogleMap mMap;
     private Marker mMarker;
 
+    Uri imageUri;
+    ImageView foto_gallery;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view       = inflater.inflate(R.layout.fragment_ind_management, container, false);
         ctx             = getContext();
 
         parent                = (IndividualRecovery) getActivity();
+        assert parent != null;
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         tvExternalID            = view.findViewById(R.id.tvExternalID);
@@ -209,14 +203,13 @@ public class ind_management_fragment extends Fragment {
         etBanco                 = view.findViewById(R.id.etBanco);
         etMontoPagoRequerido    = view.findViewById(R.id.etMontoPagoRequerido);
         etSaldoCorte            = view.findViewById(R.id.etSaldoCorte);
+        etSaldoActual           = view.findViewById(R.id.etSaldoActual);
         etMotivoDefuncion       = view.findViewById(R.id.etMotivoDefuncion);
         etFechaDefuncion        = view.findViewById(R.id.etFechaDefuncion);
         etEspecificaCausa       = view.findViewById(R.id.etEspecificaCausa);
         etPagoRealizado         = view.findViewById(R.id.etPagoRealizado);
         etFechaDeposito         = view.findViewById(R.id.etFechaDeposito);
         etEstatusPago           = view.findViewById(R.id.etEstatusPago);
-        etFolioRecibo           = view.findViewById(R.id.etFolioRecibo);
-        etFotoGaleria           = view.findViewById(R.id.etFotoGaleria);
 
         spMedioPago             = view.findViewById(R.id.spMedioPago);
         spMotivoNoPago          = view.findViewById(R.id.spMotivoNoPago);
@@ -228,32 +221,23 @@ public class ind_management_fragment extends Fragment {
         rgRecibos           = view.findViewById(R.id.rgRecibos);
         rgEstaGerente       = view.findViewById(R.id.rgEstaGerente);
 
-        rbSiContacto    = view.findViewById(R.id.rbSiContacto);
-        rbNoContacto    = view.findViewById(R.id.rbNoContacto);
-        rbAclaracion    = view.findViewById(R.id.rbAclaración);
-        rbPago          = view.findViewById(R.id.rbPago);
-        rbNoPago        = view.findViewById(R.id.rbNoPago);
         rbSiRequerido   = view.findViewById(R.id.rbSiRequerido);
         rbNoRequerido   = view.findViewById(R.id.rbNoRequerido);
         rbSiCorrecto    = view.findViewById(R.id.rbSiCorrecto);
         rbNoCorrecto    = view.findViewById(R.id.rbNoCorrecto);
-        rbSiRecibo      = view.findViewById(R.id.rbSiRecibo);
-        rbNoRecibo      = view.findViewById(R.id.rbNoRecibo);
         rbSiGerente     = view.findViewById(R.id.rbSiGerente);
         rbNoGerente     = view.findViewById(R.id.rbNoGerente);
 
-        imbMap      = view.findViewById(R.id.imbMap);
-        ibFoto      = view.findViewById(R.id.ibFoto);
-        imbGallery  = view.findViewById(R.id.imbGallery);
-        ibFotoCopia     = view.findViewById(R.id.ibFotoCopia);
-        ibGaleriaCopia  = view.findViewById(R.id.ibGaleriaCopia);
+        imbMap          = view.findViewById(R.id.imbMap);
+        ibFoto          = view.findViewById(R.id.ibFoto);
+        ibGaleria       = view.findViewById(R.id.ibGaleria);
         ibFirma         = view.findViewById(R.id.ibFirma);
 
         ivFirma     = view.findViewById(R.id.ivFirma);
+        ivEvidencia = view.findViewById(R.id.ivEvidencia);
 
         mapView = view.findViewById(R.id.mapLocation);
 
-        llContactoCliente       = view.findViewById(R.id.llContactoCliente);
         llComentarioNoContacto  = view.findViewById(R.id.llComentarioNoContacto);
         llComentarioAclaracion  = view.findViewById(R.id.llComentarioAclaracion);
         llResultadoGestion      = view.findViewById(R.id.llResultadoGestion);
@@ -277,9 +261,6 @@ public class ind_management_fragment extends Fragment {
         llFotoGaleria           = view.findViewById(R.id.llFotoGaleria);
         llEstaGerente           = view.findViewById(R.id.llEstaGerente);
         llFirma                 = view.findViewById(R.id.llFirma);
-        llFotoGaleriaBoton      = view.findViewById(R.id.llFotoGaleriaBoton);
-        llFoto                  = view.findViewById(R.id.llFoto);
-        llGaleria               = view.findViewById(R.id.llGaleria);
 
         myCalendar      = Calendar.getInstance();
 
@@ -305,20 +286,17 @@ public class ind_management_fragment extends Fragment {
 
         _outdate_info = getResources().getStringArray(R.array.outdated_information);
         _banks = getResources().getStringArray(R.array.banks);
-        _photo_galery = getResources().getStringArray(R.array.files);
-
-        etPagoRealizado.addTextChangedListener(new CustomWatcher(etPagoRealizado));
 
         // EditText Click
         etInfoDesfasada.setOnClickListener(etInfoDesfasada_OnClick);
         etFechaDefuncion.setOnClickListener(etFechaDefuncion_OnClick);
         etBanco.setOnClickListener(etBanco_OnClick);
         etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
-        etFotoGaleria.setOnClickListener(etFotoGaleria_onClick);
 
         // ImageButton Click
         imbMap.setOnClickListener(imbMap_OnClick);
         ibFoto.setOnClickListener(ibFoto_OnClick);
+        ibGaleria.setOnClickListener(ibGaleria_OnClick);
         ibFirma.setOnClickListener(ibFirma_OnClick);
 
         // RadioGroup Click
@@ -540,7 +518,7 @@ public class ind_management_fragment extends Fragment {
                     dialog.dismiss();
                 }
             });
-            file_not_exist.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            Objects.requireNonNull(file_not_exist.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
             file_not_exist.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             file_not_exist.show();
         }
@@ -586,11 +564,11 @@ public class ind_management_fragment extends Fragment {
             locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
                 @Override
                 public void onComplete(String latitud, String longitud) {
-                    Toast.makeText(ctx, "Mi ubiciación: " + "lat: " + latitud + "Lon: " + longitud, Toast.LENGTH_SHORT).show();
+                    /*Toast.makeText(ctx, "Mi ubiciación: " + "lat: " + latitud + "Lon: " + longitud, Toast.LENGTH_SHORT).show();
                     flagUbicacion = true;
                     if (flagUbicacion){
                         CancelUbicacion();
-                    }
+                    }*/
                 }
             });
             if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -603,10 +581,21 @@ public class ind_management_fragment extends Fragment {
     private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            Intent i = new Intent(parent, CameraVertical.class);
+            i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
+            startActivityForResult(i, Constants.REQUEST_CODE_CAMARA);
+            /*Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             i.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LOCKED);
             //i.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-            startActivityForResult(i, 432);
+            startActivityForResult(i, 432);*/
+        }
+    };
+
+    private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            startActivityForResult(gallery, Constants.REQUEST_CODE_GALERIA);
         }
     };
 
@@ -658,73 +647,10 @@ public class ind_management_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener etFotoGaleria_onClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.files, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            etFotoGaleria.setText(_photo_galery[position]);
-                            llFotoGaleriaBoton.setVisibility(View.VISIBLE);
-                            switch (etFotoGaleria.getText().toString()){
-                                case Constants.photo:
-                                    llFoto.setVisibility(View.VISIBLE);
-                                    llGaleria.setVisibility(View.GONE);
-                                    break;
-                                case Constants.galery:
-                                    llFoto.setVisibility(View.GONE);
-                                    llGaleria.setVisibility(View.VISIBLE);
-                                    break;
-                            }
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
-
     private void setDatePicked(EditText et){
         sdf.setTimeZone(myCalendar.getTimeZone());
         et.setError(null);
         et.setText(sdf.format(myCalendar.getTime()));
-    }
-
-    private void initComponents_ (){
-        llFotoFachada.setVisibility(View.GONE);
-        llComentarioNoContacto.setVisibility(View.GONE);
-        llDatosDefuncion.setVisibility(View.GONE);
-        llInfoDesfasada.setVisibility(View.GONE);
-        llMotivoNoPago.setVisibility(View.GONE);
-        llMontoPagoRequerido.setVisibility(View.GONE);
-        llBanco.setVisibility(View.GONE);
-        llMedioPago.setVisibility(View.GONE);
-        llResultadoGestion.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case REQUEST_CODE_SIGNATURE:
-                if (resultCode == parent.RESULT_OK){
-                    if (data != null){
-                        ibFirma.setVisibility(View.GONE);
-                        ivFirma.setVisibility(View.VISIBLE);
-                        Glide.with(ctx)
-                             .load(data.getStringExtra(Constants.uri_signature))
-                             .into(ivFirma);
-                    }
-                }
-                break;
-            case 123:
-                if (resultCode == parent.RESULT_OK){
-                    if (data != null){
-                        Toast.makeText(ctx, data.getStringExtra("message"), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                break;
-        }
     }
 
     private void initComponents(){
@@ -890,7 +816,7 @@ public class ind_management_fragment extends Fragment {
     private void SelectPagoRequerido (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llMontoCorrecto.setVisibility(View.GONE);
@@ -905,12 +831,11 @@ public class ind_management_fragment extends Fragment {
                 break;
             case 1: // Si pagará requerido
                 tvMontoCorrecto.setError("");
-                etPagoRealizado.setText(Miscellaneous.moneyFormat(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado())));
+                etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 llMontoCorrecto.setVisibility(View.VISIBLE);
                 break;
-
         }
     }
 
@@ -961,21 +886,33 @@ public class ind_management_fragment extends Fragment {
                     rgPagaraRequerido.getChildAt(i).setEnabled(false);
                 }
                 etPagoRealizado.setEnabled(false);
+
+                if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) == 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo));
+                else if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) < 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo_adelanto));
+                else if (Miscellaneous.doubleFormat(etMontoPagoRequerido) - Miscellaneous.doubleFormat(etPagoRealizado) > 0)
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pago_parcial));
+                else
+                    etEstatusPago.setText(ctx.getResources().getString(R.string.pay_status));
                 llEstatusPago.setVisibility(View.VISIBLE);
+
+                etSaldoActual.setText(Miscellaneous.moneyFormat(String.valueOf(Miscellaneous.doubleFormat(etSaldoCorte) - Miscellaneous.doubleFormat(etPagoRealizado))
+                ));
                 if (spMedioPago.getSelectedItemPosition() == 1 || spMedioPago.getSelectedItemPosition() == 2){
                     llFotoGaleria.setVisibility(View.VISIBLE);
-                    ibFotoCopia.setEnabled(true);
-                    ibGaleriaCopia.setEnabled(true);
-                    ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_rounded_blue));
+                    ibFoto.setEnabled(true);
+                    ibGaleria.setEnabled(true);
+                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
                     //etFotoGaleria.setText("");
                     //etFotoGaleria.setEnabled(true);
                 }else {
                     llImprimirRecibo.setVisibility(View.VISIBLE);
                     llFolioRecibo.setVisibility(View.VISIBLE);
                     llFotoGaleria.setVisibility(View.VISIBLE);
-                    ibFotoCopia.setEnabled(true);
-                    ibGaleriaCopia.setEnabled(false);
-                    ibGaleriaCopia.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                    ibFoto.setEnabled(true);
+                    ibGaleria.setEnabled(false);
+                    //ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
                     //etFotoGaleria.setText(_photo_galery[0]);
                     //etFotoGaleria.setEnabled(false);
                 }
@@ -1025,12 +962,12 @@ public class ind_management_fragment extends Fragment {
                         parent.ficha_ri.getPrestamo().getNumeroDePrestamo(),
                         parent.ficha_ri.getCliente().getNombre(),
                         "NOMBRE DEL ALGUN ASESOR",
-                        "0.0");
+                        0);
 
                 i.putExtra("order",order);
                 i.putExtra("tag",true);
 
-                startActivityForResult(i,123);
+                startActivityForResult(i,Constants.REQUEST_CODE_IMPRESORA);
                 break;
             default: // Sin seleccionar alguna opción o cualquier valor diferente
                 llFolioRecibo.setVisibility(View.GONE);
@@ -1152,5 +1089,53 @@ public class ind_management_fragment extends Fragment {
             locationManager.removeUpdates(locationListener);
     }
 
-
+    //===================  Resultado de activities  ===========================================
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_CODE_SIGNATURE:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        ibFirma.setVisibility(View.GONE);
+                        ivFirma.setVisibility(View.VISIBLE);
+                        Glide.with(ctx)
+                                .load(data.getStringExtra(Constants.uri_signature))
+                                .into(ivFirma);
+                    }
+                }
+                break;
+            case Constants.REQUEST_CODE_IMPRESORA:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        Toast.makeText(ctx, data.getStringExtra("message"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+            case Constants.REQUEST_CODE_GALERIA:
+                if (data != null){
+                    imageUri = data.getData();
+                    ivEvidencia.setVisibility(View.VISIBLE);
+                    Glide.with(ctx).load(imageUri).centerCrop().into(ivEvidencia);
+                }
+                break;
+            case Constants.REQUEST_CODE_CAMARA:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        Bitmap bmp = BitmapFactory.decodeFile(data.getStringExtra(Constants.PICTURE));
+                        ivEvidencia.setVisibility(View.VISIBLE);
+                        /*Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), true);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(
+                                                    scaledBitmap,
+                                                    0, 0,
+                                                    scaledBitmap.getWidth(),
+                                                    scaledBitmap.getHeight(), matrix, true);*/
+                        Glide.with(ctx).load(bmp).centerCrop().into(ivEvidencia);
+                    }
+                }
+                break;
+        }
+    }
 }

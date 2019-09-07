@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.utils.CustomWatcher;
 
 public class CierreDia extends AppCompatActivity {
 
@@ -64,7 +63,7 @@ public class CierreDia extends AppCompatActivity {
 
         etBanco.setOnClickListener(etBank_OnClick);
         ibFotoTicket.setOnClickListener(ibFotoTicket_OnClick);
-        etMontoDepositado.addTextChangedListener(new CustomWatcher(etMontoDepositado));
+
     }
 
     private View.OnClickListener etBank_OnClick = new View.OnClickListener() {

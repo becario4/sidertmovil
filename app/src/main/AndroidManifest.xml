@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.camera2.full" />
+    <uses-feature android:name="android.hardware.camera.full" />
 
     <application
         android:allowBackup="true"
@@ -37,7 +37,8 @@
         <activity android:name=".activities.IndividualExpiredWallet" />
         <activity android:name=".activities.GroupCollection" />
         <activity android:name=".activities.IndividualCollection" />
-        <activity android:name=".activities.CameraVertical" />
+        <activity android:name=".activities.CameraVertical"
+            android:configChanges="orientation|keyboardHidden"/>
         <activity
             android:name=".activities.GroupRecovery"
             android:screenOrientation="portrait"
