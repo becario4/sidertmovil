@@ -8,15 +8,21 @@
     <color name="lightGray">#A6DAD7D7</color>
     <color name="et_bkg">#99FFFFFF</color>
     <color name="gray_light">#ECECEC</color>
+    <!--<color name="blue_sidert">#3C88C4</color>-->
     <color name="blue_sidert">#1576ba</color>
+    <color name="blue_sidert_middle">#267FB9</color>
     <color name="blue_sidert_push">#3896E0</color>
+    <color name="blue_sidert_flourecente">#14ffff</color>
     <color name="transparente">#00e1ce2a</color>
     <color name="blackopacity">#C1918F8F</color>
     <color name="bkg_transparent">#00FFFFFF</color>
     <color name="red">#ffff0000</color>
     <color name="red_push">#E94747</color>
+    <color name="white">#FFFFFF</color>
     <color name="green">#68C06C</color>
     <color name="blocked_camera">#C8000000</color>
+    <color name="safe_mode_text">#80ffffff</color>
+    <color name="yellow">#FFD600</color>
 
     <color name="bkg_navigation">#071738</color>
 

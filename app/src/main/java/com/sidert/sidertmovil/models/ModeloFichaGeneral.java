@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class ModeloFichaGeneral implements Serializable {
 
+    private String TipoFormulario;
     private String NombreClienteGpo;
     private String Direccion;
     private String FechaPago;
@@ -11,6 +12,15 @@ public class ModeloFichaGeneral implements Serializable {
     private String TipoFicha;
     private int Posicion;
     private boolean isChecked;
+    private String status;
+
+    public String getTipoFormulario() {
+        return TipoFormulario;
+    }
+
+    public void setTipoFormulario(String tipoFormulario) {
+        TipoFormulario = tipoFormulario;
+    }
 
     public String getNombreClienteGpo() {
         return NombreClienteGpo;
@@ -66,5 +76,13 @@ public class ModeloFichaGeneral implements Serializable {
 
     public void setChecked(boolean checked) {
         isChecked = checked;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

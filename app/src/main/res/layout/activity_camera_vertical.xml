@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,16 +9,14 @@
     <TextureView
         android:id="@+id/tvCamera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"/>
+        android:layout_height="match_parent"/>
 
     <ImageButton
         android:id="@+id/ibCapture"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/ic_take_photo"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/circle_button_white" />
@@ -31,6 +29,17 @@
         android:layout_height="match_parent"
         android:background="@color/blocked_camera">
 
+        <TextView
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="25dp"
+            android:text="Coloque el teléfono en vertical para una mejor foto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ImageView
             android:id="@+id/ivBlocked"
             android:layout_gravity="center"
@@ -41,8 +50,7 @@
     <LinearLayout
         android:id="@+id/llPregunta"
         android:visibility="gone"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -61,5 +69,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-</RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivFotoFinal"
+        android:rotation="90"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
 

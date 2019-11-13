@@ -11,36 +11,47 @@ public class ModeloGrupal implements Serializable {
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("type")
     @Expose
     private String type;
+
     @SerializedName("assignDate")
     @Expose
     private String assignDate;
+
     @SerializedName("expirationDate")
     @Expose
     private String expirationDate;
+
     @SerializedName("cancellationDate")
     @Expose
     private String cancellationDate;
+
     @SerializedName("Grupo")
     @Expose
     private Grupo grupo;
+
     @SerializedName("Tesorera")
     @Expose
     private Tesorera tesorera;
+
     @SerializedName("Presidenta")
     @Expose
     private Presidenta presidenta;
+
     @SerializedName("Secretaria")
     @Expose
     private Secretaria secretaria;
+
     @SerializedName("Prestamo")
     @Expose
     private Prestamo prestamo;
+
     @SerializedName("ReporteAnaliticoOmega")
     @Expose
     private List<ReporteAnaliticoOmega> reporteAnaliticoOmega = null;
+
     @SerializedName("TablaPagosGrupo")
     @Expose
     private List<TablaPagosGrupo> tablaPagosGrupo = null;
@@ -146,12 +157,15 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("ClaveGrupo")
         @Expose
         private String claveGrupo;
+
         @SerializedName("NombreGrupo")
         @Expose
         private String nombreGrupo;
+
         @SerializedName("IntegrantesDelGrupo")
         @Expose
         private List<IntegrantesDelGrupo> integrantesDelGrupo = null;
+
         @SerializedName("TotalIntegrantes")
         @Expose
         private Integer totalIntegrantes;
@@ -195,12 +209,15 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("Nombre")
         @Expose
         private String nombre;
+
         @SerializedName("TelefonoCelular")
         @Expose
         private String telefonoCelular;
+
         @SerializedName("TelefonoDomicilio")
         @Expose
         private String telefonoDomicilio;
+
         @SerializedName("Direccion")
         @Expose
         private Direccion direccion;
@@ -293,45 +310,59 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("NumeroDePrestamo")
         @Expose
         private String numeroDePrestamo;
+
         @SerializedName("FechaDelCreditoOtorgado")
         @Expose
         private String fechaDelCreditoOtorgado;
+
         @SerializedName("FechaPagoEstablecida")
         @Expose
         private String fechaPagoEstablecida;
+
         @SerializedName("HoraPagoEstablecida")
         @Expose
         private String horaPagoEstablecida;
+
         @SerializedName("MontoPrestamo")
         @Expose
         private Double montoPrestamo;
+
         @SerializedName("MontoTotalPrestamo")
         @Expose
         private Double montoTotalPrestamo;
+
         @SerializedName("PagoSemanal")
         @Expose
         private Double pagoSemanal;
+
         @SerializedName("PagoRealizado")
         @Expose
         private Double pagoRealizado;
+
         @SerializedName("NumeroAmortizacion")
         @Expose
         private Integer numeroAmortizacion;
+
         @SerializedName("MontoAmortizacion")
         @Expose
         private Double montoAmortizacion;
+
         @SerializedName("SumaDePagos")
         @Expose
         private Double sumaDePagos;
+
         @SerializedName("SaldoActual")
         @Expose
         private Double saldoActual;
+
         @SerializedName("DiasAtraso")
         @Expose
         private Integer diasAtraso;
+
         @SerializedName("Frecuencia")
         @Expose
         private String frecuencia;
+
         @SerializedName("DiaSemana")
         @Expose
         private String diaSemana;
@@ -463,12 +494,15 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("NombreSecretaria")
         @Expose
         private String nombreSecretaria;
+
         @SerializedName("AddressSercretaria")
         @Expose
         private String addressSercretaria;
+
         @SerializedName("TelCelularSecretaria")
         @Expose
         private String telCelularSecretaria;
+
         @SerializedName("TelDomicilioSecretaria")
         @Expose
         private String telDomicilioSecretaria;
@@ -509,24 +543,39 @@ public class ModeloGrupal implements Serializable {
 
     public static class IntegrantesDelGrupo implements Serializable {
 
+        @SerializedName("ClaveCliente")
+        @Expose
+        private String claveCliente;
+
         @SerializedName("Nombre")
         @Expose
         private String nombre;
+
         @SerializedName("Monto")
         @Expose
         private Double monto;
+
         @SerializedName("PagoSemanalInt")
         @Expose
         private Double pagoSemanalInt;
+
         @SerializedName("PagoRealizado")
         @Expose
         private Double pagoRealizado;
 
-        private Double pagoSolidario;
-        private Double pagoAdelanto;
+        private Double pagoSolidario = 0.0;
+        private Double pagoAdelanto = 0.0;
 
         private boolean isPagoCompleto;
         private boolean isGuardado;
+
+        public String getClaveCliente() {
+            return claveCliente;
+        }
+
+        public void setClaveCliente(String claveCliente) {
+            this.claveCliente = claveCliente;
+        }
 
         public String getNombre() {
             return nombre;
@@ -598,27 +647,35 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("Address")
         @Expose
         private String address;
+
         @SerializedName("Calle")
         @Expose
         private String calle;
+
         @SerializedName("Ciudad")
         @Expose
         private String ciudad;
+
         @SerializedName("latitude")
         @Expose
         private String latitude;
+
         @SerializedName("longitude")
         @Expose
         private String longitude;
+
         @SerializedName("CodigoPostal")
         @Expose
         private String codigoPostal;
+
         @SerializedName("Colonia")
         @Expose
         private String colonia;
+
         @SerializedName("Municipio")
         @Expose
         private String municipio;
+
         @SerializedName("Estado")
         @Expose
         private String estado;
@@ -702,15 +759,19 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("No")
         @Expose
         private Integer no;
+
         @SerializedName("Fecha_Amortizacion")
         @Expose
         private String fechaAmortizacion;
+
         @SerializedName("Fecha_Pago")
         @Expose
         private String fechaPago;
+
         @SerializedName("Estatus")
         @Expose
         private String estatus;
+
         @SerializedName("Dias")
         @Expose
         private Integer dias;
@@ -762,9 +823,11 @@ public class ModeloGrupal implements Serializable {
         @SerializedName("Fecha")
         @Expose
         private String fecha;
+
         @SerializedName("Pago")
         @Expose
         private Double pago;
+
         @SerializedName("Banco")
         @Expose
         private String banco;

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +13,10 @@ import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.fragments.view_pager.answers_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.pendings_fragment;
+import com.sidert.sidertmovil.fragments.view_pager.fichas_pendientes_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.route_fragment;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-
-import org.json.JSONException;
 
 
 public class orders_fragment extends Fragment {
@@ -52,7 +49,7 @@ public class orders_fragment extends Fragment {
             @Override
             public void initTabLayout(TabLayout Tabs) {
                 final TabsRecentsAdapter adapter = new TabsRecentsAdapter(getChildFragmentManager());
-                adapter.addFragment(new pendings_fragment(), ctx.getString(R.string.pendings));
+                adapter.addFragment(new fichas_pendientes_fragment(), ctx.getString(R.string.pendings));
                 adapter.addFragment(new route_fragment(), ctx.getString(R.string.route));
                 adapter.addFragment(new answers_fragment(), ctx.getString(R.string.answers));
                 mViewPager.setAdapter(adapter);
@@ -60,6 +57,7 @@ public class orders_fragment extends Fragment {
                 Tabs.setVisibility(View.VISIBLE);
                 Tabs.setTabMode(TabLayout.MODE_FIXED);
                 mViewPager.setSwipeable(true);
+
             }
         });
         boostrap.setTitle(Miscellaneous.ucFirst(ctx.getString(R.string.orders)));

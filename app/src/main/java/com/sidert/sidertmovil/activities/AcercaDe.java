@@ -22,11 +22,18 @@ public class AcercaDe extends AppCompatActivity {
         TextView tvAboutSIDERT   = findViewById(R.id.tvAboutSIDERT);
         tbMain              = findViewById(R.id.tbMain);
 
-        tvAboutSIDERT.setText(this.getResources().getString(R.string.about_sidert));
+
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Acerca de SIDERT");
+        if (getIntent() != null && getIntent().getBooleanExtra("FLAG",false)) {
+            setTitle("Aviso de privacidad");
+            tvAboutSIDERT.setText(this.getResources().getString(R.string.privacy_polices));
+        }
+        else {
+            setTitle("Acerca de SIDERT");
+            tvAboutSIDERT.setText(this.getResources().getString(R.string.about_sidert));
+        }
     }
 
     @Override

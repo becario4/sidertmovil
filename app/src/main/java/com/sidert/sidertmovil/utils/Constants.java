@@ -1,6 +1,9 @@
 package com.sidert.sidertmovil.utils;
 
 import android.os.Environment;
+import android.os.ParcelUuid;
+
+import com.sidert.sidertmovil.database.SidertTables;
 
 public class Constants {
 
@@ -21,7 +24,8 @@ public class Constants {
 
     public final static String FICHA            = "ficha";
 
-    public final static String FORMAT_DATE_GNRAL = "yyyy-MM-dd";
+    public final static String FORMAT_DATE_GNRAL        = "yyyy-MM-dd";
+    public final static String FORMAT_TIMESTAMP         = "yyyy-MM-dd HH:mm:ss";
 
     public final static String negative_payment         = "Negación de pago";
     public final static String outdate_information      = "Información Desfasada";
@@ -56,17 +60,31 @@ public class Constants {
     public final static String type                     = "type";
     public final static String client_code              = "clave_cliente";
 
+    public final static String EFECTIVO                 = "Efectivo";
+    public final static String EXTERNAL_ID              = "external_id";
+
     //Iconos para colocar el dialog_message
     public final static String not_network              = "not_network";
     public final static String success                  = "success";
+    public final static String face_happy               = "face_happy";
+    public final static String face_dissatisfied        = "face_dissatisfied";
+    public final static String print_off                = "print_off";
+    public final static String money                    = "money";
     public final static String logout                   = "logout";
+    public final static String firma                    = "firma";
+    public final static String question                 = "question";
+    public final static String warning                  = "warning";
+    public final static String login                    = "login";
+    public final static String camara                   = "camara";
 
 
     // Keys para servicios
+
     public final static String ADVISER_ID             = "asesorid";
     public final static String DATE                   = "fecha";
     public final static String ISSUE                  = "asunto";
     public final static String REASON                 = "motivo";
+    public final static String FOLIO                  = "folio";
 
     //======================  TAGS DE FICHAS  ===================================================
     public final static String ORDER_ID                     = "id";
@@ -92,7 +110,7 @@ public class Constants {
     public final static String MUNICIPIO                    = "Municipio";
     public final static String ESTADO                       = "Estado";
     public final static String LATITUDE                     = "latitude";
-    public final static String LONGITUD                     = "longitude";
+    public final static String LONGITUDE                    = "longitude";
     public final static String AVAL                         = "Aval";
     public final static String NOMBRE_COMPLETO_AVAL         = "NombreCompletoAval";
     public final static String TELEFONO_AVAL                = "TelefonoAval";
@@ -104,6 +122,7 @@ public class Constants {
     public final static String MONTO_TOTAL_PRESTAMO         = "MontoTotalPrestamo";
     public final static String MONTO_PRESTAMO               = "MontoPrestamo";
     public final static String PAGO_SEMANAL                 = "PagoSemanal";
+    public final static String CLAVE_CLIENTE                = "ClaveCliente";
     public final static String PAGO_REALIZADO               = "PagoRealizado";
     public final static String NUMERO_AMORTIZACION          = "NumeroAmortizacion";
     public final static String MONTO_AMORTIZACION           = "MontoAmortizacion";
@@ -148,27 +167,89 @@ public class Constants {
     public final static String TABLA_PAGOS_GRUPO            = "TablaPagosGrupo";
     public final static String FECHA_AMORTIZACION_GPO       = "Fecha_Amortizacion";
     public final static String FECHA_PAGO_GPO               = "Fecha_Pago";
+    public final static String SAVE                         = "Guardar";
+    public final static String PAGO_REQUERIDO               = "PagoRequerido";
+    public final static String FIRMA_IMAGE                  = "FirmaImage";
+
 
     public final static String PICTURE                      = "picture";
 
     //==========================   REQUEST CODE   ==================================================
     public final static int REQUEST_CODE_FIRMA                     = 456;
     public final static int REQUEST_CODE_IMPRESORA                 = 963;
-    public final static int REQUEST_INTEGRANTES_GPO                = 951;
+    public final static int REQUEST_CODE_INTEGRANTES_GPO           = 951;
+    public final static int REQUEST_CODE_RESUMEN_INTEGRANTES_GPO   = 834;
     public final static int REQUEST_CODE_GALERIA                   = 852;
-    public final static int REQUEST_CODE_CAMARA                    = 753;
+    public final static int REQUEST_CODE_CAMARA_TICKET             = 753;
+    public final static int REQUEST_CODE_CAMARA_FACHADA            = 493;
+    public final static int REQUEST_CODE_LLAMADA                   = 123;
+    public final static int REQUEST_CODE_ARQUEO_CAJA               = 369;
+    public final static int REQUEST_CODE_ACTIVITY                  = 749;
+    public final static int REQUEST_CODE_PREVIEW                   = 864;
 
     //===========================   TIPOS FICHAS  ==================================================
-    public final static String RECUPERACION_INDIVIDUAL  = "RecuperacionIndividual";
-    public final static String RECUPERACION_GRUPAL      = "RecuperacionGrupal";
+    public final static String RECUPERACION_IND         = "RecuperacionIndividual";
+    public final static String RECUPERACION_GPO         = "RecuperacionGrupal";
+    public final static String COBRANZA_IND             = "CobranzaVencidaIndividual";
+    public final static String COBRANZA_GPO             = "CobranzaVencidaGrupal";
+    public final static String CARTERA_VENCIDA_IND      = "CarteraVencidaIndividual";
+    public final static String CARTERA_VENCIDA_GPO      = "CarteraVencidaGrupal";
 
     public final static int LIMIT_COMPLAINTS          = 2;
 
     public static final String PATH                   = Environment.getExternalStorageDirectory().getAbsolutePath();
+    public static final String ROOT_PATH              = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.sidert.sidertmovil/files/Pictures/Files/";
 
     //=========================  Nombre de tablas  =================================================
     public final static String LOG_ASESSOR          = "log_impressions_asessor";
     public final static String LOG_MANAGER          = "log_impressions_manager";
+    public final static String LOG_ASESSOR_T        = "log_impresiones_asesor_test";
+    public final static String LOG_MANAGER_T        = "log_impresiones_gestor_test";
+    public final static String IND                  = "individuals";
+    public final static String GPO                  = "groups";
+    public final static String FICHAS               = "fichas";
+    //public final static String IND_VE               = "individuals_ven";
+    //public final static String GPO_VE               = "groups_ven";
+    public final static String IND_T                = "individuals_t";
+    public final static String GPO_T                = "groups_t";
+    public final static String FICHAS_T               = "fichas_t";
+    //public final static String IND_VE_T             = "individuals_ven_t";
+    //public final static String GPO_VE_T             = "groups_ven_t";
+
+    public final static String STATUS_FICHAS       = "status_fichas";
+
+    //====================   TAGS  PARA  JSON  DE  RESPUESTA  DE  GESTION  =========================
+    public final static String LATITUD                  = "Latitud";
+    public final static String LONGITUD                 = "Longitud";
+    public final static String CONTACTO                 = "Contacto";
+    public final static String MOTIVO_ACLARACION        = "MotivoAclaracion";
+    public final static String COMENTARIO               = "Comentario";
+    public final static String GERENTE                  = "Gerente";
+    public final static String FIRMA                    = "Firma";
+    public final static String FACHADA                  = "Fachada";
+    public final static String EVIDENCIA                = "Evidencia";
+    public final static String ACTUALIZAR_TELEFONO      = "ActualizarTelefono";
+    public final static String NUEVO_TELEFONO           = "Nuevo_telefono";
+    public final static String RESULTADO_PAGO           = "ResultadoPago";
+    public final static String POS_MEDIO_PAGO           = "PosMedioPago";
+    public final static String MEDIO_PAGO               = "MedioPago";
+    public final static String FECHA_DEPOSITO           = "FechaDeposito";
+    public final static String SALDO_CORTE              = "SaldoCorte";
+    public final static String MONTO_REQUERIDO          = "MontoRequerido";
+    public final static String FOLIO_TICKET             = "FolioTicket";
+    public final static String POS_MOTIVO_NO_PAGO       = "PosMotivoNoPago";
+    public final static String MOTIVO_NO_PAGO           = "MotivoNoPago";
+    public final static String FECHA_DEFUNCION          = "FechaDefuncion";
+    public final static String RESUMEN_INTEGRANTES      = "ResumenInegrantes";
+    public final static String INTEGRANTES              = "Integrantes";
+    public final static String MOTIVO_NO_CONTACTO       = "MotivoNoContacto";
+    public final static String RESPUESTA_GESTION        = "RespuestaGestion";
+    public final static String IMPRESORA                = "Impresora";
+    public final static String DETALLE_FICHA            = "DetalleFicha";
+    public final static String TERMINADO                = "Terminado";
+    public final static String EDITABLE                 = "Editable";
+
+
 
 
 

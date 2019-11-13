@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,23 +26,19 @@ import java.util.List;
 public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integrantes_gpo.ViewHolder> {
 
     private Context ctx;
-    private List<ModeloGrupal.IntegrantesDelGrupo> data;
-    private Event evento;
+    public List<ModeloGrupal.IntegrantesDelGrupo> data;
+    private boolean isEditable;
 
-    public interface Event {
-        void Integrante(ModeloGrupal.IntegrantesDelGrupo item, int position);
-    }
-
-    public adapter_integrantes_gpo(Context ctx, List<ModeloGrupal.IntegrantesDelGrupo> data, Event evento) {
+    public adapter_integrantes_gpo(Context ctx, boolean isEditable, List<ModeloGrupal.IntegrantesDelGrupo> data) {
         this.ctx = ctx;
+        this.isEditable = isEditable;
         this.data = data;
-        this.evento = evento;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(ctx).inflate(R.layout.item_cliente, viewGroup, false);
+        View view = LayoutInflater.from(ctx).inflate(R.layout.item_cliente_pago_demo, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -48,7 +46,7 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int pos) {
 
         final ModeloGrupal.IntegrantesDelGrupo integrante = data.get(pos);
-
+        Log.v("NotifyData", "----- "+integrante.getPagoSemanalInt().toString() + " --------");
         holder.bind(integrante, pos);
 
     }
@@ -67,7 +65,7 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
         private EditText etPagoAdelanto;
         private CheckBox cbPagoCompleto;
 
-        private ImageView ibEditar, ibGuardar;
+        //private ImageView ibEditar, ibGuardar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,14 +78,20 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
             etPagoRealizado.requestFocus();
 
-            ibEditar        = itemView.findViewById(R.id.ibEditar);
-            ibGuardar       = itemView.findViewById(R.id.ibGuardar);
+            //ibEditar        = itemView.findViewById(R.id.ibEditar);
+            //ibGuardar       = itemView.findViewById(R.id.ibGuardar);
 
         }
 
         public void bind (final ModeloGrupal.IntegrantesDelGrupo item, final int position) {
+
+            Log.v("-","==================================================================");
+            Log.v("Realizado",item.getPagoRealizado()+"");
+            Log.v("Solidario",item.getPagoSolidario()+"");
+            Log.v("Adelanto",item.getPagoAdelanto()+"");
+            Log.v("-","==================================================================");
             tvNombre.setText(item.getNombre());
-            tvPagoSemanal.setText("Pago Semanal: " + Miscellaneous.moneyFormat(String.valueOf(item.getPagoSemanalInt())));
+            tvPagoSemanal.setText(Miscellaneous.moneyFormat(String.valueOf(item.getPagoSemanalInt())));
             etPagoRealizado.setText(String.valueOf(item.getPagoRealizado()));
             etPagoSolidario.setText(String.valueOf((item.getPagoSolidario() != null)?redondearDecimales(item.getPagoSolidario()):redondearDecimales((double)0)));
             etPagoAdelanto.setText(String.valueOf((item.getPagoAdelanto() != null)?redondearDecimales(item.getPagoAdelanto()):redondearDecimales((double)0)));
@@ -95,12 +99,18 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
             cbPagoCompleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    ibGuardar.setVisibility(View.VISIBLE);
+                    //ibGuardar.setVisibility(View.VISIBLE);
                     data.get(position).setPagoCompleto(isChecked);
                     if (isChecked){
+                        etPagoRealizado.requestFocus();
                         etPagoRealizado.setText(String.valueOf(redondearDecimales(item.getPagoSemanalInt())));
+                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
                     }else {
+                        etPagoRealizado.requestFocus();
                         etPagoRealizado.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
                     }
                 }
             });
@@ -120,22 +130,25 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    if (s.length() > 0) {
-
-                            data.get(position).setPagoRealizado(Double.parseDouble(s.toString()));
-                            if (Double.parseDouble(s.toString()) > item.getPagoSemanalInt()){
-                                etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(s.toString()) - item.getPagoSemanalInt())));
-                            }
-                            else {
-                                etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
-                                etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
-                            }
-
-
-                    } else{
-                        etPagoRealizado.setText(String.valueOf(redondearDecimales((double)0)));
-                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
+                    if (s.length() > 0){
+                        data.get(position).setPagoRealizado(Double.parseDouble(s.toString()));
+                    }
+                    else {
                         data.get(position).setPagoRealizado((double) 0);
+                    }
+
+                    if(etPagoRealizado.hasFocus()) {
+                        if (s.length() > 0) {
+                            if (Double.parseDouble(s.toString()) > item.getPagoSemanalInt()) {
+                                etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(s.toString()) - item.getPagoSemanalInt())));
+                            } else {
+                                etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
+                            }
+
+                        } else {
+                            etPagoRealizado.setText(String.valueOf(redondearDecimales((double) 0)));
+                            etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
+                        }
                     }
                 }
             });
@@ -153,23 +166,31 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                 @Override
                 public void afterTextChanged(Editable s) {
+
                     if (s.length() > 0){
-
-                            data.get(position).setPagoSolidario(Double.parseDouble(s.toString()));
-                            if (Double.parseDouble(s.toString()) + item.getPagoSemanalInt() < Double.parseDouble(etPagoRealizado.getText().toString())){
-                                etPagoAdelanto.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString()) - item.getPagoSemanalInt() - Double.parseDouble(s.toString()))));
-                            }else {
-                                if (Double.parseDouble(s.toString()) - item.getPagoSemanalInt() >= 0){
-                                    etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(s.toString()) - item.getPagoSemanalInt())));
-                                    etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
-                                }
-                            }
-
+                        data.get(position).setPagoSolidario(Double.parseDouble(s.toString()));
                     }
-                    else {
-                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
-                        etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
+                    else{
                         data.get(position).setPagoSolidario((double) 0);
+                    }
+
+                    if(etPagoSolidario.hasFocus()) {
+                        if (s.length() > 0) {
+                            if (Double.parseDouble(s.toString()) + item.getPagoSemanalInt() > Double.parseDouble(etPagoRealizado.getText().toString())) {
+                                etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString().trim()) - item.getPagoSemanalInt())));
+                                etPagoAdelanto.setText(String.valueOf(redondearDecimales((double) 0)));
+                            } else if (Double.parseDouble(s.toString()) + item.getPagoSemanalInt() < Double.parseDouble(etPagoRealizado.getText().toString())) {
+                                etPagoAdelanto.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString()) - item.getPagoSemanalInt() - Double.parseDouble(s.toString()))));
+                            }
+                        } else {
+                            if (Double.parseDouble(etPagoRealizado.getText().toString()) > item.getPagoSemanalInt()){
+                                etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
+                                etPagoAdelanto.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString()) - item.getPagoSemanalInt())));
+                            }else {
+                                etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
+                                etPagoAdelanto.setText(String.valueOf(redondearDecimales((double) 0)));
+                            }
+                        }
                     }
 
                 }
@@ -188,54 +209,27 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    if (s.length() > 0){
-                        data.get(position).setPagoAdelanto(Double.parseDouble(s.toString()));
-                    }
-                    else {
-                        data.get(position).setPagoAdelanto((double) 0);
-                    }
+
+                        if (s.length() > 0) {
+                            data.get(position).setPagoAdelanto(Double.parseDouble(s.toString()));
+
+                        } else {
+                            data.get(position).setPagoAdelanto((double) 0);
+                        }
+
                 }
             });
 
-            if (item.isGuardado()){
-                ibGuardar.setVisibility(View.INVISIBLE);
-                ibEditar.setVisibility(View.VISIBLE);
+            if (isEditable){
+                etPagoRealizado.setEnabled(true);
+                etPagoSolidario.setEnabled(true);
+                cbPagoCompleto.setEnabled(true);
+            }
+            else {
                 etPagoRealizado.setEnabled(false);
                 etPagoSolidario.setEnabled(false);
                 cbPagoCompleto.setEnabled(false);
             }
-            else {
-                ibGuardar.setVisibility(View.VISIBLE);
-                ibEditar.setVisibility(View.INVISIBLE);
-            }
-
-            ibGuardar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (etPagoSolidario.getText().toString().isEmpty()){
-                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
-                    }
-                    data.get(position).setGuardado(true);
-                    ibGuardar.setVisibility(View.INVISIBLE);
-                    ibEditar.setVisibility(View.VISIBLE);
-                    etPagoRealizado.setEnabled(false);
-                    etPagoSolidario.setEnabled(false);
-                    cbPagoCompleto.setEnabled(false);
-                    evento.Integrante(item, position);
-                }
-            });
-
-            ibEditar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ibGuardar.setVisibility(View.VISIBLE);
-                    ibEditar.setVisibility(View.INVISIBLE);
-                    etPagoRealizado.setEnabled(true);
-                    etPagoSolidario.setEnabled(true);
-                    cbPagoCompleto.setEnabled(true);
-                }
-            });
-
         }
     }
 
@@ -248,4 +242,19 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
         resultado=(resultado/Math.pow(10, 2))+parteEntera;
         return resultado;
     }
+
+    public void selectAllItem(boolean isSelectedAll) {
+        try {
+            if (data != null) {
+                for (int index = 0; index < data.size(); index++) {
+                    data.get(index).setPagoRealizado(data.get(index).getPagoSemanalInt());
+                    data.get(index).setPagoCompleto(isSelectedAll);
+                }
+            }
+            notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

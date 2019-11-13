@@ -15,31 +15,50 @@
             android:layout_height="wrap_content"
             android:gravity="center">
             <RadioButton
-                android:id="@+id/rbRecovery"
+                android:id="@+id/rbRecuperacion"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="40dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
                 android:text="Recuperacion"
+                android:textColor="@drawable/radio_flat_text_selector_left" />
+
+            <RadioButton
+                android:id="@+id/rbCobranza"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <View
-                android:background="@color/colorPrimary"
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"/>
-            <RadioButton
-                android:id="@+id/rbWalletExpire"
-                android:text="Cartera Vencida"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <View
-                android:background="@color/colorPrimary"
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"/>
-            <RadioButton
-                android:id="@+id/rbCollect"
+                android:layout_height="40dp"
+                android:background="@drawable/radio_flat_selector_center"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
                 android:text="Cobranza"
+                android:textColor="@drawable/radio_flat_text_selector_center" />
+
+            <RadioButton
+                android:id="@+id/rbCarteraVencida"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="40dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
+                android:text="Cartera Vencida"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+
         </RadioGroup>
         <android.support.v7.widget.RecyclerView
             android:padding="5dp"

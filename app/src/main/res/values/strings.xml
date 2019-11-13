@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Sidert Movil</string>
+    <string name="app_version">1.0.1</string>
+
+    <string name="google_maps_key">AIzaSyCMRfMO7B5u7MXUgOSHqRCQaAF5046VCJM</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
     <string name="orders">Fichas</string>
@@ -54,6 +57,8 @@
     <string name="no_cuenta_bateria">No cuenta con bateria</string>
     <string name="aclaracion">Aclaración</string>
     <string name="management_result">Resultado de la gestión</string>
+    <string name="actualizar_telefono">¿Actualizar teléfono del cliente?</string>
+    <string name="nuevo_telefono">Nuevo teléfono</string>
     <string name="payment">Pagó</string>
     <string name="not_pay">No pago</string>
     <string name="payment_method">Medio de pago</string>
@@ -71,6 +76,7 @@
     <string name="pay_status">Estatus del pago</string>
     <string name="amount_payment_made">Monto del pago realizado</string>
     <string name="legend_amount_made">¿El monto es el correcto? (si está correcto, debe)</string>
+    <string name="resumen_pago">Resumen de Pago</string>
     <string name="deposit_date">Fecha de depósito</string>
     <string name="selected_date">Seleccionar fecha</string>
     <string name="question_photo_gallery">¿Tomará fotografía o adjuntará desde galería?</string>
@@ -82,15 +88,17 @@
     <string name="payment_receipt_number">Número de recibo de pago</string>
     <string name="doesnt_battery">No cuenta con batería</string>
     <string name="receipt_printing">Impresión de recibo</string>
-    <string name="no_contact_comment">Comentario de no contacto</string>
-    <string name="comentario_info_desfasada">Describe a detalle</string>
+    <string name="comentario">Comentario</string>
     <string name="facade_photo">Fotografía de fachada</string>
     <string name="order">Orden</string>
+    <string name="fotografia">Fotografía</string>
+    <string name="galeria">Galería</string>
     <string name="preview">VISTA PREVIA</string>
     <string name="reason_no_payment">Motivo de no pago</string>
+    <string name="motivo_no_contacto">Motivo de no contacto</string>
     <string name="reason_death">Motivo de defunción</string>
     <string name="date_death">Fecha de defunción</string>
-    <string name="outdate_info">Información desfasada</string>
+    <string name="motivo_aclaracion">Motivo de Aclaración</string>
     <string name="specify_cause">Especifica la causa</string>
     <string name="signature_manager">Firma Gerente</string>
     <string name="group_name">Nombre del Grupo</string>
@@ -135,9 +143,15 @@
     <string name="folio_recibo">Número de recibo de pago</string>
     <string name="edit">Editar</string>
     <string name="save">Guardar</string>
+    <string name="clear">Limpiar</string>
     <string name="reason">Motivo</string>
     <string name="subject">Asunto</string>
+    <string name="resumen_int">Resumen de Integrantes</string>
     <string name="sent">Enviar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="limpiar">Limpiar</string>
+    <string name="tabla_pagos">Tabla de Pagos</string>
+    <string name="reporte_omega">Reporte de Omega</string>
     <string name="print_title">Imprimir Recibos</string>
     <string name="leyend_complaint">Su denuncia será completamente anónima.</string>
     <string name="client_signature">Firma Cliente:</string>
@@ -151,7 +165,35 @@
     <string name="amount_total_loan_group">Monto Total Préstamo Grupal</string>
     <string name="pago_parcial">Pago Parcial</string>
     <string name="pago_completo">Pago Completo</string>
+    <string name="concepto">Concepto</string>
+    <string name="ubicacion">Ubicación</string>
     <string name="pago_completo_adelanto">Pago Completo + Adelanto</string>
+    <string name="campo_requerido">Este campo es requerido</string>
+    <string name="arqueo_caja">Arqueo de Caja</string>
+    <string name="billetes">Billetes</string>
+    <string name="cero">0</string>
+    <string name="bi_mil">Billetes de $1000:</string>
+    <string name="bi_qui">Billetes de $500:</string>
+    <string name="bi_dos">Billetes de $200:</string>
+    <string name="bi_cie">Billetes de $100:</string>
+    <string name="bi_cin">Billetes de $50:</string>
+    <string name="bi_vei">Billetes de $20:</string>
+    <string name="subtotal_billetes">SubTotal Billetes</string>
+    <string name="moneda">Moneda</string>
+    <string name="mo_die">Moneda de $10:</string>
+    <string name="mo_cin">Moneda de $5:</string>
+    <string name="mo_dos">Moneda de $2:</string>
+    <string name="mo_pes">Moneda de $1:</string>
+    <string name="ce_cin">Moneda de $0.50:</string>
+    <string name="ce_vei">Moneda de $0.20:</string>
+    <string name="ce_die">Moneda de $0.10:</string>
+    <string name="subtotal_monedas">SubTotal Monedas</string>
+    <string name="final_arqueo_caja">Final Arqueo de Caja</string>
+    <string name="folio_sidert">Ingrese el folio del recibo</string>
+    <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
+    <string name="total_billetes_monedas">Total de billetes y monedas</string>
+    <string name="valor_pago_realizado">Valores del Pago Realizado</string>
+    <string name="copy_rigth">© 2019 SIDERT. Derechos reservados.</string>
 
     <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 
@@ -172,8 +214,25 @@
     <string name="error_process_info">Error al procesar la información.</string>
     <string name="error_contact_TI">Ha ocurrido un error, favor de contactar al departamento de TI.</string>
     <string name="capturar_nueva_firma">¿Desea capturar de nuevo la firma?</string>
+    <string name="capturar_foto_galeria">¿Desea capturar una nueva Fotografía o adjuntar de Galería?</string>
+    <string name="capturar_nueva_fotografia">¿Desea capturar una nueva Fotografía?</string>
+    <string name="guardar_cambios">¿Desea guardar los cambios?</string>
+    <string name="error_guardar_arqueo">Ingrese la cantidad de billetes y monedas en su respectiva denominación</string>
+    <string name="no_telefono">No cuenta con número de teléfono</string>
+    <string name="complete_campos_faltantes">Complete los campos faltantes</string>
+    <string name="no_ubicacion">No se logró obtener tu ubicación, intente de nuevo.</string>
+    <string name="error_login">Usuario y/o contraseña incorrecta, intente de nuevo.</string>
+    <string name="guardando_info">Guardando informción, por favor espere . . .</string>
+    <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
+    <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
+    <string name="leyenda_guardar_gestion">Este es un resumen de los datos que capturaste, antes de proseguir con el guardado de la información confirma que los datos son los correctos.</string>
+    <string name="privacy_polices_lite">SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TRÓPICO, S.A. DE C.V., con domicilio en Sarapes 74, Fracc. Rincón Mexicano, C.P. 91880, Veracruz, Ver., México.  En cumplimiento a lo establecido en la Ley Federal de Protacción &lt;u>&lt;font color="#1576ba">Leer más . . .&lt;font>&lt;u></string>
+    <string name="privacy_polices">SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TRÓPICO, S.A. DE C.V., con domicilio en Sarapes 74, Fracc. Rincón Mexicano, C.P. 91880, Veracruz, Ver., México.  En cumplimiento a lo establecido en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (la “Ley”), su Reglamento y los Lineamientos del Aviso de Privacidad, es responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su protección. Su información personal será utilizada para proveer los servicios y productos que ha solicitado, informarle sobre cambios en los mismos y evaluar la calidad del servicio que le brindamos. Mantener el buen uso de sus datos personales y datos personales sensibles, considerándolos como confidenciales en Los términos de este aviso y para uso exclusivo de las finalidades previstas.
+Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página de internet: www.sidert.com.mx
+</string>
 
-    <!--  TODO: Arrays  -->
+
+    <!-- TODO: Arrays -->
     <string-array name="banks">
         <item>Banamex</item>
         <item>Banorte</item>
@@ -182,20 +241,16 @@
         <item>Bancomer</item>
     </string-array>
 
-    <string-array name="open_pay">
-        <item>Aurrera</item>
-        <item>Farmacia del ahorro</item>
-        <item>Guadalajara</item>
+    <string-array name="reason_no_pay">
+        <item>Seleccione una opción</item>
+        <item>Negación de pago</item>
+        <item>Fallecimiento</item>
         <item>Otro</item>
     </string-array>
 
-    <string-array name="files">
-        <item>Fotografía</item>
-        <item>Galería</item>
-    </string-array>
-
-    <string-array name="reason_no_pay">
+    <string-array name="reason_no_pay_cv">
         <item>Seleccione una opción</item>
+        <item>Insolvente</item>
         <item>Negación de pago</item>
         <item>Fallecimiento</item>
         <item>Otro</item>
@@ -209,16 +264,28 @@
     </string-array>
 
     <string-array name="method_pay">
-        <item>Seleccione una opción</item>
-        <item>Banco</item>
-        <item>Oxxo</item>
-        <item>Efectivo</item>
-        <item>SIDERT</item>
+        <item>Seleccione una opción</item>  <!-- 0 -->
+        <item>Banamex</item>                <!-- 1 -->
+        <item>Banorte</item>                <!-- 2 -->
+        <item>Bancomer</item>               <!-- 3 -->
+        <item>Oxxo</item>                   <!-- 4 -->
+        <item>Telecom</item>                <!-- 5 -->
+        <item>Bansefi</item>                <!-- 6 -->
+        <item>Efectivo</item>               <!-- 7 -->
+        <item>SIDERT</item>                 <!-- 8 -->
     </string-array>
 
-    <string-array name="method_pay_expired">
-        <item>Efectivo</item>
+    <string-array name="motivo_no_contacto">
+        <item>Seleccione una opción</item>
+        <item>Cliente Fugado</item>
+        <item>Ilocalizable</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="metodo_pago_cv">
+        <item>Seleccione una opción</item>
         <item>Banamex722</item>
+        <item>Efectivo</item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--  ID external order -->
+    <TextView
+        android:id="@+id/tvExternalID"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/shadowdrawer"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="15dp"
+            android:paddingBottom="10dp"
+            android:background="@color/white">
+
+            <!--  Número de préstamo  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/loan_number"
+                    android:textColor="@android:color/black"
+                     android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etNumeroPrestamo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:elevation="5dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Fecha de crédito otorgado  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/credit_date_granted"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etFechaCreditoOtorgado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Número de cliente  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/client_number"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize" />
+
+                <EditText
+                    android:id="@+id/etNumeroCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Nombre del cliente  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/client_name"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etNombreCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Llamer al cliente a su domicilio  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/call_client_at_home"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/btnCallHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:drawableRight="@drawable/ic_call"
+                    android:paddingTop="2dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="2dp"
+                    android:text="@string/call"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <!--  Llamer al cliente a su celular  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/call_client_at_cellphone"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/btnCallCell"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:drawableEnd="@drawable/ic_call"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="2dp"
+                    android:text="@string/call"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <!--  Monto del préstamo otorgado  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/loan_amount_granted"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etMontoPrestamoOtorgado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Monto total del préstamo  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_loan_amount"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize" />
+
+                <EditText
+                    android:id="@+id/etMontoTotalPrestamo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Número de amortización  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amortization_number"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etNumeroAmortizacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Monto del pago requerido  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_payment_required"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etPagoRequerido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Monto de amortización  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amortization_amount"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etMontoAmortizacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Fecha de pago establecida  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/established_payment_date"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize" />
+
+                <EditText
+                    android:id="@+id/etFechaPagoEstablecida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Datos del aval  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/gray_light">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/endorsement_data"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/blue_sidert" />
+            </LinearLayout>
+
+            <!--  Nombre completo del aval  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fullname_endorsement"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize"/>
+
+                <EditText
+                    android:id="@+id/etNombreAval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Parentesco con el aval  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kinship_with_endorsement"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize" />
+
+                <EditText
+                    android:id="@+id/etParentescoAval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/textsize" />
+            </LinearLayout>
+
+            <!--  Llamer al teléfono del aval  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/call_endorsement_phone"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/btnCallEndorsement"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:drawableRight="@drawable/ic_call"
+                    android:paddingTop="2dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="2dp"
+                    android:text="@string/call"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>

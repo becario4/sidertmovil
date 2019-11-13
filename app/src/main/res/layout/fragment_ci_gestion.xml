@@ -1,0 +1,868 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <!--  ID external order -->
+    <TextView
+        android:id="@+id/tvExternalID"
+        android:textSize="17sp"
+        android:textColor="@android:color/white"
+        android:background="@color/shadowdrawer"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Ubicacion del contacto -->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/payment_recovery_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton
+                    android:id="@+id/imbMap"
+                    android:src="@drawable/ic_pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:visibility="gone"
+                    android:indeterminate="true"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapGestion"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
+            </LinearLayout>
+
+            <!-- ¿Contactó al cliente?-->
+            <LinearLayout
+                android:id="@+id/llContactoCliente"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvContactoCliente"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/contacted_client"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/rgContactoCliente"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSiContacto"
+                        android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbNoContacto"
+                        android:text="@string/not"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbAclaración"
+                        android:text="@string/aclaracion"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Actualizar telefono -->
+            <LinearLayout
+                android:id="@+id/llActualizarTelefono"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvActualizarTelefono"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/actualizar_telefono"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgActualizarTelefono"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <RadioButton
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/rbSiActualizar"
+                        android:text="@string/yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <RadioButton
+                        android:layout_marginLeft="50dp"
+                        android:id="@+id/rbNoActualizar"
+                        android:text="@string/not"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </RadioGroup>
+                <EditText
+                    android:id="@+id/etActualizarTelefono"
+                    android:hint="@string/nuevo_telefono"
+                    android:visibility="gone"
+                    android:paddingLeft="10dp"
+                    android:inputType="phone"
+                    android:maxLength="10"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
+            </LinearLayout>
+
+            <!-- Resultado de la gestión -->
+            <LinearLayout
+                android:id="@+id/llResultadoGestion"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvResultadoGestion"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/management_result"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgResultadoPago"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <RadioButton
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/rbPago"
+                        android:text="@string/payment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <RadioButton
+                        android:layout_marginLeft="50dp"
+                        android:id="@+id/rbNoPago"
+                        android:text="@string/not_pay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Medio de pago -->
+            <LinearLayout
+                android:id="@+id/llMedioPago"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvMedioPago"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/payment_method"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spMedioPago"
+                    android:entries="@array/method_pay"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!--  Fecha de deposito   -->
+            <LinearLayout
+                android:id="@+id/llFechaDeposito"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/deposit_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etFechaDeposito"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:hint="@string/deposit_date"
+                    android:drawableRight="@drawable/ic_date"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Monto del pago requerido  -->
+            <LinearLayout
+                android:id="@+id/llMontoPagoRequerido"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/amount_payment_required"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etMontoPagoRequerido"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Se pagara el monto requerido  -->
+            <LinearLayout
+                android:id="@+id/llPagaraRequerido"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvPagaraRequerido"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/amount_required_paid"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgPagaraRequerido"
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbSiRequerido"
+                        android:text="@string/yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbNoRequerido"
+                        android:text="@string/not"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!--  Monto del pago realizado  -->
+            <LinearLayout
+                android:id="@+id/llMontoPagoRealizado"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/amount_payment_made"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etPagoRealizado"
+                    android:drawableStart="@drawable/ic_money"
+                    android:paddingLeft="10dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- ¿El monto es el correcto?-->
+            <LinearLayout
+                android:id="@+id/llMontoCorrecto"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tvMontoCorrecto"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/monto_correcto"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/rgMontoCorrecto"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSiCorrecto"
+                        android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbNoCorrecto"
+                        android:text="@string/not"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!--  Arqueo de Caja  -->
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/llArqueoCaja"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvArqueoCaja"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/arqueo_caja"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/btnArqueoCaja"
+                    android:drawableRight="@drawable/ic_money"
+                    android:paddingRight="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:text="@string/arqueo_caja"
+                    android:textColor="@android:color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <RadioButton
+                    android:id="@+id/rbArqueoCaja"
+                    android:paddingLeft="10dp"
+                    android:visibility="gone"
+                    android:drawableStart="@drawable/ic_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Estatus del pago -->
+            <LinearLayout
+                android:id="@+id/llEstatusPago"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/estatus_pago"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etEstatusPago"
+                    android:enabled="false"
+                    android:hint="Estatus del pago"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Saldo al corte  -->
+            <LinearLayout
+                android:id="@+id/llSaldoCorte"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/balance_cutting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etSaldoCorte"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Saldo actual  -->
+            <LinearLayout
+                android:id="@+id/llSaldoActual"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/current_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etSaldoActual"
+                    android:enabled="false"
+                    android:hint="Calcular saldo actual"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- ¿Imprimir recibos?-->
+            <LinearLayout
+                android:id="@+id/llImprimirRecibo"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/imprimir_recibos"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/rgRecibos"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSiRecibo"
+                        android:text="@string/yes"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:id="@+id/rbNoRecibo"
+                        android:text="@string/no_cuenta_bateria"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Folio de recibo -->
+            <LinearLayout
+                android:id="@+id/llFolioRecibo"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/folio_recibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etFolioRecibo"
+                    android:enabled="false"
+                    android:hint="Obtener el folio del recibo impreso"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Tomara fotografia o adjuntara desde galeria-->
+            <LinearLayout
+                android:id="@+id/llFotoGaleria"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/question_photo_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:layout_weight="1"
+                        android:id="@+id/ibFoto"
+                        android:layout_marginRight="50dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="50dp"
+                        android:background="@drawable/round_corner_blue"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:src="@drawable/ic_camera_white" />
+                    <ImageButton
+                        android:id="@+id/ibGaleria"
+                        android:layout_weight="1"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginRight="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:padding="15dp"
+                        android:background="@drawable/round_corner_blue"
+                        android:src="@drawable/ic_folder_white" />
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/ivEvidencia"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
+            </LinearLayout>
+
+            <!--  Motivo de no pago  -->
+            <LinearLayout
+                android:id="@+id/llMotivoNoPago"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvMotivoNoPago"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/reason_no_payment"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Spinner
+                    android:id="@+id/spMotivoNoPago"
+                    android:entries="@array/reason_no_pay"
+                    android:spinnerMode="dialog"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!--  Información Desfasada  -->
+            <LinearLayout
+                android:id="@+id/llInfoDesfasada"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvInfoDesfasada"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/motivo_aclaracion"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etInfoDesfasada"
+                    android:focusable="false"
+                    android:hint="@string/motivo_aclaracion"
+                    android:drawableEnd="@drawable/ic_drop_down"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:inputType="text"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Comentario -->
+            <LinearLayout
+                android:id="@+id/llComentario"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/comentario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etComentario"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:ems="10"
+                    android:hint="@string/comentario"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <!--  Datos de defunción  -->
+            <LinearLayout
+                android:id="@+id/llDatosDefuncion"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/date_death"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etFechaDefuncion"
+                    android:hint="@string/date_death"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:drawableEnd="@drawable/ic_date"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Fotografía de fachada  -->
+            <LinearLayout
+                android:id="@+id/llFotoFachada"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvFotoFachada"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/facade_photo"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:id="@+id/ibFotoFachada"
+                        android:layout_width="match_parent"
+                        android:contentDescription="@string/facade_photo"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/round_corner_blue"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:src="@drawable/ic_camera_white" />
+                    <ImageView
+                        android:id="@+id/ivFotoFachada"
+                        android:contentDescription="@string/facade_photo"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="110dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Esta el gerente con usted -->
+            <LinearLayout
+                android:id="@+id/llEstaGerente"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvEstaGerente"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/is_manager"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgEstaGerente"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbSiGerente"
+                        android:text="@string/yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:layout_weight="1"
+                        android:id="@+id/rbNoGerente"
+                        android:text="@string/not"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Firma gerente-->
+            <LinearLayout
+                android:id="@+id/llFirma"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/signature_manager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/ibFirma"
+                    android:src="@drawable/ic_gesture"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <ImageView
+                    android:id="@+id/ivFirma"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>

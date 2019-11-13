@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
@@ -53,6 +54,7 @@ public class dialog_synchronize_db extends DialogFragment {
     private Button btnSynchronize;
     private Validator validator;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.popup_synchronize_db, container, false);
@@ -95,7 +97,7 @@ public class dialog_synchronize_db extends DialogFragment {
 
     public void DownloadImpressions(){
         if (NetworkStatus.haveNetworkConnection(ctx)){
-            final AlertDialog loading = Popups.showLoadingDialog(ctx,ctx.getResources().getString(R.string.please_wait), ctx.getResources().getString(R.string.loading_info));
+            final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
             ManagerInterface api = new RetrofitClient().generalRF().create(ManagerInterface.class);
@@ -118,7 +120,7 @@ public class dialog_synchronize_db extends DialogFragment {
                             String where = " WHERE external_id = ? AND folio = ? AND type_impression = ? ";
                             String order = "";
                             String[] args =  new String[] {result.get(i).getExternalid(), result.get(i).getFolio(), result.get(i).getTipo()};
-                            row = dBhelper.getDataImpresionsLog(table, where, order, args);
+                            row = dBhelper.getRecords(table, where, order, args);
                             Log.v("CountSelect",row.getCount()+"");
                             if (row.getCount() == 0){
                                 HashMap<Integer, String> params = new HashMap<>();
@@ -151,12 +153,13 @@ public class dialog_synchronize_db extends DialogFragment {
 
         }
         else{
-            final AlertDialog errorInternet = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.not_network), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
+            final AlertDialog errorInternet = Popups.showDialogMessage(ctx, Constants.not_network,
+                    R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                 @Override
                 public void OnClickListener(AlertDialog dialog) {
                     dialog.dismiss();
                 }
-            }, null, null);
+            });
             errorInternet.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             errorInternet.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             errorInternet.show();

@@ -23,7 +23,7 @@ public class PrintTicket {
     private final char ESC = ESCPOS.ESC;
     private final char LF = ESCPOS.LF;
     private String linea;
-    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     private String date = "";
 
     public void WriteTicket (Context ctx, OrderModel ticket) {
@@ -36,7 +36,7 @@ public class PrintTicket {
 
     private void HeadTicket (Context ctx, OrderModel ticket){
         try {
-            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_sidert_impresion);
+            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.imagen1);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
             if (ticket.getResultPrint() == 0){
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");

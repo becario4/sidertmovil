@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.sidert.sidertmovil.utils.Constants;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class SplashSidertActivity extends AppCompatActivity {
 
@@ -16,6 +18,7 @@ public class SplashSidertActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Fabric.with(this, new Crashlytics());
         if (Constants.ENVIROMENT)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_splash_sidert);

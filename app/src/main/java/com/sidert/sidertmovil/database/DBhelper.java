@@ -2,6 +2,7 @@ package com.sidert.sidertmovil.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -30,13 +31,170 @@ public class DBhelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+        db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion > DATABASE_VERSION){
+        db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+    }
 
-        }
+    public void saveRecordsFichas (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.ASESOR_ID + ", " +
+                SidertTables.SidertEntry.EXTERNAL_ID + ", " +
+                SidertTables.SidertEntry.FORM + ", " +
+                SidertTables.SidertEntry.FECHA_ASIGNACION + ", " +
+                SidertTables.SidertEntry.DIA_SEMANA + ", " +
+                SidertTables.SidertEntry.FECHA_PAGO + ", " +
+                SidertTables.SidertEntry.PRESTAMO_OBJ + ", " +
+                SidertTables.SidertEntry.NOMBRE + ", " +
+                SidertTables.SidertEntry.CLAVE + ", " +
+                SidertTables.SidertEntry.DATOS_OBJ + ", " +
+                SidertTables.SidertEntry.AVAL_OBJ + ", " +
+                SidertTables.SidertEntry.PRESIDENTA_OBJ + ", " +
+                SidertTables.SidertEntry.TESORERA_OBJ + ", " +
+                SidertTables.SidertEntry.SECRETARIA_OBJ + ", " +
+                SidertTables.SidertEntry.REPORTE_OMEGA_OBJ + ", " +
+                SidertTables.SidertEntry.TABLA_PAGOS_OBJ + ", " +
+                SidertTables.SidertEntry.IMPRESION + ", " +
+                SidertTables.SidertEntry.FECHA_INI + ", " +
+                SidertTables.SidertEntry.FECHA_TER + ", " +
+                SidertTables.SidertEntry.FECHA_ENV + ", " +
+                SidertTables.SidertEntry.FECHA_CON + ", " +
+                SidertTables.SidertEntry.RESPUESTA + ", " +
+                SidertTables.SidertEntry.STATUS + ", " +
+                SidertTables.SidertEntry.TIMESTAMP + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //ASESOR ID             1
+        pInsert.bindString(2, params.get(1));                   //EXTERNAL ID           2
+        pInsert.bindString(3, params.get(2));                   //NOMBRE FORMULARIO     3
+        pInsert.bindString(4, params.get(3));                   //FECHA ASIGNACION      4
+        pInsert.bindString(5, params.get(4));                   //DIA SEMANA            5
+        pInsert.bindString(6, params.get(5));                   //FECHA PAGO            6
+        pInsert.bindString(7, params.get(6));                   //PRESTAMO OBJ          7
+        pInsert.bindString(8, params.get(7));                   //NOMBRE                8
+        pInsert.bindString(9, params.get(8));                   //CLAVE                 9
+        pInsert.bindString(10, params.get(9));                  //DATOS OBJ             10
+        pInsert.bindString(11, params.get(10));                 //AVAL OBJ              11
+        pInsert.bindString(12, params.get(11));                 //PRESIDENTA OBJ        12
+        pInsert.bindString(13, params.get(12));                 //TESORERA OBJ          13
+        pInsert.bindString(14, params.get(13));                 //SECRETARIA OBJ        14
+        pInsert.bindString(15, params.get(14));                 //REPORTE OMEGA OBJ     15
+        pInsert.bindString(16, params.get(15));                 //TABLA PAGOS OBJ       16
+        pInsert.bindLong(17, Integer.parseInt(params.get(16))); //IMPRESION             17
+        pInsert.bindString(18, params.get(17));                 //FECHA INICIO          18
+        pInsert.bindString(19, params.get(18));                 //FECHA TERMINADO       19
+        pInsert.bindString(20, params.get(19));                 //FECHA ENVIADO         20
+        pInsert.bindString(21, params.get(20));                 //FECHA CONFIRMADO      21
+        pInsert.bindString(22, params.get(21));                 //RESPUESTA             22
+        pInsert.bindLong(23, Integer.parseInt(params.get(22))); //ESTATUS               23
+        pInsert.bindString(24, params.get(23));                 //TIMESTAMP             24
+        pInsert.execute();
+
+        Log.v("nombreSave", params.get(7));
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+    public void saveRecordsInd (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.ASESOR_ID + ", " +
+                SidertTables.SidertEntry.EXTERNAL_ID + ", " +
+                SidertTables.SidertEntry.FORM + ", " +
+                SidertTables.SidertEntry.FECHA_ASIGNACION + ", " +
+                SidertTables.SidertEntry.NOMBRE_CLIENTE + ", " +
+                SidertTables.SidertEntry.CLIENTE_OBJ + ", " +
+                SidertTables.SidertEntry.AVAL_OBJ + ", " +
+                SidertTables.SidertEntry.PRESTAMO_OBJ + ", " +
+                SidertTables.SidertEntry.REPORTE_OMEGA_OBJ + ", " +
+                SidertTables.SidertEntry.TABLA_PAGOS_OBJ + ", " +
+                SidertTables.SidertEntry.DIA_SEMANA + ", " +
+                SidertTables.SidertEntry.FECHA_PAGO + ", " +
+                SidertTables.SidertEntry.IMPRESION + ", " +
+                SidertTables.SidertEntry.FECHA_TER + ", " +
+                SidertTables.SidertEntry.FECHA_ENV + ", " +
+                SidertTables.SidertEntry.FECHA_CON + ", " +
+                SidertTables.SidertEntry.STATUS + ", " +
+                SidertTables.SidertEntry.TIMESTAMP + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //ASESOR ID
+        pInsert.bindString(2, params.get(1));                   //EXTERNAL ID
+        pInsert.bindString(3, params.get(2));                   //NOMBRE FORMULARIO
+        pInsert.bindString(4, params.get(3));                   //FECHA ASIGNACION
+        pInsert.bindString(5, params.get(4));                   //NOMBRE CLIENTE
+        pInsert.bindString(6, params.get(5));                   //CLIENTE OBJ
+        pInsert.bindString(7, params.get(6));                   //AVAL OBJ
+        pInsert.bindString(8, params.get(7));                   //PRESTAMO OBJ
+        pInsert.bindString(9, params.get(8));                   //REPORTE OMEGA OBJ
+        pInsert.bindString(10, params.get(9));                   //TABLA PAGOS OBJ
+        pInsert.bindString(11, params.get(10));                  //DIA SEMANA
+        pInsert.bindLong(12, Integer.parseInt(params.get(11))); //IMPRESION
+        pInsert.bindString(13, params.get(12));                 //FECHA TERMINADO
+        pInsert.bindString(14, params.get(13));                 //FECHA ENVIADO
+        pInsert.bindString(15, params.get(14));                 //FECHA CON
+        pInsert.bindLong(16, Integer.parseInt(params.get(15))); //STATUS
+        pInsert.bindString(17, params.get(16));                 //TIMESTAMP
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveRecordsGpo (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.ASESOR_ID + ", " +
+                SidertTables.SidertEntry.EXTERNAL_ID + ", " +
+                SidertTables.SidertEntry.FORM + ", " +
+                SidertTables.SidertEntry.FECHA_ASIGNACION + ", " +
+                SidertTables.SidertEntry.NOMBRE_GPO + ", " +
+                SidertTables.SidertEntry.CLAVE + ", " +
+                SidertTables.SidertEntry.INTEGRANTES_OBJ + ", " +
+                SidertTables.SidertEntry.TOTAL_INTEGRANTES + ", " +
+                SidertTables.SidertEntry.PRESIDENTA_OBJ + ", " +
+                SidertTables.SidertEntry.SECRETARIA_OBJ + ", " +
+                SidertTables.SidertEntry.PRESTAMO_OBJ + ", " +
+                SidertTables.SidertEntry.REPORTE_OMEGA_OBJ + ", " +
+                SidertTables.SidertEntry.TABLA_PAGOS_OBJ + ", " +
+                SidertTables.SidertEntry.DIA_SEMANA + ", " +
+                SidertTables.SidertEntry.FECHA_PAGO + ", " +
+                SidertTables.SidertEntry.STATUS + ", " +
+                SidertTables.SidertEntry.FECHA_TER + ", " +
+                SidertTables.SidertEntry.FECHA_ENV + ", " +
+                SidertTables.SidertEntry.FECHA_CON + ", " +
+                SidertTables.SidertEntry.TIMESTAMP + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //ASESOR ID
+        pInsert.bindString(2, params.get(1));                   //EXTERNAL ID
+        pInsert.bindString(3, params.get(2));                   //NOMBRE FORMULARIO
+        pInsert.bindString(4, params.get(3));                   //FECHA ASIGNACION
+        pInsert.bindString(5, params.get(4));                   //NOMBRE GPO
+        pInsert.bindString(6, params.get(5));                   //CLAVE
+        pInsert.bindString(7, params.get(6));                   //INTEGRANTES OBJ
+        pInsert.bindLong(8, Integer.parseInt(params.get(7)));   //TOTAL INTEGRANTES
+        pInsert.bindString(9, params.get(8));                   //PRESIDENTA OBJ
+        pInsert.bindString(10, params.get(9));                   //SECRETARIO OBJ
+        pInsert.bindString(11, params.get(10));                  //PRESTAMO_OBJ
+        pInsert.bindString(12, params.get(11));                 //REPORTE OMAEGAJ OBJ
+        pInsert.bindString(13, params.get(12));                 //TABLA DE PAGOS
+        pInsert.bindString(14, params.get(13));                 //DIA SEMAMA
+        pInsert.bindString(15, params.get(14));                 //FECHA PAGO
+        pInsert.bindLong(16, Integer.parseInt(params.get(15))); //ESTATUS
+        pInsert.bindString(17, params.get(16));                 //FECHA_TER;
+        pInsert.bindString(18, params.get(17));                 //FECHA_ENV
+        pInsert.bindString(19, params.get(18));                 //FECHA_CON
+        pInsert.bindString(20, params.get(19));                 //TIMESTAMP
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void saveRecordsImpressionsLog(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
@@ -53,7 +211,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 SidertTables.SidertEntry.STATUS + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Integer.parseInt(params.get(0)));   //FOLIO
-        pInsert.bindString(2, params.get(1));                     //ID ASESOR
+        pInsert.bindString(2, params.get(1));                   //ID ASESOR
         pInsert.bindString(3, params.get(2));                   //ID ORDEN
         pInsert.bindString(4, params.get(3));                   //MONTO
         pInsert.bindString(5, params.get(4));                   //TIPO IMPRESION
@@ -67,14 +225,15 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public Cursor getDataImpresionsLog(String table, String where, String order, String[] args){
+    public Cursor getRecords(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
         return res;
     }
 
-    public int updateImpressionsLog(String table, JSONObject params) throws JSONException {
-        SQLiteDatabase db = this.getReadableDatabase();
+    public int updateRecords(Context ctx, String table, JSONObject params) throws JSONException {
+        DBhelper objBD = new DBhelper(ctx);
+        SQLiteDatabase db = objBD.getWritableDatabase();
         ContentValues values = new ContentValues();
         String conditionals = "";
 
@@ -83,13 +242,16 @@ public class DBhelper extends SQLiteOpenHelper {
 
         for (int i = 0; i < jsonParams.length(); i++){
             JSONObject item = jsonParams.getJSONObject(i);
+            Log.v("values", item.getString(Constants.KEY) + ":" + item.getString(Constants.VALUE));
             values.put(item.getString(Constants.KEY),item.getString(Constants.VALUE));
         }
 
         for (int j = 0; j < jsonCon.length(); j++){
             JSONObject item = jsonCon.getJSONObject(j);
-            conditionals += item.getString(Constants.KEY) + item.getString(Constants.VALUE);
+            Log.v("condi", item.getString(Constants.KEY) + ":" + item.getString(Constants.VALUE));
+            conditionals += item.getString(Constants.KEY) + "='"+item.getString(Constants.VALUE)+"'";
         }
+
         return db.update(table, values, conditionals, null);
     }
 }

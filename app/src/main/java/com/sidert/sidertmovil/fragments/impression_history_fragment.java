@@ -32,9 +32,9 @@ public class impression_history_fragment extends Fragment {
     private Context ctx;
     private Home boostrap;
 
-    private RadioButton rbRecovery;
-    private RadioButton rbCollect;
-    private RadioButton rbWallet;
+    private RadioButton rbRecuperacion;
+    private RadioButton rbCobranza;
+    private RadioButton rbCarteraVencida;
 
     private RecyclerView rvHistory;
 
@@ -49,9 +49,9 @@ public class impression_history_fragment extends Fragment {
         ctx     = getContext();
         boostrap    = (Home) getActivity();
 
-        rbRecovery  = view.findViewById(R.id.rbRecovery);
-        rbCollect   = view.findViewById(R.id.rbCollect);
-        rbWallet    = view.findViewById(R.id.rbWalletExpire);
+        rbRecuperacion      = view.findViewById(R.id.rbRecuperacion);
+        rbCobranza          = view.findViewById(R.id.rbCobranza);
+        rbCarteraVencida    = view.findViewById(R.id.rbCarteraVencida);
 
         rvHistory   = view.findViewById(R.id.rvLogImp);
 
@@ -67,24 +67,24 @@ public class impression_history_fragment extends Fragment {
         dbHelper = new DBhelper(ctx);
 
 
-        rbRecovery.setOnClickListener(new View.OnClickListener() {
+        rbRecuperacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FillAdapter(Constants.LOG_ASESSOR,1);
             }
         });
 
-        rbCollect.setOnClickListener(new View.OnClickListener() {
+        rbCobranza.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FillAdapter(Constants.LOG_ASESSOR,3);
+                FillAdapter(Constants.LOG_ASESSOR,2);
             }
         });
 
-        rbWallet.setOnClickListener(new View.OnClickListener() {
+        rbCarteraVencida.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FillAdapter(Constants.LOG_MANAGER, 2);
+                FillAdapter(Constants.LOG_MANAGER, 3);
             }
         });
     }
@@ -93,7 +93,7 @@ public class impression_history_fragment extends Fragment {
         rvHistory.setAdapter(null);
         Cursor row;
 
-        row = dbHelper.getDataImpresionsLog(table,""," ORDER BY folio DESC",null);
+        row = dbHelper.getRecords(table,""," ORDER BY folio DESC",null);
 
         if (row.getCount() > 0){
 
@@ -115,7 +115,7 @@ public class impression_history_fragment extends Fragment {
                     }
                 }
                 else if (id == 2){
-                    if (row.getString(3).contains("cvi") || row.getString(3).contains("cvg")){
+                    if (row.getString(3).contains("ci") || row.getString(3).contains("cg")){
                         obj.add(new
                                 ImpressionsFields(row.getString(3),
                                 row.getString(2),

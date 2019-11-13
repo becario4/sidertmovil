@@ -1,9 +1,7 @@
 package com.sidert.sidertmovil.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,181 +14,133 @@ import com.sidert.sidertmovil.R;
 
 public class Popups {
 
-    private static int DIALOG_MESSAGE  = R.layout.popup_message;
-    private static int DIALOG_SUCCESS  = R.layout.popup_success;
-    private static int DIALOG_LODING   = R.layout.popup_loading;
-    private static int DIALOG_PROGRESS = R.layout.popup_progress;
+    private static int DIALOG_MESSAGE           = R.layout.popup_message;
+    private static int DIALOG_CONFIRM           = R.layout.popup_confirm;
+    private static int DIALOG_CONFIRM_IMAGE     = R.layout.popup_confirm_image;
+    private static int DIALOG_LODING            = R.layout.popup_loading;
+    private static int DIALOG_PROGRESS          = R.layout.popup_progress;
     public interface DialogMessage {
         void OnClickListener(AlertDialog dialog);
     }
 
-    public static AlertDialog showDialogMessage(Context ctx, int message,
-                                                int btnOk, final DialogMessage btnOkClick,
-                                                int btnFail, final DialogMessage btnFailClick) {
 
-        // LOADING VIEWS
-        View view          = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
-        TextView TVmessage = view.findViewById(R.id.TVmessage);
-        Button BTNok       = view.findViewById(R.id.btnAccept);
-        Button BTNfail     = view.findViewById(R.id.btnCancel);
-
-        // FILLING VIEWS
-        TVmessage.setText(ctx.getString(message));
-
-        final AlertDialog dialog = new AlertDialog.Builder(ctx)
-                .setCancelable(false)
-                .setView(view).create();
-
-        if(btnOk != 0) {
-            BTNok.setText(ctx.getString(btnOk));
-            BTNok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnOkClick.OnClickListener(dialog);
-                }
-            });
-        }
-
-        if(btnFail != 0) {
-            BTNfail.setText(ctx.getString(btnFail));
-            BTNfail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnFailClick.OnClickListener(dialog);
-                }
-            });
-        }
-
-        return dialog;
-    }
-
-    public static AlertDialog showDialogMessage(Context ctx, String message,
-                                                String btnOk, final DialogMessage btnOkClick,
-                                                int btnFail, final DialogMessage btnFailClick) {
-        // LOADING VIEWS
-        View view          = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
-        TextView TVmessage = view.findViewById(R.id.TVmessage);
-        Button BTNok       = view.findViewById(R.id.btnAccept);
-        Button BTNfail     = view.findViewById(R.id.btnCancel);
-
-        // FILLING VIEWS
-        TVmessage.setText(message);
-
-        final AlertDialog dialog = new AlertDialog.Builder(ctx)
-                .setCancelable(false)
-                .setView(view).create();
-
-        if(btnOk != "") {
-            BTNok.setText(btnOk);
-            BTNok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnOkClick.OnClickListener(dialog);
-                }
-            });
-        }
-
-        if(btnFail != 0) {
-            BTNfail.setText(ctx.getString(btnFail));
-            BTNfail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnFailClick.OnClickListener(dialog);
-                }
-            });
-        }
-
-        return dialog;
-    }
-
-    public static AlertDialog showDialogMessage(Context ctx, String icon, String message,
-                                                String btnOk, final DialogMessage btnOkClick,
-                                                String btnFail, final DialogMessage btnFailClick) {
+    public static AlertDialog showDialogMessage(Context ctx, String icon, int message,
+                                                int btOk, final DialogMessage btnOkClick) {
         // LOADING VIEWS
         View view           = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
-        TextView TVmessage  = view.findViewById(R.id.tvMessage);
-        Button BTNok        = view.findViewById(R.id.btnAccept);
-        Button BTNfail      = view.findViewById(R.id.btnFail);
-        ImageView IVicon    = view.findViewById(R.id.ivIcon);
+        TextView tvMessage  = view.findViewById(R.id.tvMessage);
+        Button btnOk        = view.findViewById(R.id.btnAccept);
+        ImageView ivIcon    = view.findViewById(R.id.ivIcon);
 
 
         switch (icon){
             case Constants.not_network:
-                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_close_white)).into(IVicon);
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_wifi_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.face_happy:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_face_satisfied)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            case Constants.face_dissatisfied:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_dissatisfied)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.money:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_money_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.print_off:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_print_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.login:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_error)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.warning:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_warning)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
+                break;
+            default:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_question)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
                 break;
         }
         // FILLING VIEWS
-        TVmessage.setText(message);
-
-        BTNfail.setVisibility(View.GONE);
+        tvMessage.setText(ctx.getResources().getString(message));
 
         final AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setCancelable(false)
                 .setView(view).create();
 
-        if(btnOk != null) {
-            BTNok.setText(btnOk);
-            BTNok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnOkClick.OnClickListener(dialog);
-                }
-            });
-        }
 
-        if(btnFail != null) {
-            BTNfail.setVisibility(View.VISIBLE);
-            BTNfail.setText(btnFail);
-            BTNfail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnFailClick.OnClickListener(dialog);
-                }
-            });
-        }
+        btnOk.setText(ctx.getResources().getString(btOk));
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOkClick.OnClickListener(dialog);
+            }
+        });
 
         return dialog;
     }
 
-    public static AlertDialog showDialogSuccess(Context ctx, String icon, String message,
-                                                String btnOk, final DialogMessage btnOkClick,
-                                                String btnFail, final DialogMessage btnFailClick) {
+    public static AlertDialog showDialogConfirm(Context ctx, String icon, int message,
+                                                int btOk, final DialogMessage btnOkClick,
+                                                int btFail, final DialogMessage btnFailClick) {
         // LOADING VIEWS
-        View view           = LayoutInflater.from(ctx).inflate(DIALOG_SUCCESS, null);
-        TextView TVmessage  = view.findViewById(R.id.tvMessage);
-        Button BTNok        = view.findViewById(R.id.btnAccept);
-        Button BTNfail      = view.findViewById(R.id.btnFail);
-        ImageView IVicon    = view.findViewById(R.id.ivIcon);
+        View view           = LayoutInflater.from(ctx).inflate(DIALOG_CONFIRM, null);
+        TextView tvMessage  = view.findViewById(R.id.tvMessage);
+        Button btnOk        = view.findViewById(R.id.btnAccept);
+        Button btnFail      = view.findViewById(R.id.btnFail);
+        ImageView ivIcon    = view.findViewById(R.id.ivIcon);
 
         switch (icon){
             case Constants.success:
-                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_done)).into(IVicon);
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_done)).into(ivIcon);
+                break;
+            case Constants.firma:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_firma_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            case Constants.print_off:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_print_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.camara:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_cam)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            default:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_question)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
                 break;
         }
         // FILLING VIEWS
-        TVmessage.setText(message);
+        tvMessage.setText(ctx.getResources().getString(message));
 
-        BTNfail.setVisibility(View.GONE);
+        btnFail.setVisibility(View.GONE);
 
 
         final AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setCancelable(false)
                 .setView(view).create();
 
-        if(btnOk != null) {
-            BTNok.setText(btnOk);
-            BTNok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnOkClick.OnClickListener(dialog);
-                }
-            });
-        }
 
-        if(btnFail != null) {
-            BTNfail.setVisibility(View.VISIBLE);
-            BTNfail.setText(btnFail);
-            BTNfail.setOnClickListener(new View.OnClickListener() {
+        btnOk.setText(ctx.getResources().getString(btOk));
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOkClick.OnClickListener(dialog);
+            }
+        });
+
+
+        if(btFail != 0) {
+            btnFail.setVisibility(View.VISIBLE);
+            btnFail.setText(ctx.getResources().getString(btFail));
+            btnFail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     btnFailClick.OnClickListener(dialog);
@@ -201,44 +151,76 @@ public class Popups {
         return dialog;
     }
 
-    public static AlertDialog showDialogMessage(Context ctx, String message,
-                                                int btnOk, final DialogMessage btnOkClick,
-                                                int btnFail, final DialogMessage btnFailClick) {
+    public static AlertDialog showDialogConfirmImage(Context ctx, String icon, int message,
+                                                int btOption1, final DialogMessage btnOption1Click,
+                                                int btOption2, final DialogMessage btnOption2Click,
+                                                int btCancel, final DialogMessage btnCancelClick) {
         // LOADING VIEWS
-        View view          = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
-        TextView TVmessage = view.findViewById(R.id.TVmessage);
-        Button BTNok       = view.findViewById(R.id.btnAccept);
-        Button BTNfail     = view.findViewById(R.id.btnCancel);
+        View view           = LayoutInflater.from(ctx).inflate(DIALOG_CONFIRM_IMAGE, null);
+        TextView tvMessage  = view.findViewById(R.id.tvMessage);
+        Button btnOption1       = view.findViewById(R.id.btnOption1);
+        Button btnOption2       = view.findViewById(R.id.btnOption2);
+        Button btnCancel        = view.findViewById(R.id.btnCancel);
+        ImageView ivIcon    = view.findViewById(R.id.ivIcon);
 
+        switch (icon){
+            case Constants.success:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_done)).into(ivIcon);
+                break;
+            case Constants.firma:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_firma_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            case Constants.print_off:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_print_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.camara:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_camera_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            default:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_question)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
+                break;
+        }
         // FILLING VIEWS
-        TVmessage.setText(message);
+        tvMessage.setText(ctx.getResources().getString(message));
+
 
         final AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setCancelable(false)
                 .setView(view).create();
 
-        if(btnOk != 0) {
-            BTNok.setText(ctx.getString(btnOk));
-            BTNok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnOkClick.OnClickListener(dialog);
-                }
-            });
-        }
 
-        if(btnFail != 0) {
-            BTNfail.setText(ctx.getString(btnFail));
-            BTNfail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnFailClick.OnClickListener(dialog);
-                }
-            });
-        }
+        btnOption1.setText(ctx.getResources().getString(btOption1));
+        btnOption1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOption1Click.OnClickListener(dialog);
+            }
+        });
+
+        btnOption2.setText(ctx.getResources().getString(btOption2));
+        btnOption2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOption2Click.OnClickListener(dialog);
+            }
+        });
+
+        btnCancel.setText(ctx.getResources().getString(btCancel));
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnCancelClick.OnClickListener(dialog);
+            }
+        });
+
 
         return dialog;
     }
+
 
     public static AlertDialog showLoadingDialog(Context ctx, int message) {
         View view = LayoutInflater.from(ctx).inflate(DIALOG_LODING, null);
@@ -249,13 +231,13 @@ public class Popups {
                 .setView(view).create();
     }
 
-    public static AlertDialog showLoadingDialog(Context ctx, String title, String message) {
+    public static AlertDialog showLoadingDialog(Context ctx, int title, int message) {
         View view = LayoutInflater.from(ctx).inflate(DIALOG_LODING, null);
         TextView tvTitle    = view.findViewById(R.id.tvTitle);
         TextView tvMessage  = view.findViewById(R.id.tvMessage);
 
-        tvTitle.setText(title);
-        tvMessage.setText(message);
+        tvTitle.setText(ctx.getResources().getString(title));
+        tvMessage.setText(ctx.getResources().getString(message));
         return new AlertDialog.Builder(ctx)
                 .setCancelable(false)
                 .setView(view).create();

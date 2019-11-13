@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="400dp"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    >
+    android:layout_gravity="center">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -38,6 +37,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
+                    android:visibility="gone"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/subject"
@@ -47,6 +47,7 @@
 
                 <EditText
                     android:id="@+id/etSubject"
+                    android:visibility="gone"
                     android:hint="@string/subject"
                     android:paddingRight="5dp"
                     android:paddingLeft="8dp"
@@ -62,7 +63,7 @@
                 <TextView
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/reason"
+                    android:text="@string/concepto"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="20dp"
                     android:layout_width="match_parent"
@@ -70,14 +71,14 @@
                 <MultiAutoCompleteTextView
                     android:id="@+id/etReason"
                     android:gravity="start"
-                    android:hint="@string/reason"
+                    android:hint="@string/concepto"
                     android:padding="8dp"
                     android:ellipsize="end"
                     android:textSize="14sp"
                     android:ems="10"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"

@@ -1,15 +1,19 @@
 package com.sidert.sidertmovil.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,8 +43,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
-import static com.sidert.sidertmovil.activities.Signature.verifyStoragePermissions;
-
 public class PrintSeewoo extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 2;
@@ -49,6 +51,11 @@ public class PrintSeewoo extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private Vector<BluetoothDevice> remoteDevices;
     ArrayAdapter<String> adapter;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 2;
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static String[] PERMISSIONS_READ_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private static final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "//temp";
     private static final String fileName = dir + "//BTPrinter";
@@ -71,7 +78,6 @@ public class PrintSeewoo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if (Constants.ENVIROMENT)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        verifyStoragePermissions(this);
         setContentView(R.layout.activity_print_seewoo);
         ctx = this;
 
@@ -205,7 +211,7 @@ public class PrintSeewoo extends AppCompatActivity {
     // Bluetooth Connection Task.
     public class connTask extends AsyncTask<Object, Void, Integer>
     {
-        final AlertDialog loading = Popups.showLoadingDialog(ctx,ctx.getResources().getString(R.string.please_wait), ctx.getResources().getString(R.string.loading_info));
+        final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
 
         @Override
         protected void onPreExecute()
@@ -247,20 +253,25 @@ public class PrintSeewoo extends AppCompatActivity {
                 PrintTicket print = new PrintTicket();
                 print.WriteTicket(ctx, item);
                 if (ban.equals("O")){
+                    item.setResultPrint(1);
                     btnPrintOriginal.setVisibility(View.GONE);
                     btnPrintCopy.setVisibility(View.VISIBLE);
                     btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
                     btnPrintCopy.setEnabled(true);
                 }
+                else{
+                    item.setResultPrint(2);
+                }
             }
             else	// Connection failed.
             {
-                final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_connect_print), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
+                final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.print_off,
+                R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
                         dialog.dismiss();
                     }
-                }, null, null);
+                });
                 Objects.requireNonNull(errorPrint.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 errorPrint.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 errorPrint.show();
@@ -278,7 +289,7 @@ public class PrintSeewoo extends AppCompatActivity {
     // add paired device to list
     public class pairBluetoothTask extends AsyncTask<BluetoothDevice, Void, Integer>
     {
-        final AlertDialog loading = Popups.showLoadingDialog(ctx,ctx.getResources().getString(R.string.please_wait), ctx.getResources().getString(R.string.loading_info));
+        final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
 
         @Override
         protected void onPreExecute()
@@ -346,13 +357,14 @@ public class PrintSeewoo extends AppCompatActivity {
                 }
             }
             else{
-                final AlertDialog errorConnect = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_connect_print), ctx.getResources().getString(R.string.connect), new Popups.DialogMessage() {
+                final AlertDialog errorConnect = Popups.showDialogConfirm(ctx, Constants.print_off,
+                        R.string.error_connect_print, R.string.connect, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
                         new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(address_print));
                         dialog.dismiss();
                     }
-                }, ctx.getResources().getString(R.string.cancel), new Popups.DialogMessage() {
+                }, R.string.cancel, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
                         dialog.dismiss();
@@ -419,8 +431,8 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     /*
-    * Obtiene la ADDRESS de la impresora de un archivo .txt llamado BTPrinter
-    * dentro de la carpeta temp y la coloca en el EditText
+    * Obtiene la ADDRESS de la impresora de un archivo llamado BTPrinter
+    * dentro de la carpeta temp y lo coloca en el EditText
     * */
     private void loadSettingFile()
     {
@@ -481,6 +493,7 @@ public class PrintSeewoo extends AppCompatActivity {
         if(success){
             intent.putExtra(Constants.MESSAGE, resultMess);
             intent.putExtra(Constants.RES_PRINT, resultPrint);
+            intent.putExtra(Constants.FOLIO, 1);
             setResult(RESULT_OK, intent);
         }else{
             intent.putExtra(Constants.MESSAGE, resultMess);
@@ -495,7 +508,7 @@ public class PrintSeewoo extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 String message = "";
-                switch (2) {
+                switch (this.item.getResultPrint()) {
                     case 0:
                         message = ctx.getResources().getString(R.string.not_print);
                         break;
@@ -520,8 +533,8 @@ public class PrintSeewoo extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        String message = "";
-        switch (2) {
+        String message;
+        switch (this.item.getResultPrint()) {
             case 0:
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
@@ -531,8 +544,32 @@ public class PrintSeewoo extends AppCompatActivity {
             case 2:
                 message = ctx.getResources().getString(R.string.print_original_copy);
                 break;
+            default:
+                message = ctx.getResources().getString(R.string.not_print);
+                break;
         }
-        sendResponse(true, 2, message);
+        sendResponse(true, this.item.getResultPrint(), message);
+    }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     * <p/>
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity the activity from which permissions are checked
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
     }
 
 }

@@ -2,10 +2,10 @@ package com.sidert.sidertmovil.utils;
 
 public class WebServicesRoutes {
 
+    public final static String DOMAIN = "http://sidert.ddns.net:"; // Dominio
+
     //public final static String PORT = "81"; //Puerto de producción
     public final static String PORT = "82"; //Puerto de desarrollo
-
-    public final static String DOMAIN = "http://sidert.zapto.org:"; // Dominio
 
     public final static String CONTROLLER = "/serviciosidert/Api.svc/"; //Controlador
 

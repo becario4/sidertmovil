@@ -57,15 +57,22 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/ivTipoFicha"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+            <View
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="1dp"/>
             <CheckBox
                 android:id="@+id/cbRuta"
                 android:drawableEnd="@drawable/item_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -19,7 +19,6 @@
             android:layout_width="match_parent" android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tbMain"
-                app:title="Acerca de SIDERT"
                 app:titleTextColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -57,7 +56,7 @@
                     android:textSize="12sp"
                     android:textColor="@color/shadowdrawer"
                     android:gravity="center"
-                    android:text="© 2019 SIDERT. Derechos reservados."
+                    android:text="@string/copy_rigth"
                     android:paddingLeft="25dp"
                     android:paddingRight="25dp"
                     android:layout_width="match_parent"

@@ -17,6 +17,13 @@
                 android:icon="@drawable/item_messages"/>
         </group>
 
+        <group android:checkableBehavior="single" android:id="@+id/group3">
+            <item
+                android:id="@+id/NVeraseTable"
+                android:title="Borrar Contenido de Tablas"
+                android:icon="@drawable/item_settings"/>
+        </group>
+
     </group>
 
 </menu>

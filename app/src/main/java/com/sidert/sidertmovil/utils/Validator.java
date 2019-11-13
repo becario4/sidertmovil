@@ -77,13 +77,6 @@ public class Validator {
                     }
                     break;
                 case PHONE:
-                    if(etx.getText().toString().trim().length() > 0 && etx.getText().toString().trim().length() < 10){
-                        etx.setError(ONLY_TEN_NUMBERS);
-                        error = true;
-                        return error;
-                    } else if (etx.getText().toString().trim().length() == 0)
-                        return false;
-                    else {
                         pattern = Pattern.compile(PATTERN_ONLY_NUMBER);
                         matcher = pattern.matcher(etx.getText().toString());
                         if (!matcher.matches()) {
@@ -93,12 +86,13 @@ public class Validator {
                         } else {
                             if (!(etx.getText().length() == 10)) {
                                 etx.setError(ONLY_TEN_NUMBERS);
-                                error = true;
+                                error = false;
                                 return error;
                             }
+                            else {
+                                return true;
+                            }
                         }
-                    }
-                    break;
                 case GENERAL:
                     pattern = Pattern.compile(PATTERN_GENERAL);
                     matcher = pattern.matcher(etx.getText().toString().toLowerCase());

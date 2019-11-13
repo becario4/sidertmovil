@@ -17,8 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,13 +25,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
 import com.sidert.sidertmovil.activities.OriginacionI;
-import com.sidert.sidertmovil.activities.Profile;
+import com.sidert.sidertmovil.activities.Perfil;
 import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_synchronize_db;
+import com.sidert.sidertmovil.fragments.erase_table_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.utils.Constants;
@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.fabric.sdk.android.Fabric;
+
 
 public class Home extends AppCompatActivity{
 
@@ -54,7 +56,6 @@ public class Home extends AppCompatActivity{
     private Toolbar TBmain;
     private CustomDrawerLayout mDrawerLayout;
     private NavigationView NVmenu;
-    private Menu navigationMore;
     private TabLayout mTabLayout;
     private CoordinatorLayout CLcontainer;
     private TextView tvNameUser;
@@ -75,6 +76,8 @@ public class Home extends AppCompatActivity{
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
+        //Fabric.with(this, new Crashlytics());
+        //logUserFabric();
         session         = new SessionManager(ctx);
         TBmain          = findViewById(R.id.TBmain);
         mDrawerLayout   = findViewById(R.id.mDrawerLayout);
@@ -120,7 +123,7 @@ public class Home extends AppCompatActivity{
                 });
             }
 
-            if(Integer.parseInt(String.valueOf(session.getUser().get(2))) == 1) {
+            if(session.getUser().get(2) != null && Integer.parseInt(String.valueOf(session.getUser().get(2))) == 1) {
                 NVmenu.getMenu().clear();
                 NVmenu.inflateMenu(R.menu.navigation_menu_admin);
                 setFragment(NameFragments.IMPRESSION_HISTORY, null);
@@ -128,7 +131,6 @@ public class Home extends AppCompatActivity{
                 setFragment(NameFragments.ORDERS, null);
             }
 
-           // setFragment(NameFragments.ORDERS, null);
             NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
             llProfile.setOnClickListener(LLprofile_OnClick);
             ivLogout.setOnClickListener(ivLogout_OnClick);
@@ -175,6 +177,12 @@ public class Home extends AppCompatActivity{
                 case R.id.NVlogPrint:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
+                case R.id.NVimpresiones:
+                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    break;
+                case R.id.NVeraseTable:
+                    setFragment(NameFragments.ERASE_TABLES, null);
+                    break;
                 default:
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
@@ -201,7 +209,7 @@ public class Home extends AppCompatActivity{
                     transaction.replace(R.id.FLmain, myAppointments, NameFragments.ORDERS);
                     tokenFragment = NameFragments.ORDERS;
                 } else
-                    return;;
+                    return;
                 break;
             case NameFragments.COMPLAINT_TEMP:
                 mTabLayout.setVisibility(View.VISIBLE);
@@ -211,16 +219,25 @@ public class Home extends AppCompatActivity{
                     transaction.replace(R.id.FLmain, complaintTemp, NameFragments.COMPLAINT_TEMP);
                     tokenFragment = NameFragments.COMPLAINT_TEMP;
                 } else
-                    return;;
+                    return;
                 break;
             case NameFragments.IMPRESSION_HISTORY:
-                if (!(current instanceof orders_fragment)){
+                if (!(current instanceof impression_history_fragment)){
                     impression_history_fragment impression_history = new impression_history_fragment();
                     impression_history.setArguments(extras);
                     transaction.replace(R.id.FLmain, impression_history, NameFragments.IMPRESSION_HISTORY);
                     tokenFragment = NameFragments.IMPRESSION_HISTORY;
                 } else
-                    return;;
+                    return;
+                break;
+            case NameFragments.ERASE_TABLES:
+                if (!(current instanceof erase_table_fragment)){
+                    erase_table_fragment erase_table = new erase_table_fragment();
+                    erase_table.setArguments(extras);
+                    transaction.replace(R.id.FLmain, erase_table, NameFragments.ERASE_TABLES);
+                    tokenFragment = NameFragments.ERASE_TABLES;
+                } else
+                    return;
                 break;
             default:
                 if (!(current instanceof orders_fragment)){
@@ -312,7 +329,7 @@ public class Home extends AppCompatActivity{
     private View.OnClickListener LLprofile_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i = new Intent(ctx, Profile.class);
+            Intent i = new Intent(ctx, Perfil.class);
             startActivity(i);
         }
     };
@@ -327,5 +344,10 @@ public class Home extends AppCompatActivity{
             mess_confirm.show(getSupportFragmentManager(), NameFragments.DIALOGLOGOUT);
         }
     };
+
+    private void logUserFabric() {
+        Crashlytics.setUserIdentifier("12345");
+        Crashlytics.setUserName("Alejandro Isaias Lopez Jim");
+    }
 
 }

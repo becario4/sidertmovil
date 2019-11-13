@@ -24,11 +24,17 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvIntegrantesGpo"
-            android:padding="5dp"
+        <CheckBox
+            android:id="@+id/cbSelectAll"
+            android:text="Pagaron todos la amortización"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+             android:id="@+id/rvIntegrantesGpo"
+             android:padding="5dp"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

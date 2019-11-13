@@ -22,7 +22,7 @@ public class CustomWatcherTotal implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-            subTotal();
+            evalMontos();
     }
 
     @Override
@@ -30,8 +30,7 @@ public class CustomWatcherTotal implements TextWatcher {
 
     }
 
-
-    private void subTotal (){
+    private void evalMontos (){
         int mil = (!views[0].getText().toString().trim().isEmpty())? Integer.parseInt(views[0].getText().toString()) : 0;
         int qui = (!views[1].getText().toString().trim().isEmpty())? Integer.parseInt(views[1].getText().toString()) : 0;
         int dos = (!views[2].getText().toString().trim().isEmpty())? Integer.parseInt(views[2].getText().toString()) : 0;
@@ -41,7 +40,7 @@ public class CustomWatcherTotal implements TextWatcher {
 
        int subTB = (mil * 1000) + (qui * 500) + (dos * 200) + (cie * 100) + (cin * 50) + (vei * 20);
 
-       views[6].setText(Miscellaneous.moneyFormat(String.valueOf(subTB)));
+       views[6].setText(String.valueOf(subTB));
 
         int diezP   = (!views[7].getText().toString().trim().isEmpty())? Integer.parseInt(views[7].getText().toString()) : 0;
         int cincoP  = (!views[8].getText().toString().trim().isEmpty())? Integer.parseInt(views[8].getText().toString()) : 0;
@@ -53,15 +52,17 @@ public class CustomWatcherTotal implements TextWatcher {
 
         double subTM = (diezP * 10) + (cincoP * 5) + (dosP * 2) + unoP + (cincuC * 0.50) + (veinteC * 0.20) + (diezC * 0.10);
 
-        views[14].setText(Miscellaneous.moneyFormat(String.valueOf(subTM)));
+        views[14].setText(String.valueOf(subTM));
 
         double total = subTB + subTM;
 
-        views[15].setText(Miscellaneous.moneyFormat(String.valueOf(total)));
+        views[15].setText(String.valueOf(total));
 
         double cambio = total - pagoRealizado;
 
-        views[16].setText(Miscellaneous.moneyFormat(String.valueOf(cambio)));
+        if (cambio > 0)
+            views[16].setText(String.valueOf(cambio));
+
     }
 
 }

@@ -11,30 +11,39 @@ public class ModeloIndividual implements Serializable {
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("type")
     @Expose
     private String type;
+
     @SerializedName("assignDate")
     @Expose
     private String assignDate;
+
     @SerializedName("expirationDate")
     @Expose
     private String expirationDate;
+
     @SerializedName("cancellationDate")
     @Expose
     private String cancellationDate;
+
     @SerializedName("Cliente")
     @Expose
     private Cliente cliente;
+
     @SerializedName("Aval")
     @Expose
     private Aval aval;
+
     @SerializedName("Prestamo")
     @Expose
     private Prestamo prestamo;
+
     @SerializedName("ReporteAnaliticoOmega")
     @Expose
     private List<ReporteAnaliticoOmega> reporteAnaliticoOmega = null;
+
     @SerializedName("TablaPagosCliente")
     @Expose
     private List<TablaPagosCliente> tablaPagosCliente = null;
@@ -335,7 +344,6 @@ public class ModeloIndividual implements Serializable {
         @SerializedName("MontoPrestamo")
         @Expose
         private Double montoPrestamo;
-
         @SerializedName("PagoSemanal")
         @Expose
         private Double pagoSemanal;

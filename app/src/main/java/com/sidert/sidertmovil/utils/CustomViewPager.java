@@ -29,7 +29,6 @@ public class CustomViewPager extends ViewPager {
         if (this.swipeable) {
             return super.onTouchEvent(event);
         }
-
         return false;
     }
 

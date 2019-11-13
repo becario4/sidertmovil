@@ -31,6 +31,20 @@
                 android:icon="@drawable/item_settings"/>
         </group>
 
+        <group android:checkableBehavior="single" android:id="@+id/group3">
+            <item
+                android:id="@+id/NVeraseTable"
+                android:title="Borrar Contenido de Tablas"
+                android:icon="@drawable/item_settings"/>
+        </group>
+
+        <group android:checkableBehavior="single" android:id="@+id/group10">
+            <item
+                android:id="@+id/NVimpresiones"
+                android:title="Reporte Impresiones"
+                android:icon="@drawable/item_settings"/>
+        </group>
+
         <group android:checkableBehavior="single" android:id="@+id/group6">
             <item
                 android:id="@+id/NVhelp"

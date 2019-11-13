@@ -1,17 +1,25 @@
 package com.sidert.sidertmovil.utils;
 
 
+import android.os.Environment;
+import android.util.Log;
 import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.UUID;
 
 public class Miscellaneous {
 
@@ -46,6 +54,7 @@ public class Miscellaneous {
     }
 
     public static int getIndorGpo(String str) {
+        Log.v("Formulario", str);
         int res;
 
         if (str.contains("ri") || str.contains("ci") || str.contains("cvi"))
@@ -161,6 +170,62 @@ public class Miscellaneous {
     public static  double doubleFormat (EditText et){
         String money = et.getText().toString();
         return Double.parseDouble(money.replace("$","").replace(",",""));
+    }
+
+    /* Obtener fecha actual */
+    public static String ObtenerFecha() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP);
+        return sdf.format(cal.getTime());
+    }
+
+    /* Guardado de fotos (fachada, tickets, firma) */
+    public static String save(byte[] bytes, int tipo_img) throws IOException {
+        String path = "";
+        String name = UUID.randomUUID().toString() + ".jpg";
+        File tempDir;
+        switch (tipo_img){
+            case 1:      //Fachada
+                tempDir = new File(Constants.ROOT_PATH+"Fachada");
+                if(!tempDir.exists())
+                {
+                    Log.v("Carpeta", "No existe Fachada");
+                    tempDir.mkdir();
+                }
+                path = Constants.ROOT_PATH+"Fachada/" +  name;
+                break;
+            case 2:      //Evidencia
+                tempDir = new File(Constants.ROOT_PATH+"Evidencia");
+                if(!tempDir.exists())
+                {
+                    Log.v("Carpeta", "No existe Evidencia");
+                    tempDir.mkdir();
+                }
+                path = Constants.ROOT_PATH+"Evidencia/" +  name;
+                break;
+            case 3:     // Firma
+                tempDir = new File(Constants.ROOT_PATH+"Firma");
+                if(!tempDir.exists())
+                {
+                    Log.v("Carpeta", "No existe Firma");
+                    tempDir.mkdir();
+                }
+                path = Constants.ROOT_PATH+"Firma/" + name;
+                break;
+        }
+
+        File file = new File(path);
+
+        OutputStream outputStream = null;
+        try{
+            outputStream = new FileOutputStream(file);
+            outputStream.write(bytes);
+        }finally {
+            if(outputStream != null)
+                outputStream.close();
+        }
+
+        return name;
     }
 
 
