@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +19,8 @@ import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.SessionManager;
+
+import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 public class dialog_logout extends DialogFragment {
 
@@ -50,7 +53,16 @@ public class dialog_logout extends DialogFragment {
     private View.OnClickListener btnAccept_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            session.deleteUser();
+            session.setUser(session.getUser().get(0),
+                    session.getUser().get(1),
+                    session.getUser().get(2),
+                    session.getUser().get(3),
+                    session.getUser().get(4),
+                    session.getUser().get(5),
+                    false,
+                    session.getUser().get(7));
+            JobScheduler scheduler = (JobScheduler) ctx.getSystemService(JOB_SCHEDULER_SERVICE);
+            scheduler.cancel(Constants.ID_JOB_SINCRONIZADO);
             triggerRebirth();
             getDialog().dismiss();
         }

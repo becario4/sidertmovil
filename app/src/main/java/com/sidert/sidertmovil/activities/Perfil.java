@@ -15,10 +15,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
@@ -32,20 +34,35 @@ public class Perfil extends AppCompatActivity {
     private FloatingActionButton fabPicture;
     private CircleImageView civAvatar;
     private final int WR_PERMS = 3453;
+    private EditText etNombre;
+    private EditText etEmail;
+    private EditText etCelular;
+    private EditText etPuesto;
+
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
         ctx             = getApplicationContext();
+        session         = new SessionManager(ctx);
         TBmain          = findViewById(R.id.TBmain);
         fabPicture      = findViewById(R.id.fabPicture);
         civAvatar       = findViewById(R.id.civAvatar);
+        etNombre        = findViewById(R.id.etNombre);
+        etEmail         = findViewById(R.id.etEmail);
+        etCelular       = findViewById(R.id.etCelular);
+        etPuesto        = findViewById(R.id.etPuesto);
 
         setSupportActionBar(TBmain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle(getApplicationContext().getString(R.string.edit_profile));
+        //setTitle(getApplicationContext().getString(R.string.edit_profile));
+        setTitle("Perfil");
+
+        etNombre.setText(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
+        etEmail.setText(session.getUser().get(7));
 
         fabPicture.setOnClickListener(fabPicture_OnClick);
     }
@@ -84,7 +101,7 @@ public class Perfil extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_save, menu);
+        //inflater.inflate(R.menu.menu_save, menu);
         return true;
     }
 

@@ -53,6 +53,7 @@ public class fichas_pendientes_fragment extends Fragment{
     private ModeloFichaGeneral mFichaGeneral;
     private SQLiteDatabase db;
     private DBhelper dBhelper;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fichas_pendientes, container,false);

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--  Nombre completo  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nombre Completo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombreCompleto"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Domicilio  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Domicilio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etDomicilio"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Telefono casa/celular  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Teléfono Casa/Celular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etTelCasaCel"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRegresar6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginRight="135dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_continuar"/>
+    </LinearLayout>
+
+</LinearLayout>

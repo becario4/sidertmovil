@@ -1,9 +1,18 @@
 package com.sidert.sidertmovil.utils;
 
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
+
+import com.google.gson.GsonBuilder;
+import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,9 +24,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -173,9 +184,17 @@ public class Miscellaneous {
     }
 
     /* Obtener fecha actual */
-    public static String ObtenerFecha() {
+    public static String ObtenerFecha(String tipo_formato) {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP);
+        SimpleDateFormat sdf = null;
+        switch (tipo_formato){
+            case "timestamp":
+                sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP);
+                break;
+            case "fecha":
+                sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
+                break;
+        }
         return sdf.format(cal.getTime());
     }
 
@@ -228,5 +247,348 @@ public class Miscellaneous {
         return name;
     }
 
+    public static String cantidadLetra(String s) {
+        StringBuilder result = new StringBuilder();
+        BigDecimal totalBigDecimal = new BigDecimal(s).setScale(2, BigDecimal.ROUND_DOWN);
+        long parteEntera = totalBigDecimal.toBigInteger().longValue();
+        int triUnidades      = (int)((parteEntera % 1000));
+        int triMiles         = (int)((parteEntera / 1000) % 1000);
+        int triMillones      = (int)((parteEntera / 1000000) % 1000);
+        int triMilMillones   = (int)((parteEntera / 1000000000) % 1000);
+
+        Log.v("triUnidades", String.valueOf(triUnidades));
+        Log.v("triMiles", String.valueOf(triMiles));
+        Log.v("triMillones", String.valueOf(triMillones));
+
+        if (parteEntera == 0) {
+            result.append("Cero ");
+            return result.toString();
+        }
+
+        if (triMilMillones > 0) result.append(triTexto(triMilMillones).toString() + "Mil ");
+        if (triMillones > 0)    result.append(triTexto(triMillones).toString());
+
+        if (triMilMillones == 0 && triMillones == 1) result.append("Millón ");
+        else if (triMilMillones > 0 || triMillones > 0) result.append("Millones ");
+
+        if (triMiles > 0)       result.append(triTexto(triMiles).toString() + "Mil ");
+        if (triUnidades > 0)    result.append(triTexto(triUnidades).toString());
+
+        return result.toString();
+    }
+
+    private static StringBuilder triTexto(int n) {
+        StringBuilder result = new StringBuilder();
+        int centenas = n / 100;
+        int decenas  = (n % 100) / 10;
+        int unidades = (n % 10);
+
+        Log.v("Centenas", String.valueOf(centenas));
+        Log.v("Decenas", String.valueOf(decenas));
+        Log.v("Unidades", String.valueOf(unidades));
+
+
+        switch (centenas) {
+            case 0: break;
+            case 1:
+                if (decenas == 0 && unidades == 0) {
+                    result.append("Cien ");
+                    return result;
+                }
+                else result.append("Ciento ");
+                break;
+            case 2: result.append("Doscientos "); break;
+            case 3: result.append("Trescientos "); break;
+            case 4: result.append("Cuatrocientos "); break;
+            case 5: result.append("Quinientos "); break;
+            case 6: result.append("Seiscientos "); break;
+            case 7: result.append("Setecientos "); break;
+            case 8: result.append("Ochocientos "); break;
+            case 9: result.append("Novecientos "); break;
+        }
+
+        switch (decenas) {
+            case 0: break;
+            case 1:
+                if (unidades == 0) { result.append("Diez "); return result; }
+                else if (unidades == 1) { result.append("Once "); return result; }
+                else if (unidades == 2) { result.append("Doce "); return result; }
+                else if (unidades == 3) { result.append("Trece "); return result; }
+                else if (unidades == 4) { result.append("Catorce "); return result; }
+                else if (unidades == 5) { result.append("Quince "); return result; }
+                else result.append("Dieci");
+                break;
+            case 2:
+                if (unidades == 0) { result.append("Veinte "); return result; }
+                else result.append("Veinti ");
+                break;
+            case 3: result.append("Treinta "); break;
+            case 4: result.append("Cuarenta "); break;
+            case 5: result.append("Cincuenta "); break;
+            case 6: result.append("Sesenta "); break;
+            case 7: result.append("Setenta "); break;
+            case 8: result.append("Ochenta "); break;
+            case 9: result.append("Noventa "); break;
+        }
+
+        if (decenas > 2 && unidades > 0)
+            result.append("y ");
+
+
+
+        switch (unidades) {
+            case 0: break;
+            case 1: result.append("Uno "); break;
+            case 2: result.append("Dos "); break;
+            case 3: result.append("Tres "); break;
+            case 4: result.append("Cuatro "); break;
+            case 5: result.append("Cinco "); break;
+            case 6: result.append("Seis "); break;
+            case 7: result.append("Siete "); break;
+            case 8: result.append("Ocho "); break;
+            case 9: result.append("Nueve "); break;
+        }
+
+        return result;
+    }
+
+    public static String clvEstado (int pos_estado){
+        String clv_estado = "";
+        switch (pos_estado){
+            case 1:
+                clv_estado = "AS";
+                break;
+            case 2:
+                clv_estado = "BC";
+                break;
+            case 3:
+                clv_estado = "BS";
+                break;
+            case 4:
+                clv_estado = "CC";
+                break;
+            case 5:
+                clv_estado = "CL";
+                break;
+            case 6:
+                clv_estado = "CM";
+                break;
+            case 7:
+                clv_estado = "CS";
+                break;
+            case 8:
+                clv_estado = "CH";
+                break;
+            case 9:
+                clv_estado = "DF";
+                break;
+            case 10:
+                clv_estado = "DG";
+                break;
+            case 11:
+                clv_estado = "GT";
+                break;
+            case 12:
+                clv_estado = "GR";
+                break;
+            case 13:
+                clv_estado = "HG";
+                break;
+            case 14:
+                clv_estado = "JC";
+                break;
+            case 15:
+                clv_estado = "MC";
+                break;
+            case 16:
+                clv_estado = "MN";
+                break;
+            case 17:
+                clv_estado = "MS";
+                break;
+            case 18:
+                clv_estado = "NT";
+                break;
+            case 19:
+                clv_estado = "NL";
+                break;
+            case 20:
+                clv_estado = "OC";
+                break;
+            case 21:
+                clv_estado = "PL";
+                break;
+            case 22:
+                clv_estado = "QT";
+                break;
+            case 23:
+                clv_estado = "QR";
+                break;
+            case 24:
+                clv_estado = "SP";
+                break;
+            case 25:
+                clv_estado = "SL";
+                break;
+            case 26:
+                clv_estado = "SR";
+                break;
+            case 27:
+                clv_estado = "TC";
+                break;
+            case 28:
+                clv_estado = "TS";
+                break;
+            case 29:
+                clv_estado = "TL";
+                break;
+            case 30:
+                clv_estado = "VZ";
+                break;
+            case 31:
+                clv_estado = "YN";
+                break;
+            case 32:
+                clv_estado = "ZS";
+                break;
+
+
+        }
+        return clv_estado;
+    }
+
+    public static char segundaConsonante( String sApellido ) {
+        char consonante = 'X';
+        for(int i=1; i <= sApellido.length()-1; i++){
+            Log.e("char", sApellido.charAt(i)+"");
+            if(esVocal(sApellido.charAt(i))){
+                if (String.valueOf(sApellido.charAt(i)).equals("Ñ"))
+                    consonante = 'X';
+                else
+                    consonante = sApellido.charAt(i);
+                break;
+            }
+        }
+
+        return consonante;
+    }
+
+    private static boolean esVocal(char c){
+        Log.e("Value",String.valueOf(!String.valueOf(c).contains("AEIOU ")));
+        if ("AEIOU ".contains(String.valueOf(c))){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public static String authorization (String user, String pass){
+        String credential = user + ":" + pass;
+        return "Basic " + Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP);
+    }
+
+    public static String validString (String str){
+        if (str == null || str.isEmpty() || str.equals("null")) {
+            return "";
+        } else {
+            return  str;
+        }
+    }
+
+    public static String ObtenerDireccion (Context ctx, double lat, double lng){
+        String address=null;
+        Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
+        List<Address> list = null;
+        try{
+            list = geocoder.getFromLocation(lat, lng, 1);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        if(list == null){
+            System.out.println("Fail to get address from location");
+            return "No se encontró la dirección";
+        }
+        if(list.size() > 0){
+            Address addr = list.get(0);
+
+            address =
+                      validString(addr.getThoroughfare()) + " " +
+                      validString(addr.getSubThoroughfare()) + ", " +
+                      validString(addr.getSubLocality()) + ", " +
+                      validString(addr.getLocality());
+
+        }
+        return address;
+    }
+
+    public static boolean JobServiceEnable (Context ctx, int id_job, String servicio){
+        boolean flag = false;
+        JobScheduler scheduler = (JobScheduler) ctx.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == id_job ) {
+                Log.e("Servicio Activo", servicio);
+                flag = true;
+                break ;
+            }
+        }
+        return flag;
+    }
+
+    public static ModeloGeolocalizacion.Integrante GetIntegrante (List<ModeloGeolocalizacion.Integrante> integrantes, String tipo){
+        ModeloGeolocalizacion.Integrante integrante = null;
+
+        for (int i = 0; i<integrantes.size(); i++){
+            if (integrantes.get(i).getIntegranteTipo().equals(tipo)){
+                integrante = integrantes.get(i);
+                break;
+            }
+        }
+
+        if (integrante == null){
+            for (int i = 0; i<integrantes.size(); i++){
+                if (integrantes.get(i).getIntegranteTipo().equals("PRESIDENTE")){
+                    integrante = integrantes.get(i);
+                    break;
+                }
+            }
+        }
+        return integrante;
+    }
+
+    public static String GetColoniaTesorera (List<ModeloGeolocalizacion.Integrante> integrantes){
+        String colonia = "";
+        for (int i = 0; i<integrantes.size(); i++){
+            if (integrantes.get(i).getIntegranteTipo().equals("TESORERO")){
+                colonia = integrantes.get(i).getClienteColonia();
+                break;
+            }
+        }
+        return colonia;
+    }
+
+    public static String JsonConvertGpo (ModeloGeolocalizacion.Grupale modelo){
+        Log.v("JsonConvert", new GsonBuilder().create().toJson(modelo));
+        return new GsonBuilder().create().toJson(modelo);
+    }
+
+    public static String JsonConvertInd (ModeloGeolocalizacion.Individuale modelo){
+        Log.v("JsonConvert", new GsonBuilder().create().toJson(modelo));
+        return new GsonBuilder().create().toJson(modelo);
+    }
+
+    public static JSONObject GetIntegrante (JSONArray integrantes, String tipo){
+        JSONObject item = null;
+        for (int i = 0; i < integrantes.length(); i++){
+            try {
+                item = integrantes.getJSONObject(i);
+                if (item.getString(Constants.INTEGRANTE_TIPO).equals(tipo)){
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return item;
+    }
 
 }

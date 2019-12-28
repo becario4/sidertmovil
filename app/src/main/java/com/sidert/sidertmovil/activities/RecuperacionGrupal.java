@@ -117,9 +117,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
             JSONArray params = new JSONArray();
             JSONObject values = new JSONObject();
             try {
-                Toast.makeText(ctx, "Fecha_inicio"+ Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(ctx, "Fecha_inicio"+ Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
                 values.put(Constants.KEY, "fecha_ini");
-                values.put(Constants.VALUE, Miscellaneous.ObtenerFecha());
+                values.put(Constants.VALUE, Miscellaneous.ObtenerFecha("timestamp"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -925,11 +925,11 @@ public class RecuperacionGrupal extends AppCompatActivity {
 
                         params.put(values);
 
-                        Toast.makeText(ctx, "Fecha_termino"+Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(ctx, "Fecha_termino"+Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
                         try {
                             values = new JSONObject();
                             values.put(Constants.KEY, SidertTables.SidertEntry.FECHA_TER);
-                            values.put(Constants.VALUE, Miscellaneous.ObtenerFecha());
+                            values.put(Constants.VALUE, Miscellaneous.ObtenerFecha("timestamp"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

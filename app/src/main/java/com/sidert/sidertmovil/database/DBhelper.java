@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -29,17 +30,44 @@ public class DBhelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS);
+        /*db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
-        db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);*/
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T);
+        Log.v("CreacionTablas", "se crearon tablas");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+        //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
+        //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+        //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION);
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION"); }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T); }
+        catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION_T");}
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT); }
+        catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla LOGIN_REPORT");}
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla LOGIN REPORT_T"); }
+
+        //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T);
+
+        //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT);
+        //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T);
+
+
     }
 
     public void saveRecordsFichas (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
@@ -100,6 +128,80 @@ public class DBhelper extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
 
+    }
+
+    public void saveRecordsGeo (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.FICHA_ID           + "," +
+                SidertTables.SidertEntry.ASESOR_NOMBRE      + "," +
+                SidertTables.SidertEntry.TIPO_FICHA         + "," +
+                SidertTables.SidertEntry.NOMBRE             + "," +
+                SidertTables.SidertEntry.NUM_SOLICITUD      + "," +
+                SidertTables.SidertEntry.CLIE_GPO_ID        + "," +
+                SidertTables.SidertEntry.CLIE_GPO_CLV       + "," +
+                SidertTables.SidertEntry.DIRECCION          + "," +
+                SidertTables.SidertEntry.COLONIA            + "," +
+                SidertTables.SidertEntry.FECHA_ENT          + "," +
+                SidertTables.SidertEntry.FECHA_VEN          + "," +
+                SidertTables.SidertEntry.DATA               + "," +
+                SidertTables.SidertEntry.RES_UNO            + "," +
+                SidertTables.SidertEntry.RES_DOS            + "," +
+                SidertTables.SidertEntry.RES_TRES           + "," +
+                SidertTables.SidertEntry.FECHA_ENV_UNO      + "," +
+                SidertTables.SidertEntry.FECHA_ENV_DOS      + "," +
+                SidertTables.SidertEntry.FECHA_ENV_TRES     + "," +
+                SidertTables.SidertEntry.FECHA_ENV          + "," +
+                SidertTables.SidertEntry.FECHA_TER          + "," +
+                SidertTables.SidertEntry.STATUS + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //FICHA ID                                1
+        pInsert.bindString(2, params.get(1));                   //NOMBRE ASESOR                           2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //TIPO FICHA (1 = IND | 2 = GPO)          3
+        pInsert.bindString(4, params.get(3));                   //NOMBRE (CLIENTE O GRUPO)                4
+        pInsert.bindString(5, params.get(4));                   //NUMERO SOLICITUD                        5
+        pInsert.bindString(6, params.get(5));                   //CLIENTE O GRUPO ID                      6
+        pInsert.bindString(7, params.get(6));                   //CLIENTE O GRUPO CLAVE                   7
+        pInsert.bindString(8, params.get(7));                   //DIRECCION                               8
+        pInsert.bindString(9, params.get(8));                   //COLONIA                                 9
+        pInsert.bindString(10, params.get(9));                  //FECHA ENTREGA                          10
+        pInsert.bindString(11, params.get(10));                 //FECHA VENCIMIENTO                      11
+        pInsert.bindString(12, params.get(11));                 //DATA                                   12
+        pInsert.bindString(13, params.get(12));                 //RESPUESTA UNO (CLIENTE|PRESIDENTE)     13
+        pInsert.bindString(14, params.get(13));                 //RESPUESTA DOS (NEGOCIO|TESORERO)       14
+        pInsert.bindString(15, params.get(14));                 //RESPUESTA TRES (AVAL|SECRETARIO)       15
+        pInsert.bindString(16, params.get(15));                 //FECHA ENVIO UNO (CLIENTE|PRESIDENTE)   16
+        pInsert.bindString(17, params.get(16));                 //FECHA ENVIO DOS (NEGOCIO|TESORERO)     17
+        pInsert.bindString(18, params.get(17));                 //FECHA ENVIO TRES (AVAL|SECRETARIO)     18
+        pInsert.bindString(19, params.get(18));                 //FECHA DE ENVIO                         19
+        pInsert.bindString(20, params.get(19));                 //FECHA DE TERMINO                       20
+        pInsert.bindLong(21, Long.parseLong(params.get(20)));   //ESTATUS DE FICHA                       21
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+    public void saveRecordLogin (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.SERIE_ID + ", " +
+                SidertTables.SidertEntry.NOMBRE + ", " +
+                SidertTables.SidertEntry.LOGIN_TIMESTAMP + ", " +
+                SidertTables.SidertEntry.FECHA_ENV + ", " +
+                SidertTables.SidertEntry.STATUS + ") VALUES(?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //SERIE ID                 1
+        pInsert.bindString(2, params.get(1));                   //NOMBRE                   2
+        pInsert.bindString(3, params.get(2));                   //TIMESTAMP INICIO SESION  3
+        pInsert.bindString(4, params.get(3));                   //FECHA ENVIO              4
+        pInsert.bindLong(5, Integer.parseInt(params.get(4)));   //ESTATUS                  5
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void saveRecordsInd (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
@@ -227,6 +329,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Cursor getRecords(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
+        Log.v("SQL", "SELECT * FROM " + table + where + order);
         Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
         return res;
     }

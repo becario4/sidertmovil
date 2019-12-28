@@ -12,8 +12,8 @@
 
         <group android:checkableBehavior="single" android:id="@+id/group2">
             <item
-                android:id="@+id/NVoriginacion"
-                android:title="Originación "
+                android:id="@+id/NVsolicitudCredito"
+                android:title="Solicitud de crédito "
                 android:icon="@drawable/item_orders" />
         </group>
 

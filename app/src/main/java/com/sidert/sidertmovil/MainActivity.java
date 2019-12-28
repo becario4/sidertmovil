@@ -7,10 +7,12 @@ import android.view.WindowManager;
 
 import com.sidert.sidertmovil.activities.Login;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private SessionManager session;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,9 +20,11 @@ public class MainActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_main);
 
+        session = new SessionManager(this);
+
         Intent i;
 
-        if (false) {
+        if (session.getUser().get(0) != null && session.getUser().get(6).equals("true")) {
             i = new Intent(getApplication(), Home.class);
             startActivity(i);
             finish();

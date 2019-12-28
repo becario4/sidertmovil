@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--  Fecha de visita  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Fecha de Visita"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/eFechaVisita"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Nombre(s)  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nombre(s)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Apellido paterno  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Apellido Paterno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etApellidoPat"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Apellido materno  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Apellido Materno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etApellidoMat"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Monto solicitado  -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Solicitado"
+            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etMontoSolicitado"
+            android:enabled="true"
+            android:drawableStart="@drawable/ic_money"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Calle  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Calle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCalle"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  No. Exterior y No. Interior  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No.Ext/Man."
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoExt"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No.Int/Lote"
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoInt"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Colonia  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Colonia o Localidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etColonia"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Codigo postal  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCodigoPostal"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Coincide croquis  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Coincide con Ubicación:"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/rgContactoCliente"
+            android:orientation="horizontal"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbSiContacto"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
+                android:text="Si"
+                android:textColor="@drawable/radio_flat_text_selector_left" />
+            <RadioButton
+                android:id="@+id/rbAclaracion"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
+                android:text="No"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!-- Casa -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Casa"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spCasa"
+            android:entries="@array/method_pay"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!--  A nombre de  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="A Nombre de"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombrePropietario"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Parentesco con el titular del domicilio  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Parentesco con el Titular del Domicilio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etParentescoPropietario"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Referencia domiciliaria  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencia Domiciliaria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Horario de localizacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Horacion de Localización del "
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etHorarioLoc"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Activos observables -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Activos Observables"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spActivos"
+            android:entries="@array/method_pay"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!--  Comentario del coordinador de zona  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Comentarios del Coordinador de Zona"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRegresar8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginRight="135dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_continuar"/>
+    </LinearLayout>
+
+</LinearLayout>

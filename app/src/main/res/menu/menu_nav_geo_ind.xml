@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nvCliente"
+        android:title="@string/cliente"
+        android:icon="@drawable/ic_home" />
+
+    <item
+        android:id="@+id/nvNegocio"
+        android:title="@string/negocio"
+        android:icon="@drawable/ic_negocio"/>
+
+    <item
+        android:id="@+id/nvAval"
+        android:title="@string/aval"
+        android:icon="@drawable/ic_person"/>
+
+</menu>

@@ -4,6 +4,7 @@ public class NameFragments {
 
     //TODO:   Nombre de fragmentos del menú lateral
     public final static String ORDERS                = "orders_fragment";
+    public final static String GEOLOCALIZACION       = "geolocalizacion_fragment";
     public final static String MESSAGES              = "messages_fragment";
     public final static String MAP                   = "map_fragment";
     public final static String SETTINGS              = "settings_fragment";
@@ -32,6 +33,16 @@ public class NameFragments {
     public final static String DIALOGSYNCHRONIZE                = "dialog_synchronize_db";
     public final static String DIALOGINTEGRANTE                 = "dialog_integrante_gpo";
 
+    //TODO: Geolocalizacion
+    public final static String GEO_CLIENTE           = "geo_cliente_fragment";
+    public final static String GEO_NEGOCIO           = "geo_negocio_fragment";
+    public final static String GEO_AVAL              = "geo_aval_fragment";
+    public final static String GEO_PRESIDENTE        = "geo_presidente_fragment";
+    public final static String GEO_TESORERA          = "geo_tesorera_fragment";
+    public final static String GEO_SECRETARIA        = "geo_secretaria_fragment";
+
+    //TODO: Programador
+    public final static String TABLAS                = "tablas_fragment";
 
 
 }

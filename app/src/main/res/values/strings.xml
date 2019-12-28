@@ -12,6 +12,16 @@
     <string name="complaint">Denuncias Sidert</string>
     <string name="help">Ayuda</string>
     <string name="about">Acerca de</string>
+    <string name="geolocalizacion">Geolocalización</string>
+
+    <string name="cliente">Cliente</string>
+    <string name="negocio">Negocio</string>
+    <string name="aval">Aval</string>
+    <string name="presidente">Presidente</string>
+    <string name="tesorera">Tesorera</string>
+    <string name="secretaria">Secretaria</string>
+
+    <string name="filtros">Filtros</string>
 
     <string name="synchronized_db">Sincronizar BD</string>
     <string name="see_log_print">Historial de impresiones</string>
@@ -143,9 +153,12 @@
     <string name="folio_recibo">Número de recibo de pago</string>
     <string name="edit">Editar</string>
     <string name="save">Guardar</string>
+    <string name="no">No</string>
     <string name="clear">Limpiar</string>
     <string name="reason">Motivo</string>
     <string name="subject">Asunto</string>
+    <string name="nombre_denunciado">Nombrel del Denunciado</string>
+    <string name="puesto">Puesto del Denunciado</string>
     <string name="resumen_int">Resumen de Integrantes</string>
     <string name="sent">Enviar</string>
     <string name="confirmar">Confirmar</string>
@@ -161,12 +174,24 @@
     <string name="name_signature">Nombre y Firma de Tesorera</string>
     <string name="loan_amount">Monto del Préstamo</string>
     <string name="group_number">Número de Grupo</string>
+    <string name="nombre_cliente">Nombre del Cliente</string>
+    <string name="nombre_negocio">Nombre del Negocio</string>
+    <string name="nombre_aval">Nombre del Aval</string>
+    <string name="nombre_presidente">Nombre del Presidente</string>
+    <string name="nombre_tesorera">Nombre de la Tesorera</string>
+    <string name="nombre_secretaria">Nombre de la Secretaria</string>
+    <string name="ubicacion_actual">Obtener Ubicación Actual</string>
+    <string name="codigo_barras">Obtener Código de Barras</string>
     <string name="detalle_ficha">¿Cuenta con el detalle de la ficha?</string>
     <string name="amount_total_loan_group">Monto Total Préstamo Grupal</string>
     <string name="pago_parcial">Pago Parcial</string>
     <string name="pago_completo">Pago Completo</string>
     <string name="concepto">Concepto</string>
     <string name="ubicacion">Ubicación</string>
+    <string name="fecha_finalizacion">Fecha de Finalización</string>
+    <string name="fecha_envio">Fecha de Envío</string>
+    <string name="ver_maps">Ver en Maps</string>
+    <string name="ver_imagen">Ver Imagen</string>
     <string name="pago_completo_adelanto">Pago Completo + Adelanto</string>
     <string name="campo_requerido">Este campo es requerido</string>
     <string name="arqueo_caja">Arqueo de Caja</string>
@@ -201,6 +226,8 @@
     <string name="please_wait">Por favor espere . . .</string>
 
     <!--  TODO: Messages  -->
+    <string name="servicio_no_disponible">El servicio no se encuentra disponible, favor de contactar al equipo de TI.</string>
+    <string name="credenciales_incorrectas">El usuario y/o contraseña son incorrectas, favor de verificar.</string>
     <string name="error_connect_print">Error de conexión, verifica si la impresora está encendida o intenta de nuevo.</string>
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
@@ -214,14 +241,20 @@
     <string name="error_process_info">Error al procesar la información.</string>
     <string name="error_contact_TI">Ha ocurrido un error, favor de contactar al departamento de TI.</string>
     <string name="capturar_nueva_firma">¿Desea capturar de nuevo la firma?</string>
+    <string name="ver_fotografia">¿Desea ver la imagen?</string>
     <string name="capturar_foto_galeria">¿Desea capturar una nueva Fotografía o adjuntar de Galería?</string>
+    <string name="capturar_foto">¿Desea capturar una nueva Fotografía?</string>
+    <string name="guardar_geo">¿Desea guardar la información capturada?, una vez guardado no podrá hacer modificaciones en este formulario.</string>
     <string name="capturar_nueva_fotografia">¿Desea capturar una nueva Fotografía?</string>
+    <string name="capturar_nueva_ubicacion">¿Desea capturar una nueva Ubicación?</string>
+    <string name="ver_en_maps">¿Desea visualizar la ubicación en la aplicación de Maps?</string>
     <string name="guardar_cambios">¿Desea guardar los cambios?</string>
     <string name="error_guardar_arqueo">Ingrese la cantidad de billetes y monedas en su respectiva denominación</string>
     <string name="no_telefono">No cuenta con número de teléfono</string>
     <string name="complete_campos_faltantes">Complete los campos faltantes</string>
     <string name="no_ubicacion">No se logró obtener tu ubicación, intente de nuevo.</string>
     <string name="error_login">Usuario y/o contraseña incorrecta, intente de nuevo.</string>
+    <string name="confirm_guardar">Está a punto de salir del formulario, ¿Desea salir sin guardar los cambios?</string>
     <string name="guardando_info">Guardando informción, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
     <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
@@ -288,7 +321,81 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Efectivo</item>
     </string-array>
 
+    <string-array name="puesto">
+        <item>Seleccione una opción</item>
+        <item>ADMINISTRADORA DE SUCURSAL</item>
+        <item>ANALISTA FUNCIONAL DE TI</item>
+        <item>ASESOR DE CREDITO</item>
+        <item>AUDITOR DE CAMPO</item>
+        <item>AUXILIAR ADMINISTRATIVO</item>
+        <item>AUXILIAR CONTABLE</item>
+        <item>AUXILIAR DE ARCHIVO</item>
+        <item>AUXILIAR DE RECURSOS HUMANOS</item>
+        <item>AUXILIAR DE TESORERIA</item>
+        <item>CAPTURISTA</item>
+        <item>CONTROL DE CALIDAD</item>
+        <item>COORDINADOR DE MESA DE CONTROL PUEBLA</item>
+        <item>COORDINADOR DE MESA DE CONTROL VERACRUZ</item>
+        <item>COORDINADOR DE SUCURSAL</item>
+        <item>DIRECCION DE CARTERA VENCIDA</item>
+        <item>DIRECTOR DE INNOVACION</item>
+        <item>DIRECTORA GENERAL</item>
+        <item>ENCARGADO DE ARCHIVO</item>
+        <item>GERENTE ADMINISTRATIVO</item>
+        <item>GERENTE DE CARTERA VENCIDA VERACRUZ</item>
+        <item>GERENTE DE SUCURSAL</item>
+        <item>GERENTE DE ZONA</item>
+        <item>GERENTE REGIONAL VERACRUZ</item>
+        <item>GESTOR DE COBRANZA</item>
+        <item>INTENDENCIA</item>
+        <item>JEFE DE AUDITORIA</item>
+        <item>JEFE DE CONTABILIDAD</item>
+        <item>JEFE DE TESORERIA</item>
+        <item>LIDER TECNOLOGIAS DE INFORMACION</item>
+        <item>OFICIAL DE CUMPLIMIENTO</item>
+        <item>PROGRAMADOR</item>
+        <item>RECEPCIONISTA</item>
+        <item>TELECOMUNICACIONES</item>
+    </string-array>
+
+    <string-array name="estados">
+        <item>Seleccione una opción</item>
+        <item>AGUASCALIENTES</item>
+        <item>BAJA CALIFORNIA NTE.</item>
+        <item>BAJA CALIFORNIA SUR</item>
+        <item>CAMPECHE</item>
+        <item>COAHUILA</item>
+        <item>COLIMA</item>
+        <item>CHIAPAS</item>
+        <item>CHIHUAHUA</item>
+        <item>DISTRITO FEDERAL</item>
+        <item>DURANGO</item>
+        <item>GUANAJUATO</item>
+        <item>GUERRERO</item>
+        <item>HIDALGO</item>
+        <item>JALISCO</item>
+        <item>MEXICO</item>
+        <item>MICHOACAN</item>
+        <item>MORELOS</item>
+        <item>NAYARIT</item>
+        <item>NUEVO LEON</item>
+        <item>OAXACA</item>
+        <item>PUEBLA</item>
+        <item>QUERETARO</item>
+        <item>QUINTANA ROO</item>
+        <item>SAN LUIS POTOSI</item>
+        <item>SINALOA</item>
+        <item>SONORA</item>
+        <item>TABASCO</item>
+        <item>TAMAULIPAS</item>
+        <item>TLAXCALA</item>
+        <item>VERACRUZ</item>
+        <item>YUCATAN</item>
+        <item>ZACATECAS</item>
+    </string-array>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

@@ -1,26 +1,44 @@
 package com.sidert.sidertmovil.models;
 
+import android.util.Log;
+
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class MailBoxPLD {
 
-    @SerializedName("asesorid")
-    private String asessorid;
-
+    @SerializedName("asesor_id")
+    @Expose
+    private String asesorId;
     @SerializedName("fecha")
-    private String date;
-
+    @Expose
+    private String fecha;
     @SerializedName("asunto")
-    private String subject;
-
+    @Expose
+    private String asunto;
+    @SerializedName("nombre_denunciado")
+    @Expose
+    private String nombreDenunciado;
+    @SerializedName("puesto_denunciado")
+    @Expose
+    private String puestoDenunciado;
     @SerializedName("motivo")
-    private String reason;
+    @Expose
+    private String motivo;
 
-    public MailBoxPLD(String asessorid, String date, String subject, String reason) {
-        this.asessorid = asessorid;
-        this.date = date;
-        this.subject = subject;
-        this.reason = reason;
+    public MailBoxPLD(String asessorid,
+                      String date,
+                      String nombre_denunciado,
+                      String puesto_denunciado,
+                      String subject,
+                      String reason) {
+        this.asesorId = asessorid;
+        this.fecha = date;
+        this.nombreDenunciado = nombre_denunciado;
+        this.puestoDenunciado = puesto_denunciado;
+        this.asunto = subject;
+        this.motivo = reason;
+
     }
 
 }

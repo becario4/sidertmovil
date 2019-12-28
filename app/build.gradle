@@ -55,7 +55,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.0' //Listas
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.android.support:multidex:1.0.1'
-    //implementation 'com.google.android.gms:play-services:12.0.1'
+    //implementation 'com.google.android.gms:play-services:15.0.1'
     implementation 'com.github.angads25:toggle:1.0.0' //Custom switch
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+' //gif
     implementation 'com.github.gcacace:signature-pad:1.2.1' //Firma digital
@@ -64,8 +64,12 @@ dependencies {
     implementation 'com.github.scottyab:showhidepasswordedittext:0.8'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0' //Para servicios
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-//Para conversiones a JSON en los servicios
-    implementation 'moe.feng:MaterialStepperView:0.2.4.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'me.dm7.barcodescanner:zbar:1.9.13'
+    implementation 'moe.feng:MaterialStepperView:0.2.4.2'//para step en solicitud de credito
+    implementation 'com.orhanobut:dialogplus:1.11@aar'
+    implementation 'com.github.myinnos:AlphabetIndex-Fast-Scroll-RecyclerView:1.0.92'
+
 
     api files('libs/Sewoo_Android_1092.jar') // Libreria para impresión de ticket
     //-----------------------           Fin         ---------------------------------

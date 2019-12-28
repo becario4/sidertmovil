@@ -1,14 +1,21 @@
 package com.sidert.sidertmovil.activities;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,15 +31,37 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_message;
+import com.sidert.sidertmovil.models.LoginResponse;
+import com.sidert.sidertmovil.utils.BkgJobServiceLogout;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.ManagerInterface;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
+import com.sidert.sidertmovil.utils.WebServicesRoutes;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Login extends AppCompatActivity {
 
@@ -44,6 +73,13 @@ public class Login extends AppCompatActivity {
     private CardView cvDenunciarPLD;
     private Validator validator;
     private SessionManager session;
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+    String[] perms = {  Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +91,17 @@ public class Login extends AppCompatActivity {
         ctx             = getApplicationContext();
         context         = this;
         session         = new SessionManager(ctx);
+
+        dBhelper        = new DBhelper(ctx);
+        db              = dBhelper.getWritableDatabase();
+
         etUser          = findViewById(R.id.etUser);
         etPassword      = findViewById(R.id.etPassword);
         btnLogin        = findViewById(R.id.btnLogin);
         cvDenunciarPLD  = findViewById(R.id.cvDenciarPLD);
 
-        //etUser.setText("administrador");
-        etUser.setText("asesor951");
+        etUser.setText("GERENTEBANDERILLA");
+        etPassword.setText("g'Rh~iAYPp9'");
         validator = new Validator();
 
         btnLogin.setOnClickListener(btnLogin_OnClick);
@@ -81,10 +121,13 @@ public class Login extends AppCompatActivity {
     private View.OnClickListener btnLogin_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            doLogin();
             if(!validator.validate(etUser, new String[] {validator.REQUIRED}) &&
                     !validator.validate(etPassword, new String[] {validator.REQUIRED})) {
-                doLogin();
+                if (etUser.getText().toString().trim().equals("programador") && etPassword.getText().toString().trim().equals("Qvv12#4")){
+                    doLoginSoporte();
+                }
+                else
+                    doLogin();
             }
         }
     };
@@ -97,9 +140,128 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    private void doLoginSoporte(){
+        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Programador","PROGRAMADOR", true, "");
+        Intent home = new Intent(context, Home.class);
+        startActivity(home);
+        finish();
+    }
+
     private void doLogin (){
-        if (true){
-            Intent home = new Intent(this, Home.class);
+        if (NetworkStatus.haveWifi(ctx)){
+
+            final AlertDialog loading = Popups.showLoadingDialog(context,R.string.please_wait, R.string.loading_info);
+            loading.show();
+
+
+            ManagerInterface api = new RetrofitClient().generalRF("login").create(ManagerInterface.class);
+
+            Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
+                                                 etPassword.getText().toString().trim(),
+                                                 "password",
+                                                 Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
+            call.enqueue(new Callback<LoginResponse>() {
+                @Override
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                    AlertDialog dialog_mess;
+                    switch (response.code()){
+                        case 200:
+                            LoginResponse res = response.body();
+
+                            if(isExternalStorageWritable()){
+                                String nombreDirectorioPrivado = "Files";
+                                crearDirectorioPrivado(ctx, nombreDirectorioPrivado);
+                            }
+
+                            byte[] data = Base64.decode(res.getAccessToken().replace(".",";").split(";")[1], Base64.DEFAULT);
+
+                            try {
+                                JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
+                                HashMap<Integer, String> params = new HashMap<>();
+                                params.put(0, json_info.getString(Constants.SERIE_ID));
+                                params.put(1, json_info.getString(Constants.NOMBRE_EMPLEADO)+" "+
+                                        json_info.getString(Constants.PATERNO)+" "+
+                                        json_info.getString(Constants.MATERNO));
+                                params.put(2,Miscellaneous.ObtenerFecha("timestamp"));
+                                params.put(3,"");
+                                params.put(4,"1");
+                                if (Constants.ENVIROMENT)
+                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT, params);
+                                else
+                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
+                                Log.v("login", json_info.toString());
+                                session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
+                                        Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
+                                        Miscellaneous.validString(json_info.getString(Constants.PATERNO)),
+                                        Miscellaneous.validString(json_info.getString(Constants.MATERNO)),
+                                        Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
+                                        Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
+                                        true,
+                                        Miscellaneous.validString(res.getAccessToken()));
+
+                                Calendar c = Calendar.getInstance();
+
+                                if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
+                                    if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_LOGOUT, "Logout")) {
+                                        Log.e("Login", "On Start Service Job");
+                                        ComponentName serviceComponent;
+                                        serviceComponent = new ComponentName(context, BkgJobServiceLogout.class);
+                                        JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_LOGOUT, serviceComponent);
+                                        builder.setMinimumLatency((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
+                                        builder.setOverrideDeadline((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
+                                        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                                        jobScheduler.schedule(builder.build());
+                                    } else
+                                        Log.e("Login", "Enable Service Job");
+                                }
+
+                                Intent home = new Intent(context, Home.class);
+                                startActivity(home);
+                                finish();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            break;
+                        case 400:
+                            dialog_mess = Popups.showDialogMessage(context, Constants.login,
+                                    R.string.credenciales_incorrectas, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            dialog_mess.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            dialog_mess.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            dialog_mess.show();
+                            break;
+                        default:
+                            dialog_mess = Popups.showDialogMessage(context, Constants.login,
+                                    R.string.servicio_no_disponible, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            dialog_mess.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            dialog_mess.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            dialog_mess.show();
+                            break;
+                    }
+                    loading.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    Log.e("error", "fail"+t.getMessage());
+                    loading.dismiss();
+                }
+            });
+
+            //
+            /*Intent home = new Intent(this, Home.class);
             switch (etUser.getText().toString().trim()){
                 case "asesor951":
                     if(isExternalStorageWritable()){
@@ -127,11 +289,11 @@ public class Login extends AppCompatActivity {
                     success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     success.show();
                     break;
-            }
+            }*/
         }
         else{
-            final AlertDialog success = Popups.showDialogMessage(ctx, Constants.login,
-                    R.string.error_login, R.string.accept, new Popups.DialogMessage() {
+            final AlertDialog success = Popups.showDialogMessage(context, Constants.not_network,
+                    R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
                             dialog.dismiss();

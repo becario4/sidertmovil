@@ -17,17 +17,26 @@
     <color name="blackopacity">#C1918F8F</color>
     <color name="bkg_transparent">#00FFFFFF</color>
     <color name="red">#ffff0000</color>
+    <color name="black">#000000</color>
     <color name="red_push">#E94747</color>
     <color name="white">#FFFFFF</color>
     <color name="green">#68C06C</color>
     <color name="blocked_camera">#C8000000</color>
     <color name="safe_mode_text">#80ffffff</color>
     <color name="yellow">#FFD600</color>
+    <color name="btn_yellow">#FFD740</color>
+    <color name="btn_yellow_push">#F3D86F</color>
 
     <color name="bkg_navigation">#071738</color>
 
     <color name="disable">#60AEAFB1</color>
     <color name="complaint_bkg">#CB5E8AFF</color>
+
+
+    <color name="env_rojo">#CEF74C4C</color>
+    <color name="env_anar">#E4E97547</color>
+    <color name="env_amarillo">#DAE7CF3B</color>
+    <color name="env_verde">#E168C06C</color>
 
    <!-- <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color> -->

@@ -85,6 +85,14 @@ public class Constants {
     public final static String ISSUE                  = "asunto";
     public final static String REASON                 = "motivo";
     public final static String FOLIO                  = "folio";
+    public final static String SERIE_ID               = "serieid";
+    public final static String NOMBRE_EMPLEADO        = "nombre";
+    public final static String PATERNO                = "paterno";
+    public final static String MATERNO                = "materno";
+    public final static String USER_NAME              = "user_name";
+    public final static String EMAIL                  = "email";
+    public final static String AUTHORITIES            = "authorities";
+
 
     //======================  TAGS DE FICHAS  ===================================================
     public final static String ORDER_ID                     = "id";
@@ -171,8 +179,20 @@ public class Constants {
     public final static String PAGO_REQUERIDO               = "PagoRequerido";
     public final static String FIRMA_IMAGE                  = "FirmaImage";
 
+    public final static String CODEBARS                     = "code_bars";
+
+    public final static String NUM_SOLICITUD                = "num_solicitud";
+    public final static String MODULO                       = "modulo";
+    public final static String _ID                          = "_id";
+    public final static String IMAGEN                       = "imagen";
+    public final static String INTEGRANTE_TIPO              = "integrante_tipo";
 
     public final static String PICTURE                      = "picture";
+
+    //========================== PARAMS REQUESTS  ==================================================
+    public final static String USERNAME                  = "username";
+    public final static String PASSWORD                  = "password";
+    public final static String GRANT_TYPE                = "grant_type";
 
     //==========================   REQUEST CODE   ==================================================
     public final static int REQUEST_CODE_FIRMA                     = 456;
@@ -186,6 +206,11 @@ public class Constants {
     public final static int REQUEST_CODE_ARQUEO_CAJA               = 369;
     public final static int REQUEST_CODE_ACTIVITY                  = 749;
     public final static int REQUEST_CODE_PREVIEW                   = 864;
+    public final static int REQUEST_CODE_CODEBARS                  = 462;
+
+    //===========================  ID JOB SCHEDULE  ================================================
+    public final static int ID_JOB_LOGOUT                  = 324;
+    public final static int ID_JOB_SINCRONIZADO            = 753;
 
     //===========================   TIPOS FICHAS  ==================================================
     public final static String RECUPERACION_IND         = "RecuperacionIndividual";
@@ -208,11 +233,15 @@ public class Constants {
     public final static String IND                  = "individuals";
     public final static String GPO                  = "groups";
     public final static String FICHAS               = "fichas";
+    public final static String GEOLOCALIZACION      = "geolocalizacion";
+    public final static String LOGIN_REPORT         = "login_report";
     //public final static String IND_VE               = "individuals_ven";
     //public final static String GPO_VE               = "groups_ven";
     public final static String IND_T                = "individuals_t";
     public final static String GPO_T                = "groups_t";
-    public final static String FICHAS_T               = "fichas_t";
+    public final static String FICHAS_T             = "fichas_t";
+    public final static String GEOLOCALIZACION_T    = "geolocalizacion_t";
+    public final static String LOGIN_REPORT_T       = "login_report_t";
     //public final static String IND_VE_T             = "individuals_ven_t";
     //public final static String GPO_VE_T             = "groups_ven_t";
 
@@ -248,6 +277,7 @@ public class Constants {
     public final static String DETALLE_FICHA            = "DetalleFicha";
     public final static String TERMINADO                = "Terminado";
     public final static String EDITABLE                 = "Editable";
+    public final static String TIPO                     = "Tipo";
 
 
 

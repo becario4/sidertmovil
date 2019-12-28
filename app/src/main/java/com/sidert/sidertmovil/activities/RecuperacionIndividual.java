@@ -111,17 +111,16 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Log.v("Respuesta", row.getString(22));
-        Log.v("fecha_ini_save 1", "true "+row.getString(18));
+
         if (row.getString(18).isEmpty()) {
-            Log.v("fecha_ini_save 2", "true "+row.getString(18));
+
             JSONObject val = new JSONObject();
             JSONArray params = new JSONArray();
             JSONObject values = new JSONObject();
             try {
-                Toast.makeText(ctx, "Fecha_inicio"+ Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(ctx, "Fecha_inicio"+ Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
                 values.put(Constants.KEY, "fecha_ini");
-                values.put(Constants.VALUE, Miscellaneous.ObtenerFecha());
+                values.put(Constants.VALUE, Miscellaneous.ObtenerFecha("timestamp"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -856,11 +855,11 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
                         params.put(values);
 
-                        Toast.makeText(ctx, "Fecha_termino"+Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(ctx, "Fecha_termino"+Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
                         try {
                             values = new JSONObject();
                             values.put(Constants.KEY, SidertTables.SidertEntry.FECHA_TER);
-                            values.put(Constants.VALUE, Miscellaneous.ObtenerFecha());
+                            values.put(Constants.VALUE, Miscellaneous.ObtenerFecha("timestamp"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

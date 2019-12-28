@@ -2,6 +2,8 @@ package com.sidert.sidertmovil.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.view_pager.cvi_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.cvi_gestion_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.cvi_pagos_fragment;
@@ -30,6 +33,8 @@ import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
+import org.json.JSONObject;
+
 import java.util.Objects;
 
 public class CarteraVencidaIndividual extends AppCompatActivity {
@@ -38,11 +43,20 @@ public class CarteraVencidaIndividual extends AppCompatActivity {
     private Toolbar TBmain;
     private TabLayout mTabLayout;
     private boolean canExitApp = false;
+    public boolean flagRespuesta = false;
     private CustomViewPager mViewPager;
     public ModeloIndividual ficha_cvi;
     private TabsRecentsAdapter adapter;
     private AlertDialog loading;
     int exit = 0;
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+    private String external_id = "";
+    public int statusFicha = 0;
+    public JSONObject jsonRes;
+    private JSONObject jsonTemp;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +66,8 @@ public class CarteraVencidaIndividual extends AppCompatActivity {
         setContentView(R.layout.activity_catera_vencida_individual);
 
         ctx             = this;
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
         TBmain          = findViewById(R.id.TBmain);
         mTabLayout      = findViewById(R.id.mTabLayout);
         mViewPager      = findViewById(R.id.mViewPager);
@@ -61,6 +77,13 @@ public class CarteraVencidaIndividual extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.order));
         Bundle data = getIntent().getExtras();
+        external_id = data.getString(Constants.ORDER_ID);
+        Cursor row = dBhelper.getRecords(Constants.FICHAS_T, " WHERE external_id = " + external_id + "'", "", null);
+        row.moveToFirst();
+
+        if (row.getInt(23) == 2){
+
+        }
         ficha_cvi     = (ModeloIndividual) data.getSerializable(Constants.INDIVIDUAL);
         setUpViewPager();
         Intent i_res = new Intent();

@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <!--  Nombre del negocio  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nombre del Negocio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombreNegocio"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Calle  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Calle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCalle"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  No. Exterior y No. Interior  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No.Ext/Man."
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoExt"
+                android:enabled="true"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No.Int/Lote"
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoInt"
+                android:enabled="true"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Colonia  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Colonia o Localidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etColonia"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Codigo postal  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCodigoPostal"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Municipio  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Municipio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etMunicipio"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Actividad economica -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Actividad Económica"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spActividadEco"
+            android:entries="@array/method_pay"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!--  Antiguedad  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Antigüedad"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etAntiguedad"
+            android:enabled="true"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Años"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!--  Ingreso semanal  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ingreso Semanal"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etIngresoSem"
+            android:enabled="true"
+            android:drawableStart="@drawable/ic_money"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Otros ingresos  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Otros Ingresos"
+            android:layout_weight="1"
+            android:layout_marginRight="8dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etOtrosIngresos"
+            android:enabled="true"
+            android:drawableStart="@drawable/ic_money"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Gasto semanal  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Gasto Semanal"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etGastoSem"
+            android:enabled="true"
+            android:drawableStart="@drawable/ic_money"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Gastos  -->
+    <LinearLayout
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:background="@color/gray_light">
+
+        <TextView
+            android:textSize="@dimen/textsize"
+            android:paddingLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gastos"
+            android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue_sidert" />
+    </LinearLayout>
+
+    <!--  Gastos fijos y agua  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Fijos"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etGastosFijos"
+                android:drawableStart="@drawable/ic_money"
+                android:enabled="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Agua"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etAgua"
+                android:drawableStart="@drawable/ic_money"
+                android:enabled="true"
+                android:paddingLeft="0dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Luz y telefono  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Luz"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etGastosLuz"
+                android:drawableStart="@drawable/ic_money"
+                android:enabled="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Teléf."
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etGastoTel"
+                android:drawableStart="@drawable/ic_money"
+                android:enabled="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Renta otros  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Renta Otros"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etRenta"
+            android:enabled="true"
+            android:drawableStart="@drawable/ic_money"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <View
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue_sidert" />
+
+    <!--  Dias de venta  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Días de Venta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Lun"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Mar"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Mie"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Jue"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Vie"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Sab"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <CheckBox
+                    android:text="Dom"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRegresar4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginRight="135dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_continuar"/>
+    </LinearLayout>
+
+</LinearLayout>

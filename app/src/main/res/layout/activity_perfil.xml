@@ -67,6 +67,7 @@
                             app:civ_border_color="@android:color/white" />
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/fabPicture"
+                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="200dp"
@@ -103,8 +104,8 @@
 
                             <EditText
                                 android:layout_marginLeft="23dp"
-                                android:id="@+id/etName"
-                                android:text="Alejandro Isaias Lopez Jimenez"
+                                android:id="@+id/etNombre"
+                                android:focusable="false"
                                 android:layout_marginTop="6dp"
                                 android:drawablePadding="10dp"
                                 android:paddingLeft="30dp"
@@ -154,7 +155,7 @@
                             <EditText
                                 android:layout_marginLeft="23dp"
                                 android:id="@+id/etEmail"
-                                android:text="programador2@rufi.mx"
+                                android:focusable="false"
                                 android:layout_marginTop="6dp"
                                 android:drawablePadding="10dp"
                                 android:paddingLeft="30dp"
@@ -202,15 +203,15 @@
                             android:layout_height="wrap_content">
 
                             <EditText
-                                android:id="@+id/etPhone"
+                                android:id="@+id/etCelular"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/et_height"
+                                android:focusable="false"
                                 android:layout_marginLeft="23dp"
                                 android:layout_marginTop="6dp"
                                 android:background="@drawable/et_rounded_edges"
                                 android:drawablePadding="10dp"
-                                android:paddingLeft="30dp"
-                                android:text="2293971895" />
+                                android:paddingLeft="30dp" />
 
                             <ImageView
                                 android:padding="10dp"
@@ -253,8 +254,8 @@
 
                             <EditText
                                 android:layout_marginLeft="23dp"
-                                android:id="@+id/etDepartment"
-                                android:text="Progamación"
+                                android:id="@+id/etPuesto"
+                                android:focusable="false"
                                 android:layout_marginTop="6dp"
                                 android:drawablePadding="10dp"
                                 android:paddingLeft="30dp"

@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     app:tabTextColor="@color/colorGrayDark"
                     app:tabSelectedTextColor="@android:color/white"
-                    app:tabIndicatorColor="@android:color/white"
+                    app:tabIndicatorColor="@color/red"
                     app:tabMode="scrollable"
                     app:tabGravity="fill"
                     app:tabMaxWidth="0dp"/>
@@ -51,13 +51,13 @@
         android:layout_width="@dimen/drawermenu"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/bkg_navigation"
+        android:background="@android:color/white"
         android:fitsSystemWindows="true"
         android:clipToPadding="false"
         android:visibility="visible"
         app:itemTextAppearance="@style/TextoMenu"
         app:headerLayout="@layout/header_menu"
-        app:itemIconTint="@android:color/white"
+        app:itemIconTint="@color/blue_sidert"
         app:menu="@menu/navigation_menu" >
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,7 +67,7 @@
             <TextView
                 android:gravity="right"
                 android:text="@string/app_version"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

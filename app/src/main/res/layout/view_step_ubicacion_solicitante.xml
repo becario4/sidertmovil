@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Ubicacion del domicilio -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvMapa"
+            android:textColor="@android:color/black"
+            android:text="Ubicación del Domicilio del Solicitante"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/ibMap"
+            android:src="@drawable/ic_pin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/round_corner_blue"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:visibility="gone"
+            android:indeterminate="true"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapGestion"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Referencia domiciliaria  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencia Domiciliaria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:enabled="false"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRegresar7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginRight="135dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_continuar"/>
+    </LinearLayout>
+
+</LinearLayout>

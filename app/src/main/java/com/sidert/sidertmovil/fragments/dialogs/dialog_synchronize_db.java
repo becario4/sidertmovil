@@ -100,7 +100,7 @@ public class dialog_synchronize_db extends DialogFragment {
             final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
-            ManagerInterface api = new RetrofitClient().generalRF().create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF("").create(ManagerInterface.class);
 
             AsesorID obj = new AsesorID(etIdAsessor.getText().toString().trim());
 

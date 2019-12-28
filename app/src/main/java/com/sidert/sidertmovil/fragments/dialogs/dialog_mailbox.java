@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.MainActivity;
@@ -53,6 +54,8 @@ public class dialog_mailbox extends DialogFragment {
 
     private Context ctx;
     private EditText etSubject;
+    private EditText etNombreDenunciado;
+    private Spinner spPuestoDenunciado;
     private MultiAutoCompleteTextView etReason;
     private Button btnSend;
     private ImageView ivClose;
@@ -70,6 +73,8 @@ public class dialog_mailbox extends DialogFragment {
         View view = inflater.inflate(R.layout.popup_mailbox, container, false);
         ctx         = getContext();
         etSubject   = view.findViewById(R.id.etSubject);
+        etNombreDenunciado  = view.findViewById(R.id.etNombreDenunciado);
+        spPuestoDenunciado  = view.findViewById(R.id.spPuestoDenunciado);
         etReason    = view.findViewById(R.id.etReason);
         btnSend     = view.findViewById(R.id.btnSend);
         ivClose    = view.findViewById(R.id.ivClose);
@@ -97,27 +102,35 @@ public class dialog_mailbox extends DialogFragment {
         @Override
         public void onClick(View v) {
 
-            if(!validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) {
+            if(!validator.validate(etSubject, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
+                    !validator.validate(etNombreDenunciado, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
+                    !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) {
 
-                if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
-                {
-                    SendComplaint();
+                if (spPuestoDenunciado.getSelectedItemPosition() != 0){
+                    if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
+                            (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
+                            (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
+                    {
+                        SendComplaint();
+                    }
+                    else{
+                        final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.face_dissatisfied,
+                                R.string.limit_mailbox, R.string.accept, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        dialog.dismiss();
+                                        getDialog().dismiss();
+                                    }
+                                });
+                        limitDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        limitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        limitDialog.show();
+                    }
                 }
                 else{
-                    final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.face_dissatisfied,
-                            R.string.limit_mailbox, R.string.accept, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            dialog.dismiss();
-                            getDialog().dismiss();
-                        }
-                    });
-                    limitDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    limitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    limitDialog.show();
+                    Toast.makeText(ctx, "Seleccione el puesto del denunciado", Toast.LENGTH_SHORT).show();
                 }
+
 
             }
             /*if(!validator.validate(etSubject, new String[] {validator.REQUIRED, validator.GENERAL}) &&
@@ -208,24 +221,25 @@ public class dialog_mailbox extends DialogFragment {
                 e.printStackTrace();
             }
 
-            ManagerInterface api = new RetrofitClient().generalRF().create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF("").create(ManagerInterface.class);
 
             MailBoxPLD obj = new MailBoxPLD(encode,
                     sdf.format(calendar.getTime()),
-                    "Denuncia desde Android",
+                    etNombreDenunciado.getText().toString().trim(),
+                    spPuestoDenunciado.getSelectedItem().toString(),
+                    "Denuncia desde android",
                     etReason.getText().toString());
-            /*MailBoxPLD obj = new MailBoxPLD(Miscellaneous.loadSettingFile(fileName),
-                    sdf.format(calendar.getTime()),
-                    etSubject.getText().toString(),
-                    etReason.getText().toString());*/
 
+            Log.v("objeto", obj.toString());
             Call<MailBoxResponse> call = api.setMailBox(obj);
+
 
             call.enqueue(new Callback<MailBoxResponse>() {
                 @Override
                 public void onResponse(Call<MailBoxResponse> call, Response<MailBoxResponse> response) {
                     loading.dismiss();
                     MailBoxResponse res = response.body();
+                    Log.v("respuesta", res.getCode()+" code");
                     switch (res.getCode()){
                         case 200:
                             session.setMailBox(sdf.format(calendar.getTime()),(session.getMailBox().get(1) + 1) );
@@ -258,9 +272,12 @@ public class dialog_mailbox extends DialogFragment {
                 }
                 @Override
                 public void onFailure(Call<MailBoxResponse> call, Throwable t) {
+                    Log.v("errorService", t.getMessage());
                     loading.dismiss();
                 }
             });
+
+
         }
         else {
             final AlertDialog errorInternet = Popups.showDialogMessage(ctx, Constants.not_network,

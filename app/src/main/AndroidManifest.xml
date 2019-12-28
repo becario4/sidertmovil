@@ -21,7 +21,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ResumenIntegrantes"></activity>
+        <activity android:name=".activities.VerImagen"></activity>
+        <activity android:name=".activities.GeolocalizacionGpo" />
+        <activity android:name=".activities.GeolocalizacionInd" />
+        <activity android:name=".activities.SolicitudCredito" />
+        <activity android:name=".activities.ResumenIntegrantes" />
         <activity android:name=".activities.OriginacionI" />
         <activity android:name=".activities.AcercaDe" />
         <activity android:name=".activities.TestTable" />
@@ -84,6 +88,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.LectorCodigoBarras" />
+
+        <service
+            android:name=".utils.BkgJobServiceLogout"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <service
+            android:name=".utils.BkgJobServiceSincronizado"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

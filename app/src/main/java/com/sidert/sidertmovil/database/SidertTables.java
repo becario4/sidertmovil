@@ -16,7 +16,8 @@ public class SidertTables {
         public static final String TABLE_FICHAS     = Constants.FICHAS;               //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG
         //public static final String TABLE_IND_VE     = Constants.IND_VE;             //Tabla para formularios individual vencida (CVI)
         //public static final String TABLE_GPO_VE     = Constants.GPO_VE;             //Tabla para formularios grupales vencida (CVG)
-
+        public static final String TABLE_GEOLOCALIZACION = Constants.GEOLOCALIZACION; //Tabla para formularios de golocaliacion
+        public static final String TABLE_LOGIN_REPORT     = Constants.LOGIN_REPORT;   //Tabla para timestamp de inicio de sesión
 
         //======================= TABLES TEST  =====================================================
         public static final String TABLE_LOG_ASESSOR_T    = Constants.LOG_ASESSOR_T; //Tabla de Recuperación y Cobranza Pruebas
@@ -26,6 +27,8 @@ public class SidertTables {
         public static final String TABLE_FICHAS_T     = Constants.FICHAS_T;          //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG para pruebas
         //public static final String TABLE_IND_VE_T     = Constants.IND_VE_T;        //Tabla para formularios individual vencida (CVI) Pruebas
         //public static final String TABLE_GPO_VE_T     = Constants.GPO_VE_T;        //Tabla para formularios grupales vencida (CVG) Pruebas
+        public static final String TABLE_GEOLOCALIZACION_T = Constants.GEOLOCALIZACION_T; //Tabla para formularios de golocaliacion Pruebas
+        public static final String TABLE_LOGIN_REPORT_T     = Constants.LOGIN_REPORT_T;   //Tabla para timestamp de inicio de sesión Pruebas
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS = Constants.STATUS_FICHAS;
@@ -35,6 +38,7 @@ public class SidertTables {
         public static final String ASESOR_ID            = "asesor_id";
         public static final String FOLIO                = "folio";
         public static final String ASSESOR_ID           = "assesor_id";
+        public static final String ASESOR_NOMBRE       = "asesor_nombre";
         public static final String EXTERNAL_ID          = "external_id";
         public static final String AMOUNT               = "amount";
         public static final String TYPE_IMPRESSION      = "type_impression";
@@ -68,6 +72,26 @@ public class SidertTables {
         public static final String DATOS_OBJ            = "datos_obj";
         public static final String IMPRESION            = "impresion";
         public static final String RESPUESTA            = "respuesta";
+        public static final String TIPO_FORM            = "tipo_form";
+        public static final String NUM_SOLICITUD        = "num_solicitud";
+        public static final String DATA                 = "data";
+        public static final String FECHA_ENT            = "fecha_ent";
+        public static final String FECHA_VEN            = "fecha_ven";
+        public static final String DIRECCION            = "direccion";
+        public static final String COLONIA              = "colonia";
+        public static final String RES_UNO              = "res_uno";
+        public static final String RES_DOS              = "res_dos";
+        public static final String RES_TRES             = "res_tres";
+        public static final String FECHA_ENV_UNO        = "fecha_env_uno";
+        public static final String FECHA_ENV_DOS        = "fecha_env_dos";
+        public static final String FECHA_ENV_TRES       = "fecha_env_tres";
+        public static final String TIPO_FICHA           = "tipo_ficha";
+        public static final String SERIE_ID             = "serie_id";
+        public static final String LOGIN_TIMESTAMP      = "login_timestamp";
+        public static final String FICHA_ID             = "ficha_id";
+        public static final String CLIE_GPO_ID          = "clie_gpo_id";
+        public static final String CLIE_GPO_CLV         = "clie_gpo_clv";
+        public static final String TIPO                 = "tipo";
 
 
         // == QUERIES CREATE
@@ -122,6 +146,38 @@ public class SidertTables {
                 + SidertEntry.STATUS            + " INTEGER,"
                 + SidertEntry.TIMESTAMP         + " TEXT)";
 
+        static final String CREATE_TABLE_GEOLOCALIZACION = "CREATE TABLE " + TABLE_GEOLOCALIZACION + "("
+                + SidertEntry._ID                + " INTEGER PRIMARY KEY,"
+                + SidertEntry.FICHA_ID           + " TEXT,"
+                + SidertEntry.ASESOR_NOMBRE      + " TEXT,"
+                + SidertEntry.TIPO_FICHA         + " INTEGER,"
+                + SidertEntry.NOMBRE             + " TEXT,"
+                + SidertEntry.NUM_SOLICITUD      + " TEXT,"
+                + SidertEntry.CLIE_GPO_ID        + " TEXT,"
+                + SidertEntry.CLIE_GPO_CLV       + " TEXT,"
+                + SidertEntry.DIRECCION          + " TEXT,"
+                + SidertEntry.COLONIA            + " TEXT,"
+                + SidertEntry.FECHA_ENT          + " TEXT,"
+                + SidertEntry.FECHA_VEN          + " TEXT,"
+                + SidertEntry.DATA               + " TEXT,"
+                + SidertEntry.RES_UNO            + " TEXT,"
+                + SidertEntry.RES_DOS            + " TEXT,"
+                + SidertEntry.RES_TRES           + " TEXT,"
+                + SidertEntry.FECHA_ENV_UNO      + " TEXT,"
+                + SidertEntry.FECHA_ENV_DOS      + " TEXT,"
+                + SidertEntry.FECHA_ENV_TRES     + " TEXT,"
+                + SidertEntry.FECHA_ENV          + " TEXT,"
+                + SidertEntry.FECHA_TER          + " TEXT,"
+                + SidertEntry.STATUS             + " INTEGER)";
+
+        static final String CREATE_TABLE_LOGIN_REPORT   = "CREATE TABLE " + TABLE_LOGIN_REPORT + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.NOMBRE            + " TEXT,"
+                + SidertEntry.LOGIN_TIMESTAMP   + " TEXT,"
+                + SidertEntry.FECHA_ENV         + " TEXT,"
+                + SidertEntry.STATUS            + " INTEGER)";
+
         //=============================== TABLES TEST  ===============================================
         static final String CREATE_TABLE_ASESSORS_T = "CREATE TABLE " + TABLE_LOG_ASESSOR_T + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
@@ -173,6 +229,38 @@ public class SidertTables {
                 + SidertEntry.RESPUESTA         + " TEXT,"                  //22
                 + SidertEntry.STATUS            + " INTEGER,"               //23
                 + SidertEntry.TIMESTAMP         + " TEXT)";                 //24
+
+        static final String CREATE_TABLE_GEOLOCALIZACION_T = "CREATE TABLE " + TABLE_GEOLOCALIZACION_T + "("
+                + SidertEntry._ID                + " INTEGER PRIMARY KEY,"
+                + SidertEntry.FICHA_ID           + " TEXT,"
+                + SidertEntry.ASESOR_NOMBRE      + " TEXT,"
+                + SidertEntry.TIPO_FICHA         + " INTEGER,"
+                + SidertEntry.NOMBRE             + " TEXT,"
+                + SidertEntry.NUM_SOLICITUD      + " TEXT,"
+                + SidertEntry.CLIE_GPO_ID        + " TEXT,"
+                + SidertEntry.CLIE_GPO_CLV       + " TEXT,"
+                + SidertEntry.DIRECCION          + " TEXT,"
+                + SidertEntry.COLONIA            + " TEXT,"
+                + SidertEntry.FECHA_ENT          + " TEXT,"
+                + SidertEntry.FECHA_VEN          + " TEXT,"
+                + SidertEntry.DATA               + " TEXT,"
+                + SidertEntry.RES_UNO            + " TEXT,"
+                + SidertEntry.RES_DOS            + " TEXT,"
+                + SidertEntry.RES_TRES           + " TEXT,"
+                + SidertEntry.FECHA_ENV_UNO      + " TEXT,"
+                + SidertEntry.FECHA_ENV_DOS      + " TEXT,"
+                + SidertEntry.FECHA_ENV_TRES     + " TEXT,"
+                + SidertEntry.FECHA_ENV          + " TEXT,"
+                + SidertEntry.FECHA_TER          + " TEXT,"
+                + SidertEntry.STATUS             + " INTEGER)";
+
+        static final String CREATE_TABLE_LOGIN_REPORT_T   = "CREATE TABLE " + TABLE_LOGIN_REPORT_T + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.NOMBRE            + " TEXT,"
+                + SidertEntry.LOGIN_TIMESTAMP   + " TEXT,"
+                + SidertEntry.FECHA_ENV         + " TEXT,"
+                + SidertEntry.STATUS            + " INTEGER)";
 
 
         //================  TABLAS GENERALES  ===================================
