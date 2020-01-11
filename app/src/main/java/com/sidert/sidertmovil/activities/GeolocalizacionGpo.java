@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.fragments.geo_aval_fragment;
 import com.sidert.sidertmovil.fragments.geo_cliente_fragment;
@@ -29,6 +30,8 @@ import com.sidert.sidertmovil.utils.Popups;
 
 import java.util.Objects;
 
+import io.fabric.sdk.android.Fabric;
+
 public class GeolocalizacionGpo extends AppCompatActivity {
 
     private BottomNavigationView nvMenu;
@@ -38,13 +41,12 @@ public class GeolocalizacionGpo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (false)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_geolocalizacion_gpo);
 
         ctx     = this;
         nvMenu  = findViewById(R.id.nvMenu);
-
+        Fabric.with(this, new Crashlytics());
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
 

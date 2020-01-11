@@ -118,6 +118,7 @@ public class geo_pendientes_fragment extends Fragment {
     private ArrayAdapter<String> adapterAsesor;
 
     private geolocalizacion_fragment parent;
+    private JSONArray nameAsesor;
 
     private SessionManager session;
     @Override
@@ -212,7 +213,7 @@ public class geo_pendientes_fragment extends Fragment {
         final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        ManagerInterface api = new RetrofitClient().generalRF("").create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS).create(ManagerInterface.class);
 
         Call<ModeloGeolocalizacion> call = api.getGeolocalizcion("1",
                                                                 "Bearer "+ session.getUser().get(7));
@@ -333,10 +334,13 @@ public class geo_pendientes_fragment extends Fragment {
         dataNombre = new String[row.getCount()];
         dataColonia = new String[row.getCount()];
         dataAsesor = new String[row.getCount()];
+        List<String> nombre = new ArrayList<>();
+        List<String> colonia = new ArrayList<>();
+        List<String> asesor = new ArrayList<>();
         for (int i = 0; i < row.getCount(); i++){
-            dataNombre[i] = row.getString(4);
-            dataColonia[i] = row.getString(9);
-            dataAsesor[i] = row.getString(2);
+            nombre.add(row.getString(4));
+            colonia.add(row.getString(9));
+            asesor.add(row.getString(2));
             mGeo = new ModelGeolocalizacion();
             mGeo.setId(Integer.parseInt(row.getString(0)));
             mGeo.setAsesor_nombre(row.getString(2));
@@ -352,6 +356,11 @@ public class geo_pendientes_fragment extends Fragment {
             _m_geolocalizacion.add(mGeo);
             row.moveToNext();
         }
+
+        dataNombre = RemoverRepetidos(nombre);
+        dataAsesor = RemoverRepetidos(asesor);
+        dataColonia = RemoverRepetidos(colonia);
+
         adapterNombre = new ArrayAdapter<String>(ctx,
                 R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
 
@@ -587,4 +596,36 @@ public class geo_pendientes_fragment extends Fragment {
 
     }
 
+    private boolean isExisteAsesor (String nombreAsesor, int pos){
+        boolean isExist = false;
+            for (int i = 0; i < pos; i++){
+                try {
+                    if (nameAsesor.get(i) != null && nameAsesor.get(i).equals(nameAsesor)) {
+                        isExist = true;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        return isExist;
+    }
+
+    private String[] RemoverRepetidos(List<String> nombres){
+        String[] data;
+        List<String> nombreUnico = new ArrayList<>();
+
+        for (int i = 0; i < nombres.size(); i++){
+            String nombre = nombres.get(i);
+            if (nombreUnico.indexOf(nombre) < 0) {
+                nombreUnico.add(nombre);
+            }
+        }
+
+        data = new String[nombreUnico.size()];
+        for (int j = 0; j < nombreUnico.size(); j++){
+            data[j] = nombreUnico.get(j);
+        }
+
+        return data;
+    }
 }

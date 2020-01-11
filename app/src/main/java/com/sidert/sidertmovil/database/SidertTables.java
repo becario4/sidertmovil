@@ -32,6 +32,9 @@ public class SidertTables {
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS = Constants.STATUS_FICHAS;
+        public static final String TABLE_ESTADOS       = Constants.ESTADOS;
+        public static final String TABLE_MUNICIPIOS    = Constants.MUNICIPIOS;
+        public static final String TABLE_COLONIAS      = Constants.COLONIAS;
 
 
         // == COLUMNS IMPRESSIONS LOG
@@ -92,6 +95,14 @@ public class SidertTables {
         public static final String CLIE_GPO_ID          = "clie_gpo_id";
         public static final String CLIE_GPO_CLV         = "clie_gpo_clv";
         public static final String TIPO                 = "tipo";
+        public static final String ESTADO_ID            = "estado_id";
+        public static final String ESTADO_NOMBRE        = "estado_nombre";
+        public static final String PAIS_ID              = "pais_id";
+        public static final String MUNICIPIO_ID         = "municipio_id";
+        public static final String MUNICIPIO_NOMBRE     = "municipio_nombre";
+        public static final String COLONIA_NOMBRE       = "colonia_nombre";
+        public static final String COLONIA_ID           = "colonia_id";
+
 
 
         // == QUERIES CREATE
@@ -269,5 +280,23 @@ public class SidertTables {
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.STATUS            + " INTEGER,"
                 + SidertEntry.NOMBRE            + " TEXT)";
+
+        static final String CREATE_TABLE_ESTADOS = "CREATE TABLE " + TABLE_ESTADOS + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.ESTADO_ID         + " INTEGER,"
+                + SidertEntry.ESTADO_NOMBRE     + " TEXT,"
+                + SidertEntry.PAIS_ID           + " INTEGER)";
+
+        static final String CREATE_TABLE_MUNICIPIOS = "CREATE TABLE " + TABLE_MUNICIPIOS + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.MUNICIPIO_ID      + " INTEGER,"
+                + SidertEntry.MUNICIPIO_NOMBRE  + " TEXT,"
+                + SidertEntry.ESTADO_ID         + " INTEGER)";
+
+        static final String CREATE_TABLE_COLONIAS = "CREATE TABLE " + TABLE_COLONIAS + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.COLONIA_ID        + " INTEGER,"
+                + SidertEntry.COLONIA_NOMBRE    + " TEXT,"
+                + SidertEntry.MUNICIPIO_ID      + " INTEGER)";
     }
 }

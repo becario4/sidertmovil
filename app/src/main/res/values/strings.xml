@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Sidert Movil</string>
-    <string name="app_version">1.0.1</string>
+    <string name="app_name">Sidert Móvil</string>
+    <string name="app_version">1.1.9</string>
 
-    <string name="google_maps_key">AIzaSyCMRfMO7B5u7MXUgOSHqRCQaAF5046VCJM</string>
+    <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
     <string name="orders">Fichas</string>
@@ -254,7 +254,7 @@
     <string name="complete_campos_faltantes">Complete los campos faltantes</string>
     <string name="no_ubicacion">No se logró obtener tu ubicación, intente de nuevo.</string>
     <string name="error_login">Usuario y/o contraseña incorrecta, intente de nuevo.</string>
-    <string name="confirm_guardar">Está a punto de salir del formulario, ¿Desea salir sin guardar los cambios?</string>
+    <string name="confirm_guardar">¿Desea salir del formulario?, perderá los datos capturados</string>
     <string name="guardando_info">Guardando informción, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
     <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
@@ -319,6 +319,83 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Seleccione una opción</item>
         <item>Banamex722</item>
         <item>Efectivo</item>
+    </string-array>
+
+    <string-array name="nivel_estudio">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Primaria</item>              <!--1-->
+        <item>Secundaria</item>            <!--2-->
+        <item>Preparatoria</item>          <!--3-->
+        <item>Licenciatura</item>          <!--4-->
+        <item>Maestría</item>              <!--5-->
+    </string-array>
+
+    <string-array name="estado_civil">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Soltera(o)</item>            <!--1-->
+        <item>Casada(o)</item>             <!--2-->
+        <item>Madre Soltera/Padre</item>   <!--3-->
+        <item>Viuda(o)</item>              <!--4-->
+        <item>Unión Libre</item>           <!--5-->
+    </string-array>
+
+    <string-array name="tipo_casa">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Casa</item>                  <!--1-->
+        <item>Renta</item>                 <!--2-->
+        <item>Otro</item>                  <!--3-->
+    </string-array>
+
+    <string-array name="actividad_eco">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Producción</item>            <!--1-->
+        <item>Comercio</item>              <!--2-->
+        <item>Servicio</item>              <!--3-->
+        <item>Agropecuario</item>          <!--4-->
+    </string-array>
+
+    <string-array name="municipios">
+        <item>Seleccione una opción</item> <!--0-->
+        <item></item>                  <!--1-->
+        <item></item>                  <!--2-->
+    </string-array>
+
+    <string-array name="localidad">
+        <item>Seleccione una opción</item> <!--0-->
+        <item></item>                  <!--1-->
+        <item></item>                  <!--2-->
+    </string-array>
+
+    <string-array name="sucursal">
+        <item>Seleccione una opción</item> <!--0-->
+        <item></item>                  <!--1-->
+        <item></item>                  <!--2-->
+    </string-array>
+
+    <string-array name="intervalo">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>4 Meses</item>               <!--1-->
+        <item>5 Meses</item>               <!--2-->
+        <item>6 Meses</item>               <!--3-->
+        <item>9 Meses</item>               <!--4-->
+        <item>12 Meses</item>              <!--5-->
+    </string-array>
+
+    <string-array name="lapso">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Semanal</item>               <!--1-->
+        <item>Catorcenal</item>            <!--2-->
+        <item>Quincenal</item>             <!--3-->
+        <item>Mensual</item>               <!--4-->
+    </string-array>
+
+    <string-array name="dependientes_eco">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>1</item>                     <!--1-->
+        <item>2</item>                     <!--2-->
+        <item>3</item>                     <!--3-->
+        <item>4</item>                     <!--4-->
+        <item>5</item>                     <!--5-->
     </string-array>
 
     <string-array name="puesto">

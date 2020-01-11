@@ -45,8 +45,6 @@ public class CarteraVencidaGrupal extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Constants.ENVIROMENT)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_cartera_vencida_grupal);
         ctx             = this;
         TBmain          = findViewById(R.id.TBmain);

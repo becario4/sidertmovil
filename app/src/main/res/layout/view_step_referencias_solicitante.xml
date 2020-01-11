@@ -19,7 +19,7 @@
 
         <EditText
             android:id="@+id/etNombreCompleto"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -40,7 +40,7 @@
 
         <EditText
             android:id="@+id/etDomicilio"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -61,7 +61,8 @@
 
         <EditText
             android:id="@+id/etTelCasaCel"
-            android:enabled="false"
+            android:inputType="phone"
+            android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"

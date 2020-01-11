@@ -1,7 +1,9 @@
 package com.sidert.sidertmovil.activities;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,12 +11,17 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
@@ -32,7 +39,21 @@ public class SolicitudCredito extends AppCompatActivity {
 
     private Context ctx;
     private Context context;
-    private VerticalStepperItemView mSteppers[] = new VerticalStepperItemView[9];
+
+    private FloatingActionButton fbAgregar;
+
+    private boolean FAB_Status = false;
+
+    FloatingActionButton fabGrupal;
+    FloatingActionButton fabIndividual;
+
+    //Animations
+    Animation show_fab_ind;
+    Animation hide_fab_ind;
+    Animation show_fab_gpo;
+    Animation hide_fab_gpo;
+
+    /*private VerticalStepperItemView mSteppers[] = new VerticalStepperItemView[9];
 
     private FloatingActionButton btnContinuar0;
     private FloatingActionButton btnContinuar1;
@@ -54,12 +75,13 @@ public class SolicitudCredito extends AppCompatActivity {
     private FloatingActionButton btnRegresar8;
 
     private EditText etMontoPrestamo;
-    private EditText etCantidadLetra;
+    private MultiAutoCompleteTextView etCantidadLetra;
 
     private EditText etNombre;
     private EditText etApPaterno;
     private EditText etApMaterno;
     private EditText etFechaNac;
+    private EditText etEdad;
     private RadioGroup rgSexo;
     private Spinner spEstadoNac;
     private EditText etCurp;
@@ -68,15 +90,61 @@ public class SolicitudCredito extends AppCompatActivity {
     private SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
     private Calendar myCalendar;
     private Date minDate;
+
+    private EditText etHorarioLoc;
+    private TimePickerDialog picker;*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solicitud_credito);
         ctx = getApplicationContext();
         context = this;
-        initComponents();
+        //initComponents();
 
-        mSteppers[0] = findViewById(R.id.stepper_0);
+        fbAgregar = findViewById(R.id.fbAgregar);
+        fabGrupal = findViewById(R.id.fabGrupal);
+        fabIndividual = findViewById(R.id.fabIndividual);
+
+        //Animations
+        show_fab_ind = AnimationUtils.loadAnimation(ctx, R.anim.fab1_show);
+        hide_fab_ind = AnimationUtils.loadAnimation(ctx, R.anim.fab1_hide);
+        show_fab_gpo = AnimationUtils.loadAnimation(ctx, R.anim.fab3_show);
+        hide_fab_gpo = AnimationUtils.loadAnimation(ctx, R.anim.fab3_hide);
+
+        fbAgregar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (FAB_Status == false) {
+                    //Display FAB menu
+                    expandFAB();
+                    FAB_Status = true;
+                } else {
+                    //Close FAB menu
+                    hideFAB();
+                    FAB_Status = false;
+                }
+            }
+        });
+
+        fabGrupal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i_solicitud_gpo = new Intent(ctx, SolicitudCreditoGpo.class);
+                startActivity(i_solicitud_gpo);
+            }
+        });
+
+        fabIndividual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
+                startActivity(i_solicitud_ind);
+            }
+        });
+
+        /*mSteppers[0] = findViewById(R.id.stepper_0);
         mSteppers[1] = findViewById(R.id.stepper_1);
         mSteppers[2] = findViewById(R.id.stepper_2);
         mSteppers[3] = findViewById(R.id.stepper_3);
@@ -114,6 +182,7 @@ public class SolicitudCredito extends AppCompatActivity {
         etApPaterno = findViewById(R.id.etApPaterno);
         etApMaterno = findViewById(R.id.etApMaterno);
         etFechaNac  = findViewById(R.id.etFechaNac);
+        etEdad      = findViewById(R.id.etEdad);
         rgSexo      = findViewById(R.id.rgSexo);
         spEstadoNac = findViewById(R.id.spEstadoNac);
         etCurp      = findViewById(R.id.etCurp);
@@ -138,6 +207,10 @@ public class SolicitudCredito extends AppCompatActivity {
         btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
 
+        etHorarioLoc = findViewById(R.id.etHorarioLoc);
+
+        etHorarioLoc.setOnClickListener(etHorarioLoc_OnClick);
+
         etFechaNac.setOnClickListener(etFechaNac_OnClick);
 
         etMontoPrestamo.addTextChangedListener(new TextWatcher() {
@@ -160,12 +233,51 @@ public class SolicitudCredito extends AppCompatActivity {
                     etCantidadLetra.setText("");
                 }
             }
-        });
+        });*/
 
 
     }
 
-    private View.OnClickListener etFechaNac_OnClick = new View.OnClickListener() {
+    private void expandFAB() {
+
+        //Floating Action Button 1
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) fabIndividual.getLayoutParams();
+        layoutParams.rightMargin += (int) (fabIndividual.getWidth() * 1.7);
+        layoutParams.bottomMargin += (int) (fabIndividual.getHeight() * 0.25);
+        fabIndividual.setLayoutParams(layoutParams);
+        fabIndividual.startAnimation(show_fab_ind);
+        fabIndividual.setClickable(true);
+
+        //Floating Action Button 3
+        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fabGrupal.getLayoutParams();
+        layoutParams3.rightMargin += (int) (fabGrupal.getWidth() * 0.25);
+        layoutParams3.bottomMargin += (int) (fabGrupal.getHeight() * 1.7);
+        fabGrupal.setLayoutParams(layoutParams3);
+        fabGrupal.startAnimation(show_fab_gpo);
+        fabGrupal.setClickable(true);
+    }
+
+    private void hideFAB() {
+
+        //Floating Action Button 1
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) fabIndividual.getLayoutParams();
+        layoutParams.rightMargin -= (int) (fabIndividual.getWidth() * 1.7);
+        layoutParams.bottomMargin -= (int) (fabIndividual.getHeight() * 0.25);
+        fabIndividual.setLayoutParams(layoutParams);
+        fabIndividual.startAnimation(hide_fab_ind);
+        fabIndividual.setClickable(false);
+
+
+        //Floating Action Button 3
+        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fabGrupal.getLayoutParams();
+        layoutParams3.rightMargin -= (int) (fabGrupal.getWidth() * 0.25);
+        layoutParams3.bottomMargin -= (int) (fabGrupal.getHeight() * 1.7);
+        fabGrupal.setLayoutParams(layoutParams3);
+        fabGrupal.startAnimation(hide_fab_gpo);
+        fabGrupal.setClickable(false);
+    }
+
+    /*private View.OnClickListener etFechaNac_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             DatePickerDialog dpd = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
@@ -195,15 +307,15 @@ public class SolicitudCredito extends AppCompatActivity {
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //mSteppers[1].nextStep();
+            mSteppers[1].nextStep();
             String apPaterno = etApPaterno.getText().toString().trim().toUpperCase();
             String apMaterno = etApMaterno.getText().toString().trim().toUpperCase();
             String nombre = etNombre.getText().toString().trim().toUpperCase();
             String fecha = etFechaNac.getText().toString().trim().toUpperCase();
             String[] sFechaNac = fecha.split("-");
 
-            etRfc.setText(apPaterno.substring(0,2)+((apMaterno.length() > 0)?apMaterno.substring(0,1):"X")+nombre.substring(0,1)+sFechaNac[0].substring(2,4)+sFechaNac[1]+sFechaNac[2]);
-            etCurp.setText(etRfc.getText()+((rgSexo.getCheckedRadioButtonId()==R.id.rbHombre)?"H":"M")+Miscellaneous.clvEstado(spEstadoNac.getSelectedItemPosition())+Miscellaneous.segundaConsonante(etApPaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etApMaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etNombre.getText().toString().trim().toUpperCase()));
+            //etRfc.setText(apPaterno.substring(0,2)+((apMaterno.length() > 0)?apMaterno.substring(0,1):"X")+nombre.substring(0,1)+sFechaNac[0].substring(2,4)+sFechaNac[1]+sFechaNac[2]);
+            //etCurp.setText(etRfc.getText()+((rgSexo.getCheckedRadioButtonId()==R.id.rbHombre)?"H":"M")+Miscellaneous.clvEstado(spEstadoNac.getSelectedItemPosition())+Miscellaneous.segundaConsonante(etApPaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etApMaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etNombre.getText().toString().trim().toUpperCase()));
         }
     };
     private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
@@ -300,10 +412,29 @@ public class SolicitudCredito extends AppCompatActivity {
     };
 
 
+    private View.OnClickListener etHorarioLoc_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final Calendar cldr = Calendar.getInstance();
+            int hour = cldr.get(Calendar.HOUR_OF_DAY);
+            int minutes = cldr.get(Calendar.MINUTE);
+            // time picker dialog
+            picker = new TimePickerDialog(SolicitudCredito.this,
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
+                            etHorarioLoc.setText(sHour + ":" + sMinute);
+                        }
+                    }, hour, minutes, true);
+            picker.show();
+        }
+    };
+
     private void setDatePicked(EditText et){
         sdf.setTimeZone(myCalendar.getTimeZone());
         et.setError(null);
         et.setText(sdf.format(myCalendar.getTime()));
+        etEdad.setText(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime())));
     }
 
     private void initComponents(){
@@ -313,6 +444,6 @@ public class SolicitudCredito extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 }

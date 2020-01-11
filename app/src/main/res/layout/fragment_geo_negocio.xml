@@ -21,6 +21,7 @@
 
             <!--  Nombre del negocio  -->
             <LinearLayout
+                android:id="@+id/llNegocio"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -193,6 +194,7 @@
                     android:id="@+id/metComentario"
                     android:inputType="textMultiLine|textCapSentences"
                     android:ems="10"
+                    android:maxLength="100"
                     android:ellipsize="end"
                     android:gravity="start"
                     android:paddingTop="3dp"

@@ -1,13 +1,15 @@
 package com.sidert.sidertmovil.utils;
 
 import android.os.Environment;
-import android.os.ParcelUuid;
-
-import com.sidert.sidertmovil.database.SidertTables;
 
 public class Constants {
 
-    public final static boolean ENVIROMENT          = false;
+    public final static boolean ENVIROMENT          = true;
+
+    // CONTROLADORES
+    public final static String CONTROLLER_LOGIN       = "login";
+    public final static String CONTROLLER_FICHAS      = "fichas";
+    public final static String CONTROLLER_CATALOGOS   = "catalogos";
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -246,6 +248,9 @@ public class Constants {
     //public final static String GPO_VE_T             = "groups_ven_t";
 
     public final static String STATUS_FICHAS       = "status_fichas";
+    public final static String ESTADOS             = "estados";
+    public final static String MUNICIPIOS          = "municipios";
+    public final static String COLONIAS            = "colonias";
 
     //====================   TAGS  PARA  JSON  DE  RESPUESTA  DE  GESTION  =========================
     public final static String LATITUD                  = "Latitud";

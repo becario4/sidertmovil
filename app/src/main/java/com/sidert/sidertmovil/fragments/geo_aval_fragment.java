@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidhiddencamera.HiddenCameraActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,6 +46,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.CamaraActivity;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.GeolocalizacionInd;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
@@ -53,6 +55,7 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
+import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 
@@ -254,6 +257,7 @@ public class geo_aval_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(boostrap, CameraVertical.class);
+            //Intent i = new Intent(boostrap, CamaraActivity.class);
             i.putExtra(Constants.ORDER_ID, ficha_id+"_aval");
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
         }
@@ -353,7 +357,18 @@ public class geo_aval_fragment extends Fragment {
         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
 
-        locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener,null);
+        String provider;
+
+        if (NetworkStatus.haveNetworkConnection(ctx)) {
+            Log.e("Proveedor", "RED");
+            provider = LocationManager.NETWORK_PROVIDER;
+        }
+        else {
+            Log.e("Proveedor", "GPS");
+            provider = LocationManager.GPS_PROVIDER;
+        }
+
+        locationManager.requestSingleUpdate(provider, locationListener,null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
@@ -641,39 +656,35 @@ public class geo_aval_fragment extends Fragment {
 
     public void ValidarInformacion() {
         if (latLngUbicacion != null || isUbicacion){
-            if (!etCodigoBarras.getText().toString().trim().isEmpty()){
-                if (byteFotoFachada != null){
-                    if (!metComentario.getText().toString().trim().isEmpty()){
-                        final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        try {
-                                            GuardarGeo();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dialog.dismiss();
+            if (byteFotoFachada != null){
+                if (!metComentario.getText().toString().trim().isEmpty()){
+                    final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                            R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    try {
+                                        GuardarGeo();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    dialog.dismiss();
 
-                                    }
-                                }, R.string.cancel, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        Objects.requireNonNull(guardar_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                        guardar_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        guardar_dlg.show();
-                    }
-                    else
-                        SendMessError("Falta capturar el comentario");
+                                }
+                            }, R.string.cancel, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(guardar_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    guardar_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    guardar_dlg.show();
                 }
                 else
-                    SendMessError("Falta Capturar la foto de fachada.");
+                    SendMessError("Falta capturar el comentario");
             }
             else
-                SendMessError("Falta obtener el código de barras del recibo de luz.");
+                SendMessError("Falta Capturar la foto de fachada.");
         }
         else
             SendMessError("Falta obtener la ubicación actual.");

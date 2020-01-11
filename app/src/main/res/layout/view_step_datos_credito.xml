@@ -25,60 +25,12 @@
             android:layout_height="wrap_content" />
         <Spinner
             android:id="@+id/spMedioPago"
-            android:entries="@array/method_pay"
+            android:entries="@array/localidad"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height"/>
-    </LinearLayout>
-
-    <!-- Sucursal -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Sucursal"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spSucursal"
-            android:entries="@array/method_pay"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
-    </LinearLayout>
-
-    <!--  Nombre del Asesor  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Nombre del Asesor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etNombreAsesor"
-            android:enabled="false"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Plazo  -->
@@ -95,7 +47,7 @@
             android:layout_height="wrap_content" />
         <Spinner
             android:id="@+id/spTiempo"
-            android:entries="@array/method_pay"
+            android:entries="@array/intervalo"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
@@ -104,7 +56,7 @@
             android:layout_height="@dimen/et_height"/>
         <Spinner
             android:id="@+id/spLapso"
-            android:entries="@array/method_pay"
+            android:entries="@array/lapso"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
@@ -147,12 +99,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/etCantidadLetra"
-            android:paddingLeft="10dp"
-            android:inputType="textCapSentences"
-            android:background="@drawable/et_rounded_edges"
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:textSize="15sp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:enabled="false"
             android:padding="5dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -177,7 +134,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnContinuar0"

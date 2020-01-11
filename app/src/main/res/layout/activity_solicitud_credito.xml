@@ -19,6 +19,8 @@
                 android:id="@+id/TBmain"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:title="Solicitudes de Crédito"
+                app:titleTextColor="@color/white"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
             <android.support.design.widget.TabLayout
@@ -34,7 +36,7 @@
                 app:tabMaxWidth="0dp"/>
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
+       <!-- <android.support.v4.widget.NestedScrollView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true">
 
-                <!--  Datos del credito 0  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_0"
                     android:layout_width="match_parent"
@@ -63,7 +65,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Datos personales del solicitante 1  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_1"
                     android:layout_width="match_parent"
@@ -78,7 +80,7 @@
                         layout="@layout/view_step_datos_personales"/>
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Datos del conyuge 2  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_2"
                     android:layout_width="match_parent"
@@ -94,7 +96,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Datos economicos 3  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_3"
                     android:layout_width="match_parent"
@@ -110,7 +112,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Datos del negocio o actividad economica 4  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_4"
                     android:layout_width="match_parent"
@@ -126,7 +128,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Datos del aval 5  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_5"
                     android:layout_width="match_parent"
@@ -142,7 +144,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Referencias del solicitante 6  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_6"
                     android:layout_width="match_parent"
@@ -158,7 +160,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Ubicacion del solicitante 7  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_7"
                     android:layout_width="match_parent"
@@ -174,7 +176,7 @@
 
                 </moe.feng.common.stepperview.VerticalStepperItemView>
 
-                <!--  Verificacion domiciliaria 8  -->
+
                 <moe.feng.common.stepperview.VerticalStepperItemView
                     android:id="@+id/stepper_8"
                     android:layout_width="match_parent"
@@ -193,6 +195,25 @@
 
             </LinearLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </android.support.v4.widget.NestedScrollView>-->
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
+
+  <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fbAgregar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:gravity="bottom"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/yellow"
+        android:src="@drawable/ic_add"/>
+
+    <include layout="@layout/view_btn_solicitud" />
+
 </android.support.design.widget.CoordinatorLayout>

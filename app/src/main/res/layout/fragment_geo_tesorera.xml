@@ -218,6 +218,7 @@
                     android:inputType="textMultiLine|textCapSentences"
                     android:ems="10"
                     android:ellipsize="end"
+                    android:maxLength="100"
                     android:gravity="start"
                     android:paddingTop="3dp"
                     android:paddingLeft="10dp"

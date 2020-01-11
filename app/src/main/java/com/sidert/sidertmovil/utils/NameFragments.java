@@ -10,6 +10,7 @@ public class NameFragments {
     public final static String SETTINGS              = "settings_fragment";
     public final static String HELP                  = "help_fragment";
     public final static String ABOUT                 = "about_fragment";
+    public final static String SOLICITUD_CREDITO     = "solicitud_credito_fragment";
 
     public final static String COMPLAINT_TEMP         = "fragment_complaint_temp";
 

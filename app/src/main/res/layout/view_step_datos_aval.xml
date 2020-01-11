@@ -19,7 +19,7 @@
 
         <EditText
             android:id="@+id/etNombre"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -40,7 +40,7 @@
 
         <EditText
             android:id="@+id/etApellidoPat"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
 
         <EditText
             android:id="@+id/etApellidoMat"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -82,7 +82,7 @@
 
         <EditText
             android:id="@+id/etParentescoAval"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -103,7 +103,7 @@
 
         <EditText
             android:id="@+id/etFechaNac"
-            android:enabled="false"
+            android:focusable="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -129,7 +129,8 @@
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/etEdad"
-                android:enabled="false"
+                android:inputType="number"
+                android:maxLength="2"
                 android:paddingLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/et_rounded_edges"
@@ -163,7 +164,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
                 <RadioButton
-                    android:id="@+id/rbSiContacto"
+                    android:id="@+id/rbMasculino"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:gravity="center"
@@ -177,7 +178,7 @@
                     android:text="M"
                     android:textColor="@drawable/radio_flat_text_selector_left" />
                 <RadioButton
-                    android:id="@+id/rbAclaracion"
+                    android:id="@+id/rbFemenino"
                     android:gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -214,7 +215,7 @@
             android:layout_height="wrap_content" />
         <Spinner
             android:id="@+id/spEstadoNac"
-            android:entries="@array/method_pay"
+            android:entries="@array/estados"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
@@ -236,7 +237,7 @@
 
         <EditText
             android:id="@+id/etNumIdentificacion"
-            android:enabled="false"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -257,7 +258,7 @@
 
         <EditText
             android:id="@+id/etOcupacion"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -278,7 +279,8 @@
 
         <EditText
             android:id="@+id/etTelNegocio"
-            android:enabled="false"
+            android:inputType="phone"
+            android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -353,69 +355,59 @@
 
         <EditText
             android:id="@+id/etCalle"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  No. Exterior y No. Interior  -->
+    <!--  No. Exterior  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="No.Ext/Manz."
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="No.Ext/Man."
-                android:layout_marginRight="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etNoExt"
-                android:enabled="false"
-                android:paddingLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-        <View
-            android:background="@color/colorGrayDark"
-            android:layout_width="@dimen/dp1"
-            android:layout_height="@dimen/et_height"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etNoExt"
+            android:inputType="text"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="No.Int/Lote"
-                android:layout_marginRight="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etNoInt"
-                android:enabled="false"
-                android:paddingLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
 
+    <!--  No. Interior  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="No.Int/Lote"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etNoInt"
+            android:inputType="text"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Colonia  -->
@@ -432,7 +424,7 @@
 
         <EditText
             android:id="@+id/etColonia"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -453,7 +445,8 @@
 
         <EditText
             android:id="@+id/etCodigoPostal"
-            android:enabled="false"
+            android:inputType="number"
+            android:maxLength="5"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -501,7 +494,7 @@
 
         <EditText
             android:id="@+id/etNombreTitular"
-            android:enabled="false"
+            android:inputType="textCapWords"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -522,7 +515,7 @@
 
         <EditText
             android:id="@+id/etParentescoTitular"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -573,7 +566,7 @@
             <EditText
                 android:id="@+id/etGastosFijos"
                 android:drawableStart="@drawable/ic_money"
-                android:enabled="true"
+                android:inputType="number"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -602,7 +595,7 @@
             <EditText
                 android:id="@+id/etAgua"
                 android:drawableStart="@drawable/ic_money"
-                android:enabled="true"
+                android:inputType="number"
                 android:paddingLeft="0dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/et_rounded_edges"
@@ -634,7 +627,7 @@
             <EditText
                 android:id="@+id/etGastosLuz"
                 android:drawableStart="@drawable/ic_money"
-                android:enabled="true"
+                android:inputType="number"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -663,7 +656,7 @@
             <EditText
                 android:id="@+id/etGastoTel"
                 android:drawableStart="@drawable/ic_money"
-                android:enabled="true"
+                android:inputType="number"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -688,7 +681,7 @@
             android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/etRenta"
-            android:enabled="true"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
             android:layout_marginRight="10dp"
@@ -742,7 +735,8 @@
 
         <EditText
             android:id="@+id/etHorarioLoc"
-            android:enabled="false"
+            android:inputType="time"
+            android:focusable="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -795,7 +789,7 @@
             android:layout_height="wrap_content" />
         <Spinner
             android:id="@+id/spActividadEco"
-            android:entries="@array/method_pay"
+            android:entries="@array/actividad_eco"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
@@ -818,7 +812,7 @@
             android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/etAntiguedad"
-            android:enabled="true"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="20dp"
@@ -830,7 +824,8 @@
             android:textColor="@android:color/black"
             android:text="Años"
             android:layout_marginRight="8dp"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
@@ -849,7 +844,7 @@
             android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/etIngresoSem"
-            android:enabled="true"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -873,7 +868,7 @@
             android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/etOtrosIngresos"
-            android:enabled="true"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -938,7 +933,8 @@
 
         <EditText
             android:id="@+id/etTelCasa"
-            android:enabled="false"
+            android:inputType="phone"
+            android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -959,7 +955,8 @@
 
         <EditText
             android:id="@+id/etTelCelular"
-            android:enabled="false"
+            android:inputType="phone"
+            android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -983,7 +980,6 @@
             android:ems="10"
             android:ellipsize="end"
             android:gravity="start"
-            android:enabled="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"

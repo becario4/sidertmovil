@@ -6,7 +6,10 @@ import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
+import com.sidert.sidertmovil.models.ModeloColonia;
+import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
+import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 import com.sidert.sidertmovil.models.SynchronizeBD;
 
@@ -71,5 +74,40 @@ public interface ManagerInterface {
                                       @Part("comentario") RequestBody comentario,
                                       @Part("tipo") RequestBody tipo,
                                       @Part MultipartBody.Part foto_fachada);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_SAVE_GEO)
+    Call<ModeloResSaveGeo> guardarGeoUpdate(@Header("Authorization") String token,
+                                            @Part("actualizar") RequestBody actualizar,
+                                            @Part("ficha_id") RequestBody ficha_id,
+                                            @Part("fecha_respuesta") RequestBody fecha_respuesta,
+                                            @Part("latitud") RequestBody latitud,
+                                            @Part("longitud") RequestBody longitud,
+                                            @Part("direccion") RequestBody direccion,
+                                            @Part("barcode") RequestBody barcode,
+                                            @Part("comentario") RequestBody comentario,
+                                            @Part("tipo") RequestBody tipo,
+                                            @Part MultipartBody.Part foto_fachada);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_ESTADOS)
+    Call<List<ModeloEstados>> getEstados(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_MUNICIPIOS)
+    Call<List<ModeloMunicipio>> getMunicipios(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_COLONIAS)
+    Call<List<ModeloColonia>> getColonias(@Header("Authorization") String barer_token);
 
 }

@@ -68,8 +68,6 @@ public class RecuperacionGrupal extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Constants.ENVIROMENT)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_recuperacion_grupal);
         ctx             = this;
         dBhelper = new DBhelper(ctx);

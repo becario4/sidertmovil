@@ -42,6 +42,7 @@ import com.sidert.sidertmovil.fragments.erase_table_fragment;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
+import com.sidert.sidertmovil.fragments.solicitud_credito_fragment;
 import com.sidert.sidertmovil.utils.BkgJobServiceLogout;
 import com.sidert.sidertmovil.utils.BkgJobServiceSincronizado;
 import com.sidert.sidertmovil.utils.Constants;
@@ -81,11 +82,9 @@ public class Home extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Constants.ENVIROMENT)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
-        //Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics());
         //logUserFabric();
         session         = new SessionManager(ctx);
         TBmain          = findViewById(R.id.TBmain);
@@ -133,16 +132,17 @@ public class Home extends AppCompatActivity{
             }
 
             tvNameUser.setText(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
-            if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_GERENTESUCURSAL")) {
+            if(session.getUser().get(5) != null && (session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") || session.getUser().get(5).contains("ROLE_GERENTEREGIONAL") || session.getUser().get(5).contains("ROLE_COORDINADOR") || session.getUser().get(5).contains("ROLE_DIRECCION"))) {
                 NVmenu.getMenu().clear();
                 NVmenu.inflateMenu(R.menu.navigation_menu_gerente_sucursal);
                 if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                    Log.e("Login", "On Start Service Job");
+                    Log.e("sincronizado", "On Start Service Job");
                     ComponentName serviceComponent;
                     serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
                     JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setMinimumLatency(10 * 60 * 1000);
-                    builder.setOverrideDeadline(10 * 60 * 1000);
+                    builder.setPeriodic(10 * 60 * 1000);
+                    //builder.setMinimumLatency(100);
+                    //builder.setOverrideDeadline(100);
                     JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     jobScheduler.schedule(builder.build());
                 } else
@@ -152,7 +152,41 @@ public class Home extends AppCompatActivity{
             else if(session.getUser().get(5) != null && session.getUser().get(5).contains("PROGRAMADOR")){
                 NVmenu.getMenu().clear();
                 NVmenu.inflateMenu(R.menu.navigation_menu_programador);
-                setFragment(NameFragments.TABLAS, null);
+                setFragment(NameFragments.ERASE_TABLES, null);
+            }
+            else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_ANALISTA")){
+                NVmenu.getMenu().clear();
+                NVmenu.inflateMenu(R.menu.navigation_menu_analista);
+                if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
+                    Log.e("Login", "On Start Service Job");
+                    ComponentName serviceComponent;
+                    serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
+                    JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
+                    builder.setPeriodic(10 * 60 * 1000);
+                    //builder.setMinimumLatency(100);
+                    //builder.setOverrideDeadline(100);
+                    JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                    jobScheduler.schedule(builder.build());
+                } else
+                    Log.e("Login", "Enable Service Job");
+                setFragment(NameFragments.GEOLOCALIZACION, null);
+            }
+            else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_SUPER")){
+                NVmenu.getMenu().clear();
+                NVmenu.inflateMenu(R.menu.navigation_menu_super);
+                /*if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
+                    Log.e("Login", "On Start Service Job");
+                    ComponentName serviceComponent;
+                    serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
+                    JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
+                    builder.setPeriodic(10 * 60 * 1000);
+                    //builder.setMinimumLatency(100);
+                    //builder.setOverrideDeadline(100);
+                    JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                    jobScheduler.schedule(builder.build());
+                } else
+                    Log.e("Login", "Enable Service Job");*/
+                setFragment(NameFragments.ERASE_TABLES, null);
             }
             else {
                 setFragment(NameFragments.ORDERS, null);
@@ -180,6 +214,7 @@ public class Home extends AppCompatActivity{
                     setFragment(NameFragments.ORDERS, null);
                     break;
                 case R.id.NVsolicitudCredito:
+                    //setFragment(NameFragments.SOLICITUD_CREDITO, null);
                     Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
                     startActivity(i_solicitud);
                     break;
@@ -187,16 +222,16 @@ public class Home extends AppCompatActivity{
                     Intent i_originacion = new Intent(getApplicationContext(), OriginacionI.class);
                     startActivity(i_originacion);
                     break;*/
-                case R.id.NVsettings:
+                /*case R.id.NVsettings:
                     //setFragment(fragments.ORDERS, null);
-                    break;
+                    break;*/
                 case R.id.NVcomplaint:
                     dialog_mailbox complaint = new dialog_mailbox();
                     complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);
                     break;
-                case R.id.NVhelp:
+                /*case R.id.NVhelp:
                     //setFragment(fragments.ORDERS, null);
-                    break;
+                    break;*/
                 case R.id.NVabout:
                     Intent i_about = new Intent(getApplicationContext(), AcercaDe.class);
                     startActivity(i_about);
@@ -208,9 +243,9 @@ public class Home extends AppCompatActivity{
                 case R.id.NVlogPrint:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
-                case R.id.NVimpresiones:
+                /*case R.id.NVimpresiones:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
-                    break;
+                    break;*/
                 case R.id.NVeraseTable:
                     setFragment(NameFragments.ERASE_TABLES, null);
                     break;
@@ -273,6 +308,15 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
+            case NameFragments.TABLAS:
+                if (!(current instanceof erase_table_fragment)){
+                    erase_table_fragment erase_table = new erase_table_fragment();
+                    erase_table.setArguments(extras);
+                    transaction.replace(R.id.FLmain, erase_table, NameFragments.TABLAS);
+                    tokenFragment = NameFragments.TABLAS;
+                } else
+                    return;
+                break;
             case NameFragments.GEOLOCALIZACION:
                 mTabLayout.setVisibility(View.VISIBLE);
                 if (!(current instanceof geolocalizacion_fragment)){
@@ -280,6 +324,16 @@ public class Home extends AppCompatActivity{
                     geolocalizacion.setArguments(extras);
                     transaction.replace(R.id.FLmain, geolocalizacion, NameFragments.GEOLOCALIZACION);
                     tokenFragment = NameFragments.GEOLOCALIZACION;
+                } else
+                    return;
+                break;
+            case NameFragments.SOLICITUD_CREDITO:
+                mTabLayout.setVisibility(View.VISIBLE);
+                if (!(current instanceof solicitud_credito_fragment)){
+                    solicitud_credito_fragment solicitud_credito = new solicitud_credito_fragment();
+                    solicitud_credito.setArguments(extras);
+                    transaction.replace(R.id.FLmain, solicitud_credito, NameFragments.SOLICITUD_CREDITO);
+                    tokenFragment = NameFragments.SOLICITUD_CREDITO;
                 } else
                     return;
                 break;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
@@ -63,6 +65,7 @@ public class dialog_logout extends DialogFragment {
                     session.getUser().get(7));
             JobScheduler scheduler = (JobScheduler) ctx.getSystemService(JOB_SCHEDULER_SERVICE);
             scheduler.cancel(Constants.ID_JOB_SINCRONIZADO);
+            Log.e("Servicio Activo", Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "Sincronizado") +" Enable");
             triggerRebirth();
             getDialog().dismiss();
         }

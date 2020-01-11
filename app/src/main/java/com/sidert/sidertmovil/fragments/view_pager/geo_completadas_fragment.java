@@ -118,7 +118,16 @@ public class geo_completadas_fragment extends Fragment {
         parent.SetUpBagde(1, row.getCount());
         _m_geolocalizacion = new ArrayList<>();
         row.moveToFirst();
+        dataNombre = new String[row.getCount()];
+        dataColonia = new String[row.getCount()];
+        dataAsesor = new String[row.getCount()];
+        List<String> nombre = new ArrayList<>();
+        List<String> colonia = new ArrayList<>();
+        List<String> asesor = new ArrayList<>();
         for (int i = 0; i < row.getCount(); i++){
+            nombre.add(row.getString(4));
+            colonia.add(row.getString(9));
+            asesor.add(row.getString(2));
             mGeo = new ModelGeolocalizacion();
             mGeo.setId(Integer.parseInt(row.getString(0)));
             mGeo.setAsesor_nombre(row.getString(2));
@@ -135,6 +144,19 @@ public class geo_completadas_fragment extends Fragment {
             _m_geolocalizacion.add(mGeo);
             row.moveToNext();
         }
+
+        dataNombre = RemoverRepetidos(nombre);
+        dataAsesor = RemoverRepetidos(asesor);
+        dataColonia = RemoverRepetidos(colonia);
+
+        adapterNombre = new ArrayAdapter<String>(ctx,
+                R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
+
+        adapterColonia = new ArrayAdapter<String>(ctx,
+                R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
+
+        adapterAsesor = new ArrayAdapter<String>(ctx,
+                R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
 
     }
 
@@ -394,5 +416,24 @@ public class geo_completadas_fragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private String[] RemoverRepetidos(List<String> nombres){
+        String[] data;
+        List<String> nombreUnico = new ArrayList<>();
+
+        for (int i = 0; i < nombres.size(); i++){
+            String nombre = nombres.get(i);
+            if (nombreUnico.indexOf(nombre) < 0) {
+                nombreUnico.add(nombre);
+            }
+        }
+
+        data = new String[nombreUnico.size()];
+        for (int j = 0; j < nombreUnico.size(); j++){
+            data[j] = nombreUnico.get(j);
+        }
+
+        return data;
     }
 }

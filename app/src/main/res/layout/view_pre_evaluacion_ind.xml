@@ -176,12 +176,7 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_marginTop="20dp"
-                android:textColor="@color/red"
-                android:text="Se elimina botón de GPS, los datos se obtendrán de forma interna"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+      ¿
 
             <!--  Aprueba la pre-evaluacion  -->
             <LinearLayout

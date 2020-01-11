@@ -33,13 +33,16 @@ public class DBhelper extends SQLiteOpenHelper {
         /*db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ASESSORS_T);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTORS_T);*/
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
-        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);*/
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS);
         Log.v("CreacionTablas", "se crearon tablas");
     }
 
@@ -48,19 +51,32 @@ public class DBhelper extends SQLiteOpenHelper {
         //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_FICHAS_T);
         //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
         //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION);
-        try {
-            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION); }
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION); }
         catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION"); }
 
-        try {
-            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T); }
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T); }
         catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION_T");}
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT); }
         catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla LOGIN_REPORT");}
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T); }
-        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla LOGIN REPORT_T"); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla LOGIN_REPORT_T"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS); }
+        catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla FICHAS");}
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla FICHAS_T"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla ESTADOS"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla MUNICIPIOS"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla COLONIAS"); }
 
         //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T);
 
@@ -68,6 +84,57 @@ public class DBhelper extends SQLiteOpenHelper {
         //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T);
 
 
+    }
+
+    public void saveEstados (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_ESTADOS + "(" +
+                SidertTables.SidertEntry.ESTADO_ID      + ", " +
+                SidertTables.SidertEntry.ESTADO_NOMBRE  + ", " +
+                SidertTables.SidertEntry.PAIS_ID + ") VALUES(?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //ESTADO ID       1
+        pInsert.bindString(2, params.get(1));                   //NOMBRE ESTADO   2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //PAIS ID         3
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveMunicipios (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_MUNICIPIOS + "(" +
+                SidertTables.SidertEntry.MUNICIPIO_ID      + ", " +
+                SidertTables.SidertEntry.MUNICIPIO_NOMBRE  + ", " +
+                SidertTables.SidertEntry.ESTADO_ID + ") VALUES(?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //MUNICIPIO ID       1
+        pInsert.bindString(2, params.get(1));                   //NOMBRE MUNICIPIO   2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //ESTADO ID          3
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveColonias (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_COLONIAS + "(" +
+                SidertTables.SidertEntry.COLONIA_ID      + ", " +
+                SidertTables.SidertEntry.COLONIA_NOMBRE  + ", " +
+                SidertTables.SidertEntry.MUNICIPIO_ID + ") VALUES(?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //COLONIA ID       1
+        pInsert.bindString(2, params.get(1));                   //COLONIA ESTADO   2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //MUNICIPIO ID     3
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void saveRecordsFichas (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){

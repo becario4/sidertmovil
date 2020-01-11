@@ -12,7 +12,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
 
-    public static Retrofit generalRF(String type_service) {
+    public static Retrofit generalRF(String controller) {
 
         //if (retrofit==null) {
 
@@ -21,12 +21,25 @@ public class RetrofitClient {
                 .readTimeout(120, TimeUnit.SECONDS)
                 .build();
 
-        Log.v("URL", (type_service.equals("login"))?WebServicesRoutes.BASE_URL:WebServicesRoutes.BASE_URL.replace("oauth/", "api/fichas/"));
-            retrofit = new Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl((type_service.equals("login"))?WebServicesRoutes.BASE_URL:WebServicesRoutes.BASE_URL.replace("oauth/", "api/fichas/"))
-                    .client(okHttpClient)
-                    .build();
+        String base_url = WebServicesRoutes.BASE_URL;
+        switch (controller){
+            case Constants.CONTROLLER_LOGIN:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_LOGIN;
+                break;
+            case Constants.CONTROLLER_FICHAS:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_FICHAS;
+                break;
+            case Constants.CONTROLLER_CATALOGOS:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CATALOGOS;
+                break;
+        }
+
+        Log.v("URL", base_url);
+        retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(base_url)
+                .client(okHttpClient)
+                .build();
         //}
 
         return retrofit;

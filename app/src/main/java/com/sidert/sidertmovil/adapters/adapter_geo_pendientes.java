@@ -110,21 +110,21 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
             Drawable icon_tres = (item.getRes_tres().equals(""))?ctx.getResources().getDrawable(R.drawable.ic_person_red):ctx.getResources().getDrawable(R.drawable.ic_person_green);
             Glide.with(ctx).load(icon_tres).into(holder.ivResTres);
         }
-        holder.ivResUno.setOnClickListener(new View.OnClickListener() {
+        holder.llResUno.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 evento.GeoOnClick(item, 1);
             }
         });
 
-        holder.ivResDos.setOnClickListener(new View.OnClickListener() {
+        holder.llResDos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 evento.GeoOnClick(item, 2);
             }
         });
 
-        holder.ivResTres.setOnClickListener(new View.OnClickListener() {
+        holder.llResTres.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 evento.GeoOnClick(item, 3);
@@ -141,6 +141,9 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre;
         private TextView tvDireccion;
+        private LinearLayout llResUno;
+        private LinearLayout llResDos;
+        private LinearLayout llResTres;
         private ImageView ivResUno;
         private ImageView ivResDos;
         private ImageView ivResTres;
@@ -153,6 +156,9 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
             super(itemView);
             tvNombre     = itemView.findViewById(R.id.tvNombre);
             tvDireccion  = itemView.findViewById(R.id.tvDireccion);
+            llResUno     = itemView.findViewById(R.id.llResUno);
+            llResDos     = itemView.findViewById(R.id.llResDos);
+            llResTres    = itemView.findViewById(R.id.llResTres);
             ivResUno     = itemView.findViewById(R.id.ivResUno);
             ivResDos     = itemView.findViewById(R.id.ivResDos);
             ivResTres    = itemView.findViewById(R.id.ivResTres);

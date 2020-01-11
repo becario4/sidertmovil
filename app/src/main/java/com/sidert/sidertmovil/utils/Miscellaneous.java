@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -64,6 +66,7 @@ public class Miscellaneous {
         return type;
     }
 
+    /* Retorna si es una ficha 2 = grupal o 1 = individual */
     public static int getIndorGpo(String str) {
         Log.v("Formulario", str);
         int res;
@@ -247,6 +250,7 @@ public class Miscellaneous {
         return name;
     }
 
+    /* Genera la cantidad en letra  */
     public static String cantidadLetra(String s) {
         StringBuilder result = new StringBuilder();
         BigDecimal totalBigDecimal = new BigDecimal(s).setScale(2, BigDecimal.ROUND_DOWN);
@@ -482,6 +486,7 @@ public class Miscellaneous {
         }
     }
 
+    /* Genera la autorización para la servicios */
     public static String authorization (String user, String pass){
         String credential = user + ":" + pass;
         return "Basic " + Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP);
@@ -495,13 +500,15 @@ public class Miscellaneous {
         }
     }
 
+    /* Retorna la dirección de acorde una latitud y longitud */
     public static String ObtenerDireccion (Context ctx, double lat, double lng){
         String address=null;
         Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
         List<Address> list = null;
         try{
-            list = geocoder.getFromLocation(lat, lng, 1);
+            list = geocoder.getFromLocation(lat, lng, 5);
         } catch(Exception e){
+            Log.e("Error_direccion", e.getMessage());
             e.printStackTrace();
         }
         if(list == null){
@@ -521,6 +528,7 @@ public class Miscellaneous {
         return address;
     }
 
+    /* Retorna si un servicio está activo o desactivado */
     public static boolean JobServiceEnable (Context ctx, int id_job, String servicio){
         boolean flag = false;
         JobScheduler scheduler = (JobScheduler) ctx.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
@@ -589,6 +597,30 @@ public class Miscellaneous {
             }
         }
         return item;
+    }
+
+    /* Obtener la edad de acorde a una fecha seleccionada */
+
+    public static String GetEdad (String fecha_nac){
+        Date fechaNac=null;
+        try {
+            fechaNac = new SimpleDateFormat("yyyy-MM-dd").parse(fecha_nac);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar fechaActual = Calendar.getInstance();
+        Calendar fechaNacimiento = Calendar.getInstance();
+        fechaNacimiento.setTime(fechaNac);
+
+        int year = fechaActual.get(Calendar.YEAR) - fechaNacimiento.get(Calendar.YEAR);
+        int mes = fechaActual.get(Calendar.MONTH) - fechaNacimiento.get(Calendar.MONTH);
+        int dia = fechaActual.get(Calendar.DATE) - fechaNacimiento.get(Calendar.DATE);
+        if(mes<0 || (mes==0 && dia<0)){
+            year--;
+        }
+
+        return String.valueOf(year);
     }
 
 }

@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!--  Nombre(s)  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Nombre(s)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etNombre"
+                    android:inputType="textCapWords"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Apellido paterno  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Apellido Paterno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etApPaterno"
+                    android:inputType="textCapWords"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Apellido materno  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Apellido Materno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etApMaterno"
+                    android:inputType="textCapWords"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Fecha de nacimiento  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Fecha de Nacimiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etFechaNac"
+                    android:focusable="false"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Edad y sexo  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Edad:"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etEdad"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:paddingLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Sexo:"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <RadioGroup
+                        android:id="@+id/rgSexo"
+                        android:orientation="horizontal"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+                        <RadioButton
+                            android:id="@+id/rbHombre"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:gravity="center"
+                            android:layout_height="30dp"
+                            android:background="@drawable/radio_flat_selector_left"
+                            android:button="@android:color/transparent"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="16dp"
+                            android:paddingBottom="3dp"
+                            android:text="H"
+                            android:textColor="@drawable/radio_flat_text_selector_left" />
+                        <RadioButton
+                            android:id="@+id/rbMujer"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/radio_flat_selector_rigth"
+                            android:button="@android:color/transparent"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="16dp"
+                            android:paddingBottom="3dp"
+                            android:text="M"
+                            android:textColor="@drawable/radio_flat_text_selector_rigth" />
+                    </RadioGroup>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Tipo y numero de identificacion  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Tipo y Número de Identificación"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etNumIdentificacion"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Estado de Nacimiento -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Estado de Nacimiento"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spEstadoNac"
+                    android:entries="@array/estados"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!-- Nivel de estudios -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Nivel de Estudio"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spEstudios"
+                    android:entries="@array/nivel_estudio"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!-- Estado civil -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Estado Civil"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spEstadoCivil"
+                    android:entries="@array/estado_civil"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!--  RFC  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="RFC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etRfc"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  CURP  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="CURP"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etCurp"
+                    android:enabled="false"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Datos del domicilio  -->
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/gray_light">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Datos del Domicilio"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/blue_sidert" />
+            </LinearLayout>
+
+            <!-- Estado -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Estado"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spEstado"
+                    android:entries="@array/estados"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!-- Municipio -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Municipio"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spMunicipio"
+                    android:entries="@array/municipios"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>
+            </LinearLayout>
+
+            <!--  Calle  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Calle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etCalle"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  No. Exterior  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="No.Ext/Man."
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etNoExt"
+                    android:paddingLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  No. Interior  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="No.Int/Lote"
+                    android:layout_weight="1"
+                    android:layout_marginRight="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etNoInt"
+                    android:paddingLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Colonia  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Colonia o Localidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etColonia"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Codigo postal  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Código Postal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etCodigoPostal"
+                    android:inputType="number"
+                    android:paddingLeft="10dp"
+                    android:maxLength="5"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Tipo Casa -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Casa"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/spCasa"
+                    android:entries="@array/tipo_casa"
+                    android:spinnerMode="dialog"
+                    android:layout_weight="1"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height"/>
+                <EditText
+                    android:id="@+id/etOtroTipo"
+                    android:visibility="gone"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Tiempo de vivir en el sitio -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Tiempo de Vivir en el Sitio"
+                    android:layout_weight="2"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etTiempoSitio"
+                    android:inputType="number"
+                    android:paddingLeft="10dp"
+                    android:maxLength="2"
+                    android:layout_weight="2"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Como se entero de nosotros  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Como se Enteró de Nosotros"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etEnteroNosotros"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Telefono de casa  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Teléfono de Casa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etTelCasa"
+                    android:inputType="phone"
+                    android:maxLength="10"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Telefono celular  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Teléfono Celular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etTelCelular"
+                    android:inputType="phone"
+                    android:paddingLeft="10dp"
+                    android:maxLength="10"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Telefono mensajes  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Teléfono de Mensajes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etTelMensajes"
+                    android:inputType="phone"
+                    android:paddingLeft="10dp"
+                    android:maxLength="10"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Estado de cuenta  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Estado de cuenta"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioGroup
+                    android:id="@+id/rgEstadoCuenta"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/rbSi"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:gravity="center"
+                        android:layout_height="30dp"
+                        android:background="@drawable/radio_flat_selector_left"
+                        android:button="@android:color/transparent"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="3dp"
+                        android:text="Si"
+                        android:textColor="@drawable/radio_flat_text_selector_left" />
+                    <RadioButton
+                        android:id="@+id/rbNo"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/radio_flat_selector_rigth"
+                        android:button="@android:color/transparent"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="3dp"
+                        android:text="No"
+                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!--  E-Mail  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Correo Electrónico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

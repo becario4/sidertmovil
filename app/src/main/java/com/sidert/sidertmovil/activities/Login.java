@@ -8,9 +8,12 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.Home;
@@ -45,6 +49,7 @@ import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
@@ -81,13 +86,14 @@ public class Login extends AppCompatActivity {
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Constants.ENVIROMENT)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        verifyPermission();
         ctx             = getApplicationContext();
         context         = this;
         session         = new SessionManager(ctx);
@@ -100,8 +106,8 @@ public class Login extends AppCompatActivity {
         btnLogin        = findViewById(R.id.btnLogin);
         cvDenunciarPLD  = findViewById(R.id.cvDenciarPLD);
 
-        etUser.setText("GERENTEBANDERILLA");
-        etPassword.setText("g'Rh~iAYPp9'");
+        //etUser.setText("GERENTEBANDERILLA");
+        //etPassword.setText("g'Rh~iAYPp9'");
         validator = new Validator();
 
         btnLogin.setOnClickListener(btnLogin_OnClick);
@@ -126,6 +132,9 @@ public class Login extends AppCompatActivity {
                 if (etUser.getText().toString().trim().equals("programador") && etPassword.getText().toString().trim().equals("Qvv12#4")){
                     doLoginSoporte();
                 }
+                else if(etUser.getText().toString().trim().equals("asesor123") && etPassword.getText().toString().trim().equals("Qvv12#4")){
+                    doLoginAsesorT();
+                }
                 else
                     doLogin();
             }
@@ -147,14 +156,29 @@ public class Login extends AppCompatActivity {
         finish();
     }
 
+    private void doLoginAsesorT(){
+        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "");
+
+        /*if (NetworkStatus.haveNetworkConnection(ctx)){
+            Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
+            catalogos.GetEstados(ctx);
+            catalogos.GetMunicipios(ctx);
+            catalogos.GetColonias(ctx);
+        }*/
+
+        Intent home = new Intent(context, Home.class);
+        startActivity(home);
+        finish();
+    }
+
     private void doLogin (){
-        if (NetworkStatus.haveWifi(ctx)){
+        if (NetworkStatus.haveNetworkConnection(ctx)){
 
             final AlertDialog loading = Popups.showLoadingDialog(context,R.string.please_wait, R.string.loading_info);
             loading.show();
 
 
-            ManagerInterface api = new RetrofitClient().generalRF("login").create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN).create(ManagerInterface.class);
 
             Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
                                                  etPassword.getText().toString().trim(),
@@ -169,55 +193,71 @@ public class Login extends AppCompatActivity {
                             LoginResponse res = response.body();
 
                             if(isExternalStorageWritable()){
-                                String nombreDirectorioPrivado = "Files";
-                                crearDirectorioPrivado(ctx, nombreDirectorioPrivado);
+                                String nameDir = "Files";
+                                crearDirectorioPrivado(ctx, nameDir);
                             }
 
                             byte[] data = Base64.decode(res.getAccessToken().replace(".",";").split(";")[1], Base64.DEFAULT);
 
                             try {
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
-                                HashMap<Integer, String> params = new HashMap<>();
-                                params.put(0, json_info.getString(Constants.SERIE_ID));
-                                params.put(1, json_info.getString(Constants.NOMBRE_EMPLEADO)+" "+
-                                        json_info.getString(Constants.PATERNO)+" "+
-                                        json_info.getString(Constants.MATERNO));
-                                params.put(2,Miscellaneous.ObtenerFecha("timestamp"));
-                                params.put(3,"");
-                                params.put(4,"1");
-                                if (Constants.ENVIROMENT)
-                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT, params);
-                                else
-                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
-                                Log.v("login", json_info.toString());
-                                session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
-                                        Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
-                                        Miscellaneous.validString(json_info.getString(Constants.PATERNO)),
-                                        Miscellaneous.validString(json_info.getString(Constants.MATERNO)),
-                                        Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
-                                        Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
-                                        true,
-                                        Miscellaneous.validString(res.getAccessToken()));
 
-                                Calendar c = Calendar.getInstance();
+                                if (json_info.getString(Constants.AUTHORITIES).contains("ROLE_GERENTESUCURSAL") ||
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_GERENTEREGIONAL") ||
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_COORDINADOR") ||
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_DIRECCION") ||
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_ANALISTA") ||
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_SUPER")){
 
-                                if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
-                                    if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_LOGOUT, "Logout")) {
-                                        Log.e("Login", "On Start Service Job");
-                                        ComponentName serviceComponent;
-                                        serviceComponent = new ComponentName(context, BkgJobServiceLogout.class);
-                                        JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_LOGOUT, serviceComponent);
-                                        builder.setMinimumLatency((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
-                                        builder.setOverrideDeadline((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
-                                        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                                        jobScheduler.schedule(builder.build());
-                                    } else
-                                        Log.e("Login", "Enable Service Job");
+                                    HashMap<Integer, String> params = new HashMap<>();
+                                    params.put(0, json_info.getString(Constants.SERIE_ID));
+                                    params.put(1, json_info.getString(Constants.NOMBRE_EMPLEADO)+" "+
+                                            json_info.getString(Constants.PATERNO)+" "+
+                                            json_info.getString(Constants.MATERNO));
+                                    params.put(2,Miscellaneous.ObtenerFecha("timestamp"));
+                                    params.put(3,"");
+                                    params.put(4,"1");
+
+                                    if (Constants.ENVIROMENT)
+                                        dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT, params);
+                                    else
+                                        dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
+                                    Log.v("login", json_info.toString());
+                                    session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
+                                            Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.PATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.MATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
+                                            Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
+                                            true,
+                                            Miscellaneous.validString(res.getAccessToken()));
+
+                                    Calendar c = Calendar.getInstance();
+
+                                    if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
+                                        if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_LOGOUT, "Logout")) {
+                                            Log.e("Login", "On Start Service Job Login");
+                                            ComponentName serviceComponent;
+                                            serviceComponent = new ComponentName(context, BkgJobServiceLogout.class);
+                                            JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_LOGOUT, serviceComponent);
+                                            //builder.setPeriodic((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
+                                            builder.setMinimumLatency((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
+                                            builder.setOverrideDeadline((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
+                                            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                                            jobScheduler.schedule(builder.build());
+                                        } else
+                                            Log.e("Login", "Service Job Login Activo");
+                                    }
+
+
+                                    Intent home = new Intent(context, Home.class);
+                                    startActivity(home);
+                                    finish();
+                                }
+                                else {
+                                    Toast.makeText(ctx, "Este usuario no está autorizado", Toast.LENGTH_SHORT).show();
                                 }
 
-                                Intent home = new Intent(context, Home.class);
-                                startActivity(home);
-                                finish();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -321,6 +361,38 @@ public class Login extends AppCompatActivity {
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void verifyPermission() {
+        int permsRequestCode = 100;
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.BLUETOOTH};
+
+        int accessFinePermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        int accessCoarsePermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+        int cameraPermission = checkSelfPermission(Manifest.permission.CAMERA);
+        int writeStorage = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readStorage = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        int callPhone = checkSelfPermission(Manifest.permission.CALL_PHONE);
+        int bluetooth = checkSelfPermission(Manifest.permission.BLUETOOTH);
+
+        if (cameraPermission == PackageManager.PERMISSION_GRANTED &&
+                accessFinePermission == PackageManager.PERMISSION_GRANTED &&
+                accessCoarsePermission == PackageManager.PERMISSION_GRANTED &&
+                writeStorage == PackageManager.PERMISSION_GRANTED &&
+                readStorage == PackageManager.PERMISSION_GRANTED &&
+                callPhone == PackageManager.PERMISSION_GRANTED &&
+                bluetooth == PackageManager.PERMISSION_GRANTED) {
+            //se realiza metodo si es necesario...
+        } else {
+            requestPermissions(perms, permsRequestCode);
+        }
     }
 
 }

@@ -14,6 +14,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
 public class LectorCodigoBarras extends Activity implements ZBarScannerView.ResultHandler {
     private ZBarScannerView mScannerView;
+    private AlertDialog.Builder builder;
 
     private String code = "";
 
@@ -42,13 +43,30 @@ public class LectorCodigoBarras extends Activity implements ZBarScannerView.Resu
         // Do something with the result here
         if (!code.isEmpty()){
             if (code.equals(rawResult.getContents())) {
+                if (builder != null){
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
                 Intent i_result = new Intent();
                 i_result.putExtra(Constants.CODEBARS, code);
                 setResult(RESULT_OK,i_result);
                 finish();
             }
             else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                if (builder != null){
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+                builder = new AlertDialog.Builder(this);
 
                 builder.setMessage("El código no coincide con la primer captura, vuelva a capturar el código.")
                         .setPositiveButton("Aceptar",
@@ -62,7 +80,15 @@ public class LectorCodigoBarras extends Activity implements ZBarScannerView.Resu
         }
         else{
             code = rawResult.getContents();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            if (builder != null){
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+            builder = new AlertDialog.Builder(this);
 
             builder.setMessage("Vuelva a capturar el código para confirmar.")
                     .setPositiveButton("Aceptar",

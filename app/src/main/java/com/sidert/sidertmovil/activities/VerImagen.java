@@ -40,8 +40,8 @@ public class VerImagen<onOptionsItemSelect> extends AppCompatActivity {
 
         Glide.with(ctx).load(data.getByteArray(Constants.IMAGEN)).into(ivVerImagen);
 
-        /*PhotoViewAttacher photo = new PhotoViewAttacher(ivVerImagen);
-        photo.update();*/
+        PhotoViewAttacher photo = new PhotoViewAttacher(ivVerImagen);
+        photo.update();
 
     }
 

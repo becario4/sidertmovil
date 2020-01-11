@@ -13,20 +13,19 @@ public class BkgJobServiceSincronizado extends JobService {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("Sincronizado", "Service Job Sincronizado");
+                Log.e("Sincronizado", "Service Job Sincronizado Bkg");
+                Log.e("Timestamp Sincronizado", Miscellaneous.ObtenerFecha("timestamp"));
                 //Toast.makeText(getApplicationContext(),"cerrar sesion job services", Toast.LENGTH_SHORT).show();
                 SessionManager session = new SessionManager(getApplicationContext());
                 if (session.getUser().get(6).equals("true")){
-                    if (session.getUser().get(5).equals("ROLE_GERENTESUCURSAL")){
-                        Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-                        if (NetworkStatus.haveWifi(getApplicationContext())) {
-                            Log.e("JOB", "Con conexion a internet Geolocalizacion");
-                            servicios.GetGeolocalizacion(getApplicationContext());
-                            servicios.SaveGeolocalizacion(getApplicationContext());
-                        }
-                        else
-                            Log.e("JOB", "Sin conexion a internet Geolocalizacion");
+                    Servicios_Sincronizado servicios = new Servicios_Sincronizado();
+                    if (NetworkStatus.haveNetworkConnection(getApplicationContext())) {
+                        Log.e("JOB", "Con conexion a internet Geolocalizacion");
+                        servicios.GetGeolocalizacion(getApplicationContext());
+                        servicios.SaveGeolocalizacion(getApplicationContext());
                     }
+                    else
+                        Log.e("JOB", "Sin conexion a internet Geolocalizacion");
                 }
                 jobFinished(params, true);
             }

@@ -52,6 +52,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/llResUno"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_weight="1"
@@ -69,6 +70,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llResDos"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_weight="1"
@@ -86,6 +88,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llResTres"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_weight="1"

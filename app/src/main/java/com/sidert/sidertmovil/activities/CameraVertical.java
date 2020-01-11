@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.SensorManager;
@@ -35,6 +36,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
@@ -55,6 +57,7 @@ import com.sidert.sidertmovil.utils.Popups;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -74,6 +77,7 @@ public class CameraVertical extends AppCompatActivity {
     private TextureView textureView;
     private ImageView ivFotoFinal;
 
+
     //Check state orientation of output image
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static{
@@ -91,20 +95,21 @@ public class CameraVertical extends AppCompatActivity {
     private ImageReader imageReader;
 
     //Save to FILE
-    private File file;
+    //private File file;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
 
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
-    private FrameLayout flBlock;
-    OrientationEventListener mOrientationListener;
-    private ImageView ivBlocked;
+    //private FrameLayout flBlock;
+    //OrientationEventListener mOrientationListener;
+    //private ImageView ivBlocked;
     private LinearLayout llPregunta;
     private Button btnGuardar;
     private Button btnNueva;
-    private String name_photo = "";
+    //private String name_photo = "";
     private byte[] mFoto;
+    private Context ctx;
 
 
 
@@ -136,21 +141,22 @@ public class CameraVertical extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_vertical);
 
+        ctx = this;
         textureView = findViewById(R.id.tvCamera);
         assert textureView != null;
         textureView.setSurfaceTextureListener(textureListener);
         ibCapture = findViewById(R.id.ibCapture);
-        flBlock = findViewById(R.id.flBlock);
-        ivBlocked    = findViewById(R.id.ivBlocked);
+        //flBlock = findViewById(R.id.flBlock);
+        //ivBlocked    = findViewById(R.id.ivBlocked);
         llPregunta  = findViewById(R.id.llPregunta);
         btnGuardar  = findViewById(R.id.btnGuardar);
         btnNueva    = findViewById(R.id.btnNueva);
         ivFotoFinal = findViewById(R.id.ivFotoFinal);
 
-        name_photo = getIntent().getStringExtra(Constants.ORDER_ID);
+        //name_photo = getIntent().getStringExtra(Constants.ORDER_ID);
 
         //Glide.with(this).load(getResources().getDrawable(R.drawable.img_blocked_camera)).into(ivBlocked);
-        mOrientationListener = new OrientationEventListener(this,
+        /*mOrientationListener = new OrientationEventListener(this,
                 SensorManager.SENSOR_DELAY_NORMAL) {
 
             @Override
@@ -164,13 +170,13 @@ public class CameraVertical extends AppCompatActivity {
                     ibCapture.setEnabled(false);
                 }
             }
-        };
+        };*/
 
-        if (mOrientationListener.canDetectOrientation()) {
+        /*if (mOrientationListener.canDetectOrientation()) {
             mOrientationListener.enable();
         } else {
             mOrientationListener.disable();
-        }
+        }*/
 
         ibCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,28 +199,41 @@ public class CameraVertical extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mOrientationListener.disable();
-                    cameraDevice.close();
-                    View vCanvas = new CanvasCustom(CameraVertical.this,df.format(Calendar.getInstance().getTime()));
+                    try {
+                        View vCanvas = new CanvasCustom(CameraVertical.this,df.format(Calendar.getInstance().getTime()));
 
-                    Bitmap newBitMap = null;
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(mFoto, 0, mFoto.length);
+                        Bitmap newBitMap = null;
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(mFoto, 0, mFoto.length);
 
-                    Bitmap.Config config = bitmap.getConfig();
+                        Bitmap.Config config = bitmap.getConfig();
 
-                    newBitMap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),config);
-                    Canvas canvas = new Canvas(newBitMap);
-                    canvas.drawBitmap(bitmap,0,0, null);
+                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),config);
+                        Canvas canvas = new Canvas(newBitMap);
+                        canvas.drawBitmap(bitmap,0,0, null);
 
-                    vCanvas.draw(canvas);
+                        vCanvas.draw(canvas);
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                    Intent i = new Intent();
-                    i.putExtra(Constants.PICTURE, baos.toByteArray());
-                    setResult(RESULT_OK, i);
-                    finish();
+                        //mOrientationListener.disable();
+                        //cameraDevice.close();
+                        Intent i = new Intent();
+                        i.putExtra(Constants.PICTURE, baos.toByteArray());
+                        setResult(RESULT_OK, i);
+                        finish();
+                    }catch (Exception e){
+
+                        Toast.makeText(ctx, "ha ocurrido un error tome de nuevo la foto", Toast.LENGTH_SHORT).show();
+                        Log.e("Catch Camera", "Cierre de camara");
+                        openCamera();
+                        llPregunta.setVisibility(View.GONE);
+                        ibCapture.setVisibility(View.VISIBLE);
+                        //finish();
+                        //startActivity(getIntent());
+                        //btnGuardar.setVisibility(View.INVISIBLE);
+
+                    }
                     loading.dismiss();
                 }
             },3000);
@@ -234,11 +253,11 @@ public class CameraVertical extends AppCompatActivity {
                 public void run() {
                     llPregunta.setVisibility(View.GONE);
                     ibCapture.setVisibility(View.VISIBLE);
-                    if (mOrientationListener.canDetectOrientation()) {
+                    /*if (mOrientationListener.canDetectOrientation()) {
                         mOrientationListener.enable();
                     } else {
                         mOrientationListener.disable();
-                    }
+                    }*/
                     openCamera();
                     loading.dismiss();
                 }
@@ -247,23 +266,21 @@ public class CameraVertical extends AppCompatActivity {
     };
 
     private void takePicture() {
-        mOrientationListener.disable();
-        if(cameraDevice == null)
+        //mOrientationListener.disable();
+        if(cameraDevice == null) {
+            Log.e("CameraDevice", "es null");
             return;
+        }
         try{
             final ImageReader reader = ImageReader.newInstance(480,640,ImageFormat.JPEG,1);
 
-            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureBuilder.addTarget(reader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
             captureBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 90);
-            //Check orientation base on device
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,270);
 
-
-            file = new File(Environment.getExternalStorageDirectory()+"/"+name_photo+".jpg");
+            //file = new File(Environment.getExternalStorageDirectory()+"/"+name_photo+".jpg");
             List<Surface> outputSurface = new ArrayList<>(2);
             outputSurface.add(reader.getSurface());
             outputSurface.add(new Surface(textureView.getSurfaceTexture()));
@@ -272,13 +289,20 @@ public class CameraVertical extends AppCompatActivity {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
                     Image image = null;
-                    image = reader.acquireLatestImage();
+                    //image = reader.acquireLatestImage();
+                    try {
+                        image = imageReader.acquireLatestImage();
+                    }
+                    catch (Exception e){
+                        Log.e("Last Image", "Catch last Image");
+                    }
 
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[buffer.capacity()];
                     buffer.get(bytes);
                     mFoto = bytes;
 
+                    Log.e("Tamaño mFoto", ": "+mFoto.length);
                 }
             };
 
@@ -287,7 +311,10 @@ public class CameraVertical extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    mOrientationListener.disable();
+                    Log.e("Resultado", result.toString());
+                    Log.e("Request", request.describeContents()+"sefsf");
+                    Log.e("Session", session.toString());
+                    //mOrientationListener.disable();
                     cameraDevice.close();
                 }
             };
@@ -316,13 +343,14 @@ public class CameraVertical extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    btnGuardar.setVisibility(View.VISIBLE);
                     llPregunta.setVisibility(View.VISIBLE);
                     loading.dismiss();
                 }
             },3000);
 
-
         } catch (CameraAccessException e) {
+            Log.e("Error TakeFoto", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -335,7 +363,7 @@ public class CameraVertical extends AppCompatActivity {
             Surface surface = new Surface(texture);
 
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
             //captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
             captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 90);
             captureRequestBuilder.addTarget(surface);
@@ -389,6 +417,8 @@ public class CameraVertical extends AppCompatActivity {
                 },REQUEST_CAMERA_PERMISSION);
                 return;
             }
+
+
 
             manager.openCamera(cameraId,stateCallback,null);
 
@@ -468,7 +498,6 @@ public class CameraVertical extends AppCompatActivity {
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
-
 
     @Override
     public void onBackPressed() {

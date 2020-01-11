@@ -20,7 +20,7 @@
 
         <EditText
             android:id="@+id/etPropiedades"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -41,7 +41,7 @@
 
         <EditText
             android:id="@+id/etValorAprox"
-            android:enabled="false"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -63,7 +63,7 @@
 
         <EditText
             android:id="@+id/etUbicacion"
-            android:enabled="false"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -83,8 +83,8 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCelular"
-            android:enabled="false"
+            android:id="@+id/etIngreso"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
