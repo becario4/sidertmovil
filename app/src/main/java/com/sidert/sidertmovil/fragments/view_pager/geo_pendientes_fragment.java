@@ -1,25 +1,17 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,57 +20,41 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.GsonBuilder;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
-import com.orhanobut.dialogplus.OnItemClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.GeolocalizacionGpo;
 import com.sidert.sidertmovil.activities.GeolocalizacionInd;
-import com.sidert.sidertmovil.adapters.adapter_fichas_pendientes;
+import com.sidert.sidertmovil.activities.ResumenGeo;
 import com.sidert.sidertmovil.adapters.adapter_geo_pendientes;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.models.ModelGeolocalizacion;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -216,6 +192,7 @@ public class geo_pendientes_fragment extends Fragment {
         ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS).create(ManagerInterface.class);
 
         Call<ModeloGeolocalizacion> call = api.getGeolocalizcion("1",
+                                                                false,
                                                                 "Bearer "+ session.getUser().get(7));
         call.enqueue(new Callback<ModeloGeolocalizacion>() {
             @Override
@@ -381,6 +358,7 @@ public class geo_pendientes_fragment extends Fragment {
         }
 
     }
+
 
     private void Filtros (){
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
@@ -561,6 +539,10 @@ public class geo_pendientes_fragment extends Fragment {
             case R.id.nvFiltro:
                 Filtros();
                 return true;
+            case R.id.nvInfo:
+                Intent i_resumen = new Intent(boostrap, ResumenGeo.class);
+                startActivity(i_resumen);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -594,20 +576,6 @@ public class geo_pendientes_fragment extends Fragment {
 
         GetGeolocalizacion(where);
 
-    }
-
-    private boolean isExisteAsesor (String nombreAsesor, int pos){
-        boolean isExist = false;
-            for (int i = 0; i < pos; i++){
-                try {
-                    if (nameAsesor.get(i) != null && nameAsesor.get(i).equals(nameAsesor)) {
-                        isExist = true;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        return isExist;
     }
 
     private String[] RemoverRepetidos(List<String> nombres){

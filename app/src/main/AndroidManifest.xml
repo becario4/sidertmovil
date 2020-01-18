@@ -23,7 +23,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.CamaraActivity"></activity>
+        <activity android:name=".activities.AgregarIntegrante"></activity>
+        <activity
+            android:name=".activities.ResumenGeo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.Configuracion"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.SolicitudCreditoGpo"
             android:screenOrientation="portrait" />

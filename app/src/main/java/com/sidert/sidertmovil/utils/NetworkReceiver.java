@@ -9,6 +9,6 @@ public class NetworkReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context ctx, Intent intent) {
         Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-        servicios.SaveGeolocalizacion(ctx);
+        servicios.SaveGeolocalizacion(ctx, false);
     }
 }

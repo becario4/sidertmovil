@@ -11,9 +11,17 @@ public class ModeloGeolocalizacion {
     @Expose
     private List<Grupale> grupales = null;
 
+    @SerializedName("grupales_gestionadas")
+    @Expose
+    private List<GrupalesGestionada> grupalesGestionadas = null;
+
     @SerializedName("individuales")
     @Expose
     private List<Individuale> individuales = null;
+
+    @SerializedName("individuales_gestionadas")
+    @Expose
+    private List<IndividualesGestionada> individualesGestionadas = null;
 
     public List<Grupale> getGrupales() {
         return grupales;
@@ -23,12 +31,28 @@ public class ModeloGeolocalizacion {
         this.grupales = grupales;
     }
 
+    public List<GrupalesGestionada> getGrupalesGestionadas() {
+        return grupalesGestionadas;
+    }
+
+    public void setGrupalesGestionadas(List<GrupalesGestionada> grupalesGestionadas) {
+        this.grupalesGestionadas = grupalesGestionadas;
+    }
+
     public List<Individuale> getIndividuales() {
         return individuales;
     }
 
     public void setIndividuales(List<Individuale> individuales) {
         this.individuales = individuales;
+    }
+
+    public List<IndividualesGestionada> getIndividualesGestionadas() {
+        return individualesGestionadas;
+    }
+
+    public void setIndividualesGestionadas(List<IndividualesGestionada> individualesGestionadas) {
+        this.individualesGestionadas = individualesGestionadas;
     }
 
     public class Grupale {
@@ -393,6 +417,258 @@ public class ModeloGeolocalizacion {
 
         public void setMontoOtorgado(Double montoOtorgado) {
             this.montoOtorgado = montoOtorgado;
+        }
+
+    }
+
+    public class GrupalesGestionada {
+
+        @SerializedName("ficha_id")
+        @Expose
+        private Integer fichaId;
+        @SerializedName("integrante_tipo")
+        @Expose
+        private String integranteTipo;
+        @SerializedName("tipo")
+        @Expose
+        private String tipo;
+        @SerializedName("barcode")
+        @Expose
+        private String barcode;
+        @SerializedName("latitud")
+        @Expose
+        private String latitud;
+        @SerializedName("longitud")
+        @Expose
+        private String longitud;
+        @SerializedName("direccion")
+        @Expose
+        private String direccion;
+        @SerializedName("comentario")
+        @Expose
+        private String comentario;
+        @SerializedName("foto_fachada")
+        @Expose
+        private String fotoFachada;
+        @SerializedName("fecha_respuesta")
+        @Expose
+        private String fechaRespuesta;
+        @SerializedName("fecha_recepcion")
+        @Expose
+        private String fechaRecepcion;
+
+        public Integer getFichaId() {
+            return fichaId;
+        }
+
+        public void setFichaId(Integer fichaId) {
+            this.fichaId = fichaId;
+        }
+
+        public String getIntegranteTipo() {
+            return integranteTipo;
+        }
+
+        public void setIntegranteTipo(String integranteTipo) {
+            this.integranteTipo = integranteTipo;
+        }
+
+        public String getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(String tipo) {
+            this.tipo = tipo;
+        }
+
+        public String getBarcode() {
+            return barcode;
+        }
+
+        public void setBarcode(String barcode) {
+            this.barcode = barcode;
+        }
+
+        public String getLatitud() {
+            return latitud;
+        }
+
+        public void setLatitud(String latitud) {
+            this.latitud = latitud;
+        }
+
+        public String getLongitud() {
+            return longitud;
+        }
+
+        public void setLongitud(String longitud) {
+            this.longitud = longitud;
+        }
+
+        public String getDireccion() {
+            return direccion;
+        }
+
+        public void setDireccion(String direccion) {
+            this.direccion = direccion;
+        }
+
+        public String getComentario() {
+            return comentario;
+        }
+
+        public void setComentario(String comentario) {
+            this.comentario = comentario;
+        }
+
+        public String getFotoFachada() {
+            return fotoFachada;
+        }
+
+        public void setFotoFachada(String fotoFachada) {
+            this.fotoFachada = fotoFachada;
+        }
+
+        public String getFechaRespuesta() {
+            return fechaRespuesta;
+        }
+
+        public void setFechaRespuesta(String fechaRespuesta) {
+            this.fechaRespuesta = fechaRespuesta;
+        }
+
+        public String getFechaRecepcion() {
+            return fechaRecepcion;
+        }
+
+        public void setFechaRecepcion(String fechaRecepcion) {
+            this.fechaRecepcion = fechaRecepcion;
+        }
+
+    }
+
+    public class IndividualesGestionada {
+
+        @SerializedName("ficha_id")
+        @Expose
+        private Integer fichaId;
+        @SerializedName("integrante_tipo")
+        @Expose
+        private String integranteTipo;
+        @SerializedName("tipo")
+        @Expose
+        private String tipo;
+        @SerializedName("barcode")
+        @Expose
+        private String barcode;
+        @SerializedName("latitud")
+        @Expose
+        private String latitud;
+        @SerializedName("longitud")
+        @Expose
+        private String longitud;
+        @SerializedName("direccion")
+        @Expose
+        private String direccion;
+        @SerializedName("comentario")
+        @Expose
+        private String comentario;
+        @SerializedName("foto_fachada")
+        @Expose
+        private String fotoFachada;
+        @SerializedName("fecha_respuesta")
+        @Expose
+        private String fechaRespuesta;
+        @SerializedName("fecha_recepcion")
+        @Expose
+        private String fechaRecepcion;
+
+        public Integer getFichaId() {
+            return fichaId;
+        }
+
+        public void setFichaId(Integer fichaId) {
+            this.fichaId = fichaId;
+        }
+
+        public String getIntegranteTipo() {
+            return integranteTipo;
+        }
+
+        public void setIntegranteTipo(String integranteTipo) {
+            this.integranteTipo = integranteTipo;
+        }
+
+        public String getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(String tipo) {
+            this.tipo = tipo;
+        }
+
+        public String getBarcode() {
+            return barcode;
+        }
+
+        public void setBarcode(String barcode) {
+            this.barcode = barcode;
+        }
+
+        public String getLatitud() {
+            return latitud;
+        }
+
+        public void setLatitud(String latitud) {
+            this.latitud = latitud;
+        }
+
+        public String getLongitud() {
+            return longitud;
+        }
+
+        public void setLongitud(String longitud) {
+            this.longitud = longitud;
+        }
+
+        public String getDireccion() {
+            return direccion;
+        }
+
+        public void setDireccion(String direccion) {
+            this.direccion = direccion;
+        }
+
+        public String getComentario() {
+            return comentario;
+        }
+
+        public void setComentario(String comentario) {
+            this.comentario = comentario;
+        }
+
+        public String getFotoFachada() {
+            return fotoFachada;
+        }
+
+        public void setFotoFachada(String fotoFachada) {
+            this.fotoFachada = fotoFachada;
+        }
+
+        public String getFechaRespuesta() {
+            return fechaRespuesta;
+        }
+
+        public void setFechaRespuesta(String fechaRespuesta) {
+            this.fechaRespuesta = fechaRespuesta;
+        }
+
+        public String getFechaRecepcion() {
+            return fechaRecepcion;
+        }
+
+        public void setFechaRecepcion(String fechaRecepcion) {
+            this.fechaRecepcion = fechaRecepcion;
         }
 
     }

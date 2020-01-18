@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/CLcontainer"
+    android:clipChildren="false"
+    android:layout_marginStart="@dimen/paddingcl">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tbMain"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/settings"
+                app:titleTextColor="@color/white"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvSincronizarFichas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_update"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:text="Sincronizar Fichas"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:textColor="@android:color/black"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvFichasGestionadas"
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_done_black"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:text="Obtener Fichas Contestadas"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@android:color/black"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

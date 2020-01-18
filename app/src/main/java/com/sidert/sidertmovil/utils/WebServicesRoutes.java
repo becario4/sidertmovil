@@ -3,7 +3,8 @@ package com.sidert.sidertmovil.utils;
 public class WebServicesRoutes {
 
     //public final static String DOMAIN = "http://sidert.ddns.net:"; // Dominio
-    public final static String DOMAIN = "http://172.24.16.48:"; // Dominio local
+    public final static String DOMAIN = "http://172.24.16.48:"; // Dominio producción con VPN
+    //public final static String DOMAIN = "http://192.168.0.167:"; // Dominio local IP Francisco
 
     //public final static String PORT = "81"; //Puerto de producción
     //public final static String PORT = "82"; //Puerto de desarrollo
@@ -14,6 +15,7 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_LOGIN = "/oauth/"; //Controlador login
     public final static String CONTROLLER_FICHAS = "/api/fichas/"; //Controlador para fichas
     public final static String CONTROLLER_CATALOGOS = "/api/catalogos/"; //Controlador para catalogos
+    public final static String IMAGES_GEOLOCALIZACION = "uploads/img/";
 
     public final static String BASE_URL = DOMAIN + PORT;
 

@@ -10,5 +10,12 @@
                 android:icon="@drawable/ic_pin" />
         </group>
 
+        <group android:checkableBehavior="single" android:id="@+id/group4">
+            <item
+                android:id="@+id/NVsettings"
+                android:title="@string/settings"
+                android:icon="@drawable/item_settings"/>
+        </group>
+
     </group>
 </menu>

@@ -195,12 +195,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <EditText
-                    android:id="@+id/etOcupacion"
-                    android:paddingLeft="10dp"
+                <Spinner
+                    android:id="@+id/spOcupacion"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"/>
             </LinearLayout>
 
             <!--  Tipo y numero de identificacion  -->
@@ -752,6 +753,7 @@
 
             <!--  Estado de cuenta  -->
             <LinearLayout
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -840,9 +842,5 @@
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
-
-
-
 
 </LinearLayout>

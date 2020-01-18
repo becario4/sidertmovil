@@ -191,6 +191,15 @@ public class Constants {
 
     public final static String PICTURE                      = "picture";
 
+    //==========================  TIPO INTEGRANTE  =================================================
+    public final static String TIPO_CLIENTE                 = "CLIENTE";
+    public final static String TIPO_NEGOCIO                 = "NEGOCIO";
+    public final static String TIPO_AVAL                    = "AVAL";
+    public final static String TIPO_PRESIDENTE              = "PRESIDENTE";
+    public final static String TIPO_TESORERO                = "TESORERO";
+    public final static String TIPO_SECRETARIO              = "SECRETARIO";
+
+
     //========================== PARAMS REQUESTS  ==================================================
     public final static String USERNAME                  = "username";
     public final static String PASSWORD                  = "password";
@@ -209,6 +218,7 @@ public class Constants {
     public final static int REQUEST_CODE_ACTIVITY                  = 749;
     public final static int REQUEST_CODE_PREVIEW                   = 864;
     public final static int REQUEST_CODE_CODEBARS                  = 462;
+    public final static int REQUEST_CODE_ADD_INTEGRANTE            = 764;
 
     //===========================  ID JOB SCHEDULE  ================================================
     public final static int ID_JOB_LOGOUT                  = 324;
@@ -238,7 +248,8 @@ public class Constants {
     public final static String GEOLOCALIZACION      = "geolocalizacion";
     public final static String LOGIN_REPORT         = "login_report";
     //public final static String IND_VE               = "individuals_ven";
-    //public final static String GPO_VE               = "groups_ven";
+    //public final static String GPO_VE               = "groups_ven"
+    public final static String SINCRONIZADO         = "sincronizado";
     public final static String IND_T                = "individuals_t";
     public final static String GPO_T                = "groups_t";
     public final static String FICHAS_T             = "fichas_t";
@@ -246,6 +257,7 @@ public class Constants {
     public final static String LOGIN_REPORT_T       = "login_report_t";
     //public final static String IND_VE_T             = "individuals_ven_t";
     //public final static String GPO_VE_T             = "groups_ven_t";
+    public final static String SINCRONIZADO_T       = "sincronizado_t";
 
     public final static String STATUS_FICHAS       = "status_fichas";
     public final static String ESTADOS             = "estados";

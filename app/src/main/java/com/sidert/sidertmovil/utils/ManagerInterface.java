@@ -60,6 +60,7 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_GEOLOCALIZACIONES)
     Call<ModeloGeolocalizacion> getGeolocalizcion(@Query("ficha_estado_id") String ficha_estado,
+                                                  @Query("incluir_gestiones") boolean incluir_gestiones,
                                                   @Header("Authorization") String barer_token);
 
     @Multipart

@@ -22,6 +22,8 @@ import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
 
+import androidx.work.WorkManager;
+
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 public class dialog_logout extends DialogFragment {
@@ -63,8 +65,9 @@ public class dialog_logout extends DialogFragment {
                     session.getUser().get(5),
                     false,
                     session.getUser().get(7));
-            JobScheduler scheduler = (JobScheduler) ctx.getSystemService(JOB_SCHEDULER_SERVICE);
-            scheduler.cancel(Constants.ID_JOB_SINCRONIZADO);
+
+            WorkManager mWorkManager = WorkManager.getInstance();
+            mWorkManager.cancelAllWork();
             Log.e("Servicio Activo", Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "Sincronizado") +" Enable");
             triggerRebirth();
             getDialog().dismiss();

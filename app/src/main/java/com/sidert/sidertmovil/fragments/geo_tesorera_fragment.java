@@ -552,7 +552,7 @@ public class geo_tesorera_fragment extends Fragment {
             e.printStackTrace();
         }
         Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-        servicios.SaveGeolocalizacion(ctx);
+        servicios.SaveGeolocalizacion(ctx, false);
         initComponents();
 
 
@@ -571,9 +571,9 @@ public class geo_tesorera_fragment extends Fragment {
         ficha_id = row.getString(1);
         try {
             JSONObject jsonData = new JSONObject(row.getString(12));
-            cliente_clv = Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"), "TESORERO").getString("cliente_clave");
-            etNombre.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),"TESORERO").getString("cliente_nombre"));
-            metDireccion.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),"TESORERO").getString("cliente_direccion"));
+            cliente_clv = Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"), Constants.TIPO_TESORERO).getString("cliente_clave");
+            etNombre.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),Constants.TIPO_TESORERO).getString("cliente_nombre"));
+            metDireccion.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),Constants.TIPO_TESORERO).getString("cliente_direccion"));
             if (!row.getString(14).isEmpty()){
                 flag_edit = false;
                 JSONObject jsonRes = new JSONObject(row.getString(14));

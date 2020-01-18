@@ -8,4 +8,10 @@
         android:icon="@drawable/ic_filtro"
         app:showAsAction="always"
         app:actionLayout="@layout/custom_badge"/>
+
+    <item
+        android:id="@+id/nvInfo"
+        android:title="@string/resumen_info"
+        android:icon="@drawable/ic_info"
+        app:showAsAction="always" />
 </menu>

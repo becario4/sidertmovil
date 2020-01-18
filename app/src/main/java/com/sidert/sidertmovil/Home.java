@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -31,9 +33,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
+import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.OriginacionI;
 import com.sidert.sidertmovil.activities.Perfil;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
@@ -69,6 +73,7 @@ public class Home extends AppCompatActivity{
     private NavigationView NVmenu;
     private TabLayout mTabLayout;
     private CoordinatorLayout CLcontainer;
+    private TextView tvUltimaSincro;
     private TextView tvNameUser;
     private LinearLayout llProfile;
     private ImageView ivLogout;
@@ -94,10 +99,11 @@ public class Home extends AppCompatActivity{
         CLcontainer     = findViewById(R.id.CLcontainer);
         View view       = NVmenu.getHeaderView(0);
         tvNameUser      = view.findViewById(R.id.tvName);
+        tvUltimaSincro  = view.findViewById(R.id.tvultimaSincro);
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
 
-        Bundle data = getIntent().getExtras();
+        final Bundle data = getIntent().getExtras();
         if (true){
             initNavigationDrawer();
             setSupportActionBar(TBmain);
@@ -113,6 +119,24 @@ public class Home extends AppCompatActivity{
                     @Override
                     public void onDrawerOpened(View drawerView) {
                         super.onDrawerOpened(drawerView);
+                        DBhelper dBhelper = new DBhelper(ctx);
+                        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+                        Cursor row;
+                        if (Constants.ENVIROMENT)
+                            row = dBhelper.getRecords(Constants.SINCRONIZADO, ""," ORDER BY _id DESC", null);
+                        else
+                            row = dBhelper.getRecords(Constants.SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
+
+                        if (row.getCount() > 0){
+                            row.moveToFirst();
+                            tvUltimaSincro.setText("Última Sincronización: " + row.getString(2));
+                            for (int i = 0; i < row.getCount(); i++){
+                                Log.e("Sincronizado"+i, row.getString(2));
+                                row.moveToNext();
+                            }
+
+                        }
                     }
 
                     @Override
@@ -140,7 +164,7 @@ public class Home extends AppCompatActivity{
                     ComponentName serviceComponent;
                     serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
                     JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setPeriodic(10 * 60 * 1000);
+                    builder.setPeriodic(15 * 60 * 1000);
                     //builder.setMinimumLatency(100);
                     //builder.setOverrideDeadline(100);
                     JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -162,7 +186,7 @@ public class Home extends AppCompatActivity{
                     ComponentName serviceComponent;
                     serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
                     JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setPeriodic(10 * 60 * 1000);
+                    builder.setPeriodic(15 * 60 * 1000);
                     //builder.setMinimumLatency(100);
                     //builder.setOverrideDeadline(100);
                     JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -174,18 +198,18 @@ public class Home extends AppCompatActivity{
             else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_SUPER")){
                 NVmenu.getMenu().clear();
                 NVmenu.inflateMenu(R.menu.navigation_menu_super);
-                /*if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                    Log.e("Login", "On Start Service Job");
+                if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
+                    Log.e("Sincronizado", "On Start Service Job 15 min");
                     ComponentName serviceComponent;
                     serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
                     JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setPeriodic(10 * 60 * 1000);
-                    //builder.setMinimumLatency(100);
-                    //builder.setOverrideDeadline(100);
+                    //builder.setPeriodic(15 * 60 * 1000);
+                    builder.setMinimumLatency(15 * 60 * 1000);
+                    builder.setOverrideDeadline(15 * 60 * 1000);
                     JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     jobScheduler.schedule(builder.build());
                 } else
-                    Log.e("Login", "Enable Service Job");*/
+                    Log.e("Sincronizado", "Disabled Service Job");
                 setFragment(NameFragments.ERASE_TABLES, null);
             }
             else {
@@ -222,9 +246,10 @@ public class Home extends AppCompatActivity{
                     Intent i_originacion = new Intent(getApplicationContext(), OriginacionI.class);
                     startActivity(i_originacion);
                     break;*/
-                /*case R.id.NVsettings:
-                    //setFragment(fragments.ORDERS, null);
-                    break;*/
+                case R.id.NVsettings:
+                    Intent i_configuracion = new Intent(getApplicationContext(), Configuracion.class);
+                    startActivity(i_configuracion);
+                    break;
                 case R.id.NVcomplaint:
                     dialog_mailbox complaint = new dialog_mailbox();
                     complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);

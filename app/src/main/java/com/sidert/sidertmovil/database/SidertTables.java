@@ -9,26 +9,28 @@ public class SidertTables {
     public static class SidertEntry implements BaseColumns {
 
         // == TABLE
-        public static final String TABLE_NAME_LOG_ASESSOR    = Constants.LOG_ASESSOR; //Tabla de Recuperación y Cobranza
-        public static final String TABLE_NAME_LOG_MANAGER    = Constants.LOG_MANAGER; //Tabla de Cartera Vencida
-        public static final String TABLE_IND     = Constants.IND;                     //Tabla para formularios individual vigente (RI, CI)
-        public static final String TABLE_GPO     = Constants.GPO;                     //Tabla para formularios grupales vigente (RG, CG)
-        public static final String TABLE_FICHAS     = Constants.FICHAS;               //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG
-        //public static final String TABLE_IND_VE     = Constants.IND_VE;             //Tabla para formularios individual vencida (CVI)
-        //public static final String TABLE_GPO_VE     = Constants.GPO_VE;             //Tabla para formularios grupales vencida (CVG)
-        public static final String TABLE_GEOLOCALIZACION = Constants.GEOLOCALIZACION; //Tabla para formularios de golocaliacion
-        public static final String TABLE_LOGIN_REPORT     = Constants.LOGIN_REPORT;   //Tabla para timestamp de inicio de sesión
+        public static final String TABLE_NAME_LOG_ASESSOR  = Constants.LOG_ASESSOR;        //Tabla de Recuperación y Cobranza
+        public static final String TABLE_NAME_LOG_MANAGER  = Constants.LOG_MANAGER;        //Tabla de Cartera Vencida
+        public static final String TABLE_IND               = Constants.IND;                //Tabla para formularios individual vigente (RI, CI)
+        public static final String TABLE_GPO               = Constants.GPO;                //Tabla para formularios grupales vigente (RG, CG)
+        public static final String TABLE_FICHAS            = Constants.FICHAS;             //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG
+        //public static final String TABLE_IND_VE          = Constants.IND_VE;             //Tabla para formularios individual vencida (CVI)
+        //public static final String TABLE_GPO_VE          = Constants.GPO_VE;             //Tabla para formularios grupales vencida (CVG)
+        public static final String TABLE_GEOLOCALIZACION   = Constants.GEOLOCALIZACION;    //Tabla para formularios de golocaliacion
+        public static final String TABLE_LOGIN_REPORT      = Constants.LOGIN_REPORT;       //Tabla para timestamp de inicio de sesión
+        public static final String TABLE_SINCRONIZADO      = Constants.SINCRONIZADO;
 
         //======================= TABLES TEST  =====================================================
-        public static final String TABLE_LOG_ASESSOR_T    = Constants.LOG_ASESSOR_T; //Tabla de Recuperación y Cobranza Pruebas
-        public static final String TABLE_LOG_MANAGER_T    = Constants.LOG_MANAGER_T; //Tabla de Cartera Vencida Pruebas
-        public static final String TABLE_IND_T     = Constants.IND_T;                //Tabla para formularios individual vigente (RI, CI) Pruebas
-        public static final String TABLE_GPO_T     = Constants.GPO_T;                //Tabla para formularios grupales vigente (RG, CG) Pruebas
-        public static final String TABLE_FICHAS_T     = Constants.FICHAS_T;          //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG para pruebas
-        //public static final String TABLE_IND_VE_T     = Constants.IND_VE_T;        //Tabla para formularios individual vencida (CVI) Pruebas
-        //public static final String TABLE_GPO_VE_T     = Constants.GPO_VE_T;        //Tabla para formularios grupales vencida (CVG) Pruebas
-        public static final String TABLE_GEOLOCALIZACION_T = Constants.GEOLOCALIZACION_T; //Tabla para formularios de golocaliacion Pruebas
-        public static final String TABLE_LOGIN_REPORT_T     = Constants.LOGIN_REPORT_T;   //Tabla para timestamp de inicio de sesión Pruebas
+        public static final String TABLE_LOG_ASESSOR_T     = Constants.LOG_ASESSOR_T;      //Tabla de Recuperación y Cobranza Pruebas
+        public static final String TABLE_LOG_MANAGER_T     = Constants.LOG_MANAGER_T;      //Tabla de Cartera Vencida Pruebas
+        public static final String TABLE_IND_T             = Constants.IND_T;              //Tabla para formularios individual vigente (RI, CI) Pruebas
+        public static final String TABLE_GPO_T             = Constants.GPO_T;              //Tabla para formularios grupales vigente (RG, CG) Pruebas
+        public static final String TABLE_FICHAS_T          = Constants.FICHAS_T;           //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG para pruebas
+        //public static final String TABLE_IND_VE_T        = Constants.IND_VE_T;           //Tabla para formularios individual vencida (CVI) Pruebas
+        //public static final String TABLE_GPO_VE_T        = Constants.GPO_VE_T;           //Tabla para formularios grupales vencida (CVG) Pruebas
+        public static final String TABLE_GEOLOCALIZACION_T = Constants.GEOLOCALIZACION_T;  //Tabla para formularios de golocaliacion Pruebas
+        public static final String TABLE_LOGIN_REPORT_T    = Constants.LOGIN_REPORT_T;     //Tabla para timestamp de inicio de sesión Pruebas
+        public static final String TABLE_SINCRONIZADO_T    = Constants.SINCRONIZADO_T;
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS = Constants.STATUS_FICHAS;
@@ -189,6 +191,11 @@ public class SidertTables {
                 + SidertEntry.FECHA_ENV         + " TEXT,"
                 + SidertEntry.STATUS            + " INTEGER)";
 
+        static final String CREATE_TABLE_SINCRONIZADO   = "CREATE TABLE " + TABLE_SINCRONIZADO + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.TIMESTAMP         + " TEXT)";
+
         //=============================== TABLES TEST  ===============================================
         static final String CREATE_TABLE_ASESSORS_T = "CREATE TABLE " + TABLE_LOG_ASESSOR_T + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
@@ -272,6 +279,11 @@ public class SidertTables {
                 + SidertEntry.LOGIN_TIMESTAMP   + " TEXT,"
                 + SidertEntry.FECHA_ENV         + " TEXT,"
                 + SidertEntry.STATUS            + " INTEGER)";
+
+        static final String CREATE_TABLE_SINCRONIZADO_T   = "CREATE TABLE " + TABLE_SINCRONIZADO_T + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.TIMESTAMP         + " TEXT)";
 
 
         //================  TABLAS GENERALES  ===================================

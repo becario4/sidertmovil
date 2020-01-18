@@ -548,7 +548,7 @@ public class geo_negocio_fragment extends Fragment {
         }
 
         Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-        servicios.SaveGeolocalizacion(ctx);
+        servicios.SaveGeolocalizacion(ctx, false);
         initComponents();
 
 

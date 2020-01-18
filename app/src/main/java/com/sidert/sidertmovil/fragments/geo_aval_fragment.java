@@ -33,7 +33,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidhiddencamera.HiddenCameraActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,7 +45,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CamaraActivity;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.GeolocalizacionInd;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
@@ -552,7 +550,7 @@ public class geo_aval_fragment extends Fragment {
         }
 
         Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-        servicios.SaveGeolocalizacion(ctx);
+        servicios.SaveGeolocalizacion(ctx, false);
         initComponents();
 
 
@@ -573,6 +571,7 @@ public class geo_aval_fragment extends Fragment {
         _id = row.getInt(0);
         status = row.getInt(21);
         ficha_id = row.getString(1);
+        Log.e("estatus", status+"");
         try {
             JSONObject jsonData = new JSONObject(row.getString(12));
             etNombre.setText(jsonData.getString("aval_nombre"));
@@ -580,6 +579,7 @@ public class geo_aval_fragment extends Fragment {
             if (!row.getString(15).isEmpty()){
                 flag_edit = false;
                 JSONObject jsonRes = new JSONObject(row.getString(15));
+                ibUbicacion.setVisibility(View.GONE);
                 direccion = jsonRes.getString(Constants.DIRECCION);
                 if (jsonRes.getDouble(Constants.LATITUD) == 0 && jsonRes.getDouble(Constants.LONGITUD) == 0){
                     tvMapa.setVisibility(View.GONE);

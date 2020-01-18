@@ -12,6 +12,8 @@ import android.view.WindowManager;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.crashlytics.android.Crashlytics;
+import com.sidert.sidertmovil.utils.Miscellaneous;
+
 import io.fabric.sdk.android.Fabric;
 
 public class SplashSidertActivity extends AppCompatActivity {
@@ -30,6 +32,8 @@ public class SplashSidertActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);*/
         setContentView(R.layout.activity_splash_sidert);
         ctx = getApplicationContext();
+
+        Miscellaneous.BorrarDuplicadosGeo(this);
 
         Handler handler=new Handler();
         handler.postDelayed(new Runnable() {

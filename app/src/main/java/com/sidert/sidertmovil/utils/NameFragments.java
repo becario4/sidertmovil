@@ -33,6 +33,7 @@ public class NameFragments {
     public final static String DIALOGMAILBOX                    = "dialog_mailbox";
     public final static String DIALOGSYNCHRONIZE                = "dialog_synchronize_db";
     public final static String DIALOGINTEGRANTE                 = "dialog_integrante_gpo";
+    public final static String INFO_GEOLOCALIZACIONES           = "dialog_info_geo";
 
     //TODO: Geolocalizacion
     public final static String GEO_CLIENTE           = "geo_cliente_fragment";

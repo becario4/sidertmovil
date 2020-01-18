@@ -552,7 +552,7 @@ public class geo_presidente_fragment extends Fragment {
         }
 
         Servicios_Sincronizado servicios = new Servicios_Sincronizado();
-        servicios.SaveGeolocalizacion(ctx);
+        servicios.SaveGeolocalizacion(ctx, false);
         initComponents();
 
 
@@ -571,10 +571,10 @@ public class geo_presidente_fragment extends Fragment {
         ficha_id = row.getString(1);
         try {
             JSONObject jsonData = new JSONObject(row.getString(12));
-            Log.v("presidente", jsonData.toString());
-            cliente_clv = Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"), "PRESIDENTE").getString("cliente_clave");
-            etNombre.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),"PRESIDENTE").getString("cliente_nombre"));
-            metDireccion.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),"PRESIDENTE").getString("cliente_direccion"));
+            //Log.v("presidente", jsonData.toString());
+            cliente_clv = Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"), Constants.TIPO_PRESIDENTE).getString("cliente_clave");
+            etNombre.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),Constants.TIPO_PRESIDENTE).getString("cliente_nombre"));
+            metDireccion.setText(Miscellaneous.GetIntegrante(jsonData.getJSONArray("integrantes"),Constants.TIPO_PRESIDENTE).getString("cliente_direccion"));
             if (!row.getString(13).isEmpty()){
                 flag_edit = false;
                 JSONObject jsonRes = new JSONObject(row.getString(13));

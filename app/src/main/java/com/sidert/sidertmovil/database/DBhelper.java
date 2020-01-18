@@ -43,6 +43,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T);
         Log.v("CreacionTablas", "se crearon tablas");
     }
 
@@ -77,6 +79,13 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS); }
         catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla COLONIAS"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T); }
+        catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO_T");}
+
 
         //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T);
 
@@ -264,6 +273,21 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(3, params.get(2));                   //TIMESTAMP INICIO SESION  3
         pInsert.bindString(4, params.get(3));                   //FECHA ENVIO              4
         pInsert.bindLong(5, Integer.parseInt(params.get(4)));   //ESTATUS                  5
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveSincronizado (SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +table_name + "(" +
+                SidertTables.SidertEntry.SERIE_ID + ", " +
+                SidertTables.SidertEntry.TIMESTAMP + ") VALUES(?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //SERIE ID                 1
+        pInsert.bindString(2, params.get(1));                   //TIMESTAMP                2
 
         pInsert.execute();
 

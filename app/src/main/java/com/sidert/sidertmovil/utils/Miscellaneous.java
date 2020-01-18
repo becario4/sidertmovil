@@ -3,21 +3,29 @@ package com.sidert.sidertmovil.utils;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Environment;
+import android.telecom.ConnectionService;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
 
 import com.google.gson.GsonBuilder;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,6 +33,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -600,7 +610,6 @@ public class Miscellaneous {
     }
 
     /* Obtener la edad de acorde a una fecha seleccionada */
-
     public static String GetEdad (String fecha_nac){
         Date fechaNac=null;
         try {
@@ -621,6 +630,120 @@ public class Miscellaneous {
         }
 
         return String.valueOf(year);
+    }
+
+    /* Borra duplicados de tabla de Geolocalizacion  */
+    public static boolean BorrarDuplicadosGeo (Context ctx){
+        boolean flag = false;
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor rows = dBhelper.getRecords(Constants.GEOLOCALIZACION, "", " GROUP BY ficha_id, num_solicitud ORDER BY _id ASC", null);
+        if (rows.getCount() > 0){
+            //Log.e("Total GroupID", ""+rows.getCount());
+            String ids = "";
+            rows.moveToFirst();
+            for(int i = 0; i < rows.getCount(); i++){
+                //Log.e("Ficha"+rows.getString(0), rows.getString(1)+" "+rows.getString(5));
+                String _id = rows.getString(0);
+                String ficha_id = rows.getString(1);
+                String num_solucitud = rows.getString(5);
+                int status = rows.getInt(21);
+                if (i == 0)
+                    ids = _id;
+                else
+                    ids += ","+_id;
+                Cursor fichas = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE _id <> '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", " ORDER BY _id ASC", null);
+                if(fichas.getCount() > 0){
+                    fichas.moveToFirst();
+                    //Log.e("Total Iguales", ""+fichas.getCount());
+                    for (int j = 0; j < fichas.getCount(); j++){
+                        /*if (fichas.getString(1).equals("1137")) {
+                            Log.e("Ficha " + j, "cliente: " + fichas.getString(4));
+                            Log.e("Ficha " + j, "res_uno: " + fichas.getString(13));
+                            Log.e("Ficha " + j, "res_dos: " + fichas.getString(14));
+                            Log.e("Ficha " + j, "res_tres: " + fichas.getString(15));
+                            Log.e("Ficha " + j, "fecha_uno: " + fichas.getString(16));
+                            Log.e("Ficha " + j, "fecha_dos: " + fichas.getString(17));
+                            Log.e("Ficha " + j, "fecha_tres: " + fichas.getString(18));
+                            Log.e("--", "--------------------------------------------------------------------------------------------");
+                        }*/
+                        if (!fichas.getString(13).trim().isEmpty()){
+                            ContentValues valores = new ContentValues();
+                            valores.put("res_uno",fichas.getString(13));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (!fichas.getString(14).trim().isEmpty()){
+                            ContentValues valores = new ContentValues();
+                            valores.put("res_dos",fichas.getString(14));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (!fichas.getString(15).trim().isEmpty()){
+                            ContentValues valores = new ContentValues();
+                            valores.put("res_tres",fichas.getString(15));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (!fichas.getString(16).trim().isEmpty() && fichas.getString(16).length() > 1){
+                            ContentValues valores = new ContentValues();
+                            valores.put("fecha_env_uno",fichas.getString(16));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (!fichas.getString(17).trim().isEmpty() && fichas.getString(17).length() > 1){
+                            ContentValues valores = new ContentValues();
+                            valores.put("fecha_env_dos",fichas.getString(17));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (!fichas.getString(18).trim().isEmpty() && fichas.getString(18).length() > 1){
+                            ContentValues valores = new ContentValues();
+                            valores.put("fecha_env_tres",fichas.getString(18));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        if (fichas.getInt(21) > status){
+                            status = fichas.getInt(21);
+                            ContentValues valores = new ContentValues();
+                            valores.put("status",fichas.getInt(21));
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                        }
+
+                        //Log.e("Igual",fichas.getString(0)+" "+fichas.getString(1)+" "+fichas.getString(5));
+                        fichas.moveToNext();
+                    }
+                }
+                rows.moveToNext();
+            }
+
+            db.execSQL("DELETE FROM " + Constants.GEOLOCALIZACION + " WHERE _id NOT  IN "+"("+ids+")");
+
+            //Log.e("IDS", "("+ids+")");
+        }
+        return flag;
+    }
+
+    /* Descarga una imagen de un URL */
+    public static byte[] descargarImagen (String urlImage){
+        URL imageUrl = null;
+        Bitmap imagen = null;
+        byte[] compressedByteArray = null;
+        try{
+            imageUrl = new URL(urlImage);
+            HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+            conn.connect();
+            imagen = BitmapFactory.decodeStream(conn.getInputStream());
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            imagen.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+            compressedByteArray = stream.toByteArray();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+
+        return compressedByteArray;
     }
 
 }

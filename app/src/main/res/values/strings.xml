@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">1.1.9</string>
+    <string name="app_version">1.2.1</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -125,6 +125,7 @@
     <string name="receptionist_name">Nombre de la secretaria</string>
     <string name="call_receptionist_phone">Llamar al teléfono de la secretaria</string>
     <string name="solidary_payment">¿Se hizo pago solidario?</string>
+    <string name="resumen_info">Resumen</string>
     <string name="user">Usuario</string>
     <string name="password">Contraseña</string>
     <string name="login">Iniciar sesión</string>
@@ -226,6 +227,7 @@
     <string name="please_wait">Por favor espere . . .</string>
 
     <!--  TODO: Messages  -->
+    <string name="not_wifi">Es necesario que esté conectado a una red WIFI para la descargar la información.</string>
     <string name="servicio_no_disponible">El servicio no se encuentra disponible, favor de contactar al equipo de TI.</string>
     <string name="credenciales_incorrectas">El usuario y/o contraseña son incorrectas, favor de verificar.</string>
     <string name="error_connect_print">Error de conexión, verifica si la impresora está encendida o intenta de nuevo.</string>
@@ -339,6 +341,14 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Unión Libre</item>           <!--5-->
     </string-array>
 
+    <string-array name="cargo">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Presidente</item>            <!--1-->
+        <item>Tesorera</item>              <!--2-->
+        <item>Secretaria</item>            <!--3-->
+        <item>Integrante</item>            <!--4-->
+    </string-array>
+
     <string-array name="tipo_casa">
         <item>Seleccione una opción</item> <!--0-->
         <item>Casa</item>                  <!--1-->
@@ -396,6 +406,16 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>3</item>                     <!--3-->
         <item>4</item>                     <!--4-->
         <item>5</item>                     <!--5-->
+    </string-array>
+
+    <string-array name="semana">
+        <item>Seleccione una opción</item> <!--0-->
+        <item>Lunes</item>                 <!--1-->
+        <item>Martes</item>                <!--2-->
+        <item>Miércoles</item>             <!--3-->
+        <item>Jueves</item>                <!--4-->
+        <item>Viernes</item>               <!--5-->
+        <item>Sábado</item>                <!--6-->
     </string-array>
 
     <string-array name="puesto">

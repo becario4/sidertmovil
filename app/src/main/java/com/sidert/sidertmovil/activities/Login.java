@@ -52,6 +52,8 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
+import com.sidert.sidertmovil.utils.WorkerLogout;
+import com.sidert.sidertmovil.utils.WorkerSincronizado;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +63,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -222,6 +228,16 @@ public class Login extends AppCompatActivity {
                                         dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT, params);
                                     else
                                         dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
+
+                                    HashMap<Integer, String> params_sincro = new HashMap<>();
+                                    params_sincro.put(0, json_info.getString(Constants.SERIE_ID));
+                                    params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+
+                                    if (Constants.ENVIROMENT)
+                                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
+                                    else
+                                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
                                     Log.v("login", json_info.toString());
                                     session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
                                             Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
@@ -235,18 +251,28 @@ public class Login extends AppCompatActivity {
                                     Calendar c = Calendar.getInstance();
 
                                     if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
-                                        if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_LOGOUT, "Logout")) {
+
                                             Log.e("Login", "On Start Service Job Login");
-                                            ComponentName serviceComponent;
+                                            WorkManager mWorkManager = WorkManager.getInstance();
+                                            OneTimeWorkRequest mRequestUnique = new OneTimeWorkRequest.Builder(WorkerLogout.class).setInitialDelay((22 - c.get(Calendar.HOUR_OF_DAY))-1, TimeUnit.HOURS).build();
+                                            mWorkManager.enqueue(mRequestUnique);
+
+                                            /*if (!json_info.getString(Constants.AUTHORITIES).contains("ROLE_SUPER")){
+
+                                                final PeriodicWorkRequest mRequest = new PeriodicWorkRequest.Builder(WorkerSincronizado.class, 15, TimeUnit.MINUTES).addTag(Constants.SINCRONIZADO).build();
+                                                mWorkManager.enqueue(mRequest);
+                                            }*/
+
+
+                                            /*ComponentName serviceComponent;
                                             serviceComponent = new ComponentName(context, BkgJobServiceLogout.class);
                                             JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_LOGOUT, serviceComponent);
                                             //builder.setPeriodic((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
                                             builder.setMinimumLatency((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
                                             builder.setOverrideDeadline((22 - c.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000);
                                             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                                            jobScheduler.schedule(builder.build());
-                                        } else
-                                            Log.e("Login", "Service Job Login Activo");
+                                            jobScheduler.schedule(builder.build());*/
+
                                     }
 
 
@@ -299,37 +325,6 @@ public class Login extends AppCompatActivity {
                     loading.dismiss();
                 }
             });
-
-            //
-            /*Intent home = new Intent(this, Home.class);
-            switch (etUser.getText().toString().trim()){
-                case "asesor951":
-                    if(isExternalStorageWritable()){
-                        String nombreDirectorioPrivado = "Files";
-                        crearDirectorioPrivado(ctx, nombreDirectorioPrivado);
-                    }
-                    session.setUser("1", "Operador", "0");
-                    startActivity(home);
-                    finish();
-                    break;
-                case "administrador":
-                    session.setUser("2","Administrador","1");
-                    startActivity(home);
-                    finish();
-                    break;
-                default:
-                    final AlertDialog success = Popups.showDialogMessage(context, Constants.login,
-                            R.string.error_login, R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    success.show();
-                    break;
-            }*/
         }
         else{
             final AlertDialog success = Popups.showDialogMessage(context, Constants.not_network,

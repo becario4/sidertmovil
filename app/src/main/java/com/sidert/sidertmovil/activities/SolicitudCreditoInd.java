@@ -71,6 +71,7 @@ public class SolicitudCreditoInd extends AppCompatActivity {
     private Calendar myCalendar;
     private Date minDate;
 
+    private EditText etHoraVisita;
     private EditText etHorarioLoc;
     private TimePickerDialog picker;
 
@@ -116,6 +117,7 @@ public class SolicitudCreditoInd extends AppCompatActivity {
 
         etMontoPrestamo = findViewById(R.id.etMontoPrestamo);
         etCantidadLetra = findViewById(R.id.etCantidadLetra);
+        etHoraVisita    = findViewById(R.id.etHoraVisita);
 
         etNombre    = findViewById(R.id.etNombre);
         etApPaterno = findViewById(R.id.etApPaterno);
@@ -146,8 +148,10 @@ public class SolicitudCreditoInd extends AppCompatActivity {
         btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
 
+
         etHorarioLoc = findViewById(R.id.etHorarioLoc);
 
+        etHoraVisita.setOnClickListener(etHoraVisita_OnClick);
         etHorarioLoc.setOnClickListener(etHorarioLoc_OnClick);
 
         etFechaNac.setOnClickListener(etFechaNac_OnClick);
@@ -309,6 +313,23 @@ public class SolicitudCreditoInd extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener etHoraVisita_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final Calendar cldr = Calendar.getInstance();
+            int hour = cldr.get(Calendar.HOUR_OF_DAY);
+            int minutes = cldr.get(Calendar.MINUTE);
+            // time picker dialog
+            picker = new TimePickerDialog(context,
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
+                            etHoraVisita.setText(sHour + ":" + sMinute);
+                        }
+                    }, hour, minutes, true);
+            picker.show();
+        }
+    };
 
     private View.OnClickListener etHorarioLoc_OnClick = new View.OnClickListener() {
         @Override

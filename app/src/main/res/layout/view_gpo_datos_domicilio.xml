@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Localidad -->
+    <!-- Estado -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Localidad"
+            android:text="Estado"
             android:layout_weight="1"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
@@ -23,8 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Spinner
-            android:id="@+id/spMedioPago"
-            android:entries="@array/localidad"
+            android:id="@+id/spEstado"
+            android:entries="@array/estados"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
@@ -32,7 +32,55 @@
             android:layout_height="@dimen/et_height"/>
     </LinearLayout>
 
-    <!--  Plazo  -->
+    <!-- Municipio -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Municipio"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spMunicipio"
+            android:entries="@array/municipios"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!--  Calle  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Calle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCalle"
+            android:inputType="textCapSentences"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  No. Exterior  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
@@ -40,52 +88,45 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Plazo"
-            android:layout_weight=".5"
+            android:text="No.Ext/Manz."
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spTiempo"
-            android:entries="@array/intervalo"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+        <EditText
+            android:id="@+id/etNoExt"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="@dimen/et_height"/>
-        <Spinner
-            android:id="@+id/spLapso"
-            android:entries="@array/lapso"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  No. Interior  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="No.Int/Lote"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etNoInt"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="@dimen/et_height"/>
-    </LinearLayout>
-
-    <!--  Fecha de desombolso  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Fecha de Desembolso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etFechaDesembolso"
-            android:focusable="false"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  Dia de desombolso  -->
+    <!--  Colonia  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -93,119 +134,118 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Día de Desembolso"
+            android:text="Colonia o Localidad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etDíaDesembolso"
-            android:enabled="false"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Horario de visita  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Hora de Visita"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etHoraVisita"
-            android:focusable="false"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Monto del prestamo  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Monto del préstamo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etMontoPrestamo"
-            android:inputType="number"
-            android:maxLength="5"
-            android:drawableStart="@drawable/ic_money"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Cantidad en letra  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Monto en Letra"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <MultiAutoCompleteTextView
-            android:id="@+id/etCantidadLetra"
-            android:inputType="textMultiLine|textCapSentences"
-            android:ems="10"
-            android:textSize="15sp"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:enabled="false"
-            android:padding="5dp"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <!--  Destino del prestamo  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Destino del Préstamo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etDestinoPrestamo"
-            android:paddingLeft="10dp"
-            android:maxLength="255"
+            android:id="@+id/etColonia"
             android:inputType="textCapSentences"
+            android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnContinuar0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+    <!--  Codigo postal  -->
+    <LinearLayout
         android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
-        android:src="@drawable/ic_continuar" />
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
+        <EditText
+            android:id="@+id/etCodigoPostal"
+            android:inputType="number"
+            android:paddingLeft="10dp"
+            android:maxLength="5"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Casa -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Casa"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spCasa"
+            android:entries="@array/tipo_casa"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+        <EditText
+            android:id="@+id/etOtroTipoCasa"
+            android:visibility="gone"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Tiempo de vivir en el sitio -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tiempo de Vivir en el Sitio"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etTiempoSitio"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRegresar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginRight="135dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_continuar"/>
+    </LinearLayout>
 
 </LinearLayout>

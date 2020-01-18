@@ -25,7 +25,7 @@ public class NetworkStatus {
         return haveConnectedWifi || haveConnectedMobile;
     }
 
-    /*public static boolean haveWifi(Context ctx) {
+    public static boolean haveWifi(Context ctx) {
         if(Build.VERSION.SDK_INT >= 23) {
             ConnectivityManager connectivityManager = ((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE));
             boolean isWifiConnected = false;
@@ -55,5 +55,5 @@ public class NetworkStatus {
             }
             return haveConnectedWifi;
         }
-    }*/
+    }
 }

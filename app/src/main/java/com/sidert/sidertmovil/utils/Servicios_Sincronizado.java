@@ -1,14 +1,18 @@
 package com.sidert.sidertmovil.utils;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.GsonBuilder;
+import com.sidert.sidertmovil.MainActivity;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
@@ -20,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import okhttp3.MediaType;
@@ -31,22 +36,27 @@ import retrofit2.Response;
 
 public class Servicios_Sincronizado {
 
-    public void GetGeolocalizacion(Context ctx){
+    public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones){
+        Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas");
         SessionManager session = new SessionManager(ctx);
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        /*final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-        loading.show();*/
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (showDG)
+            loading.show();
 
         ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS).create(ManagerInterface.class);
 
         Call<ModeloGeolocalizacion> call = api.getGeolocalizcion("1",
+                incluir_gestiones,
                 "Bearer "+ session.getUser().get(7));
         call.enqueue(new Callback<ModeloGeolocalizacion>() {
             @Override
             public void onResponse(Call<ModeloGeolocalizacion> call, Response<ModeloGeolocalizacion> response) {
 
+                Log.e("Geolocalizacion Code", ""+response.code());
                 switch (response.code()) {
                     case 200:
                         ModeloGeolocalizacion modeloGeo = response.body();
@@ -85,9 +95,9 @@ public class Servicios_Sincronizado {
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }
-                            }
-                        }
+                                }//Fin de IF que no existe registro de gestion para ser guardado
+                            }//Fin For de Guardado de gestiones grupales
+                        }//Fin de Grupales
 
                         if (modeloGeo.getIndividuales().size() > 0){
                             for (int i = 0; i < modeloGeo.getIndividuales().size(); i++){
@@ -124,26 +134,104 @@ public class Servicios_Sincronizado {
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }
-                            }
-                        }
+                                }//Fin de IF que no existe registro de gestion para ser guardado
+                            }//Fin de For de Guardado de individuales
+                        }//Fin de Individuales
+
+                        if(modeloGeo.getGrupalesGestionadas().size() > 0){
+                            for (int h = 0; h < modeloGeo.getGrupalesGestionadas().size(); h++){
+                                Cursor rowGeoGG;
+                                if (Constants.ENVIROMENT)
+                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getGrupalesGestionadas().get(h).getFichaId()+"'", "", null);
+                                else
+                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getGrupalesGestionadas().get(h).getFichaId()+"'", "", null);
+
+                                if (rowGeoGG.getCount() > 0){
+                                    rowGeoGG.moveToFirst();
+
+                                    switch(modeloGeo.getGrupalesGestionadas().get(h).getIntegranteTipo()){
+                                        case Constants.TIPO_PRESIDENTE:
+                                            if (rowGeoGG.getString(13).trim().isEmpty() && rowGeoGG.getString(16).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+                                        case Constants.TIPO_TESORERO:
+                                            if (rowGeoGG.getString(14).trim().isEmpty() && rowGeoGG.getString(17).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+                                        case Constants.TIPO_SECRETARIO:
+                                            if (rowGeoGG.getString(15).trim().isEmpty() && rowGeoGG.getString(18).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+                                    }//Fin switch para ser actilizado el registro
+                                }//Fin de IF que existe registro de gestion
+                            }//Fin de For para guardado de Grupales Gestionadas
+                        }//Fin de Grupales Gestionadas
+
+                        if(modeloGeo.getIndividualesGestionadas().size() > 0){
+                            for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++){
+                                Cursor rowGeoGG;
+                                if (Constants.ENVIROMENT)
+                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getIndividualesGestionadas().get(h).getFichaId()+"'", "", null);
+                                else
+                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getIndividualesGestionadas().get(h).getFichaId()+"'", "", null);
+
+                                if (rowGeoGG.getCount() > 0){
+                                    rowGeoGG.moveToFirst();
+
+                                    switch(modeloGeo.getIndividualesGestionadas().get(h).getTipo()){
+                                        case Constants.TIPO_CLIENTE:
+                                            if (rowGeoGG.getString(13).trim().isEmpty() && rowGeoGG.getString(16).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+                                        case Constants.TIPO_NEGOCIO:
+                                            if (rowGeoGG.getString(14).trim().isEmpty() && rowGeoGG.getString(17).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+
+                                        case Constants.TIPO_AVAL:
+                                            if (rowGeoGG.getString(15).trim().isEmpty() && rowGeoGG.getString(18).trim().isEmpty()){
+                                                new DescargarFotoFachada()
+                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
+                                            }
+                                            break;
+                                    }//Fin switch para ser actilizado el registro
+                                }//Fin de IF que existe registro de gestion
+                            }//Fin de For para guardado de Grupales Gestionadas
+                        }//Fin de Grupales Gestionadas
 
                         break;
                     default:
                         break;
                 }
 
-                //loading.dismiss();
+                if (showDG)
+                    loading.dismiss();
             }
 
             @Override
             public void onFailure(Call<ModeloGeolocalizacion> call, Throwable t) {
-
+                if (showDG)
+                    loading.dismiss();
             }
         });
     }
 
-    public void SaveGeolocalizacion(Context ctx){
+    public void SaveGeolocalizacion(Context ctx, boolean flag){
+
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag)
+            loading.show();
         SessionManager session = new SessionManager(ctx);
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -157,7 +245,10 @@ public class Servicios_Sincronizado {
         if (row.getCount() > 0){
             row.moveToFirst();
             for(int i = 0; i < row.getCount(); i++){
-                Log.e("fecha_uno",String.valueOf(row.getString(16).isEmpty() && !row.getString(13).isEmpty())+" "+row.getString(16));
+                if (row.getString(16).isEmpty() && !row.getString(13).isEmpty()){
+                    Log.e("row", row.getString(13));
+                }
+                //Log.e("fecha_uno",String.valueOf(row.getString(16).isEmpty() && !row.getString(13).isEmpty())+" "+row.getString(16));
                 if (row.getString(16).isEmpty() && !row.getString(13).isEmpty())
                     SendGeolocalizacion(ctx, row.getString(13), row.getString(1), 1);
                 if (row.getString(17).isEmpty() && !row.getString(14).isEmpty())
@@ -167,6 +258,9 @@ public class Servicios_Sincronizado {
                 row.moveToNext();
             }
         }
+
+        if (flag)
+            loading.dismiss();
     }
 
     private void SendGeolocalizacion(final Context ctx, String respuesta, final String ficha_id, final int modulo){
@@ -257,5 +351,122 @@ public class Servicios_Sincronizado {
             }
 
         }
+    }
+
+
+    public class DescargarFotoFachada extends AsyncTask<Object, Void, String> {
+
+        //ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+            /*pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Cargando Imagen");
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pDialog.show();*/
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            // TODO Auto-generated method stub
+            Log.i("doInBackground" , "Entra en doInBackground");
+
+            JSONObject jsonGeo = null;
+            Context ctx = (Context) params[2];
+            int status = Integer.parseInt((String) params[1]);
+            try {
+                JSONObject data = new JSONObject((String) params[0]);
+                Log.e("DataGestion", data.toString());
+                jsonGeo = new JSONObject();
+
+
+                if (false){
+                    jsonGeo.put(Constants.LATITUD, 0);
+                    jsonGeo.put(Constants.LONGITUD, 0);
+                }
+                else{
+                    jsonGeo.put(Constants.LATITUD, data.getDouble("latitud"));
+                    jsonGeo.put(Constants.LONGITUD, data.getDouble("longitud"));
+                }
+
+                jsonGeo.put(Constants.DIRECCION, data.getString("direccion").trim());
+                jsonGeo.put(Constants.CODEBARS, data.getString("barcode").trim());
+                try {
+                    if(!data.getString("foto_fachada").trim().isEmpty()) {
+                        jsonGeo.put(Constants.FACHADA, Miscellaneous.save(
+                                Miscellaneous.descargarImagen(
+                                        WebServicesRoutes.BASE_URL +
+                                                WebServicesRoutes.CONTROLLER_FICHAS +
+                                                WebServicesRoutes.IMAGES_GEOLOCALIZACION +
+                                                data.getString("foto_fachada")), 1));
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                jsonGeo.put(Constants.COMENTARIO, data.getString("comentario").trim());
+                jsonGeo.put(Constants.FECHA, data.getString("fecha_respuesta"));
+
+                ContentValues valores = new ContentValues();
+                switch (data.getString("integrante_tipo")){
+                    case Constants.TIPO_CLIENTE:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_CLIENTE);
+                        valores.put("res_uno",jsonGeo.toString());
+                        valores.put("fecha_env_uno",data.getString("fecha_recepcion"));
+                        break;
+                    case Constants.TIPO_NEGOCIO:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_NEGOCIO);
+                        valores.put("res_dos",jsonGeo.toString());
+                        valores.put("fecha_env_dos",data.getString("fecha_recepcion"));
+                        break;
+                    case Constants.TIPO_AVAL:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_AVAL);
+                        valores.put("res_tres",jsonGeo.toString());
+                        valores.put("fecha_env_tres",data.getString("fecha_recepcion"));
+                        break;
+                    case Constants.TIPO_PRESIDENTE:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_PRESIDENTE);
+                        valores.put("res_uno",jsonGeo.toString());
+                        valores.put("fecha_env_uno",data.getString("fecha_recepcion"));
+                        break;
+                    case Constants.TIPO_TESORERO:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_TESORERO);
+                        valores.put("res_dos",jsonGeo.toString());
+                        valores.put("fecha_env_dos",data.getString("fecha_recepcion"));
+                        break;
+                    case Constants.TIPO_SECRETARIO:
+                        jsonGeo.put(Constants.TIPO, Constants.TIPO_SECRETARIO);
+                        valores.put("res_tres",jsonGeo.toString());
+                        valores.put("fecha_env_tres",data.getString("fecha_recepcion"));
+                        break;
+                }
+
+                valores.put("status", status+1);
+
+                DBhelper dBhelper = new DBhelper(ctx);
+                SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+                if (Constants.ENVIROMENT)
+                    db.update(Constants.GEOLOCALIZACION, valores, "ficha_id = '"+data.getString("ficha_id")+"'", null);
+                else
+                    db.update(Constants.GEOLOCALIZACION_T, valores, "ficha_id = '"+data.getString("ficha_id")+"'", null);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return "termina";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+
+        }
+
     }
 }
