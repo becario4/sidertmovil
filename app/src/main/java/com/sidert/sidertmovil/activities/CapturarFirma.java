@@ -65,6 +65,27 @@ public class CapturarFirma extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        Bundle data = getIntent().getExtras();
+        assert data != null;
+        if (data.containsKey(Constants.TIPO)) {
+            final AlertDialog solicitud;
+            switch (data.getString(Constants.TIPO, "")) {
+                case "CLIENTE":
+                case "AVAL":
+                    solicitud = Popups.showDialogMessage(this, Constants.warning,
+                            R.string.mess_solicitud, R.string.accept, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    solicitud.show();
+                    break;
+            }
+        }
+
         tvPrivacyPolices.setText(Html.fromHtml(getResources().getString(R.string.privacy_polices_lite)));
 
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
@@ -86,7 +107,7 @@ public class CapturarFirma extends AppCompatActivity {
             }
         });
 
-        tvPrivacyPolices.setOnClickListener(tvPrivacyPolices_OnClick);
+        //tvPrivacyPolices.setOnClickListener(tvPrivacyPolices_OnClick);
 
     }
 

@@ -117,11 +117,11 @@ public class erase_table_fragment extends Fragment {
             for(int i = 0; i < row.getCount(); i++){
                 Log.e("fecha_uno",String.valueOf(row.getString(16).isEmpty() && !row.getString(13).isEmpty())+" "+row.getString(16));
                 if (!row.getString(16).isEmpty() && !row.getString(13).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(13), row.getString(1), 1);
+                    SendGeolocalizacion(ctx, row.getString(13), row.getString(22), row.getString(1), 1);
                 if (!row.getString(17).isEmpty() && !row.getString(14).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(14), row.getString(1), 2);
+                    SendGeolocalizacion(ctx, row.getString(14), row.getString(22), row.getString(1), 2);
                 if (!row.getString(18).isEmpty() && !row.getString(15).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(15), row.getString(1), 3);
+                    SendGeolocalizacion(ctx, row.getString(15), row.getString(22), row.getString(1), 3);
                 row.moveToNext();
             }
             loading.dismiss();
@@ -129,7 +129,7 @@ public class erase_table_fragment extends Fragment {
         }
     }
 
-    private void SendGeolocalizacion(final Context ctx, String respuesta, final String ficha_id, final int modulo){
+    private void SendGeolocalizacion(final Context ctx, String respuesta, final String fecha_dispositivo, final String ficha_id, final int modulo){
         SessionManager session = new SessionManager(ctx);
         DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -137,7 +137,7 @@ public class erase_table_fragment extends Fragment {
             try {
 
                 JSONObject jsonRes = new JSONObject(respuesta);
-                Log.e("Ficha Id Env", jsonRes.toString() + "fICHA: "+ficha_id);
+                Log.e("Ficha Id Env", jsonRes.toString() + "Ficha: "+ficha_id);
 
                 final File image = new File(Constants.ROOT_PATH + "Fachada/"+jsonRes.getString(Constants.FACHADA));
 
@@ -147,7 +147,14 @@ public class erase_table_fragment extends Fragment {
                 RequestBody lngBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.LONGITUD));
                 RequestBody direccionBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.DIRECCION));
                 RequestBody barcodeBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.CODEBARS));
-                RequestBody fechaBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaDispositivoBody = RequestBody.create(MultipartBody.FORM, fecha_dispositivo);
+                RequestBody fechaGestionIniBody;
+                if (jsonRes.has(Constants.FECHA_INI))
+                    fechaGestionIniBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA_INI));
+                else
+                    fechaGestionIniBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaGestionFinBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha("timestamp"));
                 RequestBody comentarioBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.COMENTARIO));
                 RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.TIPO));
                 MultipartBody.Part body = null;
@@ -165,13 +172,16 @@ public class erase_table_fragment extends Fragment {
                 Call<ModeloResSaveGeo> call = api.guardarGeoUpdate("Bearer "+ session.getUser().get(7),
                         actualizarBody,
                         ficha_idBody,
-                        fechaBody,
                         latBody,
                         lngBody,
                         direccionBody,
                         barcodeBody,
                         comentarioBody,
                         tipoBody,
+                        fechaDispositivoBody,
+                        fechaGestionIniBody,
+                        fechaGestionFinBody,
+                        fechaEnvioBody,
                         body);
 
                 call.enqueue(new Callback<ModeloResSaveGeo>() {

@@ -43,6 +43,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SECTORES);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_OCUPACIONES);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T);
         Log.v("CreacionTablas", "se crearon tablas");
@@ -80,12 +82,25 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS); }
         catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla COLONIAS"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SECTORES); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla SECTORES"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_OCUPACIONES); }
+        catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla OCUPACIONES"); }
+
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO); }
         catch (Exception e){ Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO"); }
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T); }
         catch (Exception e){Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO_T");}
 
+        try{ db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO);
+            Log.e("ADD GEO CREATE", "se agrego la columna");}
+        catch (Exception e){ Log.e("ADD GEO CREATE", "ya contiene la columna"); }
+
+        try{ db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO_T);
+            Log.e("ADD GEO_T CREATE", "se agrego la columna");}
+        catch (Exception e){ Log.e("ADD GEO_T CREATE", "ya contiene la columna"); }
 
         //db.execSQL("DROP TABLE IF EXISTS " + SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T);
 
@@ -134,11 +149,51 @@ public class DBhelper extends SQLiteOpenHelper {
         String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_COLONIAS + "(" +
                 SidertTables.SidertEntry.COLONIA_ID      + ", " +
                 SidertTables.SidertEntry.COLONIA_NOMBRE  + ", " +
-                SidertTables.SidertEntry.MUNICIPIO_ID + ") VALUES(?, ?, ?)";
+                SidertTables.SidertEntry.CP  + ", " +
+                SidertTables.SidertEntry.MUNICIPIO_ID + ") VALUES(?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));     //COLONIA ID       1
-        pInsert.bindString(2, params.get(1));                   //COLONIA ESTADO   2
-        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //MUNICIPIO ID     3
+        pInsert.bindString(2, params.get(1));                   //COLONIA NOMBRE   2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //CODIGO POSTAL    3
+        pInsert.bindLong(4, Long.parseLong(params.get(3)));     //MUNICIPIO ID     4
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveSectores (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_SECTORES + "(" +
+                SidertTables.SidertEntry.SECTOR_ID      + ", " +
+                SidertTables.SidertEntry.SECTOR_NOMBRE  + ", " +
+                SidertTables.SidertEntry.NIVEL_RIESGO   + ") VALUES(?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //SECTOR ID       1
+        pInsert.bindString(2, params.get(1));                   //SECTOR NOMBRE   2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //NIVEL RIESGO    3
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveOcupaciones (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " +SidertTables.SidertEntry.TABLE_OCUPACIONES + "(" +
+                SidertTables.SidertEntry.OCUPACION_ID      + ", " +
+                SidertTables.SidertEntry.OCUPACION_NOMBRE  + ", " +
+                SidertTables.SidertEntry.OCUPACION_CLAVE   + ", " +
+                SidertTables.SidertEntry.NIVEL_RIESGO      + ", " +
+                SidertTables.SidertEntry.SECTOR_ID         + ") VALUES(?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //OCUPACION ID       1
+        pInsert.bindString(2, params.get(1));                   //OCUPACION NOMBRE   2
+        pInsert.bindString(3, params.get(2));                   //OCUPACION CLAVE    3
+        pInsert.bindLong(4, Long.parseLong(params.get(3)));     //NIVEL RIESGO       4
+        pInsert.bindLong(5, Long.parseLong(params.get(4)));     //SECTOR ID          5
 
         pInsert.execute();
 
@@ -229,7 +284,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 SidertTables.SidertEntry.FECHA_ENV_TRES     + "," +
                 SidertTables.SidertEntry.FECHA_ENV          + "," +
                 SidertTables.SidertEntry.FECHA_TER          + "," +
-                SidertTables.SidertEntry.STATUS + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                SidertTables.SidertEntry.STATUS             + "," +
+                SidertTables.SidertEntry.CREATE_AT          + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //FICHA ID                                1
         pInsert.bindString(2, params.get(1));                   //NOMBRE ASESOR                           2
@@ -252,6 +308,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(19, params.get(18));                 //FECHA DE ENVIO                         19
         pInsert.bindString(20, params.get(19));                 //FECHA DE TERMINO                       20
         pInsert.bindLong(21, Long.parseLong(params.get(20)));   //ESTATUS DE FICHA                       21
+        pInsert.bindString(22, params.get(21));                 //FECHA DE CREADO                        22
         pInsert.execute();
 
         db.setTransactionSuccessful();
@@ -420,10 +477,17 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Cursor getRecords(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
-        Log.v("SQL", "SELECT * FROM " + table + where + order);
+        //Log.v("SQL", "SELECT * FROM " + table + where + order);
         Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
         return res;
     }
+
+    public Cursor getDireccionByCP (String cp){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "SELECT e.estado_id ,e.estado_nombre, e.pais_id, m.municipio_id, m.municipio_nombre, m.estado_id, c.colonia_id, c.colonia_nombre, c.cp, c.municipio_id FROM colonias AS c INNER JOIN municipios AS m ON m.municipio_id = c.municipio_id INNER JOIN estados AS e ON e.estado_id = m.estado_id WHERE c.cp = "+cp, null);
+        return res;
+    }
+
 
     public int updateRecords(Context ctx, String table, JSONObject params) throws JSONException {
         DBhelper objBD = new DBhelper(ctx);

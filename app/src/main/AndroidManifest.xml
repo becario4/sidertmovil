@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.sidert.sidertmovil">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,7 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AgregarIntegrante"></activity>
+        <activity
+            android:name=".activities.Catalogos"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.AgregarIntegrante"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ResumenGeo"
             android:screenOrientation="portrait" />
@@ -69,11 +75,6 @@
         <activity
             android:name=".activities.PrintSeewoo"
             android:screenOrientation="portrait" />
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Base.Theme.AppCompat"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.Perfil"
             android:screenOrientation="portrait" />
@@ -164,6 +165,18 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <service
+            android:name=".utils.MyFirebaseMessagingService"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

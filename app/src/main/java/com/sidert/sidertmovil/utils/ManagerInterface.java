@@ -10,7 +10,9 @@ import com.sidert.sidertmovil.models.ModeloColonia;
 import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.models.ModeloMunicipio;
+import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
+import com.sidert.sidertmovil.models.ModeloSectores;
 import com.sidert.sidertmovil.models.SynchronizeBD;
 
 import org.json.JSONArray;
@@ -67,13 +69,16 @@ public interface ManagerInterface {
     @POST(WebServicesRoutes.WS_SAVE_GEO)
     Call<ModeloResSaveGeo> guardarGeo(@Header("Authorization") String token,
                                       @Part("ficha_id") RequestBody ficha_id,
-                                      @Part("fecha_respuesta") RequestBody fecha_respuesta,
                                       @Part("latitud") RequestBody latitud,
                                       @Part("longitud") RequestBody longitud,
                                       @Part("direccion") RequestBody direccion,
                                       @Part("barcode") RequestBody barcode,
                                       @Part("comentario") RequestBody comentario,
                                       @Part("tipo") RequestBody tipo,
+                                      @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
+                                      @Part("fecha_gestion_inicio") RequestBody fecha_inicio,
+                                      @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
+                                      @Part("fecha_envio") RequestBody fecha_envio,
                                       @Part MultipartBody.Part foto_fachada);
 
     @Multipart
@@ -81,13 +86,16 @@ public interface ManagerInterface {
     Call<ModeloResSaveGeo> guardarGeoUpdate(@Header("Authorization") String token,
                                             @Part("actualizar") RequestBody actualizar,
                                             @Part("ficha_id") RequestBody ficha_id,
-                                            @Part("fecha_respuesta") RequestBody fecha_respuesta,
                                             @Part("latitud") RequestBody latitud,
                                             @Part("longitud") RequestBody longitud,
                                             @Part("direccion") RequestBody direccion,
                                             @Part("barcode") RequestBody barcode,
                                             @Part("comentario") RequestBody comentario,
                                             @Part("tipo") RequestBody tipo,
+                                            @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
+                                            @Part("fecha_gestion_inicio") RequestBody fecha_inicio,
+                                            @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
+                                            @Part("fecha_envio") RequestBody fecha_envio,
                                             @Part MultipartBody.Part foto_fachada);
 
     @Headers({
@@ -110,5 +118,19 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_COLONIAS)
     Call<List<ModeloColonia>> getColonias(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_SECTORES)
+    Call<List<ModeloSectores>> getSectores(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_OCUPACIONES)
+    Call<List<ModeloOcupaciones>> getOcupaciones(@Header("Authorization") String barer_token);
 
 }

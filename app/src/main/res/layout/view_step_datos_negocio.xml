@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -18,12 +19,52 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etNombreNegocio"
-            android:inputType="textCapSentences"
+            android:id="@+id/etNombreNeg"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Ubicacion del domicilio -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvMapa"
+            android:textColor="@android:color/black"
+            android:text="Ubicación del Negocio"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/ibMapNeg"
+            android:src="@drawable/ic_pin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/round_corner_blue"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <ProgressBar
+            android:id="@+id/pbLoadNeg"
+            android:visibility="gone"
+            android:indeterminate="true"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapNeg"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
     </LinearLayout>
 
     <!--  Calle  -->
@@ -39,9 +80,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etCalle"
-            android:inputType="textCapSentences"
+            android:id="@+id/etCalleNeg"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -56,14 +98,14 @@
         <TextView
             android:textColor="@android:color/black"
             android:text="No.Ext/Manz."
-            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etNoExt"
+            android:id="@+id/etNoExtNeg"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:maxLength="10"
+            android:inputType="textCapCharacters"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -84,9 +126,34 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etNoInt"
+            android:id="@+id/etNoIntNeg"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:maxLength="10"
+            android:inputType="textCapCharacters"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Codigo postal  -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCpNeg"
+            android:inputType="number"
+            android:maxLength="5"
+            android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -106,36 +173,12 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etColonia"
-            android:inputType="textCapSentences"
+            android:id="@+id/etColoniaNeg"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:focusable="false"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Codigo postal  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Código Postal"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etCodigoPostal"
-            android:inputType="number"
-            android:maxLength="5"
-            android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
@@ -152,12 +195,14 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etMunicipio"
-            android:inputType="textCapSentences"
+            android:id="@+id/etMunicipioNeg"
+            android:inputType="textCapCharacters"
+            android:focusable="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+
     </LinearLayout>
 
     <!-- Actividad economica -->
@@ -177,14 +222,21 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <Spinner
+        <EditText
+            android:id="@+id/etActEconomicaNeg"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:focusable="false"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+        <!--<Spinner
             android:id="@+id/spActividadEco"
-            android:entries="@array/actividad_eco"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="@dimen/et_height"/>-->
     </LinearLayout>
 
     <!--  Antiguedad  -->
@@ -195,28 +247,19 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Antigüedad"
-            android:layout_marginRight="8dp"
+            android:text="Antigüedad (Años)"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etAntiguedad"
+            android:id="@+id/etAntiguedadNeg"
             android:inputType="number"
-            android:maxLength="3"
+            android:maxLength="2"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="40dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="@dimen/et_height" />
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Años"
-            android:layout_marginRight="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Ingreso semanal  -->
@@ -228,15 +271,14 @@
         <TextView
             android:textColor="@android:color/black"
             android:text="Ingreso Semanal"
-            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etIngresoSem"
+            android:id="@+id/etIngSemNeg"
             android:inputType="number"
+            android:maxLength="6"
             android:drawableStart="@drawable/ic_money"
-            android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -253,14 +295,13 @@
             android:textColor="@android:color/black"
             android:text="Otros Ingresos"
             android:layout_weight="1"
-            android:layout_marginRight="8dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etOtrosIngresos"
+            android:id="@+id/etOtrosIngNeg"
             android:inputType="number"
+            android:maxLength="6"
             android:drawableStart="@drawable/ic_money"
-            android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -276,15 +317,14 @@
         <TextView
             android:textColor="@android:color/black"
             android:text="Gasto Semanal"
-            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etGastoSem"
+            android:id="@+id/etGastoSemNeg"
             android:inputType="number"
+            android:maxLength="6"
             android:drawableStart="@drawable/ic_money"
-            android:layout_marginRight="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -328,15 +368,14 @@
             <TextView
                 android:textColor="@android:color/black"
                 android:text="Fijos"
-                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etGastosFijos"
+                android:id="@+id/etGastosFijosNeg"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:layout_marginRight="10dp"
+                android:maxLength="6"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -357,16 +396,15 @@
             <TextView
                 android:textColor="@android:color/black"
                 android:text="Agua"
-                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etAgua"
+                android:id="@+id/etGastosAguaNeg"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
                 android:paddingLeft="0dp"
-                android:layout_marginRight="10dp"
+                android:maxLength="6"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -389,15 +427,14 @@
             <TextView
                 android:textColor="@android:color/black"
                 android:text="Luz"
-                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etGastosLuz"
+                android:id="@+id/etGastosLuzNeg"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:layout_marginRight="10dp"
+                android:maxLength="6"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -418,15 +455,14 @@
             <TextView
                 android:textColor="@android:color/black"
                 android:text="Teléf."
-                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etGastoTel"
+                android:id="@+id/etGastosTelNeg"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:layout_marginRight="10dp"
+                android:maxLength="6"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -444,16 +480,15 @@
         <TextView
             android:textColor="@android:color/black"
             android:text="Renta Otros"
-            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etRenta"
+            android:id="@+id/etRentaNeg"
             android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:maxLength="6"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -475,115 +510,93 @@
         <TextView
             android:textColor="@android:color/black"
             android:text="Días de Venta"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etDiasVentaNeg"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:focusable="false"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
 
+    <!--  Fotografía de fachada  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvFotoFachada"
+            android:textColor="@android:color/black"
+            android:text="@string/facade_photo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Lun"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Mar"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Mie"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Jue"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Vie"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Sab"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-                <CheckBox
-                    android:text="Dom"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/ibFotoFachNeg"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/facade_photo"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivFotoFachNeg"
+                android:rotation="90"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
         </LinearLayout>
     </LinearLayout>
 
+    <!--  Referencia domiciliaria  -->
     <LinearLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencia del Negocio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/etReferenciaNeg"
+            android:inputType="textMultiLine|textCapCharacters"
+            android:ems="10"
+            android:maxLength="100"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -591,12 +604,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
 </LinearLayout>

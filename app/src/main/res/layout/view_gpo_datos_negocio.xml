@@ -207,7 +207,6 @@
                     android:layout_height="wrap_content" />
                 <Spinner
                     android:id="@+id/spActividadEco"
-                    android:entries="@array/actividad_eco"
                     android:spinnerMode="dialog"
                     android:drawableRight="@drawable/ic_drop_down"
                     android:background="@drawable/et_rounded_edges"

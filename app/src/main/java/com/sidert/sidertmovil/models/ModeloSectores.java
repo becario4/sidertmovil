@@ -3,19 +3,17 @@ package com.sidert.sidertmovil.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ModeloEstados {
+public class ModeloSectores {
 
     @SerializedName("id")
     @Expose
     private Integer id;
-
     @SerializedName("nombre")
     @Expose
     private String nombre;
-
-    @SerializedName("paisId")
+    @SerializedName("nivel_riesgo")
     @Expose
-    private Integer paisId;
+    private Integer nivelRiesgo;
 
     public Integer getId() {
         return id;
@@ -33,17 +31,16 @@ public class ModeloEstados {
         this.nombre = nombre;
     }
 
-    public Integer getPaisId() {
-        return paisId;
+    public Integer getNivelRiesgo() {
+        return nivelRiesgo;
     }
 
-    public void setPaisId(Integer paisId) {
-        this.paisId = paisId;
+    public void setNivelRiesgo(Integer nivelRiesgo) {
+        this.nivelRiesgo = nivelRiesgo;
     }
 
     @Override
     public String toString() {
         return nombre;
     }
-
 }

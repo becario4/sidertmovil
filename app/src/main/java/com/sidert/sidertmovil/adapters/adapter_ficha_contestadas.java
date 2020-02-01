@@ -33,13 +33,13 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
 
     @NonNull
     @Override
-    public adapter_ficha_contestadas.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(ctx).inflate(R.layout.item_ficha_contestada, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull adapter_ficha_contestadas.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final ModelFichaContestada item = data.get(position);
         holder.tvNombre.setText(item.getNombreClienteGpo());
         holder.tvFechaIni.setText(item.getFechaIni());

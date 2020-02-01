@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.database;
 import android.provider.BaseColumns;
 
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 
 public class SidertTables {
 
@@ -18,7 +19,8 @@ public class SidertTables {
         //public static final String TABLE_GPO_VE          = Constants.GPO_VE;             //Tabla para formularios grupales vencida (CVG)
         public static final String TABLE_GEOLOCALIZACION   = Constants.GEOLOCALIZACION;    //Tabla para formularios de golocaliacion
         public static final String TABLE_LOGIN_REPORT      = Constants.LOGIN_REPORT;       //Tabla para timestamp de inicio de sesión
-        public static final String TABLE_SINCRONIZADO      = Constants.SINCRONIZADO;
+        public static final String TABLE_SINCRONIZADO      = Constants.SINCRONIZADO;       //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion
+        public static final String TABLE_SOLICITUDES_IND   = Constants.SOLICITUDES_IND;    //Tabla para registrar las solicitudes de crédito
 
         //======================= TABLES TEST  =====================================================
         public static final String TABLE_LOG_ASESSOR_T     = Constants.LOG_ASESSOR_T;      //Tabla de Recuperación y Cobranza Pruebas
@@ -30,14 +32,16 @@ public class SidertTables {
         //public static final String TABLE_GPO_VE_T        = Constants.GPO_VE_T;           //Tabla para formularios grupales vencida (CVG) Pruebas
         public static final String TABLE_GEOLOCALIZACION_T = Constants.GEOLOCALIZACION_T;  //Tabla para formularios de golocaliacion Pruebas
         public static final String TABLE_LOGIN_REPORT_T    = Constants.LOGIN_REPORT_T;     //Tabla para timestamp de inicio de sesión Pruebas
-        public static final String TABLE_SINCRONIZADO_T    = Constants.SINCRONIZADO_T;
+        public static final String TABLE_SINCRONIZADO_T    = Constants.SINCRONIZADO_T;     //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion Pruebas
+        public static final String TABLE_SOLICITUDES_IND_T = Constants.SOLICITUDES_IND_T;  //Tabla para registrar las solicitudes de crédito Pruebas
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS = Constants.STATUS_FICHAS;
         public static final String TABLE_ESTADOS       = Constants.ESTADOS;
         public static final String TABLE_MUNICIPIOS    = Constants.MUNICIPIOS;
         public static final String TABLE_COLONIAS      = Constants.COLONIAS;
-
+        public static final String TABLE_OCUPACIONES   = Constants.OCUPACIONES;
+        public static final String TABLE_SECTORES      = Constants.SECTORES;
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String ASESOR_ID            = "asesor_id";
@@ -104,7 +108,21 @@ public class SidertTables {
         public static final String MUNICIPIO_NOMBRE     = "municipio_nombre";
         public static final String COLONIA_NOMBRE       = "colonia_nombre";
         public static final String COLONIA_ID           = "colonia_id";
-
+        public static final String OCUPACION_ID         = "ocupacion_id";
+        public static final String OCUPACION_NOMBRE     = "ocupacion_nombre";
+        public static final String OCUPACION_CLAVE      = "ocupacion_clave";
+        public static final String NIVEL_RIESGO         = "nivel_riesgo";
+        public static final String SECTOR_ID            = "sector_id";
+        public static final String SECTOR_NOMBRE        = "sector_nombre";
+        public static final String CP                   = "cp";
+        public static final String CREDITO              = "credito";
+        public static final String PERSONALES           = "personales";
+        public static final String CONYUGE              = "conyuge";
+        public static final String ECONOMICOS           = "economicos";
+        public static final String NEGOCIO              = "negocio";
+        public static final String AVAL                 = "aval";
+        public static final String REFERENCIA           = "referencia";
+        public static final String CREATE_AT            = "create_at";
 
 
         // == QUERIES CREATE
@@ -181,7 +199,8 @@ public class SidertTables {
                 + SidertEntry.FECHA_ENV_TRES     + " TEXT,"
                 + SidertEntry.FECHA_ENV          + " TEXT,"
                 + SidertEntry.FECHA_TER          + " TEXT,"
-                + SidertEntry.STATUS             + " INTEGER)";
+                + SidertEntry.STATUS             + " INTEGER,"
+                + SidertEntry.CREATE_AT          + " TEXT)";
 
         static final String CREATE_TABLE_LOGIN_REPORT   = "CREATE TABLE " + TABLE_LOGIN_REPORT + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
@@ -195,6 +214,21 @@ public class SidertTables {
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.SERIE_ID          + " TEXT,"
                 + SidertEntry.TIMESTAMP         + " TEXT)";
+
+        static final String CREATE_TABLE_SOLICITUDES_IND   = "CREATE TABLE " + TABLE_SOLICITUDES_IND + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.CREDITO           + " TEXT,"
+                + SidertEntry.PERSONALES        + " TEXT,"
+                + SidertEntry.CONYUGE           + " TEXT,"
+                + SidertEntry.ECONOMICOS        + " TEXT,"
+                + SidertEntry.NEGOCIO           + " TEXT,"
+                + SidertEntry.AVAL              + " TEXT,"
+                + SidertEntry.REFERENCIA        + " TEXT,"
+                + SidertEntry.FECHA_INI         + " TEXT,"
+                + SidertEntry.FECHA_TER         + " TEXT,"
+                + SidertEntry.FECHA_ENV         + " TEXT,"
+                + SidertEntry.STATUS            + " INTEGER)";
 
         //=============================== TABLES TEST  ===============================================
         static final String CREATE_TABLE_ASESSORS_T = "CREATE TABLE " + TABLE_LOG_ASESSOR_T + "("
@@ -270,13 +304,29 @@ public class SidertTables {
                 + SidertEntry.FECHA_ENV_TRES     + " TEXT,"
                 + SidertEntry.FECHA_ENV          + " TEXT,"
                 + SidertEntry.FECHA_TER          + " TEXT,"
-                + SidertEntry.STATUS             + " INTEGER)";
+                + SidertEntry.STATUS             + " INTEGER,"
+                + SidertEntry.CREATE_AT          + " TEXT)";
 
         static final String CREATE_TABLE_LOGIN_REPORT_T   = "CREATE TABLE " + TABLE_LOGIN_REPORT_T + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.SERIE_ID          + " TEXT,"
                 + SidertEntry.NOMBRE            + " TEXT,"
                 + SidertEntry.LOGIN_TIMESTAMP   + " TEXT,"
+                + SidertEntry.FECHA_ENV         + " TEXT,"
+                + SidertEntry.STATUS            + " INTEGER)";
+
+        static final String CREATE_TABLE_SOLICITUDES_IND_T   = "CREATE TABLE " + TABLE_SOLICITUDES_IND_T + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SERIE_ID          + " TEXT,"
+                + SidertEntry.CREDITO           + " TEXT,"
+                + SidertEntry.PERSONALES        + " TEXT,"
+                + SidertEntry.CONYUGE           + " TEXT,"
+                + SidertEntry.ECONOMICOS        + " TEXT,"
+                + SidertEntry.NEGOCIO           + " TEXT,"
+                + SidertEntry.AVAL              + " TEXT,"
+                + SidertEntry.REFERENCIA        + " TEXT,"
+                + SidertEntry.FECHA_INI         + " TEXT,"
+                + SidertEntry.FECHA_TER         + " TEXT,"
                 + SidertEntry.FECHA_ENV         + " TEXT,"
                 + SidertEntry.STATUS            + " INTEGER)";
 
@@ -309,6 +359,29 @@ public class SidertTables {
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.COLONIA_ID        + " INTEGER,"
                 + SidertEntry.COLONIA_NOMBRE    + " TEXT,"
+                + SidertEntry.CP                + " INTEGER,"
                 + SidertEntry.MUNICIPIO_ID      + " INTEGER)";
+
+        static final String CREATE_TABLE_OCUPACIONES = "CREATE TABLE " + TABLE_OCUPACIONES + "("
+                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
+                + SidertEntry.OCUPACION_ID      + " INTEGER,"
+                + SidertEntry.OCUPACION_NOMBRE  + " TEXT,"
+                + SidertEntry.OCUPACION_CLAVE   + " TEXT,"
+                + SidertEntry.NIVEL_RIESGO      + " INTEGER,"
+                + SidertEntry.SECTOR_ID         + " INTEGER)";
+
+        static final String CREATE_TABLE_SECTORES = "CREATE TABLE " + TABLE_SECTORES + "("
+                + SidertEntry._ID            + " INTEGER PRIMARY KEY,"
+                + SidertEntry.SECTOR_ID      + " INTEGER,"
+                + SidertEntry.SECTOR_NOMBRE  + " TEXT,"
+                + SidertEntry.NIVEL_RIESGO   + " INTEGER)";
+
+        static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
+                                                " ADD COLUMN " + SidertEntry.CREATE_AT +
+                                                " TEXT DEFAULT '" + Miscellaneous.ObtenerFecha("timestamp")+"'";
+
+        static final String ADD_CREATE_AT_GEO_T = "ALTER TABLE " + TABLE_GEOLOCALIZACION_T +
+                                                  " ADD COLUMN " + SidertEntry.CREATE_AT +
+                                                  " TEXT DEFAULT '" + Miscellaneous.ObtenerFecha("timestamp")+"'";
     }
 }

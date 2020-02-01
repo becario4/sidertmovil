@@ -2,10 +2,11 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--  Nombre completo  -->
+    <!--  Nombre(s)  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -13,20 +14,21 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Nombre Completo"
+            android:text="Nombre(s)"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etNombreCompleto"
-            android:inputType="textCapWords"
+            android:id="@+id/etNombreRef"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  Domicilio  -->
+    <!--  Apellido paterno  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -34,17 +36,150 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Domicilio"
+            android:text="Apellido Paterno"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etDomicilio"
-            android:inputType="textCapWords"
+            android:id="@+id/etApPaternoRef"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Apellido materno  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Apellido Materno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etApMaternoRef"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Calle  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Calle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCalleRef"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Codigo postal  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCpRef"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:inputType="number"
+            android:maxLength="5"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Colonia  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Colonia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etColoniaRef"
+            android:focusable="false"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+        <!--<Spinner
+            android:id="@+id/spColonia"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />-->
+    </LinearLayout>
+
+    <!-- Municipio -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Municipio"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etMunicipioRef"
+            android:focusable="false"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+        <!--<Spinner
+            android:id="@+id/spMunicipio"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />-->
     </LinearLayout>
 
     <!--  Telefono casa/celular  -->
@@ -60,8 +195,8 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCasaCel"
-            android:inputType="phone"
+            android:id="@+id/etTelCelRef"
+            android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -69,7 +204,7 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -79,12 +214,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
 </LinearLayout>

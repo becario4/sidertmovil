@@ -8,9 +8,11 @@ public class ModeloMunicipio {
     @SerializedName("id")
     @Expose
     private Integer id;
+
     @SerializedName("nombre")
     @Expose
     private String nombre;
+
     @SerializedName("estadoId")
     @Expose
     private Integer estadoId;
@@ -37,6 +39,11 @@ public class ModeloMunicipio {
 
     public void setEstadoId(Integer estadoId) {
         this.estadoId = estadoId;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 
 }

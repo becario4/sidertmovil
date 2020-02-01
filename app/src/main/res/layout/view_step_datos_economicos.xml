@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -19,9 +19,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etPropiedades"
-            android:inputType="textCapSentences"
+            android:id="@+id/etPropiedadesEco"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="60"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -40,10 +41,11 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etValorAprox"
+            android:id="@+id/etValorAproxEco"
             android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
+            android:maxLength="6"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -62,9 +64,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etUbicacion"
-            android:inputType="textCapSentences"
+            android:id="@+id/etUbicacionEco"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -83,18 +86,18 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etIngreso"
+            android:id="@+id/etIngresoEco"
             android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"
+            android:maxLength="6"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -102,12 +105,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
 </LinearLayout>

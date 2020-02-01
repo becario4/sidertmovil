@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">1.2.1</string>
+    <string name="app_version">1.2.1.1</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -158,7 +158,7 @@
     <string name="clear">Limpiar</string>
     <string name="reason">Motivo</string>
     <string name="subject">Asunto</string>
-    <string name="nombre_denunciado">Nombrel del Denunciado</string>
+    <string name="nombre_denunciado">Nombre del Denunciado</string>
     <string name="puesto">Puesto del Denunciado</string>
     <string name="resumen_int">Resumen de Integrantes</string>
     <string name="sent">Enviar</string>
@@ -235,8 +235,10 @@
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
     <string name="loading_info">Cargando información, por favor espere . . .</string>
+    <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA D DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
     <string name="print_original">Solo se ha impreso el recibo original</string>
+    <string name="mensaje_telefono">Debe contener 10 caracteres numéricos.</string>
     <string name="print_original_copy">Ya se imprimió el recibo original y la copia</string>
     <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su denuncia es totalmente anónima.</string>
     <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
@@ -324,98 +326,132 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="nivel_estudio">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Primaria</item>              <!--1-->
-        <item>Secundaria</item>            <!--2-->
-        <item>Preparatoria</item>          <!--3-->
-        <item>Licenciatura</item>          <!--4-->
-        <item>Maestría</item>              <!--5-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>NINGUNO</item>               <!--1-->
+        <item>PRIMARIA</item>              <!--2-->
+        <item>SECUNDARIA</item>            <!--3-->
+        <item>TÉNICO</item>                <!--4-->
+        <item>PREPARATORIA</item>          <!--5-->
+        <item>LICENCIATURA</item>          <!--6-->
+        <item>MAESTRÍA</item>              <!--7-->
+        <item>DOCTORADO</item>             <!--8-->
     </string-array>
 
     <string-array name="estado_civil">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Soltera(o)</item>            <!--1-->
-        <item>Casada(o)</item>             <!--2-->
-        <item>Madre Soltera/Padre</item>   <!--3-->
-        <item>Viuda(o)</item>              <!--4-->
-        <item>Unión Libre</item>           <!--5-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>SOLTERA(O)</item>            <!--1-->
+        <item>CASADA(O)</item>             <!--2-->
+        <item>DIVORCIADA(O)</item>         <!--3-->
+        <item>VIUDA(O)</item>              <!--4-->
+        <item>UNIÓN LIBRE</item>           <!--5-->
     </string-array>
 
     <string-array name="cargo">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Presidente</item>            <!--1-->
-        <item>Tesorera</item>              <!--2-->
-        <item>Secretaria</item>            <!--3-->
-        <item>Integrante</item>            <!--4-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>PRESIDENTE</item>            <!--1-->
+        <item>TESORERO</item>              <!--2-->
+        <item>SECRETARIO</item>            <!--3-->
+        <item>INTEGRANTE</item>            <!--4-->
+    </string-array>
+
+    <string-array name="entero_nosotros">
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>RECOMENDACION</item>         <!--1-->
+        <item>PERIÓDICO</item>             <!--2-->
+        <item>RADIO</item>                 <!--3-->
+        <item>TELEVISÓN</item>             <!--4-->
+        <item>VOLANTE</item>               <!--5-->
+        <item>ANUNCIO</item>               <!--6-->
+        <item>PLÁTICA DE GRUPO</item>      <!--7-->
+        <item>PERIFONEO</item>             <!--8-->
     </string-array>
 
     <string-array name="tipo_casa">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Casa</item>                  <!--1-->
-        <item>Renta</item>                 <!--2-->
-        <item>Otro</item>                  <!--3-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>CASA</item>                  <!--1-->
+        <item>RENTA</item>                 <!--2-->
+        <item>OTRO</item>                  <!--3-->
     </string-array>
 
-    <string-array name="actividad_eco">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Producción</item>            <!--1-->
-        <item>Comercio</item>              <!--2-->
-        <item>Servicio</item>              <!--3-->
-        <item>Agropecuario</item>          <!--4-->
+    <string-array name="destino_prestamo">
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>AGROPECUARIO</item>          <!--1-->
+        <item>COMERCIO</item>              <!--2-->
+        <item>SERVICIO</item>              <!--3-->
     </string-array>
 
-    <string-array name="municipios">
-        <item>Seleccione una opción</item> <!--0-->
-        <item></item>                  <!--1-->
-        <item></item>                  <!--2-->
+    <string-array name="activos">
+        <item>TELEVISIÓN</item>            <!--0-->
+        <item>MICROONDAS</item>            <!--1-->
+        <item>REFRIGERADOR</item>          <!--2-->
+        <item>SALA</item>                  <!--3-->
+        <item>COMEDOR</item>               <!--4-->
     </string-array>
 
-    <string-array name="localidad">
-        <item>Seleccione una opción</item> <!--0-->
-        <item></item>                  <!--1-->
-        <item></item>                  <!--2-->
+    <string-array name="dias_semana">
+        <item>LUNES</item>                 <!--0-->
+        <item>MARTES</item>                <!--1-->
+        <item>MIÉRCOLES</item>             <!--2-->
+        <item>JUEVES</item>                <!--3-->
+        <item>VIERNES</item>               <!--4-->
+        <item>SÁBADO</item>                <!--5-->
+        <item>DOMINGO</item>               <!--6-->
     </string-array>
 
-    <string-array name="sucursal">
-        <item>Seleccione una opción</item> <!--0-->
-        <item></item>                  <!--1-->
-        <item></item>                  <!--2-->
+    <string-array name="parentesco">
+        <item>SELECCIONE UNA OPCION</item> <!--0-->
+        <item>PRIMA(O)</item>              <!--1-->
+        <item>TÍA(O)</item>                <!--2-->
+        <item>ABUELA(O)</item>             <!--3-->
+        <item>SOBRINA(O)</item>            <!--4-->
+        <item>AMISTAD</item>               <!--5-->
+        <item>VECINA(O)</item>             <!--6-->
+        <item>CUÑADA(O)</item>             <!--7-->
+        <item>NUERA</item>                 <!--8-->
+        <item>YERNO</item>                 <!--9-->
+        <item>SUEGRA(O)</item>             <!--10-->
+    </string-array>
+
+    <string-array name="parentesco_titular">
+        <item>SELECCIONE UNA OPCION</item> <!--0-->
+        <item>ARRENDATARIO</item>          <!--1-->
+        <item>TITULAR</item>               <!--1-->
+        <item>PRIMA(O)</item>              <!--3-->
+        <item>TÍA(O)</item>                <!--4-->
+        <item>ABUELA(O)</item>             <!--5-->
+        <item>SOBRINA(O)</item>            <!--6-->
+        <item>AMISTAD</item>               <!--7-->
+        <item>VECINA(O)</item>             <!--8-->
+        <item>CUÑADA(O)</item>             <!--9-->
+        <item>NUERA</item>                 <!--10-->
+        <item>YERNO</item>                 <!--11-->
+        <item>SUEGRA(O)</item>             <!--12-->
     </string-array>
 
     <string-array name="intervalo">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>4 Meses</item>               <!--1-->
-        <item>5 Meses</item>               <!--2-->
-        <item>6 Meses</item>               <!--3-->
-        <item>9 Meses</item>               <!--4-->
-        <item>12 Meses</item>              <!--5-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>4 MESES</item>               <!--1-->
+        <item>5 MESES</item>               <!--2-->
+        <item>6 MESES</item>               <!--3-->
+        <item>9 MESES</item>               <!--4-->
+        <item>12 MESES</item>              <!--5-->
     </string-array>
 
     <string-array name="lapso">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Semanal</item>               <!--1-->
-        <item>Catorcenal</item>            <!--2-->
-        <item>Quincenal</item>             <!--3-->
-        <item>Mensual</item>               <!--4-->
+        <item>SELECCIONE UNA OPCION</item> <!--0-->
+        <item>SEMANAL</item>               <!--1-->
+        <item>CATORCENAL</item>            <!--2-->
+        <item>QUINCENAL</item>             <!--3-->
+        <item>MENSUAL</item>               <!--4-->
     </string-array>
 
     <string-array name="dependientes_eco">
-        <item>Seleccione una opción</item> <!--0-->
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>1</item>                     <!--1-->
         <item>2</item>                     <!--2-->
         <item>3</item>                     <!--3-->
         <item>4</item>                     <!--4-->
         <item>5</item>                     <!--5-->
-    </string-array>
-
-    <string-array name="semana">
-        <item>Seleccione una opción</item> <!--0-->
-        <item>Lunes</item>                 <!--1-->
-        <item>Martes</item>                <!--2-->
-        <item>Miércoles</item>             <!--3-->
-        <item>Jueves</item>                <!--4-->
-        <item>Viernes</item>               <!--5-->
-        <item>Sábado</item>                <!--6-->
     </string-array>
 
     <string-array name="puesto">
@@ -453,42 +489,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>PROGRAMADOR</item>
         <item>RECEPCIONISTA</item>
         <item>TELECOMUNICACIONES</item>
-    </string-array>
-
-    <string-array name="estados">
-        <item>Seleccione una opción</item>
-        <item>AGUASCALIENTES</item>
-        <item>BAJA CALIFORNIA NTE.</item>
-        <item>BAJA CALIFORNIA SUR</item>
-        <item>CAMPECHE</item>
-        <item>COAHUILA</item>
-        <item>COLIMA</item>
-        <item>CHIAPAS</item>
-        <item>CHIHUAHUA</item>
-        <item>DISTRITO FEDERAL</item>
-        <item>DURANGO</item>
-        <item>GUANAJUATO</item>
-        <item>GUERRERO</item>
-        <item>HIDALGO</item>
-        <item>JALISCO</item>
-        <item>MEXICO</item>
-        <item>MICHOACAN</item>
-        <item>MORELOS</item>
-        <item>NAYARIT</item>
-        <item>NUEVO LEON</item>
-        <item>OAXACA</item>
-        <item>PUEBLA</item>
-        <item>QUERETARO</item>
-        <item>QUINTANA ROO</item>
-        <item>SAN LUIS POTOSI</item>
-        <item>SINALOA</item>
-        <item>SONORA</item>
-        <item>TABASCO</item>
-        <item>TAMAULIPAS</item>
-        <item>TLAXCALA</item>
-        <item>VERACRUZ</item>
-        <item>YUCATAN</item>
-        <item>ZACATECAS</item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

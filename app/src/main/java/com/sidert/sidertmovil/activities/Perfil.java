@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 
@@ -75,9 +74,7 @@ public class Perfil extends AppCompatActivity {
                     || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, WR_PERMS);
             } else {
-                CropImage.activity().
-                        setOutputCompressQuality(50).
-                        start(Perfil.this);
+
             }
         }
     };
@@ -87,14 +84,7 @@ public class Perfil extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode){
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (data != null){
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    final Uri selectedImage = result.getUri();
-                    final File foto = new File(selectedImage.getPath());
-                    Glide.with(ctx).load(foto).into(civAvatar);
-                }
-                break;
+
         }
     }
 

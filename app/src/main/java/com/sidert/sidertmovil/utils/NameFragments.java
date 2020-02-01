@@ -34,6 +34,8 @@ public class NameFragments {
     public final static String DIALOGSYNCHRONIZE                = "dialog_synchronize_db";
     public final static String DIALOGINTEGRANTE                 = "dialog_integrante_gpo";
     public final static String INFO_GEOLOCALIZACIONES           = "dialog_info_geo";
+    public final static String DIALOGDATEPICKER                 = "dialog_date_picker";
+    public final static String DIALOGTIMEPICKER                 = "dialog_time_picker";
 
     //TODO: Geolocalizacion
     public final static String GEO_CLIENTE           = "geo_cliente_fragment";

@@ -2,50 +2,29 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Localidad -->
+    <!--  Plazo  -->
     <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@android:color/black"
-            android:text="Localidad"
-            android:layout_weight="1"
+            android:id="@+id/tvPlazo"
+            android:textColor="@color/black"
+            android:text="Plazo"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"
             android:background="@android:color/white"
             style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spMedioPago"
-            android:entries="@array/localidad"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
-    </LinearLayout>
-
-    <!--  Plazo  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Plazo"
             android:layout_weight=".5"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <Spinner
-            android:id="@+id/spTiempo"
+            android:id="@+id/spPlazo"
             android:entries="@array/intervalo"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
@@ -54,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/et_height"/>
         <Spinner
-            android:id="@+id/spLapso"
+            android:id="@+id/spFrecuencia"
             android:entries="@array/lapso"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
@@ -98,7 +77,7 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etDíaDesembolso"
+            android:id="@+id/etDiaDesembolso"
             android:enabled="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -142,7 +121,7 @@
         <EditText
             android:id="@+id/etMontoPrestamo"
             android:inputType="number"
-            android:maxLength="5"
+            android:maxLength="6"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -183,29 +162,81 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@android:color/black"
+            android:id="@+id/tvDestino"
+            android:textColor="@color/black"
             android:text="Destino del Préstamo"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etDestinoPrestamo"
-            android:paddingLeft="10dp"
-            android:maxLength="255"
-            android:inputType="textCapSentences"
+        <Spinner
+            android:id="@+id/spDestino"
+            android:entries="@array/destino_prestamo"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
+            android:layout_height="@dimen/et_height"/>
+        <!--<EditText
+            android:id="@+id/etDestino"
+            android:paddingLeft="10dp"
+            android:maxLength="255"
+            android:inputType="textCapCharacters"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />-->
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnContinuar0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
-        android:src="@drawable/ic_continuar" />
+    <!-- Firma Aval-->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvFirmaCre"
+            android:textColor="@color/black"
+            android:text="Eleboración Pre-Análisis de Solicitud (Asesor)"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:id="@+id/ibFirmaCre"
+            android:src="@drawable/ic_gesture"
+            android:background="@drawable/round_corner_blue"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <ImageView
+            android:id="@+id/ivFirmaCre"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/ic_continuar" />
+    </RelativeLayout>
+
+
 
 
 </LinearLayout>

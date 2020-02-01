@@ -8,12 +8,13 @@ public class ModeloColonia {
     @SerializedName("id")
     @Expose
     private Integer id;
-
     @SerializedName("nombre")
     @Expose
     private String nombre;
-
-    @SerializedName("municipioId")
+    @SerializedName("cp")
+    @Expose
+    private Integer cp;
+    @SerializedName("municipio_id")
     @Expose
     private Integer municipioId;
 
@@ -33,12 +34,25 @@ public class ModeloColonia {
         this.nombre = nombre;
     }
 
+    public Integer getCp() {
+        return cp;
+    }
+
+    public void setCp(Integer cp) {
+        this.cp = cp;
+    }
+
     public Integer getMunicipioId() {
         return municipioId;
     }
 
     public void setMunicipioId(Integer municipioId) {
         this.municipioId = municipioId;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 
 }

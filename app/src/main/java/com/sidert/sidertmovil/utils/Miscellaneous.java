@@ -19,7 +19,11 @@ import android.widget.EditText;
 
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.ModeloColonia;
+import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
+import com.sidert.sidertmovil.models.ModeloMunicipio;
+import com.sidert.sidertmovil.models.ModeloOcupaciones;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +42,10 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -352,7 +358,7 @@ public class Miscellaneous {
 
         switch (unidades) {
             case 0: break;
-            case 1: result.append("Uno "); break;
+            case 1: result.append("Un "); break;
             case 2: result.append("Dos "); break;
             case 3: result.append("Tres "); break;
             case 4: result.append("Cuatro "); break;
@@ -746,4 +752,412 @@ public class Miscellaneous {
         return compressedByteArray;
     }
 
+    /* Obtención de catálogo de Estados */
+    public static ArrayList<ModeloEstados> GetCatalogoEstado (Context ctx){
+        ArrayList<ModeloEstados> catalogo = new ArrayList<>();
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row = dBhelper.getRecords(Constants.ESTADOS,""," ORDER BY estado_nombre ASC", null);
+
+        ModeloEstados mEstados = new ModeloEstados();
+        mEstados.setId(0);
+        mEstados.setNombre("SELECCIONE UNA OPCIÓN");
+        mEstados.setPaisId(0);
+        catalogo.add(mEstados);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                mEstados = new ModeloEstados();
+                mEstados.setId(row.getInt(1));
+                mEstados.setNombre(row.getString(2));
+                mEstados.setPaisId(row.getInt(3));
+                catalogo.add(mEstados);
+                row.moveToNext();
+            }
+
+        }
+
+        return catalogo;
+    }
+
+    /* Obtención de catálogo de Municipios */
+    public static ArrayList<ModeloMunicipio> GetCatalogoMunicipios (Context ctx, int estado_id){
+        ArrayList<ModeloMunicipio> catalogo = new ArrayList<>();
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row = dBhelper.getRecords(Constants.MUNICIPIOS," WHERE estado_id = '" + estado_id + "'"," ORDER BY municipio_nombre ASC", null);
+
+        ModeloMunicipio mMunicipios = new ModeloMunicipio();
+        mMunicipios.setId(0);
+        mMunicipios.setNombre("SELECCIONE UNA OPCIÓN");
+        mMunicipios.setEstadoId(0);
+        catalogo.add(mMunicipios);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                mMunicipios = new ModeloMunicipio();
+                mMunicipios.setId(row.getInt(1));
+                mMunicipios.setNombre(row.getString(2));
+                mMunicipios.setEstadoId(row.getInt(3));
+                catalogo.add(mMunicipios);
+                row.moveToNext();
+            }
+
+        }
+
+        return catalogo;
+    }
+
+    /* Obtención de catálogo de Colonia */
+    public static ArrayList<ModeloColonia> GetCatalogoColonias (Context ctx, int municipio_id){
+        ArrayList<ModeloColonia> catalogo = new ArrayList<>();
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row = dBhelper.getRecords(Constants.COLONIAS," WHERE municipio_id = '" + municipio_id + "'"," ORDER BY colonia_nombre ASC", null);
+
+        ModeloColonia mColonia = new ModeloColonia();
+        mColonia.setId(0);
+        mColonia.setNombre("SELECCIONE UNA OPCIÓN");
+        mColonia.setMunicipioId(0);
+        catalogo.add(mColonia);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                Log.e("Colonia", row.getString(2));
+                mColonia = new ModeloColonia();
+                mColonia.setId(row.getInt(1));
+                mColonia.setNombre(row.getString(2));
+                mColonia.setCp(row.getInt(3));
+                mColonia.setMunicipioId(row.getInt(4));
+                catalogo.add(mColonia);
+                row.moveToNext();
+            }
+        }
+        else
+            Log.e("Colonias", "Sin registros");
+        return catalogo;
+    }
+
+    /* Obtención de catálogo de Ocupaciones */
+    public static ArrayList<ModeloOcupaciones> GetCatalogoOcupaciones (Context ctx){
+        ArrayList<ModeloOcupaciones> catalogo = new ArrayList<>();
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row = dBhelper.getRecords(Constants.OCUPACIONES,""," ORDER BY ocupacion_nombre ASC", null);
+
+        ModeloOcupaciones mOcupaciones = new ModeloOcupaciones();
+        mOcupaciones.setId(0);
+        mOcupaciones.setNombre("SELECCIONE UNA OPCIÓN");
+        mOcupaciones.setClave("");
+        mOcupaciones.setNivelRiesgo(0);
+        mOcupaciones.setSectorId(0);
+
+        catalogo.add(mOcupaciones);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                mOcupaciones = new ModeloOcupaciones();
+                mOcupaciones.setId(row.getInt(1));
+                mOcupaciones.setNombre(row.getString(2));
+                mOcupaciones.setClave(row.getString(3));
+                mOcupaciones.setNivelRiesgo(row.getInt(4));
+                mOcupaciones.setSectorId(row.getInt(5));
+                catalogo.add(mOcupaciones);
+                row.moveToNext();
+            }
+
+        }
+
+        return catalogo;
+    }
+
+    /* Para saber si es vocal */
+    public static boolean esVocal(Character texto){
+        if (texto == 'a' || texto == 'e' || texto == 'i' || texto == 'o' || texto == 'u'
+                || texto == 'A' || texto == 'E' || texto == 'I' || texto == 'O' || texto == 'U'
+                || texto == 'Á' || texto == 'É' || texto == 'Í' || texto == 'Ó' || texto == 'Ú'
+                || texto == 'á' || texto == 'é' || texto == 'í' || texto == 'ó' || texto == 'ú'
+                || texto == '/' || texto == '-' ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /* Generador de CURP */
+    public static String GenerarCurp (HashMap<Integer, String> params){
+
+        String nombreTexto = params.get(0).toUpperCase();
+
+        nombreTexto = nombreTexto.replaceAll("\\bMARIA\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bMA\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bMA\\.\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bJ\\.\\s\\b","");
+
+        String primerApellidoTexto = params.get(1).toUpperCase();
+        primerApellidoTexto = primerApellidoTexto.replaceAll("/","X");
+        primerApellidoTexto = primerApellidoTexto.replaceAll("-","X");
+
+        String segundoApellidoTexto = params.get(2).toUpperCase();
+
+        String fechaNacimientoTexto = params.get(3).toUpperCase();
+
+        String fechaNacimientoTextotest = fechaNacimientoTexto;
+
+        String sexoTexto = params.get(4);
+        String estadoTexto = params.get(5);
+
+        // Lista Resultado
+
+        List<Character> listaResultado = new ArrayList<>();
+
+        // String Resultado
+
+        String resultado = "";
+
+        // Verificando datos
+
+        Log.e("Curp","Nombre: "+nombreTexto);
+        Log.e("Curp","Paterno: "+primerApellidoTexto);
+        Log.e("Curp","Materno: "+segundoApellidoTexto);
+        Log.e("Curp","Fecha: "+fechaNacimientoTexto);
+        Log.e("Curp","Genero: "+sexoTexto);
+        Log.e("Curp","Estado: "+estadoTexto);
+
+        boolean datosCorrectos = true;
+
+        if (nombreTexto.isEmpty() || primerApellidoTexto.isEmpty() || fechaNacimientoTexto.isEmpty()
+                || fechaNacimientoTexto.length() < 6 || sexoTexto.isEmpty() || estadoTexto.isEmpty()){
+            datosCorrectos = false;
+            resultado = "Curp no válida";
+
+        }
+
+        if (datosCorrectos && nombreTexto.length() > 3 && primerApellidoTexto.length() > 3){
+
+            // Convirtiendo textos a Listas
+
+            List<Character> nombreLista = new ArrayList<>();
+            for (int i=0; i< nombreTexto.length();i++){
+                nombreLista.add(nombreTexto.charAt(i));
+            }
+
+            List<Character> primerApellidoLista = new ArrayList<>();
+            for (int i=0; i< primerApellidoTexto.length();i++){
+                primerApellidoLista.add(primerApellidoTexto.charAt(i));
+            }
+
+            List<Character> segundoApellidoLista = new ArrayList<>();
+            for (int i=0; i< segundoApellidoTexto.length();i++){
+                segundoApellidoLista.add(segundoApellidoTexto.charAt(i));
+            }
+
+            // Calculando 4 primeros caracteres
+
+            boolean segundaLetraConsonante = false;
+            boolean noSegundoApellido = false;
+
+            // ¿Consonante segunda letra?
+
+            if (!(esVocal(primerApellidoLista.get(1)))){
+                segundaLetraConsonante = true;
+            }
+
+            if (segundoApellidoTexto == ""){
+                noSegundoApellido = true;
+            }
+
+            // Lista Resultado
+
+            //primera letra: si no segunda componante -> dos primeras letras = dos primeras letras 1er apellido
+
+            int posicionPrimeraVocal = 0;
+
+            if (segundaLetraConsonante == false){
+                listaResultado.add(primerApellidoLista.get(0));
+                listaResultado.add(primerApellidoLista.get(1));
+            }else{
+                boolean romperIf = false;
+                for (int i=0; i < primerApellidoLista.size();i++){
+                    if(esVocal(primerApellidoLista.get(i)) && romperIf == false){
+                        listaResultado.add(primerApellidoLista.get(i));
+                        posicionPrimeraVocal = i;
+                        romperIf = true;
+                    }
+                }
+            }
+
+            //segunda letra: buscamos la primera vocal interna del apellido
+
+            if (listaResultado.size() == 1){
+                for (int i=posicionPrimeraVocal+1 ; i < primerApellidoLista.size(); i++){
+                    if(esVocal(primerApellidoLista.get(i)) && listaResultado.size() < 2){
+                        listaResultado.add(primerApellidoLista.get(i));
+                    }
+                }
+            }
+
+            if(listaResultado.size()==1){
+                listaResultado.add('X');
+            }
+
+            // tercera letra: inicial del segundo apellido
+
+            if (segundoApellidoLista.isEmpty() == true){
+                listaResultado.add('X');
+            }else{
+                listaResultado.add(segundoApellidoLista.get(0));
+            }
+
+            // cuarta letra: inicial del nombre
+
+            listaResultado.add(nombreLista.get(0));
+
+            // Fecha de nacimiento
+
+            fechaNacimientoTextotest = fechaNacimientoTextotest.replaceAll("-","");
+            fechaNacimientoTextotest = fechaNacimientoTextotest.replaceAll("/","");
+
+            if (fechaNacimientoTextotest.length() > 0){
+                listaResultado.add(fechaNacimientoTextotest.charAt(2));
+                listaResultado.add(fechaNacimientoTextotest.charAt(3));
+                listaResultado.add(fechaNacimientoTextotest.charAt(4));
+                listaResultado.add(fechaNacimientoTextotest.charAt(5));
+                listaResultado.add(fechaNacimientoTextotest.charAt(6));
+                listaResultado.add(fechaNacimientoTextotest.charAt(7));
+            }
+            /*for (int i=0;i<fechaNacimientoTextotest.length();i++){
+                listaResultado.add(fechaNacimientoTextotest.charAt(i));
+            }*/
+
+            // Sexo
+
+            listaResultado.add(sexoTexto.charAt(0));
+
+            // Estado
+
+            String codigoEstado = "";
+
+            switch (estadoTexto){
+                case "EXTRANJERO": codigoEstado="NE"; break;
+                case "AGUASCALIENTES": codigoEstado="AS" ; break;
+                case "BAJA CALIFORNIA": codigoEstado="BC" ; break;
+                case "BAJA CALIFORNIA SUR": codigoEstado="BS" ; break;
+                case "CAMPECHE": codigoEstado="CC" ; break;
+                case "CHIAPAS": codigoEstado="CS" ; break;
+                case "CHIHUAHUA": codigoEstado="CH" ; break;
+                case "COAHUILA": codigoEstado="CL" ; break;
+                case "COLIMA": codigoEstado="CM" ; break;
+                case "CIUDAD DE MÉXICO": codigoEstado="DF" ; break;
+                case "DURANGO": codigoEstado="DG" ; break;
+                case "GUANAJUATO": codigoEstado="GT" ; break;
+                case "GUERRERO": codigoEstado="GR" ; break;
+                case "HIDALGO": codigoEstado="HG" ; break;
+                case "JALISCO": codigoEstado="JC" ; break;
+                case "ESTADO DE MÉXICO": codigoEstado="MC" ; break;
+                case "MICHOACÁN": codigoEstado="MN" ; break;
+                case "MORELOS": codigoEstado="MS" ; break;
+                case "NAYARIT": codigoEstado="NT" ; break;
+                case "NUEVO LEÓN": codigoEstado="NL" ; break;
+                case "OAXACA": codigoEstado="OC" ; break;
+                case "PUEBLA": codigoEstado="PL" ; break;
+                case "QUERÉTARO": codigoEstado="QO" ; break;
+                case "QUINTANA ROO": codigoEstado="QR" ; break;
+                case "SAN LUIS POTOSI": codigoEstado="SP" ; break;
+                case "SINALOA": codigoEstado="SL" ; break;
+                case "SONORA": codigoEstado="SR" ; break;
+                case "TABASCO": codigoEstado="TC" ; break;
+                case "TAMAULIPAS": codigoEstado="TS" ; break;
+                case "TLAXCALA": codigoEstado="TL" ; break;
+                case "VERACRUZ": codigoEstado="VZ" ; break;
+                case "YUCATÁN ": codigoEstado="YN" ; break;
+                case "ZACATECAS": codigoEstado="ZS" ; break;
+            }
+
+            listaResultado.add(codigoEstado.charAt(0));
+            listaResultado.add(codigoEstado.charAt(1));
+
+            // Consonantes internas de nombre y apellidos
+
+            // Consonante interna primer apellido
+
+            for(int i=1; i < primerApellidoLista.size() ; i++){
+                if(esVocal(primerApellidoLista.get(i)) == false){
+                    listaResultado.add(primerApellidoLista.get(i));
+                    break;
+                }
+            }
+
+            if(listaResultado.size() < 14){
+                listaResultado.add('X');
+            }
+
+            // Consonante interna segundo apellido
+
+            for(int i=1; i < segundoApellidoLista.size() ; i++){
+                if(segundoApellidoLista.isEmpty()){
+                    listaResultado.add('X');
+                    break;
+                }
+
+                if(esVocal(segundoApellidoLista.get(i)) == false){
+                    listaResultado.add(segundoApellidoLista.get(i));
+                    break;
+                }
+            }
+
+            if (listaResultado.size() < 15){
+                listaResultado.add('X');
+            }
+
+            // Consonante interna nombre
+
+            for(int i=1; i < nombreLista.size() ; i++){
+                if(esVocal(nombreLista.get(i)) == false){
+                    listaResultado.add(nombreLista.get(i));
+                    break;
+                }
+            }
+
+            if (listaResultado.size()<16){
+                listaResultado.add('X');
+            }
+
+
+            StringBuilder builder = new StringBuilder(listaResultado.size());
+            for(Character ch: listaResultado)
+            {
+                builder.append(ch);
+            }
+
+            String listaResultadoTexto = builder.toString();
+
+            listaResultadoTexto = listaResultadoTexto.replaceAll("Ñ","X");
+            listaResultadoTexto = listaResultadoTexto.replaceAll("\\-","X");
+            listaResultadoTexto = listaResultadoTexto.replaceAll("\\.", "X");
+            listaResultadoTexto = listaResultadoTexto.replace('Ä','A')
+                    .replace('Ë','E')
+                    .replace('Ï','I')
+                    .replace('Ö','O')
+                    .replace('Ü','U');
+            listaResultadoTexto = listaResultadoTexto.replaceAll(" ","");
+
+            resultado = listaResultadoTexto;
+
+        }
+        else
+            resultado = "Curp no válida";
+
+        return resultado;
+    }
 }

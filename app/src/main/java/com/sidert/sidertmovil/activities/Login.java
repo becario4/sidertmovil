@@ -44,6 +44,7 @@ import com.sidert.sidertmovil.utils.BkgJobServiceLogout;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.MyFireBaseInstanceIDService;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
@@ -163,14 +164,40 @@ public class Login extends AppCompatActivity {
     }
 
     private void doLoginAsesorT(){
-        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "");
+        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiVkFMREVTIiwicGF0ZXJubyI6IkZJUkFTIiwidXNlcl9uYW1lIjoiQVVESVRPUjUzNSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdLCJzZXJpZWlkIjoiNTM1IiwiaWQiOjExNiwiZXhwIjoxNTgwNTg1NzIyLCJub21icmUiOiJMVUlTIFJPRE9MRk8iLCJhdXRob3JpdGllcyI6WyJST0xFX0dFUkVOVEVTVUNVUlNBTCIsIlJPTEVfQVVESVRPUklBIl0sImp0aSI6ImNmZjViMGFjLTRlZDgtNDFkNy1iMTlkLTU1ZDk4YTQwMmUxMyIsImVtYWlsIjoiYXVkaXRvcjUzNUBzaWRlcnQuY29tLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.YBb_DQw-xoeWbXpAo4LSFBFq9E3BGGC2RuWgQTpAEnqThJl54IUWek8F5PDOKqBb9CUXzvpmym88--RqcGHQ2sTLVADRagths8xDwvNQBOJzjluVt9TcW_MCJcdfcpvhzDsCYW1cnvKizGTWgJHy7PRZJ9A26DQmkpeTCrPYURXSpBmbntS2_Xeh_A0aT226SJhFUEXCu_g7psAWIrbLLfuDigBYRt1dbaZ9kTXOclMu_uLDTx1VDvdV3hFVDi17-hfQJhGgJ7BU6XWk1YgtI2mvhg4urVn2MXsnU44i5WxX7T5f0fpvAICerbbDNqS5VXf_llYjn_OyncXf_ebDUg");
 
-        /*if (NetworkStatus.haveNetworkConnection(ctx)){
-            Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
-            catalogos.GetEstados(ctx);
-            catalogos.GetMunicipios(ctx);
+        if (NetworkStatus.haveNetworkConnection(ctx)){
+            final Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    catalogos.GetEstados(ctx);
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    catalogos.GetMunicipios(ctx);
+                }
+            }).start();
+
             catalogos.GetColonias(ctx);
-        }*/
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    catalogos.GetSectores(ctx);
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    catalogos.GetOcupaciones(ctx);
+                }
+            }).start();
+        }
 
         Intent home = new Intent(context, Home.class);
         startActivity(home);
@@ -250,6 +277,7 @@ public class Login extends AppCompatActivity {
 
                                     Calendar c = Calendar.getInstance();
 
+                                    MyFireBaseInstanceIDService id = new MyFireBaseInstanceIDService();
                                     if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
 
                                             Log.e("Login", "On Start Service Job Login");
@@ -276,6 +304,19 @@ public class Login extends AppCompatActivity {
                                     }
 
 
+                                    Intent home = new Intent(context, Home.class);
+                                    startActivity(home);
+                                    finish();
+                                }
+                                else if(json_info.getString(Constants.AUTHORITIES).contains("ROLE_ASESOR")){
+                                    session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
+                                            Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.PATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.MATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
+                                            Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
+                                            true,
+                                            Miscellaneous.validString(res.getAccessToken()));
                                     Intent home = new Intent(context, Home.class);
                                     startActivity(home);
                                     finish();

@@ -37,7 +37,7 @@ import retrofit2.Response;
 public class Servicios_Sincronizado {
 
     public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones){
-        Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas");
+        Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas "+incluir_gestiones);
         SessionManager session = new SessionManager(ctx);
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -91,6 +91,7 @@ public class Servicios_Sincronizado {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "0");
+                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
                                     if (Constants.ENVIROMENT)
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
@@ -129,7 +130,7 @@ public class Servicios_Sincronizado {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "0");
-
+                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
                                     if (Constants.ENVIROMENT)
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
@@ -151,19 +152,19 @@ public class Servicios_Sincronizado {
 
                                     switch(modeloGeo.getGrupalesGestionadas().get(h).getIntegranteTipo()){
                                         case Constants.TIPO_PRESIDENTE:
-                                            if (rowGeoGG.getString(13).trim().isEmpty() && rowGeoGG.getString(16).trim().isEmpty()){
+                                            if (rowGeoGG.getString(13).trim().isEmpty() && (rowGeoGG.getString(16).trim().isEmpty() || rowGeoGG.getString(16).equals("0"))){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
                                             break;
                                         case Constants.TIPO_TESORERO:
-                                            if (rowGeoGG.getString(14).trim().isEmpty() && rowGeoGG.getString(17).trim().isEmpty()){
+                                            if (rowGeoGG.getString(14).trim().isEmpty() && (rowGeoGG.getString(17).trim().isEmpty() || rowGeoGG.getString(17).equals("0"))){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
                                             break;
                                         case Constants.TIPO_SECRETARIO:
-                                            if (rowGeoGG.getString(15).trim().isEmpty() && rowGeoGG.getString(18).trim().isEmpty()){
+                                            if (rowGeoGG.getString(15).trim().isEmpty() && (rowGeoGG.getString(18).trim().isEmpty() || rowGeoGG.getString(18).equals("0"))){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
@@ -173,6 +174,7 @@ public class Servicios_Sincronizado {
                             }//Fin de For para guardado de Grupales Gestionadas
                         }//Fin de Grupales Gestionadas
 
+                        Log.e("Individuales conte", modeloGeo.getIndividualesGestionadas().size()+" ------------");
                         if(modeloGeo.getIndividualesGestionadas().size() > 0){
                             for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++){
                                 Cursor rowGeoGG;
@@ -181,25 +183,29 @@ public class Servicios_Sincronizado {
                                 else
                                     rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getIndividualesGestionadas().get(h).getFichaId()+"'", "", null);
 
+                                Log.e("siContiene", rowGeoGG.getCount()+"++++++++++");
                                 if (rowGeoGG.getCount() > 0){
                                     rowGeoGG.moveToFirst();
 
                                     switch(modeloGeo.getIndividualesGestionadas().get(h).getTipo()){
                                         case Constants.TIPO_CLIENTE:
+                                            Log.e("datos", rowGeoGG.getString(13));
+                                            Log.e("fecha", rowGeoGG.getString(16));
+                                            Log.e("Cliente", (rowGeoGG.getString(13).trim().isEmpty() && (rowGeoGG.getString(16).trim().isEmpty() || rowGeoGG.getString(16).equals("0")))+"  xxxxx   ");
                                             if (rowGeoGG.getString(13).trim().isEmpty() && rowGeoGG.getString(16).trim().isEmpty()){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
                                             break;
                                         case Constants.TIPO_NEGOCIO:
-                                            if (rowGeoGG.getString(14).trim().isEmpty() && rowGeoGG.getString(17).trim().isEmpty()){
+                                            if (rowGeoGG.getString(14).trim().isEmpty() && (rowGeoGG.getString(17).trim().isEmpty() || rowGeoGG.getString(17).equals("0"))){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
                                             break;
 
                                         case Constants.TIPO_AVAL:
-                                            if (rowGeoGG.getString(15).trim().isEmpty() && rowGeoGG.getString(18).trim().isEmpty()){
+                                            if (rowGeoGG.getString(15).trim().isEmpty() && (rowGeoGG.getString(18).trim().isEmpty() || rowGeoGG.getString(18).equals("0"))){
                                                 new DescargarFotoFachada()
                                                         .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
                                             }
@@ -245,16 +251,16 @@ public class Servicios_Sincronizado {
         if (row.getCount() > 0){
             row.moveToFirst();
             for(int i = 0; i < row.getCount(); i++){
-                if (row.getString(16).isEmpty() && !row.getString(13).isEmpty()){
+                if ((row.getString(16).isEmpty() || row.getString(16).equals("0")) && !row.getString(13).isEmpty()){
                     Log.e("row", row.getString(13));
                 }
                 //Log.e("fecha_uno",String.valueOf(row.getString(16).isEmpty() && !row.getString(13).isEmpty())+" "+row.getString(16));
                 if (row.getString(16).isEmpty() && !row.getString(13).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(13), row.getString(1), 1);
+                    SendGeolocalizacion(ctx, row.getString(13), row.getString(22), row.getString(1), 1);
                 if (row.getString(17).isEmpty() && !row.getString(14).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(14), row.getString(1), 2);
+                    SendGeolocalizacion(ctx, row.getString(14), row.getString(22), row.getString(1), 2);
                 if (row.getString(18).isEmpty() && !row.getString(15).isEmpty())
-                    SendGeolocalizacion(ctx, row.getString(15), row.getString(1), 3);
+                    SendGeolocalizacion(ctx, row.getString(15), row.getString(22), row.getString(1), 3);
                 row.moveToNext();
             }
         }
@@ -263,7 +269,7 @@ public class Servicios_Sincronizado {
             loading.dismiss();
     }
 
-    private void SendGeolocalizacion(final Context ctx, String respuesta, final String ficha_id, final int modulo){
+    private void SendGeolocalizacion(final Context ctx, String respuesta, final String fecha_dispositivo, final String ficha_id, final int modulo){
         SessionManager session = new SessionManager(ctx);
         DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -271,7 +277,7 @@ public class Servicios_Sincronizado {
             try {
 
                 JSONObject jsonRes = new JSONObject(respuesta);
-                Log.e("testRes", jsonRes.toString() + "fICHA: "+ficha_id);
+                Log.e("testRes", jsonRes.toString() + "Ficha: "+ficha_id);
 
                 final File image = new File(Constants.ROOT_PATH + "Fachada/"+jsonRes.getString(Constants.FACHADA));
 
@@ -280,7 +286,14 @@ public class Servicios_Sincronizado {
                 RequestBody lngBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.LONGITUD));
                 RequestBody direccionBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.DIRECCION));
                 RequestBody barcodeBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.CODEBARS));
-                RequestBody fechaBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaDispositivoBody = RequestBody.create(MultipartBody.FORM, fecha_dispositivo);
+                RequestBody fechaGestionIniBody;
+                if (jsonRes.has(Constants.FECHA_INI))
+                    fechaGestionIniBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA_INI));
+                else
+                    fechaGestionIniBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaGestionFinBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.FECHA));
+                RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha("timestamp"));
                 RequestBody comentarioBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.COMENTARIO));
                 RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, jsonRes.getString(Constants.TIPO));
                 MultipartBody.Part body = null;
@@ -298,13 +311,16 @@ public class Servicios_Sincronizado {
 
                 Call<ModeloResSaveGeo> call = api.guardarGeo("Bearer "+ session.getUser().get(7),
                                                                 ficha_idBody,
-                                                                fechaBody,
                                                                 latBody,
                                                                 lngBody,
                                                                 direccionBody,
                                                                 barcodeBody,
                                                                 comentarioBody,
                                                                 tipoBody,
+                                                                fechaDispositivoBody,
+                                                                fechaGestionIniBody,
+                                                                fechaGestionFinBody,
+                                                                fechaEnvioBody,
                                                                 body);
 
                 call.enqueue(new Callback<ModeloResSaveGeo>() {

@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp">
@@ -19,9 +20,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etNombre"
-            android:inputType="textCapWords"
+            android:id="@+id/etNombreCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -40,9 +42,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etApellidoPat"
-            android:inputType="textCapWords"
+            android:id="@+id/etApPaternoCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -61,9 +64,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etApellidoMat"
-            android:inputType="textCapWords"
+            android:id="@+id/etApMaternoCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -81,13 +85,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Spinner
-            android:id="@+id/spOcupacion"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+        <EditText
+            android:id="@+id/etOcupacionCony"
+            android:focusable="false"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Telefono celular  -->
@@ -103,8 +108,8 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCelular"
-            android:inputType="phone"
+            android:id="@+id/etCelularCony"
+            android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -112,9 +117,8 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -122,12 +126,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"/>
+    </RelativeLayout>
 
 </LinearLayout>

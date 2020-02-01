@@ -484,6 +484,7 @@ public class geo_negocio_fragment extends Fragment {
 
         jsonGeo.put(Constants.DIRECCION, metDireccionCap.getText().toString().trim());
         jsonGeo.put(Constants.CODEBARS, etCodigoBarras.getText().toString().trim());
+        jsonGeo.put(Constants.FECHA_INI, Miscellaneous.ObtenerFecha("timestamp"));
         try {
             jsonGeo.put(Constants.FACHADA, Miscellaneous.save(byteFotoFachada, 1));
         } catch (IOException e) {

@@ -19,7 +19,7 @@
 
         <EditText
             android:id="@+id/etTelCasa"
-            android:inputType="phone"
+            android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -41,7 +41,7 @@
 
         <EditText
             android:id="@+id/etTelCelular"
-            android:inputType="phone"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:maxLength="10"
             android:background="@drawable/et_rounded_edges"
@@ -63,7 +63,7 @@
 
         <EditText
             android:id="@+id/etTelMensajes"
-            android:inputType="phone"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:maxLength="10"
             android:background="@drawable/et_rounded_edges"

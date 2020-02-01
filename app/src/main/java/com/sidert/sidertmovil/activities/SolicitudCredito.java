@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -46,6 +48,8 @@ public class SolicitudCredito extends AppCompatActivity {
 
     FloatingActionButton fabGrupal;
     FloatingActionButton fabIndividual;
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
 
     //Animations
     Animation show_fab_ind;
@@ -100,6 +104,10 @@ public class SolicitudCredito extends AppCompatActivity {
         setContentView(R.layout.activity_solicitud_credito);
         ctx = getApplicationContext();
         context = this;
+
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
+
         //initComponents();
 
         fbAgregar = findViewById(R.id.fbAgregar);

@@ -29,4 +29,12 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
+    <style name="NumberPickerText18">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="NumberPickerText22">
+        <item name="android:textSize">22sp</item>
+    </style>
+
 </resources>

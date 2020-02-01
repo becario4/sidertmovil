@@ -181,6 +181,8 @@ public class Constants {
     public final static String PAGO_REQUERIDO               = "PagoRequerido";
     public final static String FIRMA_IMAGE                  = "FirmaImage";
 
+    public final static String FECHA_INI                    = "Fecha_Ini";
+
     public final static String CODEBARS                     = "code_bars";
 
     public final static String NUM_SOLICITUD                = "num_solicitud";
@@ -219,6 +221,31 @@ public class Constants {
     public final static int REQUEST_CODE_PREVIEW                   = 864;
     public final static int REQUEST_CODE_CODEBARS                  = 462;
     public final static int REQUEST_CODE_ADD_INTEGRANTE            = 764;
+    public final static int REQUEST_CODE_ESTADO_NAC                = 468;
+    public final static int REQUEST_CODE_OCUPACION_CLIE            = 346;
+    public final static int REQUEST_CODE_OCUPACION_CONY            = 673;
+    public final static int REQUEST_CODE_OCUPACION_NEG             = 412;
+    public final static int REQUEST_CODE_ESTADO_NAC_AVAL           = 348;
+    public final static int REQUEST_CODE_OCUPACION_AVAL            = 671;
+    public final static int REQUEST_CODE_ESTADO_AVAL               = 846;
+    public final static int REQUEST_CODE_COLONIA_CLIE              = 934;
+    public final static int REQUEST_CODE_COLONIA_AVAL              = 168;
+    public final static int REQUEST_CODE_COLONIA_NEG               = 336;
+    public final static int REQUEST_CODE_COLONIA_REF               = 794;
+    public final static int REQUEST_CODE_CAMARA_FACHADA_CLI        = 698;
+    public final static int REQUEST_CODE_CAMARA_FACHADA_NEG        = 598;
+    public final static int REQUEST_CODE_CAMARA_FACHADA_AVAL       = 994;
+    public final static int REQUEST_CODE_FIRMA_AVAL                = 863;
+    public final static int REQUEST_CODE_FIRMA_CLI                 = 862;
+    public final static int REQUEST_CODE_FIRMA_CRE                 = 861;
+
+    //=========================== PARÁMETROS FECHAS  ===============================================
+    public final static String DAY_CURRENT    = "day_current";
+    public final static String MONTH_CURRENT  = "month_current";
+    public final static String YEAR_CURRENT   = "year_current";
+    public final static String DATE_CURRENT   = "date_current";
+    public final static String FECHAS_POST    = "fechas_post";
+    public final static String IDENTIFIER     = "identifier";
 
     //===========================  ID JOB SCHEDULE  ================================================
     public final static int ID_JOB_LOGOUT                  = 324;
@@ -250,6 +277,7 @@ public class Constants {
     //public final static String IND_VE               = "individuals_ven";
     //public final static String GPO_VE               = "groups_ven"
     public final static String SINCRONIZADO         = "sincronizado";
+    public final static String SOLICITUDES_IND      = "solicitudes_ind";
     public final static String IND_T                = "individuals_t";
     public final static String GPO_T                = "groups_t";
     public final static String FICHAS_T             = "fichas_t";
@@ -258,11 +286,14 @@ public class Constants {
     //public final static String IND_VE_T             = "individuals_ven_t";
     //public final static String GPO_VE_T             = "groups_ven_t";
     public final static String SINCRONIZADO_T       = "sincronizado_t";
+    public final static String SOLICITUDES_IND_T    = "solicitudes_ind_t";
 
     public final static String STATUS_FICHAS       = "status_fichas";
     public final static String ESTADOS             = "estados";
     public final static String MUNICIPIOS          = "municipios";
     public final static String COLONIAS            = "colonias";
+    public final static String OCUPACIONES         = "ocupaciones";
+    public final static String SECTORES            = "sectores";
 
     //====================   TAGS  PARA  JSON  DE  RESPUESTA  DE  GESTION  =========================
     public final static String LATITUD                  = "Latitud";
@@ -295,6 +326,12 @@ public class Constants {
     public final static String TERMINADO                = "Terminado";
     public final static String EDITABLE                 = "Editable";
     public final static String TIPO                     = "Tipo";
+
+    public final static String TITULO                   = "titulo";
+    public final static String CATALOGO                 = "catalogo";
+    public final static String ITEM                     = "item";
+    public final static String REQUEST_CODE             = "request_code";
+    public final static String EXTRA                    = "extra";
 
 
 

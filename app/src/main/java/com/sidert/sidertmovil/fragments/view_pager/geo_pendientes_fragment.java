@@ -234,6 +234,7 @@ public class geo_pendientes_fragment extends Fragment {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "0");
+                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
                                     if (Constants.ENVIROMENT)
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
@@ -273,6 +274,7 @@ public class geo_pendientes_fragment extends Fragment {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "0");
+                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
                                     if (Constants.ENVIROMENT)
                                         dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
                                     else
