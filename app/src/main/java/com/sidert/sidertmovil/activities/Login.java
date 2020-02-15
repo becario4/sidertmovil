@@ -164,7 +164,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void doLoginAsesorT(){
-        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiVkFMREVTIiwicGF0ZXJubyI6IkZJUkFTIiwidXNlcl9uYW1lIjoiQVVESVRPUjUzNSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdLCJzZXJpZWlkIjoiNTM1IiwiaWQiOjExNiwiZXhwIjoxNTgwNTg1NzIyLCJub21icmUiOiJMVUlTIFJPRE9MRk8iLCJhdXRob3JpdGllcyI6WyJST0xFX0dFUkVOVEVTVUNVUlNBTCIsIlJPTEVfQVVESVRPUklBIl0sImp0aSI6ImNmZjViMGFjLTRlZDgtNDFkNy1iMTlkLTU1ZDk4YTQwMmUxMyIsImVtYWlsIjoiYXVkaXRvcjUzNUBzaWRlcnQuY29tLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.YBb_DQw-xoeWbXpAo4LSFBFq9E3BGGC2RuWgQTpAEnqThJl54IUWek8F5PDOKqBb9CUXzvpmym88--RqcGHQ2sTLVADRagths8xDwvNQBOJzjluVt9TcW_MCJcdfcpvhzDsCYW1cnvKizGTWgJHy7PRZJ9A26DQmkpeTCrPYURXSpBmbntS2_Xeh_A0aT226SJhFUEXCu_g7psAWIrbLLfuDigBYRt1dbaZ9kTXOclMu_uLDTx1VDvdV3hFVDi17-hfQJhGgJ7BU6XWk1YgtI2mvhg4urVn2MXsnU44i5WxX7T5f0fpvAICerbbDNqS5VXf_llYjn_OyncXf_ebDUg");
+        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiIiwicGF0ZXJubyI6IkxPUEVaIiwidXNlcl9uYW1lIjoiUFJPR1JBTUFET1JBTkQiLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXSwic2VyaWVpZCI6IjU4NCIsImlkIjoxMTksImV4cCI6MTU4MTc4MDQ4Nywibm9tYnJlIjoiQUxFSkFORFJPIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9TVVBFUiJdLCJqdGkiOiIyN2VkNzE2MS01ZDI1LTQ2ZmQtYWNiNi1hM2RjNWQzNTVjMWIiLCJlbWFpbCI6InByb2dyYW1hZG9yMkBydWZpLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.dKgxCXq-t7K1FuwcSxtkG7U4LUCWgwxXdZe67T5vPYqonQYviVZ2bFA-NpV1MvuSgAXHZhxAXc4fGwkhz-IyhdY49kvzzilfzFHuRHbXLiNowTIxdUmFFYMxNPMN5XMIpauQt4eC--6eEmdkDYL1cxB35RA9Q_p6kSRkc0U8_UWVh1_K-9UOYwliJLbIlpSUMkps82wmUydp8rATd_OanwHbUx3uiOHBzBhXVOi2b8It9mIH_gBSAKeiEySIqSAMFoaimWacYw8vVPUrtNH5Z4CspLCYDc63qDEQYTiR1egtv0Ofxu-irpCEIGfsTOTPFGXrb-G_M7YAXdvkmCmlHQ");
 
         if (NetworkStatus.haveNetworkConnection(ctx)){
             final Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
@@ -198,7 +198,10 @@ public class Login extends AppCompatActivity {
                 }
             }).start();
         }
-
+        if(isExternalStorageWritable()){
+            String nameDir = "Files";
+            crearDirectorioPrivado(ctx, nameDir);
+        }
         Intent home = new Intent(context, Home.class);
         startActivity(home);
         finish();

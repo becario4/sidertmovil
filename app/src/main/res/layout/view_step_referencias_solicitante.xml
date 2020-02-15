@@ -130,22 +130,15 @@
             android:text="Colonia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etColoniaRef"
-            android:focusable="false"
-            android:inputType="textCapCharacters"
+        <TextView
+            android:id="@+id/tvColoniaRef"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
-        <!--<Spinner
-            android:id="@+id/spColonia"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />-->
     </LinearLayout>
 
     <!-- Municipio -->
@@ -165,21 +158,15 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etMunicipioRef"
-            android:focusable="false"
-            android:inputType="textCapCharacters"
+        <TextView
+            android:id="@+id/tvMunicipioRef"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
-        <!--<Spinner
-            android:id="@+id/spMunicipio"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />-->
     </LinearLayout>
 
     <!--  Telefono casa/celular  -->

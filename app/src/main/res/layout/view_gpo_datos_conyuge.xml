@@ -18,9 +18,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etNombre"
-            android:inputType="textCapWords"
+            android:id="@+id/etNombreCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -39,9 +40,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etApellidoPat"
-            android:inputType="textCapWords"
+            android:id="@+id/etApPaternoCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -60,9 +62,10 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etApellidoMat"
-            android:inputType="textCapWords"
+            android:id="@+id/etApMaternoCony"
+            android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
+            android:maxLength="45"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -79,14 +82,17 @@
             android:text="Ocupación"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <Spinner
-            android:id="@+id/spOcupacion"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+        <TextView
+            android:id="@+id/tvOcupacionCony"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:padding="5dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Telefono celular  -->
@@ -102,8 +108,8 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCelular"
-            android:inputType="phone"
+            android:id="@+id/etCelularCony"
+            android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
@@ -124,19 +130,17 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etIngresos"
-            android:inputType="phone"
-            android:maxLength="10"
-            android:paddingLeft="10dp"
+            android:id="@+id/etIngresosCony"
+            android:inputType="number"
             android:drawableStart="@drawable/ic_money"
+            android:maxLength="6"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -144,12 +148,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"/>
+    </RelativeLayout>
 
 </LinearLayout>

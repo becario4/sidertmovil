@@ -28,7 +28,7 @@
             android:entries="@array/intervalo"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/et_rounded_left"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="@dimen/et_height"/>
@@ -37,7 +37,7 @@
             android:entries="@array/lapso"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/et_rounded_right"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="@dimen/et_height"/>
@@ -55,9 +55,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/etFechaDesembolso"
-            android:focusable="false"
+        <TextView
+            android:id="@+id/tvFechaDesembolso"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -75,12 +77,13 @@
             android:text="Día de Desembolso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etDiaDesembolso"
-            android:enabled="false"
+        <TextView
+            android:id="@+id/tvDiaDesembolso"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
@@ -96,10 +99,11 @@
             android:text="Hora de Visita"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etHoraVisita"
-            android:focusable="false"
+        <TextView
+            android:id="@+id/tvHoraVisita"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -121,7 +125,7 @@
         <EditText
             android:id="@+id/etMontoPrestamo"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="5"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -139,18 +143,15 @@
             android:text="Monto en Letra"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <MultiAutoCompleteTextView
-            android:id="@+id/etCantidadLetra"
-            android:inputType="textMultiLine|textCapSentences"
-            android:ems="10"
-            android:textSize="15sp"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:enabled="false"
+        <TextView
+            android:id="@+id/tvCantidadLetra"
+            android:textSize="17sp"
             android:padding="5dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
+            android:paddingRight="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -192,6 +193,7 @@
 
     <!-- Firma Aval-->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"

@@ -14,12 +14,13 @@
         android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/TBmain"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Solicitud Crédito Individual"
+                app:title="Agregar integrante"
                 app:titleTextColor="@color/white"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -49,101 +50,305 @@
                 android:animateLayoutChanges="true">
 
                 <!--  Datos Personales  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_0"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    app:step_index="0"
-                    app:step_title="Datos Personales"
-                    app:step_state="selected">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llPersonales"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_datos_personales"/>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos Personales"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown1"
+                            android:visibility="gone"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp1"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosPersonales"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_personales"/>
+                    </LinearLayout>
 
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                </LinearLayout>
 
                 <!--  Datos Telefonicos  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_1"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:step_index="1"
-                    app:step_title="Datos Telefónicos">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llTelefonicos"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_datos_telefonicos"/>
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos Telefónicos"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown2"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp2"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosTelefonicos"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_telefonicos"/>
+                    </LinearLayout>
+
+                </LinearLayout>
 
                 <!--  Datos Domicilio  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_2"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:step_index="2"
-                    app:step_title="Datos del Domicilio">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llDomicilio"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_datos_domicilio"/>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Domicilio"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown3"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp3"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosDomicilio"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_domicilio"/>
+                    </LinearLayout>
 
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                </LinearLayout>
 
                 <!--  Datos Negocio  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_3"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:step_index="3"
-                    app:step_title="Datos del Negocio/ Act. Económica">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llNegocio"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_datos_negocio"/>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Negocio"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown4"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp4"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosNegocio"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_negocio"/>
+                    </LinearLayout>
 
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                </LinearLayout>
 
                 <!--  Datos Conyuge  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_4"
+                <LinearLayout
+                    android:id="@+id/llConyuge"
+                    android:visibility="gone"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:step_index="4"
-                    app:step_title="Datos del Conyuge">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_datos_conyuge"/>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Conyuge"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown5"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp5"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosConyuge"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_conyuge"/>
+                    </LinearLayout>
 
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                </LinearLayout>
 
                 <!--  Otros Datos  -->
-                <moe.feng.common.stepperview.VerticalStepperItemView
-                    android:id="@+id/stepper_5"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:step_index="5"
-                    app:step_title="Otros Datos"
-                    app:step_is_last="true">
-
-                    <include
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llOtros"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        layout="@layout/view_gpo_otros_datos"/>
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Otros Datos"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown6"
 
-                </moe.feng.common.stepperview.VerticalStepperItemView>
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp6"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llOtrosDatos"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_otros_datos"/>
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 

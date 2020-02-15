@@ -11,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.telecom.ConnectionService;
 import android.util.Base64;
 import android.util.Log;
@@ -35,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
@@ -264,6 +267,43 @@ public class Miscellaneous {
         }
 
         return name;
+    }
+
+    /* Convertir de URI a byte[] */
+    public static byte[] getBytesUri (Context ctx, Uri uri_img, int tipo_imagen){
+        byte[] compressedByteArray = null;
+
+        switch (tipo_imagen){
+            case 0:
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver() , uri_img);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                    compressedByteArray = stream.toByteArray();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 1:
+                try {
+                    InputStream iStream =   ctx.getContentResolver().openInputStream(uri_img);
+                    ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+                    int bufferSize = 1024;
+                    byte[] buffer = new byte[bufferSize];
+
+                    int len = 0;
+                    while ((len = iStream.read(buffer)) != -1) {
+                        byteBuffer.write(buffer, 0, len);
+                    }
+                    compressedByteArray = byteBuffer.toByteArray();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+        return compressedByteArray;
     }
 
     /* Genera la cantidad en letra  */
@@ -683,7 +723,7 @@ public class Miscellaneous {
                         if (!fichas.getString(14).trim().isEmpty()){
                             ContentValues valores = new ContentValues();
                             valores.put("res_dos",fichas.getString(14));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
+                            db.update(Constants.GEOLOCALIZACION, valores, "_id = "+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
                         }
 
                         if (!fichas.getString(15).trim().isEmpty()){
@@ -881,7 +921,7 @@ public class Miscellaneous {
 
     /* Para saber si es vocal */
     public static boolean esVocal(Character texto){
-        if (texto == 'a' || texto == 'e' || texto == 'i' || texto == 'o' || texto == 'u'
+        if (texto == 'a' || texto == 'e'|| texto == 'i' || texto == 'o' || texto == 'u'
                 || texto == 'A' || texto == 'E' || texto == 'I' || texto == 'O' || texto == 'U'
                 || texto == 'Á' || texto == 'É' || texto == 'Í' || texto == 'Ó' || texto == 'Ú'
                 || texto == 'á' || texto == 'é' || texto == 'í' || texto == 'ó' || texto == 'ú'
@@ -1145,11 +1185,11 @@ public class Miscellaneous {
             listaResultadoTexto = listaResultadoTexto.replaceAll("Ñ","X");
             listaResultadoTexto = listaResultadoTexto.replaceAll("\\-","X");
             listaResultadoTexto = listaResultadoTexto.replaceAll("\\.", "X");
-            listaResultadoTexto = listaResultadoTexto.replace('Ä','A')
-                    .replace('Ë','E')
-                    .replace('Ï','I')
-                    .replace('Ö','O')
-                    .replace('Ü','U');
+            listaResultadoTexto = listaResultadoTexto.replace("Ä","A")
+                    .replace("Ë","E")
+                    .replace("Ï","I")
+                    .replace("Ö","O")
+                    .replace("Ü","U");
             listaResultadoTexto = listaResultadoTexto.replaceAll(" ","");
 
             resultado = listaResultadoTexto;
@@ -1159,5 +1199,567 @@ public class Miscellaneous {
             resultado = "Curp no válida";
 
         return resultado;
+    }
+
+    public static Integer GetPlazo (String plazo){
+        int no_plazo = 0;
+        switch (plazo){
+            case "4 MESES":
+                no_plazo = 4;
+                break;
+            case "5 MESES":
+                no_plazo = 5;
+                break;
+            case "6 MESES":
+                no_plazo = 6;
+                break;
+        }
+        return no_plazo;
+    }
+
+    public static Integer GetPeriodicidad (String periodo){
+        int periodicidad = 0;
+        switch (periodo){
+            case "SEMANAL":
+                periodicidad = 7;
+                break;
+            case "CATORCENAL":
+                periodicidad = 14;
+                break;
+            case "QUINCENAL":
+                periodicidad = 15;
+                break;
+        }
+        return periodicidad;
+    }
+
+    public static boolean CurpValidador(String curp){
+        String diccionario = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+        String curp17 = curp.substring(0,17);
+        double lngSuma = 0.0;
+        double lngDigito = 0.0;
+        for (int i = 0; i < 17; i++){
+            lngSuma = lngSuma + diccionario.indexOf(curp17.charAt(i)) * (18 - i);
+        }
+        lngDigito = 10 - lngSuma % 10;
+        if (lngDigito == 10) lngDigito = 0;
+
+        if (lngDigito == Integer.parseInt(curp.substring(17,18)))
+            return true;
+        else
+            return false;
+    }
+    
+    public static String GenerarRFC (String rfc, String nombre, String ap_paterno, String ap_materno){
+        String nombre_completo = ap_paterno.trim() + " " + ap_materno.trim() + " " + nombre.trim();
+        Log.e("nombre", nombre_completo);
+        String numero = "0";
+        String letra;
+        String numero1 = null;
+        String numero2 = null;
+        int numeroSuma = 0;
+        //alert(nombre_completo);
+        //alert(nombre_completo.length);
+        for (int i = 0; i < nombre_completo.length(); i++) {
+            Log.e("letra",String.valueOf(nombre_completo.charAt(i)));
+            letra = String.valueOf(nombre_completo.charAt(i)).toLowerCase();
+            switch (letra) {
+                case "ñ":
+                    numero = numero + "10";
+                    break;
+                case "ü":
+                    numero = numero + "10";
+                    break;
+                case "a":
+                    numero = numero + "11";
+                    break;
+                case "b":
+                    numero = numero + "12";
+                    break;
+                case "c":
+                    numero = numero + "13";
+                    break;
+                case "d":
+                    numero = numero + "14";
+                    break;
+                case "e":
+                    numero = numero + "15";
+                    break;
+                case "f":
+                    numero = numero + "16";
+                    break;
+                case "g":
+                    numero = numero + "17";
+                    break;
+                case "h":
+                    numero = numero + "18";
+                    break;
+                case "i":
+                    numero = numero + "19";
+                    break;
+                case "j":
+                    numero = numero + "21";
+                    break;
+                case "k":
+                    numero = numero + "22";
+                    break;
+                case "l":
+                    numero = numero + "23";
+                    break;
+                case "m":
+                    numero = numero + "24";
+                    break;
+                case "n":
+                    numero = numero + "25";
+                    break;
+                case "o":
+                    numero = numero + "26";
+                    break;
+                case "p":
+                    numero = numero + "27";
+                    break;
+                case "q":
+                    numero = numero + "28";
+                    break;
+                case "r":
+                    numero = numero + "29";
+                    break;
+                case "s":
+                    numero = numero + "32";
+                    break;
+                case "t":
+                    numero = numero + "33";
+                    break;
+                case "u":
+                    numero = numero + "34";
+                    break;
+                case "v":
+                    numero = numero + "35";
+                    break;
+                case "w":
+                    numero = numero + "36";
+                    break;
+                case "x":
+                    numero = numero + "37";
+                    break;
+                case "y":
+                    numero = numero + "38";
+                    break;
+                case "z":
+                    numero = numero + "39";
+                    break;
+                case " ":
+                    numero = numero + "00";
+                    break;
+            }
+        }
+        Log.e("xxxxx", numero);
+        //alert(numero);
+        for (int i = 0; i < numero.length() + 1; i++) {
+            //Log.e("iteraciones", ""+(i+1));
+            try{
+                numero1 = numero.substring(i, i+2);
+            }
+            catch (Exception e){
+                numero1 = "0";
+            }
+
+            try{
+                numero2 = numero.substring(i + 1, i+2);
+            }
+            catch (Exception e){
+                numero2 = "0";
+            }
+            try{
+                numeroSuma = numeroSuma + (Integer.parseInt(numero1) * Integer.parseInt(numero2));
+            }
+            catch (Exception e){}
+        }
+        Log.e("Suma: ", "Suma: "+numeroSuma);
+        //alert(numeroSuma);
+        double numero3 = numeroSuma % 1000;
+        //alert(numero3);
+        Log.e("numero3", String.valueOf(numero3));
+        double numero4 = numero3 / 34;
+        Log.e("numero4", String.valueOf(numero4));
+        String numero5 = String.valueOf(numero4).replace(".",",").split(",")[0];
+        Log.e("Numero 5", numero5);
+        //alert(numero5);
+        double numero6 = numero3 % 34;
+        Log.e("Numero 6", numero6+"");
+        String homonimio = "";
+        switch (numero5) {
+            case "0":
+                homonimio = "1";
+                break;
+            case "1":
+                homonimio = "2";
+                break;
+            case "2":
+                homonimio = "3";
+                break;
+            case "3":
+                homonimio = "4";
+                break;
+            case "4":
+                homonimio = "5";
+                break;
+            case "5":
+                homonimio = "6";
+                break;
+            case "6":
+                homonimio = "7";
+                break;
+            case "7":
+                homonimio = "8";
+                break;
+            case "8":
+                homonimio = "9";
+                break;
+            case "9":
+                homonimio = "A";
+                break;
+            case "10":
+                homonimio = "B";
+                break;
+            case "11":
+                homonimio = "C";
+                break;
+            case "12":
+                homonimio = "D";
+                break;
+            case "13":
+                homonimio = "E";
+                break;
+            case "14":
+                homonimio = "F";
+                break;
+            case "15":
+                homonimio = "G";
+                break;
+            case "16":
+                homonimio = "H";
+                break;
+            case "17":
+                homonimio = "I";
+                break;
+            case "18":
+                homonimio = "J";
+                break;
+            case "19":
+                homonimio = "K";
+                break;
+            case "20":
+                homonimio = "L";
+                break;
+            case "21":
+                homonimio = "M";
+                break;
+            case "22":
+                homonimio = "N";
+                break;
+            case "23":
+                homonimio = "P";
+                break;
+            case "24":
+                homonimio = "Q";
+                break;
+            case "25":
+                homonimio = "R";
+                break;
+            case "26":
+                homonimio = "S";
+                break;
+            case "27":
+                homonimio = "T";
+                break;
+            case "28":
+                homonimio = "U";
+                break;
+            case "29":
+                homonimio = "V";
+                break;
+            case "30":
+                homonimio = "W";
+                break;
+            case "31":
+                homonimio = "X";
+                break;
+            case "32":
+                homonimio = "Y";
+                break;
+            case "33":
+                homonimio = "Z";
+                break;
+
+        }
+
+        switch ((int)numero6) {
+            case 0:
+                homonimio = homonimio + "1";
+                break;
+            case 1:
+                homonimio = homonimio + "2";
+                break;
+            case 2:
+                homonimio = homonimio + "3";
+                break;
+            case 3:
+                homonimio = homonimio + "4";
+                break;
+            case 4:
+                homonimio = homonimio + "5";
+                break;
+            case 5:
+                homonimio = homonimio + "6";
+                break;
+            case 6:
+                homonimio = homonimio + "7";
+                break;
+            case 7:
+                homonimio = homonimio + "8";
+                break;
+            case 8:
+                homonimio = homonimio + "9";
+                break;
+            case 9:
+                homonimio = homonimio + "A";
+                break;
+            case 10:
+                homonimio = homonimio + "B";
+                break;
+            case 11:
+                homonimio = homonimio + "C";
+                break;
+            case 12:
+                homonimio = homonimio + "D";
+                break;
+            case 13:
+                homonimio = homonimio + "E";
+                break;
+            case 14:
+                homonimio = homonimio + "F";
+                break;
+            case 15:
+                homonimio = homonimio + "G";
+                break;
+            case 16:
+                homonimio = homonimio + "H";
+                break;
+            case 17:
+                homonimio = homonimio + "I";
+                break;
+            case 18:
+                homonimio = homonimio + "J";
+                break;
+            case 19:
+                homonimio = homonimio + "K";
+                break;
+            case 20:
+                homonimio = homonimio + "L";
+                break;
+            case 21:
+                homonimio = homonimio + "M";
+                break;
+            case 22:
+                homonimio = homonimio + "N";
+                break;
+            case 23:
+                homonimio = homonimio + "P";
+                break;
+            case 24:
+                homonimio = homonimio + "Q";
+                break;
+            case 25:
+                homonimio = homonimio + "R";
+                break;
+            case 26:
+                homonimio = homonimio + "S";
+                break;
+            case 27:
+                homonimio = homonimio + "T";
+                break;
+            case 28:
+                homonimio = homonimio + "U";
+                break;
+            case 29:
+                homonimio = homonimio + "V";
+                break;
+            case 30:
+                homonimio = homonimio + "W";
+                break;
+            case 31:
+                homonimio = homonimio + "X";
+                break;
+            case 32:
+                homonimio = homonimio + "Y";
+                break;
+            case 33:
+                homonimio = homonimio + "Z";
+                break;
+
+        }
+        //console.log("homonimio: " + homonimio);
+        return rfc+homonimio+RFCDigitoVerificador(rfc+homonimio);
+    }
+
+    public static String RFCDigitoVerificador(String rfc) {
+        ArrayList<String> rfcsuma = new ArrayList<>();
+        int nv = 0;
+        int y = 0;
+        for (int i = 0; i < rfc.length(); i++) {
+            String letra = rfc.substring(i, i+1);
+            Log.e("Letra: ", letra);
+            switch (letra) {
+                case "0":
+                    rfcsuma.add("00");
+                    break;
+                case "1":
+                    rfcsuma.add("01");
+                    break;
+                case "2":
+                    rfcsuma.add("02");
+                    break;
+                case "3":
+                    rfcsuma.add("03");
+                    break;
+                case "4":
+                    rfcsuma.add("04");
+                    break;
+                case "5":
+                    rfcsuma.add("05");
+                    break;
+                case "6":
+                    rfcsuma.add("06");
+                    break;
+                case "7":
+                    rfcsuma.add("07");
+                    break;
+                case "8":
+                    rfcsuma.add("08");
+                    break;
+                case "9":
+                    rfcsuma.add("09");
+                    break;
+                case "A":
+                    rfcsuma.add("10");
+                    break;
+                case "B":
+                    rfcsuma.add("11");
+                    break;
+                case "C":
+                    rfcsuma.add("12");
+                    break;
+                case "D":
+                    rfcsuma.add("13");
+                    break;
+                case "E":
+                    rfcsuma.add("14");
+                    break;
+                case "F":
+                    rfcsuma.add("15");
+                    break;
+                case "G":
+                    rfcsuma.add("16");
+                    break;
+                case "H":
+                    rfcsuma.add("17");
+                    break;
+                case "I":
+                    rfcsuma.add("18");
+                    break;
+                case "J":
+                    rfcsuma.add("19");
+                    break;
+                case "K":
+                    rfcsuma.add("20");
+                    break;
+                case "L":
+                    rfcsuma.add("21");
+                    break;
+                case "M":
+                    rfcsuma.add("22");
+                    break;
+                case "N":
+                    rfcsuma.add("23");
+                    break;
+                case "&":
+                    rfcsuma.add("24");
+                    break;
+                case "O":
+                    rfcsuma.add("25");
+                    break;
+                case "P":
+                    rfcsuma.add("26");
+                    break;
+                case "Q":
+                    rfcsuma.add("27");
+                    break;
+                case "R":
+                    rfcsuma.add("28");
+                    break;
+                case "S":
+                    rfcsuma.add("29");
+                    break;
+                case "T":
+                    rfcsuma.add("30");
+                    break;
+                case "U":
+                    rfcsuma.add("31");
+                    break;
+                case "V":
+                    rfcsuma.add("32");
+                    break;
+                case "W":
+                    rfcsuma.add("33");
+                    break;
+                case "X":
+                    rfcsuma.add("34");
+                    break;
+                case "Y":
+                    rfcsuma.add("35");
+                    break;
+                case "Z":
+                    rfcsuma.add("36");
+                    break;
+                case " ":
+                    rfcsuma.add("37");
+                    break;
+                case "Ñ":
+                    rfcsuma.add("38");
+                    break;
+                default:
+                    rfcsuma.add("00");
+            }
+        }
+
+        for (int i = 13; i > 1; i--) {
+            nv = nv + ((Integer.parseInt(rfcsuma.get(y))) * i);
+            y++;
+        }
+        nv = nv % 11;
+        String id_verificador = "";
+
+        Log.e("NV: ", String.valueOf(nv));
+        //alert(nv);
+        if (nv == 0) {
+            id_verificador = String.valueOf(nv);
+            rfc = rfc + nv;
+        } else if (nv <= 10) {
+            nv = 11 - nv;
+            if (nv == 10) {
+                id_verificador = "A";
+            }else
+                id_verificador = String.valueOf(nv);
+            rfc = rfc + nv;
+        } else if (nv == 10) {
+            nv = 'A';
+            id_verificador = "A";
+            rfc = rfc + nv;
+        }
+
+        Log.e("digito_verificiador", id_verificador);
+        
+        return id_verificador;
     }
 }

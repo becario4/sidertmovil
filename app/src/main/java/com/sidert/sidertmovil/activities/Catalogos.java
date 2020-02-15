@@ -117,6 +117,21 @@ public class Catalogos extends AppCompatActivity {
                     }
                 }
                 break;
+            case Constants.SECTORES:
+                row = dBhelper.getRecords(Constants.SECTORES,value," ORDER BY sector_nombre ASC", null);
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+                    for (int i = 0; i < row.getCount(); i++){
+                        ModeloCatalogoGral mCatalogoGral = new ModeloCatalogoGral();
+                        mCatalogoGral.setId(row.getString(1));
+                        mCatalogoGral.setNombre(row.getString(2));
+                        mCatalogoGral.setExtra("");
+                        mCatalogoGral.setCatalogo(Constants.SECTORES);
+                        catalogo.add(mCatalogoGral);
+                        row.moveToNext();
+                    }
+                }
+                break;
         }
 
         adapter = new adapter_catalogos(ctx, catalogo, new adapter_catalogos.Event() {
@@ -135,6 +150,11 @@ public class Catalogos extends AppCompatActivity {
                         finish();
                         break;
                     case Constants.COLONIAS:
+                        data.putExtra(Constants.ITEM, item);
+                        setResult(request_code, data);
+                        finish();
+                        break;
+                    case Constants.SECTORES:
                         data.putExtra(Constants.ITEM, item);
                         setResult(request_code, data);
                         finish();
@@ -176,6 +196,9 @@ public class Catalogos extends AppCompatActivity {
                         break;
                     case Constants.COLONIAS:
                         getCatalogo(" WHERE colonia_nombre like '%"+newText+"%' AND cp = '"+extra+"'");
+                        break;
+                    case Constants.SECTORES:
+                        getCatalogo(" WHERE sector_nombre like '%"+newText+"%'");
                         break;
                 }
 

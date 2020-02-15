@@ -259,6 +259,9 @@
     <string name="no_ubicacion">No se logró obtener tu ubicación, intente de nuevo.</string>
     <string name="error_login">Usuario y/o contraseña incorrecta, intente de nuevo.</string>
     <string name="confirm_guardar">¿Desea salir del formulario?, perderá los datos capturados</string>
+    <string name="datos_correctos">¿Los datos son los correctos?</string>
+    <string name="borrar_solicitud">¿Desea borrar la solicitud?</string>
+    <string name="confirm_borrar_solicitud">¿Está completamente seguro que desea borrar la solicitud?</string>
     <string name="guardando_info">Guardando informción, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
     <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
@@ -366,11 +369,26 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>PERIFONEO</item>             <!--8-->
     </string-array>
 
+    <string-array name="tipo_casa_cli">
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>CASA PROPIA</item>           <!--1-->
+        <item>CASA RENTADA</item>          <!--2-->
+        <item>CASA FAMILIAR</item>         <!--3-->
+        <item>OTRO</item>                  <!--4-->
+    </string-array>
+
+    <string-array name="tipo_casa_aval">
+        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
+        <item>CASA PROPIA</item>           <!--1-->
+        <item>CASA FAMILIAR</item>         <!--2-->
+    </string-array>
+
     <string-array name="tipo_casa">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
-        <item>CASA</item>                  <!--1-->
-        <item>RENTA</item>                 <!--2-->
-        <item>OTRO</item>                  <!--3-->
+        <item>CASA PROPIA</item>           <!--1-->
+        <item>CASA RENTADA</item>          <!--2-->
+        <item>CASA FAMILIAR</item>         <!--3-->
+        <item>OTRO</item>                  <!--4-->
     </string-array>
 
     <string-array name="destino_prestamo">
@@ -428,13 +446,40 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SUEGRA(O)</item>             <!--12-->
     </string-array>
 
+    <string-array name="casa_familiar">
+        <item>SELECCIONE UNA OPCION</item> <!--0-->
+        <item>PRIMA(O)</item>              <!--1-->
+        <item>TÍA(O)</item>                <!--2-->
+        <item>ABUELA(O)</item>             <!--3-->
+        <item>SOBRINA(O)</item>            <!--4-->
+        <item>AMISTAD</item>               <!--5-->
+        <item>VECINA(O)</item>             <!--6-->
+        <item>CUÑADA(O)</item>             <!--7-->
+        <item>NUERA</item>                 <!--8-->
+        <item>YERNO</item>                 <!--9-->
+        <item>SUEGRA(O)</item>             <!--10-->
+        <item>OTRO</item>                  <!--11-->
+    </string-array>
+
+    <string-array name="casa_familiar_aval">
+        <item>SELECCIONE UNA OPCION</item> <!--0-->
+        <item>PRIMA(O)</item>              <!--1-->
+        <item>TÍA(O)</item>                <!--2-->
+        <item>ABUELA(O)</item>             <!--3-->
+        <item>SOBRINA(O)</item>            <!--4-->
+        <item>AMISTAD</item>               <!--5-->
+        <item>VECINA(O)</item>             <!--6-->
+        <item>CUÑADA(O)</item>             <!--7-->
+        <item>NUERA</item>                 <!--8-->
+        <item>YERNO</item>                 <!--9-->
+        <item>SUEGRA(O)</item>             <!--10-->
+    </string-array>
+
     <string-array name="intervalo">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>4 MESES</item>               <!--1-->
         <item>5 MESES</item>               <!--2-->
         <item>6 MESES</item>               <!--3-->
-        <item>9 MESES</item>               <!--4-->
-        <item>12 MESES</item>              <!--5-->
     </string-array>
 
     <string-array name="lapso">
@@ -442,16 +487,16 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SEMANAL</item>               <!--1-->
         <item>CATORCENAL</item>            <!--2-->
         <item>QUINCENAL</item>             <!--3-->
-        <item>MENSUAL</item>               <!--4-->
     </string-array>
 
     <string-array name="dependientes_eco">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
-        <item>1</item>                     <!--1-->
-        <item>2</item>                     <!--2-->
-        <item>3</item>                     <!--3-->
-        <item>4</item>                     <!--4-->
-        <item>5</item>                     <!--5-->
+        <item>0</item>                     <!--1-->
+        <item>1</item>                     <!--2-->
+        <item>2</item>                     <!--3-->
+        <item>3</item>                     <!--4-->
+        <item>4</item>                     <!--5-->
+        <item>5</item>                     <!--6-->
     </string-array>
 
     <string-array name="puesto">

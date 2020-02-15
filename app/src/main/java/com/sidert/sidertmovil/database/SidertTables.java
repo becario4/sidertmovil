@@ -335,6 +335,193 @@ public class SidertTables {
                 + SidertEntry.SERIE_ID          + " TEXT,"
                 + SidertEntry.TIMESTAMP         + " TEXT)";
 
+        static final String CREATE_TABLE_SOLICITUDES_T = "CREATE TABLE solicitudes_t ( " +
+                "id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "serie_id TEXT, " +
+                "tipo_solicitud INTEGER," +
+                "estatus INTEGER, " +
+                "id_originacion INTEGER, " +
+                "nombre TEXT, " +
+                "paterno TEXT, " +
+                "materno TEXT, " +
+                "fecha_inicio TEXT, " +
+                "fecha_termino TEXT, " +
+                "fecha_envio TEXT, " +
+                "fecha_dispositivo TEXT, " +
+                "fecha_guardado TEXT)";
+
+        static final String CREATE_TABLE_DATOS_CREDITO_IND_T = "CREATE TABLE datos_credito_ind_t (" +
+                "id_credito INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "plazo INTEGER," +
+                "periodicidad INTEGER," +
+                "fecha_desembolso TEXT," +
+                "dia_desembolso TEXT," +
+                "hora_visita TEXT," +
+                "monto_prestamo TEXT," +
+                "destino INTEGER," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TABLE_CLIENTE_IND_T = "CREATE TABLE datos_cliente_ind_t (" +
+                "id_cliente INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "fecha_nacimiento TEXT," +
+                "edad TEXT," +
+                "genero INTEGER," +
+                "estado_nacimiento TEXT," +
+                "rfc TEXT," +
+                "homoclave TEXT," +
+                "curp TEXT," +
+                "curp_digito_veri TEXT," +
+                "ocupacion TEXT," +
+                "actividad_economica TEXT," +
+                "tipo_identificacion INTEGER," +
+                "no_identificacion TEXT," +
+                "nivel_estudio INTEGER," +
+                "estado_civil INTEGER," +
+                "bienes INTEGER," +
+                "tipo_vivienda INTEGER," +
+                "parentesco INTEGER," +
+                "otro_tipo_vivienda TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "tel_casa TEXT," +
+                "tel_celular TEXT," +
+                "tel_mensajes TEXT," +
+                "tel_trabajo TEXT," +
+                "tiempo_vivir_sitio INTEGER," +
+                "dependientes INTEGER," +
+                "medio_contacto INTEGER," +
+                "email TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "firma TEXT," +
+                "estatus_rechazo INTEGER," +
+                "comentario_rechazo TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TABLE_CONYUGE_IND_T = "CREATE TABLE datos_conyuge_ind_t (" +
+                "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "ocupacion TEXT," +
+                "tel_celular TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TABLE_ECONOMICOS_IND_T = "CREATE TABLE datos_economicos_ind_t (" +
+                "id_economico INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "propiedades TEXT," +
+                "valor_aproximado TEXT," +
+                "ubicacion TEXT," +
+                "ingreso TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TABLE_NEGOCIO_IND_T = "CREATE TABLE datos_negocio_ind_t (" +
+                "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "actividad_economica TEXT," +
+                "antiguedad INTEGER," +
+                "ing_mensual TEXT," +
+                "ing_otros TEXT," +
+                "gasto_semanal TEXT," +
+                "gasto_agua TEXT," +
+                "gasto_luz TEXT," +
+                "gasto_telefono TEXT," +
+                "gasto_renta TEXT," +
+                "gasto_otros TEXT," +
+                "capacidad_pago TEXT," +
+                "dias_venta TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TABLE_AVAL_IND_T = "CREATE TABLE datos_aval_ind_t (" +
+                "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "fecha_nacimiento TEXT," +
+                "edad TEXT," +
+                "genero INTEGER," +
+                "estado_nacimiento TEXT," +
+                "rfc TEXT," +
+                "homoclave TEXT," +
+                "curp TEXT," +
+                "curp_digito_veri TEXT," +
+                "tipo_identificacion INTEGER," +
+                "no_identificacion TEXT," +
+                "ocupacion TEXT," +
+                "actividad_economica TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "tipo_vivienda INTEGER," +
+                "nombre_titular TEXT," +
+                "parentesco INTEGER," +
+                "ing_mensual TEXT," +
+                "ing_otros TEXT," +
+                "gasto_semanal TEXT," +
+                "gasto_agua TEXT," +
+                "gasto_luz TEXT," +
+                "gasto_telefono TEXT," +
+                "gasto_renta TEXT," +
+                "gasto_otros TEXT," +
+                "horario_localizacion TEXT," +
+                "antiguedad INTEGER," +
+                "tel_casa TEXT," +
+                "tel_celular TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "firma TEXT," +
+                "estatus_rechazo INTEGER," +
+                "comentario_rechazo TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TABLE_REFERENCIA_IND_T = "CREATE TABLE datos_referencia_ind_t (" +
+                "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "calle TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "municipio TEXT," +
+                "tel_celular TEXT," +
+                "estatus_completado INTEGER)";
+                
+
+
 
         //================  TABLAS GENERALES  ===================================
 

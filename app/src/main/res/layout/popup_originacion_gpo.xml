@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Nombre del Grupo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etNombreGpo"
+                        android:inputType="textCapCharacters"
+                        android:paddingLeft="10dp"
+                        android:maxLength="20"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvPlazo"
+                        android:textColor="@color/black"
+                        android:text="Plazo"
+                        android:focusable="false"
+                        android:textSize="@dimen/labelsize"
+                        android:focusableInTouchMode="false"
+                        android:background="@android:color/white"
+                        style="@android:style/Widget.EditText"
+                        android:layout_weight=".5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <Spinner
+                        android:id="@+id/spPlazo"
+                        android:entries="@array/intervalo"
+                        android:spinnerMode="dialog"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height"/>
+                    <Spinner
+                        android:id="@+id/spFrecuencia"
+                        android:entries="@array/lapso"
+                        android:spinnerMode="dialog"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Fecha de Desembolso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvFechaDesembolso"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Día de Desembolso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvDiaDesembolso"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Hora de Visita"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvHoraVisita"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/btnCerrar"
+                        android:visibility="gone"
+                        android:background="@drawable/btn_rounded_yellow"
+                        android:text="Cerrar"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <Button
+                        android:id="@+id/btnGuardar"
+                        android:background="@drawable/btn_rounded_blue"
+                        android:textColor="@color/white"
+                        android:text="Guardar"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
+<!--
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="5dp">
+    <LinearLayout
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Nombre del Grupo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/etNombreGpo"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="10dp"
+                android:maxLength="20"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvPlazo"
+                android:textColor="@color/black"
+                android:text="Plazo"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_weight=".5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/spPlazo"
+                android:entries="@array/intervalo"
+                android:spinnerMode="dialog"
+                android:drawableRight="@drawable/ic_drop_down"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height"/>
+            <Spinner
+                android:id="@+id/spFrecuencia"
+                android:entries="@array/lapso"
+                android:spinnerMode="dialog"
+                android:drawableRight="@drawable/ic_drop_down"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Fecha de Desembolso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvFechaDesembolso"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Día de Desembolso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvDiaDesembolso"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/bkg_rounded_edges_blocked"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Hora de Visita"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvHoraVisita"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btnCerrar"
+                android:visibility="gone"
+                android:background="@drawable/btn_rounded_yellow"
+                android:text="Cerrar"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btnGuardar"
+                android:background="@drawable/btn_rounded_blue"
+                android:textColor="@color/white"
+                android:text="Guardar"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView> -->

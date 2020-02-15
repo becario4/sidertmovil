@@ -2,339 +2,525 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <android.support.v4.widget.NestedScrollView
+    <!-- Cargo -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Cargo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spCargo"
+            android:entries="@array/cargo"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!--  Nombre(s)  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nombre(s)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombreCli"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Apellido paterno  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Apellido Paterno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etApPaternoCli"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Apellido materno  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Apellido Materno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etApMaternoCli"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Fecha de nacimiento  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Fecha de Nacimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvFechaNacCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Edad y sexo  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Edad:"
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvEdadCli"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/bkg_rounded_edges_blocked"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/tvGeneroCli"
+                android:textColor="@android:color/black"
+                android:text="Género"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="8dp"
+                android:focusable="true"
+                android:layout_gravity="center_vertical"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioGroup
+                android:id="@+id/rgGeneroCli"
+                android:orientation="horizontal"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/rbHombre"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_left"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="3dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="H"
+                    android:textColor="@drawable/radio_flat_text_selector_left" />
+                <RadioButton
+                    android:id="@+id/rbMujer"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_rigth"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="3dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="M"
+                    android:textColor="@drawable/radio_flat_text_selector_rigth" />
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Estado de Nacimiento -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Estado de Nacimiento"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvEstadoNacCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  RFC  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="RFC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvRfcCli"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:layout_weight="2"
+                android:background="@drawable/bkg_rounded_edges_blocked_left"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+
+            <EditText
+                android:id="@+id/etRfcClaveCli"
+                android:hint="HomoClave"
+                android:inputType="textCapCharacters"
+                android:textSize="15sp"
+                android:maxLength="3"
+                android:paddingLeft="3dp"
+                android:background="@drawable/et_rounded_right"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  CURP  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="CURP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvCurpCli"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:layout_weight="2"
+                android:background="@drawable/bkg_rounded_edges_blocked_left"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+            <EditText
+                android:id="@+id/etCurpIdCli"
+                android:hint="Dígitos Veri."
+                android:inputType="number"
+                android:maxLength="2"
+                android:textSize="15sp"
+                android:paddingLeft="3dp"
+                android:background="@drawable/et_rounded_right"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <!--  Tipo de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tipo de Identificación:"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/rgIdentficacion"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbINE"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
+                android:text="INE"
+                android:textColor="@drawable/radio_flat_text_selector_left" />
+            <RadioButton
+                android:id="@+id/rbIFE"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="3dp"
+                android:text="IFE"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!--  Numero de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Número de Identificación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNumIdentifCli"
+            android:paddingLeft="10dp"
+            android:maxLength="20"
+            android:inputType="textCapCharacters"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Nivel de estudios -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvEstudiosCli"
+            android:textColor="@android:color/black"
+            android:text="Nivel de Estudio"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spEstudiosCli"
+            android:entries="@array/nivel_estudio"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+    </LinearLayout>
+
+    <!-- Estado civil -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvEstadoCivilCli"
+            android:textColor="@android:color/black"
+            android:text="Estado Civil"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spEstadoCivilCli"
+            android:entries="@array/estado_civil"
+            android:spinnerMode="dialog"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:id="@+id/llBienes"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <!--  Nombre(s)  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Nombre(s)"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etNombre"
-                    android:inputType="textCapWords"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  Apellido paterno  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Apellido Paterno"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etApPaterno"
-                    android:inputType="textCapWords"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  Apellido materno  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Apellido Materno"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etApMaterno"
-                    android:inputType="textCapWords"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  Fecha de nacimiento  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Fecha de Nacimiento"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etFechaNac"
-                    android:focusable="false"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  Edad y sexo  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
+            <TextView
+                android:id="@+id/tvBienes"
+                android:textColor="@android:color/black"
+                android:text="Detalle de Estado Civil (Bienes)"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioGroup
+                android:id="@+id/rgBienes"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <LinearLayout
-                    android:orientation="horizontal"
+                <RadioButton
+                    android:id="@+id/rbMancomunados"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:textColor="@android:color/black"
-                        android:text="Edad:"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <EditText
-                        android:id="@+id/etEdad"
-                        android:inputType="number"
-                        android:enabled="false"
-                        android:maxLength="2"
-                        android:paddingLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_weight="2"
-                        android:layout_width="0dp"
-                        android:layout_height="@dimen/et_height" />
-                </LinearLayout>
-
-                <View
-                    android:background="@color/colorGrayDark"
-                    android:layout_width="@dimen/dp1"
-                    android:layout_height="@dimen/et_height"/>
-
-                <LinearLayout
-                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_left"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="3dp"
+                    android:text="Mancomunados"
+                    android:textColor="@drawable/radio_flat_text_selector_left" />
+                <RadioButton
+                    android:id="@+id/rbSeparados"
+                    android:gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:textColor="@android:color/black"
-                        android:text="Sexo:"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <RadioGroup
-                        android:id="@+id/rgSexo"
-                        android:orientation="horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content">
-                        <RadioButton
-                            android:id="@+id/rbHombre"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:gravity="center"
-                            android:layout_height="30dp"
-                            android:background="@drawable/radio_flat_selector_left"
-                            android:button="@android:color/transparent"
-                            android:paddingLeft="16dp"
-                            android:paddingTop="3dp"
-                            android:paddingRight="16dp"
-                            android:paddingBottom="3dp"
-                            android:text="H"
-                            android:textColor="@drawable/radio_flat_text_selector_left" />
-                        <RadioButton
-                            android:id="@+id/rbMujer"
-                            android:gravity="center"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/radio_flat_selector_rigth"
-                            android:button="@android:color/transparent"
-                            android:paddingLeft="16dp"
-                            android:paddingTop="3dp"
-                            android:paddingRight="16dp"
-                            android:paddingBottom="3dp"
-                            android:text="M"
-                            android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                    </RadioGroup>
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Estado de Nacimiento -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Estado de Nacimiento"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    style="@android:style/Widget.EditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/spEstadoNac"
-                    android:spinnerMode="dialog"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"/>
-            </LinearLayout>
-
-            <!-- Estado civil -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Estado Civil"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    style="@android:style/Widget.EditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/spEstadoCivil"
-                    android:entries="@array/estado_civil"
-                    android:spinnerMode="dialog"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"/>
-            </LinearLayout>
-
-            <!--  Tipo y numero de identificacion  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Tipo y Número de Identificación"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etNumIdentificacion"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  RFC  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="RFC"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etRfc"
-                    android:enabled="false"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!--  CURP  -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="CURP"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etCurp"
-                    android:enabled="false"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
-            <!-- Nivel de estudios -->
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:textColor="@android:color/black"
-                    android:text="Nivel de Estudio"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    style="@android:style/Widget.EditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/spEstudios"
-                    android:entries="@array/nivel_estudio"
-                    android:spinnerMode="dialog"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"/>
-            </LinearLayout>
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btnContinuar0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
-                android:src="@drawable/ic_continuar" />
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_rigth"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="3dp"
+                    android:text="Separados"
+                    android:textColor="@drawable/radio_flat_text_selector_rigth" />
+            </RadioGroup>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnContinuar0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/ic_continuar" />
+    </RelativeLayout>
+
 
 </LinearLayout>

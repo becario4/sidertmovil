@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.AgregarIntegrante;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -144,7 +145,14 @@ public class dialog_date_picker extends DialogFragment {
                             SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                             registerActivity.setDate(sdf.format(myCalendar.getTime()), "desembolso");
                             dismiss();
-                        } else {
+                        }
+                        else if(identifer == 2){
+                            Intent i = new Intent();
+                            i.putExtra("fecha",sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(123,321,i);
+                            dismiss();
+                        }
+                        else {
                             Intent i = new Intent();
                             i.putExtra(Constants.DATE, sdf.format(myCalendar.getTime()));
                             getTargetFragment().onActivityResult(123, 321, i);
@@ -186,6 +194,23 @@ public class dialog_date_picker extends DialogFragment {
                             if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
                                 SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacAval");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                        else if (identifer == 4){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                                AgregarIntegrante integranteActivity = (AgregarIntegrante) getActivity();
+                                integranteActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacCli");
                                 dismiss();
                             }
                             else{

@@ -4,14 +4,28 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -26,14 +40,19 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.adapters.adapter_originacion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.Popups;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Objects;
 
 import moe.feng.common.stepperview.VerticalStepperItemView;
 
@@ -46,10 +65,15 @@ public class SolicitudCredito extends AppCompatActivity {
 
     private boolean FAB_Status = false;
 
+    private adapter_originacion adapter;
+    private RecyclerView rvOriginacion;
+
     FloatingActionButton fabGrupal;
     FloatingActionButton fabIndividual;
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+
+    private Paint p = new Paint();
 
     //Animations
     Animation show_fab_ind;
@@ -57,46 +81,6 @@ public class SolicitudCredito extends AppCompatActivity {
     Animation show_fab_gpo;
     Animation hide_fab_gpo;
 
-    /*private VerticalStepperItemView mSteppers[] = new VerticalStepperItemView[9];
-
-    private FloatingActionButton btnContinuar0;
-    private FloatingActionButton btnContinuar1;
-    private FloatingActionButton btnContinuar2;
-    private FloatingActionButton btnContinuar3;
-    private FloatingActionButton btnContinuar4;
-    private FloatingActionButton btnContinuar5;
-    private FloatingActionButton btnContinuar6;
-    private FloatingActionButton btnContinuar7;
-    private FloatingActionButton btnContinuar8;
-
-    private FloatingActionButton btnRegresar1;
-    private FloatingActionButton btnRegresar2;
-    private FloatingActionButton btnRegresar3;
-    private FloatingActionButton btnRegresar4;
-    private FloatingActionButton btnRegresar5;
-    private FloatingActionButton btnRegresar6;
-    private FloatingActionButton btnRegresar7;
-    private FloatingActionButton btnRegresar8;
-
-    private EditText etMontoPrestamo;
-    private MultiAutoCompleteTextView etCantidadLetra;
-
-    private EditText etNombre;
-    private EditText etApPaterno;
-    private EditText etApMaterno;
-    private EditText etFechaNac;
-    private EditText etEdad;
-    private RadioGroup rgSexo;
-    private Spinner spEstadoNac;
-    private EditText etCurp;
-    private EditText etRfc;
-
-    private SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
-    private Calendar myCalendar;
-    private Date minDate;
-
-    private EditText etHorarioLoc;
-    private TimePickerDialog picker;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +92,12 @@ public class SolicitudCredito extends AppCompatActivity {
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
-        //initComponents();
+        rvOriginacion = findViewById(R.id.rvOriginacion);
+
+        rvOriginacion.setLayoutManager(new LinearLayoutManager(ctx));
+        rvOriginacion.setHasFixedSize(false);
+
+        initComponents();
 
         fbAgregar = findViewById(R.id.fbAgregar);
         fabGrupal = findViewById(R.id.fabGrupal);
@@ -140,6 +129,7 @@ public class SolicitudCredito extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i_solicitud_gpo = new Intent(ctx, SolicitudCreditoGpo.class);
+                i_solicitud_gpo.putExtra("is_new",true);
                 startActivity(i_solicitud_gpo);
             }
         });
@@ -148,102 +138,10 @@ public class SolicitudCredito extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
+                i_solicitud_ind.putExtra("is_new", true);
                 startActivity(i_solicitud_ind);
             }
         });
-
-        /*mSteppers[0] = findViewById(R.id.stepper_0);
-        mSteppers[1] = findViewById(R.id.stepper_1);
-        mSteppers[2] = findViewById(R.id.stepper_2);
-        mSteppers[3] = findViewById(R.id.stepper_3);
-        mSteppers[4] = findViewById(R.id.stepper_4);
-        mSteppers[5] = findViewById(R.id.stepper_5);
-        mSteppers[6] = findViewById(R.id.stepper_6);
-        mSteppers[7] = findViewById(R.id.stepper_7);
-        mSteppers[8] = findViewById(R.id.stepper_8);
-
-        btnContinuar0 = findViewById(R.id.btnContinuar0);
-        btnContinuar1 = findViewById(R.id.btnContinuar1);
-        btnContinuar2 = findViewById(R.id.btnContinuar2);
-        btnContinuar3 = findViewById(R.id.btnContinuar3);
-        btnContinuar4 = findViewById(R.id.btnContinuar4);
-        btnContinuar5 = findViewById(R.id.btnContinuar5);
-        btnContinuar6 = findViewById(R.id.btnContinuar6);
-        btnContinuar7 = findViewById(R.id.btnContinuar7);
-        btnContinuar8 = findViewById(R.id.btnContinuar8);
-
-        btnRegresar1 = findViewById(R.id.btnRegresar1);
-        btnRegresar2 = findViewById(R.id.btnRegresar2);
-        btnRegresar3 = findViewById(R.id.btnRegresar3);
-        btnRegresar4 = findViewById(R.id.btnRegresar4);
-        btnRegresar5 = findViewById(R.id.btnRegresar5);
-        btnRegresar6 = findViewById(R.id.btnRegresar6);
-        btnRegresar7 = findViewById(R.id.btnRegresar7);
-        btnRegresar8 = findViewById(R.id.btnRegresar8);
-
-        VerticalStepperItemView.bindSteppers(mSteppers);
-
-        etMontoPrestamo = findViewById(R.id.etMontoPrestamo);
-        etCantidadLetra = findViewById(R.id.etCantidadLetra);
-
-        etNombre    = findViewById(R.id.etNombre);
-        etApPaterno = findViewById(R.id.etApPaterno);
-        etApMaterno = findViewById(R.id.etApMaterno);
-        etFechaNac  = findViewById(R.id.etFechaNac);
-        etEdad      = findViewById(R.id.etEdad);
-        rgSexo      = findViewById(R.id.rgSexo);
-        spEstadoNac = findViewById(R.id.spEstadoNac);
-        etCurp      = findViewById(R.id.etCurp);
-        etRfc       = findViewById(R.id.etRfc);
-
-        btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
-        btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
-        btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
-        btnContinuar3.setOnClickListener(btnContinuar3_OnClick);
-        btnContinuar4.setOnClickListener(btnContinuar4_OnClick);
-        btnContinuar5.setOnClickListener(btnContinuar5_OnClick);
-        btnContinuar6.setOnClickListener(btnContinuar6_OnClick);
-        btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
-        btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
-
-        btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
-        btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
-        btnRegresar3.setOnClickListener(btnRegresar3_OnClick);
-        btnRegresar4.setOnClickListener(btnRegresar4_OnClick);
-        btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
-        btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
-        btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
-        btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
-
-        etHorarioLoc = findViewById(R.id.etHorarioLoc);
-
-        etHorarioLoc.setOnClickListener(etHorarioLoc_OnClick);
-
-        etFechaNac.setOnClickListener(etFechaNac_OnClick);
-
-        etMontoPrestamo.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length()> 0){
-                    etCantidadLetra.setText(Miscellaneous.cantidadLetra(s.toString()).toUpperCase() + " PESOS MEXICANOS ");
-                }
-                else{
-                    etCantidadLetra.setText("");
-                }
-            }
-        });*/
-
-
     }
 
     private void expandFAB() {
@@ -285,173 +183,138 @@ public class SolicitudCredito extends AppCompatActivity {
         fabGrupal.setClickable(false);
     }
 
-    /*private View.OnClickListener etFechaNac_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DatePickerDialog dpd = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+    private void initComponents(){
+        Cursor row = null;
+        if (Constants.ENVIROMENT)
+            row = dBhelper.getRecords(Constants.SOLICITUDES_T, "", "", null);
+        else
+            row = dBhelper.getRecords(Constants.SOLICITUDES_T, "", "", null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
+            for(int i = 0; i < row.getCount(); i++){
+                HashMap<Integer, String> item = new HashMap();
+                item.put(0,row.getString(0));
+                String nombre = row.getString(5) + " " +row.getString(6) + " " + row.getString(7);
+                item.put(1, nombre.trim().toUpperCase());
+                data.add(item);
+                row.moveToNext();
+            }
+
+            adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
                 @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                    myCalendar.set(Calendar.YEAR,year);
-                    myCalendar.set(Calendar.MONTH,month);
-                    myCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                    setDatePicked(etFechaNac);
-
+                public void FichaOnClick(HashMap<Integer, String> item) {
+                    Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
+                    i_solicitud_ind.putExtra("is_new", false);
+                    Log.e("id_Solicitud",item.get(0));
+                    i_solicitud_ind.putExtra("id_solicitud", item.get(0));
+                    startActivity(i_solicitud_ind);
                 }
-            },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH));
-            dpd.getDatePicker().setMaxDate(new Date().getTime());
-            dpd.getDatePicker().setMinDate(minDate.getTime());
-            dpd.show();
-        }
-    };
+            });
 
-    //Continuar
-    private View.OnClickListener btnContinuar0_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[0].nextStep();
+            rvOriginacion.setAdapter(adapter);
+            initSwipe();
         }
-    };
-    private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[1].nextStep();
-            String apPaterno = etApPaterno.getText().toString().trim().toUpperCase();
-            String apMaterno = etApMaterno.getText().toString().trim().toUpperCase();
-            String nombre = etNombre.getText().toString().trim().toUpperCase();
-            String fecha = etFechaNac.getText().toString().trim().toUpperCase();
-            String[] sFechaNac = fecha.split("-");
-
-            //etRfc.setText(apPaterno.substring(0,2)+((apMaterno.length() > 0)?apMaterno.substring(0,1):"X")+nombre.substring(0,1)+sFechaNac[0].substring(2,4)+sFechaNac[1]+sFechaNac[2]);
-            //etCurp.setText(etRfc.getText()+((rgSexo.getCheckedRadioButtonId()==R.id.rbHombre)?"H":"M")+Miscellaneous.clvEstado(spEstadoNac.getSelectedItemPosition())+Miscellaneous.segundaConsonante(etApPaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etApMaterno.getText().toString().trim().toUpperCase())+Miscellaneous.segundaConsonante(etNombre.getText().toString().trim().toUpperCase()));
-        }
-    };
-    private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[2].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar3_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[3].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar4_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[4].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar5_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[5].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar6_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[6].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar7_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[7].nextStep();
-        }
-    };
-    private View.OnClickListener btnContinuar8_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(ctx, "Termina proceso", Toast.LENGTH_SHORT).show();
-        }
-    };
-
-    //Regresar
-    private View.OnClickListener btnRegresar1_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[1].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar2_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[2].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[3].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[4].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar5_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[5].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar6_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[6].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar7_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[7].prevStep();
-        }
-    };
-    private View.OnClickListener btnRegresar8_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSteppers[8].prevStep();
-        }
-    };
-
-
-    private View.OnClickListener etHorarioLoc_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            final Calendar cldr = Calendar.getInstance();
-            int hour = cldr.get(Calendar.HOUR_OF_DAY);
-            int minutes = cldr.get(Calendar.MINUTE);
-            // time picker dialog
-            picker = new TimePickerDialog(SolicitudCredito.this,
-                    new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
-                            etHorarioLoc.setText(sHour + ":" + sMinute);
-                        }
-                    }, hour, minutes, true);
-            picker.show();
-        }
-    };
-
-    private void setDatePicked(EditText et){
-        sdf.setTimeZone(myCalendar.getTimeZone());
-        et.setError(null);
-        et.setText(sdf.format(myCalendar.getTime()));
-        etEdad.setText(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime())));
     }
 
-    private void initComponents(){
-        myCalendar = Calendar.getInstance();
-        try {
-            minDate = sdf.parse("1955-01-01");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }*/
+    private void BorrarSolicitud (final String id_Solcitud, final int position){
+        AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
+                R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
+                                R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        db.delete(Constants.SOLICITUDES_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_CLIENTE_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_CONYUGE_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_ECONOMICOS_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_NEGOCIO_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_AVAL_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        db.delete(Constants.DATOS_REFERENCIA_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
+                                        adapter.removeItem(position);
+                                        dialog.dismiss();
 
+                                    }
+                                }, R.string.no, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        adapter.notifyDataSetChanged();
+                                        dialog.dismiss();
+                                    }
+                                });
+                        Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                        confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        confirm_borrar_soli_dlg.show();
+                        dialog.dismiss();
+
+                    }
+                }, R.string.no, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
+        Objects.requireNonNull(borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+        borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        borrar_soli_dlg.show();
+    }
+
+    private void initSwipe() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.RIGHT){
+                    BorrarSolicitud(adapter.getItem(position).get(0), position);
+                } else {
+                    BorrarSolicitud(adapter.getItem(position).get(0), position);
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                Bitmap icon;
+                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+                    View itemView = viewHolder.itemView;
+                    float height  = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width   = height /4;
+                    if(dX > 0){
+                        p.setColor(Color.RED);
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 3*width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                    } else {
+                        p.setColor(Color.RED);
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 3*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper helper = new ItemTouchHelper(simpleCallback);
+        helper.attachToRecyclerView(rvOriginacion);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initComponents();
+
+    }
 }

@@ -4,7 +4,7 @@ import android.os.Environment;
 
 public class Constants {
 
-    public final static boolean ENVIROMENT          = true;
+    public final static boolean ENVIROMENT          = false;
 
     // CONTROLADORES
     public final static String CONTROLLER_LOGIN       = "login";
@@ -224,7 +224,7 @@ public class Constants {
     public final static int REQUEST_CODE_ESTADO_NAC                = 468;
     public final static int REQUEST_CODE_OCUPACION_CLIE            = 346;
     public final static int REQUEST_CODE_OCUPACION_CONY            = 673;
-    public final static int REQUEST_CODE_OCUPACION_NEG             = 412;
+    public final static int REQUEST_CODE_ACTIVIDAD_NEG             = 412;
     public final static int REQUEST_CODE_ESTADO_NAC_AVAL           = 348;
     public final static int REQUEST_CODE_OCUPACION_AVAL            = 671;
     public final static int REQUEST_CODE_ESTADO_AVAL               = 846;
@@ -287,6 +287,16 @@ public class Constants {
     //public final static String GPO_VE_T             = "groups_ven_t";
     public final static String SINCRONIZADO_T       = "sincronizado_t";
     public final static String SOLICITUDES_IND_T    = "solicitudes_ind_t";
+
+    public final static String SOLICITUDES_T            = "solicitudes_t";
+    public final static String DATOS_CREDITO_IND_T      = "datos_credito_ind_t";
+    public final static String DATOS_CLIENTE_IND_T      = "datos_cliente_ind_t";
+    public final static String DATOS_CONYUGE_IND_T      = "datos_conyuge_ind_t";
+    public final static String DATOS_ECONOMICOS_IND_T   = "datos_economicos_ind_t";
+    public final static String DATOS_NEGOCIO_IND_T      = "datos_negocio_ind_t";
+    public final static String DATOS_AVAL_IND_T         = "datos_aval_ind_t";
+    public final static String DATOS_REFERENCIA_IND_T   = "datos_referencia_ind_t";
+
 
     public final static String STATUS_FICHAS       = "status_fichas";
     public final static String ESTADOS             = "estados";

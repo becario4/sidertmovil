@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -65,6 +66,11 @@ public class dialog_time_picker extends DialogFragment {
                 case 2:
                     SolicitudCreditoInd registerActivityAval = (SolicitudCreditoInd) getActivity();
                     registerActivityAval.setTimer(valuesHour[npHour.getValue()]+":"+valuesMinute[npMinute.getValue()], "HoraVisitaAval");
+                    break;
+                case 3:
+                    Intent i = new Intent();
+                    i.putExtra("hora", valuesHour[npHour.getValue()]+":"+valuesMinute[npMinute.getValue()]);
+                    getTargetFragment().onActivityResult(159,753,i);
                     break;
             }
             dismiss();

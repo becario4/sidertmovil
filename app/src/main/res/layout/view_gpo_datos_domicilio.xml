@@ -5,7 +5,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Estado -->
+    <!-- Ubicacion del domicilio -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvMapaCli"
+            android:textColor="@android:color/black"
+            android:text="Ubicación del Domicilio del Solicitante"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/ibMapCli"
+            android:src="@drawable/ic_pin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/round_corner_blue"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <ProgressBar
+            android:id="@+id/pbLoadCli"
+            android:visibility="gone"
+            android:indeterminate="true"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapCli"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Calle  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -13,22 +52,181 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Estado"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
+            android:text="Calle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spEstado"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+
+        <EditText
+            android:id="@+id/etCalleCli"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Num Exterior y Manzana  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No. Ext"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoExtCli"
+                android:inputType="textCapCharacters"
+                android:maxLength="6"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
             android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Manz."
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etManzCli"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="0dp"
+                android:maxLength="6"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Num Interior y Lote  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="No. Int."
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etNoIntCli"
+                android:inputType="textCapCharacters"
+                android:maxLength="6"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayDark"
+            android:layout_width="@dimen/dp1"
+            android:layout_height="@dimen/et_height"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Lote"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etLoteCli"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="0dp"
+                android:maxLength="6"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Codigo postal  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Código Postal"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCpCli"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:inputType="number"
+            android:maxLength="5"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Colonia  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Colonia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvColoniaCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!-- Municipio -->
@@ -48,16 +246,18 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spMunicipio"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
+        <TextView
+            android:id="@+id/tvMunicipioCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  Calle  -->
+    <!-- Estado -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -65,104 +265,22 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Calle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etCalle"
-            android:inputType="textCapSentences"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  No. Exterior  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="No.Ext/Manz."
-            android:layout_marginRight="8dp"
+            android:text="Estado"
             android:layout_weight="1"
-            android:layout_width="0dp"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etNoExt"
-            android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  No. Interior  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
         <TextView
-            android:textColor="@android:color/black"
-            android:text="No.Int/Lote"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etNoInt"
+            android:id="@+id/tvEstadoCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Colonia  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Colonia o Localidad"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etColonia"
-            android:inputType="textCapSentences"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Codigo postal  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Código Postal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etCodigoPostal"
-            android:inputType="number"
-            android:paddingLeft="10dp"
-            android:maxLength="5"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
@@ -174,8 +292,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvTipoCasaCli"
             android:textColor="@android:color/black"
-            android:text="Casa"
+            android:text="Tipo Vivienda"
             android:layout_weight="1"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
@@ -185,20 +304,67 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Spinner
-            android:id="@+id/spCasa"
-            android:entries="@array/tipo_casa"
+            android:id="@+id/spTipoCasaCli"
+            android:entries="@array/tipo_casa_cli"
             android:spinnerMode="dialog"
             android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height"/>
-        <EditText
-            android:id="@+id/etOtroTipoCasa"
+        <LinearLayout
+            android:id="@+id/llCasaFamiliar"
             android:visibility="gone"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Casa Familiar"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/spCasaFamiliar"
+                android:entries="@array/casa_familiar"
+                android:spinnerMode="dialog"
+                android:drawableRight="@drawable/ic_drop_down"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llCasaOtro"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Otro Tipo"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etOtroTipoCli"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="10dp"
+                android:maxLength="45"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Tiempo de vivir en el sitio -->
@@ -209,7 +375,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Tiempo de Vivir en el Sitio"
+            android:text="Tiempo de Vivir en el Sitio (Años)"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"
@@ -228,9 +394,75 @@
 
     </LinearLayout>
 
+    <!--  Fotografía de fachada  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvFotoFachada"
+            android:textColor="@android:color/black"
+            android:text="@string/facade_photo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibFotoFachCli"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/facade_photo"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivFotoFachCli"
+                android:rotation="90"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--  Referencia domiciliaria  -->
     <LinearLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencia Domiciliaria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/etReferenciaCli"
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:maxLength="100"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -238,12 +470,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
 </LinearLayout>

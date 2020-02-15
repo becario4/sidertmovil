@@ -2,8 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <!--  Telefono de casa  -->
     <LinearLayout
@@ -18,7 +19,7 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCasa"
+            android:id="@+id/etTelCasaCli"
             android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelCelular"
+            android:id="@+id/etCelularCli"
             android:inputType="number"
             android:paddingLeft="10dp"
             android:maxLength="10"
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/etTelMensajes"
+            android:id="@+id/etTelMensCli"
             android:inputType="number"
             android:paddingLeft="10dp"
             android:maxLength="10"
@@ -71,9 +72,8 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
@@ -81,12 +81,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
-            android:layout_marginRight="135dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnContinuar1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"/>
-    </LinearLayout>
+            android:src="@drawable/ic_continuar"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
 </LinearLayout>

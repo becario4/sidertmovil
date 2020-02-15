@@ -1,618 +1,755 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--  Nombre del negocio  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Nombre del Negocio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etNombreNeg"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:maxLength="80"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!-- Ubicacion del domicilio -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvMapa"
-            android:textColor="@android:color/black"
-            android:text="Ubicación del Negocio"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:id="@+id/ibMapNeg"
-            android:src="@drawable/ic_pin"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/round_corner_blue"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"/>
-        <ProgressBar
-            android:id="@+id/pbLoadNeg"
-            android:visibility="gone"
-            android:indeterminate="true"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapNeg"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="100dp" />
-    </LinearLayout>
-
-    <!--  Calle  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Calle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etCalleNeg"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:maxLength="45"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  No. Exterior  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="No.Ext/Manz."
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etNoExtNeg"
-            android:paddingLeft="10dp"
-            android:maxLength="10"
-            android:inputType="textCapCharacters"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  No. Interior  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="No.Int/Lote"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etNoIntNeg"
-            android:paddingLeft="10dp"
-            android:maxLength="10"
-            android:inputType="textCapCharacters"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Codigo postal  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Código Postal"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etCpNeg"
-            android:inputType="number"
-            android:maxLength="5"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Colonia  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Colonia o Localidad"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etColoniaNeg"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:focusable="false"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Municipio  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Municipio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etMunicipioNeg"
-            android:inputType="textCapCharacters"
-            android:focusable="false"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-
-    </LinearLayout>
-
-    <!-- Actividad economica -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Actividad Económica"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etActEconomicaNeg"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:focusable="false"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-        <!--<Spinner
-            android:id="@+id/spActividadEco"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>-->
-    </LinearLayout>
-
-    <!--  Antiguedad  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Antigüedad (Años)"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etAntiguedadNeg"
-            android:inputType="number"
-            android:maxLength="2"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Ingreso semanal  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Ingreso Semanal"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etIngSemNeg"
-            android:inputType="number"
-            android:maxLength="6"
-            android:drawableStart="@drawable/ic_money"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Otros ingresos  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Otros Ingresos"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etOtrosIngNeg"
-            android:inputType="number"
-            android:maxLength="6"
-            android:drawableStart="@drawable/ic_money"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Gasto semanal  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Gasto Semanal"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etGastoSemNeg"
-            android:inputType="number"
-            android:maxLength="6"
-            android:drawableStart="@drawable/ic_money"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Gastos  -->
-    <LinearLayout
-        android:visibility="visible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:background="@color/gray_light">
-
-        <TextView
-            android:textSize="@dimen/textsize"
-            android:paddingLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gastos"
-            android:textColor="@android:color/black" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/blue_sidert" />
-    </LinearLayout>
-
-    <!--  Gastos fijos y agua  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Fijos"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etGastosFijosNeg"
-                android:drawableStart="@drawable/ic_money"
-                android:inputType="number"
-                android:maxLength="6"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-        <View
-            android:background="@color/colorGrayDark"
-            android:layout_width="@dimen/dp1"
-            android:layout_height="@dimen/et_height"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Agua"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etGastosAguaNeg"
-                android:drawableStart="@drawable/ic_money"
-                android:inputType="number"
-                android:paddingLeft="0dp"
-                android:maxLength="6"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!--  Luz y telefono  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Luz"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etGastosLuzNeg"
-                android:drawableStart="@drawable/ic_money"
-                android:inputType="number"
-                android:maxLength="6"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-        <View
-            android:background="@color/colorGrayDark"
-            android:layout_width="@dimen/dp1"
-            android:layout_height="@dimen/et_height"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Teléf."
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etGastosTelNeg"
-                android:drawableStart="@drawable/ic_money"
-                android:inputType="number"
-                android:maxLength="6"
-                android:background="@drawable/et_rounded_edges"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!--  Renta otros  -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Renta Otros"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etRentaNeg"
-            android:inputType="number"
-            android:drawableStart="@drawable/ic_money"
-            android:paddingLeft="10dp"
-            android:maxLength="6"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <View
-        android:layout_marginTop="3dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/blue_sidert" />
-
-    <!--  Dias de venta  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Días de Venta"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/etDiasVentaNeg"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:focusable="false"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Fotografía de fachada  -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvFotoFachada"
-            android:textColor="@android:color/black"
-            android:text="@string/facade_photo"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/ibFotoFachNeg"
+            <!--  Nombre del negocio  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:contentDescription="@string/facade_photo"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_corner_blue"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_camera_white" />
-            <ImageView
-                android:id="@+id/ivFotoFachNeg"
-                android:rotation="90"
-                android:contentDescription="@string/facade_photo"
-                android:visibility="gone"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Nombre del Negocio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etNombreNeg"
+                    android:inputType="textCapCharacters"
+                    android:paddingLeft="10dp"
+                    android:maxLength="80"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!-- Ubicacion del domicilio -->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvMapa"
+                    android:textColor="@android:color/black"
+                    android:text="Ubicación del Negocio"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-    <!--  Referencia domiciliaria  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Referencia del Negocio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/ibMapNeg"
+                    android:src="@drawable/ic_pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/round_corner_blue"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <ProgressBar
+                    android:id="@+id/pbLoadNeg"
+                    android:visibility="gone"
+                    android:indeterminate="true"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapNeg"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
+            </LinearLayout>
 
-        <MultiAutoCompleteTextView
-            android:id="@+id/etReferenciaNeg"
-            android:inputType="textMultiLine|textCapCharacters"
-            android:ems="10"
-            android:maxLength="100"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="100dp" />
-    </LinearLayout>
+            <!--  Calle  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Calle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-    <RelativeLayout
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnRegresar4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_regresar"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"/>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnContinuar4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"
-            android:layout_marginRight="20dp"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+                <EditText
+                    android:id="@+id/etCalleNeg"
+                    android:inputType="textCapCharacters"
+                    android:paddingLeft="10dp"
+                    android:maxLength="45"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Num Exterior y Manzana  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="No. Ext"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etNoExtNeg"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:paddingLeft="10dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Manz."
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etManzanaNeg"
+                        android:inputType="number"
+                        android:paddingLeft="10dp"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Num Interior y Lote  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="No. Int."
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etNoIntNeg"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:paddingLeft="10dp"
+                        android:layout_marginRight="8dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Lote"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etLoteNeg"
+                        android:inputType="number"
+                        android:paddingLeft="10dp"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Codigo postal  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Código Postal"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etCpNeg"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Colonia  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Colonia o Localidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvColoniaNeg"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Municipio  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Municipio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvMunicipioNeg"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
+            </LinearLayout>
+
+            <!-- Actividad economica -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Actividad Económica"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvActEconomicaNeg"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <!--<Spinner
+                    android:id="@+id/spActividadEco"
+                    android:spinnerMode="dialog"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"/>-->
+            </LinearLayout>
+
+            <!--  Antiguedad  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Antigüedad (Años)"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etAntiguedadNeg"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Ingresos  -->
+            <LinearLayout
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/gray_light">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ingresos"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/blue_sidert" />
+            </LinearLayout>
+
+            <!--  Ingreso Mensual  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Ingreso Mensual"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etIngMenNeg"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Otros ingresos  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Otros Ingresos"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etOtrosIngNeg"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Gastos  -->
+            <LinearLayout
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/gray_light">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Gastos"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/blue_sidert" />
+            </LinearLayout>
+
+            <!--  Gastos Sem y agua  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Seman."
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosSemNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:layout_marginRight="8dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Agua"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosAguaNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:paddingLeft="0dp"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Gastos Luz y Telefono  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Luz"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosLuzNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:layout_marginRight="8dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Teléf."
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosTelNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:paddingLeft="0dp"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Renta y Otro  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Renta"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosRentaNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:layout_marginRight="8dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <View
+                    android:background="@color/colorGrayDark"
+                    android:layout_width="@dimen/dp1"
+                    android:layout_height="@dimen/et_height"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Otros"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <EditText
+                        android:id="@+id/etGastosOtrosNeg"
+                        android:drawableStart="@drawable/ic_money"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--  Capacidad de Pago  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Capacidad de Pago"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvCapacidadPagoNeg"
+                    android:drawableStart="@drawable/ic_money"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Dias de venta  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Días de Venta"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvDiasVentaNeg"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:padding="5dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!--  Fotografía de fachada  -->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvFotoFachada"
+                    android:textColor="@android:color/black"
+                    android:text="@string/facade_photo"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:id="@+id/ibFotoFachNeg"
+                        android:layout_width="match_parent"
+                        android:contentDescription="@string/facade_photo"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/round_corner_blue"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:src="@drawable/ic_camera_white" />
+                    <ImageView
+                        android:id="@+id/ivFotoFachNeg"
+                        android:rotation="90"
+                        android:contentDescription="@string/facade_photo"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--  Referencia domiciliaria  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Referencia del Negocio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <MultiAutoCompleteTextView
+                    android:id="@+id/etReferenciaNeg"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:ems="10"
+                    android:maxLength="100"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/btnRegresar4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_regresar"
+                    android:layout_marginLeft="20dp"
+                    android:layout_alignParentLeft="true"/>
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/btnContinuar4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_continuar"
+                    android:layout_marginRight="20dp"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
 
 </LinearLayout>

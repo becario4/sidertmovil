@@ -4,8 +4,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:layout_height="wrap_content">
 
     <!--  Nombre(s)  -->
     <LinearLayout
@@ -84,15 +83,17 @@
             android:text="Ocupación"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etOcupacionCony"
-            android:focusable="false"
-            android:inputType="textCapCharacters"
+        <TextView
+            android:id="@+id/tvOcupacionCony"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:padding="5dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Telefono celular  -->

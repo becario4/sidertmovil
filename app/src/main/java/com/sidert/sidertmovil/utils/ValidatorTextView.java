@@ -1,12 +1,11 @@
 package com.sidert.sidertmovil.utils;
 
-import android.util.Log;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validator {
+public class ValidatorTextView {
 
     public final String REQUIRED        = "required";
     public final String ONLY_TEXT       = "text";
@@ -18,7 +17,6 @@ public class Validator {
     public final String CURP            = "curp";
     public final String CURP_ID         = "curp_id";
     public final String HOMOCLAVE       = "homocalve";
-    public final String EMAIL           = "email";
 
     public  String REQUIRED_MESSAGE       = "Este campo es requerido.";
     public  String ONLY_TEXT_MESSAGE      = "Solo permite letras y espacios.";
@@ -29,7 +27,6 @@ public class Validator {
     public  String MENSAJE_MONTO_CREDITO  = "La cantidad no corresponde a un monto de crédito válido";
     public  String MENSAJE_CURP_NO_VALIDA = "No corresponde a una CURP válida";
     public  String MENSAJE_CURP_ID        = "Formato incorrecto";
-    public  String MENSAJE_EMAIL          = "Formato de correo inválido";
 
     private final String PATTERN_ONLY_TEXT      = "[A-Za-z ÑñÁáÉéÍíÓóÚú]*";
     private final String PATTERN_ONLY_NUMBER    = "[0-9]*";
@@ -39,136 +36,147 @@ public class Validator {
     private final String PATTERN_CURP           = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}";
     private final String PATTERN_CURP_ID        = "[0-9]{2}";
     private final String PATTERN_HOMOCLAVE      = "[A-Z]{2}[0-9]";
-    private final String PATTERN_EMAIL          = "^(.+)@(.+)$";
 
     private Pattern pattern;
     private Matcher matcher;
 
-    public boolean validate(EditText etx, String[] RULS) {
+    public boolean validate(TextView tvx, String[] RULS) {
         Boolean error = false;
 
         for (int i = 0; i< RULS.length; i++) {
             switch (RULS[i]) {
                 case REQUIRED:
-                    if(etx.getText().toString().trim().length() == 0) {
-                        etx.setError(REQUIRED_MESSAGE);
-                        etx.requestFocus();
+                    if(tvx.getText().toString().trim().length() == 0) {
+                        tvx.setError(REQUIRED_MESSAGE);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
                         error = true;
                         return error;
                     }
                     break;
                 case ONLY_TEXT:
                     pattern = Pattern.compile(PATTERN_ONLY_TEXT);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(ONLY_TEXT_MESSAGE);
-                        etx.requestFocus();
-                        error = true;
-                        return error;
-                    }
-                    break;
-                case EMAIL:
-                    pattern = Pattern.compile(PATTERN_EMAIL);
-                    matcher = pattern.matcher(etx.getText().toString());
-                    if(!matcher.matches()) {
-                        etx.setError(MENSAJE_EMAIL);
-                        etx.requestFocus();
+                        tvx.setError(ONLY_TEXT_MESSAGE);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
                         error = true;
                         return error;
                     }
                     break;
                 case CREDITO:
                     pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(MENSAJE_MONTO_CREDITO);
-                        etx.requestFocus();
+                        tvx.setError(MENSAJE_MONTO_CREDITO);
+                        tvx.requestFocus();
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
                         error = true;
                         return error;
                     }
                     break;
                 case CURP:
                     pattern = Pattern.compile(PATTERN_CURP);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(MENSAJE_CURP_NO_VALIDA);
-                        etx.requestFocus();
+                        tvx.setError(MENSAJE_CURP_NO_VALIDA);
+                        tvx.requestFocus();
                         error = true;
                         return error;
                     }
                     break;
                 case CURP_ID:
                     pattern = Pattern.compile(PATTERN_CURP_ID);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(MENSAJE_CURP_ID);
-                        etx.requestFocus();
+                        tvx.setError(MENSAJE_CURP_ID);
+                        tvx.requestFocus();
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
                         error = true;
                         return error;
                     }
                     break;
                 case HOMOCLAVE:
                     pattern = Pattern.compile(PATTERN_HOMOCLAVE);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(MENSAJE_CURP_ID);
+                        tvx.setError(MENSAJE_CURP_ID);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
                         error = true;
                         return error;
                     }
                     break;
                 case ONLY_NUMBER:
                     pattern = Pattern.compile(PATTERN_ONLY_NUMBER);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(ONLY_NUMBER_MESSAGE);
-                        etx.requestFocus();
+                        tvx.setError(ONLY_NUMBER_MESSAGE);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
                         error = true;
                         return error;
                     }
                     break;
                 case MONEY:
                     pattern = Pattern.compile(PATTERN_MONEY);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        etx.setError(MENSAJE_MONEDA);
-                        etx.requestFocus();
+                        tvx.setError(MENSAJE_MONEDA);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.setFocusable(true);
                         error = true;
                         return error;
                     }
                     else {
-                        if (Double.parseDouble(etx.getText().toString()) == 0){
-                            etx.setError("No se permiten cantidades iguales a 0");
-                            etx.requestFocus();
+                        if (Double.parseDouble(tvx.getText().toString()) == 0){
+                            tvx.setError("No se permiten cantidades iguales a 0");
+                            tvx.setFocusable(true);
+                            tvx.setFocusableInTouchMode(true);
+                            tvx.requestFocus();
                             error = true;
                             return error;
                         }
                     }
                     break;
                 case PHONE:
-                        pattern = Pattern.compile(PATTERN_ONLY_NUMBER);
-                        matcher = pattern.matcher(etx.getText().toString());
-                        if (!matcher.matches()) {
-                            etx.setError(ONLY_TEN_NUMBERS);
-                            etx.requestFocus();
-                            error = true;
+                    pattern = Pattern.compile(PATTERN_ONLY_NUMBER);
+                    matcher = pattern.matcher(tvx.getText().toString());
+                    if (!matcher.matches()) {
+                        tvx.setError(ONLY_TEN_NUMBERS);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
+                        error = true;
+                        return error;
+                    } else {
+                        if (!(tvx.getText().length() == 10)) {
+                            tvx.setError(ONLY_TEN_NUMBERS);
+                            tvx.setFocusable(true);
+                            tvx.setFocusableInTouchMode(true);
+                            tvx.requestFocus();
+                            error = false;
                             return error;
-                        } else {
-                            if (!(etx.getText().length() == 10)) {
-                                etx.setError(ONLY_TEN_NUMBERS);
-                                etx.requestFocus();
-                                error = false;
-                                return error;
-                            }
-                            else {
-                                return true;
-                            }
                         }
+                        else {
+                            return true;
+                        }
+                    }
                 case GENERAL:
                     pattern = Pattern.compile(PATTERN_GENERAL);
-                    matcher = pattern.matcher(etx.getText().toString().toLowerCase());
+                    matcher = pattern.matcher(tvx.getText().toString().toLowerCase());
                     if(!matcher.matches()) {
-                        etx.setError(GENERAL_MESSAGE);
-                        etx.requestFocus();
+                        tvx.setError(GENERAL_MESSAGE);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
                         error = true;
                         return error;
                     }
