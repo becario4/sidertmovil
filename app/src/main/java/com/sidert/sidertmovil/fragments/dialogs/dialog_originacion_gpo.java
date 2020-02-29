@@ -1,12 +1,17 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,18 +24,34 @@ import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.SolicitudCreditoGpo;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.Validator;
+import com.sidert.sidertmovil.utils.ValidatorTextView;
 
 import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
 
 public class dialog_originacion_gpo extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(String nombre, int plazo, int periodicidad, String fecha, String dia, String hora);
+        void onComplete(long id_solicitud, long id_credito, String nombre, String plazo, String periodicidad, String fecha, String dia, String hora);
     }
 
     @Override
@@ -44,12 +65,15 @@ public class dialog_originacion_gpo extends DialogFragment {
         }
     }
 
+    private String[] _plazo;
+    private String[] _frecuencia;
+
     private OnCompleteListener mListener;
     private Context ctx;
     private SolicitudCreditoGpo boostrap;
     private EditText etNombre;
-    private Spinner spPlazo;
-    private Spinner spPeriodicidad;
+    private TextView tvPlazo;
+    private TextView tvPeriodicidad;
     private TextView tvFechaDesembolso;
     private TextView tvDiaDesembolso;
     private TextView tvHoraVisita;
@@ -59,16 +83,31 @@ public class dialog_originacion_gpo extends DialogFragment {
     private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+    private SessionManager session;
+
+    private Validator validator = new Validator();
+    private ValidatorTextView validatorTV = new ValidatorTextView();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_originacion_gpo, container, false);
 
         myCalendar = Calendar.getInstance();
         ctx = getContext();
+
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
+
+        _plazo = getResources().getStringArray(R.array.intervalo);
+        _frecuencia = getResources().getStringArray(R.array.lapso);
+
+        session = new SessionManager(ctx);
         boostrap = (SolicitudCreditoGpo) getActivity();
         etNombre = view.findViewById(R.id.etNombreGpo);
-        spPlazo = view.findViewById(R.id.spPlazo);
-        spPeriodicidad = view.findViewById(R.id.spFrecuencia);
+        tvPlazo = view.findViewById(R.id.tvPlazo);
+        tvPeriodicidad = view.findViewById(R.id.tvFrecuencia);
         tvFechaDesembolso = view.findViewById(R.id.tvFechaDesembolso);
         tvDiaDesembolso = view.findViewById(R.id.tvDiaDesembolso);
         tvHoraVisita = view.findViewById(R.id.tvHoraVisita);
@@ -78,11 +117,11 @@ public class dialog_originacion_gpo extends DialogFragment {
         if (!getArguments().getBoolean("is_edit")){
             etNombre.setText(getArguments().getString("nombre"));
             etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNombre.setFocusable(false);
-            spPlazo.setSelection(getArguments().getInt("plazo"));
-            spPlazo.setEnabled(false);
-            spPeriodicidad.setSelection(getArguments().getInt("periodicidad"));
-            spPeriodicidad.setEnabled(false);
+            etNombre.setEnabled(false);
+            tvPlazo.setText(getArguments().getString("plazo"));
+            tvPlazo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_left));
+            tvPeriodicidad.setText(getArguments().getString("periodicidad"));
+            tvPeriodicidad.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
             tvFechaDesembolso.setText(getArguments().getString("fecha_desembolso"));
             tvFechaDesembolso.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             tvDiaDesembolso.setText(getArguments().getString("dia_desembolso"));
@@ -103,12 +142,50 @@ public class dialog_originacion_gpo extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        tvPlazo.setOnClickListener(tvPlazo_OnClick);
+        tvPeriodicidad.setOnClickListener(tvPeriodicidad_OnClick);
         tvFechaDesembolso.setOnClickListener(tvFechaDesembolso_OnClik);
         tvHoraVisita.setOnClickListener(tvHoraVisita_OnClik);
 
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
         btnCerrar.setOnClickListener(btnCerrar_OnClick);
     }
+
+    private View.OnClickListener tvPlazo_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.intervalo, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvPlazo.setError(null);
+                                tvPlazo.setText(_plazo[position]);
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        }
+    };
+
+    private View.OnClickListener tvPeriodicidad_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.lapso, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvPeriodicidad.setError(null);
+                                tvPeriodicidad.setText(_frecuencia[position]);
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        }
+    };
 
     private View.OnClickListener tvFechaDesembolso_OnClik = new View.OnClickListener() {
         @Override
@@ -145,39 +222,39 @@ public class dialog_originacion_gpo extends DialogFragment {
     private View.OnClickListener btnGuardar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etNombre.getText().toString().trim().isEmpty()){
-                if (spPlazo.getSelectedItemPosition() > 0){
-                    if (spPeriodicidad.getSelectedItemPosition() > 0){
-                        if (!tvFechaDesembolso.getText().toString().trim().isEmpty()){
-                            if (!tvHoraVisita.getText().toString().trim().isEmpty()){
-                                mListener.onComplete(etNombre.getText().toString().trim(),
-                                        spPlazo.getSelectedItemPosition(),
-                                        spPeriodicidad.getSelectedItemPosition(),
-                                        tvFechaDesembolso.getText().toString().trim(),
-                                        tvDiaDesembolso.getText().toString().trim(),
-                                        tvHoraVisita.getText().toString().trim());
-                                getDialog().dismiss();
+            if (!validator.validate(etNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                    !validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
+                    !validatorTV.validate(tvPeriodicidad, new String[]{validatorTV.REQUIRED}) &&
+                    !validatorTV.validate(tvFechaDesembolso, new String[]{validatorTV.REQUIRED}) &&
+                    !validatorTV.validate(tvHoraVisita, new String[]{validatorTV.REQUIRED})) {
+                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                        R.string.datos_correctos, R.string.yes, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                saveGrupo();
+                                dialog.dismiss();
+
                             }
-                            else
-                                tvHoraVisita.setError("Este campo es requerido");
-                        }
-                        else
-                            tvFechaDesembolso.setError("Este campo es requerido");
-                    }
-                    else
-                        Toast.makeText(ctx, "Seleccione la periodicidad del crédito", Toast.LENGTH_SHORT).show();
-                }
-                else
-                    Toast.makeText(ctx, "Seleccione el plazo del crédito", Toast.LENGTH_SHORT).show();
+                        }, R.string.no, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                guardar_info_dlg.show();
             }
-            else
-                etNombre.setError("Este campo es requerido");
         }
     };
 
     private View.OnClickListener btnCerrar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (!is_edit)
+                mListener.onComplete(0, 0,etNombre.getText().toString().trim().toUpperCase(), tvPlazo.getText().toString(), tvPeriodicidad.getText().toString(), tvFechaDesembolso.getText().toString().trim(), tvDiaDesembolso.getText().toString(), tvHoraVisita.getText().toString());
+            else
+                mListener.onComplete(0, 0,null, null, null, null, null, null);
             getDialog().dismiss();
         }
     };
@@ -202,13 +279,13 @@ public class dialog_originacion_gpo extends DialogFragment {
                             break;
                         case 3: diaDesembolso = "MARTES";
                             break;
-                        case 4: diaDesembolso = "MIÉRCOLES";
+                        case 4: diaDesembolso = "MIERCOLES";
                             break;
                         case 5: diaDesembolso = "JUEVES";
                             break;
                         case 6: diaDesembolso = "VIERNES";
                             break;
-                        case 7: diaDesembolso = "SÁBADO";
+                        case 7: diaDesembolso = "SABADO";
                             break;
                     }
                     tvDiaDesembolso.setText(diaDesembolso);
@@ -223,5 +300,51 @@ public class dialog_originacion_gpo extends DialogFragment {
                 }
             }
         }
+    }
+
+    private void saveGrupo (){
+        long id_solicitud;
+        // Crea la solicitud de credito grupal
+        HashMap<Integer, String> params = new HashMap<>();
+        params.put(0, session.getUser().get(0));
+        params.put(1, "2");
+        params.put(2, "1");
+        params.put(3, "0");
+        params.put(4, etNombre.getText().toString().trim().toUpperCase());
+        params.put(5, Miscellaneous.ObtenerFecha("timestamp"));
+        params.put(6, "");
+        params.put(7, "");
+        params.put(8, Miscellaneous.ObtenerFecha("timestamp"));
+        params.put(9, "");
+        if (ENVIROMENT)
+            id_solicitud = dBhelper.saveSolicitudes(db, SOLICITUDES, params);
+        else
+            id_solicitud = dBhelper.saveSolicitudes(db, SOLICITUDES_T, params);
+
+        //Inserta registro de datos del credito
+        long id_credito;
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id_solicitud));
+        params.put(1, etNombre.getText().toString().trim().toUpperCase());
+        params.put(2, tvPlazo.getText().toString());
+        params.put(3, tvPeriodicidad.getText().toString());
+        params.put(4, tvFechaDesembolso.getText().toString().trim());
+        params.put(5, tvDiaDesembolso.getText().toString().trim());
+        params.put(6, tvHoraVisita.getText().toString().trim());
+        params.put(7,"0");
+        if (ENVIROMENT)
+            id_credito = dBhelper.saveDatosCreditoGpo(db, DATOS_CREDITO_GPO, params);
+        else
+            id_credito = dBhelper.saveDatosCreditoGpo(db, DATOS_CREDITO_GPO_T, params);
+
+        mListener.onComplete(id_solicitud,
+                id_credito,etNombre.getText().toString().trim().toUpperCase(),
+                tvPlazo.getText().toString(),
+                tvPeriodicidad.getText().toString(),
+                tvFechaDesembolso.getText().toString().trim(),
+                tvDiaDesembolso.getText().toString().trim(),
+                tvHoraVisita.getText().toString().trim());
+        getDialog().dismiss();
+
     }
 }

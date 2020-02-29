@@ -18,6 +18,7 @@ import android.telecom.ConnectionService;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -252,6 +253,15 @@ public class Miscellaneous {
                     tempDir.mkdir();
                 }
                 path = Constants.ROOT_PATH+"Firma/" + name;
+                break;
+            case 4:     // Documentos
+                tempDir = new File(Constants.ROOT_PATH+"Documentos");
+                if(!tempDir.exists())
+                {
+                    Log.v("Carpeta", "No existe Documentos");
+                    tempDir.mkdir();
+                }
+                path = Constants.ROOT_PATH+"Documentos/" + name;
                 break;
         }
 
@@ -1762,4 +1772,28 @@ public class Miscellaneous {
         
         return id_verificador;
     }
+
+    public static String ConvertToJson (Object obj){
+        Log.v("JsonConvert", new GsonBuilder().create().toJson(obj));
+        return new GsonBuilder().create().toJson(obj);
+    }
+
+    public static boolean ValidTextView (TextView tv){
+        boolean flag = false;
+        if (tv.getText().toString().trim().isEmpty()){
+            tv.setError("Este campo es requerido");
+            tv.setFocusable(true);
+            //tv.setFocusableInTouchMode(true);*/
+            flag = true;
+        }
+
+        if (!tv.getText().toString().trim().isEmpty() && tv.getText().toString().trim().toUpperCase().contains("NO SE ENCONTRÓ INFORMACIÓN")){
+            tv.setError("Este campo es requerido");
+            tv.setFocusable(true);
+            //tv.setFocusableInTouchMode(true);*/
+            flag = true;
+        }
+        return flag;
+    }
+
 }

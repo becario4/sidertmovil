@@ -75,10 +75,14 @@ dependencies {
     implementation 'android.arch.work:work-runtime:1.0.1'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
 
+    implementation 'io.card:android-sdk:5.5.0'
+
+
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
 
+    //implementation project(':scanlibrary')
 
     api files('libs/Sewoo_Android_1092.jar') // Libreria para impresión de ticket
     //-----------------------           Fin         ---------------------------------

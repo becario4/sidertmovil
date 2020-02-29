@@ -20,6 +20,7 @@
 
         <EditText
             android:id="@+id/etNombreCony"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -42,6 +43,7 @@
 
         <EditText
             android:id="@+id/etApPaternoCony"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -64,6 +66,7 @@
 
         <EditText
             android:id="@+id/etApMaternoCony"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -110,6 +113,7 @@
 
         <EditText
             android:id="@+id/etCelularCony"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"

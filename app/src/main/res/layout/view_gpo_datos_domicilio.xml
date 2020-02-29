@@ -59,6 +59,7 @@
         <EditText
             android:id="@+id/etCalleCli"
             android:inputType="textCapCharacters"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
             android:maxLength="100"
             android:background="@drawable/et_rounded_edges"
@@ -88,6 +89,8 @@
                 android:inputType="textCapCharacters"
                 android:maxLength="6"
                 android:layout_marginRight="8dp"
+                android:paddingLeft="10dp"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -112,10 +115,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etManzCli"
+                android:id="@+id/etManzanaCli"
                 android:inputType="textCapCharacters"
-                android:paddingLeft="0dp"
+                android:paddingLeft="10dp"
                 android:maxLength="6"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -146,6 +150,8 @@
                 android:inputType="textCapCharacters"
                 android:maxLength="6"
                 android:layout_marginRight="8dp"
+                android:paddingLeft="10dp"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -172,8 +178,9 @@
             <EditText
                 android:id="@+id/etLoteCli"
                 android:inputType="textCapCharacters"
-                android:paddingLeft="0dp"
+                android:paddingLeft="10dp"
                 android:maxLength="6"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -201,6 +208,7 @@
             android:layout_marginRight="10dp"
             android:inputType="number"
             android:maxLength="5"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -292,7 +300,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tvTipoCasaCli"
             android:textColor="@android:color/black"
             android:text="Tipo Vivienda"
             android:layout_weight="1"
@@ -303,14 +310,17 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <Spinner
-            android:id="@+id/spTipoCasaCli"
-            android:entries="@array/tipo_casa_cli"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+        <TextView
+            android:id="@+id/tvTipoCasaCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
             android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="@dimen/et_height" />
         <LinearLayout
             android:id="@+id/llCasaFamiliar"
             android:visibility="gone"
@@ -329,14 +339,17 @@
                 style="@android:style/Widget.EditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <Spinner
-                android:id="@+id/spCasaFamiliar"
-                android:entries="@array/casa_familiar"
-                android:spinnerMode="dialog"
-                android:drawableRight="@drawable/ic_drop_down"
+            <TextView
+                android:id="@+id/tvCasaFamiliar"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:hint="SELECCIONE UNA OPCIÓN"
                 android:background="@drawable/et_rounded_edges"
+                android:drawableRight="@drawable/ic_drop_down"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/et_height"/>
+                android:layout_height="@dimen/et_height" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/llCasaOtro"
@@ -361,6 +374,7 @@
                 android:inputType="textCapCharacters"
                 android:paddingLeft="10dp"
                 android:maxLength="45"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/et_height" />
@@ -388,6 +402,7 @@
             android:inputType="number"
             android:maxLength="2"
             android:paddingLeft="10dp"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -401,7 +416,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tvFotoFachada"
+            android:id="@+id/tvFachadaCli"
             android:textColor="@android:color/black"
             android:text="@string/facade_photo"
             android:layout_weight="1"
@@ -450,11 +465,12 @@
 
         <MultiAutoCompleteTextView
             android:id="@+id/etReferenciaCli"
-            android:inputType="textMultiLine|textCapSentences"
+            android:inputType="textMultiLine|textCapCharacters"
             android:ems="10"
             android:maxLength="100"
             android:ellipsize="end"
             android:gravity="start"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"

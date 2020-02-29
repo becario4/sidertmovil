@@ -42,6 +42,7 @@ public class SidertTables {
         public static final String TABLE_COLONIAS      = Constants.COLONIAS;
         public static final String TABLE_OCUPACIONES   = Constants.OCUPACIONES;
         public static final String TABLE_SECTORES      = Constants.SECTORES;
+        public static final String TABLE_IDENTIFICACIONES      = Constants.IDENTIFICACIONES;
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String ASESOR_ID            = "asesor_id";
@@ -123,6 +124,8 @@ public class SidertTables {
         public static final String AVAL                 = "aval";
         public static final String REFERENCIA           = "referencia";
         public static final String CREATE_AT            = "create_at";
+        public static final String IDENTIFICACION_ID    = "identificacion_id";
+        public static final String IDENTIFICACION_NOMBRE = "identificacion_nombre";
 
 
         // == QUERIES CREATE
@@ -342,8 +345,6 @@ public class SidertTables {
                 "estatus INTEGER, " +
                 "id_originacion INTEGER, " +
                 "nombre TEXT, " +
-                "paterno TEXT, " +
-                "materno TEXT, " +
                 "fecha_inicio TEXT, " +
                 "fecha_termino TEXT, " +
                 "fecha_envio TEXT, " +
@@ -353,13 +354,13 @@ public class SidertTables {
         static final String CREATE_TABLE_DATOS_CREDITO_IND_T = "CREATE TABLE datos_credito_ind_t (" +
                 "id_credito INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
-                "plazo INTEGER," +
-                "periodicidad INTEGER," +
+                "plazo TEXT," +
+                "periodicidad TEXT," +
                 "fecha_desembolso TEXT," +
                 "dia_desembolso TEXT," +
                 "hora_visita TEXT," +
                 "monto_prestamo TEXT," +
-                "destino INTEGER," +
+                "destino TEXT," +
                 "estatus_completado INTEGER)";
 
         static final String CREATE_TABLE_CLIENTE_IND_T = "CREATE TABLE datos_cliente_ind_t (" +
@@ -378,13 +379,13 @@ public class SidertTables {
                 "curp_digito_veri TEXT," +
                 "ocupacion TEXT," +
                 "actividad_economica TEXT," +
-                "tipo_identificacion INTEGER," +
+                "tipo_identificacion TEXT," +
                 "no_identificacion TEXT," +
-                "nivel_estudio INTEGER," +
-                "estado_civil INTEGER," +
+                "nivel_estudio TEXT," +
+                "estado_civil TEXT," +
                 "bienes INTEGER," +
-                "tipo_vivienda INTEGER," +
-                "parentesco INTEGER," +
+                "tipo_vivienda TEXT," +
+                "parentesco TEXT," +
                 "otro_tipo_vivienda TEXT," +
                 "latitud TEXT," +
                 "longitud TEXT," +
@@ -400,8 +401,8 @@ public class SidertTables {
                 "tel_mensajes TEXT," +
                 "tel_trabajo TEXT," +
                 "tiempo_vivir_sitio INTEGER," +
-                "dependientes INTEGER," +
-                "medio_contacto INTEGER," +
+                "dependientes TEXT," +
+                "medio_contacto TEXT," +
                 "email TEXT," +
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
@@ -472,7 +473,7 @@ public class SidertTables {
                 "homoclave TEXT," +
                 "curp TEXT," +
                 "curp_digito_veri TEXT," +
-                "tipo_identificacion INTEGER," +
+                "tipo_identificacion TEXT," +
                 "no_identificacion TEXT," +
                 "ocupacion TEXT," +
                 "actividad_economica TEXT," +
@@ -485,9 +486,9 @@ public class SidertTables {
                 "lote TEXT," +
                 "cp TEXT," +
                 "colonia TEXT," +
-                "tipo_vivienda INTEGER," +
+                "tipo_vivienda TEXT," +
                 "nombre_titular TEXT," +
-                "parentesco INTEGER," +
+                "parentesco TEXT," +
                 "ing_mensual TEXT," +
                 "ing_otros TEXT," +
                 "gasto_semanal TEXT," +
@@ -519,7 +520,123 @@ public class SidertTables {
                 "municipio TEXT," +
                 "tel_celular TEXT," +
                 "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_DATOS_CREDITO_GPO_T = "CREATE TABLE datos_credito_gpo_t (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre_grupo TEXT," +
+                "plazo TEXT," +
+                "periodicidad TEXT," +
+                "fecha_desembolso TEXT," +
+                "dia_desembolso TEXT," +
+                "hora_visita TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_INTEGRANTES_GPO_T = "CREATE TABLE datos_integrantes_gpo_t (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_credito INTEGER," +
+                "cargo INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "fecha_nacimiento TEXT," +
+                "edad TEXT," +
+                "genero INTEGER," +
+                "estado_nacimiento TEXT," +
+                "rfc TEXT," +
+                "curp TEXT," +
+                "curp_digito_veri TEXT," +
+                "tipo_identificacion TEXT," +
+                "no_identificacion TEXT," +
+                "nivel_estudio TEXT," +
+                "estado_civil TEXT," +
+                "bienes INTEGER," +
+                "estatus_rechazo INTEGER," +
+                "comentario_rechazo TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_TELEFONOS_INTEGRANTE_T = "CREATE TABLE telefonos_integrante_t (" +
+                "id_telefonico INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "tel_casa TEXT," +
+                "tel_celular TEXT," +
+                "tel_mensaje TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_DOMICILIO_INTEGRANTE_T = "CREATE TABLE domicilio_integrante_t (" +
+                "id_domicilio INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "tipo_vivienda TEXT," +
+                "parentesco TEXT," +
+                "otro_tipo_vivienda TEXT," +
+                "tiempo_vivir_sitio TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_NEGOCIO_INTEGRANTE_T = "CREATE TABLE negocio_integrante_t (" +
+                "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "nombre TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "actividad_economica TEXT," +
+                "antiguedad TEXT," +
+                "ing_mensual TEXT," +
+                "ing_otros TEXT," +
+                "gasto_semanal TEXT," +
+                "capacidad_pago TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "estatus_rechazo INTEGER," +
+                "comentario_rechazo TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_CONYUGE_INTEGRANTE_T = "CREATE TABLE conyuge_integrante_t (" +
+                "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "ocupacion TEXT," +
+                "tel_celular TEXT," +
+                "ingresos TEXT," +
+                "estatus_completado INTEGER)";
                 
+        static final String CREATE_TBL_OTROS_DATOS_INTEGRANTE_T = "CREATE TABLE otros_datos_integrante_t (" +
+                "id_otro INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "medio_contacto TEXT," +
+                "email TEXT," +
+                "estatus_integrante INTEGER," +
+                "monto_solicitado TEXT," +
+                "casa_reunion INTEGER," +
+                "firma TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_DOCUMENTOS_CLIENTES_T = "CREATE TABLE documentos_t (" +
+                "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_cliente INTEGER," +
+                "nombre TEXT," +
+                "tipo_documento INTEGER," +
+                "estatus INTEGER)";
+
 
 
 
@@ -562,6 +679,11 @@ public class SidertTables {
                 + SidertEntry.SECTOR_ID      + " INTEGER,"
                 + SidertEntry.SECTOR_NOMBRE  + " TEXT,"
                 + SidertEntry.NIVEL_RIESGO   + " INTEGER)";
+
+        static final String CREATE_TABLE_IDENTIFICACIONES = "CREATE TABLE " + TABLE_IDENTIFICACIONES + "("
+                + SidertEntry._ID                    + " INTEGER PRIMARY KEY,"
+                + SidertEntry.IDENTIFICACION_ID      + " INTEGER,"
+                + SidertEntry.IDENTIFICACION_NOMBRE  + " TEXT)";
 
         static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
                                                 " ADD COLUMN " + SidertEntry.CREATE_AT +

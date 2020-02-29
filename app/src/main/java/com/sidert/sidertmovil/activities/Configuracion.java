@@ -20,6 +20,7 @@ import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 
 import java.util.HashMap;
 
@@ -29,6 +30,7 @@ public class Configuracion extends AppCompatActivity {
     private Toolbar tbMain;
     private CardView cvSincronizarFichas;
     private CardView cvFichasGestionadas;
+    private CardView cvCatalogos;
 
     private SessionManager session;
 
@@ -44,6 +46,7 @@ public class Configuracion extends AppCompatActivity {
         tbMain = findViewById(R.id.tbMain);
         cvSincronizarFichas = findViewById(R.id.cvSincronizarFichas);
         cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
+        cvCatalogos         = findViewById(R.id.cvCatalogos);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -56,6 +59,7 @@ public class Configuracion extends AppCompatActivity {
 
         cvSincronizarFichas.setOnClickListener(cvSincronizarFichas_OnClick);
         cvFichasGestionadas.setOnClickListener(cvFichasGestionadas_OnClick);
+        cvCatalogos.setOnClickListener(cvCatalogos_OnClick);
     }
 
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
@@ -94,6 +98,34 @@ public class Configuracion extends AppCompatActivity {
                 success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                 success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 success.show();
+            }
+        }
+    };
+
+    private View.OnClickListener cvCatalogos_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            if (NetworkStatus.haveNetworkConnection(ctx)){
+                Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
+                catalogos.GetEstados(ctx);
+                catalogos.GetMunicipios(ctx);
+                catalogos.GetOcupaciones(ctx);
+                catalogos.GetSectores(ctx);
+                catalogos.GetTipoIdentificacion(ctx);
+                catalogos.GetColonias(ctx);
+            }
+            else{
+                final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_wifi, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                not_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                not_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                not_network.show();
             }
         }
     };

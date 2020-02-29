@@ -16,7 +16,8 @@ public class ValidatorTextView {
     public final String CREDITO         = "credito";
     public final String CURP            = "curp";
     public final String CURP_ID         = "curp_id";
-    public final String HOMOCLAVE       = "homocalve";
+    public final String RFC             = "rfc";
+
 
     public  String REQUIRED_MESSAGE       = "Este campo es requerido.";
     public  String ONLY_TEXT_MESSAGE      = "Solo permite letras y espacios.";
@@ -27,6 +28,7 @@ public class ValidatorTextView {
     public  String MENSAJE_MONTO_CREDITO  = "La cantidad no corresponde a un monto de crédito válido";
     public  String MENSAJE_CURP_NO_VALIDA = "No corresponde a una CURP válida";
     public  String MENSAJE_CURP_ID        = "Formato incorrecto";
+    public  String MENSAJE_RFC            = "No corresponde a un RFC válido";
 
     private final String PATTERN_ONLY_TEXT      = "[A-Za-z ÑñÁáÉéÍíÓóÚú]*";
     private final String PATTERN_ONLY_NUMBER    = "[0-9]*";
@@ -35,7 +37,7 @@ public class ValidatorTextView {
     private final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
     private final String PATTERN_CURP           = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}";
     private final String PATTERN_CURP_ID        = "[0-9]{2}";
-    private final String PATTERN_HOMOCLAVE      = "[A-Z]{2}[0-9]";
+    private final String PATTERN_RFC            = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])|[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Zd]{2})(Ad)";
 
     private Pattern pattern;
     private Matcher matcher;
@@ -101,11 +103,11 @@ public class ValidatorTextView {
                         return error;
                     }
                     break;
-                case HOMOCLAVE:
-                    pattern = Pattern.compile(PATTERN_HOMOCLAVE);
+                case RFC:
+                    pattern = Pattern.compile(PATTERN_RFC);
                     matcher = pattern.matcher(tvx.getText().toString());
                     if(!matcher.matches()) {
-                        tvx.setError(MENSAJE_CURP_ID);
+                        tvx.setError(MENSAJE_RFC);
                         tvx.setFocusable(true);
                         tvx.setFocusableInTouchMode(true);
                         error = true;

@@ -477,6 +477,7 @@ public class CameraVertical extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.e("Error", "OnPause");
+
         cameraDevice.close();
         stopBackgroundThread();
         super.onPause();

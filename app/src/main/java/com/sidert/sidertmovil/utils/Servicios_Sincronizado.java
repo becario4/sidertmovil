@@ -16,6 +16,7 @@ import com.sidert.sidertmovil.MainActivity;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
+import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 
@@ -369,7 +370,6 @@ public class Servicios_Sincronizado {
         }
     }
 
-
     public class DescargarFotoFachada extends AsyncTask<Object, Void, String> {
 
         //ProgressDialog pDialog;
@@ -482,6 +482,366 @@ public class Servicios_Sincronizado {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
 
+        }
+
+    }
+
+    public void SendOriginacionInd (Context ctx, boolean flag){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag)
+            loading.show();
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row;
+        if (Constants.ENVIROMENT)
+            row = dBhelper.getRecords(Constants.SOLICITUDES_T, " WHERE tipo_solicitud = 1 AND estatus = 0", "", null);
+        else
+            row = dBhelper.getRecords(Constants.SOLICITUDES_T, " WHERE tipo_solicitud = 1 AND estatus = 0", "", null);
+
+        if (row.getCount() > 0){
+            row.moveToNext();
+
+            Log.e("count solicitudes", row.getCount()+" total");
+            for (int i = 0; i < row.getCount(); i++){
+                Cursor row_soli = dBhelper.getOriginacionInd(row.getString(0), true);
+                if (row_soli.getCount() > 0) {
+                    Log.e("count solicitud", row_soli.getCount() + " total");
+                    row_soli.moveToFirst();
+                    JSONObject json_solicitud = new JSONObject();
+                    try {
+                        json_solicitud.put(Constants.K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
+                        json_solicitud.put(Constants.K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
+                        json_solicitud.put(Constants.K_FECHA_DESEMBOLSO, row_soli.getString(4));
+                        json_solicitud.put(Constants.K_HORA_VISITA, row_soli.getString(6));
+                        json_solicitud.put(Constants.K_MONTO_PRESTAMO, row_soli.getInt(7));
+                        json_solicitud.put(Constants.K_DESTINO_PRESTAMO, row_soli.getString(8));
+
+                        JSONObject json_solicitante = new JSONObject();
+                        json_solicitante.put(Constants.K_NOMBRE, row_soli.getString(12));
+                        json_solicitante.put(Constants.K_PATERNO, row_soli.getString(13));
+                        json_solicitante.put(Constants.K_MATERNO, row_soli.getString(14));
+                        json_solicitante.put(Constants.K_FECHA_NACIMIENTO, row_soli.getString(15));
+                        json_solicitante.put(Constants.K_GENERO, row_soli.getInt(17));
+                        json_solicitante.put(Constants.K_ESTADO_NACIMIENTO, row_soli.getString(18));
+                        json_solicitante.put(Constants.K_RFC, row_soli.getString(19));
+                        json_solicitante.put(Constants.K_CURP, row_soli.getString(21) + row_soli.getString(22));
+                        json_solicitante.put(Constants.K_OCUPACION, row_soli.getString(23));
+                        json_solicitante.put(Constants.K_ACTIVIDAD_ECONOMICA, row_soli.getString(24));
+                        json_solicitante.put(Constants.K_IDENTIFICACION_TIPO, row_soli.getString(25));
+                        json_solicitante.put(Constants.K_NO_IDENTIFICACION, row_soli.getString(26));
+                        json_solicitante.put(Constants.K_NIVEL_ESTUDIO, row_soli.getString(27));
+                        json_solicitante.put(Constants.K_ESTADO_CIVIL, row_soli.getString(28));
+                        if (row_soli.getString(28).equals("CASADA(O)"))
+                            json_solicitante.put(Constants.K_BIENES, (row_soli.getInt(29) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                        json_solicitante.put(Constants.K_TIPO_VIVIENDA, row_soli.getString(30));
+                        if (row_soli.getString(30).equals("CASA FAMILIAR"))
+                            json_solicitante.put(Constants.K_PARENTESCO, row_soli.getString(31));
+                        else if (row_soli.getString(30).equals("OTRO"))
+                            json_solicitante.put(Constants.K_OTRO_TIPO_VIVIENDA, row_soli.getString(32));
+                        json_solicitante.put(Constants.K_LATITUD, row_soli.getString(33));
+                        json_solicitante.put(Constants.K_LONGITUD, row_soli.getString(34));
+                        json_solicitante.put(Constants.K_CALLE, row_soli.getString(35));
+                        json_solicitante.put(Constants.K_NO_EXTERIOR,row_soli.getString(36));
+                        json_solicitante.put(Constants.K_NO_INTERIOR, row_soli.getString(37));
+                        json_solicitante.put(Constants.K_NO_MANZANA, row_soli.getString(38));
+                        json_solicitante.put(Constants.K_NO_LOTE, row_soli.getString(39));
+                        json_solicitante.put(Constants.K_CODIGO_POSTAL, row_soli.getInt(40));
+                        Cursor row_direccion = dBhelper.getDireccionByCP(row_soli.getString(40));
+                        row_direccion.moveToFirst();
+                        json_solicitante.put(Constants.K_COLONIA, row_soli.getString(41));
+                        json_solicitante.put(Constants.K_MUNICIPIO,row_direccion.getString(4));
+                        json_solicitante.put(Constants.K_ESTADO, row_direccion.getString(1));
+                        row_direccion.close();
+                        json_solicitante.put(Constants.K_TEL_CASA, row_soli.getString(42));
+                        json_solicitante.put(Constants.K_TEL_CELULAR, row_soli.getString(43));
+                        json_solicitante.put(Constants.K_TEL_MENSAJE, row_soli.getString(44));
+                        json_solicitante.put(Constants.K_TEL_TRABAJO, row_soli.getString(45));
+                        json_solicitante.put(Constants.K_TIEMPO_VIVIR_SITIO, row_soli.getInt(46));
+                        json_solicitante.put(Constants.K_DEPENDIENTES_ECONOMICO, row_soli.getInt(47));
+                        json_solicitante.put(Constants.K_MEDIO_CONTACTO, row_soli.getString(48));
+                        json_solicitante.put(Constants.K_EMAIL, row_soli.getString(49));
+                        json_solicitante.put(Constants.K_FOTO_FACHADA, row_soli.getString(50));
+                        json_solicitante.put(Constants.K_REFERENCIA_DOMICILIARIA, row_soli.getString(51));
+                        json_solicitante.put(Constants.K_FIRMA, row_soli.getString(52));
+
+                        MultipartBody.Part fachada_cliente = null;
+                        File image_fachada_cliente = new File(Constants.ROOT_PATH + "Fachada/"+row_soli.getString(50));
+                        if (image_fachada_cliente != null) {
+                            RequestBody imageBodyFachadaCli =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_fachada_cliente);
+
+                            fachada_cliente = MultipartBody.Part.createFormData("fachada_cliente", image_fachada_cliente.getName(), imageBodyFachadaCli);
+                        }
+
+                        MultipartBody.Part firma_cliente = null;
+                        File image_firma_cliente = new File(Constants.ROOT_PATH + "Firma/"+row_soli.getString(52));
+                        if (image_fachada_cliente != null) {
+                            RequestBody imageBodyFirmaCli =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_firma_cliente);
+
+                            firma_cliente = MultipartBody.Part.createFormData("firma_cliente", image_firma_cliente.getName(), imageBodyFirmaCli);
+                        }
+
+                        json_solicitud.put(Constants.K_SOLICITANTE, json_solicitante);
+                        if (row_soli.getString(28).equals("CASADA(O)") ||
+                                row_soli.getString(28).equals("UNIÓN LIBRE")) {
+                            JSONObject json_conyuge = new JSONObject();
+                            json_conyuge.put(Constants.K_NOMBRE, row_soli.getString(58));
+                            json_conyuge.put(Constants.K_PATERNO, row_soli.getString(59));
+                            json_conyuge.put(Constants.K_MATERNO, row_soli.getString(60));
+                            json_conyuge.put(Constants.K_OCUPACION, row_soli.getString(61));
+                            json_conyuge.put(Constants.K_TEL_CELULAR, row_soli.getString(62));
+
+                            json_solicitud.put(Constants.K_SOLICITANTE_CONYUGE, json_conyuge);
+                        }
+
+                        if (row_soli.getInt(7) >= 30000){
+                            JSONObject json_economicos = new JSONObject();
+                            json_economicos.put(Constants.K_PROPIEDADES, row_soli.getString(66));
+                            json_economicos.put(Constants.K_VALOR_APROXIMADO, row_soli.getString(67));
+                            json_economicos.put(Constants.K_UBICACION, row_soli.getString(68));
+                            json_economicos.put(Constants.K_INGRESO, row_soli.getString(69));
+
+                            json_solicitud.put(Constants.K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
+                        }
+
+                        JSONObject json_negocio = new JSONObject();
+                        json_negocio.put(Constants.K_NOMBRE, row_soli.getString(73));
+                        json_negocio.put(Constants.K_LATITUD, row_soli.getString(74));
+                        json_negocio.put(Constants.K_LONGITUD, row_soli.getString(75));
+                        json_negocio.put(Constants.K_CALLE, row_soli.getString(76));
+                        json_negocio.put(Constants.K_NO_INTERIOR, row_soli.getString(77));
+                        json_negocio.put(Constants.K_NO_INTERIOR, row_soli.getString(78));
+                        json_negocio.put(Constants.K_NO_MANZANA, row_soli.getString(79));
+                        json_negocio.put(Constants.K_NO_LOTE, row_soli.getString(80));
+                        json_negocio.put(Constants.K_CODIGO_POSTAL, row_soli.getInt(81));
+                        json_negocio.put(Constants.K_COLONIA, row_soli.getString(82));
+                        Cursor row_address_neg = dBhelper.getDireccionByCP(row_soli.getString(81));
+                        row_address_neg.moveToFirst();
+                        json_negocio.put(Constants.K_MUNICIPIO,row_address_neg.getString(4));
+                        row_address_neg.close();
+                        json_negocio.put(Constants.K_ACTIVIDAD_ECONOMICA, row_soli.getString(83));
+                        json_negocio.put(Constants.K_ANTIGUEDAD, row_soli.getString(84));
+                        json_negocio.put(Constants.K_INGRESO_MENSUAL, row_soli.getString(85));
+                        json_negocio.put(Constants.K_INGRESOS_OTROS, row_soli.getString(86));
+                        json_negocio.put(Constants.K_GASTO_SEMANAL, row_soli.getString(87));
+                        json_negocio.put(Constants.K_GASTO_AGUA, row_soli.getString(88));
+                        json_negocio.put(Constants.K_GASTO_LUZ, row_soli.getString(89));
+                        json_negocio.put(Constants.K_GASTO_TELEFONO, row_soli.getString(90));
+                        json_negocio.put(Constants.K_GASTO_RENTA, row_soli.getString(91));
+                        json_negocio.put(Constants.K_GASTO_OTROS, row_soli.getString(92));
+                        json_negocio.put(Constants.K_CAPACIDAD_PAGO, row_soli.getString(93));
+                        json_negocio.put(Constants.K_DIAS_VENTA, row_soli.getString(94));
+                        json_negocio.put(Constants.K_FOTO_FACHADA, row_soli.getString(95));
+                        json_negocio.put(Constants.K_REFERENCIA_NEGOCIO, row_soli.getString(96));
+
+                        MultipartBody.Part fachada_negocio = null;
+                        File image_fachada_negocio = new File(Constants.ROOT_PATH + "Fachada/"+row_soli.getString(95));
+                        if (image_fachada_negocio != null) {
+                            RequestBody imageBodyFachadaNeg =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_fachada_negocio);
+
+                            fachada_negocio = MultipartBody.Part.createFormData("fachada_negocio", image_fachada_negocio.getName(), imageBodyFachadaNeg);
+                        }
+
+                        json_solicitud.put(Constants.K_SOLICITANTE_NEGOCIO, json_negocio);
+
+                        JSONObject json_aval = new JSONObject();
+                        json_aval.put(Constants.K_NOMBRE, row_soli.getString(100));
+                        json_aval.put(Constants.K_PATERNO, row_soli.getString(101));
+                        json_aval.put(Constants.K_MATERNO, row_soli.getString(102));
+                        json_aval.put(Constants.K_FECHA_NACIMIENTO, row_soli.getString(103));
+                        json_aval.put(Constants.K_GENERO, row_soli.getInt(105));
+                        json_aval.put(Constants.K_ESTADO_NACIMIENTO, row_soli.getString(106));
+                        json_aval.put(Constants.K_RFC, row_soli.getString(107));
+                        json_aval.put(Constants.K_CURP, row_soli.getString(109)+row_soli.getString(110));
+                        json_aval.put(Constants.K_IDENTIFICACION_TIPO, row_soli.getString(111));
+                        json_aval.put(Constants.K_NO_IDENTIFICACION, row_soli.getString(112));
+                        json_aval.put(Constants.K_OCUPACION, row_soli.getString(113));
+                        json_aval.put(Constants.K_ACTIVIDAD_ECONOMICA, row_soli.getString(114));
+                        json_aval.put(Constants.K_LATITUD, row_soli.getString(115));
+                        json_aval.put(Constants.K_LONGITUD, row_soli.getString(116));
+                        json_aval.put(Constants.K_CALLE, row_soli.getString(117));
+                        json_aval.put(Constants.K_NO_EXTERIOR, row_soli.getString(118));
+                        json_aval.put(Constants.K_NO_INTERIOR, row_soli.getString(119));
+                        json_aval.put(Constants.K_NO_MANZANA, row_soli.getString(120));
+                        json_aval.put(Constants.K_NO_LOTE, row_soli.getString(121));
+                        json_aval.put(Constants.K_CODIGO_POSTAL, row_soli.getInt(122));
+                        json_aval.put(Constants.K_COLONIA, row_soli.getString(123));
+                        Cursor row_address_aval = dBhelper.getDireccionByCP(row_soli.getString(122));
+                        row_address_aval.moveToFirst();
+                        json_aval.put(Constants.K_MUNICIPIO,row_address_aval.getString(4));
+                        json_aval.put(Constants.K_ESTADO, row_address_aval.getString(1));
+                        row_address_aval.close();
+                        json_aval.put(Constants.K_TIPO_VIVIENDA, row_soli.getString(124));
+                        if (row_soli.getString(124).equals("CASA FAMILIAR")){
+                            json_aval.put(Constants.K_NOMBRE_TITULAR, row_soli.getString(125));
+                            json_aval.put(Constants.K_PARENTESCO, row_soli.getString(126));
+                        }
+                        json_aval.put(Constants.K_INGRESO_MENSUAL, row_soli.getDouble(127));
+                        json_aval.put(Constants.K_INGRESOS_OTROS, row_soli.getDouble(128));
+                        json_aval.put(Constants.K_GASTO_SEMANAL, row_soli.getDouble(129));
+                        json_aval.put(Constants.K_GASTO_AGUA, row_soli.getDouble(130));
+                        json_aval.put(Constants.K_GASTO_LUZ, row_soli.getDouble(131));
+                        json_aval.put(Constants.K_GASTO_TELEFONO, row_soli.getDouble(132));
+                        json_aval.put(Constants.K_GASTO_RENTA, row_soli.getDouble(133));
+                        json_aval.put(Constants.K_GASTO_OTROS, row_soli.getDouble(134));
+                        json_aval.put(Constants.K_HORA_LOCALIZACION, row_soli.getString(135));
+                        json_aval.put(Constants.K_ANTIGUEDAD, row_soli.getInt(136));
+                        json_aval.put(Constants.K_TEL_CASA, row_soli.getString(137));
+                        json_aval.put(Constants.K_TEL_CELULAR, row_soli.getString(138));
+                        json_aval.put(Constants.K_FOTO_FACHADA, row_soli.getString(139));
+                        json_aval.put(Constants.K_REFERENCIA_DOMICILIARIA, row_soli.getString(140));
+                        json_aval.put(Constants.K_FIRMA, row_soli.getString(141));
+
+                        MultipartBody.Part fachada_aval = null;
+                        File image_fachada_aval = new File(Constants.ROOT_PATH + "Fachada/"+row_soli.getString(139));
+                        if (image_fachada_aval != null) {
+                            RequestBody imageBodyFachadaAval =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_fachada_aval);
+
+                            fachada_aval = MultipartBody.Part.createFormData("fachada_aval", image_fachada_aval.getName(), imageBodyFachadaAval);
+                        }
+
+                        MultipartBody.Part firma_aval = null;
+                        File image_firma_aval = new File(Constants.ROOT_PATH + "Firma/"+row_soli.getString(141));
+                        if (image_fachada_aval != null) {
+                            RequestBody imageBodyFirmaAval =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_firma_aval);
+
+                            firma_aval = MultipartBody.Part.createFormData("firma_aval", image_firma_aval.getName(), imageBodyFirmaAval);
+                        }
+
+                        json_solicitud.put(Constants.K_SOLICITANTE_AVAL, json_aval);
+
+                        JSONObject json_referencia = new JSONObject();
+                        json_referencia.put(Constants.K_NOMBRE, row_soli.getString(147));
+                        json_referencia.put(Constants.K_PATERNO, row_soli.getString(148));
+                        json_referencia.put(Constants.K_MATERNO, row_soli.getString(149));
+                        json_referencia.put(Constants.K_CALLE, row_soli.getString(150));
+                        json_referencia.put(Constants.K_CODIGO_POSTAL, row_soli.getInt(151));
+                        json_referencia.put(Constants.K_COLONIA, row_soli.getString(152));
+                        json_referencia.put(Constants.K_MUNICIPIO, row_soli.getString(153));
+                        json_referencia.put(Constants.K_TEL_CELULAR, row_soli.getString(154));
+
+                        json_solicitud.put(Constants.K_SOLICITANTE_REFERENCIA, json_referencia);
+                        MultipartBody.Part foto_ine_frontal = null;
+                        MultipartBody.Part foto_ine_reverso = null;
+                        MultipartBody.Part foto_curp = null;
+                        MultipartBody.Part foto_comprobante = null;
+                        MultipartBody.Part firma_asesor = null;
+                        for (int j = 0; j < row_soli.getCount(); j++){
+
+                            switch (row_soli.getInt(159)){
+                                case 1:
+                                    File image_ine_frontal = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
+                                    if (image_ine_frontal != null) {
+                                        RequestBody imageBody =
+                                                RequestBody.create(
+                                                        MediaType.parse("image/*"), image_ine_frontal);
+
+                                        foto_ine_frontal = MultipartBody.Part.createFormData("identificacion_frontal", image_ine_frontal.getName(), imageBody);
+                                    }
+                                    break;
+                                case 2:
+                                    File image_ine_reverso = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
+                                    if (image_ine_reverso != null) {
+                                        RequestBody imageBody =
+                                                RequestBody.create(
+                                                        MediaType.parse("image/*"), image_ine_reverso);
+
+                                        foto_ine_reverso = MultipartBody.Part.createFormData("identificacion_reverso", image_ine_reverso.getName(), imageBody);
+                                    }
+                                    break;
+                                case 3:
+                                    File image_curp = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
+                                    if (image_curp != null) {
+                                        RequestBody imageBody =
+                                                RequestBody.create(
+                                                        MediaType.parse("image/*"), image_curp);
+
+                                        foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
+                                    }
+                                    break;
+                                case 4:
+                                    File image_comprobante = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
+                                    if (image_comprobante != null) {
+                                        RequestBody imageBody =
+                                                RequestBody.create(
+                                                        MediaType.parse("image/*"), image_comprobante);
+
+                                        foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
+                                    }
+                                    break;
+                                case 6:
+                                    File image_firma_asesor = new File(Constants.ROOT_PATH + "Firma/"+row_soli.getString(158));
+                                    if (image_firma_asesor != null) {
+                                        RequestBody imageBody =
+                                                RequestBody.create(
+                                                        MediaType.parse("image/*"), image_firma_asesor);
+
+                                        firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
+                                    }
+                                    break;
+                            }
+                            row_soli.moveToNext();
+                        }
+
+                        RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
+
+
+                        Log.e("solicitud", json_solicitud.toString());
+                        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_SOLICITUDES).create(ManagerInterface.class);
+
+                        Call<MResSaveOriginacionInd> call = api.guardarOriginacionInd("Bearer "+ session.getUser().get(7),
+                                solicitudBody,
+                                fachada_cliente,
+                                firma_cliente,
+                                fachada_negocio,
+                                fachada_aval,
+                                firma_aval,
+                                foto_ine_frontal,
+                                foto_ine_reverso,
+                                foto_curp,
+                                foto_comprobante,
+                                firma_asesor);
+
+                        call.enqueue(new Callback<MResSaveOriginacionInd>() {
+                            @Override
+                            public void onResponse(Call<MResSaveOriginacionInd> call, Response<MResSaveOriginacionInd> response) {
+                                Log.e("Respuesta code", response.code()+" codigo");
+                                Log.e("Respuesta mensaje", response.body().toString());
+                                switch (response.code()){
+                                    case 200:
+                                        Log.e("respuesta", response.body().toString());
+                                        break;
+                                }
+                                loading.dismiss();
+                            }
+
+                            @Override
+                            public void onFailure(Call<MResSaveOriginacionInd> call, Throwable t) {
+                                loading.dismiss();
+                                Log.e("Error", "fail");
+
+                            }
+                        });
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                row.moveToNext();
+            }
         }
 
     }

@@ -22,6 +22,7 @@
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="80"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -34,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tvMapa"
+            android:id="@+id/tvMapaNeg"
             android:textColor="@android:color/black"
             android:text="Ubicación del Negocio"
             android:layout_weight="1"
@@ -83,6 +84,7 @@
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -107,10 +109,12 @@
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/etNoExtNeg"
-                android:inputType="number"
+                android:inputType="textCapCharacters"
                 android:maxLength="6"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
+                android:paddingLeft="10dp"
                 android:layout_marginRight="8dp"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/et_height" />
@@ -134,10 +138,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/etManzNeg"
-                android:inputType="number"
-                android:paddingLeft="0dp"
+                android:id="@+id/etManzanaNeg"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="10dp"
                 android:maxLength="6"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -165,8 +170,10 @@
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/etNoIntNeg"
-                android:inputType="number"
+                android:textColor="@drawable/edit_text_selector"
+                android:inputType="textCapCharacters"
                 android:maxLength="6"
+                android:paddingLeft="10dp"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -193,9 +200,10 @@
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/etLoteNeg"
-                android:inputType="number"
-                android:paddingLeft="0dp"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="10dp"
                 android:maxLength="6"
+                android:textColor="@drawable/edit_text_selector"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -222,6 +230,7 @@
             android:inputType="number"
             android:maxLength="5"
             android:paddingLeft="10dp"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -325,6 +334,7 @@
             android:inputType="number"
             android:maxLength="2"
             android:paddingLeft="10dp"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -370,6 +380,7 @@
             android:id="@+id/etIngMenNeg"
             android:inputType="number"
             android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -393,6 +404,7 @@
             android:id="@+id/etOtrosIngNeg"
             android:inputType="number"
             android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -436,13 +448,43 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <EditText
-            android:id="@+id/etGastoSemanal"
+            android:id="@+id/etGastosSemNeg"
             android:inputType="number"
             android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Capacidad de Pago  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Capacidad de Pago"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvCapacidadPagoNeg"
+            android:drawableStart="@drawable/ic_money"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
@@ -453,7 +495,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tvFotoFachada"
+            android:id="@+id/tvFachadaNeg"
             android:textColor="@android:color/black"
             android:text="@string/facade_photo"
             android:layout_weight="1"
@@ -507,6 +549,7 @@
             android:maxLength="100"
             android:ellipsize="end"
             android:gravity="start"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"

@@ -30,11 +30,30 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+
 
 public class dialog_registro_cli extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(long id_solicitud, String nombre, String paterno, String materno);
+        void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno);
     }
 
     @Override
@@ -123,37 +142,39 @@ public class dialog_registro_cli extends DialogFragment {
     };
 
     private void saveCliente(){
+        long id = 0;
+        long id_cliente = 0;
         HashMap<Integer, String> params = new HashMap<>();
-        params.put(0,session.getUser().get(0));
-        params.put(1,"1");
-        params.put(2,"1");
-        params.put(3,"0");
-        params.put(4,"");
-        params.put(5,etNombre.getText().toString().trim().toUpperCase());
-        params.put(6,etPaterno.getText().toString().trim().toUpperCase());
-        params.put(7,etMaterno.getText().toString().trim().toUpperCase());
-        params.put(8,"");
-        params.put(9,"");
-        params.put(10, Miscellaneous.ObtenerFecha("timestamp"));
-        params.put(11,"");
-        long id = dBhelper.saveSolicitudes(db, "solicitudes_t",params);
+        params.put(0,session.getUser().get(0));                                      //SERIE ID
+        params.put(1,"1");                                                           //TIPO SOLICITUD
+        params.put(2,"1");                                                           //ESTATUS
+        params.put(3,"0");                                                           //ID ORIGINACION
+        params.put(4,etNombre.getText().toString().trim().toUpperCase() + " " + etPaterno.getText().toString().trim().toUpperCase() + " " + etMaterno.getText().toString().trim().toUpperCase());
+        params.put(5, Miscellaneous.ObtenerFecha("timestamp"));
+        params.put(6,"");
+        params.put(7,"");
+        params.put(8, Miscellaneous.ObtenerFecha("timestamp"));
+        params.put(9,Miscellaneous.ObtenerFecha("timestamp"));
+        if (ENVIROMENT)
+            id = dBhelper.saveSolicitudes(db, SOLICITUDES,params);
+        else
+            id = dBhelper.saveSolicitudes(db, SOLICITUDES_T,params);
 
         //Inserta registro de datos del credito
         params = new HashMap<>();
         params.put(0,String.valueOf(id));
-        params.put(1,"0");
-        params.put(2,"0");
+        params.put(1,"");
+        params.put(2,"");
         params.put(3,"");
         params.put(4,"");
         params.put(5,"");
         params.put(6,"");
-        params.put(7,"0");
+        params.put(7,"");
         params.put(8,"0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosCredito(db, Constants.DATOS_CREDITO_IND, params);
+        if (ENVIROMENT)
+            dBhelper.saveDatosCredito(db, DATOS_CREDITO_IND, params);
         else
-            dBhelper.saveDatosCredito(db, Constants.DATOS_CREDITO_IND_T, params);
+            dBhelper.saveDatosCredito(db, DATOS_CREDITO_IND_T, params);
 
         //Inserta registro de datos del cliente
         params = new HashMap<>();
@@ -161,22 +182,51 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(1, etNombre.getText().toString().trim().toUpperCase());
         params.put(2, etPaterno.getText().toString().trim().toUpperCase());
         params.put(3, etMaterno.getText().toString().trim().toUpperCase());
-        params.put(4, ""); params.put(5, ""); params.put(6, "2"); params.put(7, "");
-        params.put(8, ""); params.put(9, ""); params.put(10, ""); params.put(11, "");
-        params.put(12, ""); params.put(13, ""); params.put(14, "0"); params.put(15, "");
-        params.put(16, "0"); params.put(17, "0"); params.put(18, "0"); params.put(19, "0");
-        params.put(20, "0"); params.put(21, ""); params.put(22, ""); params.put(23, "");
-        params.put(24, ""); params.put(25, ""); params.put(26, ""); params.put(27, "");
-        params.put(28, ""); params.put(29, ""); params.put(30, ""); params.put(31, "");
-        params.put(32, ""); params.put(33, ""); params.put(34, ""); params.put(35, "0");
-        params.put(36, "0"); params.put(37, "0"); params.put(38, ""); params.put(39, "");
-        params.put(40, ""); params.put(41, ""); params.put(42, "0"); params.put(43, "");
+        params.put(4, "");
+        params.put(5, "");
+        params.put(6, "2");
+        params.put(7, "");
+        params.put(8, "");
+        params.put(9, "");
+        params.put(10, "");
+        params.put(11, "");
+        params.put(12, "");
+        params.put(13, "");
+        params.put(14, "");
+        params.put(15, "");
+        params.put(16, "");
+        params.put(17, "");
+        params.put(18, "0");
+        params.put(19, "");
+        params.put(20, "");
+        params.put(21, "");
+        params.put(22, "");
+        params.put(23, "");
+        params.put(24, "");
+        params.put(25, "");
+        params.put(26, "");
+        params.put(27, "");
+        params.put(28, "");
+        params.put(29, "");
+        params.put(30, "");
+        params.put(31, "");
+        params.put(32, "");
+        params.put(33, "");
+        params.put(34, "");
+        params.put(35, "0");
+        params.put(36, "");
+        params.put(37, "");
+        params.put(38, "");
+        params.put(39, "");
+        params.put(40, "");
+        params.put(41, "");
+        params.put(42, "0");
+        params.put(43, "");
         params.put(44, "0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosPersonales(db, Constants.DATOS_CLIENTE_IND, params);
+        if (ENVIROMENT)
+            dBhelper.saveDatosPersonales(db, DATOS_CLIENTE_IND, params);
         else
-            dBhelper.saveDatosPersonales(db, Constants.DATOS_CLIENTE_IND_T, params);
+            id_cliente = dBhelper.saveDatosPersonales(db, DATOS_CLIENTE_IND_T, params);
 
         //Inserta registro de datos conyuge
         params = new HashMap<>();
@@ -187,11 +237,10 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(4, "");
         params.put(5, "");
         params.put(6, "0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosConyuge(db, Constants.DATOS_CONYUGE_IND, params);
+        if (ENVIROMENT)
+            dBhelper.saveDatosConyuge(db, DATOS_CONYUGE_IND, params);
         else
-            dBhelper.saveDatosConyuge(db, Constants.DATOS_CONYUGE_IND_T, params);
+            dBhelper.saveDatosConyuge(db, DATOS_CONYUGE_IND_T, params);
 
         //Inserta registro de datos economicos
         params = new HashMap<>();
@@ -201,46 +250,96 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(3, "");
         params.put(4, "");
         params.put(5, "0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosEconomicos(db, Constants.DATOS_ECONOMICOS_IND, params);
+        if (ENVIROMENT)
+            dBhelper.saveDatosEconomicos(db, DATOS_ECONOMICOS_IND, params);
         else
-            dBhelper.saveDatosEconomicos(db, Constants.DATOS_ECONOMICOS_IND_T, params);
+            dBhelper.saveDatosEconomicos(db, DATOS_ECONOMICOS_IND_T, params);
 
         //Inserta registro de negocio
         params = new HashMap<>();
-        params.put(0, String.valueOf(id)); params.put(1, ""); params.put(2, "");
-        params.put(3, ""); params.put(4, ""); params.put(5, ""); params.put(6, "");
-        params.put(7, ""); params.put(8, ""); params.put(9, ""); params.put(10, "");
-        params.put(11, ""); params.put(12,"0"); params.put(13,""); params.put(14,"");
-        params.put(15,""); params.put(16,""); params.put(17,""); params.put(18,"");
-        params.put(19,""); params.put(20,""); params.put(21,""); params.put(22,"");
-        params.put(23,""); params.put(24,""); params.put(25,"0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosNegocio(db, Constants.DATOS_NEGOCIO_IND, params);
+        params.put(0, String.valueOf(id));
+        params.put(1, "");
+        params.put(2, "");
+        params.put(3, "");
+        params.put(4, "");
+        params.put(5, "");
+        params.put(6, "");
+        params.put(7, "");
+        params.put(8, "");
+        params.put(9, "");
+        params.put(10, "");
+        params.put(11, "");
+        params.put(12,"0");
+        params.put(13,"");
+        params.put(14,"");
+        params.put(15,"");
+        params.put(16,"");
+        params.put(17,"");
+        params.put(18,"");
+        params.put(19,"");
+        params.put(20,"");
+        params.put(21,"");
+        params.put(22,"");
+        params.put(23,"");
+        params.put(24,"");
+        params.put(25,"0");
+        if (ENVIROMENT)
+            dBhelper.saveDatosNegocio(db, Constants.DATOS_NEGOCIO_IND, params);
         else
-            dBhelper.saveDatosNegocio(db, Constants.DATOS_NEGOCIO_IND_T, params);
+            dBhelper.saveDatosNegocio(db, DATOS_NEGOCIO_IND_T, params);
 
         //Inserta registro del aval
         params = new HashMap<>();
-        params.put(0, String.valueOf(id)); params.put(1, ""); params.put(2, "");
-        params.put(3, "");params.put(4, ""); params.put(5, ""); params.put(6, "2");
-        params.put(7, ""); params.put(8, ""); params.put(9, ""); params.put(10, "");
-        params.put(11, ""); params.put(12, "0"); params.put(13, ""); params.put(14, "");
-        params.put(15, ""); params.put(16, ""); params.put(17, ""); params.put(18, "");
-        params.put(19, ""); params.put(20, ""); params.put(21, ""); params.put(22, "");
-        params.put(23, ""); params.put(24, "");params.put(25, "0");params.put(26, "");
-        params.put(27, "0"); params.put(28, ""); params.put(29, ""); params.put(30, "");
-        params.put(31, ""); params.put(32, ""); params.put(33, ""); params.put(34, "");
-        params.put(35, ""); params.put(36, ""); params.put(37, "0"); params.put(38, "");
-        params.put(39, ""); params.put(40, ""); params.put(41, ""); params.put(42, "");
-        params.put(43, "0"); params.put(44, ""); params.put(45, "0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosAval(db, Constants.DATOS_AVAL_IND, params);
+        params.put(0, String.valueOf(id));
+        params.put(1, "");
+        params.put(2, "");
+        params.put(3, "");
+        params.put(4, "");
+        params.put(5, "");
+        params.put(6, "2");
+        params.put(7, "");
+        params.put(8, "");
+        params.put(9, "");
+        params.put(10, "");
+        params.put(11, "");
+        params.put(12, "");
+        params.put(13, "");
+        params.put(14, "");
+        params.put(15, "");
+        params.put(16, "");
+        params.put(17, "");
+        params.put(18, "");
+        params.put(19, "");
+        params.put(20, "");
+        params.put(21, "");
+        params.put(22, "");
+        params.put(23, "");
+        params.put(24, "");
+        params.put(25, "");
+        params.put(26, "");
+        params.put(27, "");
+        params.put(28, "");
+        params.put(29, "");
+        params.put(30, "");
+        params.put(31, "");
+        params.put(32, "");
+        params.put(33, "");
+        params.put(34, "");
+        params.put(35, "");
+        params.put(36, "");
+        params.put(37, "0");
+        params.put(38, "");
+        params.put(39, "");
+        params.put(40, "");
+        params.put(41, "");
+        params.put(42, "");
+        params.put(43, "0");
+        params.put(44, "");
+        params.put(45, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDatosAval(db, DATOS_AVAL_IND, params);
         else
-            dBhelper.saveDatosAval(db, Constants.DATOS_AVAL_IND_T, params);
+            dBhelper.saveDatosAval(db, DATOS_AVAL_IND_T, params);
 
         //Inserta registro de referencia
         params = new HashMap<>();
@@ -254,20 +353,88 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(7, "");
         params.put(8, "");
         params.put(9, "0");
-        if (Constants.ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveReferencia(db, Constants.DATOS_REFERENCIA_IND, params);
+        if (ENVIROMENT)
+            dBhelper.saveReferencia(db, DATOS_REFERENCIA_IND, params);
         else
-            dBhelper.saveReferencia(db, Constants.DATOS_REFERENCIA_IND_T, params);
+            dBhelper.saveReferencia(db, DATOS_REFERENCIA_IND_T, params);
 
-        mListener.onComplete(id,etNombre.getText().toString().trim().toUpperCase(),etPaterno.getText().toString().trim().toUpperCase(),etMaterno.getText().toString().trim().toUpperCase());
+        //Inseta registro de documentos INE FRONTAL
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "1");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        //Inseta registro de documentos INE REVERSO
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "2");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        //Inseta registro de documentos CURP
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "3");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        //Inseta registro de documentos COMPROBANTE DOMICILIO
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "4");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        //Inseta registro de documentos CODIGO BARRAS
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "5");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        //Inseta registro de Firma Aval
+        params = new HashMap<>();
+        params.put(0,String.valueOf(id_cliente));
+        params.put(1, "");
+        params.put(2, "6");
+        params.put(3, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
+        else
+            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
+
+        mListener.onComplete(id, String.valueOf(id_cliente),
+                etNombre.getText().toString().trim().toUpperCase(),
+                etPaterno.getText().toString().trim().toUpperCase(),
+                etMaterno.getText().toString().trim().toUpperCase());
         getDialog().dismiss();
     }
 
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, null, null, null);
+            mListener.onComplete(0, "0", null, null, null);
             getDialog().dismiss();
         }
     };

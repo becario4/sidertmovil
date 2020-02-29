@@ -50,7 +50,6 @@ import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
 import com.sidert.sidertmovil.utils.WorkerLogout;
@@ -166,38 +165,6 @@ public class Login extends AppCompatActivity {
     private void doLoginAsesorT(){
         session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiIiwicGF0ZXJubyI6IkxPUEVaIiwidXNlcl9uYW1lIjoiUFJPR1JBTUFET1JBTkQiLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXSwic2VyaWVpZCI6IjU4NCIsImlkIjoxMTksImV4cCI6MTU4MTc4MDQ4Nywibm9tYnJlIjoiQUxFSkFORFJPIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9TVVBFUiJdLCJqdGkiOiIyN2VkNzE2MS01ZDI1LTQ2ZmQtYWNiNi1hM2RjNWQzNTVjMWIiLCJlbWFpbCI6InByb2dyYW1hZG9yMkBydWZpLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.dKgxCXq-t7K1FuwcSxtkG7U4LUCWgwxXdZe67T5vPYqonQYviVZ2bFA-NpV1MvuSgAXHZhxAXc4fGwkhz-IyhdY49kvzzilfzFHuRHbXLiNowTIxdUmFFYMxNPMN5XMIpauQt4eC--6eEmdkDYL1cxB35RA9Q_p6kSRkc0U8_UWVh1_K-9UOYwliJLbIlpSUMkps82wmUydp8rATd_OanwHbUx3uiOHBzBhXVOi2b8It9mIH_gBSAKeiEySIqSAMFoaimWacYw8vVPUrtNH5Z4CspLCYDc63qDEQYTiR1egtv0Ofxu-irpCEIGfsTOTPFGXrb-G_M7YAXdvkmCmlHQ");
 
-        if (NetworkStatus.haveNetworkConnection(ctx)){
-            final Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    catalogos.GetEstados(ctx);
-                }
-            }).start();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    catalogos.GetMunicipios(ctx);
-                }
-            }).start();
-
-            catalogos.GetColonias(ctx);
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    catalogos.GetSectores(ctx);
-                }
-            }).start();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    catalogos.GetOcupaciones(ctx);
-                }
-            }).start();
-        }
         if(isExternalStorageWritable()){
             String nameDir = "Files";
             crearDirectorioPrivado(ctx, nameDir);

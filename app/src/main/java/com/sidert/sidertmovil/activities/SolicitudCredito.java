@@ -196,8 +196,9 @@ public class SolicitudCredito extends AppCompatActivity {
             for(int i = 0; i < row.getCount(); i++){
                 HashMap<Integer, String> item = new HashMap();
                 item.put(0,row.getString(0));
-                String nombre = row.getString(5) + " " +row.getString(6) + " " + row.getString(7);
+                String nombre = row.getString(5);
                 item.put(1, nombre.trim().toUpperCase());
+                item.put(2, row.getString(2));
                 data.add(item);
                 row.moveToNext();
             }
@@ -205,11 +206,22 @@ public class SolicitudCredito extends AppCompatActivity {
             adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
-                    i_solicitud_ind.putExtra("is_new", false);
-                    Log.e("id_Solicitud",item.get(0));
-                    i_solicitud_ind.putExtra("id_solicitud", item.get(0));
-                    startActivity(i_solicitud_ind);
+                    Intent i_solicitud;
+                    switch (Integer.parseInt(item.get(2))){
+                        case 1:
+                            i_solicitud = new Intent(ctx, SolicitudCreditoInd.class);
+                            i_solicitud.putExtra("is_new", false);
+                            i_solicitud.putExtra("id_solicitud", item.get(0));
+                            startActivity(i_solicitud);
+                            break;
+                        case 2:
+                            i_solicitud = new Intent(ctx, SolicitudCreditoGpo.class);
+                            i_solicitud.putExtra("is_new", false);
+                            i_solicitud.putExtra("id_solicitud", item.get(0));
+                            startActivity(i_solicitud);
+                            break;
+                    }
+
                 }
             });
 

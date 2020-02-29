@@ -20,6 +20,7 @@
 
         <EditText
             android:id="@+id/etNombreRef"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -42,6 +43,7 @@
 
         <EditText
             android:id="@+id/etApPaternoRef"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -64,6 +66,7 @@
 
         <EditText
             android:id="@+id/etApMaternoRef"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="45"
@@ -86,6 +89,7 @@
 
         <EditText
             android:id="@+id/etCalleRef"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="100"
@@ -109,8 +113,8 @@
             android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/etCpRef"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:layout_marginRight="10dp"
             android:inputType="number"
             android:maxLength="5"
             android:background="@drawable/et_rounded_edges"
@@ -183,6 +187,7 @@
 
         <EditText
             android:id="@+id/etTelCelRef"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"

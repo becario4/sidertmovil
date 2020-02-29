@@ -32,6 +32,9 @@ public class RetrofitClient {
             case Constants.CONTROLLER_CATALOGOS:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CATALOGOS;
                 break;
+            case Constants.CONTROLLER_SOLICITUDES:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_SOLICITUDES;
+                break;
         }
 
         Log.v("URL", base_url);

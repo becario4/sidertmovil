@@ -329,24 +329,28 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="nivel_estudio">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>NINGUNO</item>               <!--1-->
         <item>PRIMARIA</item>              <!--2-->
         <item>SECUNDARIA</item>            <!--3-->
-        <item>TÉNICO</item>                <!--4-->
+        <item>TECNICO</item>               <!--4-->
         <item>PREPARATORIA</item>          <!--5-->
         <item>LICENCIATURA</item>          <!--6-->
-        <item>MAESTRÍA</item>              <!--7-->
+        <item>MAESTRIA</item>              <!--7-->
         <item>DOCTORADO</item>             <!--8-->
     </string-array>
 
     <string-array name="estado_civil">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
-        <item>SOLTERA(O)</item>            <!--1-->
-        <item>CASADA(O)</item>             <!--2-->
-        <item>DIVORCIADA(O)</item>         <!--3-->
-        <item>VIUDA(O)</item>              <!--4-->
-        <item>UNIÓN LIBRE</item>           <!--5-->
+        <item>SOLTERA(O)</item>            <!--0-->
+        <item>CASADA(O)</item>             <!--1-->
+        <item>DIVORCIADA(O)</item>         <!--2-->
+        <item>VIUDA(O)</item>              <!--3-->
+        <item>UNION LIBRE</item>           <!--4-->
+    </string-array>
+
+    <string-array name="tipo_identificacion">
+        <item>INE/IFE</item>                    <!--0-->
+        <item>PASAPORTE</item>                  <!--1-->
+        <item>CÉDULA PROFESIONAL</item>         <!--2-->
     </string-array>
 
     <string-array name="cargo">
@@ -358,27 +362,24 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="entero_nosotros">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>RECOMENDACION</item>         <!--1-->
-        <item>PERIÓDICO</item>             <!--2-->
+        <item>PERIODICO</item>             <!--2-->
         <item>RADIO</item>                 <!--3-->
-        <item>TELEVISÓN</item>             <!--4-->
+        <item>TELEVISION</item>            <!--4-->
         <item>VOLANTE</item>               <!--5-->
         <item>ANUNCIO</item>               <!--6-->
-        <item>PLÁTICA DE GRUPO</item>      <!--7-->
+        <item>PLATICA DE GRUPO</item>      <!--7-->
         <item>PERIFONEO</item>             <!--8-->
     </string-array>
 
     <string-array name="tipo_casa_cli">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
-        <item>CASA PROPIA</item>           <!--1-->
-        <item>CASA RENTADA</item>          <!--2-->
-        <item>CASA FAMILIAR</item>         <!--3-->
-        <item>OTRO</item>                  <!--4-->
+        <item>CASA PROPIA</item>           <!--0-->
+        <item>CASA RENTADA</item>          <!--1-->
+        <item>CASA FAMILIAR</item>         <!--2-->
+        <item>OTRO</item>                  <!--3-->
     </string-array>
 
     <string-array name="tipo_casa_aval">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>CASA PROPIA</item>           <!--1-->
         <item>CASA FAMILIAR</item>         <!--2-->
     </string-array>
@@ -392,14 +393,13 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="destino_prestamo">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>AGROPECUARIO</item>          <!--1-->
         <item>COMERCIO</item>              <!--2-->
         <item>SERVICIO</item>              <!--3-->
     </string-array>
 
     <string-array name="activos">
-        <item>TELEVISIÓN</item>            <!--0-->
+        <item>TELEVISION</item>            <!--0-->
         <item>MICROONDAS</item>            <!--1-->
         <item>REFRIGERADOR</item>          <!--2-->
         <item>SALA</item>                  <!--3-->
@@ -409,17 +409,17 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     <string-array name="dias_semana">
         <item>LUNES</item>                 <!--0-->
         <item>MARTES</item>                <!--1-->
-        <item>MIÉRCOLES</item>             <!--2-->
+        <item>MIERCOLES</item>             <!--2-->
         <item>JUEVES</item>                <!--3-->
         <item>VIERNES</item>               <!--4-->
-        <item>SÁBADO</item>                <!--5-->
+        <item>SABADO</item>                <!--5-->
         <item>DOMINGO</item>               <!--6-->
     </string-array>
 
     <string-array name="parentesco">
         <item>SELECCIONE UNA OPCION</item> <!--0-->
         <item>PRIMA(O)</item>              <!--1-->
-        <item>TÍA(O)</item>                <!--2-->
+        <item>TIA(O)</item>                <!--2-->
         <item>ABUELA(O)</item>             <!--3-->
         <item>SOBRINA(O)</item>            <!--4-->
         <item>AMISTAD</item>               <!--5-->
@@ -435,7 +435,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>ARRENDATARIO</item>          <!--1-->
         <item>TITULAR</item>               <!--1-->
         <item>PRIMA(O)</item>              <!--3-->
-        <item>TÍA(O)</item>                <!--4-->
+        <item>TIA(O)</item>                <!--4-->
         <item>ABUELA(O)</item>             <!--5-->
         <item>SOBRINA(O)</item>            <!--6-->
         <item>AMISTAD</item>               <!--7-->
@@ -447,50 +447,53 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="casa_familiar">
-        <item>SELECCIONE UNA OPCION</item> <!--0-->
-        <item>PRIMA(O)</item>              <!--1-->
-        <item>TÍA(O)</item>                <!--2-->
-        <item>ABUELA(O)</item>             <!--3-->
-        <item>SOBRINA(O)</item>            <!--4-->
-        <item>AMISTAD</item>               <!--5-->
-        <item>VECINA(O)</item>             <!--6-->
-        <item>CUÑADA(O)</item>             <!--7-->
-        <item>NUERA</item>                 <!--8-->
-        <item>YERNO</item>                 <!--9-->
-        <item>SUEGRA(O)</item>             <!--10-->
-        <item>OTRO</item>                  <!--11-->
+        <item>PADRE</item>                 <!--1-->
+        <item>MADRE</item>                 <!--2-->
+        <item>HIJA(O)</item>               <!--3-->
+        <item>HERMANA(O)</item>            <!--4-->
+        <item>PRIMA(O)</item>              <!--5-->
+        <item>TIA(O)</item>                <!--6-->
+        <item>ABUELA(O)</item>             <!--7-->
+        <item>SOBRINA(O)</item>            <!--8-->
+        <item>AMISTAD</item>               <!--9-->
+        <item>VECINA(O)</item>             <!--10-->
+        <item>CUÑADA(O)</item>             <!--11-->
+        <item>NUERA</item>                 <!--12-->
+        <item>YERNO</item>                 <!--13-->
+        <item>SUEGRA(O)</item>             <!--14-->
+        <item>OTRO</item>                  <!--15-->
     </string-array>
 
     <string-array name="casa_familiar_aval">
-        <item>SELECCIONE UNA OPCION</item> <!--0-->
-        <item>PRIMA(O)</item>              <!--1-->
-        <item>TÍA(O)</item>                <!--2-->
-        <item>ABUELA(O)</item>             <!--3-->
-        <item>SOBRINA(O)</item>            <!--4-->
-        <item>AMISTAD</item>               <!--5-->
-        <item>VECINA(O)</item>             <!--6-->
-        <item>CUÑADA(O)</item>             <!--7-->
-        <item>NUERA</item>                 <!--8-->
-        <item>YERNO</item>                 <!--9-->
-        <item>SUEGRA(O)</item>             <!--10-->
+        <item>PADRE</item>                 <!--1-->
+        <item>MADRE</item>                 <!--2-->
+        <item>HIJA(O)</item>               <!--3-->
+        <item>HERMANA(O)</item>            <!--4-->
+        <item>PRIMA(O)</item>              <!--5-->
+        <item>TIA(O)</item>                <!--6-->
+        <item>ABUELA(O)</item>             <!--7-->
+        <item>SOBRINA(O)</item>            <!--8-->
+        <item>AMISTAD</item>               <!--9-->
+        <item>VECINA(O)</item>             <!--10-->
+        <item>CUÑADA(O)</item>             <!--11-->
+        <item>NUERA</item>                 <!--12-->
+        <item>YERNO</item>                 <!--13-->
+        <item>SUEGRA(O)</item>             <!--14-->
     </string-array>
 
     <string-array name="intervalo">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>4 MESES</item>               <!--1-->
         <item>5 MESES</item>               <!--2-->
         <item>6 MESES</item>               <!--3-->
     </string-array>
 
     <string-array name="lapso">
-        <item>SELECCIONE UNA OPCION</item> <!--0-->
         <item>SEMANAL</item>               <!--1-->
         <item>CATORCENAL</item>            <!--2-->
         <item>QUINCENAL</item>             <!--3-->
     </string-array>
 
     <string-array name="dependientes_eco">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>0</item>                     <!--1-->
         <item>1</item>                     <!--2-->
         <item>2</item>                     <!--3-->
@@ -534,6 +537,14 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>PROGRAMADOR</item>
         <item>RECEPCIONISTA</item>
         <item>TELECOMUNICACIONES</item>
+    </string-array>
+
+    <string-array name="documentos">
+        <item>INE FRONTAL</item>              <!-- 1 -->
+        <item>INE REVERSO</item>              <!-- 2 -->
+        <item>CURP</item>                     <!-- 3 -->
+        <item>COMPROBANTE DOMICILIO</item>    <!-- 4 -->
+        <item>CODIGO BARRAS</item>            <!-- 5 -->
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

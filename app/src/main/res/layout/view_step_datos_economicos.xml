@@ -21,6 +21,7 @@
         <EditText
             android:id="@+id/etPropiedadesEco"
             android:inputType="textCapCharacters"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
             android:maxLength="60"
             android:background="@drawable/et_rounded_edges"
@@ -44,6 +45,7 @@
             android:id="@+id/etValorAproxEco"
             android:inputType="number"
             android:drawableStart="@drawable/ic_money"
+            android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
             android:maxLength="6"
             android:background="@drawable/et_rounded_edges"
@@ -65,6 +67,7 @@
 
         <EditText
             android:id="@+id/etUbicacionEco"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
             android:maxLength="80"
@@ -87,6 +90,7 @@
 
         <EditText
             android:id="@+id/etIngresoEco"
+            android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
             android:drawableStart="@drawable/ic_money"
             android:paddingLeft="10dp"

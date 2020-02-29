@@ -4,11 +4,13 @@ import android.provider.ContactsContract;
 
 import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
+import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.models.ModeloColonia;
 import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
+import com.sidert.sidertmovil.models.ModeloIdentificacion;
 import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
@@ -98,6 +100,21 @@ public interface ManagerInterface {
                                             @Part("fecha_envio") RequestBody fecha_envio,
                                             @Part MultipartBody.Part foto_fachada);
 
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_ORIGINACION_IND)
+    Call<MResSaveOriginacionInd> guardarOriginacionInd(@Header("Authorization") String token,
+                                                       @Part("solicitud") RequestBody solicitud,
+                                                       @Part MultipartBody.Part fachada_cliente,
+                                                       @Part MultipartBody.Part firma_cliente,
+                                                       @Part MultipartBody.Part fachada_negocio,
+                                                       @Part MultipartBody.Part fachada_aval,
+                                                       @Part MultipartBody.Part firma_aval,
+                                                       @Part MultipartBody.Part identificacion_frontal,
+                                                       @Part MultipartBody.Part identificacion_reverso,
+                                                       @Part MultipartBody.Part curp,
+                                                       @Part MultipartBody.Part comprobante_domicilio,
+                                                       @Part MultipartBody.Part firma_asesor);
+
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
@@ -132,5 +149,12 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_OCUPACIONES)
     Call<List<ModeloOcupaciones>> getOcupaciones(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_IDENTIFICACIONES)
+    Call<List<ModeloIdentificacion>> getIdentificaciones(@Header("Authorization") String barer_token);
 
 }

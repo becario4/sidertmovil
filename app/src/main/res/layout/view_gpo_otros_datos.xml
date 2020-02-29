@@ -16,15 +16,17 @@
             android:text="Como se Enteró de Nosotros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <Spinner
-            android:id="@+id/spEnteroNosotros"
-            android:entries="@array/entero_nosotros"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
+        <TextView
+            android:id="@+id/tvMedioContacto"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
             android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  E-Mail  -->
@@ -44,6 +46,7 @@
             android:inputType="textEmailAddress"
             android:paddingLeft="10dp"
             android:maxLength="60"
+            android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -57,6 +60,7 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/tvEstatus"
             android:textColor="@android:color/black"
             android:text="Estatus"
             android:layout_marginLeft="10dp"
@@ -134,10 +138,35 @@
             android:id="@+id/etCredSolicitado"
             android:inputType="number"
             android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Cantidad en letra  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto en Letra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvCantidadLetra"
+            android:textSize="17sp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Casa para reuniones  -->
@@ -155,6 +184,7 @@
             android:layout_height="match_parent" />
 
         <CheckBox
+            android:id="@+id/cbCasaReuniones"
             android:layout_gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -168,7 +198,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tvFirma"
+            android:id="@+id/tvFirmaCli"
             android:textColor="@color/black"
             android:text="Firma Cliente"
             android:focusable="false"
