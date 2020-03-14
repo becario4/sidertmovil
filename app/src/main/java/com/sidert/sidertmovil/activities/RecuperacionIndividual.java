@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.activities;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,6 +27,7 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
+import com.sidert.sidertmovil.fragments.view_pager.recuperacion_ind_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_gestion_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_pagos_fragment;
@@ -35,6 +37,7 @@ import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
+import com.sidert.sidertmovil.utils.ValidatorTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +50,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.FICHAS;
+import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
 
 public class RecuperacionIndividual extends AppCompatActivity {
 
@@ -104,6 +111,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
         statusFicha = row.getInt(23);
         if (!row.getString(22).isEmpty()) {
             try {
+                Log.e("temporal", "obtiene respuesta");
                 jsonRes = new JSONObject(row.getString(22));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -268,7 +276,8 @@ public class RecuperacionIndividual extends AppCompatActivity {
         adapter = new TabsRecentsAdapter(getSupportFragmentManager());
 
         adapter.addFragment(new ri_detalle_fragment(), "");
-        adapter.addFragment(new ri_gestion_fragment(), "");
+        //adapter.addFragment(new ri_gestion_fragment(), "");
+        adapter.addFragment(new recuperacion_ind_fragment(), "");
         adapter.addFragment(new ri_pagos_fragment(), "");
 
         mViewPager.setAdapter(adapter);
@@ -278,6 +287,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
         mViewPager.setSwipeable(true);
         mTabLayout.getTabAt(0).setIcon(R.drawable.ic_single).setContentDescription("Detalle");
+        //mTabLayout.getTabAt(1).setIcon(R.drawable.give_mone_white).setContentDescription("Gestión");
         mTabLayout.getTabAt(1).setIcon(R.drawable.give_mone_white).setContentDescription("Gestión");
         mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Historial de Pagos");
 
@@ -320,7 +330,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 firma_dlg.show();
                 break;
             case R.id.save:
-                ri_gestion_fragment ri_data = ((ri_gestion_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
+                recuperacion_ind_fragment ri_data = ((recuperacion_ind_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
                 GuardarGestion(ri_data);
                 break;
         }
@@ -358,7 +368,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
     }
 
     private void GuardarTemp (){
-        ri_gestion_fragment ri_data = ((ri_gestion_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
+        recuperacion_ind_fragment ri_data = ((recuperacion_ind_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
         jsonTemp = new JSONObject();
         try {
         if (ri_data.latLngGestion != null){
@@ -366,66 +376,63 @@ public class RecuperacionIndividual extends AppCompatActivity {
             jsonTemp.put(Constants.LONGITUD, ri_data.latLngGestion.longitude);
         }
 
-        if (ri_data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbSiContacto ||
-            ri_data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbNoContacto ||
-            ri_data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbAclaracion){
-            switch (ri_data.rgContactoCliente.getCheckedRadioButtonId()){
-                case R.id.rbSiContacto:
-                    jsonTemp.put(Constants.CONTACTO, 1);
-                    if (ri_data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbSiActualizar ||
-                        ri_data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbNoActualizar){
-                        switch (ri_data.rgActualizarTelefono.getCheckedRadioButtonId()){
-                            case R.id.rbSiActualizar:
-                                jsonTemp.put(Constants.ACTUALIZAR_TELEFONO, true);
+        Miscellaneous m = new Miscellaneous();
+
+        if (!ri_data.tvContacto.getText().toString().trim().isEmpty()){
+            switch (m.ContactoCliente(ri_data.tvContacto)){
+                case 0:
+                    jsonTemp.put(Constants.CONTACTO, ri_data.tvContacto.getText().toString());
+                    if (!ri_data.tvActualizarTelefono.getText().toString().trim().isEmpty()){
+                        switch (m.ActualizarTelefono(ri_data.tvActualizarTelefono)){
+                            case 0:
+                                jsonTemp.put(Constants.ACTUALIZAR_TELEFONO, "SI");
                                 if (!ri_data.etActualizarTelefono.getText().toString().trim().isEmpty())
                                     jsonTemp.put(Constants.NUEVO_TELEFONO, ri_data.etActualizarTelefono.getText().toString().trim());
                                 break;
-                            case  R.id.rbNoActualizar:
-                                jsonTemp.put(Constants.ACTUALIZAR_TELEFONO, false);
+                            case  1:
+                                jsonTemp.put(Constants.ACTUALIZAR_TELEFONO, "NO");
                                 break;
                         }
                     }
 
-                    if (ri_data.rgResultadoPago.getCheckedRadioButtonId() == R.id.rbPago ||
-                            ri_data.rgResultadoPago.getCheckedRadioButtonId() == R.id.rbNoPago){
-                        switch (ri_data.rgResultadoPago.getCheckedRadioButtonId()){
-                            case R.id.rbPago: //Si Pago
-                                jsonTemp.put(Constants.RESULTADO_PAGO, true);
-                                jsonTemp.put(Constants.POS_MEDIO_PAGO, ri_data.spMedioPago.getSelectedItemPosition());
-                                jsonTemp.put(Constants.MEDIO_PAGO, ri_data.spMedioPago.getSelectedItem().toString());
+                    if (!ri_data.tvResultadoGestion.getText().toString().trim().isEmpty()){
+                        switch (m.ResultadoGestion(ri_data.tvResultadoGestion)){
+                            case 0: //Si Pago
+                                jsonTemp.put(Constants.RESULTADO_PAGO, "PAGO");
+                                jsonTemp.put(Constants.MEDIO_PAGO, ri_data.tvMedioPago.getText().toString());
 
-                                if (ri_data.spMedioPago.getSelectedItemPosition() != 0){
-                                    switch (ri_data.rgPagaraRequerido.getCheckedRadioButtonId()){
-                                        case R.id.rbSiRequerido:
-                                            jsonTemp.put(Constants.PAGO_REQUERIDO, true);
+                                if (!ri_data.tvMedioPago.getText().toString().isEmpty()){
+                                    switch (m.PagoRequerido(ri_data.tvPagaraRequerido)){
+                                        case 0:
+                                            jsonTemp.put(Constants.PAGO_REQUERIDO, "SI");
                                             break;
-                                        case R.id.rbNoRequerido:
-                                            jsonTemp.put(Constants.PAGO_REQUERIDO, false);
+                                        case 1:
+                                            jsonTemp.put(Constants.PAGO_REQUERIDO, "NO");
                                             if (!ri_data.etPagoRealizado.getText().toString().trim().isEmpty())
                                                 jsonTemp.put(Constants.PAGO_REALIZADO, ri_data.etPagoRealizado.getText().toString().trim());
                                             break;
                                     }
 
-                                    switch (ri_data.spMedioPago.getSelectedItemPosition()){
-                                        case 1: //Banamex
-                                        case 2: //Banorte
-                                        case 3: //Bancomer
-                                        case 4: //Oxxo
-                                        case 5: //Telecom
-                                        case 6: //Bansefi
-                                        case 8: //Sidert
-                                            if (!ri_data.etFechaDeposito.getText().toString().trim().isEmpty())
-                                                jsonTemp.put(Constants.FECHA_DEPOSITO, ri_data.etFechaDeposito.getText().toString().trim());
+                                    switch (m.MedioPago(ri_data.tvMedioPago)){
+                                        case 0: //Banamex
+                                        case 1: //Banorte
+                                        case 2: //Bancomer
+                                        case 3: //Oxxo
+                                        case 4: //Telecom
+                                        case 5: //Bansefi
+                                        case 7: //Sidert
+                                            if (!ri_data.tvFechaDeposito.getText().toString().trim().isEmpty())
+                                                jsonTemp.put(Constants.FECHA_DEPOSITO, ri_data.tvFechaDeposito.getText().toString().trim());
                                             break;
-                                        case 7: //Efectivo
-                                            switch (ri_data.rgRecibos.getCheckedRadioButtonId()){
-                                                case R.id.rbSiRecibo:
-                                                    jsonTemp.put(Constants.IMPRESORA, true);
+                                        case 6: //Efectivo
+                                            switch (m.Impresion(ri_data.tvImprimirRecibo)){
+                                                case 0:
+                                                    jsonTemp.put(Constants.IMPRESORA, "SI");
                                                     if (!ri_data.etFolioRecibo.getText().toString().trim().isEmpty())
                                                         jsonTemp.put(Constants.FOLIO_TICKET, ri_data.etFolioRecibo.getText().toString().trim());
                                                     break;
-                                                case R.id.rbNoRecibo:
-                                                    jsonTemp.put(Constants.IMPRESORA, false);
+                                                case 1:
+                                                    jsonTemp.put(Constants.IMPRESORA, "NO CUENTA CON BATERIA");
                                                     if (!ri_data.etFolioRecibo.getText().toString().trim().isEmpty())
                                                         jsonTemp.put(Constants.FOLIO_TICKET, ri_data.etFolioRecibo.getText().toString().trim());
                                                     break;
@@ -437,28 +444,28 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                     if (ri_data.byteEvidencia != null)
                                         jsonTemp.put(Constants.EVIDENCIA, Miscellaneous.save(ri_data.byteEvidencia, 2));
 
-                                    switch (ri_data.rgEstaGerente.getCheckedRadioButtonId()){
-                                        case R.id.rbSiGerente:
-                                            jsonTemp.put(Constants.GERENTE, true);
+                                    switch (m.Gerente(ri_data.tvGerente)){
+                                        case 0:
+                                            jsonTemp.put(Constants.GERENTE, "SI");
                                             if (ri_data.byteFirma != null) {
                                                 jsonTemp.put(Constants.FIRMA, Miscellaneous.save(ri_data.byteFirma, 3));
                                             }
                                             break;
-                                        case R.id.rbNoGerente:
-                                            jsonTemp.put(Constants.GERENTE, false);
+                                        case 1:
+                                            jsonTemp.put(Constants.GERENTE, "NO");
                                             break;
                                     }
                                 }
                                 break;
-                            case  R.id.rbNoPago: // No Pago
-                                jsonTemp.put(Constants.RESULTADO_PAGO, false);
+                            case  1: // No Pago
+                                jsonTemp.put(Constants.RESULTADO_PAGO, "NO PAGO");
 
-                                jsonTemp.put(Constants.POS_MOTIVO_NO_PAGO, ri_data.spMotivoNoPago.getSelectedItemPosition());
-                                jsonTemp.put(Constants.MOTIVO_NO_PAGO, ri_data.spMotivoNoPago.getSelectedItem().toString());
+                                //jsonTemp.put(Constants.POS_MOTIVO_NO_PAGO, ri_data.spMotivoNoPago.getSelectedItemPosition());
+                                jsonTemp.put(Constants.MOTIVO_NO_PAGO, ri_data.tvMotivoNoPago.getText().toString());
 
-                                if (ri_data.spMotivoNoPago.getSelectedItemPosition() == 2){
-                                    if (!ri_data.etFechaDefuncion.getText().toString().trim().isEmpty())
-                                        jsonTemp.put(Constants.FECHA_DEFUNCION, ri_data.etFechaDefuncion.getText().toString().trim());
+                                if (ri_data.tvMotivoNoPago.getText().toString().equals("FALLECIMIENTO")){
+                                    if (!ri_data.tvFechaDefuncion.getText().toString().trim().isEmpty())
+                                        jsonTemp.put(Constants.FECHA_DEFUNCION, ri_data.tvFechaDefuncion.getText().toString().trim());
                                 }
 
                                 if (!ri_data.etComentario.getText().toString().trim().isEmpty())
@@ -470,39 +477,45 @@ public class RecuperacionIndividual extends AppCompatActivity {
                         }
                     }
 
-
                     break;
-                case R.id.rbNoContacto:
-                    jsonTemp.put(Constants.CONTACTO, 0);
+                case 1:
+                    jsonTemp.put(Constants.CONTACTO, "NO");
                     if (!ri_data.etComentario.getText().toString().trim().isEmpty())
                         jsonTemp.put(Constants.COMENTARIO, ri_data.etComentario.getText().toString().trim());
                     if (ri_data.byteEvidencia != null)
                         jsonTemp.put(Constants.FACHADA, Miscellaneous.save(ri_data.byteEvidencia, 1));
                     break;
-                case R.id.rbAclaracion:
-                    jsonTemp.put(Constants.CONTACTO, 2);
-                    if (!ri_data.etMotivoAclaracion.getText().toString().trim().isEmpty())
-                        jsonTemp.put(Constants.MOTIVO_ACLARACION, ri_data.etMotivoAclaracion.getText().toString().trim());
+                case 2:
+                    jsonTemp.put(Constants.CONTACTO, "ACLARACION");
+                    if (!ri_data.tvMotivoAclaracion.getText().toString().trim().isEmpty())
+                        jsonTemp.put(Constants.MOTIVO_ACLARACION, ri_data.tvMotivoAclaracion.getText().toString().trim());
                     if (!ri_data.etComentario.getText().toString().trim().isEmpty())
                         jsonTemp.put(Constants.COMENTARIO, ri_data.etComentario.getText().toString().trim());
                     break;
             }
 
-            if (ri_data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente ||
-                ri_data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente){
-                switch (ri_data.rgEstaGerente.getCheckedRadioButtonId()){
-                    case R.id.rbSiGerente:
-                        jsonTemp.put(Constants.GERENTE, true);
+            if (!ri_data.tvGerente.getText().toString().trim().isEmpty()){
+                switch (m.Gerente(ri_data.tvGerente)){
+                    case 0:
+                        jsonTemp.put(Constants.GERENTE, "SI");
                         if (ri_data.byteFirma != null) {
                             jsonTemp.put(Constants.FIRMA, Miscellaneous.save(ri_data.byteFirma, 3));
                         }
                         break;
-                    case R.id.rbNoGerente:
-                        jsonTemp.put(Constants.GERENTE, false);
+                    case 1:
+                        jsonTemp.put(Constants.GERENTE, "NO");
                         break;
                 }
             }
         }
+
+        ContentValues cv = new ContentValues();
+        cv.put("respuesta", jsonTemp.toString());
+        cv.put("status", "1");
+        if (ENVIROMENT)
+            db.update(FICHAS, cv, "external_id = ?", new String[]{ficha_ri.getId()});
+        else
+            db.update(FICHAS_T, cv, "external_id = ?", new String[]{ficha_ri.getId()});
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -512,7 +525,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
         Log.v("JsonTemp", jsonTemp.toString());
 
-        JSONObject val = new JSONObject();
+        /*JSONObject val = new JSONObject();
         JSONArray params = new JSONArray();
         JSONObject values = new JSONObject();
 
@@ -561,7 +574,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
             int res = dBhelper.updateRecords(ctx, Constants.FICHAS_T, val);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
         Toast.makeText(ctx, "Ficha Guardada Temporalmente con éxito.", Toast.LENGTH_SHORT).show();
 
@@ -569,47 +582,49 @@ public class RecuperacionIndividual extends AppCompatActivity {
         loading.dismiss();
     }
 
-    private void GuardarGestion(ri_gestion_fragment data){
+    private void GuardarGestion(recuperacion_ind_fragment data){
         Validator validator = new Validator();
+        ValidatorTextView validatorTV = new ValidatorTextView();
+        Miscellaneous m = new Miscellaneous();
         Bundle b = new Bundle();
         if (data.latLngGestion != null){
             b.putDouble(Constants.LATITUD, data.latLngGestion.latitude);
             b.putDouble(Constants.LONGITUD, data.latLngGestion.longitude);
-            if (data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbSiContacto) { //Si Contacto cliente
-                b.putInt(Constants.CONTACTO, 1);
-                if (data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbSiActualizar || data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbNoActualizar){
-                    if ((data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbSiActualizar && validator.validate(data.etActualizarTelefono, new String[]{validator.PHONE})) || data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbNoActualizar){
-                        if (data.rgActualizarTelefono.getCheckedRadioButtonId() == R.id.rbSiActualizar){
-                            b.putBoolean(Constants.ACTUALIZAR_TELEFONO, true);
+            if (m.ContactoCliente(data.tvContacto) == 0) { //Si Contacto cliente
+                b.putString(Constants.CONTACTO, data.tvContacto.getText().toString());
+                if (!data.tvActualizarTelefono.getText().toString().isEmpty()){
+
+                    if ((m.ActualizarTelefono(data.tvActualizarTelefono) == 0 && !validator.validate(data.etActualizarTelefono, new String[]{validator.REQUIRED, validator.PHONE})) || m.ActualizarTelefono(data.tvActualizarTelefono) == 1){
+                        if (m.ActualizarTelefono(data.tvActualizarTelefono) == 0){
+                            b.putString(Constants.ACTUALIZAR_TELEFONO, "SI");
                             b.putString(Constants.NUEVO_TELEFONO, data.etActualizarTelefono.getText().toString().trim());
                         }else {
-                            b.putBoolean(Constants.ACTUALIZAR_TELEFONO, false);
+                            b.putString(Constants.ACTUALIZAR_TELEFONO, "NO");
                         }
-                        if (data.rgResultadoPago.getCheckedRadioButtonId() == R.id.rbPago){ // Si pago
-                            b.putBoolean(Constants.RESULTADO_PAGO, true);
-                            if (data.spMedioPago.getSelectedItemPosition() > 0 && data.spMedioPago.getSelectedItemPosition() < 7 || data.spMedioPago.getSelectedItemPosition() == 8 ){ // Medio de pago Bancos y Oxxo
-                                b.putInt(Constants.POS_MEDIO_PAGO,data.spMedioPago.getSelectedItemPosition());
-                                b.putString(Constants.MEDIO_PAGO, data.spMedioPago.getSelectedItem().toString());
-                                if (!data.etFechaDeposito.getText().toString().trim().isEmpty()){ //Fecha de deposito capturada
-                                    b.putString(Constants.FECHA_DEPOSITO, data.etFechaDeposito.getText().toString().trim());
-                                    if (data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbSiRequerido || data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbNoRequerido){ //Selecionó que pagará requerido o no requerido
-                                        b.putBoolean(Constants.PAGO_REQUERIDO, data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbSiRequerido);
+                        if (m.ResultadoGestion(data.tvResultadoGestion) == 0){ // Si pago
+                            b.putString(Constants.RESULTADO_PAGO, "PAGO");
+                            if (m.MedioPago(data.tvMedioPago) > 0 && m.MedioPago(data.tvMedioPago) < 6 || m.MedioPago(data.tvMedioPago) == 7 ){ // Medio de pago Bancos y Oxxo
+                                b.putString(Constants.MEDIO_PAGO, data.tvMedioPago.getText().toString());
+                                if (!data.tvFechaDeposito.getText().toString().trim().isEmpty()){ //Fecha de deposito capturada
+                                    b.putString(Constants.FECHA_DEPOSITO, data.tvFechaDeposito.getText().toString().trim());
+                                    if (!data.tvPagaraRequerido.getText().toString().isEmpty()){ //Selecionó que pagará requerido o no requerido
+                                        b.putString(Constants.PAGO_REQUERIDO, "SI");
                                         if (Double.parseDouble(data.etPagoRealizado.getText().toString()) > 0){ //El pago realizado es mayor a cero
                                             b.putDouble(Constants.SALDO_CORTE, ficha_ri.getPrestamo().getSaldoActual());
                                             b.putDouble(Constants.MONTO_REQUERIDO, ficha_ri.getPrestamo().getPagoSemanal());
                                             b.putString(Constants.PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
                                             if (data.byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
-                                                if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Selecciono que si está el gerente
+                                                if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
                                                     if (data.byteFirma != null) { //Capturó una firma
                                                         b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                                        b.putBoolean(Constants.GERENTE, true);
+                                                        b.putString(Constants.GERENTE, "SI");
                                                         b.putByteArray(Constants.FIRMA, data.byteFirma);
                                                         b.putBoolean(Constants.TERMINADO, true);
                                                     } else //No ha capturado la firma
                                                         Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No se encuentra el Gerente
+                                                } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
                                                     b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                                    b.putBoolean(Constants.GERENTE, false);
+                                                    b.putString(Constants.GERENTE, "NO");
                                                     b.putBoolean(Constants.TERMINADO, true);
                                                 } else //No ha seleccionado si está el gerente
                                                     Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -624,34 +639,33 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                         Toast.makeText(ctx, "No ha seleccionado si se pagará el requerido", Toast.LENGTH_SHORT).show();
                                 }
                                 else { //No ha seleccionado la fecha de depostio
-                                    data.etFechaDeposito.setError("");
+                                    data.tvFechaDeposito.setError("");
                                     Toast.makeText(ctx, "No ha seleccionado la fecha de deposito", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            else if (data.spMedioPago.getSelectedItemPosition() == 7){ //Efectivo
-                                b.putInt(Constants.POS_MEDIO_PAGO,data.spMedioPago.getSelectedItemPosition());
-                                b.putString(Constants.MEDIO_PAGO, data.spMedioPago.getSelectedItem().toString());
-                                if (data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbSiRequerido || data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbNoRequerido){ //Selecionó que pagará requerido o no requerido
-                                    b.putBoolean(Constants.PAGO_REQUERIDO, data.rgPagaraRequerido.getCheckedRadioButtonId() == R.id.rbSiRequerido);
+                            else if (m.MedioPago(data.tvMedioPago) == 6){ //Efectivo
+                                b.putString(Constants.MEDIO_PAGO, data.tvMedioPago.getText().toString());
+                                if (!data.tvPagaraRequerido.getText().toString().trim().isEmpty()){ //Selecionó que pagará requerido o no requerido
+                                    b.putString(Constants.PAGO_REQUERIDO, "SI");
                                     if (Double.parseDouble(data.etPagoRealizado.getText().toString()) > 0){ //El pago realizado es mayor a cero
                                         b.putDouble(Constants.SALDO_CORTE, ficha_ri.getPrestamo().getSaldoActual());
                                         b.putDouble(Constants.MONTO_REQUERIDO, ficha_ri.getPrestamo().getPagoSemanal());
                                         b.putString(Constants.PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
-                                        if (data.rgRecibos.getCheckedRadioButtonId() == R.id.rbSiRecibo){ //Si imprimirá recibos
+                                        if (m.Impresion(data.tvImprimirRecibo) == 0){ //Si imprimirá recibos
                                             if (!data.etFolioRecibo.getText().toString().trim().isEmpty()){
-                                                b.putBoolean(Constants.IMPRESORA, data.rgRecibos.getCheckedRadioButtonId() == R.id.rbSiRecibo);
+                                                b.putString(Constants.IMPRESORA, "SI");
                                                 b.putString(Constants.FOLIO_TICKET, data.etFolioRecibo.getText().toString().trim());
                                                 if (data.byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                                    if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Selecciono que si está el gerente
+                                                    if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
                                                         if (data.byteFirma != null) { //Capturó una firma
-                                                            b.putBoolean(Constants.GERENTE, true);
+                                                            b.putString(Constants.GERENTE, "SI");
                                                             b.putByteArray(Constants.FIRMA, data.byteFirma);
                                                             b.putBoolean(Constants.TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No se encuentra el Gerente
-                                                        b.putBoolean(Constants.GERENTE, false);
+                                                    } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
+                                                        b.putString(Constants.GERENTE, "NO");
                                                         b.putBoolean(Constants.TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
                                                         Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -662,21 +676,21 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                             else //No ha impreso ningun ticket
                                                 Toast.makeText(ctx,"No ha realizado nignuna impresión", Toast.LENGTH_SHORT).show();
                                         }
-                                        else if (data.rgRecibos.getCheckedRadioButtonId() == R.id.rbNoRecibo){ //No imprimirá recibos
+                                        else if (m.Impresion(data.tvImprimirRecibo) == 1){ //No imprimirá recibos
                                             if (!data.etFolioRecibo.getText().toString().trim().isEmpty()){
-                                                b.putBoolean(Constants.IMPRESORA, data.rgRecibos.getCheckedRadioButtonId() == R.id.rbSiRecibo);
+                                                b.putString(Constants.IMPRESORA, "NO CUENTA CON BATERIA");
                                                 b.putString(Constants.FOLIO_TICKET, data.etFolioRecibo.getText().toString().trim());
                                                 if (data.byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                                    if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Selecciono que si está el gerente
+                                                    if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
                                                         if (data.byteFirma != null) { //Capturó una firma
-                                                            b.putBoolean(Constants.GERENTE, true);
+                                                            b.putString(Constants.GERENTE, "SI");
                                                             b.putByteArray(Constants.FIRMA, data.byteFirma);
                                                             b.putBoolean(Constants.TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No se encuentra el Gerente
-                                                        b.putBoolean(Constants.GERENTE, false);
+                                                    } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
+                                                        b.putString(Constants.GERENTE, "NO");
                                                         b.putBoolean(Constants.TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
                                                         Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -699,24 +713,23 @@ public class RecuperacionIndividual extends AppCompatActivity {
                             else //No ha seleccionado algun medio de pago
                                 Toast.makeText(ctx, "No ha seleccionado un medio de pago", Toast.LENGTH_SHORT).show();
                         }// ================ TERMINA PAGO  ==================================
-                        else if (data.rgResultadoPago.getCheckedRadioButtonId() == R.id.rbNoPago){ //No pago
-                            b.putBoolean(Constants.RESULTADO_PAGO, false);
-                            if (data.spMotivoNoPago.getSelectedItemPosition() == 1 || data.spMotivoNoPago.getSelectedItemPosition() == 3){ //Motivo de no pago Negacion u Otra
-                                b.putInt(Constants.POS_MOTIVO_NO_PAGO, data.spMotivoNoPago.getSelectedItemPosition());
-                                b.putString(Constants.MOTIVO_NO_PAGO,data.spMotivoNoPago.getSelectedItem().toString());
+                        else if (m.ResultadoGestion(data.tvResultadoGestion) == 1){ //No pago
+                            b.putString(Constants.RESULTADO_PAGO, "NO PAGO");
+                            if (m.MotivoNoPago(data.tvMotivoNoPago) != 1){ //Motivo de no pago Negacion u Otra
+                                b.putString(Constants.MOTIVO_NO_PAGO,data.tvMotivoNoPago.getText().toString());
                                 if (!data.etComentario.getText().toString().trim().isEmpty()){ //El campo comentario es diferente de vacio
                                     b.putString(Constants.COMENTARIO, data.etComentario.getText().toString());
                                     if (data.byteEvidencia != null){
                                         b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                        if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Selecciono que si está el gerente
+                                        if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
                                             if (data.byteFirma != null) { //Capturó una firma
-                                                b.putBoolean(Constants.GERENTE, true);
+                                                b.putString(Constants.GERENTE, "SI");
                                                 b.putByteArray(Constants.FIRMA, data.byteFirma);
                                                 b.putBoolean(Constants.TERMINADO, true);
                                             } else //No ha capturado la firma
                                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                        } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No se encuentra el Gerente
-                                            b.putBoolean(Constants.GERENTE, false);
+                                        } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
+                                            b.putString(Constants.GERENTE, "NO");
                                             b.putBoolean(Constants.TERMINADO, true);
                                         } else //No ha seleccionado si está el gerente
                                             Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -727,25 +740,24 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                 else // No ha ingresado alguno comentario
                                     Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
                             }
-                            else if(data.spMotivoNoPago.getSelectedItemPosition() == 2) { //Motivo de no pago fue Fallecimiento
-                                b.putBoolean(Constants.RESULTADO_PAGO, false);
-                                b.putInt(Constants.POS_MOTIVO_NO_PAGO, data.spMotivoNoPago.getSelectedItemPosition());
-                                b.putString(Constants.MOTIVO_NO_PAGO,data.spMotivoNoPago.getSelectedItem().toString());
-                                if (!data.etFechaDefuncion.getText().toString().trim().isEmpty()){ //El campo Fecha es diferente de vacio
-                                    b.putString(Constants.FECHA_DEFUNCION, data.etFechaDefuncion.getText().toString());
+                            else if(data.tvMotivoNoPago.getText().equals("FALLECIMIENTO")) { //Motivo de no pago fue Fallecimiento
+                                b.getString(Constants.RESULTADO_PAGO, "NO PAGO");
+                                b.putString(Constants.MOTIVO_NO_PAGO,data.tvMotivoNoPago.getText().toString());
+                                if (!data.tvFechaDefuncion.getText().toString().trim().isEmpty()){ //El campo Fecha es diferente de vacio
+                                    b.putString(Constants.FECHA_DEFUNCION, data.tvFechaDefuncion.getText().toString());
                                     if (!data.etComentario.getText().toString().trim().isEmpty()){ // El campo Comentario es diferente de vacio
                                         b.putString(Constants.COMENTARIO, data.etComentario.getText().toString());
                                         if (data.byteEvidencia != null){ //Capturo una fotografia de fachada
                                             b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                                            if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Si está el gerente
+                                            if (m.Gerente(data.tvGerente) == 0) { //Si está el gerente
                                                 if (data.byteFirma != null) { //Capturó un firma
-                                                    b.putBoolean(Constants.GERENTE, true);
+                                                    b.putString(Constants.GERENTE, "SI");
                                                     b.putByteArray(Constants.FIRMA, data.byteFirma);
                                                     b.putBoolean(Constants.TERMINADO, true);
                                                 } else //No ha Capturado un Firma
                                                     Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                            } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No está el gerente
-                                                b.putBoolean(Constants.GERENTE, false);
+                                            } else if (m.Gerente(data.tvGerente) == 1) { //No está el gerente
+                                                b.putString(Constants.GERENTE, "NO");
                                                 b.putBoolean(Constants.TERMINADO, true);
                                             } else //No ha seleccionado si está el gerente
                                                 Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -771,21 +783,21 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 else //No ha seleccionado si va actualizar el telefono
                     Toast.makeText(ctx, "No ha seleccionado si va actualizar el teléfono", Toast.LENGTH_SHORT).show();
             }
-            else if(data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbNoContacto) { //No contactó al cliente
-                b.putInt(Constants.CONTACTO, 0);
+            else if(m.ContactoCliente(data.tvContacto) == 1) { //No contactó al cliente
+                b.putString(Constants.CONTACTO, "NO");
                 if (!data.etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
                     b.putString(Constants.COMENTARIO, data.etComentario.getText().toString());
                     if (data.byteEvidencia != null) { //Ha capturado una fotografia de la fachada
                         b.putByteArray(Constants.EVIDENCIA, data.byteEvidencia);
-                        if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { // Seleccionó que está el gerente
+                        if (m.Gerente(data.tvGerente) == 0) { // Seleccionó que está el gerente
                             if (data.byteFirma != null) { // Ha capturado un firma
-                                b.putBoolean(Constants.GERENTE, true);
+                                b.putString(Constants.GERENTE, "SI");
                                 b.putByteArray(Constants.FIRMA, data.byteFirma);
                                 b.putBoolean(Constants.TERMINADO, true);
                             } else //No ha capturado un firma
                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //No se encuentra el gerente
-                            b.putBoolean(Constants.GERENTE, false);
+                        } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el gerente
+                            b.putString(Constants.GERENTE, "NO");
                             b.putBoolean(Constants.TERMINADO, true);
                         } else //No ha seleccionado si está el gerente
                             Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -794,21 +806,21 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 } else //No ha ingresado algun comentario
                     Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
             }
-            else if(data.rgContactoCliente.getCheckedRadioButtonId() == R.id.rbAclaracion) { //Seleccionó Aclaración
-                b.putInt(Constants.CONTACTO, 2);
-                if (!data.etMotivoAclaracion.getText().toString().trim().isEmpty()) { //Motivo de aclaración es diferente de vacio
-                    b.putString(Constants.MOTIVO_ACLARACION, data.etMotivoAclaracion.getText().toString());
+            else if(m.ContactoCliente(data.tvContacto) == 2) { //Seleccionó Aclaración
+                b.putString(Constants.CONTACTO, "ACLARACION");
+                if (!data.tvMotivoAclaracion.getText().toString().trim().isEmpty()) { //Motivo de aclaración es diferente de vacio
+                    b.putString(Constants.MOTIVO_ACLARACION, data.tvMotivoAclaracion.getText().toString());
                     if (!data.etComentario.getText().toString().trim().isEmpty()) { // Ingresó algun comentario
                         b.putString(Constants.COMENTARIO, data.etComentario.getText().toString());
-                        if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbSiGerente) { //Seleccionó que está el gerente
+                        if (m.Gerente(data.tvGerente) == 0) { //Seleccionó que está el gerente
                             if (data.byteFirma != null) { //Ha capturado una firma
-                                b.putBoolean(Constants.GERENTE, true);
+                                b.putString(Constants.GERENTE, "SI");
                                 b.putByteArray(Constants.FIRMA, data.byteFirma);
                                 b.putBoolean(Constants.TERMINADO, true);
                             } else //No ha capturado una firma
                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (data.rgEstaGerente.getCheckedRadioButtonId() == R.id.rbNoGerente) { //Seleccionó que no está el gerente
-                            b.putBoolean(Constants.GERENTE, false);
+                        } else if (m.Gerente(data.tvGerente) == 1) { //Seleccionó que no está el gerente
+                            b.putString(Constants.GERENTE, "NO");
                             b.putBoolean(Constants.TERMINADO, true);
                         } else //No ha confirmado si está el gerente
                             Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
@@ -825,7 +837,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
         Log.v("SIDERTMOVIL", b.toString());
         if (!b.isEmpty() && b.containsKey(Constants.TERMINADO)){
-            Intent i_preview = new Intent(ctx,VistaPreviaGestion.class);
+            Intent i_preview = new Intent(ctx, VistaPreviaGestion.class);
             i_preview.putExtra(Constants.PARAMS,b);
             startActivityForResult(i_preview,Constants.REQUEST_CODE_PREVIEW);
         }

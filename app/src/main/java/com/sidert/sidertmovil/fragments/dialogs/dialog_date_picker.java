@@ -27,10 +27,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import static com.sidert.sidertmovil.utils.Constants.DATE;
+
 
 public class dialog_date_picker extends DialogFragment {
 
-
+//IDENTIFIER 8
     String[] valuesDays;
     String[] valuesMonths;
     String[] valuesYear;
@@ -154,7 +156,7 @@ public class dialog_date_picker extends DialogFragment {
                         }
                         else {
                             Intent i = new Intent();
-                            i.putExtra(Constants.DATE, sdf.format(myCalendar.getTime()));
+                            i.putExtra(DATE, sdf.format(myCalendar.getTime()));
                             getTargetFragment().onActivityResult(123, 321, i);
                             dismiss();
                         }
@@ -224,9 +226,33 @@ public class dialog_date_picker extends DialogFragment {
                                         }).show();
                             }
                         }
+                        else if(identifer == 5){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(123,321,i);
+                            dismiss();
+                        }
+                        else if(identifer == 6){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(812,321,i);
+                            dismiss();
+                        }
+                        else if(identifer == 7){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(123,321,i);
+                            dismiss();
+                        }
+                        else if(identifer == 8){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(812,321,i);
+                            dismiss();
+                        }
                         else {
                             Intent i = new Intent();
-                            i.putExtra(Constants.DATE,sdf.format(myCalendar.getTime()));
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
                             getTargetFragment().onActivityResult(123,321,i);
                             dismiss();
                         }

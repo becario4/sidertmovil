@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 
@@ -40,6 +42,19 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HashMap<Integer, String> item = data.get(position);
         holder.tvNombre.setText(item.get(1));
+        if (item.containsKey(3)){
+            if (item.get(4).equals("0"))
+                holder.ivInfo.setVisibility(View.VISIBLE);
+            else
+                holder.ivInfo.setVisibility(View.GONE);
+        }
+
+        holder.ivInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ctx, "Formulario incompletado", Toast.LENGTH_SHORT).show();
+            }
+        });
         holder.bind(item);
     }
 
@@ -50,10 +65,12 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre;
+        private ImageView ivInfo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvNombre);
+            ivInfo = itemView.findViewById(R.id.ivInfo);
         }
 
         public void bind (final HashMap<Integer, String> item){

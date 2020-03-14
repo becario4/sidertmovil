@@ -733,66 +733,55 @@ public class Servicios_Sincronizado {
                         json_referencia.put(Constants.K_TEL_CELULAR, row_soli.getString(154));
 
                         json_solicitud.put(Constants.K_SOLICITANTE_REFERENCIA, json_referencia);
+
                         MultipartBody.Part foto_ine_frontal = null;
+                        File image_ine_frontal = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
+                        if (image_ine_frontal != null) {
+                            RequestBody imageBody =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_ine_frontal);
+
+                            foto_ine_frontal = MultipartBody.Part.createFormData("identificacion_frontal", image_ine_frontal.getName(), imageBody);
+                        }
+
                         MultipartBody.Part foto_ine_reverso = null;
+                        File image_ine_reverso = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(159));
+                        if (image_ine_reverso != null) {
+                            RequestBody imageBody =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_ine_reverso);
+
+                            foto_ine_reverso = MultipartBody.Part.createFormData("identificacion_reverso", image_ine_reverso.getName(), imageBody);
+                        }
+
                         MultipartBody.Part foto_curp = null;
+                        File image_curp = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(160));
+                        if (image_curp != null) {
+                            RequestBody imageBody =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_curp);
+
+                            foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
+                        }
+
                         MultipartBody.Part foto_comprobante = null;
+                        File image_comprobante = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(161));
+                        if (image_comprobante != null) {
+                            RequestBody imageBody =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_comprobante);
+
+                            foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
+                        }
+
                         MultipartBody.Part firma_asesor = null;
-                        for (int j = 0; j < row_soli.getCount(); j++){
+                        File image_firma_asesor = new File(Constants.ROOT_PATH + "Firma/"+row_soli.getString(163));
+                        if (image_firma_asesor != null) {
+                            RequestBody imageBody =
+                                    RequestBody.create(
+                                            MediaType.parse("image/*"), image_firma_asesor);
 
-                            switch (row_soli.getInt(159)){
-                                case 1:
-                                    File image_ine_frontal = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
-                                    if (image_ine_frontal != null) {
-                                        RequestBody imageBody =
-                                                RequestBody.create(
-                                                        MediaType.parse("image/*"), image_ine_frontal);
-
-                                        foto_ine_frontal = MultipartBody.Part.createFormData("identificacion_frontal", image_ine_frontal.getName(), imageBody);
-                                    }
-                                    break;
-                                case 2:
-                                    File image_ine_reverso = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
-                                    if (image_ine_reverso != null) {
-                                        RequestBody imageBody =
-                                                RequestBody.create(
-                                                        MediaType.parse("image/*"), image_ine_reverso);
-
-                                        foto_ine_reverso = MultipartBody.Part.createFormData("identificacion_reverso", image_ine_reverso.getName(), imageBody);
-                                    }
-                                    break;
-                                case 3:
-                                    File image_curp = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
-                                    if (image_curp != null) {
-                                        RequestBody imageBody =
-                                                RequestBody.create(
-                                                        MediaType.parse("image/*"), image_curp);
-
-                                        foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
-                                    }
-                                    break;
-                                case 4:
-                                    File image_comprobante = new File(Constants.ROOT_PATH + "Documentos/"+row_soli.getString(158));
-                                    if (image_comprobante != null) {
-                                        RequestBody imageBody =
-                                                RequestBody.create(
-                                                        MediaType.parse("image/*"), image_comprobante);
-
-                                        foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
-                                    }
-                                    break;
-                                case 6:
-                                    File image_firma_asesor = new File(Constants.ROOT_PATH + "Firma/"+row_soli.getString(158));
-                                    if (image_firma_asesor != null) {
-                                        RequestBody imageBody =
-                                                RequestBody.create(
-                                                        MediaType.parse("image/*"), image_firma_asesor);
-
-                                        firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
-                                    }
-                                    break;
-                            }
-                            row_soli.moveToNext();
+                            firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
                         }
 
                         RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());

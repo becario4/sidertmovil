@@ -37,4 +37,8 @@
         <item name="android:textSize">22sp</item>
     </style>
 
+    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">#FF4081</item>
+    </style>
+
 </resources>

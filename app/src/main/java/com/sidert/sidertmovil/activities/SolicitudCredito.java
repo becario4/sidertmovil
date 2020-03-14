@@ -56,6 +56,44 @@ import java.util.Objects;
 
 import moe.feng.common.stepperview.VerticalStepperItemView;
 
+import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
+import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
+
 public class SolicitudCredito extends AppCompatActivity {
 
     private Context ctx;
@@ -185,10 +223,10 @@ public class SolicitudCredito extends AppCompatActivity {
 
     private void initComponents(){
         Cursor row = null;
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.SOLICITUDES_T, "", "", null);
+        if (ENVIROMENT)
+            row = dBhelper.getRecords(SOLICITUDES_T, "", "", null);
         else
-            row = dBhelper.getRecords(Constants.SOLICITUDES_T, "", "", null);
+            row = dBhelper.getRecords(SOLICITUDES_T, "", "", null);
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -230,52 +268,6 @@ public class SolicitudCredito extends AppCompatActivity {
         }
     }
 
-    private void BorrarSolicitud (final String id_Solcitud, final int position){
-        AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
-                R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
-                                R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        db.delete(Constants.SOLICITUDES_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_CLIENTE_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_CONYUGE_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_ECONOMICOS_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_NEGOCIO_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_AVAL_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        db.delete(Constants.DATOS_REFERENCIA_IND_T, "id_solicitud = ?", new String[]{id_Solcitud});
-                                        adapter.removeItem(position);
-                                        dialog.dismiss();
-
-                                    }
-                                }, R.string.no, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        adapter.notifyDataSetChanged();
-                                        dialog.dismiss();
-                                    }
-                                });
-                        Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                        confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        confirm_borrar_soli_dlg.show();
-                        dialog.dismiss();
-
-                    }
-                }, R.string.no, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        adapter.notifyDataSetChanged();
-                        dialog.dismiss();
-                    }
-                });
-        Objects.requireNonNull(borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-        borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        borrar_soli_dlg.show();
-    }
-
     private void initSwipe() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
             @Override
@@ -287,9 +279,9 @@ public class SolicitudCredito extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.RIGHT){
-                    BorrarSolicitud(adapter.getItem(position).get(0), position);
+                    BorrarSolicitud(Integer.parseInt(adapter.getItem(position).get(2)),adapter.getItem(position).get(0), position);
                 } else {
-                    BorrarSolicitud(adapter.getItem(position).get(0), position);
+                    BorrarSolicitud(Integer.parseInt(adapter.getItem(position).get(2)),adapter.getItem(position).get(0), position);
                 }
             }
 
@@ -321,6 +313,111 @@ public class SolicitudCredito extends AppCompatActivity {
         };
         ItemTouchHelper helper = new ItemTouchHelper(simpleCallback);
         helper.attachToRecyclerView(rvOriginacion);
+    }
+
+    private void BorrarSolicitud (final int tipo_solicitud, final String id_solcitud, final int position){
+        AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
+                R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(context, Constants.question,
+                                R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        if (tipo_solicitud == 1) {
+                                            if (ENVIROMENT) {
+                                                db.delete(SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CREDITO_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CLIENTE_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CONYUGE_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_ECONOMICOS_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_NEGOCIO_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_AVAL_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_REFERENCIA_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DOCUMENTOS, "id_solicitud = ?", new String[]{id_solcitud});
+                                            } else {
+                                                db.delete(SOLICITUDES_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CLIENTE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_CONYUGE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_ECONOMICOS_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_NEGOCIO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_AVAL_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DATOS_REFERENCIA_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DOCUMENTOS_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                            }
+                                        }
+                                        else {
+                                            if (ENVIROMENT) {
+                                                Cursor row_credito = dBhelper.getRecords(DATOS_CREDITO_GPO, " WHERE id_solicitud = ?", "", new String[]{id_solcitud});
+                                                row_credito.moveToFirst();
+                                                Cursor row_integrantes = dBhelper.getRecords(DATOS_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{row_credito.getString(0)});
+                                                row_integrantes.moveToFirst();
+                                                for (int i = 0; i < row_integrantes.getCount(); i++){
+                                                    db.delete(TELEFONOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(DOMICILIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(NEGOCIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(CONYUGE_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(OTROS_DATOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    row_integrantes.moveToNext();
+                                                }
+                                                row_integrantes.close();
+
+                                                db.delete(DATOS_INTEGRANTES_GPO, "id_credito = ?", new String[]{row_credito.getString(0)});
+                                                db.delete(DATOS_CREDITO_GPO, "id = ?", new String[]{row_credito.getString(0)});
+                                                row_credito.close();
+                                                db.delete(SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
+
+                                            } else {
+                                                Cursor row_credito = dBhelper.getRecords(DATOS_CREDITO_GPO_T, " WHERE id_solicitud = ?", "", new String[]{id_solcitud});
+                                                row_credito.moveToFirst();
+                                                Cursor row_integrantes = dBhelper.getRecords(DATOS_INTEGRANTES_GPO_T, " WHERE id_credito = ?", "", new String[]{row_credito.getString(0)});
+                                                row_integrantes.moveToFirst();
+                                                for (int i = 0; i < row_integrantes.getCount(); i++){
+                                                    db.delete(TELEFONOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(DOMICILIO_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(NEGOCIO_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(CONYUGE_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(OTROS_DATOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    db.delete(DOCUMENTOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                    row_integrantes.moveToNext();
+                                                }
+                                                row_integrantes.close();
+
+                                                db.delete(DATOS_INTEGRANTES_GPO_T, "id_credito = ?", new String[]{row_credito.getString(0)});
+                                                db.delete(DATOS_CREDITO_GPO_T, "id = ?", new String[]{row_credito.getString(0)});
+                                                row_credito.close();
+                                                db.delete(SOLICITUDES_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                            }
+                                        }
+                                        adapter.removeItem(position);
+                                        dialog.dismiss();
+
+                                    }
+                                }, R.string.no, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        adapter.notifyDataSetChanged();
+                                        dialog.dismiss();
+                                    }
+                                });
+                        Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                        confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        confirm_borrar_soli_dlg.show();
+                        dialog.dismiss();
+
+                    }
+                }, R.string.no, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
+        Objects.requireNonNull(borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+        borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        borrar_soli_dlg.show();
     }
 
     @Override

@@ -13,6 +13,12 @@
         android:layout_width="match_parent"
         android:gravity="center_vertical"
         android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/ivInfo"
+            android:visibility="gone"
+            android:src="@drawable/ic_info_red"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
         <TextView
             android:id="@+id/tvNombre"
             android:textColor="@color/black"

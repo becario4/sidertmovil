@@ -97,8 +97,11 @@ import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
 import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
@@ -3596,6 +3599,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener ibCurp_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            //Intent i_curp = new Intent(SolicitudCreditoInd.this, CameraActivity.class);
+            //startActivityForResult(i_curp, REQUEST_CODE_FOTO_CURP);
             Intent i = new Intent(SolicitudCreditoInd.this, CameraVertical.class);
             i.putExtra(Constants.ORDER_ID, "O_curp");
             startActivityForResult(i, Constants.REQUEST_CODE_FOTO_CURP);
@@ -4329,12 +4334,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteFirmaAsesor = data.getByteArrayExtra(Constants.FIRMA_IMAGE);
                         cv = new ContentValues();
                         try {
-                            cv.put("nombre", Miscellaneous.save(byteFirmaAsesor, 3));
-                            cv.put("estatus", "1");
+                            cv.put("firma_asesor", Miscellaneous.save(byteFirmaAsesor, 3));
                             if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "6"});
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             else
-                                db.update(DOCUMENTOS_T, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "6"});
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4354,12 +4358,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         cv = new ContentValues();
                         try {
-                            cv.put("nombre", Miscellaneous.save(byteIneFrontal, 4));
-                            cv.put("estatus", "1");
+                            cv.put("ine_frontal", Miscellaneous.save(byteIneFrontal, 4));
                             if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "1"});
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             else
-                                db.update(DOCUMENTOS_T, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "1"});
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4379,12 +4382,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         cv = new ContentValues();
                         try {
-                            cv.put("nombre", Miscellaneous.save(byteIneReverso, 4));
-                            cv.put("estatus", "1");
+                            cv.put("ine_reverso", Miscellaneous.save(byteIneReverso, 4));
                             if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "2"});
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             else
-                                db.update(DOCUMENTOS_T, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "2"});
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4401,12 +4403,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);
                         cv = new ContentValues();
                         try {
-                            cv.put("nombre", Miscellaneous.save(byteCurp, 4));
-                            cv.put("estatus", "1");
+                            cv.put("curp", Miscellaneous.save(byteCurp, 4));
                             if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "3"});
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             else
-                                db.update(DOCUMENTOS_T, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "3"});
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4423,12 +4424,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         cv = new ContentValues();
                         try {
-                            cv.put("nombre", Miscellaneous.save(byteComprobante, 4));
-                            cv.put("estatus", "1");
+                            cv.put("comprobante", Miscellaneous.save(byteComprobante, 4));
                             if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "4"});
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             else
-                                db.update(DOCUMENTOS_T, cv, "id_cliente = ? AND tipo_documento = ?", new String[]{id_cliente, "4"});
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5205,6 +5205,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (byteComprobante != null){
                         if (byteFirmaAsesor != null) {
                             save_documentacion = true;
+                            ContentValues cv = new ContentValues();
+                            cv.put("estatus_completado", 1);
+
+                            if (ENVIROMENT)
+                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            else
+                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else{
                             ivError8.setVisibility(View.VISIBLE);
@@ -5590,7 +5597,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (ENVIROMENT)
                         db.update(SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     else
-                        db.update(SOLICITUDES_T, cv, "id_solicitud = " + id_solicitud, null);
+                        db.update(SOLICITUDES_T, cv, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
 
                     Servicios_Sincronizado s = new Servicios_Sincronizado();
                     s.SendOriginacionInd(ctx, false);
@@ -5663,7 +5670,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         row.moveToFirst();
 
-        is_edit = row.getInt(161) == 1;
+        is_edit = row.getInt(165) == 1;
 
         if (!is_edit)
             invalidateOptionsMenu();
@@ -5942,63 +5949,50 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvMunicipioRef.setText(row.getString(153));
         etTelCelRef.setText(row.getString(154)); etTelCelRef.setEnabled(is_edit);
 
-        Log.e("count filas", ""+row.getCount());
         //Llena la documentacion
-        for (int i = 0; i < row.getCount(); i++){
-            Log.e("fila", row.getString(12));
-            switch (row.getInt(159)){
-                case 1:
-                    if (!row.getString(158).isEmpty() && row.getInt(160) == 1){
-                        File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(158));
-                        Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
-                        byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal,0);
-                        Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
-                        ibIneFrontal.setVisibility(View.GONE);
-                        ivIneFrontal.setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case 2:
-                    if (!row.getString(158).isEmpty() && row.getInt(160) == 1){
-                        File ineReversoFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(158));
-                        Uri uriIneReverso = Uri.fromFile(ineReversoFile);
-                        byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso,0);
-                        Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
-                        ibIneReverso.setVisibility(View.GONE);
-                        ivIneReverso.setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case 3:
-                    if (!row.getString(158).isEmpty() && row.getInt(160) == 1){
-                        File curpFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(158));
-                        Uri uriCurp = Uri.fromFile(curpFile);
-                        byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
-                        Glide.with(ctx).load(uriCurp).into(ivCurp);
-                        ibCurp.setVisibility(View.GONE);
-                        ivCurp.setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case 4:
-                    if (!row.getString(158).isEmpty() && row.getInt(160) == 1){
-                        File comprobanteFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(158));
-                        Uri uriComprobante = Uri.fromFile(comprobanteFile);
-                        byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante,0);
-                        Glide.with(ctx).load(uriComprobante).into(ivComprobante);
-                        ibComprobante.setVisibility(View.GONE);
-                        ivComprobante.setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case 6:
-                    if (!row.getString(158).isEmpty() && row.getInt(160) == 1){
-                        File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+row.getString(158));
-                        Uri uriFirma = Uri.fromFile(firmaFile);
-                        byteFirmaAsesor = Miscellaneous.getBytesUri(ctx, uriFirma,0);
-                        Glide.with(ctx).load(uriFirma).into(ivFirmaAsesor);
-                        ibFirmaAsesor.setVisibility(View.GONE);
-                        ivFirmaAsesor.setVisibility(View.VISIBLE);
-                    }
-                    break;
-            }
-            row.moveToNext();
+        if (!row.getString(158).isEmpty()){
+            File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(158));
+            Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
+            byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal,0);
+            Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
+            ibIneFrontal.setVisibility(View.GONE);
+            ivIneFrontal.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(159).isEmpty()){
+            File ineReversoFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(159));
+            Uri uriIneReverso = Uri.fromFile(ineReversoFile);
+            byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso,0);
+            Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
+            ibIneReverso.setVisibility(View.GONE);
+            ivIneReverso.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(160).isEmpty()){
+            File curpFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(160));
+            Uri uriCurp = Uri.fromFile(curpFile);
+            byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
+            Glide.with(ctx).load(uriCurp).into(ivCurp);
+            ibCurp.setVisibility(View.GONE);
+            ivCurp.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(161).isEmpty()){
+            File comprobanteFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(161));
+            Uri uriComprobante = Uri.fromFile(comprobanteFile);
+            byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante,0);
+            Glide.with(ctx).load(uriComprobante).into(ivComprobante);
+            ibComprobante.setVisibility(View.GONE);
+            ivComprobante.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(163).isEmpty()){
+            File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+row.getString(163));
+            Uri uriFirma = Uri.fromFile(firmaFile);
+            byteFirmaAsesor = Miscellaneous.getBytesUri(ctx, uriFirma,0);
+            Glide.with(ctx).load(uriFirma).into(ivFirmaAsesor);
+            ibFirmaAsesor.setVisibility(View.GONE);
+            ivFirmaAsesor.setVisibility(View.VISIBLE);
         }
 
         if (!is_edit){

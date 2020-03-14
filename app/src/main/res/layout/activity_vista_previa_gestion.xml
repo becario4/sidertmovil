@@ -60,19 +60,17 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etContacto"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvNuevoTelefono"
+                    android:id="@+id/tvContacto"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/NuevoTelefono"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
                     android:visibility="gone"
@@ -84,20 +82,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etNuevoTelefono"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvResultadoGestion"
+                    android:id="@+id/tvNuevoTelefono"
+                    android:textSize="17sp"
+                    android:visibility="gone"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/ResultadoGestion"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -109,20 +105,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etResultadoGestion"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges"/>
                 <TextView
-                    android:id="@+id/tvMotivoAclaracion"
+                    android:id="@+id/tvResultadoGestion"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/MotivoAclaracion"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -134,20 +128,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMotivoAclaracion"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvMotivoNoPago"
+                    android:id="@+id/tvMotivoAclaracion"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/MotivoNoPago"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -159,20 +151,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMotivoNoPago"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvMotivoNoContacto"
+                    android:id="@+id/tvMotivoNoPago"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/MotivoNoContacto"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -184,20 +174,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMotivoNoContacto"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvMedioPago"
+                    android:id="@+id/tvMotivoNoContacto"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/MedioPago"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -209,20 +197,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMedioPago"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges"/>
                 <TextView
-                    android:id="@+id/tvFecha"
+                    android:id="@+id/tvMedioPago"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/Fecha"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -234,20 +220,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etFecha"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvComentario"
+                    android:id="@+id/tvFecha"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/Comentario"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -259,21 +243,20 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etComentario"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:inputType="textMultiLine" />
                 <TextView
-                    android:id="@+id/tvPagoRealizado"
+                    android:id="@+id/tvComentario"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/PagoRealizado"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -285,21 +268,19 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etPagoRealizado"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:drawableStart="@drawable/ic_money"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvNoDetalle"
+                    android:id="@+id/tvPagoRealizado"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/NoDetalle"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -311,20 +292,19 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etNoDetalle"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvEstatusPago"
+                    android:id="@+id/tvNoDetalle"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:ems="10"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/EstatusPago"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -336,21 +316,19 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etEstatusPago"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:drawableStart="@drawable/ic_money"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvSaldoActual"
+                    android:id="@+id/tvEstatusPago"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/SaldoActual"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -362,21 +340,19 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etSaldoActual"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:drawableStart="@drawable/ic_money"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvSaldoCorte"
+                    android:id="@+id/tvSaldoActual"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:drawableStart="@drawable/ic_money"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/SaldoCorte"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -388,21 +364,19 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etSaldoCorte"
+                <TextView
+                    android:id="@+id/tvSaldoCorte"
                     android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
                     android:drawableStart="@drawable/ic_money"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
                 <TextView
-                    android:id="@+id/tvFolioRecibo"
+                    android:id="@+id/FolioRecibo"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -414,20 +388,18 @@
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etFolioRecibo"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"
-                    android:enabled="false"
-                    android:ems="10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:background="@drawable/et_rounded_edges" />
                 <TextView
-                    android:id="@+id/tvEvidencia"
+                    android:id="@+id/tvFolioRecibo"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/Evidencia"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
@@ -445,7 +417,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />
                 <TextView
-                    android:id="@+id/tvFirma"
+                    android:id="@+id/Firma"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"

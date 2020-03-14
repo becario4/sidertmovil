@@ -273,6 +273,12 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
 
     <!-- TODO: Arrays -->
+    <string-array name="contacto_cliente">
+        <item>SI</item>
+        <item>NO</item>
+        <item>ACLARACION</item>
+    </string-array>
+
     <string-array name="banks">
         <item>Banamex</item>
         <item>Banorte</item>
@@ -282,10 +288,9 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="reason_no_pay">
-        <item>Seleccione una opción</item>
-        <item>Negación de pago</item>
-        <item>Fallecimiento</item>
-        <item>Otro</item>
+        <item>NEGACION DE PAGO</item>
+        <item>FALLECIMIENTO</item>
+        <item>OTRO</item>
     </string-array>
 
     <string-array name="reason_no_pay_cv">
@@ -297,35 +302,43 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="outdated_information">
-        <item>Garantía</item>
-        <item>Refinanciamiento</item>
-        <item>Condonación</item>
-        <item>Captura de pago</item>
+        <item>GARANTIA</item>
+        <item>REFINACIAMIENTO</item>
+        <item>CONDONACION</item>
+        <item>CAPTURA DE PAGO</item>
     </string-array>
 
     <string-array name="method_pay">
-        <item>Seleccione una opción</item>  <!-- 0 -->
-        <item>Banamex</item>                <!-- 1 -->
-        <item>Banorte</item>                <!-- 2 -->
-        <item>Bancomer</item>               <!-- 3 -->
-        <item>Oxxo</item>                   <!-- 4 -->
-        <item>Telecom</item>                <!-- 5 -->
-        <item>Bansefi</item>                <!-- 6 -->
-        <item>Efectivo</item>               <!-- 7 -->
-        <item>SIDERT</item>                 <!-- 8 -->
+        <item>BANAMEX</item>                <!-- 0 -->
+        <item>BANORTE</item>                <!-- 1 -->
+        <item>BANCOMER</item>               <!-- 2 -->
+        <item>OXXO</item>                   <!-- 3 -->
+        <item>TELECOM</item>                <!-- 4 -->
+        <item>BANSEFI</item>                <!-- 5 -->
+        <item>EFECTIVO</item>               <!-- 6 -->
+        <item>SIDERT</item>                 <!-- 7 -->
+    </string-array>
+
+    <string-array name="medio_pago">
+        <item>BANAMEX</item>                <!-- 0 -->
+        <item>BANORTE</item>                <!-- 1 -->
+        <item>BANCOMER</item>               <!-- 2 -->
+        <item>TELECOM</item>                <!-- 3 -->
+        <item>BANSEFI</item>                <!-- 4 -->
+        <item>OXXO</item>                   <!-- 5 -->
+        <item>EFECTIVO</item>               <!-- 6 -->
+        <item>SIDERT</item>                 <!-- 7 -->
     </string-array>
 
     <string-array name="motivo_no_contacto">
-        <item>Seleccione una opción</item>
-        <item>Cliente Fugado</item>
-        <item>Ilocalizable</item>
-        <item>Otro</item>
+        <item>CLIENTE FUGADO</item>
+        <item>ILOCALIZABLE</item>
+        <item>OTRO</item>
     </string-array>
 
     <string-array name="metodo_pago_cv">
-        <item>Seleccione una opción</item>
-        <item>Banamex722</item>
-        <item>Efectivo</item>
+        <item>BANAMEX722</item>
+        <item>EFECTIVO</item>
     </string-array>
 
     <string-array name="nivel_estudio">
@@ -545,6 +558,21 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>CURP</item>                     <!-- 3 -->
         <item>COMPROBANTE DOMICILIO</item>    <!-- 4 -->
         <item>CODIGO BARRAS</item>            <!-- 5 -->
+    </string-array>
+
+    <string-array name="confirmacion">
+        <item>SI</item>              <!-- 0 -->
+        <item>NO</item>              <!-- 1 -->
+    </string-array>
+
+    <string-array name="imprimir">
+        <item>SI</item>              <!-- 0 -->
+        <item>NO CUENTA CON BATERIA</item>              <!-- 1 -->
+    </string-array>
+
+    <string-array name="resultado_gestion">
+        <item>PAGO</item>              <!-- 0 -->
+        <item>NO PAGO</item>              <!-- 1 -->
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

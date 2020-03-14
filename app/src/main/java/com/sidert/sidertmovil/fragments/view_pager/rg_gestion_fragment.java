@@ -874,7 +874,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectActualizarTelefono(int pos){
         switch (pos){
             case 0:
@@ -892,7 +891,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectResultadoGestion (int pos){
         switch (pos){
             case 0: // No Pago
@@ -937,7 +935,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectMedioPago (int pos){
         if (!parent.flagRespuesta) {
             spMedioPago.setEnabled(false);
@@ -1025,7 +1022,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectMotivoNoPago (int pos){
         tvMotivoNoPago.setError(null);
         switch (pos){
@@ -1050,7 +1046,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
@@ -1073,7 +1068,6 @@ public class rg_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectImprimirRecibos(int pos){
         switch (pos){
             case 0: //No cuenta con bateria la impresora
@@ -1108,7 +1102,6 @@ public class rg_gestion_fragment extends Fragment {
         }
 
     }
-
     private void SelectEstaGerente (int pos){
         switch (pos){
             case 0: // No está el gerente

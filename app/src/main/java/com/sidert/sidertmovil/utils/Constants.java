@@ -181,6 +181,7 @@ public class Constants {
     public final static String SAVE                         = "Guardar";
     public final static String PAGO_REQUERIDO               = "PagoRequerido";
     public final static String FIRMA_IMAGE                  = "FirmaImage";
+    public final static String TIPO_IMAGEN                  = "TipoImagen";
 
     public final static String FECHA_INI                    = "Fecha_Ini";
 
@@ -283,6 +284,10 @@ public class Constants {
     //public final static String GPO_VE               = "groups_ven"
     public final static String SINCRONIZADO         = "sincronizado";
     public final static String SOLICITUDES_IND      = "solicitudes_ind";
+    public final static String TBL_RECIBOS_VIGENTE  = "tbl_recibos_vigente";
+    public final static String TBL_RECIBOS_VENCIDA  = "tbl_recibos_vencida";
+    public final static String TBL_REIMPRESION     = "tbl_reimpresion";
+
     public final static String IND_T                = "individuals_t";
     public final static String GPO_T                = "groups_t";
     public final static String FICHAS_T             = "fichas_t";
@@ -292,6 +297,9 @@ public class Constants {
     //public final static String GPO_VE_T             = "groups_ven_t";
     public final static String SINCRONIZADO_T       = "sincronizado_t";
     public final static String SOLICITUDES_IND_T    = "solicitudes_ind_t";
+    public final static String TBL_RECIBOS_VIGENTE_T = "tbl_recibos_vigente_t";
+    public final static String TBL_RECIBOS_VENCIDA_T = "tbl_recibos_vencida_t";
+    public final static String TBL_REIMPRESION_T    = "tbl_reimpresion_t";
 
     public final static String SOLICITUDES              = "solicitudes";
     public final static String SOLICITUDES_T            = "solicitudes_t";
@@ -326,6 +334,11 @@ public class Constants {
     public final static String CONYUGE_INTEGRANTE_T         = "conyuge_integrante_t";
     public final static String OTROS_DATOS_INTEGRANTE       = "otros_datos_integrante";
     public final static String OTROS_DATOS_INTEGRANTE_T     = "otros_datos_integrante_t";
+    public final static String DOCUMENTOS_INTEGRANTE        = "documentos_integrante";
+    public final static String DOCUMENTOS_INTEGRANTE_T      = "documentos_integrante_t";
+
+    public final static String TBL_RECUPERACION_INDIVIDUAL_T = "recuperacion_individual_t";
+    public final static String TBL_RECUPERACION_INDIVIDUAL   = "recuperacion_individual";
 
 
 

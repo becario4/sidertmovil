@@ -1,19 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
-
-    <!--  ID external order -->
-    <TextView
-        android:id="@+id/tvExternalID"
-        android:textSize="17sp"
-        android:textColor="@android:color/white"
-        android:background="@color/shadowdrawer"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -25,7 +16,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            
+
             <!-- Ubicacion del contacto -->
             <LinearLayout
                 android:layout_marginTop="8dp"
@@ -70,13 +61,11 @@
 
             <!-- ¿Contactó al cliente?-->
             <LinearLayout
-                android:id="@+id/llContactoCliente"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/tvContactoCliente"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/contacted_client"
@@ -89,54 +78,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <RadioGroup
-                    android:id="@+id/rgContactoCliente"
-                    android:orientation="horizontal"
+                <TextView
+                    android:id="@+id/tvContacto"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <RadioButton
-                        android:id="@+id/rbSiContacto"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_left"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/yes"
-                        android:textColor="@drawable/radio_flat_text_selector_left" />
-                    <RadioButton
-                        android:id="@+id/rbNoContacto"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_center"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/not"
-                        android:textColor="@drawable/radio_flat_text_selector_center" />
-                    <RadioButton
-                        android:id="@+id/rbAclaracion"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_rigth"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/aclaracion"
-                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                </RadioGroup>
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!-- Actualizar telefono -->
@@ -148,7 +100,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/tvActualizarTelefono"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/actualizar_telefono"
@@ -160,41 +111,17 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <RadioGroup
-                    android:id="@+id/rgActualizarTelefono"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
+                <TextView
+                    android:id="@+id/tvActualizarTelefono"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <RadioButton
-                        android:id="@+id/rbSiActualizar"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_left"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/yes"
-                        android:textColor="@drawable/radio_flat_text_selector_left" />
-                    <RadioButton
-                        android:id="@+id/rbNoActualizar"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_rigth"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/not"
-                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                </RadioGroup>
+                    android:layout_height="@dimen/et_height" />
                 <EditText
                     android:id="@+id/etActualizarTelefono"
                     android:hint="@string/nuevo_telefono"
@@ -219,7 +146,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/tvResultadoGestion"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/management_result"
@@ -231,41 +157,17 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <RadioGroup
-                    android:id="@+id/rgResultadoPago"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
+                <TextView
+                    android:id="@+id/tvResultadoGestion"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <RadioButton
-                        android:id="@+id/rbPago"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_left"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/payment"
-                        android:textColor="@drawable/radio_flat_text_selector_left" />
-                    <RadioButton
-                        android:id="@+id/rbNoPago"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_rigth"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/not_pay"
-                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                </RadioGroup>
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!-- Medio de pago -->
@@ -277,7 +179,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:id="@+id/tvMedioPago"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/payment_method"
@@ -289,14 +190,25 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <Spinner
+                <TextView
+                    android:id="@+id/tvMedioPago"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <!--<Spinner
                     android:id="@+id/spMedioPago"
                     android:entries="@array/method_pay"
                     android:spinnerMode="dialog"
                     android:drawableRight="@drawable/ic_drop_down"
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height"/>
+                    android:layout_height="@dimen/et_height"/>-->
             </LinearLayout>
 
             <!--  Fecha de deposito   -->
@@ -312,19 +224,13 @@
                     android:text="@string/deposit_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/etFechaDeposito"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:hint="@string/deposit_date"
-                    android:drawableRight="@drawable/ic_date"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="3dp"
-                    android:paddingTop="3dp"
-                    android:paddingLeft="10dp"
+                <TextView
+                    android:id="@+id/tvFechaDeposito"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
                     android:background="@drawable/et_rounded_edges"
+                    android:paddingLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -343,13 +249,23 @@
                     android:text="@string/amount_payment_required"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMontoPagoRequerido"
+                <!--<EditText
                     android:enabled="false"
                     android:paddingLeft="10dp"
                     android:textColor="@drawable/edit_text_selector"
                     android:drawableStart="@drawable/ic_money"
                     android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />-->
+
+                <TextView
+                    android:id="@+id/tvMontoPagoRequerido"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -363,7 +279,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:id="@+id/tvPagaraRequerido"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/amount_required_paid"
@@ -375,41 +290,17 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <RadioGroup
-                    android:id="@+id/rgPagaraRequerido"
-                    android:orientation="horizontal"
-                    android:layout_weight="1"
+                <TextView
+                    android:id="@+id/tvPagaraRequerido"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <RadioButton
-                        android:id="@+id/rbSiRequerido"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_left"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/yes"
-                        android:textColor="@drawable/radio_flat_text_selector_left" />
-                    <RadioButton
-                        android:id="@+id/rbNoRequerido"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_rigth"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/not"
-                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                </RadioGroup>
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Monto del pago realizado  -->
@@ -437,55 +328,6 @@
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Arqueo de Caja  -->
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/llArqueoCaja"
-                android:layout_marginTop="5dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/tvArqueoCaja"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/arqueo_caja"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    style="@android:style/Widget.EditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <ImageButton
-                    android:id="@+id/ibArqueoCaja"
-                    android:src="@drawable/ic_attach_money"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/round_corner_blue"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"/>
-                <!--<Button
-                    android:id="@+id/btnArqueoCaja"
-                    android:drawableRight="@drawable/ic_money"
-                    android:paddingRight="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:layout_marginTop="3dp"
-                    android:background="@drawable/btn_rounded_blue"
-                    android:text="@string/arqueo_caja"
-                    android:textColor="@android:color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" /> -->
-                <RadioButton
-                    android:id="@+id/rbArqueoCaja"
-                    android:paddingLeft="10dp"
-                    android:visibility="gone"
-                    android:drawableStart="@drawable/ic_money"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-            </LinearLayout>
-
             <!-- ¿Imprimir recibos?-->
             <LinearLayout
                 android:id="@+id/llImprimirRecibo"
@@ -495,7 +337,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/tvImprimirRecibo"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/imprimir_recibos"
@@ -506,8 +347,19 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-               
-                <RadioGroup
+
+                <TextView
+                    android:id="@+id/tvImprimirRecibo"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+                <!--<RadioGroup
                     android:id="@+id/rgRecibos"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -540,7 +392,7 @@
                         android:paddingBottom="3dp"
                         android:text="@string/no_cuenta_bateria"
                         android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                </RadioGroup>
+                </RadioGroup>-->
 
                 <ImageButton
                     android:id="@+id/ibImprimir"
@@ -635,7 +487,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />
             </LinearLayout>
-            
+
+            <!--  Motivo de Aclaracion  -->
+            <LinearLayout
+                android:id="@+id/llMotivoAclaracion"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="@string/motivo_aclaracion"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvMotivoAclaracion"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
             <!--  Motivo de no pago  -->
             <LinearLayout
                 android:id="@+id/llMotivoNoPago"
@@ -656,7 +540,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
-                    android:id="@+id/tvMotivoNoPagoxxx"
+                    android:id="@+id/tvMotivoNoPago"
                     android:textSize="17sp"
                     android:textColor="@color/black"
                     android:hint="SELECCIONE UN OPCIÓN"
@@ -673,41 +557,6 @@
                     android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height"/>-->
-            </LinearLayout>
-
-            <!--  Motivo de Aclaracion  -->
-            <LinearLayout
-                android:id="@+id/llMotivoAclaracion"
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tvMotivoAclaracion"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/motivo_aclaracion"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    style="@android:style/Widget.EditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <EditText
-                    android:id="@+id/etMotivoAclaracion"
-                    android:focusable="false"
-                    android:hint="@string/motivo_aclaracion"
-                    android:drawableEnd="@drawable/ic_drop_down"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:inputType="text"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Datos de defunción  -->
@@ -780,7 +629,7 @@
 
             <!--  Fotografía de fachada  -->
             <LinearLayout
-                android:id="@+id/llFotoFachada"
+                android:id="@+id/llFachada"
                 android:visibility="gone"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
@@ -788,7 +637,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/tvFotoFachada"
+                    android:id="@+id/tvFachada"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/facade_photo"
@@ -805,7 +654,7 @@
                     android:layout_height="wrap_content">
 
                     <ImageButton
-                        android:id="@+id/ibFotoFachada"
+                        android:id="@+id/ibFachada"
                         android:layout_width="match_parent"
                         android:contentDescription="@string/facade_photo"
                         android:layout_height="50dp"
@@ -815,7 +664,7 @@
                         android:paddingBottom="3dp"
                         android:src="@drawable/ic_camera_white" />
                     <ImageView
-                        android:id="@+id/ivFotoFachada"
+                        android:id="@+id/ivFachada"
                         android:contentDescription="@string/facade_photo"
                         android:visibility="gone"
                         android:layout_width="match_parent"
@@ -825,14 +674,13 @@
 
             <!-- Esta el gerente con usted -->
             <LinearLayout
-                android:id="@+id/llEstaGerente"
+                android:id="@+id/llGerente"
                 android:visibility="gone"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:id="@+id/tvEstaGerente"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="@string/is_manager"
@@ -844,53 +692,17 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <RadioGroup
-                    android:id="@+id/rgEstaGerente"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
+                <TextView
+                    android:id="@+id/tvGerente"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <RadioButton
-                        android:id="@+id/rbSiGerente"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_left"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/yes"
-                        android:textColor="@drawable/radio_flat_text_selector_left" />
-                    <RadioButton
-                        android:id="@+id/rbNoGerente"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/radio_flat_selector_rigth"
-                        android:button="@android:color/transparent"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="3dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="3dp"
-                        android:text="@string/not"
-                        android:textColor="@drawable/radio_flat_text_selector_rigth" />
-                    <!--<RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbSiGerente"
-                        android:text="@string/yes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <RadioButton
-                        android:layout_weight="1"
-                        android:id="@+id/rbNoGerente"
-                        android:text="@string/not"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" /> -->
-                </RadioGroup>
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!-- Firma gerente-->
@@ -931,4 +743,5 @@
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

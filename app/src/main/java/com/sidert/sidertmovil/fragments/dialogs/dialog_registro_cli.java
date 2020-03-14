@@ -358,67 +358,16 @@ public class dialog_registro_cli extends DialogFragment {
         else
             dBhelper.saveReferencia(db, DATOS_REFERENCIA_IND_T, params);
 
-        //Inseta registro de documentos INE FRONTAL
+        //Inseta registro de documentos
         params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
+        params.put(0,String.valueOf(id));
         params.put(1, "");
-        params.put(2, "1");
-        params.put(3, "0");
-        if (ENVIROMENT)
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
-        else
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
-
-        //Inseta registro de documentos INE REVERSO
-        params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
-        params.put(1, "");
-        params.put(2, "2");
-        params.put(3, "0");
-        if (ENVIROMENT)
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
-        else
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
-
-        //Inseta registro de documentos CURP
-        params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
-        params.put(1, "");
-        params.put(2, "3");
-        params.put(3, "0");
-        if (ENVIROMENT)
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
-        else
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
-
-        //Inseta registro de documentos COMPROBANTE DOMICILIO
-        params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
-        params.put(1, "");
-        params.put(2, "4");
-        params.put(3, "0");
-        if (ENVIROMENT)
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
-        else
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
-
-        //Inseta registro de documentos CODIGO BARRAS
-        params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
-        params.put(1, "");
-        params.put(2, "5");
-        params.put(3, "0");
-        if (ENVIROMENT)
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
-        else
-            dBhelper.saveDocumentosClientes(db, DOCUMENTOS_T, params);
-
-        //Inseta registro de Firma Aval
-        params = new HashMap<>();
-        params.put(0,String.valueOf(id_cliente));
-        params.put(1, "");
-        params.put(2, "6");
-        params.put(3, "0");
+        params.put(2, "");
+        params.put(3, "");
+        params.put(4, "");
+        params.put(5, "");
+        params.put(6, "");
+        params.put(7, "0");
         if (ENVIROMENT)
             dBhelper.saveDocumentosClientes(db, DOCUMENTOS, params);
         else

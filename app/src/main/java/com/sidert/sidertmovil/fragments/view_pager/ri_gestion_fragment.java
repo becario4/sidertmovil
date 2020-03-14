@@ -4,10 +4,12 @@ package com.sidert.sidertmovil.fragments.view_pager;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -23,7 +25,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,14 +65,18 @@ import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.RecuperacionIndividual;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.CapturarFirma;
+import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
+import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -81,6 +89,59 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
+import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
+import static com.sidert.sidertmovil.utils.Constants.DATE;
+import static com.sidert.sidertmovil.utils.Constants.DATE_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.DAY_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
+import static com.sidert.sidertmovil.utils.Constants.FACHADA;
+import static com.sidert.sidertmovil.utils.Constants.FECHAS_POST;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FICHAS;
+import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
+import static com.sidert.sidertmovil.utils.Constants.FIRMA;
+import static com.sidert.sidertmovil.utils.Constants.FIRMA_IMAGE;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
+import static com.sidert.sidertmovil.utils.Constants.GERENTE;
+import static com.sidert.sidertmovil.utils.Constants.IDENTIFIER;
+import static com.sidert.sidertmovil.utils.Constants.IMPRESORA;
+import static com.sidert.sidertmovil.utils.Constants.LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.MESSAGE;
+import static com.sidert.sidertmovil.utils.Constants.MONTH_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
+import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
+import static com.sidert.sidertmovil.utils.Constants.PAGO_REQUERIDO;
+import static com.sidert.sidertmovil.utils.Constants.PICTURE;
+import static com.sidert.sidertmovil.utils.Constants.POS_MEDIO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.POS_MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ARQUEO_CAJA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CAMARA_FACHADA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CAMARA_TICKET;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_GALERIA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_IMPRESORA;
+import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+import static com.sidert.sidertmovil.utils.Constants.SAVE;
+import static com.sidert.sidertmovil.utils.Constants.TIPO;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
+import static com.sidert.sidertmovil.utils.Constants.YEAR_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.camara;
+import static com.sidert.sidertmovil.utils.Constants.firma;
+import static com.sidert.sidertmovil.utils.Constants.question;
 
 public class ri_gestion_fragment extends Fragment {
 
@@ -100,18 +161,20 @@ public class ri_gestion_fragment extends Fragment {
     private TextView tvMotivoAclaracion;
     private TextView tvEstaGerente;
     private TextView tvFotoFachada;
-    private TextView tvMotivoNoPago;
+    //private TextView tvMotivoNoPago;
+    public TextView tvMotivoNoPagoxxx;
+    public TextView tvFechaDefuncion;
 
     public EditText etActualizarTelefono;
     public EditText etComentario;
     public EditText etMotivoAclaracion;
     public EditText etMontoPagoRequerido;
-    public EditText etFechaDefuncion;
+    //public EditText etFechaDefuncion;
     public EditText etPagoRealizado;
     public EditText etFechaDeposito;
     public EditText etFolioRecibo;
 
-    public Spinner spMotivoNoPago;
+    //public Spinner spMotivoNoPago;
     public Spinner spMedioPago;
 
     public RadioGroup rgContactoCliente;
@@ -159,9 +222,10 @@ public class ri_gestion_fragment extends Fragment {
     private LinearLayout llFirma;
 
     private String[] _motivo_aclaracion;
+    private String[] _motivo_no_pago;
 
     private Calendar myCalendar;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+    private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL, Locale.US);
     private Date minDate;
 
     private final int REQUEST_CODE_SIGNATURE = 456;
@@ -190,10 +254,18 @@ public class ri_gestion_fragment extends Fragment {
 
     private boolean flag_menu = false;
 
+    private JSONObject jsonResponse;
+
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view       = inflater.inflate(R.layout.fragment_ri_gestion, container, false);
         ctx             = getContext();
+        jsonResponse         = new JSONObject();
+        dBhelper        = new DBhelper(ctx);
+        db              = dBhelper.getWritableDatabase();
 
         parent                = (RecuperacionIndividual) getActivity();
         assert parent != null;
@@ -209,7 +281,8 @@ public class ri_gestion_fragment extends Fragment {
         tvMotivoAclaracion      = view.findViewById(R.id.tvMotivoAclaracion);
         tvEstaGerente           = view.findViewById(R.id.tvEstaGerente);
         tvFotoFachada           = view.findViewById(R.id.tvFotoFachada);
-        tvMotivoNoPago          = view.findViewById(R.id.tvMotivoNoPago);
+        //tvMotivoNoPago          = view.findViewById(R.id.tvMotivoNoPago);
+        tvMotivoNoPagoxxx       = view.findViewById(R.id.tvMotivoNoPagoxxx);
         tvmapa                  = view.findViewById(R.id.tvMapa);
         tvImprimirRecibo        = view.findViewById(R.id.tvImprimirRecibo);
         tvFotoGaleria           = view.findViewById(R.id.tvFotoGaleria);
@@ -219,13 +292,13 @@ public class ri_gestion_fragment extends Fragment {
         etComentario            = view.findViewById(R.id.etComentario);
         etMotivoAclaracion      = view.findViewById(R.id.etMotivoAclaracion);
         etMontoPagoRequerido    = view.findViewById(R.id.etMontoPagoRequerido);
-        etFechaDefuncion        = view.findViewById(R.id.etFechaDefuncion);
+        tvFechaDefuncion        = view.findViewById(R.id.tvFechaDefuncion);
         etPagoRealizado         = view.findViewById(R.id.etPagoRealizado);
         etFechaDeposito         = view.findViewById(R.id.etFechaDeposito);
         etFolioRecibo           = view.findViewById(R.id.etFolioRecibo);
 
         spMedioPago             = view.findViewById(R.id.spMedioPago);
-        spMotivoNoPago          = view.findViewById(R.id.spMotivoNoPago);
+        //spMotivoNoPago          = view.findViewById(R.id.spMotivoNoPago);
 
         rgContactoCliente       = view.findViewById(R.id.rgContactoCliente);
         rgActualizarTelefono    = view.findViewById(R.id.rgActualizarTelefono);
@@ -254,7 +327,7 @@ public class ri_gestion_fragment extends Fragment {
 
         pbLoading       = view.findViewById(R.id.pbLoading);
 
-        mapView = view.findViewById(R.id.mapGestion);
+        mapView         = view.findViewById(R.id.mapGestion);
 
         llComentario            = view.findViewById(R.id.llComentario);
         llActualizarTelefono    = view.findViewById(R.id.llActualizarTelefono);
@@ -278,7 +351,7 @@ public class ri_gestion_fragment extends Fragment {
         myCalendar              = Calendar.getInstance();
 
         spMedioPago.setPrompt(getResources().getString(R.string.payment_method));
-        spMotivoNoPago.setPrompt(getResources().getString(R.string.reason_no_payment));
+        //spMotivoNoPago.setPrompt(getResources().getString(R.string.reason_no_payment));
 
         mapView.onCreate(savedInstanceState);
         locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
@@ -288,24 +361,22 @@ public class ri_gestion_fragment extends Fragment {
             View child = llEstaGerente.getChildAt(i);
             child.setEnabled(false);
         }
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         try {
-            minDate = sdf.parse("01/08/2019");
+            minDate = sdf.parse("2019-08-01");
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         _motivo_aclaracion = getResources().getStringArray(R.array.outdated_information);
+        _motivo_no_pago = getResources().getStringArray(R.array.reason_no_pay);
+
+        // TextView Click
+        tvMotivoNoPagoxxx.setOnClickListener(tvMotivoNoPagoxxx_OnClick);
 
         // EditText Click
         etMotivoAclaracion.setOnClickListener(etMotivoAclaracion_OnClick);
-        etFechaDefuncion.setOnClickListener(etFechaDefuncion_OnClick);
+        tvFechaDefuncion.setOnClickListener(tvFechaDefuncion_OnClick);
         etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
 
         // ImageButton Click
@@ -317,73 +388,140 @@ public class ri_gestion_fragment extends Fragment {
         ibImprimir.setOnClickListener(ibImprimir_OnClick);
         ibArqueoCaja.setOnClickListener(ibArqueoCaja_OnClick);
 
+        etComentario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() > 0){
+                    try {
+                        jsonResponse.put(COMENTARIO, s.toString().trim().toUpperCase());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    try {
+                        jsonResponse.put(COMENTARIO, "");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                UpdateTemporal(jsonResponse);
+            }
+        });
+
         // RadioGroup Click
         rgContactoCliente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.e("----------","Contacto Cliente");
                 tvContactoCliente.setError(null);
                 tvActualizarTelefono.setError(null);
                 tvMotivoAclaracion.setError(null);
                 etMotivoAclaracion.setError(null);
                 tvFotoFachada.setError(null);
+                int pos = 0;
                 switch (checkedId) {
                     case R.id.rbSiContacto:
-                        SelectContactoCliente(1);
+                        pos = 1;
                         break;
                     case R.id.rbNoContacto:
-                        SelectContactoCliente(0);
+                        pos = 2;
                         break;
                     case R.id.rbAclaracion:
-                        SelectContactoCliente(2);
-                    break;
+                        pos = 3;
+                        break;
                     default:
                         tvContactoCliente.setError("");
-                        SelectContactoCliente(-1);
+                        pos = 0;
                         break;
                 }
+                try {
+                    jsonResponse.put(CONTACTO, pos);
+                    UpdateTemporal(jsonResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.e("----------","Contacto Cliente  "  + pos);
+                SelectContactoCliente(pos);
+
             }
         });
 
         rgActualizarTelefono.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.e("----------","Actualiza telefono");
                 tvActualizarTelefono.setError(null);
+                int pos = 0;
                 switch (checkedId){
-                    case R.id.rbNoActualizar:
-                        SelectActualizarTelefono(0);
-                        break;
                     case R.id.rbSiActualizar:
-                        SelectActualizarTelefono(1);
+                        pos = 1;
+                        break;
+                    case R.id.rbNoActualizar:
+                        pos = 2;
                         break;
                     default:
                         etActualizarTelefono.setText("");
-                        SelectActualizarTelefono(-1);
+                        pos = 0;
                         break;
                 }
+
+                try {
+                    jsonResponse.put(ACTUALIZAR_TELEFONO, pos);
+                    UpdateTemporal(jsonResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SelectActualizarTelefono(pos);
             }
         });
 
         rgResultadoPago.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+
                 tvResultadoGestion.setError(null);
+                int pos = 0;
                 switch (checkedId) {
-                    case R.id.rbNoPago:
-                        SelectResultadoGestion(0);
-                        break;
                     case R.id.rbPago:
-                        SelectResultadoGestion(1);
+                        pos = 1;
+                        break;
+                    case R.id.rbNoPago:
+                        pos = 2;
                         break;
                     default:
-                        SelectResultadoGestion(-1);
+                        pos = 0;
                         break;
                 }
+
+                Log.e("----------","Resultado pago:   "+  pos);
+                try {
+                    jsonResponse.put(RESULTADO_PAGO, pos);
+                    UpdateTemporal(jsonResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SelectResultadoGestion(pos);
+
             }
         });
 
         rgPagaraRequerido.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.e("----------","Pago requerido");
                 tvPagaraRequerido.setError(null);
                 switch (checkedId){
                     case R.id.rbSiRequerido:
@@ -411,6 +549,7 @@ public class ri_gestion_fragment extends Fragment {
         rgRecibos.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.e("----------","Recibos");
                 switch (checkedId){
                     case R.id.rbSiRecibo:
                         SelectImprimirRecibos(1);
@@ -428,19 +567,31 @@ public class ri_gestion_fragment extends Fragment {
         rgEstaGerente.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.e("----------","Esta el gerente");
                 tvEstaGerente.setError(null);
+                int pos = 0;
                 switch (checkedId){
                     case R.id.rbSiGerente:
-                        SelectEstaGerente(1);
+                        pos = 1;
                         break;
                     case R.id.rbNoGerente:
-                        SelectEstaGerente(0);
+                        pos = 2;
                         break;
                     default:
                         tvEstaGerente.setError("");
-                        SelectEstaGerente(-1);
+                        pos = 0;
                         break;
                 }
+
+                try {
+                    jsonResponse.put(GERENTE, pos);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                UpdateTemporal(jsonResponse);
+                SelectEstaGerente(pos);
+
             }
         });
 
@@ -448,6 +599,7 @@ public class ri_gestion_fragment extends Fragment {
         spMedioPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("----------","medio pago");
                 SelectMedioPago(position);
             }
 
@@ -457,7 +609,7 @@ public class ri_gestion_fragment extends Fragment {
             }
         });
 
-        spMotivoNoPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*spMotivoNoPago.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SelectMotivoNoPago(position);
@@ -467,7 +619,7 @@ public class ri_gestion_fragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });*/
 
         try {
             initComponents();
@@ -481,13 +633,21 @@ public class ri_gestion_fragment extends Fragment {
             ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
             ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
         }
-
+        return view;
     }
+
+    /*@Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
+
+    }*/
 
     private View.OnClickListener ivFirma_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, Constants.firma,
+            final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
                     R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
@@ -512,13 +672,13 @@ public class ri_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (spMedioPago.getSelectedItemPosition() > 0 && spMedioPago.getSelectedItemPosition() < 7 || spMedioPago.getSelectedItemPosition() == 8){
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, Constants.question,
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-                                startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
+                                i.putExtra(ORDER_ID, parent.ficha_ri.getId());
+                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
                                 dialog.dismiss();
 
                             }
@@ -527,7 +687,7 @@ public class ri_gestion_fragment extends Fragment {
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                                 gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), Constants.REQUEST_CODE_GALERIA);
+                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
                                 dialog.dismiss();
                             }
                         }, R.string.cancel, new Popups.DialogMessage() {
@@ -541,13 +701,13 @@ public class ri_gestion_fragment extends Fragment {
                 evidencia_dlg.show();
             }
             else{
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-                                startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
+                                i.putExtra(ORDER_ID, parent.ficha_ri.getId());
+                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
                                 dialog.dismiss();
 
                             }
@@ -567,13 +727,13 @@ public class ri_gestion_fragment extends Fragment {
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final AlertDialog fachada_cam_dlg = Popups.showDialogConfirm(ctx, Constants.camara,
+            final AlertDialog fachada_cam_dlg = Popups.showDialogConfirm(ctx, camara,
                     R.string.capturar_nueva_fotografia, R.string.accept, new Popups.DialogMessage() {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
                             Intent i = new Intent(parent, CameraVertical.class);
-                            i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-                            startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
+                            i.putExtra(ORDER_ID, parent.ficha_ri.getId());
+                            startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
                             dialog.dismiss();
 
                         }
@@ -589,6 +749,31 @@ public class ri_gestion_fragment extends Fragment {
         }
     };
 
+    // TextView Listener Action
+    private View.OnClickListener tvMotivoNoPagoxxx_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle(R.string.selected_option)
+                    .setItems(R.array.reason_no_pay, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int position) {
+                            tvMotivoNoPagoxxx.setError(null);
+                            tvMotivoNoPagoxxx.setText(_motivo_no_pago[position]);
+                            try {
+                                jsonResponse.put(MOTIVO_NO_PAGO, _motivo_no_pago[position].toUpperCase());
+                                UpdateTemporal(jsonResponse);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            SelectMotivoNoPago(position);
+                        }
+                    });
+            builder.create();
+            builder.show();
+        }
+    };
+
     private View.OnClickListener etMotivoAclaracion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -598,6 +783,12 @@ public class ri_gestion_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvMotivoAclaracion.setError(null);
                             etMotivoAclaracion.setText(_motivo_aclaracion[position]);
+                            try {
+                                jsonResponse.put(MOTIVO_ACLARACION, _motivo_aclaracion[position].toUpperCase());
+                                UpdateTemporal(jsonResponse);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
             builder.create();
@@ -620,6 +811,14 @@ public class ri_gestion_fragment extends Fragment {
                     if (!latitud.isEmpty() && !longitud.isEmpty()){
                         tvmapa.setError(null);
                         mapView.setVisibility(View.VISIBLE);
+                        try {
+                            jsonResponse.put(LATITUD, Double.parseDouble(latitud));
+                            jsonResponse.put(LONGITUD, Double.parseDouble(longitud));
+                            UpdateTemporal(jsonResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         ColocarUbicacionGestion(Double.parseDouble(latitud), Double.parseDouble(longitud));
                     }
                     else{
@@ -627,6 +826,8 @@ public class ri_gestion_fragment extends Fragment {
                         tvmapa.setError("");
                         Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                     }
+
+
 
                     flagUbicacion = true;
                     if (flagUbicacion){
@@ -646,8 +847,8 @@ public class ri_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-            startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
+            i.putExtra(ORDER_ID, parent.ficha_ri.getId());
+            startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
         }
     };
 
@@ -655,8 +856,8 @@ public class ri_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-            startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
+            i.putExtra(ORDER_ID, parent.ficha_ri.getId());
+            startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
         }
     };
 
@@ -665,8 +866,8 @@ public class ri_gestion_fragment extends Fragment {
         public void onClick(View v) {
             Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
             gallery.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), Constants.REQUEST_CODE_GALERIA);
-            //startActivityForResult(gallery, Constants.REQUEST_CODE_GALERIA);
+            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+            //startActivityForResult(gallery, REQUEST_CODE_GALERIA);
         }
     };
 
@@ -674,6 +875,7 @@ public class ri_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent sig = new Intent(ctx, CapturarFirma.class);
+            sig.putExtra(TIPO,"");
             startActivityForResult(sig, REQUEST_CODE_SIGNATURE);
         }
     };
@@ -682,11 +884,11 @@ public class ri_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i_arqueoCaja = new Intent(ctx, ArqueoDeCaja.class);
-            i_arqueoCaja.putExtra(Constants.PAGO_REALIZADO, Double.parseDouble(etPagoRealizado.getText().toString()));
-            i_arqueoCaja.putExtra(Constants.PAGO_REQUERIDO, parent.ficha_ri.getPrestamo().getPagoSemanal());
-            i_arqueoCaja.putExtra(Constants.NOMBRE_GRUPO, parent.ficha_ri.getCliente().getNombre());
-            i_arqueoCaja.putExtra(Constants.ORDER_ID, parent.ficha_ri.getId());
-            startActivityForResult(i_arqueoCaja, Constants.REQUEST_CODE_ARQUEO_CAJA);
+            i_arqueoCaja.putExtra(PAGO_REALIZADO, Double.parseDouble(etPagoRealizado.getText().toString()));
+            i_arqueoCaja.putExtra(PAGO_REQUERIDO, parent.ficha_ri.getPrestamo().getPagoSemanal());
+            i_arqueoCaja.putExtra(NOMBRE_GRUPO, parent.ficha_ri.getCliente().getNombre());
+            i_arqueoCaja.putExtra(ORDER_ID, parent.ficha_ri.getId());
+            startActivityForResult(i_arqueoCaja, REQUEST_CODE_ARQUEO_CAJA);
         }
     };
 
@@ -709,7 +911,7 @@ public class ri_gestion_fragment extends Fragment {
                 i.putExtra("order",order);
                 i.putExtra("tag",true);
 
-                startActivityForResult(i,Constants.REQUEST_CODE_IMPRESORA);
+                startActivityForResult(i,REQUEST_CODE_IMPRESORA);
             }
             else
                 Toast.makeText(ctx, "No ha capturado el pago realizado del cliente", Toast.LENGTH_SHORT).show();
@@ -740,11 +942,25 @@ public class ri_gestion_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener etFechaDefuncion_OnClick = new View.OnClickListener() {
+    private View.OnClickListener tvFechaDefuncion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            
-            DatePickerDialog dpd = new DatePickerDialog(ctx, new DatePickerDialog.OnDateSetListener() {
+            if (parent.flagRespuesta) {
+                myCalendar = Calendar.getInstance();
+                dialog_date_picker dialogDatePicker = new dialog_date_picker();
+                Bundle b = new Bundle();
+
+                b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
+                b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
+                b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
+                b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
+                b.putInt(IDENTIFIER, 5);
+                b.putBoolean(FECHAS_POST, false);
+                dialogDatePicker.setArguments(b);
+                dialogDatePicker.setTargetFragment(ri_gestion_fragment.this,123);
+                dialogDatePicker.show(parent.getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
+            }
+            /*DatePickerDialog dpd = new DatePickerDialog(ctx, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     myCalendar.set(Calendar.YEAR,year);
@@ -755,7 +971,7 @@ public class ri_gestion_fragment extends Fragment {
                 }
             },myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH));
             dpd.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
-            dpd.show();
+            dpd.show();*/
         }
     };
 
@@ -772,36 +988,38 @@ public class ri_gestion_fragment extends Fragment {
         etMontoPagoRequerido.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoSemanal()));
 
         if (parent.jsonRes != null){
-            if (parent.jsonRes.has(Constants.LATITUD) && parent.jsonRes.has(Constants.LONGITUD)){
+            jsonResponse = parent.jsonRes;
+            Log.e("jsonParent", parent.jsonRes.toString());
+            if (parent.jsonRes.has(LATITUD) && parent.jsonRes.has(LONGITUD)){
                 try {
                     tvmapa.setError(null);
                     mapView.setVisibility(View.VISIBLE);
-                    ColocarUbicacionGestion(parent.jsonRes.getDouble(Constants.LATITUD), parent.jsonRes.getDouble(Constants.LONGITUD));
+                    ColocarUbicacionGestion(parent.jsonRes.getDouble(LATITUD), parent.jsonRes.getDouble(LONGITUD));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
-            if (parent.jsonRes.has(Constants.CONTACTO)){
+            if (parent.jsonRes.has(CONTACTO)){
                 if (!parent.flagRespuesta){
                     for(int i = 0; i < rgContactoCliente.getChildCount(); i++){
                         ((RadioButton) rgContactoCliente.getChildAt(i)).setEnabled(false);
                     }
                 }
-                switch (parent.jsonRes.getInt(Constants.CONTACTO)) {
-                    case 0:
+                switch (parent.jsonRes.getInt(CONTACTO)) {
+                    case 2: //NO CONTACTO
                         ((RadioButton) rgContactoCliente.getChildAt(1)).setChecked(true);
 
-                        if (parent.jsonRes.has(Constants.COMENTARIO)){
-                            etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
+                        if (parent.jsonRes.has(COMENTARIO)){
+                            etComentario.setText(parent.jsonRes.getString(COMENTARIO));
                             etComentario.setVisibility(View.VISIBLE);
                             etComentario.setError(null);
                             if (!parent.flagRespuesta)
                                 etComentario.setEnabled(false);
                         }
 
-                        if (parent.jsonRes.has(Constants.FACHADA)){
-                            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+parent.jsonRes.getString(Constants.FACHADA));
+                        if (parent.jsonRes.has(FACHADA)){
+                            File fachadaFile = new File(ROOT_PATH + "Fachada/"+parent.jsonRes.getString(FACHADA));
                             Uri uriFachada = Uri.fromFile(fachadaFile);
                             Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
                             ibFotoFachada.setVisibility(View.GONE);
@@ -811,17 +1029,17 @@ public class ri_gestion_fragment extends Fragment {
                         }
 
                         rgEstaGerente.setVisibility(View.VISIBLE);
-                        if (parent.jsonRes.has(Constants.GERENTE)){
+                        if (parent.jsonRes.has(GERENTE)){
                             ((RadioButton) rgEstaGerente.getChildAt(1)).setChecked(true);
                             if (!parent.flagRespuesta){
                                 for(int i = 0; i < rgEstaGerente.getChildCount(); i++){
                                     ((RadioButton) rgEstaGerente.getChildAt(i)).setEnabled(false);
                                 }
                             }
-                            if (parent.jsonRes.getBoolean(Constants.GERENTE)){
+                            if (parent.jsonRes.getInt(GERENTE) == 1){
                                 ((RadioButton) rgEstaGerente.getChildAt(0)).setChecked(true);
-                                if (parent.jsonRes.has(Constants.FIRMA)){
-                                    File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
+                                if (parent.jsonRes.has(FIRMA)){
+                                    File firmaFile = new File(ROOT_PATH + "Firma/"+parent.jsonRes.getString(FIRMA));
                                     Uri uriFirma = Uri.fromFile(firmaFile);
                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                     ibFirma.setVisibility(View.GONE);
@@ -832,62 +1050,67 @@ public class ri_gestion_fragment extends Fragment {
                             }
                         }
                         break;
-                    case 1:
+                    case 1: //SI CONTACTO
                         if (!parent.flagRespuesta){
                             for(int i = 0; i < rgActualizarTelefono.getChildCount(); i++){
                                 ((RadioButton) rgActualizarTelefono.getChildAt(i)).setEnabled(false);
                             }
-
                             etActualizarTelefono.setEnabled(false);
                         }
 
+                        Log.e("0xxxxxxx", parent.jsonRes.toString());
                         ((RadioButton) rgContactoCliente.getChildAt(0)).setChecked(true);
-                        if (parent.jsonRes.has(Constants.ACTUALIZAR_TELEFONO)){
+                        Log.e("0.5xxxxxxx", parent.jsonRes.toString());
+                        if (parent.jsonRes.has(ACTUALIZAR_TELEFONO)){
                             ((RadioButton) rgActualizarTelefono.getChildAt(1)).setChecked(true);
-                            if (parent.jsonRes.getBoolean(Constants.ACTUALIZAR_TELEFONO)){
+                            if (parent.jsonRes.getInt(ACTUALIZAR_TELEFONO) == 1){
                                 ((RadioButton) rgActualizarTelefono.getChildAt(0)).setChecked(true);
-                                if (parent.jsonRes.has(Constants.NUEVO_TELEFONO)){
-                                    etActualizarTelefono.setText(parent.jsonRes.getString(Constants.NUEVO_TELEFONO));
+                                if (parent.jsonRes.has(NUEVO_TELEFONO)){
+                                    etActualizarTelefono.setText(parent.jsonRes.getString(NUEVO_TELEFONO));
                                     etActualizarTelefono.setError(null);
                                     etActualizarTelefono.setVisibility(View.VISIBLE);
                                 }
                             }
                         }
 
-                        if (parent.jsonRes.has(Constants.RESULTADO_PAGO)){
+                        Log.e("1xxxxxxx", parent.jsonRes.toString());
+                        if (parent.jsonRes.has(RESULTADO_PAGO)){
                             if (!parent.flagRespuesta){
                                 for(int i = 0; i < rgResultadoPago.getChildCount(); i++){
                                     ((RadioButton) rgResultadoPago.getChildAt(i)).setEnabled(false);
                                 }
                             }
-                            switch ((parent.jsonRes.getBoolean(Constants.RESULTADO_PAGO)?1:0)){
-                                case 0: //No Pago
+                            Log.e("2xxxxxxx", parent.jsonRes.toString());
+                            Log.e("xxxxxxx",parent.jsonRes.getString(RESULTADO_PAGO)+"asdas");
+                            switch ((parent.jsonRes.getInt(RESULTADO_PAGO))){
+                                case 2: //No Pago
                                     if (!parent.flagRespuesta) {
-                                        spMotivoNoPago.setEnabled(false);
+                                        //spMotivoNoPago.setEnabled(false);
                                         etComentario.setEnabled(false);
-                                        etFechaDefuncion.setEnabled(false);
+                                        tvFechaDefuncion.setEnabled(false);
                                     }
 
                                     ((RadioButton) rgResultadoPago.getChildAt(1)).setChecked(true);
-                                    spMotivoNoPago.setVisibility(View.VISIBLE);
-                                    spMotivoNoPago.setSelection(parent.jsonRes.getInt(Constants.POS_MOTIVO_NO_PAGO));
+                                    //spMotivoNoPago.setVisibility(View.VISIBLE);
+                                   Log.e("motivo no pago", parent.jsonRes.getString(MOTIVO_NO_PAGO));
+                                    tvMotivoNoPagoxxx.setText(parent.jsonRes.getString(MOTIVO_NO_PAGO));
 
-                                    if (parent.jsonRes.has(Constants.FECHA_DEFUNCION)){
-                                        etFechaDefuncion.setText(parent.jsonRes.getString(Constants.FECHA_DEFUNCION));
-                                        etFechaDefuncion.setError(null);
-                                        etFechaDefuncion.setVisibility(View.VISIBLE);
+                                    if (parent.jsonRes.has(FECHA_DEFUNCION)){
+                                        tvFechaDefuncion.setText(parent.jsonRes.getString(FECHA_DEFUNCION));
+                                        tvFechaDefuncion.setError(null);
+                                        tvFechaDefuncion.setVisibility(View.VISIBLE);
                                     }
 
-                                    if (parent.jsonRes.has(Constants.COMENTARIO)){
-                                        etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
+                                    if (parent.jsonRes.has(COMENTARIO)){
+                                        etComentario.setText(parent.jsonRes.getString(COMENTARIO));
                                         etComentario.setVisibility(View.VISIBLE);
                                         etComentario.setError(null);
                                         if (!parent.flagRespuesta)
                                             etComentario.setEnabled(false);
                                     }
 
-                                    if (parent.jsonRes.has(Constants.FACHADA)){
-                                        File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+parent.jsonRes.getString(Constants.FACHADA));
+                                    if (parent.jsonRes.has(FACHADA)){
+                                        File fachadaFile = new File(ROOT_PATH + "Fachada/"+parent.jsonRes.getString(FACHADA));
                                         Uri uriFachada = Uri.fromFile(fachadaFile);
                                         Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
                                         ibFotoFachada.setVisibility(View.GONE);
@@ -897,17 +1120,17 @@ public class ri_gestion_fragment extends Fragment {
                                     }
 
                                     rgEstaGerente.setVisibility(View.VISIBLE);
-                                    if (parent.jsonRes.has(Constants.GERENTE)){
+                                    if (parent.jsonRes.has(GERENTE)){
                                         ((RadioButton) rgEstaGerente.getChildAt(1)).setChecked(true);
                                         if (!parent.flagRespuesta){
                                             for(int i = 0; i < rgEstaGerente.getChildCount(); i++){
                                                 ((RadioButton) rgEstaGerente.getChildAt(i)).setEnabled(false);
                                             }
                                         }
-                                        if (parent.jsonRes.getBoolean(Constants.GERENTE)){
+                                        if (parent.jsonRes.getInt(GERENTE) == 1){
                                             ((RadioButton) rgEstaGerente.getChildAt(0)).setChecked(true);
-                                            if (parent.jsonRes.has(Constants.FIRMA)){
-                                                File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
+                                            if (parent.jsonRes.has(FIRMA)){
+                                                File firmaFile = new File(ROOT_PATH + "Firma/"+parent.jsonRes.getString(FIRMA));
                                                 Uri uriFirma = Uri.fromFile(firmaFile);
                                                 Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                 ibFirma.setVisibility(View.GONE);
@@ -920,10 +1143,10 @@ public class ri_gestion_fragment extends Fragment {
                                     break;
                                 case 1: // Si Pago
                                     ((RadioButton) rgResultadoPago.getChildAt(0)).setChecked(true);
-                                    if (parent.jsonRes.has(Constants.POS_MEDIO_PAGO)){
-                                        spMedioPago.setSelection(parent.jsonRes.getInt(Constants.POS_MEDIO_PAGO));
+                                    if (parent.jsonRes.has(POS_MEDIO_PAGO)){
+                                        spMedioPago.setSelection(parent.jsonRes.getInt(POS_MEDIO_PAGO));
 
-                                        if (parent.jsonRes.has(Constants.PAGO_REQUERIDO)){
+                                        if (parent.jsonRes.has(PAGO_REQUERIDO)){
                                             ((RadioButton) rgPagaraRequerido.getChildAt(1)).setChecked(true);
                                             if (!parent.flagRespuesta){
                                                 for(int i = 0; i < rgPagaraRequerido.getChildCount(); i++){
@@ -931,20 +1154,20 @@ public class ri_gestion_fragment extends Fragment {
                                                 }
                                                 etPagoRealizado.setEnabled(false);
                                             }
-                                            if (parent.jsonRes.getBoolean(Constants.PAGO_REQUERIDO)){
+                                            if (parent.jsonRes.getBoolean(PAGO_REQUERIDO)){
                                                 ((RadioButton) rgPagaraRequerido.getChildAt(0)).setChecked(true);
                                             }
 
-                                            etPagoRealizado.setText(parent.jsonRes.getString(Constants.PAGO_REALIZADO));
+                                            etPagoRealizado.setText(parent.jsonRes.getString(PAGO_REALIZADO));
                                         }
 
-                                        if (parent.jsonRes.has(Constants.FECHA_DEPOSITO)){
-                                            etFechaDeposito.setText(parent.jsonRes.getString(Constants.FECHA_DEPOSITO));
+                                        if (parent.jsonRes.has(FECHA_DEPOSITO)){
+                                            etFechaDeposito.setText(parent.jsonRes.getString(FECHA_DEPOSITO));
                                             etFechaDeposito.setError(null);
                                         }
 
-                                        if (parent.jsonRes.getInt(Constants.POS_MEDIO_PAGO) == 7){
-                                            if (parent.jsonRes.has(Constants.IMPRESORA)){
+                                        if (parent.jsonRes.getInt(POS_MEDIO_PAGO) == 7){
+                                            if (parent.jsonRes.has(IMPRESORA)){
                                                 ((RadioButton) rgRecibos.getChildAt(1)).setChecked(true);
                                                 etFolioRecibo.setEnabled(true);
                                                 if (!parent.flagRespuesta){
@@ -953,18 +1176,18 @@ public class ri_gestion_fragment extends Fragment {
                                                     }
                                                     etFolioRecibo.setEnabled(false);
                                                 }
-                                                if (parent.jsonRes.getBoolean(Constants.IMPRESORA)){
+                                                if (parent.jsonRes.getBoolean(IMPRESORA)){
                                                     ((RadioButton) rgRecibos.getChildAt(0)).setChecked(true);
 
-                                                    if (parent.jsonRes.has(Constants.FOLIO_TICKET)){
+                                                    if (parent.jsonRes.has(FOLIO_TICKET)){
                                                         ibImprimir.setVisibility(View.VISIBLE);
                                                         if (!parent.flagRespuesta)
                                                             ibImprimir.setVisibility(View.GONE);
                                                         etFolioRecibo.setEnabled(false);
                                                         llFolioRecibo.setVisibility(View.VISIBLE);
-                                                        etFolioRecibo.setText(parent.jsonRes.getString(Constants.FOLIO_TICKET));
+                                                        etFolioRecibo.setText(parent.jsonRes.getString(FOLIO_TICKET));
                                                         etFolioRecibo.setError(null);
-                                                        folio_impreso = parent.jsonRes.getString(Constants.FOLIO_TICKET);
+                                                        folio_impreso = parent.jsonRes.getString(FOLIO_TICKET);
                                                     }
                                                     else {
                                                         ibImprimir.setVisibility(View.VISIBLE);
@@ -973,15 +1196,15 @@ public class ri_gestion_fragment extends Fragment {
                                                 else{
                                                     ibImprimir.setVisibility(View.GONE);
                                                     llFolioRecibo.setVisibility(View.VISIBLE);
-                                                    etFolioRecibo.setText(parent.jsonRes.getString(Constants.FOLIO_TICKET));
+                                                    etFolioRecibo.setText(parent.jsonRes.getString(FOLIO_TICKET));
                                                     etFolioRecibo.setError(null);
                                                 }
                                             }
                                         }
 
-                                        if (parent.jsonRes.has(Constants.EVIDENCIA)){
-                                            Log.v("PATH_EVIDENCIA", Constants.ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(Constants.EVIDENCIA));
-                                            File evidenciaFile = new File(Constants.ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(Constants.EVIDENCIA));
+                                        if (parent.jsonRes.has(EVIDENCIA)){
+                                            Log.v("PATH_EVIDENCIA", ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(EVIDENCIA));
+                                            File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(EVIDENCIA));
                                             Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                                             Glide.with(ctx).load(uriEvidencia).into(ivEvidencia);
                                             ibFoto.setVisibility(View.GONE);
@@ -991,18 +1214,18 @@ public class ri_gestion_fragment extends Fragment {
                                             tvFotoGaleria.setError(null);
                                         }
 
-                                        if (parent.jsonRes.has(Constants.GERENTE)){
+                                        if (parent.jsonRes.has(GERENTE)){
                                             ((RadioButton) rgEstaGerente.getChildAt(1)).setChecked(true);
                                             if (!parent.flagRespuesta){
                                                 for(int i = 0; i < rgEstaGerente.getChildCount(); i++){
                                                     ((RadioButton) rgEstaGerente.getChildAt(i)).setEnabled(false);
                                                 }
                                             }
-                                            if (parent.jsonRes.getBoolean(Constants.GERENTE)){
+                                            if (parent.jsonRes.getBoolean(GERENTE)){
                                                 ((RadioButton) rgEstaGerente.getChildAt(0)).setChecked(true);
-                                                if (parent.jsonRes.has(Constants.FIRMA)){
-                                                    Log.v("PATH_FIRMA", Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
-                                                    File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
+                                                if (parent.jsonRes.has(FIRMA)){
+                                                    Log.v("PATH_FIRMA", ROOT_PATH + "Firma/"+parent.jsonRes.getString(FIRMA));
+                                                    File firmaFile = new File(ROOT_PATH + "Firma/"+parent.jsonRes.getString(FIRMA));
                                                     Uri uriFirma = Uri.fromFile(firmaFile);
                                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                     ibFirma.setVisibility(View.GONE);
@@ -1018,17 +1241,17 @@ public class ri_gestion_fragment extends Fragment {
                         }
 
                         break;
-                    case 2:
+                    case 3:
                         ((RadioButton) rgContactoCliente.getChildAt(2)).setChecked(true);
-                        if (parent.jsonRes.has(Constants.MOTIVO_ACLARACION)){
-                            etMotivoAclaracion.setText(parent.jsonRes.getString(Constants.MOTIVO_ACLARACION));
+                        if (parent.jsonRes.has(MOTIVO_ACLARACION)){
+                            etMotivoAclaracion.setText(parent.jsonRes.getString(MOTIVO_ACLARACION));
                             etMotivoAclaracion.setVisibility(View.VISIBLE);
                             tvMotivoAclaracion.setError(null);
                             if (!parent.flagRespuesta)
                                 etMotivoAclaracion.setEnabled(false);
                         }
-                        if (parent.jsonRes.has(Constants.COMENTARIO)){
-                            etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
+                        if (parent.jsonRes.has(COMENTARIO)){
+                            etComentario.setText(parent.jsonRes.getString(COMENTARIO));
                             etComentario.setVisibility(View.VISIBLE);
                             etComentario.setError(null);
                             if (!parent.flagRespuesta)
@@ -1036,17 +1259,17 @@ public class ri_gestion_fragment extends Fragment {
                         }
 
                         rgEstaGerente.setVisibility(View.VISIBLE);
-                        if (parent.jsonRes.has(Constants.GERENTE)){
+                        if (parent.jsonRes.has(GERENTE)){
                             ((RadioButton) rgEstaGerente.getChildAt(1)).setChecked(true);
                             if (!parent.flagRespuesta){
                                 for(int i = 0; i < rgEstaGerente.getChildCount(); i++){
                                     ((RadioButton) rgEstaGerente.getChildAt(i)).setEnabled(false);
                                 }
                             }
-                            if (parent.jsonRes.getBoolean(Constants.GERENTE)){
+                            if (parent.jsonRes.getInt(GERENTE) == 1){
                                 ((RadioButton) rgEstaGerente.getChildAt(0)).setChecked(true);
-                                if (parent.jsonRes.has(Constants.FIRMA)){
-                                    File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
+                                if (parent.jsonRes.has(FIRMA)){
+                                    File firmaFile = new File(ROOT_PATH + "Firma/"+parent.jsonRes.getString(FIRMA));
                                     Uri uriFirma = Uri.fromFile(firmaFile);
                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                     ibFirma.setVisibility(View.GONE);
@@ -1068,7 +1291,37 @@ public class ri_gestion_fragment extends Fragment {
         if (rbSiGerente.isChecked() || rbNoGerente.isChecked()) tvEstaGerente.setError(null);
         else tvEstaGerente.setError("");
         switch (pos){
-            case 0: // No contacto cliente
+            case 1: // Si contacto cliente
+                tvActualizarTelefono.setError("");
+                tvResultadoGestion.setError("");
+                etMotivoAclaracion.setText("");
+                if (parent.jsonRes != null) {
+                    try {
+                        Log.e("1ResultadoGestion", parent.jsonRes.getString(RESULTADO_PAGO));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                rgResultadoPago.clearCheck();
+                if (parent.jsonRes != null) {
+                    try {
+                        Log.e("2ResultadoGestion", parent.jsonRes.getString(RESULTADO_PAGO));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                SelectResultadoGestion(-1);
+                rgEstaGerente.clearCheck();
+                SelectEstaGerente(-1);
+                llResultadoGestion.setVisibility(View.VISIBLE);
+                llActualizarTelefono.setVisibility(View.VISIBLE);
+                llComentario.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                llFirma.setVisibility(View.GONE);
+                llMotivoAclaracion.setVisibility(View.GONE);
+                break;
+            case 2: // No contacto cliente
                 tvFotoFachada.setError("");
                 etMotivoAclaracion.setText("");
                 rgResultadoPago.clearCheck();
@@ -1088,23 +1341,7 @@ public class ri_gestion_fragment extends Fragment {
                 llEstaGerente.setVisibility(View.VISIBLE);
                 llMotivoAclaracion.setVisibility(View.GONE);
                 break;
-            case 1: // Si contacto cliente
-                tvActualizarTelefono.setError("");
-                tvResultadoGestion.setError("");
-                etMotivoAclaracion.setText("");
-                rgResultadoPago.clearCheck();
-                SelectResultadoGestion(-1);
-                rgEstaGerente.clearCheck();
-                SelectEstaGerente(-1);
-                llResultadoGestion.setVisibility(View.VISIBLE);
-                llActualizarTelefono.setVisibility(View.VISIBLE);
-                llComentario.setVisibility(View.GONE);
-                llFotoFachada.setVisibility(View.GONE);
-                llEstaGerente.setVisibility(View.GONE);
-                llFirma.setVisibility(View.GONE);
-                llMotivoAclaracion.setVisibility(View.GONE);
-                break;
-            case 2: // Aclaración
+            case 3: // Aclaración
                 tvMotivoAclaracion.setError("");
                 etMotivoAclaracion.setText("");
                 etComentario.setError(getResources().getString(R.string.campo_requerido));
@@ -1139,16 +1376,15 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectActualizarTelefono(int pos){
         switch (pos){
-            case 0:
-                etActualizarTelefono.setText("");
-                etActualizarTelefono.setVisibility(View.GONE);
-                break;
             case 1:
                 etActualizarTelefono.setVisibility(View.VISIBLE);
                 etActualizarTelefono.setError(getResources().getString(R.string.campo_requerido));
+                break;
+            case 2:
+                etActualizarTelefono.setText("");
+                etActualizarTelefono.setVisibility(View.GONE);
                 break;
             default:
                 tvActualizarTelefono.setError("");
@@ -1157,11 +1393,20 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectResultadoGestion(int pos){
         switch (pos){
-            case 0: //No Pago
-                tvMotivoNoPago.setError("");
+            case 1: //Si Pago
+                //spMotivoNoPago.setSelection(0);
+                SelectMotivoNoPago(0);
+                llComentario.setVisibility(View.GONE);
+                llMedioPago.setVisibility(View.VISIBLE);
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llMotivoNoPago.setVisibility(View.GONE);
+                llFotoFachada.setVisibility(View.GONE);
+                llEstaGerente.setVisibility(View.GONE);
+                break;
+            case 2: //No Pago
+                //tvMotivoNoPago.setError("");
                 tvFotoFachada.setError("");
                 spMedioPago.setSelection(0);
                 SelectMedioPago(0);
@@ -1175,21 +1420,11 @@ public class ri_gestion_fragment extends Fragment {
                 llFotoFachada.setVisibility(View.VISIBLE);
                 llEstaGerente.setVisibility(View.VISIBLE);
                 break;
-            case 1: //Si Pago
-                spMotivoNoPago.setSelection(0);
-                SelectMotivoNoPago(0);
-                llComentario.setVisibility(View.GONE);
-                llMedioPago.setVisibility(View.VISIBLE);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
-                llMotivoNoPago.setVisibility(View.GONE);
-                llFotoFachada.setVisibility(View.GONE);
-                llEstaGerente.setVisibility(View.GONE);
-                break;
             default: //Sin seleccionar una opción o cualquier otro valor
                 tvResultadoGestion.setError("");
                 spMedioPago.setSelection(0);
                 SelectMedioPago(0);
-                spMotivoNoPago.setSelection(0);
+                //spMotivoNoPago.setSelection(0);
                 SelectMotivoNoPago(0);
                 rgPagaraRequerido.clearCheck();
                 SelectPagoRequerido(-1);
@@ -1202,7 +1437,6 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectMedioPago (int pos){
         if (!parent.flagRespuesta) {
             spMedioPago.setEnabled(false);
@@ -1285,31 +1519,25 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectMotivoNoPago (int pos){
-        tvMotivoNoPago.setError(null);
+        //tvMotivoNoPago.setError(null);
         switch (pos){
-            case 0: // Opción "Seleccione una opcion"
-                tvMotivoNoPago.setError("");
+            case 0: // Negación de pago
+            case 2: // Otro
                 llDatosDefuncion.setVisibility(View.GONE);
                 break;
-            case 1: // Negación de pago
-            case 3: // Otro
-                llDatosDefuncion.setVisibility(View.GONE);
-                break;
-            case 2: //Fallecimiento
-                etFechaDefuncion.setError("");
-                if (!etFechaDefuncion.getText().toString().trim().isEmpty())
-                    etFechaDefuncion.setError(null);
+            case 1: //Fallecimiento
+                tvFechaDefuncion.setError("");
+                if (!tvFechaDefuncion.getText().toString().trim().isEmpty())
+                    tvFechaDefuncion.setError(null);
                 llDatosDefuncion.setVisibility(View.VISIBLE);
                 break;
             default: //Sin seleccionar una opción o cualquier otro valor
-                tvMotivoNoPago.setError("");
+                //tvMotivoNoPago.setError("");
                 llDatosDefuncion.setVisibility(View.GONE);
                 break;
         }
     }
-
     private void SelectPagoRequerido (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
@@ -1328,7 +1556,6 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     private void SelectImprimirRecibos(int pos){
         switch (pos){
             case 0: //No cuenta con bateria la impresora
@@ -1364,18 +1591,17 @@ public class ri_gestion_fragment extends Fragment {
         }
 
     }
-
     private void SelectEstaGerente (int pos){
         switch (pos){
-            case 0: // No está el gerente
-                llFirma.setVisibility(View.GONE);
-                break;
             case 1: // Si está el gerente
                 if (ivFirma.getVisibility() == View.VISIBLE && byteFirma != null)
                     tvFirma.setError(null);
                 else
                     tvFirma.setError("");
                 llFirma.setVisibility(View.VISIBLE);
+                break;
+            case 2: // No está el gerente
+                llFirma.setVisibility(View.GONE);
                 break;
             default: // Sin seleccionar alguna opción o cualquier valor diferente
                 byteFirma = null;
@@ -1385,7 +1611,6 @@ public class ri_gestion_fragment extends Fragment {
                 break;
         }
     }
-
     //===================== Listener GPS  =======================================================
     private void ColocarUbicacionGestion (final double lat, final double lon){
         mapView.onResume();
@@ -1493,19 +1718,28 @@ public class ri_gestion_fragment extends Fragment {
                         ivFirma.setVisibility(View.VISIBLE);
                         tvFirma.setError(null);
                         Glide.with(ctx)
-                                .load(data.getByteArrayExtra(Constants.FIRMA_IMAGE))
+                                .load(data.getByteArrayExtra(FIRMA_IMAGE))
                                 .into(ivFirma);
-                        byteFirma = data.getByteArrayExtra(Constants.FIRMA_IMAGE);
+                        byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
+
+                        try {
+                            jsonResponse.put(FIRMA,  Miscellaneous.save(byteFirma, 3));
+                            UpdateTemporal(jsonResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_IMPRESORA:
+            case REQUEST_CODE_IMPRESORA:
                 if (resultCode == Activity.RESULT_OK){
                     //if (data != null){
                     if (false){
-                        Toast.makeText(ctx, data.getStringExtra(Constants.MESSAGE), Toast.LENGTH_SHORT).show();
-                        if(data.getIntExtra(Constants.RES_PRINT,0) == 1 || data.getIntExtra(Constants.RES_PRINT,0) == 2){
-                            folio_impreso = "Asesor951-" + String.valueOf(data.getIntExtra(Constants.FOLIO,0));
+                        Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
+                        if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
+                            folio_impreso = "Asesor951-" + String.valueOf(data.getIntExtra(FOLIO,0));
                             etFolioRecibo.setText(folio_impreso);
                             tvImprimirRecibo.setError(null);
                             llFolioRecibo.setVisibility(View.VISIBLE);
@@ -1520,7 +1754,7 @@ public class ri_gestion_fragment extends Fragment {
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_GALERIA:
+            case REQUEST_CODE_GALERIA:
                 if (data != null){
                     ibFoto.setVisibility(View.GONE);
                     ibGaleria.setVisibility(View.GONE);
@@ -1532,34 +1766,44 @@ public class ri_gestion_fragment extends Fragment {
                     byteEvidencia = getBytesUri(imageUri, 0);
                 }
                 break;
-            case Constants.REQUEST_CODE_CAMARA_TICKET:
+            case REQUEST_CODE_CAMARA_TICKET:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(Constants.PICTURE);
+                        byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
 
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_CAMARA_FACHADA:
+            case REQUEST_CODE_CAMARA_FACHADA:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
                         ibFotoFachada.setVisibility(View.GONE);
                         tvFotoFachada.setError(null);
                         ivFotoFachada.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(Constants.PICTURE);
+                        byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFotoFachada);
+
+                        try {
+                            jsonResponse.put(TIPO_IMAGEN,  "FACHADA");
+                            jsonResponse.put(FACHADA,  Miscellaneous.save(byteEvidencia, 1));
+                            UpdateTemporal(jsonResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_ARQUEO_CAJA:
+            case REQUEST_CODE_ARQUEO_CAJA:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
-                        if (data.getBooleanExtra(Constants.SAVE,false)){
+                        if (data.getBooleanExtra(SAVE,false)){
                             tvArqueoCaja.setError(null);
                             rbArqueoCaja.setChecked(true);
                         }
@@ -1570,6 +1814,23 @@ public class ri_gestion_fragment extends Fragment {
                     }
                 }
                 break;
+            case 123:
+                if (resultCode == 321){
+                    if (data != null){
+                        tvFechaDefuncion.setText(data.getStringExtra(DATE));
+                    }
+                }
+                break;
         }
+    }
+
+    private void UpdateTemporal (JSONObject json){
+        Log.e("json", json.toString());
+        ContentValues cv = new ContentValues();
+        cv.put("respuesta", json.toString());
+        if (ENVIROMENT)
+            db.update(FICHAS, cv, "external_id = ?", new String[]{parent.ficha_ri.getId()});
+        else
+            db.update(FICHAS_T, cv, "external_id = ?",new String[]{parent.ficha_ri.getId()});
     }
 }

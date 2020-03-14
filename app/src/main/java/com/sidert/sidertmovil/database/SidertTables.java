@@ -21,6 +21,9 @@ public class SidertTables {
         public static final String TABLE_LOGIN_REPORT      = Constants.LOGIN_REPORT;       //Tabla para timestamp de inicio de sesión
         public static final String TABLE_SINCRONIZADO      = Constants.SINCRONIZADO;       //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion
         public static final String TABLE_SOLICITUDES_IND   = Constants.SOLICITUDES_IND;    //Tabla para registrar las solicitudes de crédito
+        public static final String TABLE_RECIBOS_VIGENTE   = Constants.TBL_RECIBOS_VIGENTE;
+        public static final String TABLE_RECIBOS_VENCIDA   = Constants.TBL_RECIBOS_VENCIDA;
+        public static final String TABLE_REIMPRESION      = Constants.TBL_REIMPRESION;
 
         //======================= TABLES TEST  =====================================================
         public static final String TABLE_LOG_ASESSOR_T     = Constants.LOG_ASESSOR_T;      //Tabla de Recuperación y Cobranza Pruebas
@@ -34,6 +37,9 @@ public class SidertTables {
         public static final String TABLE_LOGIN_REPORT_T    = Constants.LOGIN_REPORT_T;     //Tabla para timestamp de inicio de sesión Pruebas
         public static final String TABLE_SINCRONIZADO_T    = Constants.SINCRONIZADO_T;     //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion Pruebas
         public static final String TABLE_SOLICITUDES_IND_T = Constants.SOLICITUDES_IND_T;  //Tabla para registrar las solicitudes de crédito Pruebas
+        public static final String TABLE_RECIBOS_VIGENTE_T = Constants.TBL_RECIBOS_VIGENTE_T;
+        public static final String TABLE_RECIBOS_VENCIDA_T = Constants.TBL_RECIBOS_VENCIDA_T;
+        public static final String TABLE_REIMPRESION_T    = Constants.TBL_REIMPRESION_T;
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS = Constants.STATUS_FICHAS;
@@ -126,6 +132,11 @@ public class SidertTables {
         public static final String CREATE_AT            = "create_at";
         public static final String IDENTIFICACION_ID    = "identificacion_id";
         public static final String IDENTIFICACION_NOMBRE = "identificacion_nombre";
+        public static final String CLV_CLIENTE           = "clv_cliente";
+        public static final String CLV_IMPRESION         = "clv_impresion";
+        public static final String NUEVO_FOLIO           = "nuevo_folio";
+        public static final String FOLIO_ANTERIOR        = "folio_anterior";
+        public static final String INCIDENCIA            = "incidencia";
 
 
         // == QUERIES CREATE
@@ -232,6 +243,48 @@ public class SidertTables {
                 + SidertEntry.FECHA_TER         + " TEXT,"
                 + SidertEntry.FECHA_ENV         + " TEXT,"
                 + SidertEntry.STATUS            + " INTEGER)";
+
+        static final String CREATE_TABLE_VIGENTE   = "CREATE TABLE " + TABLE_RECIBOS_VIGENTE + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.FOLIO + " INTEGER,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ERRORS + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.STATUS + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT)";
+
+        static final String CREATE_TABLE_VENCIDA   = "CREATE TABLE " + TABLE_RECIBOS_VENCIDA + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.FOLIO + " INTEGER,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ERRORS + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.STATUS + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT)";
+
+        public static final String CREATE_TABLE_REIMPRESION   = "CREATE TABLE " + TABLE_REIMPRESION + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.SERIE_ID + " TEXT,"
+                + SidertEntry.CLV_IMPRESION + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.NUEVO_FOLIO + " INTEGER,"
+                + SidertEntry.FOLIO_ANTERIOR + " INTEGER,"
+                + SidertEntry.INCIDENCIA + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT,"
+                + SidertEntry.STATUS + " INTEGER)";
 
         //=============================== TABLES TEST  ===============================================
         static final String CREATE_TABLE_ASESSORS_T = "CREATE TABLE " + TABLE_LOG_ASESSOR_T + "("
@@ -521,6 +574,17 @@ public class SidertTables {
                 "tel_celular TEXT," +
                 "estatus_completado INTEGER)";
 
+        static final String CREATE_TBL_DOCUMENTOS_CLIENTES_T = "CREATE TABLE documentos_t (" +
+                "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "ine_frontal TEXT," +
+                "ine_reverso TEXT," +
+                "curp TEXT," +
+                "comprobante TEXT," +
+                "codigo_barras TEXT," +
+                "firma_asesor TEXT," +
+                "estatus_completado INTEGER)";
+
         static final String CREATE_TBL_DATOS_CREDITO_GPO_T = "CREATE TABLE datos_credito_gpo_t (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
@@ -630,15 +694,56 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_DOCUMENTOS_CLIENTES_T = "CREATE TABLE documentos_t (" +
+        static final String CREATE_TBL_DOCUMENTOS_INTEGRANTE_T = "CREATE TABLE documentos_integrante_t (" +
                 "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_cliente INTEGER," +
-                "nombre TEXT," +
-                "tipo_documento INTEGER," +
-                "estatus INTEGER)";
+                "id_integrante INTEGER," +
+                "ine_frontal TEXT," +
+                "ine_reverso TEXT," +
+                "curp TEXT," +
+                "comprobante TEXT," +
+                "estatus_completado INTEGER)";
 
+        static final String CREATE_TABLE_VIGENTE_T   = "CREATE TABLE " + TABLE_RECIBOS_VIGENTE_T + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.FOLIO + " INTEGER,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ERRORS + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.STATUS + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT)";
 
+        static final String CREATE_TABLE_VENCIDA_T   = "CREATE TABLE " + TABLE_RECIBOS_VENCIDA_T + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.FOLIO + " INTEGER,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ERRORS + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.STATUS + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT)";
 
+        public static final String CREATE_TABLE_REIMPRESION_T   = "CREATE TABLE " + TABLE_REIMPRESION_T + "("
+                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
+                + SidertEntry.EXTERNAL_ID + " TEXT,"
+                + SidertEntry.ASSESOR_ID + " TEXT,"
+                + SidertEntry.SERIE_ID + " TEXT,"
+                + SidertEntry.CLV_IMPRESION + " TEXT,"
+                + SidertEntry.GENERATED_AT + " TEXT,"
+                + SidertEntry.SENT_AT + " TEXT,"
+                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
+                + SidertEntry.AMOUNT + " TEXT,"
+                + SidertEntry.NUEVO_FOLIO + " INTEGER,"
+                + SidertEntry.FOLIO_ANTERIOR + " INTEGER,"
+                + SidertEntry.INCIDENCIA + " TEXT,"
+                + SidertEntry.CLV_CLIENTE + " TEXT,"
+                + SidertEntry.STATUS + " INTEGER)";
 
         //================  TABLAS GENERALES  ===================================
 

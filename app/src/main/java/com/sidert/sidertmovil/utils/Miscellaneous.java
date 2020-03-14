@@ -206,6 +206,12 @@ public class Miscellaneous {
         return Double.parseDouble(money.replace("$","").replace(",",""));
     }
 
+    /*Generar a formato double TextView*/
+    public static  double doubleFormatTV (TextView tv){
+        String money = tv.getText().toString();
+        return Double.parseDouble(money.replace("$","").replace(",",""));
+    }
+
     /* Obtener fecha actual */
     public static String ObtenerFecha(String tipo_formato) {
         Calendar cal = Calendar.getInstance();
@@ -1794,6 +1800,134 @@ public class Miscellaneous {
             flag = true;
         }
         return flag;
+    }
+
+    public static int ContactoCliente(TextView tv){
+        int contacto = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                contacto = 0;
+                break;
+            case "NO":
+                contacto = 1;
+                break;
+            case "ACLARACION":
+                contacto = 2;
+                break;
+        }
+        return contacto;
+    }
+
+    public static int ActualizarTelefono(TextView tv){
+        int actualizar = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                actualizar = 0;
+                break;
+            case "NO":
+                actualizar = 1;
+                break;
+        }
+        return actualizar;
+    }
+
+    public static int ResultadoGestion(TextView tv){
+        int resultado = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "PAGO":
+                resultado = 0;
+                break;
+            case "NO PAGO":
+                resultado = 1;
+                break;
+        }
+        return resultado;
+    }
+
+    public static int PagoRequerido(TextView tv){
+        int requerido = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                requerido = 0;
+                break;
+            case "NO":
+                requerido = 1;
+                break;
+        }
+        return requerido;
+    }
+
+    public static int MedioPago(TextView tv){
+        int medioPago = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "BANAMEX":
+                medioPago = 0;
+                break;
+            case "BANORTE":
+                medioPago = 1;
+                break;
+            case "BANCOMER":
+                medioPago = 2;
+                break;
+            case "OXXO":
+                medioPago = 3;
+                break;
+            case "TELECOM":
+                medioPago = 4;
+                break;
+            case "BANSEFI":
+                medioPago = 5;
+                break;
+            case "EFECTIVO":
+                medioPago = 6;
+                break;
+            case "SIDERT":
+                medioPago = 7;
+                break;
+        }
+        return medioPago;
+    }
+
+    public static int Impresion(TextView tv){
+        int impresion = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                impresion = 0;
+                break;
+            case "NO CUENTA CON BATERIA":
+                impresion = 1;
+                break;
+        }
+        return impresion;
+    }
+
+    public static int Gerente(TextView tv){
+        int gerente = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                gerente = 0;
+                break;
+            case "NO":
+                gerente = 1;
+                break;
+        }
+        return gerente;
+    }
+
+    public static int MotivoNoPago(TextView tv){
+        int motivoNoPago = 0;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "NEGACION DE PAGO":
+                motivoNoPago = 0;
+                break;
+            case "FALLECIMIENTO":
+                motivoNoPago = 1;
+                break;
+            case "OTRO":
+                motivoNoPago = 2;
+                break;
+        }
+        return motivoNoPago;
     }
 
 }

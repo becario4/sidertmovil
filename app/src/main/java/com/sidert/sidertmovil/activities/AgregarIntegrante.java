@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -69,6 +70,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -79,6 +81,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.card.payment.CardIOActivity;
 import moe.feng.common.stepperview.VerticalStepperItemView;
 
 import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
@@ -87,6 +90,10 @@ import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
@@ -94,10 +101,16 @@ import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA_CLI;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBATE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONTAL;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.camara;
 import static com.sidert.sidertmovil.utils.Constants.cash;
+import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
 public class AgregarIntegrante extends AppCompatActivity implements dialog_registro_integrante.OnCompleteListener {
 
@@ -221,6 +234,24 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageView ivFirmaCli;
     public byte[] byteFirmaCli;
     //=========================================================================
+    //===================  DATOS NEGOCIO  =====================================
+    private TextView tvIneFrontal;
+    private ImageButton ibIneFrontal;
+    private ImageView ivIneFrontal;
+    public byte[] byteIneFrontal;
+    private TextView tvIneReverso;
+    private ImageButton ibIneReverso;
+    private ImageView ivIneReverso;
+    public byte[] byteIneReverso;
+    private TextView tvCurp;
+    private ImageButton ibCurp;
+    private ImageView ivCurp;
+    public byte[] byteCurp;
+    private TextView tvComprobante;
+    private ImageButton ibComprobante;
+    private ImageView ivComprobante;
+    public byte[] byteComprobante;
+    //=========================================================================
     //===================  LINEAR LAYOUT  =====================================
     private LinearLayout llPersonales;
     private LinearLayout llTelefonicos;
@@ -228,6 +259,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private LinearLayout llNegocio;
     private LinearLayout llConyuge;
     private LinearLayout llOtros;
+    private LinearLayout llDocumentos;
 
     private LinearLayout llDatosPersonales;
     private LinearLayout llDatosTelefonicos;
@@ -235,6 +267,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private LinearLayout llDatosNegocio;
     private LinearLayout llDatosConyuge;
     private LinearLayout llOtrosDatos;
+    private LinearLayout llDatosDocumentos;
     //=========================================================================
     //================= Image View ERROR  =====================
     private ImageView ivError1;
@@ -243,6 +276,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageView ivError4;
     private ImageView ivError5;
     private ImageView ivError6;
+    private ImageView ivError7;
     //===================================================
     //===================  IMAGE VIEW  ========================================
     private ImageView ivDown1;
@@ -251,6 +285,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageView ivDown4;
     private ImageView ivDown5;
     private ImageView ivDown6;
+    private ImageView ivDown7;
 
     private ImageView ivUp1;
     private ImageView ivUp2;
@@ -258,6 +293,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageView ivUp4;
     private ImageView ivUp5;
     private ImageView ivUp6;
+    private ImageView ivUp7;
     //=========================================================================
 
     private FloatingActionButton btnContinuar0;
@@ -272,6 +308,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private FloatingActionButton btnRegresar3;
     private FloatingActionButton btnRegresar4;
     private FloatingActionButton btnRegresar5;
+    private FloatingActionButton btnRegresar6;
 
     private LocationManager locationManager;
     private MyCurrentListener locationListener;
@@ -397,6 +434,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ibFirmaCli          = findViewById(R.id.ibFirmaCli);
         ivFirmaCli          = findViewById(R.id.ivFirmaCli);
         //==========================================================================================
+        //===================================  DOCUMENTOS  ========================================
+        tvIneFrontal          = findViewById(R.id.tvIneFrontal);
+        ibIneFrontal          = findViewById(R.id.ibIneFrontal);
+        ivIneFrontal          = findViewById(R.id.ivIneFrontal);
+        tvIneReverso          = findViewById(R.id.tvIneReverso);
+        ibIneReverso          = findViewById(R.id.ibIneReverso);
+        ivIneReverso          = findViewById(R.id.ivIneReverso);
+        tvCurp                = findViewById(R.id.tvCurp);
+        ibCurp                = findViewById(R.id.ibCurp);
+        ivCurp                = findViewById(R.id.ivCurp);
+        tvComprobante         = findViewById(R.id.tvComprobante);
+        ibComprobante         = findViewById(R.id.ibComprobante);
+        ivComprobante         = findViewById(R.id.ivComprobante);
+        //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
         ivError2 = findViewById(R.id.ivError2);
@@ -404,6 +455,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ivError4 = findViewById(R.id.ivError4);
         ivError5 = findViewById(R.id.ivError5);
         ivError6 = findViewById(R.id.ivError6);
+        ivError7 = findViewById(R.id.ivError7);
         //=========================================================
         //============================ IMAGE VIEW UP|DOWN  =========================================
         ivDown1 = findViewById(R.id.ivDown1);
@@ -412,6 +464,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ivDown4 = findViewById(R.id.ivDown4);
         ivDown5 = findViewById(R.id.ivDown5);
         ivDown6 = findViewById(R.id.ivDown6);
+        ivDown7 = findViewById(R.id.ivDown7);
 
         ivUp1 = findViewById(R.id.ivUp1);
         ivUp2 = findViewById(R.id.ivUp2);
@@ -419,6 +472,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ivUp4 = findViewById(R.id.ivUp4);
         ivUp5 = findViewById(R.id.ivUp5);
         ivUp6 = findViewById(R.id.ivUp6);
+        ivUp7 = findViewById(R.id.ivUp7);
         //=========================================================
         //================ LINEAR LAYOUT  =========================
         llDatosPersonales   = findViewById(R.id.llDatosPersonales);
@@ -427,6 +481,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llDatosNegocio      = findViewById(R.id.llDatosNegocio);
         llDatosConyuge      = findViewById(R.id.llDatosConyuge);
         llOtrosDatos        = findViewById(R.id.llOtrosDatos);
+        llDatosDocumentos   = findViewById(R.id.llDatosDocumentos);
 
         llPersonales    = findViewById(R.id.llPersonales);
         llTelefonicos   = findViewById(R.id.llTelefonicos);
@@ -434,6 +489,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llNegocio       = findViewById(R.id.llNegocio);
         llConyuge       = findViewById(R.id.llConyuge);
         llOtros         = findViewById(R.id.llOtros);
+        llDocumentos    = findViewById(R.id.llDocumentos);
         //=========================================================
 
         btnContinuar0 = findViewById(R.id.btnContinuar0);
@@ -448,6 +504,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         btnRegresar3 = findViewById(R.id.btnRegresar3);
         btnRegresar4 = findViewById(R.id.btnRegresar4);
         btnRegresar5 = findViewById(R.id.btnRegresar5);
+        btnRegresar6 = findViewById(R.id.btnRegresar6);
 
         mapCli.onCreate(savedInstanceState);
         mapNeg.onCreate(savedInstanceState);
@@ -470,6 +527,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llNegocio.setOnClickListener(llNegocio_OnClick);
         llConyuge.setOnClickListener(llConyuge_OnClick);
         llOtros.setOnClickListener(llOtros_OnClick);
+        llDocumentos.setOnClickListener(llDocumentos_OnClick);
         //===========================================================================
         //==============================  PERSONALES LISTENER ======================================
         etNombreCli.addTextChangedListener(new TextWatcher() {
@@ -1408,6 +1466,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             }
         });
         ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
+        //===========================================================================
+        //====================================  DOCUMENTOS  ========================================
+        ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
+        ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
+        ibCurp.setOnClickListener(ibCurp_OnClick);
+        ibComprobante.setOnClickListener(ibComprobante_OnClick);
         //==========================================================================
 
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
@@ -1422,6 +1486,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         btnRegresar3.setOnClickListener(btnRegresar3_OnClick);
         btnRegresar4.setOnClickListener(btnRegresar4_OnClick);
         btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
+        btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
 
         //================================  CLIENTE GENERO LISTENER  ===============================
         rgGeneroCli.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -1644,6 +1709,22 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivDown6.setVisibility(View.VISIBLE);
                 ivUp6.setVisibility(View.GONE);
                 llOtrosDatos.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    private View.OnClickListener llDocumentos_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (ivDown7.getVisibility() == View.VISIBLE && ivUp7.getVisibility() == View.GONE){
+                ivDown7.setVisibility(View.GONE);
+                ivUp7.setVisibility(View.VISIBLE);
+                llDatosDocumentos.setVisibility(View.VISIBLE);
+            }
+            else if (ivDown7.getVisibility() == View.GONE && ivUp7.getVisibility() == View.VISIBLE){
+                ivDown7.setVisibility(View.VISIBLE);
+                ivUp7.setVisibility(View.GONE);
+                llDatosDocumentos.setVisibility(View.GONE);
             }
         }
     };
@@ -1950,7 +2031,56 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             Intent i_firma_cli = new Intent(ctx, CapturarFirma.class);
             i_firma_cli.putExtra(Constants.TIPO,"CLIENTE");
-            startActivityForResult(i_firma_cli,Constants.REQUEST_CODE_FIRMA_CLI);
+            startActivityForResult(i_firma_cli, REQUEST_CODE_FIRMA_CLI);
+        }
+    };
+    //==============================================================================================
+    //================================== ACTION DOCUMENTOS =========================================
+    private View.OnClickListener ibIneFrontal_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent scanIntent = new Intent(AgregarIntegrante.this, CardIOActivity.class);
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+
+            // laszar activity
+            startActivityForResult(scanIntent, Constants.REQUEST_CODE_FOTO_INE_FRONTAL);
+        }
+    };
+
+    private View.OnClickListener ibIneReverso_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent scanIntent = new Intent(AgregarIntegrante.this, CardIOActivity.class);
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+
+            // laszar activity
+            startActivityForResult(scanIntent, Constants.REQUEST_CODE_FOTO_INE_REVERSO);
+        }
+    };
+
+    private View.OnClickListener ibCurp_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(AgregarIntegrante.this, CameraVertical.class);
+            i.putExtra(Constants.ORDER_ID, "SCG_Curp");
+            startActivityForResult(i, Constants.REQUEST_CODE_FOTO_CURP);
+        }
+    };
+
+    private View.OnClickListener ibComprobante_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(AgregarIntegrante.this, CameraVertical.class);
+            i.putExtra(Constants.ORDER_ID, "SCG_Comprobante");
+            startActivityForResult(i, Constants.REQUEST_CODE_FOTO_COMPROBATE);
         }
     };
     //==============================================================================================
@@ -2041,7 +2171,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivDown6.setVisibility(View.VISIBLE);
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
-            Toast.makeText(ctx, "Terminar proceso", Toast.LENGTH_SHORT).show();
+
+            ivDown7.setVisibility(View.GONE);
+            ivUp7.setVisibility(View.VISIBLE);
+            llDatosDocumentos.setVisibility(View.VISIBLE);
+
         }
     };
 
@@ -2119,6 +2253,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 etNombreNeg.requestFocus();
             }
 
+        }
+    };
+
+    private View.OnClickListener btnRegresar6_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ivDown7.setVisibility(View.VISIBLE);
+            ivUp7.setVisibility(View.GONE);
+            llDatosDocumentos.setVisibility(View.GONE);
+
+            ivDown6.setVisibility(View.GONE);
+            ivUp6.setVisibility(View.VISIBLE);
+            llOtrosDatos.setVisibility(View.VISIBLE);
+            etEmail.requestFocus();
         }
     };
 
@@ -2417,6 +2565,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         Log.e("negocio", row.getString(67));
         Log.e("conyuge", row.getString(76));
         Log.e("otros", row.getString(85));
+        Log.e("documentos", row.getString(92));
 
 
 
@@ -2430,7 +2579,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         (row.getString(16).equals("SOLTERA(O)") ||
         row.getString(16).equals("VIUDA(O)") ||
         row.getString(16).equals("DIVORCIADA(O)"))) &&
-        row.getInt(85) == 1){
+        row.getInt(85) == 1 &&
+        row.getInt(92) == 1){
             is_edit = false;
         }
 
@@ -2624,6 +2774,44 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivFirmaCli.setVisibility(View.VISIBLE);
         }
 
+        //Documentos
+        if (!row.getString(88).isEmpty()){
+            File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(88));
+            Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
+            byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal,0);
+            Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
+            ibIneFrontal.setVisibility(View.GONE);
+            ivIneFrontal.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(89).isEmpty()){
+            File ineReversoFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(89));
+            Uri uriIneReverso = Uri.fromFile(ineReversoFile);
+            byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso,0);
+            Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
+            ibIneReverso.setVisibility(View.GONE);
+            ivIneReverso.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(90).isEmpty()){
+            File curpFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(90));
+            Uri uriCurp = Uri.fromFile(curpFile);
+            byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
+            Glide.with(ctx).load(uriCurp).into(ivCurp);
+            ibCurp.setVisibility(View.GONE);
+            ivCurp.setVisibility(View.VISIBLE);
+        }
+
+        if (!row.getString(91).isEmpty()){
+            File comprobanteFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(91));
+            Uri uriComprobante = Uri.fromFile(comprobanteFile);
+            byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante,0);
+            Glide.with(ctx).load(uriComprobante).into(ivComprobante);
+            ibComprobante.setVisibility(View.GONE);
+            ivComprobante.setVisibility(View.VISIBLE);
+        }
+
+
         if (!is_edit){
             invalidateOptionsMenu();
 
@@ -2751,7 +2939,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim());
                                 cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
                                 cv.put("nivel_estudio", tvEstudiosCli.getText().toString());
-                                cv.put("estatus_completado", 1);
 
                                 if (ENVIROMENT)
                                     db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
@@ -2998,44 +3185,39 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             rgEstatus.getCheckedRadioButtonId() == R.id.rbRenovado ||
             rgEstatus.getCheckedRadioButtonId() == R.id.rbCambio){
                 if (!validator.validate(etCredSolicitado, new String[]{validator.REQUIRED, validator.CREDITO})){
-                    if (!cbCasaReuniones.isEnabled() || cbCasaReuniones.isChecked()){
-                        if (byteFirmaCli != null){
-                            ivError6.setVisibility(View.GONE);
-                            ContentValues cv = new ContentValues();
-                            cv.put("medio_contacto", tvMedioContacto.getText().toString().trim().toUpperCase());
-                            cv.put("email", etEmail.getText().toString().trim());
-                            switch (rgEstatus.getCheckedRadioButtonId()){
-                                case R.id.rbNuevo:
-                                    cv.put("estatus_integrante", 1);
-                                    break;
-                                case R.id.rbRenovado:
-                                    cv.put("estatus_integrante", 2);
-                                    break;
-                                case R.id.rbCambio:
-                                    cv.put("estatus_integrante", 3);
-                                    break;
-                            }
-                            cv.put("monto_solicitado", etCredSolicitado.getText().toString().trim());
-                            if (cbCasaReuniones.isChecked())
-                                cv.put("casa_reunion", 1);
-                            else
-                                cv.put("casa_reunion", 0);
-                            cv.put("estatus_completado", 1);
-
-                            if (ENVIROMENT)
-                                db.update(OTROS_DATOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
-                            else
-                                db.update(OTROS_DATOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
-
+                    if (byteFirmaCli != null){
+                        ivError6.setVisibility(View.GONE);
+                        ContentValues cv = new ContentValues();
+                        cv.put("medio_contacto", tvMedioContacto.getText().toString().trim().toUpperCase());
+                        cv.put("email", etEmail.getText().toString().trim());
+                        switch (rgEstatus.getCheckedRadioButtonId()){
+                            case R.id.rbNuevo:
+                                cv.put("estatus_integrante", 1);
+                                break;
+                            case R.id.rbRenovado:
+                                cv.put("estatus_integrante", 2);
+                                break;
+                            case R.id.rbCambio:
+                                cv.put("estatus_integrante", 3);
+                                break;
                         }
-                        else{
-                            tvFirmaCli.setError("");
-                            ivError6.setVisibility(View.VISIBLE);
-                        }
+                        cv.put("monto_solicitado", etCredSolicitado.getText().toString().trim());
+                        if (cbCasaReuniones.isChecked())
+                            cv.put("casa_reunion", 1);
+                        else
+                            cv.put("casa_reunion", 0);
+
+                        if (ENVIROMENT)
+                            db.update(OTROS_DATOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+                        else
+                            db.update(OTROS_DATOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
+
+                        save_otros = true;
+
                     }
-                    else {
+                    else{
+                        tvFirmaCli.setError("");
                         ivError6.setVisibility(View.VISIBLE);
-                        cbCasaReuniones.setError("");
                     }
                 }
                 else
@@ -3050,6 +3232,44 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivError6.setVisibility(View.VISIBLE);
 
         return save_otros;
+    }
+    private boolean saveDocumentos(){
+        boolean save_documentos = false;
+        if (byteIneFrontal != null){
+            if (byteIneReverso != null){
+                if (byteCurp != null){
+                    if (byteComprobante != null){
+                        ivError7.setVisibility(View.GONE);
+                        ContentValues cv = new ContentValues();
+                        cv.put("estatus_completado", 1);
+                        if (ENVIROMENT)
+                            db.update(DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+                        else
+                            db.update(DOCUMENTOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+
+                        save_documentos = true;
+                    }
+                    else{
+                         tvComprobante.setError("");
+                         ivError7.setVisibility(View.VISIBLE);
+                    }
+                }
+                else{
+                    tvCurp.setError("");
+                    ivError7.setVisibility(View.VISIBLE);
+                }
+            }
+            else{
+                tvIneReverso.setError("");
+                ivError7.setVisibility(View.VISIBLE);
+            }
+        }
+        else {
+            tvIneFrontal.setError(null);
+            ivError7.setVisibility(View.VISIBLE);
+        }
+
+        return save_documentos;
     }
 
     @Override
@@ -3083,6 +3303,19 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 else
                     datos_conyuge = true;
                 boolean datos_otros = saveDatosOtros();
+                boolean datos_documentos = saveDocumentos();
+
+                Log.e("is_save", String.valueOf(datos_personales)+" "+String.valueOf(datos_telefonicos)+" "+String.valueOf(datos_domiclio)+" "+String.valueOf(datos_negocio)+" "+String.valueOf(datos_conyuge)+" "+String.valueOf(datos_otros)+" "+String.valueOf(datos_documentos));
+                if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
+                datos_conyuge && datos_otros && datos_documentos){
+                    ContentValues cv = new ContentValues();
+                    cv.put("estatus_completado", 1);
+                    if (ENVIROMENT)
+                        db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
+                    else
+                        db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{id_integrante});
+                    finish();
+                }
 
                 break;
         }
@@ -3247,7 +3480,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_FIRMA_CLI:
+            case REQUEST_CODE_FIRMA_CLI:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
                         tvFirmaCli.setError(null);
@@ -3264,6 +3497,96 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 db.update(OTROS_DATOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
                             else
                                 db.update(OTROS_DATOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_FRONTAL:
+                if (resultCode == RESULT_SCAN_SUPPRESSED){
+                    if (data != null){
+                        tvIneFrontal.setError(null);
+                        Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byteIneFrontal =  baos.toByteArray();
+                        ibIneFrontal.setVisibility(View.GONE);
+                        ivIneFrontal.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
+                        cv = new ContentValues();
+                        try {
+                            cv.put("ine_frontal", Miscellaneous.save(byteIneFrontal, 4));
+                            if (ENVIROMENT)
+                                db.update(DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+                            else
+                                db.update(DOCUMENTOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_REVERSO:
+                if (resultCode == RESULT_SCAN_SUPPRESSED){
+                    if (data != null){
+                        tvIneReverso.setError(null);
+                        Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byteIneReverso =  baos.toByteArray();
+                        ibIneReverso.setVisibility(View.GONE);
+                        ivIneReverso.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
+                        cv = new ContentValues();
+                        try {
+                            cv.put("ine_reverso", Miscellaneous.save(byteIneReverso, 4));
+                            if (ENVIROMENT)
+                                db.update(DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+                            else
+                                db.update(DOCUMENTOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_CURP:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvCurp.setError(null);
+                        ibCurp.setVisibility(View.GONE);
+                        ivCurp.setVisibility(View.VISIBLE);
+                        byteCurp = data.getByteArrayExtra(Constants.PICTURE);
+                        Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);
+                        cv = new ContentValues();
+                        try {
+                            cv.put("curp", Miscellaneous.save(byteCurp, 4));
+                            if (ENVIROMENT)
+                                db.update(DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+                            else
+                                db.update(DOCUMENTOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_COMPROBATE:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvComprobante.setError(null);
+                        ibComprobante.setVisibility(View.GONE);
+                        ivComprobante.setVisibility(View.VISIBLE);
+                        byteComprobante = data.getByteArrayExtra(Constants.PICTURE);
+                        Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
+                        cv = new ContentValues();
+                        try {
+                            cv.put("comprobante", Miscellaneous.save(byteComprobante, 4));
+                            if (ENVIROMENT)
+                                db.update(DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+                            else
+                                db.update(DOCUMENTOS_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -3295,5 +3618,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             solicitud.setCancelable(true);
             solicitud.show();
         }
+        else
+            finish();
     }
 }

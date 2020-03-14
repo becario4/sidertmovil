@@ -37,9 +37,21 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 
 
 public class dialog_registro_integrante extends DialogFragment {
@@ -230,10 +242,9 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(0, String.valueOf(id)); params.put(1, ""); params.put(2, "");
         params.put(3, "");params.put(4, "0");
         if (ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //Bhelper.saveDatosTelefonicos(db, Constants.TELEFONOS_INTEGRANTE, params);
+            dBhelper.saveDatosTelefonicos(db, TELEFONOS_INTEGRANTE, params);
         else
-            dBhelper.saveDatosTelefonicos(db, Constants.TELEFONOS_INTEGRANTE_T, params);
+            dBhelper.saveDatosTelefonicos(db, TELEFONOS_INTEGRANTE_T, params);
 
         //Inserta registro de datos domicilio
         params = new HashMap<>();
@@ -243,10 +254,9 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(11, ""); params.put(12, ""); params.put(13, ""); params.put(14, "");
         params.put(15, ""); params.put(16, "0");
         if (ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosDomicilio(db, Constants.DOMICILIO_INTEGRANTE, params);
+            dBhelper.saveDatosDomicilio(db, DOMICILIO_INTEGRANTE, params);
         else
-            dBhelper.saveDatosDomicilio(db, Constants.DOMICILIO_INTEGRANTE_T, params);
+            dBhelper.saveDatosDomicilio(db, DOMICILIO_INTEGRANTE_T, params);
 
         //Inserta registro de negocio
         params = new HashMap<>();
@@ -273,10 +283,9 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(20,"");
         params.put(21,"0");
         if (ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosNegocioGpo(db, Constants.NEGOCIO_INTEGRANTE, params);
+            dBhelper.saveDatosNegocioGpo(db, NEGOCIO_INTEGRANTE, params);
         else
-            dBhelper.saveDatosNegocioGpo(db, Constants.NEGOCIO_INTEGRANTE_T, params);
+            dBhelper.saveDatosNegocioGpo(db, NEGOCIO_INTEGRANTE_T, params);
 
         //Inserta registro del conyuge
         params = new HashMap<>();
@@ -284,10 +293,9 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(3, "");params.put(4, ""); params.put(5, ""); params.put(6, "");
         params.put(7, "0");
         if (ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosConyugeGpo(db, Constants.CONYUGE_INTEGRANTE, params);
+            dBhelper.saveDatosConyugeGpo(db, CONYUGE_INTEGRANTE, params);
         else
-            dBhelper.saveDatosConyugeGpo(db, Constants.CONYUGE_INTEGRANTE_T, params);
+            dBhelper.saveDatosConyugeGpo(db, CONYUGE_INTEGRANTE_T, params);
 
         //Inserta otros datos del integrante
         params = new HashMap<>();
@@ -295,10 +303,22 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(3, "0"); params.put(4, ""); params.put(5, "0"); params.put(6, "");
         params.put(7, "0");
         if (ENVIROMENT)
-            Log.e("Produccion", "Registra en produccion");
-            //dBhelper.saveDatosOtrosGpo(db, Constants.OTROS_DATOS_INTEGRANTE, params);
+            dBhelper.saveDatosOtrosGpo(db, OTROS_DATOS_INTEGRANTE, params);
         else
-            dBhelper.saveDatosOtrosGpo(db, Constants.OTROS_DATOS_INTEGRANTE_T, params);
+            dBhelper.saveDatosOtrosGpo(db, OTROS_DATOS_INTEGRANTE_T, params);
+
+        //Inserta registro de documentos de integrante
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id));
+        params.put(1, "");
+        params.put(2, "");
+        params.put(3, "");
+        params.put(4, "");
+        params.put(5, "0");
+        if (ENVIROMENT)
+            dBhelper.saveDocumentosIntegrante(db, DOCUMENTOS_INTEGRANTE, params);
+        else
+            dBhelper.saveDocumentosIntegrante(db, DOCUMENTOS_INTEGRANTE_T, params);
 
         mListener.onComplete(id,etNombre.getText().toString().trim().toUpperCase(),etPaterno.getText().toString().trim().toUpperCase(),etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
         getDialog().dismiss();
