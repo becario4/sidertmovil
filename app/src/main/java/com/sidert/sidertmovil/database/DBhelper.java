@@ -89,6 +89,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VIGENTE_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VENCIDA_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_REIMPRESION_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T);
 
         Log.v("CreacionTablas", "se crearon tablas");
     }
@@ -165,6 +166,9 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO_T); }
         catch (Exception e) { Log.e("ADD GEO_T CREATE", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_IS_RUTA_T); }
+        catch (Exception e) { Log.e("ADD GEO_T CREATE", "ya contiene la columna"); }
+
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SOLICITUDES_T); }
         catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla SOLICITUDES_T"); }
 
@@ -215,6 +219,9 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_T); }
         catch (Exception e) {  Log.e("Tablas", "Catch tabla DOCUMENTOS_INTEGRANTE_T"); }
+
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T); }
+        catch (Exception e) {}
 
     }
 
@@ -550,6 +557,31 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(3, params.get(2));                   //TIMESTAMP INICIO SESION  3
         pInsert.bindString(4, params.get(3));                   //FECHA ENVIO              4
         pInsert.bindLong(5, Integer.parseInt(params.get(4)));   //ESTATUS                  5
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveTicketCC(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
+        db.beginTransaction();
+        String sql = "INSERT INTO " + table_name + "(" +
+                "asesor_id, " +
+                "tipo_impresion, " +
+                "nombre_cliente, " +
+                "folio, " +
+                "fecha_impresion, " +
+                "fecha_envio, " +
+                "estatus) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //SERIE ID        1
+        pInsert.bindString(2, params.get(1));                   //TIPO_IMPRESION  2
+        pInsert.bindString(3, params.get(2));                   //NOMBRE CLIENTE  3
+        pInsert.bindLong(4, Long.parseLong(params.get(3)));     //FOLIO           4
+        pInsert.bindString(5, params.get(4));                   //FECHA IMPRESION 5
+        pInsert.bindString(6, params.get(5));                   //FECHA ENVIO     6
+        pInsert.bindLong(7, Integer.parseInt(params.get(6)));   //ESTATUS         7
 
         pInsert.execute();
 

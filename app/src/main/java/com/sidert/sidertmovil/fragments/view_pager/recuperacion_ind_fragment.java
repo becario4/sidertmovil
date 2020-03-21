@@ -563,6 +563,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             tvPagaraRequerido.setText(_confirmacion[position]);
                             switch (position){
                                 case 0:
+                                    etPagoRealizado.setText(parent.ficha_ri.getPrestamo().getPagoSemanal().toString().trim());
                                     if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 0){
                                         SelectPagoRequerido(0);
                                     }
@@ -574,6 +575,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                     }
                                     break;
                                 case 1:
+                                    etPagoRealizado.setText("");
                                     SelectPagoRequerido(1);
                                     break;
                                 default:
@@ -1050,7 +1052,6 @@ public class recuperacion_ind_fragment extends Fragment {
             case 2: // Telecom
             case 3: // Bansefi
             case 4: // Bancomer
-            case 7: // Sidert
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
                 else
@@ -1085,6 +1086,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 tvPagaraRequerido.setText(_confirmacion[0]);
                 tvPagaraRequerido.setEnabled(false);
+                etPagoRealizado.setText(parent.ficha_ri.getPrestamo().getPagoSemanal().toString());
                 SelectPagoRequerido(0);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
@@ -1106,6 +1108,31 @@ public class recuperacion_ind_fragment extends Fragment {
                 tvPagaraRequerido.setEnabled(true);
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
+                tvImprimirRecibo.setText("");
+                tvImprimirRecibo.setEnabled(true);
+                SelectImprimirRecibos(-1);
+                llFotoGaleria.setVisibility(View.VISIBLE);
+                llGerente.setVisibility(View.VISIBLE);
+                break;
+            case 7: //Sidert
+                if (byteEvidencia != null)
+                    tvFotoGaleria.setError(null);
+                else
+                    tvFotoGaleria.setError("");
+                ibGaleria.setEnabled(false);
+                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                if (!etFolioRecibo.getText().toString().trim().isEmpty())
+                    tvImprimirRecibo.setError(null);
+                else
+                    tvImprimirRecibo.setError("");
+                llPagaraRequerido.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
+                tvPagaraRequerido.setEnabled(true);
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llImprimirRecibo.setVisibility(View.VISIBLE);
+                tvImprimirRecibo.setText(_imprimir[1]);
+                tvImprimirRecibo.setEnabled(false);
+                SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
                 break;
@@ -1129,14 +1156,14 @@ public class recuperacion_ind_fragment extends Fragment {
     private void SelectPagoRequerido (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFolioRecibo.setVisibility(View.GONE);
                 break;
             case 0: // Si pagará requerido
-                etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 break;
@@ -1145,7 +1172,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 break;
             default:
-                etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_ri.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);

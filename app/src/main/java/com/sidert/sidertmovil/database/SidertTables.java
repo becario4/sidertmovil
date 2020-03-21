@@ -744,6 +744,16 @@ public class SidertTables {
                 + SidertEntry.INCIDENCIA + " TEXT,"
                 + SidertEntry.CLV_CLIENTE + " TEXT,"
                 + SidertEntry.STATUS + " INTEGER)";
+        
+        public static final String CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T = "CREATE TABLE recibos_circulo_credito_t (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "asesor_id TEXT," +
+                "tipo_impresion TEXT," +
+                "nombre_cliente TEXT," +
+                "folio INTEGER," +
+                "fecha_impresion TEXT," +
+                "fecha_envio TEXT," +
+                "estatus INTEGER)";
 
         //================  TABLAS GENERALES  ===================================
 
@@ -797,5 +807,9 @@ public class SidertTables {
         static final String ADD_CREATE_AT_GEO_T = "ALTER TABLE " + TABLE_GEOLOCALIZACION_T +
                                                   " ADD COLUMN " + SidertEntry.CREATE_AT +
                                                   " TEXT DEFAULT '" + Miscellaneous.ObtenerFecha("timestamp")+"'";
+
+        static final String ADD_IS_RUTA_T = "ALTER TABLE " + Constants.FICHAS_T +
+                " ADD COLUMN is_ruta" +
+                " INTEGER DEFAULT 0";
     }
 }

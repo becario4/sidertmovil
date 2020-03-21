@@ -10,32 +10,34 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.OrderModel;
+import com.sidert.sidertmovil.models.MFormatoRecibo;
+import com.sidert.sidertmovil.models.MTicketCC;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.PrintRecibos;
 import com.sidert.sidertmovil.utils.PrintTicket;
+import com.sidert.sidertmovil.utils.SessionManager;
+
+import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -44,7 +46,10 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
-public class PrintSeewoo extends AppCompatActivity {
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
+import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
+
+public class FormatoRecibos extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 2;
 
@@ -66,105 +71,90 @@ public class PrintSeewoo extends AppCompatActivity {
     private Thread hThread;
     private Context ctx;
 
-    private Button btnPrintOriginal;
-    private Button btnPrintCopy;
+    private Button btnOriginal;
+    private Button btnCopia;
+    private Button btnOriginalRe;
+    private Button btnCopiaRe;
 
     private String address_print = "";
 
-    private OrderModel item;
+    private SessionManager session;
+
+    private TextView tvTipoImpresion;
+    private TextView tvTipoRecibo;
+    private TextView tvTimestamp;
+    private TextView tvNombreCliente;
+    private TextView tvPago;
+    private TextView tvCantidadLetra;
+    private TextView tvTipoFirma;
+    private TextView tvNombreFirma;
+
+    private MFormatoRecibo mRecibo;
+    private MTicketCC mTicket;
+
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_print_seewoo);
+        setContentView(R.layout.activity_formato_recibos);
+
         ctx = this;
+
+        session = new SessionManager(ctx);
 
         Toolbar tbMain              = findViewById(R.id.tbMain);
 
-        TextView tvNumLoan           = findViewById(R.id.tvNumLoan);
-        TextView tvNum               = findViewById(R.id.tvNum);
-        TextView tvNumClient         = findViewById(R.id.tvNumClient);
-        TextView tvName              = findViewById(R.id.tvName);
-        TextView tvNameClient        = findViewById(R.id.tvNameClient);
-        TextView tvTotalLoan         = findViewById(R.id.tvTotalLoan);
-        TextView tvAmountLoan        = findViewById(R.id.tvAmountLoan);
-        TextView tvPaymentRequired   = findViewById(R.id.tvPaymentRequired);
-        TextView tvPaymentMade       = findViewById(R.id.tvPaymentMade);
-        TextView tvSignature         = findViewById(R.id.tvSignature);
-        TextView tvNameSignature     = findViewById(R.id.tvNameSignature);
+        tvTipoImpresion     = findViewById(R.id.tvTipoImpresion);
+        tvTipoRecibo        = findViewById(R.id.tvTipoRecibo);
+        tvTimestamp         = findViewById(R.id.tvTimestamp);
+        tvNombreCliente     = findViewById(R.id.tvNombreCliente);
+        tvPago              = findViewById(R.id.tvPago);
+        tvCantidadLetra     = findViewById(R.id.tvCantidadLetra);
+        tvTipoFirma         = findViewById(R.id.tvTipoFirma);
+        tvNombreFirma       = findViewById(R.id.tvNombreFirma);
 
-        LinearLayout llPaymentRequired   = findViewById(R.id.llPaymentRequired);
-
-        btnPrintOriginal    = findViewById(R.id.btnPrintOriginal);
-        btnPrintCopy        = findViewById(R.id.btnPrintCopy);
+        btnOriginal = findViewById(R.id.btnOriginal);
+        btnCopia = findViewById(R.id.btnCopia);
+        btnOriginalRe = findViewById(R.id.btnOriginalRe);
+        btnCopiaRe = findViewById(R.id.btnCopiaRe);
 
         setSupportActionBar(tbMain);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
+        int tipo_recibo = 0;
 
-        item = (OrderModel) getIntent().getSerializableExtra("order");
+            mRecibo = (MFormatoRecibo) getIntent().getSerializableExtra(TICKET_CC);
+            tipo_recibo = mRecibo.getTipoRecibo();
+            if (mRecibo.isTipoImpresion()){ // si es original
+                tvTipoImpresion.setText("Original");
+                tvTipoFirma.setText("Firma Asesor");
+                tvNombreFirma.setText(session.getUser().get(1));
+            }
+            else{ // si es copia
+                tvTipoImpresion.setText("Copia");
+                tvTipoFirma.setText("Firma Cliente");
+                tvNombreFirma.setText(mRecibo.getNombreCliente());
+            }
 
-        if (item.getResultPrint() == 0){
-            if (item.getExternalID().contains("ri") || item.getExternalID().contains("ci")){
-                tvSignature.setText(ctx.getResources().getString(R.string.client_signature));
-                tvNameSignature.setText(item.getNameClient());
-            }
-            else if (item.getExternalID().contains("rg") || item.getExternalID().contains("cg")){
-                tvSignature.setText(ctx.getResources().getString(R.string.treasurer_signature));
-                tvNameSignature.setText(item.getNameClient());
-            }
-            else{
-                tvSignature.setText(ctx.getResources().getString(R.string.manager_signature));
-                tvNameSignature.setText(item.getNameAsessor());
-            }
-        }
-        else if (item.getResultPrint() == 1){
-            if (item.getExternalID().contains("ri") ||
-                    item.getExternalID().contains("ci") ||
-                    item.getExternalID().contains("rg") ||
-                    item.getExternalID().contains("cg")){
-                tvSignature.setText(ctx.getResources().getString(R.string.asessor_signature));
-                tvNameSignature.setText(item.getNameAsessor());
-            }
-            else{
-                tvSignature.setText("");
-                tvNameSignature.setText(ctx.getResources().getString(R.string.name_signature));
-            }
-        }
-        else{
-            Toast.makeText(ctx, ctx.getResources().getString(R.string.print_original_copy), Toast.LENGTH_SHORT).show();
+            tvTimestamp.setText(Miscellaneous.ObtenerFecha("timestamp"));
+
+            tvNombreCliente.setText(mRecibo.getNombreCliente());
+
+
+
+        switch (tipo_recibo){
+            case 1: //Formato circulo de credito
+                tvTipoRecibo.setText("CIRCULO DE CREDITO");
+                tvPago.setText(Miscellaneous.moneyFormat("17.5"));
+                tvCantidadLetra.setText("Diecisiete pesos 50/100 M.N.");
+                break;
+            case 2: //Formato de gastos funerarios
+                break;
         }
 
-        tvNumLoan.setText(item.getNumLoan());
-        tvNumClient.setText(item.getNumClient());
-        tvNameClient.setText(item.getNameClient());
-        tvAmountLoan.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountLoan())));
-        tvPaymentRequired.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountRequired())));
-        tvPaymentMade.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountMade())));
-
-        if (Miscellaneous.getIndorGpo(item.getExternalID()) == 1){
-            tvNum.setText(ctx.getResources().getString(R.string.client_number)+":");
-            tvName.setText(ctx.getResources().getString(R.string.client_name)+":");
-            tvTotalLoan.setText(ctx.getResources().getString(R.string.loan_amount)+":");
-            llPaymentRequired.setVisibility(View.VISIBLE);
-        }
-        else if (Miscellaneous.getIndorGpo(item.getExternalID()) == 2){
-            tvNum.setText(ctx.getResources().getString(R.string.group_number)+":");
-            tvName.setText(ctx.getResources().getString(R.string.group_name)+":");
-            tvTotalLoan.setText(ctx.getResources().getString(R.string.amount_total_loan_group)+":");
-            if (item.getExternalID().contains("cvg")){
-                llPaymentRequired.setVisibility(View.GONE);
-            }
-        }
-        else {
-            Toast.makeText(ctx, ctx.getResources().getString(R.string.error_contact_TI), Toast.LENGTH_SHORT).show();
-        }
-
-        //Valida si se está obteniendo datos y que de dentro de los datos contenga la key = 'formiikdata'
-        //if (this.getIntent() != null && this.getIntent().hasExtra("Data"))
         if (this.getIntent() != null)
         {
             loadSettingFile();
@@ -178,16 +168,16 @@ public class PrintSeewoo extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         addPairedDevices();
 
-        btnPrintOriginal.setOnClickListener(btnPrintOriginal_OnClick);
-        btnPrintCopy.setOnClickListener(btnPrintCopy_OnClick);
-
+        btnOriginal.setOnClickListener(btnOriginal_OnClick);
+        btnCopia.setOnClickListener(btnCopia_OnClick);
+        btnOriginalRe.setOnClickListener(btnOriginalRe_OnClick);
+        btnCopiaRe.setOnClickListener(btnCopiaRe_OnClick);
     }
 
-    private View.OnClickListener btnPrintOriginal_OnClick = new View.OnClickListener() {
+    private View.OnClickListener btnOriginal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             try {
-                item.setResultPrint(0);
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
             }catch (Exception e){
                 e.printStackTrace();
@@ -195,15 +185,33 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener btnPrintCopy_OnClick = new View.OnClickListener() {
+    private View.OnClickListener btnCopia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             try {
-                item.setResultPrint(1);
+                mRecibo.setTipoImpresion(false);
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
             }catch (Exception e){
                 e.printStackTrace();
             }
+        }
+    };
+
+    private View.OnClickListener btnOriginalRe_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mRecibo.setTipoImpresion(true);
+            mRecibo.setReeimpresion(true);
+            new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+        }
+    };
+
+    private View.OnClickListener btnCopiaRe_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mRecibo.setTipoImpresion(false);
+            mRecibo.setReeimpresion(true);
+            new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
         }
     };
 
@@ -249,28 +257,34 @@ public class PrintSeewoo extends AppCompatActivity {
                 hThread = new Thread(rh);
                 hThread.start();
 
-                PrintTicket print = new PrintTicket();
-                print.WriteTicket(ctx, item);
-                if (ban.equals("O")){
-                    item.setResultPrint(1);
-                    btnPrintOriginal.setVisibility(View.GONE);
-                    btnPrintCopy.setVisibility(View.VISIBLE);
-                    btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
-                    btnPrintCopy.setEnabled(true);
+                PrintRecibos print = new PrintRecibos();
+                print.WriteTicket(ctx, mRecibo);
+                if (!mRecibo.isReeimpresion()) {
+                    if (mRecibo.isTipoImpresion()) {
+                        tvTipoImpresion.setText("Copia");
+                        tvTipoFirma.setText("Firma Cliente");
+                        tvNombreFirma.setText(mRecibo.getNombreCliente());
+                        btnOriginal.setVisibility(View.GONE);
+                        btnCopia.setVisibility(View.VISIBLE);
+                        btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
+                        btnCopia.setEnabled(true);
+                    } else {
+                        btnCopia.setVisibility(View.GONE);
+                        btnCopiaRe.setVisibility(View.VISIBLE);
+                        btnOriginalRe.setVisibility(View.VISIBLE);
+                    }
                 }
-                else{
-                    item.setResultPrint(2);
-                }
+
             }
             else	// Connection failed.
             {
                 final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.print_off,
-                R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        dialog.dismiss();
-                    }
-                });
+                        R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
                 Objects.requireNonNull(errorPrint.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 errorPrint.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 errorPrint.show();
@@ -314,6 +328,9 @@ public class PrintSeewoo extends AppCompatActivity {
             {
                 retVal = -1;
             }
+
+            Log.e("retVal", ""+retVal);
+
             return retVal;
         }
 
@@ -325,25 +342,31 @@ public class PrintSeewoo extends AppCompatActivity {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
-                switch (item.getResultPrint()){
-                    case 0:
-                        btnPrintOriginal.setVisibility(View.VISIBLE);
-                        btnPrintOriginal.setEnabled(true);
-                        btnPrintOriginal.setBackgroundResource(R.drawable.btn_rounded_blue);
-                        break;
-                    case 1:
-                        btnPrintOriginal.setVisibility(View.GONE);
-                        btnPrintOriginal.setEnabled(false);
-                        btnPrintOriginal.setBackgroundResource(R.drawable.btn_disable);
+                if (!mRecibo.isReeimpresion()) {
+                    switch (mRecibo.getResImpresion()) {
+                        case 0:
+                            btnOriginal.setVisibility(View.VISIBLE);
+                            btnOriginal.setEnabled(true);
+                            btnOriginal.setBackgroundResource(R.drawable.btn_rounded_blue);
+                            break;
+                        case 1:
+                            btnOriginal.setVisibility(View.GONE);
+                            btnOriginal.setEnabled(false);
+                            btnOriginal.setBackgroundResource(R.drawable.btn_disable);
 
-                        btnPrintCopy.setVisibility(View.VISIBLE);
-                        btnPrintCopy.setEnabled(true);
-                        btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
-                        break;
-                    case 2:
-                        btnPrintCopy.setVisibility(View.GONE);
-                        btnPrintOriginal.setVisibility(View.GONE);
-                        break;
+                            btnCopia.setVisibility(View.VISIBLE);
+                            btnCopia.setEnabled(true);
+                            btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
+                            break;
+                        case 2:
+                            btnCopia.setVisibility(View.GONE);
+                            btnOriginal.setVisibility(View.GONE);
+                            break;
+                    }
+                }
+                else{
+                    btnCopiaRe.setVisibility(View.VISIBLE);
+                    btnOriginalRe.setVisibility(View.VISIBLE);
                 }
 
                 try {
@@ -358,18 +381,25 @@ public class PrintSeewoo extends AppCompatActivity {
             else{
                 final AlertDialog errorConnect = Popups.showDialogConfirm(ctx, Constants.print_off,
                         R.string.error_connect_print, R.string.connect, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(address_print));
-                        dialog.dismiss();
-                    }
-                }, R.string.cancel, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        dialog.dismiss();
-                        sendResponse(false,0, ctx.getResources().getString(R.string.error_process_info));
-                    }
-                });
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                try {
+                                    bluetoothPort.disconnect();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(address_print));
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                                sendResponse(false,0, ctx.getResources().getString(R.string.error_process_info));
+                            }
+                        });
                 Objects.requireNonNull(errorConnect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 errorConnect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 errorConnect.show();
@@ -387,19 +417,23 @@ public class PrintSeewoo extends AppCompatActivity {
         if(bluetoothPort.isConnected()){
             Log.e("bluetooth", "Conectado");
             clearBtDevData();
-            btnPrintCopy.setEnabled(false);
+            btnCopia.setEnabled(false);
         }else {
             Log.e("bluetooth", "No Conectado");
-            btnPrintOriginal.setEnabled(true);
-            btnPrintCopy.setEnabled(false);
+            btnOriginal.setEnabled(true);
+            btnCopia.setEnabled(false);
             clearBtDevData();
             if (bluetoothAdapter == null) {
                 // Device does not support Bluetooth
                 return;
             }
             if (!bluetoothAdapter.isEnabled()) {
+                Log.e("xx","---------------------------");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+            else{
+                Log.e("xxxxx","-------------- " + bluetoothAdapter.isEnabled());
             }
         }
     }
@@ -416,6 +450,7 @@ public class PrintSeewoo extends AppCompatActivity {
                     remoteDevices.add(pairedDevice);
                     adapter.add(pairedDevice.getName() + "\n[" + pairedDevice.getAddress() + "] [Paired]");
                     address_print = pairedDevice.toString();
+                    Log.e("paired", pairedDevice.toString());
                     new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(pairedDevice.toString()));
                 }
             }
@@ -432,9 +467,9 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     /*
-    * Obtiene la ADDRESS de la impresora de un archivo llamado BTPrinter
-    * dentro de la carpeta temp y lo coloca en el EditText
-    * */
+     * Obtiene la ADDRESS de la impresora de un archivo llamado BTPrinter
+     * dentro de la carpeta temp y lo coloca en el EditText
+     * */
     private void loadSettingFile()
     {
         int rin;
@@ -447,6 +482,9 @@ public class PrintSeewoo extends AppCompatActivity {
             {
                 lastConnAddr = new String(buf,0,rin);
                 address_print = lastConnAddr;
+
+                Log.e("Address", lastConnAddr);
+
             }
             fReader.close();
         }
@@ -481,13 +519,13 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     /*
-    * Generación de la respuesta para la actividad para identificar que
-    * impresiones se han realizado
-    *
-    * @param success para saber si se realizó impresión
-    * @param resultPrint que tipo de impresión se ha ejecutado
-    * @param resultMess mensaje para usuario que tipo de impresión ha realizado
-    * */
+     * Generación de la respuesta para la actividad para identificar que
+     * impresiones se han realizado
+     *
+     * @param success para saber si se realizó impresión
+     * @param resultPrint que tipo de impresión se ha ejecutado
+     * @param resultMess mensaje para usuario que tipo de impresión ha realizado
+     * */
     public void sendResponse(boolean success, int resultPrint, String resultMess){
         saveSettingFile();
         Intent intent = new Intent();
@@ -509,7 +547,7 @@ public class PrintSeewoo extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 String message = "";
-                switch (this.item.getResultPrint()) {
+                switch (this.mRecibo.getResImpresion()) {
                     case 0:
                         message = ctx.getResources().getString(R.string.not_print);
                         break;
@@ -535,7 +573,7 @@ public class PrintSeewoo extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         String message;
-        switch (this.item.getResultPrint()) {
+        switch (this.mRecibo.getResImpresion()) {
             case 0:
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
@@ -549,7 +587,7 @@ public class PrintSeewoo extends AppCompatActivity {
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
         }
-        sendResponse(true, this.item.getResultPrint(), message);
+        sendResponse(true, this.mRecibo.getResImpresion(), message);
     }
 
     /**
@@ -572,5 +610,4 @@ public class PrintSeewoo extends AppCompatActivity {
             );
         }
     }
-
 }

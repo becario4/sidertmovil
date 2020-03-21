@@ -33,7 +33,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
+import com.sidert.sidertmovil.activities.CirculoCredito;
 import com.sidert.sidertmovil.activities.Configuracion;
+import com.sidert.sidertmovil.activities.FormatoRecibos;
 import com.sidert.sidertmovil.activities.OriginacionI;
 import com.sidert.sidertmovil.activities.Perfil;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
@@ -54,6 +56,7 @@ import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.PrintRecibos;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.Calendar;
@@ -268,9 +271,11 @@ public class Home extends AppCompatActivity{
                 case R.id.NVlogPrint:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
-                /*case R.id.NVimpresiones:
-                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
-                    break;*/
+                case R.id.NVcc:
+                    Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
+                    startActivity(i_cc);
+                    //setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    break;
                 case R.id.NVeraseTable:
                     setFragment(NameFragments.ERASE_TABLES, null);
                     break;

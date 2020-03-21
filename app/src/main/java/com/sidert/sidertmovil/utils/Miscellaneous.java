@@ -1803,7 +1803,7 @@ public class Miscellaneous {
     }
 
     public static int ContactoCliente(TextView tv){
-        int contacto = 0;
+        int contacto = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "SI":
                 contacto = 0;
@@ -1819,7 +1819,7 @@ public class Miscellaneous {
     }
 
     public static int ActualizarTelefono(TextView tv){
-        int actualizar = 0;
+        int actualizar = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "SI":
                 actualizar = 0;
@@ -1832,7 +1832,7 @@ public class Miscellaneous {
     }
 
     public static int ResultadoGestion(TextView tv){
-        int resultado = 0;
+        int resultado = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "PAGO":
                 resultado = 0;
@@ -1845,7 +1845,7 @@ public class Miscellaneous {
     }
 
     public static int PagoRequerido(TextView tv){
-        int requerido = 0;
+        int requerido = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "SI":
                 requerido = 0;
@@ -1858,7 +1858,7 @@ public class Miscellaneous {
     }
 
     public static int MedioPago(TextView tv){
-        int medioPago = 0;
+        int medioPago = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "BANAMEX":
                 medioPago = 0;
@@ -1889,7 +1889,7 @@ public class Miscellaneous {
     }
 
     public static int Impresion(TextView tv){
-        int impresion = 0;
+        int impresion = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "SI":
                 impresion = 0;
@@ -1915,7 +1915,7 @@ public class Miscellaneous {
     }
 
     public static int MotivoNoPago(TextView tv){
-        int motivoNoPago = 0;
+        int motivoNoPago = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "NEGACION DE PAGO":
                 motivoNoPago = 0;

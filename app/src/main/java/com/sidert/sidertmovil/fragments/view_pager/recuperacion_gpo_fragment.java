@@ -862,7 +862,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private void SelectMedioPago (int pos){
         if (!parent.flagRespuesta) {
             tvMedioPago.setEnabled(false);
-            if (pos > 0 && pos < 7 || pos == 8) {
+            if (pos >= 0 && pos < 6 || pos == 7) {
                 tvFechaDeposito.setEnabled(false);
             } else {
                 tvFechaDeposito.setEnabled(true);
@@ -886,8 +886,6 @@ public class recuperacion_gpo_fragment extends Fragment {
             case 2: // Telecom
             case 3: // Bansefi
             case 4: // Bancomer
-            case 5: // Oxxo
-            case 7: // Sidert
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
                 else
@@ -895,6 +893,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 if (tvFechaDeposito.getText().toString().isEmpty())
                     tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
                 llDetalleFicha.setVisibility(View.VISIBLE);
+                tvDetalleFicha.setEnabled(true);
                 llFechaDeposito.setVisibility(View.VISIBLE);
                 ibGaleria.setEnabled(true);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
@@ -907,6 +906,52 @@ public class recuperacion_gpo_fragment extends Fragment {
                     //rbArqueoCaja.setChecked(false);
                 }
                 break;
+            case 5: // Oxoo
+                if (byteEvidencia != null)
+                    tvFotoGaleria.setError(null);
+                else
+                    tvFotoGaleria.setError("");
+                if (tvFechaDeposito.getText().toString().isEmpty())
+                    tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
+                tvDetalleFicha.setText(_confirmacion[0]);
+                tvDetalleFicha.setEnabled(false);
+                etPagoRealizado.setText(parent.ficha_rg.getPrestamo().getPagoSemanal().toString());
+                SelectDetalleFicha(0);
+                ibGaleria.setEnabled(true);
+                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llImprimirRecibo.setVisibility(View.GONE);
+                llFotoGaleria.setVisibility(View.VISIBLE);
+                llGerente.setVisibility(View.VISIBLE);
+                if (!etPagoRealizado.getText().toString().trim().isEmpty()) {
+                    llArqueoCaja.setVisibility(View.GONE);
+                    //rbArqueoCaja.setChecked(false);
+                }
+                break;
+            case 7:
+                if (byteEvidencia != null)
+                    tvFotoGaleria.setError(null);
+                else
+                    tvFotoGaleria.setError("");
+                ibGaleria.setEnabled(false);
+                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                if (!etFolioRecibo.getText().toString().trim().isEmpty())
+                    tvImprimirRecibo.setError(null);
+                else
+                    tvImprimirRecibo.setError("");
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
+                tvDetalleFicha.setEnabled(false);
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llImprimirRecibo.setVisibility(View.VISIBLE);
+                tvImprimirRecibo.setText(_imprimir[1]);
+                tvImprimirRecibo.setEnabled(false);
+                SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
+                llFotoGaleria.setVisibility(View.VISIBLE);
+                llGerente.setVisibility(View.VISIBLE);
+                break;
             case 6: // Efectivo
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
@@ -914,7 +959,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     tvFotoGaleria.setError("");
                 }
 
-                if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 10000 && pos == 7) {
+                if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 10000) {
                     llArqueoCaja.setVisibility(View.VISIBLE);
                     //rbArqueoCaja.setChecked(false);
                 }
@@ -927,6 +972,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     tvImprimirRecibo.setError("");
                 llFechaDeposito.setVisibility(View.GONE);
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                tvDetalleFicha.setEnabled(true);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
@@ -949,13 +995,13 @@ public class recuperacion_gpo_fragment extends Fragment {
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.GONE);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 break;
             case 0: // Si cuenta con detalle
-                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.VISIBLE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
@@ -1351,7 +1397,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         etPagoRealizado.setError(null);
                         etPagoRealizado.setText(String.valueOf(data.getStringExtra(Constants.RESPONSE)));
                         _Integrantes = data.getStringExtra("integrantes");
-                        //rbIntegrantes.setChecked(true);
+                        rbIntegrantes.setChecked(true);
                         Log.v("/","/////////////////////////////////////////////////////////////");
                         Log.v("RespuestaIntegrantes", _Integrantes);
                         Log.v("/","/////////////////////////////////////////////////////////////");

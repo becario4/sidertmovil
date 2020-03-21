@@ -8,7 +8,7 @@ public class WebServicesRoutes {
 
     //public final static String PORT = "81"; //Puerto de producción
     //public final static String PORT = "82"; //Puerto de desarrollo
-    //public final static String PORT = "83";
+    //public final static String PORT = "83";   //Puerto de producción sidert.ddns
     public final static String PORT = "8080"; //Puerto de local
 
     //public final static String CONTROLLER = "/serviciosidert/Api.svc/"; //Controlador

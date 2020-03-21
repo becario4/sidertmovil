@@ -44,12 +44,14 @@
 
                 <EditText
                     android:id="@+id/etNumeroPrestamo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:elevation="5dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Fecha de crédito otorgado  -->
@@ -70,11 +72,14 @@
 
                 <EditText
                     android:id="@+id/etFechaCreditoOtorgado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Número de cliente  -->
@@ -95,12 +100,14 @@
 
                 <EditText
                     android:id="@+id/etNumeroCliente"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Nombre del cliente  -->
@@ -121,12 +128,14 @@
 
                 <EditText
                     android:id="@+id/etNombreCliente"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Llamer al cliente a su domicilio  -->
@@ -207,11 +216,14 @@
 
                 <EditText
                     android:id="@+id/etMontoPrestamoOtorgado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Monto total del préstamo  -->
@@ -232,11 +244,14 @@
 
                 <EditText
                     android:id="@+id/etMontoTotalPrestamo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Número de amortización  -->
@@ -257,11 +272,14 @@
 
                 <EditText
                     android:id="@+id/etNumeroAmortizacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Monto del pago requerido  -->
@@ -282,11 +300,14 @@
 
                 <EditText
                     android:id="@+id/etPagoRequerido"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Monto de amortización  -->
@@ -307,11 +328,14 @@
 
                 <EditText
                     android:id="@+id/etMontoAmortizacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Fecha de pago establecida  -->
@@ -332,11 +356,14 @@
 
                 <EditText
                     android:id="@+id/etFechaPagoEstablecida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Datos del aval  -->
@@ -379,11 +406,14 @@
 
                 <EditText
                     android:id="@+id/etNombreAval"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Parentesco con el aval  -->
@@ -404,11 +434,14 @@
 
                 <EditText
                     android:id="@+id/etParentescoAval"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:textSize="@dimen/textsize" />
+                    android:maxLength="45"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
             <!--  Llamer al teléfono del aval  -->

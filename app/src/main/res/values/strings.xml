@@ -262,7 +262,7 @@
     <string name="datos_correctos">¿Los datos son los correctos?</string>
     <string name="borrar_solicitud">¿Desea borrar la solicitud?</string>
     <string name="confirm_borrar_solicitud">¿Está completamente seguro que desea borrar la solicitud?</string>
-    <string name="guardando_info">Guardando informción, por favor espere . . .</string>
+    <string name="guardando_info">Guardando información, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
     <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
     <string name="leyenda_guardar_gestion">Este es un resumen de los datos que capturaste, antes de proseguir con el guardado de la información confirma que los datos son los correctos.</string>
@@ -566,8 +566,8 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="imprimir">
-        <item>SI</item>              <!-- 0 -->
-        <item>NO CUENTA CON BATERIA</item>              <!-- 1 -->
+        <item>SI</item>                      <!-- 0 -->
+        <item>NO CUENTA CON BATERIA</item>   <!-- 1 -->
     </string-array>
 
     <string-array name="resultado_gestion">

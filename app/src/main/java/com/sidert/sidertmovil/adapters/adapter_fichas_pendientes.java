@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +23,13 @@ import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Constants;
 
+import org.w3c.dom.Text;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
 
 public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fichas_pendientes.ViewHolder> {
 
@@ -34,6 +39,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
 
     public interface Event {
         void FichaOnClick(ModeloFichaGeneral item);
+        void IsRutaOnClick(ModeloFichaGeneral item, boolean is_ruta);
     }
 
     public adapter_fichas_pendientes(Context ctx, List<ModeloFichaGeneral> data, Event evento) {
@@ -52,27 +58,29 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final ModeloFichaGeneral item = data.get(position);
-        if (item.getTipoFormulario().equals(Constants.RECUPERACION_IND) ||
-                item.getTipoFormulario().equals(Constants.COBRANZA_IND) ||
-                item.getTipoFormulario().equals(Constants.CARTERA_VENCIDA_IND)){
+        if (item.getTipoFormulario().equals(RECUPERACION_IND)) {
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipoFicha);
+            holder.tvNombreTesorera.setText("");
         }
         else {
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipoFicha);
+            holder.tvNombreTesorera.setText(item.getNombreTesorera());
         }
+
+        holder.tvDiaSemana.setText(item.getDiaSemana());
         holder.tvNombre.setText(item.getNombreClienteGpo());
         holder.tvDireccion.setText(item.getDireccion());
-        holder.tvFechaPago.setText(item.getFechaPago());
-        holder.tvDiaSemana.setText(item.getDiaSemana());
-        holder.tvStatus.setText("Status: "+item.getStatus());
 
         holder.cbRuta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 item.setChecked(isChecked);
+                evento.IsRutaOnClick(item, isChecked);
+
             }
         });
         holder.cbRuta.setChecked(item.isChecked());
+
         holder.bind(item);
 
     }
@@ -83,23 +91,32 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        //private TextView tvNombre;
+        //private TextView tvDireccion;
+        //private TextView tvFechaPago;
+        //private TextView tvDiaSemana;
+        //private CheckBox cbRuta;
+        //private ImageView ivTipoFicha;
+        //private TextView tvStatus;
         private TextView tvNombre;
-        private TextView tvDireccion;
-        private TextView tvFechaPago;
+        private TextView tvNombreTesorera;
         private TextView tvDiaSemana;
-        private CheckBox cbRuta;
-        private ImageView ivTipoFicha;
-        private TextView tvStatus;
+        private TextView tvDireccion;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvNombre    = itemView.findViewById(R.id.tvNombre);
-            tvDireccion = itemView.findViewById(R.id.tvDireccion);
-            tvFechaPago = itemView.findViewById(R.id.tvFechaPago);
-            tvDiaSemana = itemView.findViewById(R.id.tvDiaSemana);
-            cbRuta      = itemView.findViewById(R.id.cbRuta);
-            ivTipoFicha = itemView.findViewById(R.id.ivTipoFicha);
-            tvStatus    = itemView.findViewById(R.id.tvStatus);
+        private ImageView ivTipoFicha;
+        private CheckBox cbRuta;
+
+
+        public ViewHolder(@NonNull View v) {
+            super(v);
+            tvNombre    = v.findViewById(R.id.tvNombre);
+            tvDireccion = v.findViewById(R.id.tvDireccion);
+            tvDiaSemana = v.findViewById(R.id.tvDiaSemana);
+            //tvDiaSemana = itemView.findViewById(R.id.tvDiaSemana);
+            cbRuta      = v.findViewById(R.id.cbRuta);
+            ivTipoFicha = v.findViewById(R.id.ivTipoFicha);
+            tvNombreTesorera = v.findViewById(R.id.tvNombreTesorera);
+            //tvStatus    = itemView.findViewById(R.id.tvStatus);
         }
 
         public void bind (final ModeloFichaGeneral item){

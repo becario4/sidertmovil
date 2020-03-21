@@ -1,11 +1,16 @@
 package com.sidert.sidertmovil.models;
 
+import android.content.ContentValues;
+
+import com.sidert.sidertmovil.utils.Constants;
+
 import java.io.Serializable;
 
 public class ModeloFichaGeneral implements Serializable {
 
     private String TipoFormulario;
     private String NombreClienteGpo;
+    private String NombreTesorera;
     private String Direccion;
     private String FechaPago;
     private String DiaSemana;
@@ -28,6 +33,14 @@ public class ModeloFichaGeneral implements Serializable {
 
     public void setNombreClienteGpo(String nombreClienteGpo) {
         NombreClienteGpo = nombreClienteGpo;
+    }
+
+    public String getNombreTesorera() {
+        return NombreTesorera;
+    }
+
+    public void setNombreTesorera(String nombreTesorera) {
+        NombreTesorera = nombreTesorera;
     }
 
     public String getDireccion() {

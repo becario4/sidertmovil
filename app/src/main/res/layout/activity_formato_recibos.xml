@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tbMain"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_weight="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:text="SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR. (SIDERT)."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvTipoRecibo"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvTipoImpresion"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Fecha y hora:"
+                        android:textColor="@android:color/black"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvTimestamp"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:textSize="14dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Recibimos de:"
+                        android:textColor="@android:color/black"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvNombreCliente"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:textSize="14dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Monto del Pago:"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvPago"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Cantidad en letra:"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvCantidadLetra"
+                        android:textSize="14dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvTipoFirma"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <View
+                        android:layout_marginTop="35dp"
+                        android:background="@android:color/black"
+                        android:layout_marginRight="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"/>
+                    <TextView
+                        android:id="@+id/tvNombreFirma"
+                        android:gravity="center"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="N O    O L V I D E S    V E R I F I C A R    T U    P A G O"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/black"
+                    android:textSize="14dp"
+                    android:gravity="center"
+                    android:text="El recibo debe de coincidir con lo entregado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
+                    android:text="El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnOriginal"
+                    android:enabled="false"
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_print"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@android:color/white"
+                    android:text="Imprimir Original"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/btnCopia"
+                    android:enabled="false"
+                    android:visibility="gone"
+                    android:text="Imprimir Copia"
+                    android:drawableLeft="@drawable/ic_print"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@android:color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnOriginalRe"
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_print"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@android:color/white"
+                    android:text="Reimprimir Original"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/btnCopiaRe"
+                    android:visibility="gone"
+                    android:text="Reimprimir Copia"
+                    android:drawableLeft="@drawable/ic_print"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@android:color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

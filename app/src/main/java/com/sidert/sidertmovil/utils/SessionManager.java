@@ -109,14 +109,14 @@ public class SessionManager {
     public ArrayList<String> getUser (){
         ArrayList<String> user = new ArrayList<>();
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
-        user.add(preferences.getString(SERIE_ID, null));
-        user.add(preferences.getString(NOMBRE,null));
-        user.add(preferences.getString(AP_PATERNO, null));
-        user.add(preferences.getString(AP_MATERNO, null));
-        user.add(preferences.getString(USER_NAME, null));
-        user.add(preferences.getString(TYPE_USER, null));
-        user.add(String.valueOf(preferences.getBoolean(FLAG, false)));
-        user.add(preferences.getString(ACCESS_TOKEN, null));
+        user.add(preferences.getString(SERIE_ID, null));                       //0
+        user.add(preferences.getString(NOMBRE,null));                          //1
+        user.add(preferences.getString(AP_PATERNO, null));                     //2
+        user.add(preferences.getString(AP_MATERNO, null));                     //3
+        user.add(preferences.getString(USER_NAME, null));                      //4
+        user.add(preferences.getString(TYPE_USER, null));                      //5
+        user.add(String.valueOf(preferences.getBoolean(FLAG, false)));         //6
+        user.add(preferences.getString(ACCESS_TOKEN, null));                   //7
         return user;
     }
 

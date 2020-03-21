@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -448,7 +449,7 @@ public class geo_pendientes_fragment extends Fragment {
 
                     }
                 })
-                .setExpanded(true, 900)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, 900)
                 .create();
         aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
         aetColonia  = filtros_dg.getHolderView().findViewById(R.id.aetColonia);

@@ -89,6 +89,8 @@ public class Login extends AppCompatActivity {
     String[] perms = {  Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.CAMERA,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.BLUETOOTH,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -156,14 +158,14 @@ public class Login extends AppCompatActivity {
     };
 
     private void doLoginSoporte(){
-        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Programador","PROGRAMADOR", true, "");
+        session.setUser("000","Alejandro Isaias", "Lopez", "Jimenez", "Programador","PROGRAMADOR", true, "");
         Intent home = new Intent(context, Home.class);
         startActivity(home);
         finish();
     }
 
     private void doLoginAsesorT(){
-        session.setUser("00000","Alejandro Isaías", "López", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiIiwicGF0ZXJubyI6IkxPUEVaIiwidXNlcl9uYW1lIjoiUFJPR1JBTUFET1JBTkQiLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXSwic2VyaWVpZCI6IjU4NCIsImlkIjoxMTksImV4cCI6MTU4MTc4MDQ4Nywibm9tYnJlIjoiQUxFSkFORFJPIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9TVVBFUiJdLCJqdGkiOiIyN2VkNzE2MS01ZDI1LTQ2ZmQtYWNiNi1hM2RjNWQzNTVjMWIiLCJlbWFpbCI6InByb2dyYW1hZG9yMkBydWZpLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.dKgxCXq-t7K1FuwcSxtkG7U4LUCWgwxXdZe67T5vPYqonQYviVZ2bFA-NpV1MvuSgAXHZhxAXc4fGwkhz-IyhdY49kvzzilfzFHuRHbXLiNowTIxdUmFFYMxNPMN5XMIpauQt4eC--6eEmdkDYL1cxB35RA9Q_p6kSRkc0U8_UWVh1_K-9UOYwliJLbIlpSUMkps82wmUydp8rATd_OanwHbUx3uiOHBzBhXVOi2b8It9mIH_gBSAKeiEySIqSAMFoaimWacYw8vVPUrtNH5Z4CspLCYDc63qDEQYTiR1egtv0Ofxu-irpCEIGfsTOTPFGXrb-G_M7YAXdvkmCmlHQ");
+        session.setUser("000","Alejandro Isaias", "Lopez", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiIiwicGF0ZXJubyI6IkxPUEVaIiwidXNlcl9uYW1lIjoiUFJPR1JBTUFET1JBTkQiLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXSwic2VyaWVpZCI6IjU4NCIsImlkIjoxMTksImV4cCI6MTU4MTc4MDQ4Nywibm9tYnJlIjoiQUxFSkFORFJPIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9TVVBFUiJdLCJqdGkiOiIyN2VkNzE2MS01ZDI1LTQ2ZmQtYWNiNi1hM2RjNWQzNTVjMWIiLCJlbWFpbCI6InByb2dyYW1hZG9yMkBydWZpLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.dKgxCXq-t7K1FuwcSxtkG7U4LUCWgwxXdZe67T5vPYqonQYviVZ2bFA-NpV1MvuSgAXHZhxAXc4fGwkhz-IyhdY49kvzzilfzFHuRHbXLiNowTIxdUmFFYMxNPMN5XMIpauQt4eC--6eEmdkDYL1cxB35RA9Q_p6kSRkc0U8_UWVh1_K-9UOYwliJLbIlpSUMkps82wmUydp8rATd_OanwHbUx3uiOHBzBhXVOi2b8It9mIH_gBSAKeiEySIqSAMFoaimWacYw8vVPUrtNH5Z4CspLCYDc63qDEQYTiR1egtv0Ofxu-irpCEIGfsTOTPFGXrb-G_M7YAXdvkmCmlHQ");
 
         if(isExternalStorageWritable()){
             String nameDir = "Files";

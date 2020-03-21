@@ -8,7 +8,7 @@
         "cancellationDate": "09/05/2019 10:09:48",
         "Grupo": {
           "ClaveGrupo": "995005",
-          "NombreGrupo": "CG PROGRAMADORES 555",
+          "NombreGrupo": "RG PROGRAMADORES 555",
           "IntegrantesDelGrupo": [
             {
               "ClaveCliente":1,
@@ -168,7 +168,7 @@
           "SaldoActual": 49560.14,
           "DiasAtraso": 19,
           "Frecuencia": "SEMANAL",
-          "DiaSemana": "3. MIERCOLES"
+          "DiaSemana": "MIERCOLES"
         },
         "ReporteAnaliticoOmega": [
           {
@@ -417,7 +417,7 @@
 				"SaldoActual": 49560.14,
 				"DiasAtraso": 19,
 				"Frecuencia": "SEMANAL",
-				"DiaSemana": "3. MIERCOLES"
+				"DiaSemana": "MIERCOLES"
 			},
 			"ReporteAnaliticoOmega": [
 				{
@@ -506,7 +506,7 @@
           "cancellationDate": "09/05/2019 10:09:48",
           "Grupo": {
             "ClaveGrupo": "995005",
-            "NombreGrupo": "CVG PROGRAMADORES 555",
+            "NombreGrupo": "RG PROGRAMADORES 555",
             "IntegrantesDelGrupo": [
               {
                 "ClaveCliente":1,
@@ -666,7 +666,7 @@
             "SaldoActual": 49560.14,
             "DiasAtraso": 19,
             "Frecuencia": "SEMANAL",
-            "DiaSemana": "3. MIERCOLES"
+            "DiaSemana": "MIERCOLES"
           },
           "ReporteAnaliticoOmega": [
             {
@@ -755,7 +755,7 @@
           "cancellationDate": "09/05/2019 10:09:48",
           "Grupo": {
             "ClaveGrupo": "995005",
-            "NombreGrupo": "CG PROGRAMADORES 555",
+            "NombreGrupo": "RG PROGRAMADORES 555",
             "IntegrantesDelGrupo": [
               {
                 "ClaveCliente":1,
@@ -915,7 +915,7 @@
             "SaldoActual": 49560.14,
             "DiasAtraso": 19,
             "Frecuencia": "SEMANAL",
-            "DiaSemana": "3. MIERCOLES"
+            "DiaSemana": "MIERCOLES"
           },
           "ReporteAnaliticoOmega": [
             {
@@ -1010,7 +1010,7 @@
 				"TelCelular": "2291777371",
 				"TelDomicilio": "2291089935",
 				"Direccion":{
-					"Calle": "U  GALVAN LTE 10 CAMBIO",
+					"Calle": "U GALVAN LTE 10 CAMBIO",
 					"Ciudad": "VERACRUZ",
 					"CodigoPostal": "91726",
 					"Colonia": "EMANCIPACION CAMPESINA",
@@ -1031,7 +1031,7 @@
 				"FechaDelCreditoOtorgado": "21/03/2019",
 				"MontoTotalPrestamo": 12043.92,
 				"MontoPrestamo": 9000.00,
-				"PagoSemanal": 0,
+				"PagoSemanal": 255,
 				"PagoRealizado": 0,
 				"NumeroAmortizacion": 19,
 				"MontoAmortizacion": 501.83,
@@ -1041,7 +1041,7 @@
 				"SumaDePagos": 9535.62,
 				"DiasAtraso": 0,
 				"Frecuencia": "SEMANAL",
-				"DiaSemana": "4. JUEVES",
+				"DiaSemana": "JUEVES",
 				"PerteneceGarantia": "SI",
 				"CuentaConGarantia": "SI",
 				"TipoGarantia": "AVAL"
@@ -1145,7 +1145,7 @@
 				"FechaDelCreditoOtorgado": "05/04/2019",
 				"MontoTotalPrestamo": 12570.00,
 				"MontoPrestamo": 10000.00,
-				"PagoSemanal": 8998.74,
+				"PagoSemanal": 899.74,
 				"PagoRealizado": 0,
 				"NumeroAmortizacion": 8,
 				"MontoAmortizacion": 1571.25,
@@ -1155,7 +1155,7 @@
 				"SumaDePagos": 3571.26,
 				"DiasAtraso": 82,
 				"Frecuencia": "QUINCENAL",
-				"DiaSemana": "3. MIERCOLES",
+				"DiaSemana": "MIERCOLES",
 				"CuentaConGarantia": "SI",
 				"TipoGarantia": "AVAL",
 				"PerteneceGarantia": "SI"
@@ -1248,7 +1248,7 @@
 				"FechaDelCreditoOtorgado": "16/04/2019",
 				"MontoTotalPrestamo": 20112.00,
 				"MontoPrestamo": 16000.00,
-				"PagoSemanal": 0,
+				"PagoSemanal": 378,
 				"PagoRealizado": 0,
 				"NumeroAmortizacion": 15,
 				"MontoAmortizacion": 1257.00,
@@ -1260,7 +1260,7 @@
 				"TipoGarantia": "AVAL",
 				"DiasAtraso": 0,
 				"Frecuencia": "SEMANAL",
-				"DiaSemana": "2. MARTES",
+				"DiaSemana": "MARTES",
 				"PerteneceGarantia": "SI"
 
 			},
@@ -1374,7 +1374,7 @@
 				"FechaDelCreditoOtorgado": "22/04/2019",
 				"MontoTotalPrestamo": "42131.44",
 				"MontoPrestamo": 31000.00,
-				"PagoSemanal": 0,
+				"PagoSemanal": 519,
 				"PagoRealizado": 0,
 				"NumeroAmortizacion": 14,
 				"MontoAmortizacion": 1755.48,
@@ -1386,7 +1386,7 @@
 				"TipoGarantia": "AVAL",
 				"DiasAtraso": 0,
 				"Frecuencia": "SEMANAL",
-				"DiaSemana": "1. LUNES",
+				"DiaSemana": "LUNES",
 				"PerteneceGarantia": "SI"
 			},
 			"ReporteAnaliticoOmega": [

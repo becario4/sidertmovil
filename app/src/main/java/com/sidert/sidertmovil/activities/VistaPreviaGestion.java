@@ -234,7 +234,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     if (datos.containsKey(Constants.PAGO_REQUERIDO))
                         jsonResp.put(Constants.PAGO_REQUERIDO, datos.getString(Constants.PAGO_REQUERIDO));
                     else
-                        jsonResp.put(Constants.DETALLE_FICHA, datos.getBoolean(Constants.DETALLE_FICHA));
+                        jsonResp.put(Constants.DETALLE_FICHA, datos.getString(Constants.DETALLE_FICHA));
                     jsonResp.put(Constants.PAGO_REALIZADO, datos.getString(Constants.PAGO_REALIZADO));
                     jsonResp.put(Constants.SALDO_CORTE, datos.getDouble(Constants.SALDO_CORTE));
                     jsonResp.put(Constants.SALDO_ACTUAL, etSaldoActual.getText().toString().trim());
@@ -254,6 +254,9 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     PagoRealizado.setVisibility(View.VISIBLE);
                     etPagoRealizado.setText(datos.getString(Constants.PAGO_REALIZADO));
                     etPagoRealizado.setVisibility(View.VISIBLE);
+                    if (Miscellaneous.MedioPago(etMedioPago) == 7){
+
+                    }
                     if (datos.containsKey(Constants.RESUMEN_INTEGRANTES)){
                         if (datos.getBoolean(Constants.RESUMEN_INTEGRANTES)){
                             integrantes = datos.getString(Constants.INTEGRANTES);
@@ -329,7 +332,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
                     Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    if (datos.getBoolean(Constants.GERENTE)) { //Si está el gerente
+                    if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);

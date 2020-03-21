@@ -234,6 +234,7 @@ public class Constants {
     public final static int REQUEST_CODE_COLONIA_AVAL              = 168;
     public final static int REQUEST_CODE_COLONIA_NEG               = 336;
     public final static int REQUEST_CODE_COLONIA_REF               = 794;
+    public final static int REQUEST_CODE_COLONIA                   = 641;
     public final static int REQUEST_CODE_CAMARA_FACHADA_CLI        = 698;
     public final static int REQUEST_CODE_CAMARA_FACHADA_NEG        = 598;
     public final static int REQUEST_CODE_CAMARA_FACHADA_AVAL       = 994;
@@ -287,6 +288,7 @@ public class Constants {
     public final static String TBL_RECIBOS_VIGENTE  = "tbl_recibos_vigente";
     public final static String TBL_RECIBOS_VENCIDA  = "tbl_recibos_vencida";
     public final static String TBL_REIMPRESION     = "tbl_reimpresion";
+    public final static String RECIBOS_CIRCULO_CREDITO    = "recibos_circulo_credito";
 
     public final static String IND_T                = "individuals_t";
     public final static String GPO_T                = "groups_t";
@@ -336,6 +338,7 @@ public class Constants {
     public final static String OTROS_DATOS_INTEGRANTE_T     = "otros_datos_integrante_t";
     public final static String DOCUMENTOS_INTEGRANTE        = "documentos_integrante";
     public final static String DOCUMENTOS_INTEGRANTE_T      = "documentos_integrante_t";
+    public final static String RECIBOS_CIRCULO_CREDITO_T    = "recibos_circulo_credito_t";
 
     public final static String TBL_RECUPERACION_INDIVIDUAL_T = "recuperacion_individual_t";
     public final static String TBL_RECUPERACION_INDIVIDUAL   = "recuperacion_individual";
@@ -386,6 +389,7 @@ public class Constants {
     public final static String TITULO                   = "titulo";
     public final static String CATALOGO                 = "catalogo";
     public final static String ITEM                     = "item";
+    public final static String TICKET_CC                = "ticket_cc";
     public final static String REQUEST_CODE             = "request_code";
     public final static String EXTRA                    = "extra";
 

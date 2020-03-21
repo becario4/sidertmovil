@@ -24,7 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.CameraActivity"></activity>
+        <activity android:name=".activities.FormatoRecibos"></activity>
+        <activity android:name=".activities.CirculoCredito" />
+        <activity android:name=".activities.CameraActivity" />
         <activity
             android:name=".activities.Catalogos"
             android:screenOrientation="portrait" />

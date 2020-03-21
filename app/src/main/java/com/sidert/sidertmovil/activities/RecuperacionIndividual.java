@@ -420,7 +420,6 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                         case 3: //Oxxo
                                         case 4: //Telecom
                                         case 5: //Bansefi
-                                        case 7: //Sidert
                                             if (!ri_data.tvFechaDeposito.getText().toString().trim().isEmpty())
                                                 jsonTemp.put(Constants.FECHA_DEPOSITO, ri_data.tvFechaDeposito.getText().toString().trim());
                                             break;
@@ -433,6 +432,19 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                                     break;
                                                 case 1:
                                                     jsonTemp.put(Constants.IMPRESORA, "NO CUENTA CON BATERIA");
+                                                    if (!ri_data.etFolioRecibo.getText().toString().trim().isEmpty())
+                                                        jsonTemp.put(Constants.FOLIO_TICKET, ri_data.etFolioRecibo.getText().toString().trim());
+                                                    break;
+                                            }
+                                            break;
+                                        case 7: //Sidert
+                                            if (!ri_data.tvFechaDeposito.getText().toString().trim().isEmpty())
+                                                jsonTemp.put(Constants.FECHA_DEPOSITO, ri_data.tvFechaDeposito.getText().toString().trim());
+
+                                            switch (m.Impresion(ri_data.tvImprimirRecibo)){
+                                                case 0:
+                                                case 1:
+                                                    jsonTemp.put(Constants.IMPRESORA, ri_data.tvImprimirRecibo.getText().toString());
                                                     if (!ri_data.etFolioRecibo.getText().toString().trim().isEmpty())
                                                         jsonTemp.put(Constants.FOLIO_TICKET, ri_data.etFolioRecibo.getText().toString().trim());
                                                     break;
@@ -613,6 +625,21 @@ public class RecuperacionIndividual extends AppCompatActivity {
                                             b.putDouble(Constants.SALDO_CORTE, ficha_ri.getPrestamo().getSaldoActual());
                                             b.putDouble(Constants.MONTO_REQUERIDO, ficha_ri.getPrestamo().getPagoSemanal());
                                             b.putString(Constants.PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
+                                            //-------------------------------------------------------
+                                            if (m.MedioPago(data.tvMedioPago) == 7) {
+                                                if (m.Impresion(data.tvImprimirRecibo) == 1) { //No imprimirá recibos
+                                                    if (!data.etFolioRecibo.getText().toString().trim().isEmpty()) {
+                                                        b.putString(Constants.IMPRESORA, data.tvImprimirRecibo.getText().toString());
+                                                        b.putString(Constants.FOLIO_TICKET, data.etFolioRecibo.getText().toString().trim());
+                                                    }
+                                                    else
+                                                        Toast.makeText(ctx, "No ha capturado el folio del recibo manual", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+
+
+                                            //----------------------------------------------------
                                             if (data.byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                 if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
                                                     if (data.byteFirma != null) { //Capturó una firma
