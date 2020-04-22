@@ -3,23 +3,36 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -50,13 +63,19 @@ import com.sidert.sidertmovil.activities.CapturarFirma;
 import com.sidert.sidertmovil.activities.IntegrantesGpo;
 import com.sidert.sidertmovil.activities.PrintSeewoo;
 import com.sidert.sidertmovil.activities.RecuperacionGrupal;
+import com.sidert.sidertmovil.activities.VistaPreviaGestion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
+import com.sidert.sidertmovil.models.MImpresion;
+import com.sidert.sidertmovil.models.MIntegrantePago;
 import com.sidert.sidertmovil.models.OrderModel;
+import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
 import org.json.JSONArray;
@@ -69,64 +88,117 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
+import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.DATE;
 import static com.sidert.sidertmovil.utils.Constants.DATE_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.DAY_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.DETALLE_FICHA;
+import static com.sidert.sidertmovil.utils.Constants.EFECTIVO;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
+import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHAS_POST;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA_IMAGE;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
 import static com.sidert.sidertmovil.utils.Constants.IDENTIFIER;
+import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.IMPRESORA;
+import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.MONTH_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
+import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
+import static com.sidert.sidertmovil.utils.Constants.PAGO_REQUERIDO;
+import static com.sidert.sidertmovil.utils.Constants.PARAMS;
+import static com.sidert.sidertmovil.utils.Constants.PICTURE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ARQUEO_CAJA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CAMARA_FACHADA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CAMARA_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_GALERIA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_IMPRESORA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
+import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.SAVE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.YEAR_CURRENT;
+import static com.sidert.sidertmovil.utils.Constants.camara;
+import static com.sidert.sidertmovil.utils.Constants.firma;
+import static com.sidert.sidertmovil.utils.Constants.question;
 
 public class recuperacion_gpo_fragment extends Fragment {
 
     private Context ctx;
 
-    public String[] _contacto;
-    public String[] _motivo_aclaracion;
-    public String[] _confirmacion;
-    public String[] _resultado_gestion;
-    public String[] _medio_pago;
-    public String[] _motivo_no_pago;
-    public String[] _imprimir;
+    private String[] _contacto;
+    private String[] _motivo_aclaracion;
+    private String[] _confirmacion;
+    private String[] _resultado_gestion;
+    private String[] _medio_pago;
+    private String[] _motivo_no_pago;
+    private String[] _imprimir;
 
-    //private TextView tvExternalID;
-    public TextView tvContacto;
-    public TextView tvActualizarTelefono;
-    public TextView tvResultadoGestion;
-    public TextView tvMedioPago;
-    public TextView tvFechaDeposito;
-    public TextView tvMontoPagoRequerido;
-    public TextView tvDetalleFicha;
+    private TextView tvContacto;
+    private TextView tvActualizarTelefono;
+    private TextView tvResultadoGestion;
+    private TextView tvMedioPago;
+    private TextView tvFechaDeposito;
+    private TextView tvMontoPagoRequerido;
+    private TextView tvDetalleFicha;
     private TextView tvArqueoCaja;
-    public TextView tvMotivoAclaracion;
-    public TextView tvFechaDefuncion;
-    public TextView tvGerente;
+    private TextView tvMotivoAclaracion;
+    private TextView tvFechaDefuncion;
+    private TextView tvGerente;
     private TextView tvFachada;
-    public TextView tvMotivoNoPago;
+    private TextView tvMotivoNoPago;
     private TextView tvmapa;
     private TextView tvFirma;
-    public TextView tvImprimirRecibo;
+    private TextView tvImprimirRecibo;
     private TextView tvFotoGaleria;
 
-    public EditText etActualizarTelefono;
-    public EditText etComentario;
+    private EditText etActualizarTelefono;
+    private EditText etComentario;
 
-    public EditText etPagoRealizado;
-    public EditText etFolioRecibo;
+    private EditText etPagoRealizado;
+    private EditText etFolioRecibo;
 
     private ImageButton ibMap;
     private ImageButton ibFachada;
@@ -144,6 +216,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private Uri imageUri;
 
     public RadioButton rbIntegrantes;
+    private RadioButton rbArqueoCaja;
 
     private LinearLayout llActualizarTelefono;
     private LinearLayout llComentario;
@@ -190,9 +263,11 @@ public class recuperacion_gpo_fragment extends Fragment {
 
     public byte[] byteEvidencia;
     public byte[] byteFirma;
-    public String _Integrantes = "";
 
     public String folio_impreso = "";
+    private int res_impresion = 0;
+    private int medio_pago_anterio = -1;
+    private SessionManager session;
 
 
     @Override
@@ -200,6 +275,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recuperacion_gpo, container, false);
 
         ctx = getContext();
+        session         = new SessionManager(ctx);
         dBhelper        = new DBhelper(ctx);
         db              = dBhelper.getWritableDatabase();
 
@@ -216,7 +292,6 @@ public class recuperacion_gpo_fragment extends Fragment {
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         tvActualizarTelefono    = v.findViewById(R.id.tvActualizarTelefono);
-        //tvExternalID            = v.findViewById(R.id.tvExternalID);
         tvContacto              = v.findViewById(R.id.tvContacto);
         tvResultadoGestion      = v.findViewById(R.id.tvResultadoGestion);
         tvMedioPago             = v.findViewById(R.id.tvMedioPago);
@@ -257,6 +332,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         mapView     = v.findViewById(R.id.mapGestion);
 
         rbIntegrantes   = v.findViewById(R.id.rbIntegrantes);
+        rbArqueoCaja    = v.findViewById(R.id.rbArqueoCaja);
 
         llActualizarTelefono    = v.findViewById(R.id.llActualizarTelefono);
         llComentario            = v.findViewById(R.id.llComentario);
@@ -306,11 +382,109 @@ public class recuperacion_gpo_fragment extends Fragment {
         tvFechaDefuncion.setOnClickListener(tvFechaDefuncion_OnClick);
         tvGerente.setOnClickListener(tvGerente_OnClick);
 
-        try {
-            init();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        etComentario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0){
+                    Update("comentario", etComentario.getText().toString().trim().toUpperCase());
+                }
+                else
+                    Update("comentario", "");
+            }
+        });
+        etActualizarTelefono.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 10) {
+                    if (!etActualizarTelefono.getText().toString().trim().isEmpty() &&
+                            etActualizarTelefono.getText().toString().trim().length() == 10) {
+                        Update("nuevo_telefono", etActualizarTelefono.getText().toString().trim());
+                    }
+                }
+                else{
+                    Update("nuevo_telefono", "");
+                }
+            }
+        });
+        etPagoRealizado.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0) {
+                    if (!etPagoRealizado.getText().toString().trim().isEmpty()) {
+                        if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 0) {
+                            Update("pago_realizado", etPagoRealizado.getText().toString().trim());
+                            if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) >= 10000 && Miscellaneous.MedioPago(tvMedioPago) == 6)
+                                llArqueoCaja.setVisibility(View.VISIBLE);
+                            else
+                                llArqueoCaja.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                else{
+                    Update("pago_realizado", "");
+                }
+            }
+        });
+        etFolioRecibo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                    if (s.length() > 0){
+                        Update("folio", s.toString());
+                    }
+                    else{
+                        Update("folio", s.toString());
+                    }
+                }
+            }
+        });
+
+        ivFirma.setOnClickListener(ivFirma_OnClick);
+        ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
+        ivFachada.setOnClickListener(ivFotoFachada_OnClick);
+
+        init();
+
         return v;
     }
 
@@ -337,6 +511,93 @@ public class recuperacion_gpo_fragment extends Fragment {
                         Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                     }
 
+                    Cursor row;
+                    if (ENVIROMENT)
+                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                    else
+                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                    row.moveToLast();
+                    if (row.getCount() == 0){
+                        HashMap<Integer, String> params = new HashMap<>();
+                        params.put(0,parent.id_prestamo);
+                        params.put(1, latitud);
+                        params.put(2, longitud);
+                        params.put(3, "");
+                        params.put(4, "");
+                        params.put(5, "");
+                        params.put(6, "");
+                        params.put(7, "");
+                        params.put(8, "");
+                        params.put(9, "");
+                        params.put(10, "");
+                        params.put(11, "");
+                        params.put(12, "");
+                        params.put(13, "");
+                        params.put(14, "");
+                        params.put(15, "");
+                        params.put(16, "");
+                        params.put(17, "");
+                        params.put(18, "");
+                        params.put(19, "");
+                        params.put(20, "");
+                        params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        params.put(22, "");
+                        params.put(23, "");
+                        params.put(24, "0");
+                        params.put(25, "0");
+                        params.put(26, "0");
+                        params.put(27, "0");
+                        params.put(28, "0");
+                        params.put(29, "0");
+                        params.put(30, "0");
+
+                        long id = dBhelper.saveRespuestasGpo(db, params);
+                        parent.id_respuesta = String.valueOf(id);
+                    }
+                    else{
+                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0,parent.id_prestamo);
+                            params.put(1, latitud);
+                            params.put(2, longitud);
+                            params.put(3, "");
+                            params.put(4, "");
+                            params.put(5, "");
+                            params.put(6, "");
+                            params.put(7, "");
+                            params.put(8, "");
+                            params.put(9, "");
+                            params.put(10, "");
+                            params.put(11, "");
+                            params.put(12, "");
+                            params.put(13, "");
+                            params.put(14, "");
+                            params.put(15, "");
+                            params.put(16, "");
+                            params.put(17, "");
+                            params.put(18, "");
+                            params.put(19, "");
+                            params.put(20, "");
+                            params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(22, "");
+                            params.put(23, "");
+                            params.put(24, "0");
+                            params.put(25, "0");
+                            params.put(26, "0");
+                            params.put(27, "0");
+                            params.put(28, "0");
+                            params.put(29, "0");
+                            params.put(30, "0");
+
+                            long id = dBhelper.saveRespuestasGpo(db, params);
+                            parent.id_respuesta = String.valueOf(id);
+                        }
+                        else{
+                            Update("latitud", latitud);
+                            Update("longitud", longitud);
+                        }
+                    }
+
                     flagUbicacion = true;
                     if (flagUbicacion){
                         CancelUbicacion();
@@ -354,34 +615,72 @@ public class recuperacion_gpo_fragment extends Fragment {
     private View.OnClickListener ibIntegrantes_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i_integrantes = new Intent(ctx, IntegrantesGpo.class);
-            try {
-                if (rbIntegrantes.isChecked()){
-                    Log.v("-","-------------------------------------------------------------");
-                    Log.v("Pago Integrantes", "true");
-                    Log.v("-","-------------------------------------------------------------");
-                    JSONArray _integrantes_pago = new JSONArray(_Integrantes);
-                    for (int i = 0; i < _integrantes_pago.length(); i++){
-                        JSONObject item = _integrantes_pago.getJSONObject(i);
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoRealizado(item.getDouble("pago"));
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoSolidario(item.getDouble("solidario"));
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoAdelanto(item.getDouble("adelanto"));
-                    }
-                    i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
-                    i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
-                }
-                else{
-                    Log.v("-","-------------------------------------------------------------");
-                    Log.v("Pago Integrantes", "false");
-                    Log.v("-","-------------------------------------------------------------");
-                    i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
-                }
-                i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
-                startActivityForResult(i_integrantes, Constants.REQUEST_CODE_INTEGRANTES_GPO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Cursor row;
+            if (ENVIROMENT)
+                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+            else
+                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
 
+            if (row.getCount() == 0){
+                row.close();
+                if (ENVIROMENT)
+                    row = dBhelper.getRecords(TBL_MIEMBROS_GPO, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
+                else
+                    row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
+
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+                    for (int i = 0; i < row.getCount(); i++){
+                        HashMap<Integer, String> params = new HashMap<>();
+                        params.put(0, row.getString(2));
+                        params.put(1, row.getString(1));
+                        params.put(2, parent.id_respuesta);
+                        params.put(3, row.getString(5));
+                        params.put(4, row.getString(11));
+                        params.put(5, "0");
+                        params.put(6, "0");
+                        params.put(7, "0");
+                        params.put(8, "0");
+
+                        dBhelper.saveMiembrosPagos(db, params);
+                        row.moveToNext();
+                    }
+                }
+            }
+            row.close();
+
+            Intent i_integrantes = new Intent(ctx, IntegrantesGpo.class);
+            i_integrantes.putExtra(NOMBRE_GRUPO, parent.nombre);
+            i_integrantes.putExtra(ID_PRESTAMO, parent.id_prestamo);
+            i_integrantes.putExtra(ID_GESTION, parent.id_respuesta);
+
+            if (ENVIROMENT)
+                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+            else
+                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+
+            ArrayList<MIntegrantePago> integrantesPagos = new ArrayList<>();
+            if (row.getCount() > 0){
+                row.moveToFirst();
+                for(int i = 0; i < row.getCount(); i++){
+                    MIntegrantePago item = new MIntegrantePago();
+                    item.setIdPrestamo(row.getString(2));
+                    item.setIdIntegrante(row.getString(1));
+                    item.setIdGestion(row.getString(3));
+                    item.setNombre(row.getString(4));
+                    item.setMontoRequerido(row.getString(5));
+                    item.setPagoRealizado(row.getString(6));
+                    item.setAdelanto(row.getString(7));
+                    item.setSolidario(row.getString(8));
+                    item.setPagoRequerido(row.getInt(9) == 1);
+
+                    integrantesPagos.add(item);
+                    row.moveToNext();
+                }
+            }
+            i_integrantes.putExtra(INTEGRANTES, integrantesPagos);
+
+            startActivityForResult(i_integrantes, REQUEST_CODE_INTEGRANTES_GPO);
 
         }
     };
@@ -390,10 +689,10 @@ public class recuperacion_gpo_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i_arqueoCaja = new Intent(ctx, ArqueoDeCaja.class);
-            i_arqueoCaja.putExtra(Constants.PAGO_REALIZADO, Double.parseDouble(etPagoRealizado.getText().toString()));
-            i_arqueoCaja.putExtra(Constants.NOMBRE_GRUPO, parent.ficha_rg.getGrupo().getNombreGrupo());
-            i_arqueoCaja.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
-            startActivityForResult(i_arqueoCaja, Constants.REQUEST_CODE_ARQUEO_CAJA);
+            i_arqueoCaja.putExtra(PAGO_REALIZADO, Double.parseDouble(etPagoRealizado.getText().toString()));
+            i_arqueoCaja.putExtra(Constants.NOMBRE_GRUPO, parent.nombre);
+            i_arqueoCaja.putExtra(ID_GESTION, parent.id_respuesta);
+            startActivityForResult(i_arqueoCaja, REQUEST_CODE_ARQUEO_CAJA);
         }
     };
 
@@ -402,21 +701,27 @@ public class recuperacion_gpo_fragment extends Fragment {
         public void onClick(View v) {
             if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 0){
                 Intent i = new Intent(ctx, PrintSeewoo.class);
-                OrderModel order = new OrderModel(parent.ficha_rg.getId(),
-                        "002",
-                        parent.ficha_rg.getPrestamo().getMontoPrestamo(),
-                        parent.ficha_rg.getPrestamo().getPagoSemanal(),
-                        Miscellaneous.doubleFormat(etPagoRealizado),
-                        parent.ficha_rg.getGrupo().getClaveGrupo(),
-                        parent.ficha_rg.getPrestamo().getNumeroDePrestamo(),
-                        parent.ficha_rg.getGrupo().getNombreGrupo(),
-                        "NOMBRE DEL ALGUN ASESOR",
-                        0);
+                MImpresion mImpresion = new MImpresion();
+                mImpresion.setIdPrestamo(parent.id_prestamo);
+                mImpresion.setIdGestion(parent.id_respuesta);
+                mImpresion.setMonto(String.valueOf(Math.ceil(Double.parseDouble(etPagoRealizado.getText().toString().trim()))));
+                mImpresion.setMontoPrestamo(parent.monto_prestamo);
+                mImpresion.setNumeroPrestamo(parent.num_prestamo);
+                mImpresion.setNumeroCliente(parent.num_prestamo);
+                mImpresion.setNombre(parent.nombre);
+                mImpresion.setPagoRequerido(String.valueOf(parent.monto_requerido));
+                mImpresion.setNombreAsesor(session.getUser().get(1));
+                mImpresion.setAsesorId(session.getUser().get(0));
+                mImpresion.setTipoPrestamo("VIGENTE");
+                mImpresion.setTipoGestion("GRUPAL");
+                mImpresion.setNombreFirma(parent.tesorera);
+                mImpresion.setResultPrint(res_impresion);
+                mImpresion.setClaveCliente(parent.clave_grupo);
 
-                i.putExtra("order",order);
+                i.putExtra("order", mImpresion);
                 i.putExtra("tag",true);
 
-                startActivityForResult(i,Constants.REQUEST_CODE_IMPRESORA);
+                startActivityForResult(i,REQUEST_CODE_IMPRESORA);
             }
             else {
                 Toast.makeText(ctx, "No ha capturado el pago realizado del cliente", Toast.LENGTH_SHORT).show();
@@ -429,7 +734,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+            i.putExtra(Constants.ORDER_ID, parent.id_prestamo);
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
         }
     };
@@ -447,7 +752,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+            i.putExtra(Constants.ORDER_ID, parent.id_prestamo);
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
         }
     };
@@ -473,8 +778,110 @@ public class recuperacion_gpo_fragment extends Fragment {
                             tvContacto.setText(_contacto[position]);
                             tvMotivoAclaracion.setError(null);
                             tvFachada.setError(null);
-                            SelectContactoCliente(position);
+                            etComentario.setText("");
+                            tvGerente.setText("");
+                            byteFirma = null;
+                            byteEvidencia = null;
+                            ibFachada.setVisibility(View.VISIBLE);
+                            ivFachada.setVisibility(View.GONE);
 
+                            ibFirma.setVisibility(View.VISIBLE);
+                            ivFirma.setVisibility(View.GONE);
+                            SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+
+                            Cursor row;
+                            if (ENVIROMENT)
+                                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
+                            else
+                                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
+                            row.moveToLast();
+                            Log.e("RespuestaGpo", row.getCount()+" count");
+                            if (row.getCount() == 0) {
+                                HashMap<Integer, String> params = new HashMap<>();
+                                params.put(0, parent.id_prestamo);
+                                params.put(1, "");
+                                params.put(2, "");
+                                params.put(3, _contacto[position]);
+                                params.put(4, "");
+                                params.put(5, "");
+                                params.put(6, "");
+                                params.put(7, "");
+                                params.put(8, "");
+                                params.put(9, "");
+                                params.put(10, "");
+                                params.put(11, "");
+                                params.put(12, "");
+                                params.put(13, "");
+                                params.put(14, "");
+                                params.put(15, "");
+                                params.put(16, "");
+                                params.put(17, "");
+                                params.put(18, "");
+                                params.put(19, "");
+                                params.put(20, "");
+                                params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                params.put(22, "");
+                                params.put(23, "");
+                                params.put(24, "0");
+                                params.put(25, "0");
+                                params.put(26, "0");
+                                params.put(27, "0");
+                                params.put(28, "0");
+                                params.put(29, "0");
+                                params.put(30, "0");
+
+                                long id = dBhelper.saveRespuestasGpo(db, params);
+
+                                parent.id_respuesta = String.valueOf(id);
+                            } else {
+                                Log.e("RespuestaEstatus", row.getString(25)+" xxxxx");
+                                if (row.getInt(25) == 1 || row.getInt(25) == 2) {
+                                    HashMap<Integer, String> params = new HashMap<>();
+                                    params.put(0, parent.id_prestamo);
+                                    params.put(1, "");
+                                    params.put(2, "");
+                                    params.put(3, _contacto[position]);
+                                    params.put(4, "");
+                                    params.put(5, "");
+                                    params.put(6, "");
+                                    params.put(7, "");
+                                    params.put(8, "");
+                                    params.put(9, "");
+                                    params.put(10, "");
+                                    params.put(11, "");
+                                    params.put(12, "");
+                                    params.put(13, "");
+                                    params.put(14, "");
+                                    params.put(15, "");
+                                    params.put(16, "");
+                                    params.put(17, "");
+                                    params.put(18, "");
+                                    params.put(19, "");
+                                    params.put(20, "");
+                                    params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(22, "");
+                                    params.put(23, "");
+                                    params.put(24, "0");
+                                    params.put(25, "0");
+                                    params.put(26, "0");
+                                    params.put(27, "0");
+                                    params.put(28, "0");
+                                    params.put(29, "0");
+                                    params.put(30, "0");
+                                    long id = dBhelper.saveRespuestasGpo(db, params);
+
+                                    parent.id_respuesta = String.valueOf(id);
+                                } else {
+                                    Log.e("ACtualizaContacto", "xxxxxxxxxxxxxxxxxxxxxx");
+                                    Update("contacto", _contacto[position]);
+
+                                    Update("gerente", "");
+                                    Update("firma", "");
+                                    Update("evidencia", "");
+                                    Update("tipo_imagen", "");
+                                }
+                            }
+                            SelectContactoCliente(position);
                         }
                     });
             builder.create();
@@ -491,6 +898,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvActualizarTelefono.setError(null);
                             tvActualizarTelefono.setText(_confirmacion[position]);
+                            Update("actualizar_telefono", _confirmacion[position]);
                             /*try {
                                 jsonResponse.put(ACTUALIZAR_TELEFONO, pos);
                                 UpdateTemporal(jsonResponse);
@@ -514,12 +922,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvResultadoGestion.setError(null);
                             tvResultadoGestion.setText(_resultado_gestion[position]);
-                            /*try {
-                                jsonResponse.put(ACTUALIZAR_TELEFONO, pos);
-                                UpdateTemporal(jsonResponse);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
+                            Update("resultado_gestion", _resultado_gestion[position]);
                             SelectResultadoGestion(position);
                         }
                     });
@@ -537,7 +940,9 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvMedioPago.setError(null);
                             tvMedioPago.setText(_medio_pago[position]);
-                            if (position == 6){
+                            if (position == 6 && medio_pago_anterio >= 0) {
+                                Update("evidencia", "");
+                                Update("tipo_imagen", "");
                                 byteEvidencia = null;
 
                                 ibGaleria.setEnabled(false);
@@ -547,6 +952,19 @@ public class recuperacion_gpo_fragment extends Fragment {
                                 llFotoGaleria.setVisibility(View.VISIBLE);
                                 ivEvidencia.setVisibility(View.GONE);
                             }
+                            else if(position >= 0 && medio_pago_anterio == 6){
+                                byteEvidencia = null;
+                                Update("evidencia", "");
+                                Update("tipo_imagen", "");
+                                ibGaleria.setEnabled(true);
+                                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                ibFoto.setVisibility(View.VISIBLE);
+                                ibGaleria.setVisibility(View.VISIBLE);
+                                llFotoGaleria.setVisibility(View.VISIBLE);
+                                ivEvidencia.setVisibility(View.GONE);
+                            }
+                            medio_pago_anterio = position;
+                            Update("medio_pago", _medio_pago[position]);
                             SelectMedioPago(position);
                         }
                     });
@@ -558,7 +976,6 @@ public class recuperacion_gpo_fragment extends Fragment {
     private View.OnClickListener tvFechaDeposito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (parent.flagRespuesta) {
                 myCalendar = Calendar.getInstance();
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
@@ -572,7 +989,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                 dialogDatePicker.setArguments(b);
                 dialogDatePicker.setTargetFragment(recuperacion_gpo_fragment.this,812);
                 dialogDatePicker.show(parent.getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
-            }
         }
     };
 
@@ -585,6 +1001,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvDetalleFicha.setError(null);
                             tvDetalleFicha.setText(_confirmacion[position]);
+                            Update("detalle_ficha", _confirmacion[position]);
                             SelectDetalleFicha(position);
                         }
                     });
@@ -602,6 +1019,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvImprimirRecibo.setError(null);
                             tvImprimirRecibo.setText(_imprimir[position]);
+                            Update("imprimir_recibo", _imprimir[position]);
                             SelectImprimirRecibos(position);
                         }
                     });
@@ -620,12 +1038,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvMotivoNoPago.setError(null);
                             tvMotivoNoPago.setText(_motivo_no_pago[position]);
-                            /*try {
-                                jsonResponse.put(MOTIVO_NO_PAGO, _motivo_no_pago[position].toUpperCase());
-                                UpdateTemporal(jsonResponse);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
+                            Update("motivo_no_pago", _motivo_no_pago[position]);
 
                             SelectMotivoNoPago(position);
                         }
@@ -644,6 +1057,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvMotivoAclaracion.setError(null);
                             tvMotivoAclaracion.setText(_motivo_aclaracion[position]);
+                            Update("motivo_aclaracion", _motivo_aclaracion[position]);
                             /*try {
                                 jsonResponse.put(MOTIVO_ACLARACION, _motivo_aclaracion[position].toUpperCase());
                                 UpdateTemporal(jsonResponse);
@@ -660,7 +1074,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private View.OnClickListener tvFechaDefuncion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (parent.flagRespuesta) {
+            //if (parent.flagRespuesta) {
                 myCalendar = Calendar.getInstance();
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
@@ -674,7 +1088,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 dialogDatePicker.setArguments(b);
                 dialogDatePicker.setTargetFragment(recuperacion_gpo_fragment.this,123);
                 dialogDatePicker.show(parent.getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
-            }
+            //}
         }
     };
 
@@ -688,24 +1102,119 @@ public class recuperacion_gpo_fragment extends Fragment {
                             tvGerente.setError(null);
                             tvGerente.setText(_confirmacion[position]);
 
-                            /*try {
-                                jsonResponse.put(GERENTE, pos);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
-
-                            //UpdateTemporal(jsonResponse);
+                            Update("gerente", _confirmacion[position]);
                             SelectEstaGerente(position);
-                            /*try {
-                                jsonResponse.put(MOTIVO_ACLARACION, _motivo_aclaracion[position].toUpperCase());
-                                UpdateTemporal(jsonResponse);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
+
                         }
                     });
             builder.create();
             builder.show();
+        }
+    };
+
+    private View.OnClickListener ivFirma_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
+                    R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            Intent sig = new Intent(ctx, CapturarFirma.class);
+                            sig.putExtra(TIPO,"");
+                            startActivityForResult(sig, REQUEST_CODE_FIRMA);
+                            dialog.dismiss();
+
+                        }
+                    }, R.string.cancel, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+            Objects.requireNonNull(firma_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+            firma_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            firma_dlg.show();
+        }
+    };
+
+    private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (tvMedioPago.getText().toString().trim().toUpperCase().equals("EFECTIVO")){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
+                        R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(parent, CameraVertical.class);
+                                i.putExtra(ORDER_ID, parent.id_prestamo);
+                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
+                        R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(parent, CameraVertical.class);
+                                i.putExtra(ORDER_ID, parent.id_prestamo);
+                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.galeria, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                gallery.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+        }
+    };
+
+    private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final AlertDialog fachada_cam_dlg = Popups.showDialogConfirm(ctx, camara,
+                    R.string.capturar_nueva_fotografia, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            Intent i = new Intent(parent, CameraVertical.class);
+                            i.putExtra(ORDER_ID, parent.id_prestamo);
+                            startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
+                            dialog.dismiss();
+
+                        }
+                    }, R.string.cancel, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+            Objects.requireNonNull(fachada_cam_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+            fachada_cam_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            fachada_cam_dlg.show();
         }
     };
 
@@ -807,6 +1316,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 tvFachada.setError("");
                 tvMedioPago.setText("");
                 SelectMotivoNoPago(-1);
+                SelectMedioPago(-1);
                 tvDetalleFicha.setText("");
                 SelectDetalleFicha(-1);
                 llMedioPago.setVisibility(View.GONE);
@@ -860,15 +1370,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         }
     }
     private void SelectMedioPago (int pos){
-        if (!parent.flagRespuesta) {
-            tvMedioPago.setEnabled(false);
-            if (pos >= 0 && pos < 6 || pos == 7) {
-                tvFechaDeposito.setEnabled(false);
-            } else {
-                tvFechaDeposito.setEnabled(true);
-            }
-        }
-
+        Log.e("MedioPago", ""+pos);
         tvMedioPago.setError(null);
         switch (pos) {
             case -1: // Opción "Seleccione una opción"
@@ -880,6 +1382,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 llFotoGaleria.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFolioRecibo.setVisibility(View.GONE);
+                llGerente.setVisibility(View.GONE);
                 break;
             case 0: // Banamex
             case 1: // Banorte
@@ -901,36 +1404,31 @@ public class recuperacion_gpo_fragment extends Fragment {
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
-                if (!etPagoRealizado.getText().toString().trim().isEmpty()) {
-                    llArqueoCaja.setVisibility(View.GONE);
-                    //rbArqueoCaja.setChecked(false);
-                }
+                llFolioRecibo.setVisibility(View.GONE);
+                //SelectImprimirRecibos(-1);
                 break;
-            case 5: // Oxoo
+            case 5: // OXXO
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
                 else
                     tvFotoGaleria.setError("");
                 if (tvFechaDeposito.getText().toString().isEmpty())
                     tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
-                llDetalleFicha.setVisibility(View.VISIBLE);
-                llFechaDeposito.setVisibility(View.VISIBLE);
-                tvDetalleFicha.setText(_confirmacion[0]);
-                tvDetalleFicha.setEnabled(false);
-                etPagoRealizado.setText(parent.ficha_rg.getPrestamo().getPagoSemanal().toString());
-                SelectDetalleFicha(0);
                 ibGaleria.setEnabled(true);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                llDetalleFicha.setVisibility(View.VISIBLE);
+                llFechaDeposito.setVisibility(View.VISIBLE);
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                tvDetalleFicha.setText(_confirmacion[0]);
+                tvDetalleFicha.setEnabled(false);
+                etPagoRealizado.setText(String.valueOf(parent.monto_requerido));
+                SelectDetalleFicha(0);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
-                if (!etPagoRealizado.getText().toString().trim().isEmpty()) {
-                    llArqueoCaja.setVisibility(View.GONE);
-                    //rbArqueoCaja.setChecked(false);
-                }
+                //SelectImprimirRecibos(-1);
                 break;
-            case 7:
+            case 7: //SIDERT
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
                 else
@@ -943,7 +1441,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     tvImprimirRecibo.setError("");
                 llDetalleFicha.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.VISIBLE);
-                tvDetalleFicha.setEnabled(false);
+                tvDetalleFicha.setEnabled(true);
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 tvImprimirRecibo.setText(_imprimir[1]);
@@ -955,13 +1453,11 @@ public class recuperacion_gpo_fragment extends Fragment {
             case 6: // Efectivo
                 if (byteEvidencia != null)
                     tvFotoGaleria.setError(null);
-                else{
+                else
                     tvFotoGaleria.setError("");
-                }
 
                 if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 10000) {
                     llArqueoCaja.setVisibility(View.VISIBLE);
-                    //rbArqueoCaja.setChecked(false);
                 }
                 llDetalleFicha.setVisibility(View.VISIBLE);
                 ibGaleria.setEnabled(false);
@@ -973,9 +1469,12 @@ public class recuperacion_gpo_fragment extends Fragment {
                 llFechaDeposito.setVisibility(View.GONE);
                 llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 tvDetalleFicha.setEnabled(true);
+                tvImprimirRecibo.setEnabled(true);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
+                tvImprimirRecibo.setText("");
+                SelectImprimirRecibos(-1);
                 break;
             default: //Sin seleccionar una opción o cualquier otro valor
                 tvMedioPago.setError("");
@@ -989,19 +1488,20 @@ public class recuperacion_gpo_fragment extends Fragment {
                 llFotoGaleria.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFolioRecibo.setVisibility(View.GONE);
+                llGerente.setVisibility(View.GONE);
+                tvDetalleFicha.setEnabled(true);
                 break;
         }
     }
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
-                llIntegrantes.setVisibility(View.GONE);
                 llMontoPagoRealizado.setVisibility(View.GONE);
+                llImprimirRecibo.setVisibility(View.GONE);
+                llFolioRecibo.setVisibility(View.GONE);
                 break;
             case 0: // Si cuenta con detalle
-                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.VISIBLE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
@@ -1011,6 +1511,12 @@ public class recuperacion_gpo_fragment extends Fragment {
                 etPagoRealizado.setEnabled(true);
                 llIntegrantes.setVisibility(View.GONE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                break;
+            default:
+                etPagoRealizado.setEnabled(false);
+                llMontoPagoRealizado.setVisibility(View.GONE);
+                llImprimirRecibo.setVisibility(View.GONE);
+                llFolioRecibo.setVisibility(View.GONE);
                 break;
         }
     }
@@ -1023,6 +1529,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     llFolioRecibo.setVisibility(View.VISIBLE);
                     etFolioRecibo.setText(folio_impreso);
                     etFolioRecibo.setEnabled(false);
+                    etFolioRecibo.setError(null);
                 }
                 else {
                     tvImprimirRecibo.setError("");
@@ -1031,7 +1538,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                 break;
             case 1: //No cuenta con bateria la impresora
                 tvImprimirRecibo.setError(null);
-                llFolioRecibo.setVisibility(View.GONE);
                 ibImprimir.setVisibility(View.GONE);
                 llFolioRecibo.setVisibility(View.VISIBLE);
                 etFolioRecibo.setText("");
@@ -1124,234 +1630,300 @@ public class recuperacion_gpo_fragment extends Fragment {
             locationManager.removeUpdates(locationListener);
     }
 
-    private void init() throws JSONException {
-        tvmapa.setError("");
-        tvContacto.setError("");
-        tvMontoPagoRequerido.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoSemanal()));
+    private void init(){
+        setHasOptionsMenu(true);
+        parent.getSupportActionBar().show();
+        tvMontoPagoRequerido.setText(String.valueOf(parent.monto_requerido));
 
-        if (parent.jsonRes != null){
-            Log.e("jsonPArent", parent.jsonRes.toString());
-            if (parent.jsonRes.has(Constants.LATITUD) && parent.jsonRes.has(Constants.LONGITUD)){
-                try {
+        if (!parent.id_respuesta.isEmpty()){
+            Cursor row;
+            if (ENVIROMENT)
+                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});
+            else
+                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});
+
+            if (row.getCount() > 0) {
+                row.moveToFirst();
+
+                Log.e("res_impresion", row.getString(26));
+                res_impresion = row.getInt(26);
+
+                if (!row.getString(2).isEmpty() && !row.getString(3).isEmpty()){
                     tvmapa.setError(null);
                     mapView.setVisibility(View.VISIBLE);
-                    ColocarUbicacionGestion(parent.jsonRes.getDouble(Constants.LATITUD), parent.jsonRes.getDouble(Constants.LONGITUD));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (parent.jsonRes.has(Constants.CONTACTO)){
-                if (!parent.flagRespuesta){
-                    tvContacto.setEnabled(false);
+                    ColocarUbicacionGestion(row.getDouble(2), row.getDouble(3));
                 }
 
-                tvContacto.setText(parent.jsonRes.getString(Constants.CONTACTO));
-                SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
-                switch (Miscellaneous.ContactoCliente(tvContacto)) {
-                    case 1: //====================================================================== No Contacto
-                        if (parent.jsonRes.has(Constants.COMENTARIO)){
-                            etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
-                            etComentario.setVisibility(View.VISIBLE);
-                            etComentario.setError(null);
-                            if (!parent.flagRespuesta)
-                                etComentario.setEnabled(false);
-                        }
+                Log.e("Contacto", String.valueOf(!row.getString(4).isEmpty()));
+                if (!row.getString(4).isEmpty()){
+                    tvContacto.setText(row.getString(4));
+                    Log.e("Contacto",""+Miscellaneous.ContactoCliente(tvContacto));
+                    switch (Miscellaneous.ContactoCliente(tvContacto)) {
+                        case 0: //SI CONTACTO
+                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
 
-                        if (parent.jsonRes.has(Constants.FACHADA)){
-                            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+parent.jsonRes.getString(Constants.FACHADA));
-                            Uri uriFachada = Uri.fromFile(fachadaFile);
-                            Glide.with(ctx).load(uriFachada).into(ivFachada);
-                            ibFachada.setVisibility(View.GONE);
-                            ivFachada.setVisibility(View.VISIBLE);
-                            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
-                            tvFachada.setError(null);
-                        }
-                        tvGerente.setVisibility(View.VISIBLE);
-                        break;
-                    case 0: //====================================================================== Si Contacto
-                        if (!parent.flagRespuesta){
-                            tvActualizarTelefono.setEnabled(false);
-                            etActualizarTelefono.setEnabled(false);
-                        }
-
-                        if (parent.jsonRes.has(ACTUALIZAR_TELEFONO)){
-                            tvActualizarTelefono.setText(parent.jsonRes.getString(ACTUALIZAR_TELEFONO));
-                            if (Miscellaneous.ActualizarTelefono(tvActualizarTelefono) == 0){
-                                if (parent.jsonRes.has(Constants.NUEVO_TELEFONO)){
-                                    etActualizarTelefono.setText(parent.jsonRes.getString(Constants.NUEVO_TELEFONO));
-                                    etActualizarTelefono.setError(null);
+                            if (!row.getString(7).isEmpty()){//ACTUALIZAR TELEFONO
+                                tvActualizarTelefono.setText(row.getString(7));
+                                if (Miscellaneous.ActualizarTelefono(tvActualizarTelefono) == 0){
                                     etActualizarTelefono.setVisibility(View.VISIBLE);
+                                    if (!row.getString(8).isEmpty()){//NUEVO TELEFONO
+                                        etActualizarTelefono.setText(row.getString(8));
+                                        etActualizarTelefono.setError(null);
+                                    }
                                 }
                             }
-                        }
 
-                        if (parent.jsonRes.has(Constants.RESULTADO_PAGO)){
-                            if (!parent.flagRespuesta){
-                                tvResultadoGestion.setEnabled(false);
-                            }
-                            tvResultadoGestion.setText(parent.jsonRes.getString(RESULTADO_PAGO));
-                            SelectResultadoGestion(Miscellaneous.ResultadoGestion(tvResultadoGestion));
-                            switch (Miscellaneous.ResultadoGestion(tvResultadoGestion)){
-                                case 1: //========================================================== No Pago
-                                    if (!parent.flagRespuesta) {
-                                        tvMotivoNoPago.setEnabled(false);
-                                        etComentario.setEnabled(false);
-                                        tvFechaDefuncion.setEnabled(false);
-                                    }
+                            if (!row.getString(9).isEmpty()){//RESULTADO PAGO
+                                tvResultadoGestion.setText(row.getString(9));
+                                SelectResultadoGestion(Miscellaneous.ResultadoGestion(tvResultadoGestion));
+                                switch (Miscellaneous.ResultadoGestion(tvResultadoGestion)){
+                                    case 1: //No Pago
 
-                                    tvMotivoNoPago.setVisibility(View.VISIBLE);
-                                    tvMotivoNoPago.setText(parent.jsonRes.getString(Constants.MOTIVO_NO_PAGO));
+                                        tvMotivoNoPago.setText(row.getString(10));
 
-                                    SelectMotivoNoPago(Miscellaneous.MotivoNoPago(tvMotivoNoPago));
-                                    if (parent.jsonRes.has(Constants.FECHA_DEFUNCION)){
-                                        tvFechaDefuncion.setText(parent.jsonRes.getString(Constants.FECHA_DEFUNCION));
-                                        tvFechaDefuncion.setError(null);
-                                        tvFechaDefuncion.setVisibility(View.VISIBLE);
-                                    }
-
-                                    if (parent.jsonRes.has(Constants.COMENTARIO)){
-                                        etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
-                                        etComentario.setVisibility(View.VISIBLE);
-                                        etComentario.setError(null);
-                                    }
-
-                                    if (parent.jsonRes.has(Constants.FACHADA)){
-                                        File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+parent.jsonRes.getString(Constants.FACHADA));
-                                        Uri uriFachada = Uri.fromFile(fachadaFile);
-                                        Glide.with(ctx).load(uriFachada).into(ivFachada);
-                                        ibFachada.setVisibility(View.GONE);
-                                        ivFachada.setVisibility(View.VISIBLE);
-                                        byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
-                                        tvFachada.setError(null);
-                                    }
-                                    break;
-                                case 0: //========================================================== Si Pago
-                                    if (parent.jsonRes.has(Constants.MEDIO_PAGO)){
-                                        tvMedioPago.setText(parent.jsonRes.getString(Constants.MEDIO_PAGO));
-
-                                        SelectMedioPago(Miscellaneous.MedioPago(tvMedioPago));
-                                        if (parent.jsonRes.has(DETALLE_FICHA)){
-                                            tvDetalleFicha.setText(parent.jsonRes.getString(DETALLE_FICHA));
-
-                                            SelectDetalleFicha(Miscellaneous.PagoRequerido(tvDetalleFicha));
-                                            if (!parent.flagRespuesta){
-                                                tvDetalleFicha.setEnabled(false);
-                                                etPagoRealizado.setEnabled(false);
-                                            }
-                                            if (Miscellaneous.PagoRequerido(tvDetalleFicha) == 0){
-                                                if (parent.jsonRes.has(Constants.INTEGRANTES)){
-                                                    _Integrantes = parent.jsonRes.getString(Constants.INTEGRANTES);
-                                                    rbIntegrantes.setChecked(true);
-                                                    Log.v("-","-----------------------------------------------------------");
-                                                    Log.v("Detalle de integrantes","entra a detalle de ficha");
-                                                    Log.v("Detalle de integrantes",_Integrantes);
-                                                    Log.v("-","-----------------------------------------------------------");
-
-                                                }
-                                            }
-
-                                            etPagoRealizado.setText(parent.jsonRes.getString(Constants.PAGO_REALIZADO));
-
+                                        if (!row.getString(11).isEmpty()){//FECHA DE DEFUNCION
+                                            SelectMotivoNoPago(Miscellaneous.MotivoNoPago(tvMotivoNoPago));
+                                            tvFechaDefuncion.setText(row.getString(11));
+                                            tvFechaDefuncion.setError(null);
+                                            tvFechaDefuncion.setVisibility(View.VISIBLE);
                                         }
 
-                                        if (parent.jsonRes.has(Constants.FECHA_DEPOSITO)){
-                                            tvFechaDeposito.setText(parent.jsonRes.getString(Constants.FECHA_DEPOSITO));
-                                            tvFechaDeposito.setError(null);
+                                        if (!row.getString(6).isEmpty()){//COMENTARIO
+                                            etComentario.setText(row.getString(6));
+                                            etComentario.setVisibility(View.VISIBLE);
+                                            etComentario.setError(null);
                                         }
 
-                                        if (Miscellaneous.MedioPago(tvMedioPago) == 6){
-                                            if (parent.jsonRes.has(Constants.IMPRESORA)){
-                                                tvImprimirRecibo.setText(parent.jsonRes.getString(IMPRESORA));
-                                                SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
-                                                etFolioRecibo.setEnabled(true);
-                                                if (!parent.flagRespuesta){
-                                                    tvImprimirRecibo.setEnabled(false);
-                                                    etFolioRecibo.setEnabled(false);
+                                        if (!row.getString(18).isEmpty() && !row.getString(19).isEmpty()){//FACHADA
+                                            File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(18));
+                                            Uri uriFachada = Uri.fromFile(fachadaFile);
+                                            Glide.with(ctx).load(uriFachada).into(ivFachada);
+                                            ibFachada.setVisibility(View.GONE);
+                                            ivFachada.setVisibility(View.VISIBLE);
+                                            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
+                                            tvFachada.setError(null);
+                                        }
+
+                                        tvGerente.setVisibility(View.VISIBLE);
+                                        if (!row.getString(20).isEmpty()){//ESTA GERENTE
+                                            tvGerente.setText(row.getString(20));
+                                            SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+
+                                            if (Miscellaneous.Gerente(tvGerente) == 0){
+
+                                                if (!row.getString(21).isEmpty()){//FIRMA
+                                                    File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
+                                                    Uri uriFirma = Uri.fromFile(firmaFile);
+                                                    Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                                    ibFirma.setVisibility(View.GONE);
+                                                    ivFirma.setVisibility(View.VISIBLE);
+                                                    byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                                    tvFirma.setError(null);
                                                 }
-                                                if (Miscellaneous.Impresion(tvImprimirRecibo) == 0){
+                                            }
+                                        }
+                                        break;
+                                    case 0: // Si Pago
+                                        if (!row.getString(12).isEmpty()){//MEDIO PAGO
+                                            tvMedioPago.setText(row.getString(12));
+                                            medio_pago_anterio = Miscellaneous.MedioPago(tvMedioPago);
+                                            SelectMedioPago(Miscellaneous.MedioPago(tvMedioPago));
+                                            if (!row.getString(14).isEmpty()){//DETALLE DE FICHA
 
+                                                tvDetalleFicha.setText(row.getString(14));
+                                                SelectDetalleFicha(Miscellaneous.PagoRequerido(tvDetalleFicha));
+                                                if (Miscellaneous.PagoRequerido(tvDetalleFicha) == 0){
+                                                    Cursor row_pago;
+                                                    if (ENVIROMENT)
+                                                        row_pago = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+                                                    else
+                                                        row_pago = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
 
-                                                    if (parent.jsonRes.has(Constants.FOLIO_TICKET)){
-                                                        ibImprimir.setVisibility(View.VISIBLE);
-                                                        if (!parent.flagRespuesta)
-                                                            ibImprimir.setVisibility(View.GONE);
+                                                    Log.e("pagoIntegrante", row_pago.getCount()+"");
+                                                    if (row_pago.getCount() > 0)
+                                                        rbIntegrantes.setChecked(true);
+
+                                                    row_pago.close();
+                                                }
+                                                etPagoRealizado.setText(row.getString(15));
+
+                                            }
+
+                                            if (!row.getString(13).isEmpty()){//FECHA DEPOSITO
+                                                tvFechaDeposito.setText(row.getString(13));
+                                                tvFechaDeposito.setError(null);
+                                            }
+
+                                            Log.e("medioPAgo", String.valueOf(Miscellaneous.MedioPago(tvMedioPago) == 6));
+                                            if (Miscellaneous.MedioPago(tvMedioPago) == 6){ //EFECTIVO
+                                                if (!row.getString(16).isEmpty()){//IMPRIMIRA RECIBOS
+                                                    tvImprimirRecibo.setText(row.getString(16));
+                                                    SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
+                                                    etFolioRecibo.setEnabled(true);
+                                                    rbArqueoCaja.setChecked(row.getInt(27) == 1);
+
+                                                    if (Miscellaneous.Impresion(tvImprimirRecibo) == 0){ //SI IMPRIMIRA RECIBOS
+
+                                                        if (!row.getString(17).isEmpty()){//FOLIO
+                                                            etPagoRealizado.setEnabled(false);
+                                                            etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+
+                                                            tvContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                            tvContacto.setEnabled(false);
+                                                            tvResultadoGestion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                            tvResultadoGestion.setEnabled(false);
+                                                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                            tvMedioPago.setEnabled(false);
+                                                            tvDetalleFicha.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                            tvDetalleFicha.setEnabled(false);
+                                                            ibIntegrantes.setEnabled(false);
+                                                            tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                            tvImprimirRecibo.setEnabled(false);
+                                                            ibImprimir.setVisibility(View.VISIBLE);
+
+                                                            etFolioRecibo.setEnabled(false);
+                                                            llFolioRecibo.setVisibility(View.VISIBLE);
+                                                            etFolioRecibo.setText(row.getString(17));
+                                                            etFolioRecibo.setError(null);
+                                                            folio_impreso = row.getString(17);
+                                                        }
+                                                        else {
+                                                            ibImprimir.setVisibility(View.VISIBLE);
+                                                        }
+                                                    }
+                                                    else{
+                                                        ibImprimir.setVisibility(View.GONE);
                                                         llFolioRecibo.setVisibility(View.VISIBLE);
-                                                        etFolioRecibo.setEnabled(false);
-                                                        etFolioRecibo.setText(parent.jsonRes.getString(Constants.FOLIO_TICKET));
+                                                        etFolioRecibo.setText(row.getString(17));
                                                         etFolioRecibo.setError(null);
-                                                        folio_impreso = parent.jsonRes.getString(Constants.FOLIO_TICKET);
-                                                    }
-                                                    else {
-                                                        ibImprimir.setVisibility(View.VISIBLE);
                                                     }
                                                 }
-                                                else{
-                                                    ibImprimir.setVisibility(View.GONE);
-                                                    llFolioRecibo.setVisibility(View.VISIBLE);
-                                                    etFolioRecibo.setText(parent.jsonRes.getString(Constants.FOLIO_TICKET));
-                                                    etFolioRecibo.setError(null);
-                                                }
+                                            }
+                                            else if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                                                Log.e("ELSE", "xxxxxxxxxxxxxxxx");
+                                                ibImprimir.setVisibility(View.GONE);
+                                                llFolioRecibo.setVisibility(View.VISIBLE);
+                                                Log.e("Folioxxx", row.getString(17)+"dsfdsfs");
+                                                etFolioRecibo.setText(row.getString(17));
+                                                etFolioRecibo.setError(null);
+                                            }
 
+                                            if (!row.getString(18).isEmpty() && !row.getString(19).isEmpty()){//FOTOGRAFIA O GALERIA
+                                                File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+row.getString(18));
+                                                Uri uriEvidencia = Uri.fromFile(evidenciaFile);
+                                                Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
+                                                ibFoto.setVisibility(View.GONE);
+                                                ibGaleria.setVisibility(View.GONE);
+                                                ivEvidencia.setVisibility(View.VISIBLE);
+                                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
+                                                tvFotoGaleria.setError(null);
+                                            }
+
+                                            if (!row.getString(20).isEmpty()){//ESTA GERENTE
+                                                tvGerente.setText(row.getString(20));
+
+                                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+                                                if (Miscellaneous.Gerente(tvGerente) == 0){//SI ESTA GERENTE
+                                                    if (!row.getString(21).isEmpty()){//FIRMA
+                                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
+                                                        Uri uriFirma = Uri.fromFile(firmaFile);
+                                                        Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                                        ibFirma.setVisibility(View.GONE);
+                                                        ivFirma.setVisibility(View.VISIBLE);
+                                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                                        tvFirma.setError(null);
+                                                    }
+                                                }
                                             }
                                         }
-
-                                        if (parent.jsonRes.has(Constants.EVIDENCIA)){
-                                            Log.v("PATH_EVIDENCIA", Constants.ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(Constants.EVIDENCIA));
-                                            File evidenciaFile = new File(Constants.ROOT_PATH + "Evidencia/"+parent.jsonRes.getString(Constants.EVIDENCIA));
-                                            Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                                            Glide.with(ctx).load(uriEvidencia).into(ivEvidencia);
-                                            ibFoto.setVisibility(View.GONE);
-                                            ibGaleria.setVisibility(View.GONE);
-                                            ivEvidencia.setVisibility(View.VISIBLE);
-                                            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
-                                            tvFotoGaleria.setError(null);
-                                        }
-                                    }
-                                    break;
+                                        break;
+                                }
                             }
-                        }
-                        break;
-                    case 2: //====================================================================== Aclaracion
-                        if (parent.jsonRes.has(Constants.MOTIVO_ACLARACION)){
-                            tvMotivoAclaracion.setText(parent.jsonRes.getString(Constants.MOTIVO_ACLARACION));
-                            tvMotivoAclaracion.setVisibility(View.VISIBLE);
-                            tvMotivoAclaracion.setError(null);
-                            if (!parent.flagRespuesta)
-                                tvMotivoAclaracion.setEnabled(false);
-                        }
-                        if (parent.jsonRes.has(Constants.COMENTARIO)){
-                            etComentario.setText(parent.jsonRes.getString(Constants.COMENTARIO));
-                            etComentario.setVisibility(View.VISIBLE);
-                            etComentario.setError(null);
-                            if (!parent.flagRespuesta)
-                                etComentario.setEnabled(false);
-                        }
-                        tvGerente.setVisibility(View.VISIBLE);
-                        break;
-                }
+                            break;
+                        case 1: //NO CONTACTO
+                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
+                            if (!row.getString(6).isEmpty()){//COMENTARIO
+                                etComentario.setText(row.getString(6));
+                                etComentario.setVisibility(View.VISIBLE);
+                                etComentario.setError(null);
+                            }
 
-                if (parent.jsonRes.has(Constants.GERENTE)){
-                    tvGerente.setText(parent.jsonRes.getString(GERENTE));
+                            if (!row.getString(18).isEmpty() && !row.getString(19).isEmpty()){
+                                File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(18));
+                                Uri uriFachada = Uri.fromFile(fachadaFile);
+                                Glide.with(ctx).load(uriFachada).into(ivFachada);
+                                ibFachada.setVisibility(View.GONE);
+                                ivFachada.setVisibility(View.VISIBLE);
+                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
+                                tvFachada.setError(null);
+                            }
 
-                    if (!parent.flagRespuesta){
-                        tvGerente.setEnabled(false);
-                    }
-                    if (Miscellaneous.Gerente(tvGerente) == 0){
-                        SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
-                        if (parent.jsonRes.has(Constants.FIRMA)){
-                            File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+parent.jsonRes.getString(Constants.FIRMA));
-                            Uri uriFirma = Uri.fromFile(firmaFile);
-                            Glide.with(ctx).load(uriFirma).into(ivFirma);
-                            ibFirma.setVisibility(View.GONE);
-                            ivFirma.setVisibility(View.VISIBLE);
-                            byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
-                            tvFirma.setError(null);
-                        }
+                            tvGerente.setVisibility(View.VISIBLE);
+                            if (!row.getString(20).isEmpty()){//ESTA GERENTE
+                                tvGerente.setText(row.getString(20));
+                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+
+                                if (Miscellaneous.Gerente(tvGerente) == 0){
+                                    if (!row.getString(21).isEmpty()){
+                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
+                                        Uri uriFirma = Uri.fromFile(firmaFile);
+                                        Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                        ibFirma.setVisibility(View.GONE);
+                                        ivFirma.setVisibility(View.VISIBLE);
+                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                        tvFirma.setError(null);
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
+                            Log.e("aclaracion",row.getString(5));
+                            if (!row.getString(5).isEmpty()){//MOTIVO ACLARACION
+                                tvMotivoAclaracion.setText(row.getString(5));
+                                tvMotivoAclaracion.setVisibility(View.VISIBLE);
+                                tvMotivoAclaracion.setError(null);
+
+                            }
+                            if (!row.getString(6).isEmpty()){//COMENTARIO
+                                etComentario.setText(row.getString(6));
+                                etComentario.setVisibility(View.VISIBLE);
+                                etComentario.setError(null);
+                            }
+
+                            tvGerente.setVisibility(View.VISIBLE);
+                            if (!row.getString(20).isEmpty()){//ESTA GERENTE
+                                tvGerente.setText(row.getString(20));
+                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+                                if (Miscellaneous.Gerente(tvGerente) == 0){
+                                    if (!row.getString(21).isEmpty()){
+                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
+                                        Uri uriFirma = Uri.fromFile(firmaFile);
+                                        Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                        ibFirma.setVisibility(View.GONE);
+                                        ivFirma.setVisibility(View.VISIBLE);
+                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                        tvFirma.setError(null);
+                                    }
+                                }
+                            }
+                            break;
+
                     }
                 }
             }
+            row.close();
         }
+    }
+
+    private void Update(String key, String value) {
+        Log.e("update", key+": "+value);
+        ContentValues cv = new ContentValues();
+        cv.put(key, value);
+        if (ENVIROMENT)
+            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
+        else
+            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
     }
 
     @Override
@@ -1369,14 +1941,11 @@ public class recuperacion_gpo_fragment extends Fragment {
                                 .into(ivFirma);
                         byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
 
-                        /*try {
-                            jsonResponse.put(FIRMA,  Miscellaneous.save(byteFirma, 3));
-                            UpdateTemporal(jsonResponse);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        try {
+                            Update("firma", Miscellaneous.save(byteFirma, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
-                        }*/
+                        }
                     }
                 }
                 break;
@@ -1386,42 +1955,46 @@ public class recuperacion_gpo_fragment extends Fragment {
                         ibFachada.setVisibility(View.GONE);
                         tvFachada.setError(null);
                         ivFachada.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(Constants.PICTURE);
+                        byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
-                    }
-                }
-                break;
-            case Constants.REQUEST_CODE_INTEGRANTES_GPO:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        etPagoRealizado.setError(null);
-                        etPagoRealizado.setText(String.valueOf(data.getStringExtra(Constants.RESPONSE)));
-                        _Integrantes = data.getStringExtra("integrantes");
-                        rbIntegrantes.setChecked(true);
-                        Log.v("/","/////////////////////////////////////////////////////////////");
-                        Log.v("RespuestaIntegrantes", _Integrantes);
-                        Log.v("/","/////////////////////////////////////////////////////////////");
-                        if (tvMedioPago.getText().toString().trim().equals("EFECTIVO")){
-                            if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 10000){
-                                llArqueoCaja.setVisibility(View.VISIBLE);
-                            }
-                            else {
-                                llArqueoCaja.setVisibility(View.GONE);
-                                //rbArqueoCaja.setChecked(false);
-                            }
+
+                        try {
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 1));
+                            Update("tipo_imagen", "FACHADA");
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_IMPRESORA:
+            case REQUEST_CODE_INTEGRANTES_GPO:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        etPagoRealizado.setError(null);
+                        etPagoRealizado.setText(String.valueOf(data.getStringExtra(Constants.RESPONSE)));
+                        rbIntegrantes.setChecked(true);
+                        if (tvMedioPago.getText().toString().trim().equals("EFECTIVO")){
+                            if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) >= 10000)
+                                llArqueoCaja.setVisibility(View.VISIBLE);
+                            else
+                                llArqueoCaja.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_IMPRESORA:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
                         Toast.makeText(ctx, data.getStringExtra(Constants.MESSAGE), Toast.LENGTH_SHORT).show();
                         if(data.getIntExtra(Constants.RES_PRINT,0) == 1 || data.getIntExtra(Constants.RES_PRINT,0) == 2){
-                            folio_impreso = "Asesor002-" + String.valueOf(data.getIntExtra(Constants.FOLIO,0));
+                            folio_impreso = "RC"+session.getUser().get(0) + "-" + String.valueOf(data.getIntExtra(FOLIO,0));
                             etFolioRecibo.setText(folio_impreso);
                             tvImprimirRecibo.setError(null);
                             llFolioRecibo.setVisibility(View.VISIBLE);
+                            res_impresion = data.getIntExtra(RES_PRINT, 0);
+
+                            DisableFields();
+                            Update("folio", folio_impreso);
                         }
                     }
                 }
@@ -1433,21 +2006,32 @@ public class recuperacion_gpo_fragment extends Fragment {
                     tvFotoGaleria.setError(null);
                     imageUri = data.getData();
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    Glide.with(ctx).load(imageUri).centerCrop().into(ivEvidencia);
+
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+
+                    View vCanvas = new CanvasCustom(ctx,new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                    Bitmap newBitMap = null;
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                    Bitmap.Config config = bitmap.getConfig();
+
+                    newBitMap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),config);
+                    Canvas canvas = new Canvas(newBitMap);
+                    canvas.drawBitmap(bitmap,0,0, null);
+
+                    vCanvas.draw(canvas);
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                    byteEvidencia = baos.toByteArray();
+
+                    Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                     try {
-                        InputStream iStream =   ctx.getContentResolver().openInputStream(imageUri);
-                        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-                        int bufferSize = 1024;
-                        byte[] buffer = new byte[bufferSize];
-
-                        int len = 0;
-                        while ((len = iStream.read(buffer)) != -1) {
-                            byteBuffer.write(buffer, 0, len);
-                        }
-                        byteEvidencia = byteBuffer.toByteArray();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                        Update("tipo_imagen", "GALERIA");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1460,41 +2044,407 @@ public class recuperacion_gpo_fragment extends Fragment {
                         ibGaleria.setVisibility(View.GONE);
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(Constants.PICTURE);
+                        byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
+                        try {
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                            Update("tipo_imagen", "FOTOGRAFIA");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_ARQUEO_CAJA:
+            case REQUEST_CODE_ARQUEO_CAJA:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
-                        if (data.getBooleanExtra(Constants.SAVE,false)){
+                        if (data.getBooleanExtra(SAVE,false)){
                             tvArqueoCaja.setError(null);
-                            //rbArqueoCaja.setChecked(true);
-                        }
-                        else {
-                            tvArqueoCaja.setError("");
-                            //rbArqueoCaja.setChecked(false);
+                            Update("arqueo_caja","1");
+                            rbArqueoCaja.setChecked(true);
                         }
                     }
                 }
                 break;
-            case 123:
+            case 123: //Fecha de defuncion
                 if (resultCode == 321){
                     if (data != null){
                         tvFechaDefuncion.setError(null);
                         tvFechaDefuncion.setText(data.getStringExtra(DATE));
+                        Update("fecha_fallecimiento", tvFechaDefuncion.getText().toString());
                     }
                 }
                 break;
-            case 812:
+            case 812: //Fecha de pago
                 if (resultCode == 321){
                     if (data != null){
                         tvFechaDeposito.setError(null);
                         tvFechaDeposito.setText(data.getStringExtra(DATE));
+                        Update("fecha_pago", tvFechaDeposito.getText().toString());
+                    }
+                }
+                break;
+            case Constants.REQUEST_CODE_PREVIEW:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        ContentValues cv = new ContentValues();if (data.hasExtra(ESTATUS)) {
+                            cv.put("estatus", data.getStringExtra(ESTATUS));
+                            cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
+                            cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
+                        }
+                        cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
+                        cv.put("fecha_fin", Miscellaneous.ObtenerFecha("timestamp"));
+                        cv.put("estatus", "1");
+                        if (ENVIROMENT)
+                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
+                        else
+                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
+
+                        Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
+                        parent.finish();
                     }
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_save, menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                GuardarGestion();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void GuardarGestion(){
+        Validator validator = new Validator();
+        Bundle b = new Bundle();
+        Miscellaneous m = new Miscellaneous();
+        if (latLngGestion != null) {
+            b.putDouble(LATITUD, latLngGestion.latitude);
+            b.putDouble(LONGITUD, latLngGestion.longitude);
+            if (m.ContactoCliente(tvContacto) == 0){ //Si Contacto cliente
+                b.putString(CONTACTO, tvContacto.getText().toString());
+                if (!tvActualizarTelefono.getText().toString().isEmpty()){
+                    if ((m.ActualizarTelefono(tvActualizarTelefono) == 0 && !validator.validate(etActualizarTelefono, new String[]{validator.REQUIRED,validator.PHONE})) || m.ActualizarTelefono(tvActualizarTelefono) == 1){
+                        b.putString(ACTUALIZAR_TELEFONO, tvActualizarTelefono.getText().toString());
+                        if (m.ActualizarTelefono(tvActualizarTelefono) == 0){
+                            b.putString(NUEVO_TELEFONO, etActualizarTelefono.getText().toString().trim());
+                        }
+                        if (m.ResultadoGestion(tvResultadoGestion) == 0) { // Si pago
+                            b.putString(RESULTADO_PAGO, tvResultadoGestion.getText().toString());
+                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7) { // Medio de pago Bancos, Oxxo, SIDERT
+                                b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
+                                if (!tvFechaDeposito.getText().toString().trim().isEmpty()) {
+                                    b.putString(FECHA_DEPOSITO, tvFechaDeposito.getText().toString().trim());
+                                    if (!tvDetalleFicha.getText().toString().isEmpty()) { //Selecionó que cuenta con el detalle o no
+                                        b.putString(DETALLE_FICHA, tvDetalleFicha.getText().toString());
+                                        if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString()) > 0) { //El pago realizado es mayor a cero
+                                            b.putDouble(SALDO_CORTE, parent.saldo_corte);
+                                            b.putDouble(PAGO_REQUERIDO, parent.monto_requerido);
+                                            b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim());
+
+                                            if (m.MedioPago(tvMedioPago) == 7) {//SIDERT
+                                                if (m.Impresion(tvImprimirRecibo) == 1) { //No imprimirá recibos
+                                                    if (!etFolioRecibo.getText().toString().trim().isEmpty()) {
+                                                        b.putString(Constants.IMPRESORA, tvImprimirRecibo.getText().toString());
+                                                        b.putString(Constants.FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
+                                                    }
+                                                    else
+                                                        Toast.makeText(ctx, "No ha capturado el folio del recibo manual", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            if (byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
+                                                b.putByteArray(EVIDENCIA, byteEvidencia);
+                                                if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                                    b.putString(GERENTE, tvGerente.getText().toString());
+                                                    if (byteFirma != null) { //Capturó una firma
+                                                        b.putByteArray(FIRMA, byteFirma);
+                                                        if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 1) {
+                                                            if (m.PagoRequerido(tvDetalleFicha) == 0) {
+                                                                b.putBoolean(RESUMEN_INTEGRANTES, true);
+                                                            } else {
+                                                                b.putBoolean(RESUMEN_INTEGRANTES, false);
+                                                            }
+                                                            b.putBoolean(TERMINADO,true);
+
+                                                        }
+                                                        else
+                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                    } else //No ha capturado la firma
+                                                        Toast.makeText(parent, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                                                } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                    b.putString(GERENTE, tvGerente.getText().toString());
+                                                    if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 1) {
+
+                                                        if (m.PagoRequerido(tvDetalleFicha) == 0) {
+                                                            b.putBoolean(RESUMEN_INTEGRANTES, true);
+                                                        } else {
+                                                            b.putBoolean(RESUMEN_INTEGRANTES, false);
+                                                        }
+                                                        b.putBoolean(TERMINADO, true);
+                                                    }
+                                                    else
+                                                        Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                } else //No ha seleccionado si está el gerente
+                                                    Toast.makeText(parent, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                                            } else //No ha capturado fotografía evidencia
+                                                Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
+                                        } else //El monto ingresado es igual a cero
+                                            Toast.makeText(ctx, "No se pueden capturar montos iguales a cero", Toast.LENGTH_SHORT).show();
+                                    } else // No ha seleccionado si tiene el detalle de la ficha
+                                        Toast.makeText(ctx, "No se seleccionado si cuenta con el detalle de la ficha", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    tvFechaDeposito.setError("");
+                                    Toast.makeText(ctx, "No ha ingresado la fecha de depósito", Toast.LENGTH_SHORT).show();
+                                }
+                            } else if (m.MedioPago(tvMedioPago) == 6) { //Medio de pago Efectivo
+                                b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
+                                if (!tvDetalleFicha.getText().toString().isEmpty()) { //Selecionó que cuenta con el detalle o no
+                                    b.putString(DETALLE_FICHA, tvDetalleFicha.getText().toString());
+                                    if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString()) > 0) { //El pago realizado es mayor a cero
+                                        b.putDouble(SALDO_CORTE, parent.saldo_corte);
+                                        b.putDouble(PAGO_REQUERIDO, parent.monto_requerido);
+                                        if (m.Impresion(tvImprimirRecibo) == 0) { //Si imprimirá recibos
+                                            b.putString(IMPRESORA, tvImprimirRecibo.getText().toString());
+                                            if (!etFolioRecibo.getText().toString().trim().isEmpty()) {
+                                                b.putString(FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
+                                                if (byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
+                                                    b.putByteArray(EVIDENCIA, byteEvidencia);
+                                                    if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                                        b.putString(GERENTE, tvGerente.getText().toString());
+                                                        if (byteFirma != null) { //Capturó una firma
+                                                            b.putByteArray(FIRMA, byteFirma);
+                                                            if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 1) {
+                                                                b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim());
+                                                                if (m.PagoRequerido(tvDetalleFicha) == 0) {
+                                                                    b.putBoolean(RESUMEN_INTEGRANTES, true);
+                                                                } else {
+                                                                    b.putBoolean(RESUMEN_INTEGRANTES, false);
+                                                                }
+                                                                b.putBoolean(TERMINADO, true);
+                                                            }
+                                                            else
+                                                                Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                        } else //No ha capturado la firma
+                                                            Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                                                    } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                        if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 1) {
+                                                            if (m.PagoRequerido(tvDetalleFicha) == 0) {
+                                                                b.putBoolean(RESUMEN_INTEGRANTES, true);
+                                                            } else {
+                                                                b.putBoolean(RESUMEN_INTEGRANTES, false);
+                                                            }
+                                                            b.putString(GERENTE, tvGerente.getText().toString());
+                                                            b.putBoolean(TERMINADO, true);
+                                                        }
+                                                        else
+                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                    } else //No ha seleccionado si está el gerente
+                                                        Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                                                } else //No ha capturado fotografía evidencia
+                                                    Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
+                                            } else //No ha impreso ningun ticket
+                                                Toast.makeText(ctx, "No ha realizado nignuna impresión", Toast.LENGTH_SHORT).show();
+                                        } else if (m.Impresion(tvImprimirRecibo) == 1) { //No imprimirá recibos
+                                            b.putString(IMPRESORA, tvImprimirRecibo.getText().toString());
+                                            if (!etFolioRecibo.getText().toString().trim().isEmpty()) {
+                                                b.putString(FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
+                                                if (byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
+                                                    b.putByteArray(EVIDENCIA, byteEvidencia);
+                                                    if (m.Gerente(tvGerente) == 1) { //Selecciono que si está el gerente
+                                                        b.putString(GERENTE, tvGerente.getText().toString());
+                                                        if (byteFirma != null) { //Capturó una firma
+                                                            if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 0 ) {
+                                                                b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim());
+                                                                b.putByteArray(EVIDENCIA, byteEvidencia);
+                                                                b.putBoolean(TERMINADO, true);
+                                                            }
+                                                            else
+                                                                Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                        } else //No ha capturado la firma
+                                                            Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                                                    } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                        if ((m.PagoRequerido(tvDetalleFicha) == 0 && rbIntegrantes.isChecked()) || m.PagoRequerido(tvDetalleFicha) == 0) {
+                                                            b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim());
+                                                            b.putBoolean(GERENTE, false);
+                                                            b.putBoolean(TERMINADO, true);
+                                                        }
+                                                        else
+                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
+                                                    } else //No ha seleccionado si está el gerente
+                                                        Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                                                } else //No ha capturado fotografía evidencia
+                                                    Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
+                                            } else
+                                                Toast.makeText(ctx, "No ha capturado el folio del recibo", Toast.LENGTH_SHORT).show();
+                                        } else //No ha seleccionado si imprimirá recibos
+                                            Toast.makeText(ctx, "No ha confirmado si va imprimir recibos", Toast.LENGTH_SHORT).show();
+                                    } else //El monto ingresado es igual a cero
+                                        Toast.makeText(ctx, "No se pueden capturar montos iguales a cero", Toast.LENGTH_SHORT).show();
+                                } else // No ha seleccionado si tiene el detalle de la ficha
+                                    Toast.makeText(ctx, "No se seleccionado si cuenta con el detalle de la ficha", Toast.LENGTH_SHORT).show();
+                            } else //No ha seleccionado algun medio de pago
+                                Toast.makeText(ctx, "No ha seleccionado un medio de pago", Toast.LENGTH_SHORT).show();
+                        } // =================  Termina Si Pago  ==============================================
+                        else if (m.ResultadoGestion(tvResultadoGestion) == 1) { //No pago
+                            b.putString(RESULTADO_PAGO, tvResultadoGestion.getText().toString());
+                            if (m.MotivoNoPago(tvMotivoNoPago) == 0 || m.MotivoNoPago(tvMotivoNoPago) == 2) { //Motivo de no pago Negacion u Otra
+                                b.putString(MOTIVO_NO_PAGO, tvMotivoNoPago.getText().toString());
+                                if (!etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
+                                    b.putString(COMENTARIO, etComentario.getText().toString());
+                                    if (byteEvidencia != null) {
+                                        b.putByteArray(EVIDENCIA, byteEvidencia);
+
+                                        if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                            b.putString(GERENTE, tvGerente.getText().toString());
+                                            if (byteFirma != null) { //Capturó una firma
+                                                b.putByteArray(FIRMA, byteFirma);
+                                                b.putBoolean(TERMINADO, true);
+                                            } else { //No ha capturado la firma
+                                                Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                                                Log.e("aaaaaaaaaa","aaaaaaaaaaaaaaaaa");
+                                            }
+                                        } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                            b.putString(GERENTE, tvGerente.getText().toString());
+                                            b.putBoolean(TERMINADO, true);
+                                        } else //No ha seleccionado si está el gerente
+                                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                                    } else //no ha capturado la fotografía de la fachada
+                                        Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
+                                } else // No ha ingresado alguno comentario
+                                    Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
+                            } else if (m.MotivoNoPago(tvMotivoNoPago) == 1) { //Motivo de no pago fue Fallecimiento
+                                b.putString(MOTIVO_NO_PAGO, tvMotivoNoPago.getText().toString());
+                                if (!tvFechaDefuncion.getText().toString().trim().isEmpty()) { //El campo Fecha es diferente de vacio
+                                    b.putString(FECHA_DEFUNCION, tvFechaDefuncion.getText().toString());
+                                    if (!etComentario.getText().toString().trim().isEmpty()) { // El campo Comentario es diferente de vacio
+                                        b.putString(COMENTARIO, etComentario.getText().toString());
+                                        if (byteEvidencia != null) { //Capturo una fotografia de fachada
+                                            b.putByteArray(EVIDENCIA, byteEvidencia);
+                                            if (m.Gerente(tvGerente) == 0) { //Si está el gerente
+                                                b.putString(GERENTE, tvGerente.getText().toString());
+                                                if (byteFirma != null) { //Capturó un firma
+                                                    b.putByteArray(FIRMA, byteFirma);
+                                                    b.putBoolean(TERMINADO, true);
+                                                } else //No ha Capturado un Firma
+                                                    Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                                            } else if (m.Gerente(tvGerente) == 1) { //No está el gerente
+                                                b.putString(GERENTE, tvGerente.getText().toString());
+                                                b.putBoolean(TERMINADO, true);
+                                            } else //No ha seleccionado si está el gerente
+                                                Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                                        } else //No ha capturado una fotografia
+                                            Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
+                                    } else //No ha ingresado algun comentario
+                                        Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
+                                } else //No ha seleccionado la fecha de defuncion
+                                    Toast.makeText(ctx, "No ha seleccionado la fecha de defunción", Toast.LENGTH_SHORT).show();
+                            } else  //No ha seleccionado algun motivo de no pago
+                                Toast.makeText(ctx, "No ha seleccionado motivo de no pago", Toast.LENGTH_SHORT).show();
+                        } // =================  Termina No Pago  ==============================================
+                        else //No ha seleccionado si pagó o no el cliente
+                            Toast.makeText(ctx, "No ha seleccionado el resultado de la gestión", Toast.LENGTH_SHORT).show();
+                    }
+                    else //No ha ingresado el nuevo teléfono
+                        Toast.makeText(ctx, "No ha ingresado el nuevo teléfono", Toast.LENGTH_SHORT).show();
+                }
+                else //No ha seleccionado si va actualizar el telefono
+                    Toast.makeText(ctx, "No ha seleccionado si va actualizar el teléfono", Toast.LENGTH_SHORT).show();
+            }// ============  Termina Si Contacto  =============================
+            else if(m.ContactoCliente(tvContacto) == 1) { //No contactó al cliente
+                b.putString(Constants.CONTACTO, tvContacto.getText().toString());
+                if (!etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
+                    b.putString(COMENTARIO, etComentario.getText().toString());
+                    if (byteEvidencia != null) { //Ha capturado una fotografia de la fachada
+                        b.putByteArray(EVIDENCIA, byteEvidencia);
+                        if (m.Gerente(tvGerente) == 0) { // Seleccionó que está el gerente
+                            if (byteFirma != null) { // Ha capturado un firma
+                                b.putString(GERENTE, tvGerente.getText().toString());
+                                b.putByteArray(FIRMA, byteFirma);
+                                b.putBoolean(TERMINADO, true);
+                            } else //No ha capturado un firma
+                                Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                        } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el gerente
+                            b.putString(GERENTE, tvGerente.getText().toString());
+                            b.putBoolean(TERMINADO, true);
+                        } else //No ha seleccionado si está el gerente
+                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                    } else // No ha capturado una fotografia de fachada
+                        Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
+                } else //No ha ingresado algun comentario
+                    Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
+            } //============  Termina No Contacto  =============================
+            else if(m.ContactoCliente(tvContacto) == 2) { //Seleccionó Aclaración
+                b.putString(Constants.CONTACTO, tvContacto.getText().toString());
+                if (!tvMotivoAclaracion.getText().toString().trim().isEmpty()) { //Motivo de aclaración es diferente de vacio
+                    b.putString(MOTIVO_ACLARACION, tvMotivoAclaracion.getText().toString());
+                    if (!etComentario.getText().toString().trim().isEmpty()) { // Ingresó algun comentario
+                        b.putString(COMENTARIO, etComentario.getText().toString());
+                        if (m.Gerente(tvGerente) == 0) { //Seleccionó que está el gerente
+                            if (byteFirma != null) { //Ha capturado una firma
+                                b.putString(GERENTE, tvGerente.getText().toString());
+                                b.putByteArray(FIRMA, byteFirma);
+                                b.putBoolean(TERMINADO, true);
+                            }
+                            else //No ha capturado una firma
+                                Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
+                        }
+                        else if (m.Gerente(tvGerente) == 1) { //Seleccionó que no está el gerente
+                            b.putString(GERENTE, tvGerente.getText().toString());
+                            b.putBoolean(TERMINADO, true);
+                        }
+                        else //No ha confirmado si está el gerente
+                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
+                    }
+                    else //No ha ingresado algun comentario
+                        Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
+                }
+                else //No ha seleccionado el motivo de aclaración
+                    Toast.makeText(ctx, "Seleccione el motivo de aclaración", Toast.LENGTH_SHORT).show();
+            } //============  Termina Aclaración  ==============================
+            else //No ha seleccionadosi conectado al cliente o es una aclaración
+                Toast.makeText(ctx, "No ha seleccionado si contacto al cliente", Toast.LENGTH_SHORT).show();
+        }
+        else //No ha capturado la ubicación
+            Toast.makeText(ctx,"Falta obtener la ubicación de la gestión", Toast.LENGTH_SHORT).show();
+
+        if (!b.isEmpty() && b.containsKey(TERMINADO)){
+            Intent i_preview = new Intent(parent, VistaPreviaGestion.class);
+            i_preview.putExtra(PARAMS,b);
+            startActivityForResult(i_preview,Constants.REQUEST_CODE_PREVIEW);
+        }
+        else{
+            //Toast.makeText(ctx, "No contiene el parámetro TERMINADO", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void DisableFields(){
+        tvContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvContacto.setEnabled(false);
+        tvResultadoGestion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvResultadoGestion.setEnabled(false);
+        tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvMedioPago.setEnabled(false);
+        tvDetalleFicha.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvDetalleFicha.setEnabled(false);
+        ibIntegrantes.setEnabled(false);
+        etPagoRealizado.setEnabled(false);
+        etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+        tvImprimirRecibo.setEnabled(false);
+
     }
 }

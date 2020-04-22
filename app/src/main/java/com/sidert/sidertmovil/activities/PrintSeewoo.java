@@ -5,9 +5,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,18 +34,36 @@ import android.widget.Toast;
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.MImpresion;
+import com.sidert.sidertmovil.models.MReimpresion;
 import com.sidert.sidertmovil.models.OrderModel;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.PrintTicket;
+import com.sidert.sidertmovil.utils.ReprintTicket;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.Objects;
 import java.util.Vector;
+
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 
 public class PrintSeewoo extends AppCompatActivity {
 
@@ -71,7 +92,20 @@ public class PrintSeewoo extends AppCompatActivity {
 
     private String address_print = "";
 
-    private OrderModel item;
+    private MImpresion item;
+
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+
+    private LinearLayout llReimpreion;
+    private Button btnReprintOriginal;
+    private Button btnReprintCopia;
+
+    private String DBRecibosVigente = "DBRecibosVigente.csv";
+    private String DBRecibosVigente_t = "DBRecibosVigente_t.csv";
+
+    private MReimpresion mReimpresion;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -79,6 +113,9 @@ public class PrintSeewoo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print_seewoo);
         ctx = this;
+
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
 
         Toolbar tbMain              = findViewById(R.id.tbMain);
 
@@ -94,6 +131,10 @@ public class PrintSeewoo extends AppCompatActivity {
         TextView tvSignature         = findViewById(R.id.tvSignature);
         TextView tvNameSignature     = findViewById(R.id.tvNameSignature);
 
+        llReimpreion                 = findViewById(R.id.llReimpresion);
+        btnReprintOriginal           = findViewById(R.id.btnReprintOriginal);
+        btnReprintCopia              = findViewById(R.id.btnReprintCopia);
+
         LinearLayout llPaymentRequired   = findViewById(R.id.llPaymentRequired);
 
         btnPrintOriginal    = findViewById(R.id.btnPrintOriginal);
@@ -104,58 +145,111 @@ public class PrintSeewoo extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
+        /*File archivo;
+        if (ENVIROMENT)
+            archivo = new File(DBRecibosVigente);
+        else
+            archivo = new File(DBRecibosVigente_t);
+        if (!archivo.exists()){
+            try {
+                Writer out = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(DBRecibosVigente), "ISO-8859-1"));
+                String headers = "_ID,ID_PRESTAMO_ID_CLIENTE_ID_GESTION,ASESOR_ID,FOLIO,TIPO_IMPRESION,MONTO,CLV_CLIENTE,FECHA_IMPRESO,FECHA_ENVIO,ESTATUS"+"\n";
+                out.append(headers);
+                out.flush();
+                out.close();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }*/
 
-        item = (OrderModel) getIntent().getSerializableExtra("order");
+
+        item = (MImpresion) getIntent().getSerializableExtra("order");
 
         if (item.getResultPrint() == 0){
-            if (item.getExternalID().contains("ri") || item.getExternalID().contains("ci")){
-                tvSignature.setText(ctx.getResources().getString(R.string.client_signature));
-                tvNameSignature.setText(item.getNameClient());
-            }
-            else if (item.getExternalID().contains("rg") || item.getExternalID().contains("cg")){
-                tvSignature.setText(ctx.getResources().getString(R.string.treasurer_signature));
-                tvNameSignature.setText(item.getNameClient());
-            }
-            else{
-                tvSignature.setText(ctx.getResources().getString(R.string.manager_signature));
-                tvNameSignature.setText(item.getNameAsessor());
-            }
+            if (item.getTipoPrestamo().equals("VIGENTE"))
+                tvSignature.setText("Firma Asesor:");
+            else if (item.getTipoPrestamo().equals("VENCIDA"))
+                tvSignature.setText("Firma Gestor:");
+            tvNameSignature.setText(item.getNombreAsesor());
         }
         else if (item.getResultPrint() == 1){
-            if (item.getExternalID().contains("ri") ||
-                    item.getExternalID().contains("ci") ||
-                    item.getExternalID().contains("rg") ||
-                    item.getExternalID().contains("cg")){
-                tvSignature.setText(ctx.getResources().getString(R.string.asessor_signature));
-                tvNameSignature.setText(item.getNameAsessor());
+            if (item.getTipoPrestamo().equals("VIGENTE")){
+                if (item.getTipoGestion().equals("INDIVIDUAL")){
+                    tvSignature.setText("Firma Cliente:");
+                    tvNameSignature.setText(item.getNombre());
+                }
+                else if (item.getTipoGestion().equals("GRUPAL")){
+                    tvSignature.setText("Firma Tesorera:");
+                    tvNameSignature.setText(item.getNombreFirma());
+                }
             }
-            else{
-                tvSignature.setText("");
-                tvNameSignature.setText(ctx.getResources().getString(R.string.name_signature));
+            else if (item.getTipoPrestamo().equals("VENCIDA")){
+                tvSignature.setText("Firma Cliente:");
+                tvNameSignature.setText(item.getNombre());
             }
         }
         else{
+            llReimpreion.setVisibility(View.VISIBLE);
+            mReimpresion = new MReimpresion();
+            Cursor row;
+            if (ENVIROMENT)
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion(), "O"});
+            else
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion(), "O"});
+
+            Log.e("row", row.getCount()+"    asdasda");
+            if (row.getCount() > 0){
+                row.moveToFirst();
+                mReimpresion.setIdPrestamo(item.getIdPrestamo());
+                mReimpresion.setIdGestion(item.getIdGestion());
+                mReimpresion.setMontoPrestamo(item.getMontoPrestamo());
+                mReimpresion.setFolio(row.getString(3));
+                mReimpresion.setMonto(row.getString(5));
+                mReimpresion.setClaveCliente(item.getClaveCliente());
+                mReimpresion.setNumeroPrestamo(item.getNumeroPrestamo());
+                mReimpresion.setNumeroCliente(item.getNumeroCliente());
+                mReimpresion.setNombre(item.getNombre());
+                mReimpresion.setPagoRequerido(item.getPagoRequerido());
+                mReimpresion.setNombreAsesor(item.getNombreAsesor());
+                mReimpresion.setAsesorId(item.getAsesorId());
+                mReimpresion.setTipoPrestamo(item.getTipoPrestamo());
+                mReimpresion.setTipoGestion(item.getTipoGestion());
+                mReimpresion.setNombreFirma(item.getNombreFirma());
+            }
+            row.close();
+
+
             Toast.makeText(ctx, ctx.getResources().getString(R.string.print_original_copy), Toast.LENGTH_SHORT).show();
         }
 
-        tvNumLoan.setText(item.getNumLoan());
-        tvNumClient.setText(item.getNumClient());
-        tvNameClient.setText(item.getNameClient());
-        tvAmountLoan.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountLoan())));
-        tvPaymentRequired.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountRequired())));
-        tvPaymentMade.setText(Miscellaneous.moneyFormat(String.valueOf(item.getAmountMade())));
+        tvNumLoan.setText(item.getNumeroPrestamo());
+        tvNumClient.setText(item.getNumeroCliente());
+        tvNameClient.setText(item.getNombre());
 
-        if (Miscellaneous.getIndorGpo(item.getExternalID()) == 1){
+        tvAmountLoan.setText(Miscellaneous.moneyFormat(String.valueOf(item.getMontoPrestamo())));
+        tvPaymentRequired.setText(Miscellaneous.moneyFormat(String.valueOf(item.getPagoRequerido())));
+        tvPaymentMade.setText(Miscellaneous.moneyFormat(String.valueOf(item.getMonto())));
+
+        if (item.getTipoGestion().equals("INDIVIDUAL")){
             tvNum.setText(ctx.getResources().getString(R.string.client_number)+":");
             tvName.setText(ctx.getResources().getString(R.string.client_name)+":");
             tvTotalLoan.setText(ctx.getResources().getString(R.string.loan_amount)+":");
             llPaymentRequired.setVisibility(View.VISIBLE);
+            if (item.getTipoPrestamo().equals("VENCIDA")){
+                llPaymentRequired.setVisibility(View.GONE);
+            }
         }
-        else if (Miscellaneous.getIndorGpo(item.getExternalID()) == 2){
+        else if (item.getTipoGestion().equals("GRUPAL")){
             tvNum.setText(ctx.getResources().getString(R.string.group_number)+":");
             tvName.setText(ctx.getResources().getString(R.string.group_name)+":");
             tvTotalLoan.setText(ctx.getResources().getString(R.string.amount_total_loan_group)+":");
-            if (item.getExternalID().contains("cvg")){
+            llPaymentRequired.setVisibility(View.VISIBLE);
+            if (item.getTipoPrestamo().equals("VENCIDA")){
                 llPaymentRequired.setVisibility(View.GONE);
             }
         }
@@ -181,12 +275,16 @@ public class PrintSeewoo extends AppCompatActivity {
         btnPrintOriginal.setOnClickListener(btnPrintOriginal_OnClick);
         btnPrintCopy.setOnClickListener(btnPrintCopy_OnClick);
 
+        btnReprintOriginal.setOnClickListener(btnReprintOriginal_OnClick);
+        btnReprintCopia.setOnClickListener(btnReprintCopia_OnClick);
+
     }
 
     private View.OnClickListener btnPrintOriginal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             try {
+
                 item.setResultPrint(0);
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
             }catch (Exception e){
@@ -206,6 +304,107 @@ public class PrintSeewoo extends AppCompatActivity {
             }
         }
     };
+
+    private View.OnClickListener btnReprintOriginal_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                mReimpresion.setTipo_impresion("O");
+                new connTaskReprint().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    };
+
+    private View.OnClickListener btnReprintCopia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                mReimpresion.setTipo_impresion("C");
+                new connTaskReprint().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
+
+    // Bluetooth Connection Task.
+    public class connTaskReprint extends AsyncTask<Object, Void, Integer>
+    {
+        final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
+
+        @Override
+        protected void onPreExecute()
+        {
+            loading.setCancelable(false);
+            loading.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(Object... params)
+        {
+            int  retVal;
+            try
+            {
+                ban = (String) params[1];
+                bluetoothPort.connect((BluetoothDevice)params[0],true);
+
+                lastConnAddr = ((BluetoothDevice)params[0]).getAddress();
+                retVal = 0;
+            }
+            catch (IOException e)
+            {
+                retVal = -1;
+            }
+            return retVal;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            loading.dismiss();
+            if(result == 0)	// Connection success.
+            {
+                RequestHandler rh = new RequestHandler();
+                hThread = new Thread(rh);
+                hThread.start();
+
+                ReprintTicket Reprint = new ReprintTicket();
+                Reprint.WriteTicket(ctx, mReimpresion);
+                try {
+                    bluetoothPort.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else	// Connection failed.
+            {
+                final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.print_off,
+                        R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(errorPrint.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                errorPrint.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                errorPrint.show();
+                try {
+                    bluetoothPort.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     // Bluetooth Connection Task.
     public class connTask extends AsyncTask<Object, Void, Integer>
@@ -251,15 +450,78 @@ public class PrintSeewoo extends AppCompatActivity {
 
                 PrintTicket print = new PrintTicket();
                 print.WriteTicket(ctx, item);
+                try {
                 if (ban.equals("O")){
+                    bluetoothPort.disconnect();
                     item.setResultPrint(1);
+                    ContentValues cv = new ContentValues();
+                    cv.put("res_impresion", 1);
+                    if (ENVIROMENT) {
+                        if (item.getTipoGestion().equals("INDIVIDUAL"))
+                            db.update(TBL_RESPUESTAS_IND, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        else
+                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                    }
+                    else {
+                        if (item.getTipoGestion().equals("INDIVIDUAL"))
+                            db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        else
+                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                    }
                     btnPrintOriginal.setVisibility(View.GONE);
                     btnPrintCopy.setVisibility(View.VISIBLE);
                     btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
                     btnPrintCopy.setEnabled(true);
                 }
                 else{
+                    ContentValues cv = new ContentValues();
+                    cv.put("res_impresion", 2);
+                    if (ENVIROMENT) {
+                        if (item.getTipoGestion().equals("INDIVIDUAL"))
+                            db.update(TBL_RESPUESTAS_IND, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        else
+                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                    }
+                    else {
+                        if (item.getTipoGestion().equals("INDIVIDUAL"))
+                            db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        else
+                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                    }
+
+                    btnPrintCopy.setVisibility(View.GONE);
+                    llReimpreion.setVisibility(View.VISIBLE);
+                    bluetoothPort.disconnect();
                     item.setResultPrint(2);
+
+                    Cursor row;
+                    if (ENVIROMENT)
+                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion()});
+                    else
+                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion()});
+                    row.moveToFirst();
+                    mReimpresion = new MReimpresion();
+                    mReimpresion.setIdPrestamo(item.getIdPrestamo());
+                    mReimpresion.setIdGestion(item.getIdGestion());
+                    mReimpresion.setMontoPrestamo(item.getMontoPrestamo());
+                    mReimpresion.setFolio(row.getString(3));
+                    mReimpresion.setMonto(row.getString(5));
+                    mReimpresion.setClaveCliente(item.getClaveCliente());
+                    mReimpresion.setNumeroPrestamo(item.getNumeroPrestamo());
+                    mReimpresion.setNumeroCliente(item.getNumeroCliente());
+                    mReimpresion.setNombre(item.getNombre());
+                    mReimpresion.setPagoRequerido(item.getPagoRequerido());
+                    mReimpresion.setNombreAsesor(item.getNombreAsesor());
+                    mReimpresion.setAsesorId(item.getAsesorId());
+                    mReimpresion.setTipoPrestamo(item.getTipoPrestamo());
+                    mReimpresion.setTipoGestion(item.getTipoGestion());
+                    mReimpresion.setNombreFirma(item.getNombreFirma());
+
+                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             else	// Connection failed.
@@ -492,9 +754,15 @@ public class PrintSeewoo extends AppCompatActivity {
         saveSettingFile();
         Intent intent = new Intent();
         if(success){
+            Cursor row;
+            if (ENVIROMENT)
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getIdPrestamo()+this.item.getIdGestion()});
+            else
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getIdPrestamo()+this.item.getIdGestion()});
+            row.moveToFirst();
             intent.putExtra(Constants.MESSAGE, resultMess);
             intent.putExtra(Constants.RES_PRINT, resultPrint);
-            intent.putExtra(Constants.FOLIO, 1);
+            intent.putExtra(Constants.FOLIO, row.getInt(3));
             setResult(RESULT_OK, intent);
         }else{
             intent.putExtra(Constants.MESSAGE, resultMess);
@@ -520,7 +788,7 @@ public class PrintSeewoo extends AppCompatActivity {
                         message = ctx.getResources().getString(R.string.print_original_copy);
                         break;
                 }
-                sendResponse(true, 2, message);
+                sendResponse(true, this.item.getResultPrint(), message);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -535,21 +803,24 @@ public class PrintSeewoo extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         String message;
+        boolean success = false;
         switch (this.item.getResultPrint()) {
             case 0:
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
             case 1:
                 message = ctx.getResources().getString(R.string.print_original);
+                success = true;
                 break;
             case 2:
                 message = ctx.getResources().getString(R.string.print_original_copy);
+                success = true;
                 break;
             default:
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
         }
-        sendResponse(true, this.item.getResultPrint(), message);
+        sendResponse(success, this.item.getResultPrint(), message);
     }
 
     /**

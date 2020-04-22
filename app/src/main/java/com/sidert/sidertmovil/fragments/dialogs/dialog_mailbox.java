@@ -50,6 +50,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
+
 public class dialog_mailbox extends DialogFragment {
 
     private Context ctx;
@@ -221,7 +223,7 @@ public class dialog_mailbox extends DialogFragment {
                 e.printStackTrace();
             }
 
-            ManagerInterface api = new RetrofitClient().generalRF("").create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_DENUNCIAS).create(ManagerInterface.class);
 
             MailBoxPLD obj = new MailBoxPLD(encode,
                     sdf.format(calendar.getTime()),

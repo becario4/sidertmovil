@@ -362,7 +362,6 @@ public class geo_pendientes_fragment extends Fragment {
 
     }
 
-
     private void Filtros (){
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros))
@@ -399,25 +398,25 @@ public class geo_pendientes_fragment extends Fragment {
                                 else filtros.put("asesor_p","");
 
                                 if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    filtros.put("individual_p","1");
-                                    filtros.put("grupal_p","1");
+                                    filtros.put("tipo_cartera_ind_p","1");
+                                    filtros.put("tipo_cartera_gpo_p","1");
                                     cont_filtros += 2;
                                     where += " AND tipo_ficha IN (1,2)";
                                 }
                                 else if (cbInd.isChecked()){
-                                    filtros.put("individual_p","1");
-                                    filtros.put("grupal_p","0");
+                                    filtros.put("tipo_cartera_ind_p","1");
+                                    filtros.put("tipo_cartera_gpo_p","0");
                                     cont_filtros += 1;
                                     where += " AND tipo_ficha = "+1;
                                 }
                                 else if (cbGpo.isChecked()){
-                                    filtros.put("individual_p","0");
-                                    filtros.put("grupal_p","1");
+                                    filtros.put("tipo_cartera_ind_p","0");
+                                    filtros.put("tipo_cartera_gpo_p","1");
                                     cont_filtros += 1;
                                     where += " AND tipo_ficha = "+2;
                                 }else {
-                                    filtros.put("individual_p","0");
-                                    filtros.put("grupal_p","0");
+                                    filtros.put("tipo_cartera_ind_p","0");
+                                    filtros.put("tipo_cartera_gpo_p","0");
                                 }
                                 filtros.put("contador_p", String.valueOf(cont_filtros));
                                 session.setFiltrosGeoPend(filtros);
@@ -431,12 +430,13 @@ public class geo_pendientes_fragment extends Fragment {
 
                                 cont_filtros = 0;
                                 filtros = new HashMap<>();
-                                filtros.put("nombre_p","");
-                                filtros.put("colonia_p","");
-                                filtros.put("asesor_p","");
-                                filtros.put("individual_p","0");
-                                filtros.put("grupal_p","0");
-                                filtros.put("contador_p", "0");
+                                filtros.put("nombre_cartera_p","");
+                                filtros.put("colonia_cartera_p","");
+                                filtros.put("dia_semana_p","");
+                                filtros.put("asesor_cartera_p","");
+                                filtros.put("tipo_cartera_ind_p","0");
+                                filtros.put("tipo_cartera_gpo_p","0");
+                                filtros.put("contador_cartera_p", "0");
 
                                 session.setFiltrosGeoPend(filtros);
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -505,19 +505,6 @@ public class geo_pendientes_fragment extends Fragment {
             tvContFiltros.setText(String.valueOf(session.getFiltrosGeoPend().get(5)));
             tvContFiltros.setVisibility(View.VISIBLE);
         }
-
-        /*if (tvContFiltros != null) {
-            if (cont_filtros == 0) {
-                if (tvContFiltros.getVisibility() != View.GONE) {
-                    tvContFiltros.setVisibility(View.GONE);
-                }
-            } else {
-                tvContFiltros.setText(String.valueOf(session.getFiltrosGeo().get(5)));
-                if (tvContFiltros.getVisibility() != View.VISIBLE) {
-                    tvContFiltros.setVisibility(View.VISIBLE);
-                }
-            }
-        }*/
     }
 
     @Override

@@ -7,8 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,9 +37,11 @@ import com.sidert.sidertmovil.fragments.view_pager.rg_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_pagos_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_gestion_fragment;
 import com.sidert.sidertmovil.models.ModeloGrupal;
+import com.sidert.sidertmovil.utils.BottomNavigationViewHelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
@@ -84,6 +91,7 @@ import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.FRECUENCIA;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
 import static com.sidert.sidertmovil.utils.Constants.HORA_PAGO_ESTABLECIDA;
+import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.IMPRESORA;
 import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES_GRUPO;
@@ -120,6 +128,16 @@ import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
 import static com.sidert.sidertmovil.utils.Constants.SUMA_DE_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONO_CELULAR;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONO_DOMICILIO;
 import static com.sidert.sidertmovil.utils.Constants.TEL_CELULAR_SECRETARIA;
@@ -127,37 +145,45 @@ import static com.sidert.sidertmovil.utils.Constants.TEL_DOMICILIO_SECRETARIA;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TOTAL_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.VALUE;
+import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_GPO;
+import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO;
+import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_GPO;
 
 public class RecuperacionGrupal extends AppCompatActivity {
 
     private Context ctx;
 
     private Toolbar TBmain;
-    private TabLayout mTabLayout;
-    private boolean canExitApp = false;
-    public boolean flagRespuesta = false;
-    private CustomViewPager mViewPager;
-    public ModeloGrupal ficha_rg;
-    private TabsRecentsAdapter adapter;
-    private AlertDialog loading;
-    int exit = 0;
+
     private DBhelper dBhelper;
-    private SQLiteDatabase db;
-    private String external_id = "";
-    public int statusFicha = 0;
-    public JSONObject jsonRes;
-    private JSONObject jsonTemp;
+
+    public String id_prestamo = "";
+    public String id_respuesta = "";
+    public String monto_amortiz = "";
+    public String nombre = "";
+    public String tesorera = "";
+    public String monto_prestamo = "";
+    public double monto_requerido = 0;
+    public String num_prestamo = "";
+    public String grupo_id = "";
+    public String clave_grupo = "";
+    public double saldo_corte = 0;
+    public String fecha_establecida = "";
+
+    private BottomNavigationView nvMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_grupal);
         ctx             = this;
-        dBhelper = new DBhelper(ctx);
-        db = dBhelper.getWritableDatabase();
+        dBhelper        = new DBhelper(ctx);
         TBmain          = findViewById(R.id.TBmain);
-        mTabLayout      = findViewById(R.id.mTabLayout);
-        mViewPager      = findViewById(R.id.mViewPager);
+        nvMenu          = findViewById(R.id.nvMenu);
+        BottomNavigationViewHelper.disableShiftMode(nvMenu);
+        nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
+        //mTabLayout      = findViewById(R.id.mTabLayout);
+        //mViewPager      = findViewById(R.id.mViewPager);
 
         setSupportActionBar(TBmain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -165,255 +191,162 @@ public class RecuperacionGrupal extends AppCompatActivity {
         setTitle(getApplicationContext().getString(R.string.order));
 
         Bundle data = getIntent().getExtras();
-        external_id = data.getString(ORDER_ID);
-        Cursor row = dBhelper.getRecords(FICHAS_T, " WHERE external_id = '" + external_id + "'", "", null);
-        row.moveToFirst();
+        id_prestamo = data.getString(ID_PRESTAMO);
+        monto_amortiz = data.getString(MONTO_AMORTIZACION);
 
+        Cursor row;
+        if (ENVIROMENT)
+            row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
+        else
+            row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
 
-        if (row.getInt(23) == 2){
-            flagRespuesta = false;
-            invalidateOptionsMenu();
-        }
-        else {
-            flagRespuesta = true;
-            invalidateOptionsMenu();
-        }
-
-        Log.v("Estatus ficha", String.valueOf(flagRespuesta));
-
-        statusFicha = row.getInt(23);
-        if (!row.getString(22).isEmpty()) {
-            try {
-                jsonRes = new JSONObject(row.getString(22));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        row.moveToLast();
+        if (row.getCount() > 0){
+            if (row.getInt(25) == 0){
+                id_respuesta = row.getString(0);
             }
         }
 
-        Log.v("Respuesta", row.getString(22));
-        Log.v("fecha_ini_save 1", "true "+row.getString(18));
-        if (row.getString(18).isEmpty()) {
-            Log.v("fecha_ini_save 2", "true "+row.getString(18));
-            JSONObject val = new JSONObject();
-            JSONArray params = new JSONArray();
-            JSONObject values = new JSONObject();
-            try {
-                //Toast.makeText(ctx, "Fecha_inicio"+ Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
-                values.put(KEY, "fecha_ini");
-                values.put(VALUE, Miscellaneous.ObtenerFecha("timestamp"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        if (ENVIROMENT)
+            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+        else
+            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO_T  + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
-            params.put(values);
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+            grupo_id = row.getString(2);
+            num_prestamo = row.getString(3);
+            monto_amortiz = row.getString(8);
+            monto_prestamo = row.getString(6);
+            monto_requerido = row.getDouble(9);
+            nombre = row.getString(16);
+            fecha_establecida = row.getString(11);
+            tesorera = row.getString(17);
+            clave_grupo = row.getString(18);
+        }
+        row.close();
 
-            try {
-                val.put(PARAMS, params);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        if (ENVIROMENT)
+            row = dBhelper.customSelect(TBL_AMORTIZACIONES + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+        else
+            row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
 
-            try {
-                values = new JSONObject();
-                values.put(KEY, "external_id");
-                values.put(VALUE, external_id);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            params = new JSONArray();
-            params.put(values);
-
-            try {
-                val.put(CONDITIONALS, params);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                int res = dBhelper.updateRecords(ctx, Constants.FICHAS_T, val);
-                Log.v("PrintResponse", res+" respuesta de BD");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-
-                dBhelper.updateRecords(ctx, Constants.FICHAS_T, val);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            saldo_corte = row.getDouble(0);
         }
 
+        nvMenu.setSelectedItemId(R.id.nvGestion);
+    }
 
-        Log.v("Fecha", "fecha ini: " + row.getString(18)+ " fecha ter: " + row.getString(19) + " Fecha: " + row.getString(20));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        ficha_rg = new ModeloGrupal();
-
-        ficha_rg.setId(row.getString(2));
-        ficha_rg.setType(row.getString(3));
-        ficha_rg.setAssignDate(row.getString(4));
-        ficha_rg.setExpirationDate("");
-        ficha_rg.setCancellationDate("");
-
-        ModeloGrupal.Grupo grupo = new ModeloGrupal.Grupo();
-        try {
-            JSONObject jsonGrupo = new JSONObject(row.getString(10));
-            grupo.setClaveGrupo(jsonGrupo.getString(CLAVE_GRUPO));
-            grupo.setNombreGrupo(jsonGrupo.getString(NOMBRE_GRUPO));
-            grupo.setTotalIntegrantes(jsonGrupo.getInt(TOTAL_INTEGRANTES));
-            //Log.v("Integrantes", jsonGrupo.getJSONArray(Constants.INTEGRANTES_GRUPO).toString());
-            JSONArray jsonIntegrantes = new JSONArray(jsonGrupo.getJSONArray(INTEGRANTES_GRUPO).toString());
-            ArrayList<ModeloGrupal.IntegrantesDelGrupo> _integrantes = new ArrayList<>();
-            for(int i = 0; i < jsonIntegrantes.length(); i++){
-                JSONObject item = jsonIntegrantes.getJSONObject(i);
-                //Log.v("Integrante", item.getString(NOMBRE));
-                ModeloGrupal.IntegrantesDelGrupo integrante = new ModeloGrupal.IntegrantesDelGrupo();
-                integrante.setClaveCliente(item.getString(CLAVE_CLIENTE));
-                integrante.setPagoRealizado(item.getDouble(PAGO_REALIZADO));
-                integrante.setMonto(item.getDouble(MONTO));
-                integrante.setNombre(item.getString(NOMBRE));
-                integrante.setPagoSemanalInt(item.getDouble(PAGO_SEMANAL_INT));
-                _integrantes.add(integrante);
+    private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.nvDatos:
+                    setFragment(DETALLE_GPO, null);
+                    break;
+                case R.id.nvGestion:
+                    setFragment(RECUPERACION_GPO, null);
+                    break;
+                case R.id.nvReporte:
+                    setFragment(REPORTE_PAGOS_GPO, null);
+                    break;
             }
-            grupo.setIntegrantesDelGrupo(_integrantes);
-            ficha_rg.setGrupo(grupo);
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return true;
+        }
+    };
+
+    public void setFragment(String fragment, Bundle extras) {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        String tokenFragment = "";
+
+        switch (fragment) {
+            case DETALLE_GPO:
+                if (!(current instanceof rg_detalle_fragment)){
+                    rg_detalle_fragment detalle = new rg_detalle_fragment();
+                    detalle.setArguments(extras);
+                    transaction.replace(R.id.flMain, detalle, DETALLE_GPO);
+                    tokenFragment = DETALLE_GPO;
+                } else
+                    return;
+                break;
+            case RECUPERACION_GPO:
+                if (!(current instanceof recuperacion_gpo_fragment)){
+                    recuperacion_gpo_fragment recuperacion = new recuperacion_gpo_fragment();
+                    recuperacion.setArguments(extras);
+                    transaction.replace(R.id.flMain, recuperacion, RECUPERACION_GPO);
+                    tokenFragment = RECUPERACION_GPO;
+                } else
+                    return;
+
+                break;
+            case REPORTE_PAGOS_GPO:
+                if (!(current instanceof rg_pagos_fragment)){
+                    rg_pagos_fragment reporte = new rg_pagos_fragment();
+                    reporte.setArguments(extras);
+                    transaction.replace(R.id.flMain, reporte, REPORTE_PAGOS_GPO);
+                    tokenFragment = REPORTE_PAGOS_GPO;
+                } else
+                    return;
+                break;
+
         }
 
-        try {
-            JSONObject jsonPrestamo = new JSONObject(row.getString(7));
-            ModeloGrupal.Prestamo prestamo = new ModeloGrupal.Prestamo();
-            prestamo.setNumeroDePrestamo(jsonPrestamo.getString(NUMERO_DE_PRESTAMO));
-            prestamo.setDiasAtraso(jsonPrestamo.getInt(DIAS_ATRASO));
-            prestamo.setDiaSemana(jsonPrestamo.getString(DIA_SEMANA));
-            prestamo.setFechaDelCreditoOtorgado(jsonPrestamo.getString(FECHA_CREDITO_OTORGADO));
-            prestamo.setFechaPagoEstablecida(jsonPrestamo.getString(FECHA_PAGO_ESTABLECIDA));
-            prestamo.setFrecuencia(jsonPrestamo.getString(FRECUENCIA));
-            prestamo.setHoraPagoEstablecida(jsonPrestamo.getString(HORA_PAGO_ESTABLECIDA));
-            prestamo.setMontoAmortizacion(jsonPrestamo.getDouble(MONTO_AMORTIZACION));
-            prestamo.setMontoPrestamo(jsonPrestamo.getDouble(MONTO_PRESTAMO));
-            prestamo.setMontoTotalPrestamo(jsonPrestamo.getDouble(MONTO_TOTAL_PRESTAMO));
-            prestamo.setNumeroAmortizacion(jsonPrestamo.getInt(NUMERO_AMORTIZACION));
-            prestamo.setPagoRealizado(jsonPrestamo.getDouble(PAGO_REALIZADO));
-            prestamo.setPagoSemanal(jsonPrestamo.getDouble(PAGO_SEMANAL));
-            prestamo.setSaldoActual(jsonPrestamo.getDouble(SALDO_ACTUAL));
-            prestamo.setSumaDePagos(jsonPrestamo.getDouble(SUMA_DE_PAGOS));
-            ficha_rg.setPrestamo(prestamo);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            JSONObject jsonPresidanta = new JSONObject(row.getString(12));
-            ModeloGrupal.Presidenta presidenta = new ModeloGrupal.Presidenta();
-            presidenta.setNombrePresidenta(jsonPresidanta.getString(Constants.NOMBRE_PRESIDENTA));
-            presidenta.setAddressPresidenta(jsonPresidanta.getString(Constants.ADDRESS_PRESIDENTA));
-            presidenta.setTelCelularPresidenta(jsonPresidanta.getString(Constants.TEL_CELULAR_PRESIDENTA));
-            presidenta.setTelDomicilioPresidenta(jsonPresidanta.getString(Constants.TEL_DOMICILIO_PRESIDENTA));
-            ficha_rg.setPresidenta(presidenta);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            //Log.v("tesorera", row.getString(13));
-            JSONObject jsonTesorera = new JSONObject(row.getString(13));
-            ModeloGrupal.Tesorera tesorera = new ModeloGrupal.Tesorera();
-            tesorera.setNombre(jsonTesorera.getString(NOMBRE));
-            ModeloGrupal.Direccion direccion = new ModeloGrupal.Direccion();
-            direccion.setAddress(jsonTesorera.getJSONObject(DIRECCION).getString(ADDRESS));
-            direccion.setEstado(jsonTesorera.getJSONObject(DIRECCION).getString(ESTADO));
-            direccion.setMunicipio(jsonTesorera.getJSONObject(DIRECCION).getString(MUNICIPIO));
-            direccion.setCodigoPostal(jsonTesorera.getJSONObject(DIRECCION).getString(CODIGO_POSTAL));
-            direccion.setCalle(jsonTesorera.getJSONObject(DIRECCION).getString(CALLE));
-            direccion.setCiudad(jsonTesorera.getJSONObject(DIRECCION).getString(CIUDAD));
-            direccion.setColonia(jsonTesorera.getJSONObject(DIRECCION).getString(COLONIA));
-            direccion.setLatitude(jsonTesorera.getJSONObject(DIRECCION).getString(LATITUDE));
-            direccion.setLongitude(jsonTesorera.getJSONObject(DIRECCION).getString(LONGITUDE));
-            tesorera.setDireccion(direccion);
-            tesorera.setTelefonoCelular(jsonTesorera.getString(TELEFONO_CELULAR));
-            tesorera.setTelefonoDomicilio(jsonTesorera.getString(TELEFONO_DOMICILIO));
-            ficha_rg.setTesorera(tesorera);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            JSONObject jsonSecretaria = new JSONObject(row.getString(14));
-            ModeloGrupal.Secretaria secretaria = new ModeloGrupal.Secretaria();
-            secretaria.setNombreSecretaria(jsonSecretaria.getString(NOMBRE_SECRETARIA));
-            secretaria.setAddressSercretaria(jsonSecretaria.getString(ADDRESS_SECRETARIA));
-            secretaria.setTelCelularSecretaria(jsonSecretaria.getString(TEL_CELULAR_SECRETARIA));
-            secretaria.setTelDomicilioSecretaria(jsonSecretaria.getString(TEL_DOMICILIO_SECRETARIA));
-            ficha_rg.setSecretaria(secretaria);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            //Log.v("ReporteOmega", row.getString(15));
-            JSONArray _omega = new JSONArray(row.getString(15));
-            List<ModeloGrupal.ReporteAnaliticoOmega> _reporteOmega = new ArrayList<>();
-            for (int i = 0; i < _omega.length(); i++){
-                JSONObject item = _omega.getJSONObject(i);
-                ModeloGrupal.ReporteAnaliticoOmega rOmega = new ModeloGrupal.ReporteAnaliticoOmega();
-                rOmega.setNo(item.getInt(NO));
-                rOmega.setFechaAmortizacion(item.getString(FECHA_AMORTIZACION_GPO));
-                rOmega.setFechaPago(item.getString(FECHA_PAGO_GPO));
-                rOmega.setEstatus(item.getString(ESTATUS));
-                rOmega.setDias(item.getInt(DIAS));
-                _reporteOmega.add(rOmega);
+        if(!tokenFragment.equals(RECUPERACION_GPO)) {
+            int count = manager.getBackStackEntryCount();
+            if(count > 0) {
+                int index = count - 1;
+                String tag = manager.getBackStackEntryAt(index).getName();
+                if(!tag.equals(tokenFragment)) {
+                    transaction.addToBackStack(tokenFragment);
+                }
+            } else {
+                transaction.addToBackStack(tokenFragment);
             }
-            ficha_rg.setReporteAnaliticoOmega(_reporteOmega);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            cleanFragments();
         }
+        transaction.commit();
+    }
 
-        try {
-            JSONArray _pagos = new JSONArray(row.getString(16));
-            List<ModeloGrupal.TablaPagosGrupo> _tablaPagos = new ArrayList<>();
-            for (int i = 0; i < _pagos.length(); i++){
-                JSONObject item = _pagos.getJSONObject(i);
-                ModeloGrupal.TablaPagosGrupo tPagos = new ModeloGrupal.TablaPagosGrupo();
-                tPagos.setFecha(item.getString(FECHA));
-                tPagos.setBanco(item.getString(BANCO));
-                tPagos.setPago(item.getDouble(PAGO));
-                _tablaPagos.add(tPagos);
-            }
-            ficha_rg.setTablaPagosGrupo(_tablaPagos);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        setUpViewPager();
-
-        Intent i_res = new Intent();
-        i_res.putExtra(RESPONSE,1);
-        setResult(RESULT_OK, i_res);
+    public void cleanFragments() {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     private void setUpViewPager() {
         TabsRecentsAdapter adapter = new TabsRecentsAdapter(getSupportFragmentManager());
 
         adapter.addFragment(new rg_detalle_fragment(), "");
-        //adapter.addFragment(new rg_gestion_fragment(), "");
         adapter.addFragment(new recuperacion_gpo_fragment(), "");
         adapter.addFragment(new rg_pagos_fragment(), "");
 
-        mViewPager.setAdapter(adapter);
+        /*mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setVisibility(View.VISIBLE);
         mTabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         mViewPager.setSwipeable(true);
         mTabLayout.getTabAt(0).setIcon(R.drawable.ic_group).setContentDescription("Detalle");
-        //mTabLayout.getTabAt(1).setIcon(R.drawable.give_mone_white).setContentDescription("Gestión");
         mTabLayout.getTabAt(1).setIcon(R.drawable.give_mone_white).setContentDescription("Gestión");
-        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Historial de Pagos");
+        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Historial de Pagos");*/
 
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         if (flagRespuesta) {
             final AlertDialog confirm_dlg = Popups.showDialogConfirm(ctx, Constants.question,
@@ -441,9 +374,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
         else
             finish();
 
-    }
+    }*/
 
-    private void GuardarTemp (){
+    /*private void GuardarTemp (){
         recuperacion_gpo_fragment rg_data = ((recuperacion_gpo_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
         Miscellaneous m = new Miscellaneous();
         jsonTemp = new JSONObject();
@@ -595,9 +528,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
 
         finish();
         loading.dismiss();
-    }
+    }*/
 
-    private void GuardarGestion(recuperacion_gpo_fragment data){
+    /*private void GuardarGestion(recuperacion_gpo_fragment data){
         Validator validator = new Validator();
         Bundle b = new Bundle();
         Miscellaneous m = new Miscellaneous();
@@ -890,9 +823,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
             //Toast.makeText(ctx, "No contiene el parámetro TERMINADO", Toast.LENGTH_SHORT).show();
         }
 
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_save, menu);
@@ -902,9 +835,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
                 menu.getItem(i).setVisible(flagRespuesta);
         }
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -935,9 +868,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
@@ -1010,5 +943,5 @@ public class RecuperacionGrupal extends AppCompatActivity {
                 }
                 break;
         }
-    }
+    }*/
 }

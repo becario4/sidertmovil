@@ -23,7 +23,14 @@
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.AppBarLayout>
-
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/shadowdrawer"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
         <ListView
             android:id="@+id/lvIntegrantes"
             android:fillViewport="true"

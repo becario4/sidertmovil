@@ -86,7 +86,6 @@ public class rg_gestion_fragment extends Fragment {
 
     private Context ctx;
 
-    private TextView tvExternalID;
     private TextView tvContactoCliente;
     private TextView tvActualizarTelefono;
     private TextView tvResultadoGestion;
@@ -201,7 +200,6 @@ public class rg_gestion_fragment extends Fragment {
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         tvActualizarTelefono    = view.findViewById(R.id.tvActualizarTelefono);
-        tvExternalID            = view.findViewById(R.id.tvExternalID);
         tvContactoCliente       = view.findViewById(R.id.tvContactoCliente);
         tvResultadoGestion      = view.findViewById(R.id.tvResultadoGestion);
         tvMedioPago             = view.findViewById(R.id.tvMedioPago);
@@ -307,11 +305,11 @@ public class rg_gestion_fragment extends Fragment {
         etFechaDeposito.setOnClickListener(etFechaDeposito_OnClick);
 
         // ImageView Click
-        if(parent.flagRespuesta) {
+
             ivFirma.setOnClickListener(ivFirma_OnClick);
             ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
             ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
-        }
+
 
         //ImageButton Click
         ibMap.setOnClickListener(ibMap_OnClick);
@@ -466,11 +464,7 @@ public class rg_gestion_fragment extends Fragment {
             }
         });
 
-        try {
-            initComponents();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        //initComponents();
     }
 
     /*
@@ -582,7 +576,7 @@ public class rg_gestion_fragment extends Fragment {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
                             Intent i = new Intent(parent, CameraVertical.class);
-                            i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+                            //i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
                             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
                             dialog.dismiss();
 
@@ -608,7 +602,7 @@ public class rg_gestion_fragment extends Fragment {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+                                //i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
                                 startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
                                 dialog.dismiss();
 
@@ -637,7 +631,7 @@ public class rg_gestion_fragment extends Fragment {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+                                //i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
                                 startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
                                 dialog.dismiss();
 
@@ -699,7 +693,7 @@ public class rg_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+            //i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
         }
     };
@@ -708,7 +702,7 @@ public class rg_gestion_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(parent, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+            //i.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_TICKET);
         }
     };
@@ -746,20 +740,20 @@ public class rg_gestion_fragment extends Fragment {
                     JSONArray _integrantes_pago = new JSONArray(_Integrantes);
                     for (int i = 0; i < _integrantes_pago.length(); i++){
                         JSONObject item = _integrantes_pago.getJSONObject(i);
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoRealizado(item.getDouble("pago"));
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoSolidario(item.getDouble("solidario"));
-                        parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoAdelanto(item.getDouble("adelanto"));
+                        //parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoRealizado(item.getDouble("pago"));
+                        //parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoSolidario(item.getDouble("solidario"));
+                        //parent.ficha_rg.getGrupo().getIntegrantesDelGrupo().get(Integer.parseInt(item.getString("clave_cliente"))-1).setPagoAdelanto(item.getDouble("adelanto"));
                     }
-                    i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
-                    i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
+                    //i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
+                    //i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
                 }
                 else{
                     Log.v("-","-------------------------------------------------------------");
                     Log.v("Pago Integrantes", "false");
                     Log.v("-","-------------------------------------------------------------");
-                    i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
+                    //i_integrantes.putExtra(Constants.INTEGRANTES_GRUPO, parent.ficha_rg.getGrupo());
                 }
-                i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
+                //i_integrantes.putExtra(Constants.EDITABLE, parent.flagRespuesta);
                 startActivityForResult(i_integrantes, Constants.REQUEST_CODE_INTEGRANTES_GPO);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -774,8 +768,8 @@ public class rg_gestion_fragment extends Fragment {
         public void onClick(View v) {
             Intent i_arqueoCaja = new Intent(ctx, ArqueoDeCaja.class);
             i_arqueoCaja.putExtra(Constants.PAGO_REALIZADO, Double.parseDouble(etPagoRealizado.getText().toString()));
-            i_arqueoCaja.putExtra(Constants.NOMBRE_GRUPO, parent.ficha_rg.getGrupo().getNombreGrupo());
-            i_arqueoCaja.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
+            //i_arqueoCaja.putExtra(Constants.NOMBRE_GRUPO, parent.ficha_rg.getGrupo().getNombreGrupo());
+            //i_arqueoCaja.putExtra(Constants.ORDER_ID, parent.ficha_rg.getId());
             startActivityForResult(i_arqueoCaja, Constants.REQUEST_CODE_ARQUEO_CAJA);
         }
     };
@@ -785,7 +779,7 @@ public class rg_gestion_fragment extends Fragment {
         public void onClick(View v) {
             if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim()) > 0){
                 Intent i = new Intent(ctx, PrintSeewoo.class);
-                OrderModel order = new OrderModel(parent.ficha_rg.getId(),
+                /*OrderModel order = new OrderModel(parent.ficha_rg.getId(),
                         "002",
                         parent.ficha_rg.getPrestamo().getMontoPrestamo(),
                         parent.ficha_rg.getPrestamo().getPagoSemanal(),
@@ -796,7 +790,7 @@ public class rg_gestion_fragment extends Fragment {
                         "NOMBRE DEL ALGUN ASESOR",
                         0);
 
-                i.putExtra("order",order);
+                i.putExtra("order",order);*/
                 i.putExtra("tag",true);
 
                 startActivityForResult(i,Constants.REQUEST_CODE_IMPRESORA);
@@ -936,14 +930,14 @@ public class rg_gestion_fragment extends Fragment {
         }
     }
     private void SelectMedioPago (int pos){
-        if (!parent.flagRespuesta) {
+        //if (!parent.flagRespuesta) {
             spMedioPago.setEnabled(false);
             if (pos > 0 && pos < 7 || pos == 8) {
                 etFechaDeposito.setEnabled(false);
             } else {
                 etFechaDeposito.setEnabled(true);
             }
-        }
+        //}
 
         tvMedioPago.setError(null);
         switch (pos) {
@@ -1049,7 +1043,7 @@ public class rg_gestion_fragment extends Fragment {
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case -1: //Sin seleccionar una opción o cualquier otro valor
-                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.GONE);
                 llMontoPagoRealizado.setVisibility(View.GONE);
@@ -1061,7 +1055,7 @@ public class rg_gestion_fragment extends Fragment {
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 break;
             case 1: // Si cuenta con detalle
-                etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
+                //etPagoRealizado.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoRealizado()));
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.VISIBLE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
@@ -1122,8 +1116,7 @@ public class rg_gestion_fragment extends Fragment {
     }
 
     //======================  Otros Métodos  =================================
-    private void initComponents() throws JSONException {
-        tvExternalID.setText(parent.ficha_rg.getId());
+    /*private void initComponents() throws JSONException {
         tvmapa.setError("");
         tvContactoCliente.setError("");
         etMontoPagoRequerido.setText(String.valueOf(parent.ficha_rg.getPrestamo().getPagoSemanal()));
@@ -1363,7 +1356,7 @@ public class rg_gestion_fragment extends Fragment {
                 }
             }
         }
-    }
+    }*/
 
     private void setDatePicked(EditText et){
         sdf.setTimeZone(myCalendar.getTimeZone());

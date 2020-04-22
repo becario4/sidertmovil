@@ -40,6 +40,7 @@ import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_message;
 import com.sidert.sidertmovil.models.LoginResponse;
+import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.utils.BkgJobServiceLogout;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
@@ -49,6 +50,7 @@ import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
@@ -63,6 +65,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.OneTimeWorkRequest;
@@ -81,6 +84,7 @@ public class Login extends AppCompatActivity {
     private EditText etUser;
     private EditText etPassword;
     private Button btnLogin;
+    private CardView cvCovid;
     private CardView cvDenunciarPLD;
     private Validator validator;
     private SessionManager session;
@@ -112,6 +116,7 @@ public class Login extends AppCompatActivity {
         etUser          = findViewById(R.id.etUser);
         etPassword      = findViewById(R.id.etPassword);
         btnLogin        = findViewById(R.id.btnLogin);
+        cvCovid         = findViewById(R.id.cvInfoCovid);
         cvDenunciarPLD  = findViewById(R.id.cvDenciarPLD);
 
         //etUser.setText("GERENTEBANDERILLA");
@@ -121,6 +126,7 @@ public class Login extends AppCompatActivity {
         btnLogin.setOnClickListener(btnLogin_OnClick);
 
         cvDenunciarPLD.setOnClickListener(cvDenunciarPLD_OnClick);
+        cvCovid.setOnClickListener(cvCovid_OnClick);
 
         etUser.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -154,6 +160,14 @@ public class Login extends AppCompatActivity {
         public void onClick(View v) {
             dialog_mailbox complaint = new dialog_mailbox();
             complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);
+        }
+    };
+
+    private View.OnClickListener cvCovid_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent covid = new Intent(context, ComunicadoCovid.class);
+            startActivity(covid);
         }
     };
 
@@ -211,8 +225,7 @@ public class Login extends AppCompatActivity {
                                         json_info.getString(Constants.AUTHORITIES).contains("ROLE_GERENTEREGIONAL") ||
                                         json_info.getString(Constants.AUTHORITIES).contains("ROLE_COORDINADOR") ||
                                         json_info.getString(Constants.AUTHORITIES).contains("ROLE_DIRECCION") ||
-                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_ANALISTA") ||
-                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_SUPER")){
+                                        json_info.getString(Constants.AUTHORITIES).contains("ROLE_ANALISTA")){
 
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, json_info.getString(Constants.SERIE_ID));
@@ -280,6 +293,22 @@ public class Login extends AppCompatActivity {
                                     startActivity(home);
                                     finish();
                                 }
+                                else if(json_info.getString(Constants.AUTHORITIES).contains("ROLE_SUPER")){
+                                    session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
+                                            Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.PATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.MATERNO)),
+                                            Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
+                                            Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
+                                            true,
+                                            Miscellaneous.validString(res.getAccessToken()));
+
+                                    Intent home = new Intent(context, Home.class);
+                                    home.putExtra("login", true);
+                                    startActivity(home);
+                                    finish();
+
+                                }
                                 else if(json_info.getString(Constants.AUTHORITIES).contains("ROLE_ASESOR")){
                                     session.setUser(Miscellaneous.validString(json_info.getString(Constants.SERIE_ID)),
                                             Miscellaneous.validString(json_info.getString(Constants.NOMBRE_EMPLEADO)),
@@ -289,7 +318,9 @@ public class Login extends AppCompatActivity {
                                             Miscellaneous.validString(json_info.getString(Constants.AUTHORITIES)),
                                             true,
                                             Miscellaneous.validString(res.getAccessToken()));
+
                                     Intent home = new Intent(context, Home.class);
+                                    home.putExtra("login", true);
                                     startActivity(home);
                                     finish();
                                 }
@@ -402,5 +433,6 @@ public class Login extends AppCompatActivity {
             requestPermissions(perms, permsRequestCode);
         }
     }
+
 
 }

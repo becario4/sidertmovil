@@ -47,12 +47,12 @@ public class cvi_pagos_fragment extends Fragment {
                 rvPagos.setAdapter(null);
                 switch (checkedId){
                     case R.id.rbTablaPagos:
-                        adapter_pagos = new adapter_pagos_ind(ctx, parent.ficha_cvi.getTablaPagosCliente());
-                        rvPagos.setAdapter(adapter_pagos);
+                        //adapter_pagos = new adapter_pagos_ind(ctx, parent.ficha_cvi.getTablaPagosCliente());
+                        //rvPagos.setAdapter(adapter_pagos);
                         break;
                     case R.id.rbReporteOmega:
-                        adapter_omega = new adapter_reporte_omega_ind(ctx, parent.ficha_cvi.getReporteAnaliticoOmega());
-                        rvPagos.setAdapter(adapter_omega);
+                        //adapter_omega = new adapter_reporte_omega_ind(ctx, parent.ficha_cvi.getReporteAnaliticoOmega());
+                        //rvPagos.setAdapter(adapter_omega);
                         break;
                 }
             }

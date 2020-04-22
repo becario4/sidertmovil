@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">1.2.1.1</string>
+    <string name="app_name">SidertM</string>
+    <string name="app_version">2.0.1</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -264,6 +264,7 @@
     <string name="confirm_borrar_solicitud">¿Está completamente seguro que desea borrar la solicitud?</string>
     <string name="guardando_info">Guardando información, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
+    <string name="mess_arqueo_caja">El monto total registrado en el arqueo de caja no coincide con el pago realizado</string>
     <string name="confirm_exit">Existen cambios recientes, ¿desea salir sin guardar cambios?</string>
     <string name="leyenda_guardar_gestion">Este es un resumen de los datos que capturaste, antes de proseguir con el guardado de la información confirma que los datos son los correctos.</string>
     <string name="privacy_polices_lite">SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TRÓPICO, S.A. DE C.V., con domicilio en Sarapes 74, Fracc. Rincón Mexicano, C.P. 91880, Veracruz, Ver., México.  En cumplimiento a lo establecido en la Ley Federal de Protacción &lt;u>&lt;font color="#1576ba">Leer más . . .&lt;font>&lt;u></string>
@@ -302,10 +303,10 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="outdated_information">
-        <item>GARANTIA</item>
-        <item>REFINACIAMIENTO</item>
-        <item>CONDONACION</item>
-        <item>CAPTURA DE PAGO</item>
+        <item>GARANTIA</item>               <!-- 0 -->
+        <item>REFINACIAMIENTO</item>        <!-- 1 -->
+        <item>CONDONACION</item>            <!-- 2 -->
+        <item>CAPTURA DE PAGO</item>        <!-- 3 -->
     </string-array>
 
     <string-array name="method_pay">

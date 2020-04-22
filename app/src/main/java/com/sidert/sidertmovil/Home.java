@@ -57,6 +57,7 @@ import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.PrintRecibos;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.Calendar;
@@ -201,7 +202,12 @@ public class Home extends AppCompatActivity{
             else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_SUPER")){
                 NVmenu.getMenu().clear();
                 NVmenu.inflateMenu(R.menu.navigation_menu_super);
-                if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
+                if(data != null && data.getBoolean("login")){
+                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                    ss.GetCartera(this);
+                }
+
+                /*if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
                     Log.e("Sincronizado", "On Start Service Job 15 min");
                     ComponentName serviceComponent;
                     serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
@@ -212,8 +218,8 @@ public class Home extends AppCompatActivity{
                     JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     jobScheduler.schedule(builder.build());
                 } else
-                    Log.e("Sincronizado", "Disabled Service Job");
-                setFragment(NameFragments.ERASE_TABLES, null);
+                    Log.e("Sincronizado", "Disabled Service Job");*/
+                setFragment(NameFragments.ORDERS, null);
             }
             else {
                 setFragment(NameFragments.ORDERS, null);

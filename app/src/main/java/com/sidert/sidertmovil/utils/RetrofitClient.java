@@ -8,6 +8,13 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CATALOGOS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_LOGIN;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
+
 public class RetrofitClient {
 
     private static Retrofit retrofit = null;
@@ -23,17 +30,23 @@ public class RetrofitClient {
 
         String base_url = WebServicesRoutes.BASE_URL;
         switch (controller){
-            case Constants.CONTROLLER_LOGIN:
+            case CONTROLLER_LOGIN:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_LOGIN;
                 break;
-            case Constants.CONTROLLER_FICHAS:
+            case CONTROLLER_FICHAS:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_FICHAS;
                 break;
-            case Constants.CONTROLLER_CATALOGOS:
+            case CONTROLLER_CATALOGOS:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CATALOGOS;
                 break;
-            case Constants.CONTROLLER_SOLICITUDES:
+            case CONTROLLER_SOLICITUDES:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_SOLICITUDES;
+                break;
+            case CONTROLLER_MOVIL:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_MOVIL;
+                break;
+            case CONTROLLER_DENUNCIAS:
+                base_url = "http://sidert.ddns.net:81/serviciosidert/Api.svc/";
                 break;
         }
 

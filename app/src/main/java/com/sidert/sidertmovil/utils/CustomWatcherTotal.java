@@ -62,6 +62,8 @@ public class CustomWatcherTotal implements TextWatcher {
 
         if (cambio > 0)
             views[16].setText(String.valueOf(cambio));
+        else
+            views[16].setText("0");
 
     }
 

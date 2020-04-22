@@ -259,8 +259,10 @@ public class FormatoRecibos extends AppCompatActivity {
 
                 PrintRecibos print = new PrintRecibos();
                 print.WriteTicket(ctx, mRecibo);
+                try{
                 if (!mRecibo.isReeimpresion()) {
                     if (mRecibo.isTipoImpresion()) {
+                        bluetoothPort.disconnect();
                         tvTipoImpresion.setText("Copia");
                         tvTipoFirma.setText("Firma Cliente");
                         tvNombreFirma.setText(mRecibo.getNombreCliente());
@@ -269,10 +271,16 @@ public class FormatoRecibos extends AppCompatActivity {
                         btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
                         btnCopia.setEnabled(true);
                     } else {
+                        bluetoothPort.disconnect();
                         btnCopia.setVisibility(View.GONE);
                         btnCopiaRe.setVisibility(View.VISIBLE);
                         btnOriginalRe.setVisibility(View.VISIBLE);
                     }
+                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
             }

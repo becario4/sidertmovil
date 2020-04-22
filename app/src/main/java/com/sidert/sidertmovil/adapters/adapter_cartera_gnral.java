@@ -44,10 +44,10 @@ public class adapter_cartera_gnral extends RecyclerView.Adapter<adapter_cartera_
         MCarteraGnral item = data.get(i);
 
         switch (item.getTipo()){
-            case 1:
+            case "INDIVIDUAL":
                 holder.ivTipo.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_default_user));
                 break;
-            case 2:
+            case "GRUPAL":
                 holder.ivTipo.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_users));
                 break;
         }

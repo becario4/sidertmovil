@@ -1,8 +1,12 @@
 package com.sidert.sidertmovil.activities;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,13 +19,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomWatcherTotal;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Validator;
 
+import java.util.HashMap;
 import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 
 public class ArqueoDeCaja extends AppCompatActivity {
 
@@ -29,7 +40,8 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
     private Context ctx;
 
-    private TextView tvExternalID;
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
 
     private EditText etNombreGrupo;
     private EditText etPagoRealizado;
@@ -53,15 +65,18 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
     private Validator validator;
 
+    private String id_gestion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arqueo_de_caja);
         ctx     = getApplicationContext();
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
 
         tbMain              = findViewById(R.id.tbMain);
 
-        tvExternalID        = findViewById(R.id.tvExternalID);
         etNombreGrupo       = findViewById(R.id.etNombreGrupo);
         etPagoRealizado     = findViewById(R.id.etPagoRealizado);
         etBmil              = findViewById(R.id.etBmil);
@@ -108,7 +123,8 @@ public class ArqueoDeCaja extends AppCompatActivity {
         };
         double pagoRealizado = getIntent().getDoubleExtra(Constants.PAGO_REALIZADO,0);
 
-        tvExternalID.setText(getIntent().getStringExtra(Constants.ORDER_ID));
+        id_gestion = getIntent().getStringExtra(ID_GESTION);
+
         etNombreGrupo.setText(getIntent().getStringExtra(Constants.NOMBRE_GRUPO));
         etPagoRealizado.setText(String.valueOf(pagoRealizado));
 
@@ -126,6 +142,31 @@ public class ArqueoDeCaja extends AppCompatActivity {
         etCveinte.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etCdiez.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
 
+        Cursor row;
+        if (ENVIROMENT)
+            row = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+        else
+            row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            etBmil.setText(row.getString(2));
+            etBquinientos.setText(row.getString(3));
+            etBdocientos.setText(row.getString(4));
+            etBcien.setText(row.getString(5));
+            etBcincuenta.setText(row.getString(6));
+            etBveinte.setText(row.getString(7));
+            etPdiez.setText(row.getString(8));
+            etPcinco.setText(row.getString(9));
+            etPdos.setText(row.getString(10));
+            etPuno.setText(row.getString(11));
+            etCcincuenta.setText(row.getString(12));
+            etCveinte.setText(row.getString(13));
+            etCdiez.setText(row.getString(14));
+        }
+        row.close();
+
         validator = new Validator();
 
     }
@@ -136,11 +177,25 @@ public class ArqueoDeCaja extends AppCompatActivity {
                 R.string.guardar_cambios, R.string.save, new Popups.DialogMessage() {
             @Override
             public void OnClickListener(AlertDialog dialog) {
-                i_save_caja.putExtra(Constants.SAVE,true);
-                setResult(RESULT_OK, i_save_caja);
-                finish();
-                dialog.dismiss();
-
+                if (Double.parseDouble(etPagoRealizado.getText().toString()) == Double.parseDouble(etTotal.getText().toString())) {
+                    boolean b = ArqueoCaja();
+                    i_save_caja.putExtra(Constants.SAVE, b);
+                    setResult(RESULT_OK, i_save_caja);
+                    finish();
+                    dialog.dismiss();
+                }
+                else {
+                    dialog.dismiss();
+                    AlertDialog dlg = Popups.showDialogMessage(ArqueoDeCaja.this, "default", R.string.mess_arqueo_caja, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+                    Objects.requireNonNull(dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dlg.show();
+                }
             }
         }, R.string.cancel, new Popups.DialogMessage() {
             @Override
@@ -154,6 +209,56 @@ public class ArqueoDeCaja extends AppCompatActivity {
         Objects.requireNonNull(dialog_confirm.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
         dialog_confirm.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog_confirm.show();
+    }
+
+    private boolean ArqueoCaja(){
+        Cursor row;
+        if (ENVIROMENT)
+            row = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+        else
+            row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+
+        if (row.getCount() > 0){ //Actualiza
+            ContentValues cv = new ContentValues();
+            cv.put("mil", etBmil.getText().toString().trim());
+            cv.put("quinientos", etBquinientos.getText().toString().trim());
+            cv.put("doscientos", etBdocientos.getText().toString().trim());
+            cv.put("cien", etBcien.getText().toString().trim());
+            cv.put("cincuenta", etBcincuenta.getText().toString().trim());
+            cv.put("veinte", etBveinte.getText().toString().trim());
+            cv.put("diez", etPdiez.getText().toString().trim());
+            cv.put("cinco", etPcinco.getText().toString().trim());
+            cv.put("dos", etPdos.getText().toString().trim());
+            cv.put("peso", etPuno.getText().toString().trim());
+            cv.put("c_cincuenta", etCcincuenta.getText().toString().trim());
+            cv.put("c_veinte", etCveinte.getText().toString().trim());
+            cv.put("c_diez", etCdiez.getText().toString().trim());
+
+            if (ENVIROMENT)
+                db.update(TBL_ARQUEO_CAJA, cv, "id_gestion = ?", new String[]{id_gestion});
+            else
+                db.update(TBL_ARQUEO_CAJA_T, cv, "id_gestion = ?", new String[]{id_gestion});
+        }
+        else{ //Registra
+            HashMap<Integer, String> params = new HashMap<>();
+            params.put(0, id_gestion);
+            params.put(1, etBmil.getText().toString().trim());
+            params.put(2, etBquinientos.getText().toString().trim());
+            params.put(3, etBdocientos.getText().toString().trim());
+            params.put(4, etBcien.getText().toString().trim());
+            params.put(5, etBcincuenta.getText().toString().trim());
+            params.put(6, etBveinte.getText().toString().trim());
+            params.put(7, etPdiez.getText().toString().trim());
+            params.put(8, etPcinco.getText().toString().trim());
+            params.put(9, etPdos.getText().toString().trim());
+            params.put(10, etPuno.getText().toString().trim());
+            params.put(11, etCcincuenta.getText().toString().trim());
+            params.put(12, etCveinte.getText().toString().trim());
+            params.put(13, etCdiez.getText().toString().trim());
+
+            dBhelper.saveArqueoCaja(db, params);
+        }
+        return true;
     }
 
     @Override

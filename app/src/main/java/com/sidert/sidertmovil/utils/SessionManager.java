@@ -32,6 +32,21 @@ public class SessionManager {
     private final String CONTADOR_C       = "contador_c";
     private final String CLIENTE_GRUPO_C  = "cliente_grupo_c";
     private final String ACCESS_TOKEN   = "access_token";
+    //==================== FILTROS CARTERA ==========================================
+    private final String TIPO_CARTERA_IND_P = "tipo_cartera_ind_p";
+    private final String TIPO_CARTERA_GPO_P = "tipo_cartera_gpo_p";
+    private final String TIPO_CARTERA_IND_R = "tipo_cartera_ind_r";
+    private final String TIPO_CARTERA_GPO_R = "tipo_cartera_gpo_r";
+    private final String NOMBRE_CARTERA_P   = "nombre_cartera_p";
+    private final String NOMBRE_CARTERA_R   = "nombre_cartera_R";
+    private final String DIA_SEMANA_P       = "dia_semana_p";
+    private final String DIA_SEMANA_R       = "dia_semana_r";
+    private final String COLONIA_CARTERA_P  = "colonia_cartera_p";
+    private final String COLONIA_CARTERA_R  = "colonia_cartera_r";
+    private final String ASESOR_CARTERA_P   = "asesor_cartera_p";
+    private final String ASESOR_CARTERA_R   = "asesor_cartera_r";
+    private final String CONTADOR_CARTERA_P = "contador_cartera_p";
+    private final String CONTADOR_CARTERA_R = "contador_cartera_r";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -88,6 +103,33 @@ public class SessionManager {
         filtros.add(preferences.getString(INDIVIDUAL_C, ""));
         filtros.add(preferences.getString(GRUPAL_C, ""));
         filtros.add(preferences.getString(CONTADOR_C, "0"));
+        return filtros;
+    }
+
+    //==================== Filtros de Cartera ======================================================
+    public void setFiltrosCartera (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_CARTERA_IND_P, filtros.get(TIPO_CARTERA_IND_P));
+        editor.putString(TIPO_CARTERA_GPO_P, filtros.get(TIPO_CARTERA_GPO_P));
+        editor.putString(NOMBRE_CARTERA_P, filtros.get(NOMBRE_CARTERA_P));
+        editor.putString(DIA_SEMANA_P, filtros.get(DIA_SEMANA_P));
+        editor.putString(COLONIA_CARTERA_P, filtros.get(COLONIA_CARTERA_P));
+        editor.putString(ASESOR_CARTERA_P, filtros.get(ASESOR_CARTERA_P));
+        editor.putString(CONTADOR_CARTERA_P, filtros.get(CONTADOR_CARTERA_P));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCartera (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_CARTERA_IND_P, ""));
+        filtros.add(preferences.getString(TIPO_CARTERA_GPO_P, ""));
+        filtros.add(preferences.getString(NOMBRE_CARTERA_P,""));
+        filtros.add(preferences.getString(DIA_SEMANA_P, ""));
+        filtros.add(preferences.getString(COLONIA_CARTERA_P, ""));
+        filtros.add(preferences.getString(ASESOR_CARTERA_P, ""));
+        filtros.add(preferences.getString(CONTADOR_CARTERA_P, "0"));
         return filtros;
     }
 

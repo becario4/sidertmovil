@@ -45,7 +45,7 @@ public class PrintRecibos {
 
     private void HeadTicket(Context ctx, MFormatoRecibo ticket){
         try {
-            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.imagen1);
+            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "En caso de dudas o aclaraciones ");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comunicarse al 01 800 112 6666");

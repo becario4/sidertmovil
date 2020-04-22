@@ -40,6 +40,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Intent start = new Intent(ctx, MainActivity.class);
+                start.putExtra("login", false);
                 startActivity(start);
                 finish();
             }

@@ -4,7 +4,11 @@ import android.provider.ContactsContract;
 
 import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
+import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MPrestamoGpoRes;
+import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
+import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.models.ModeloColonia;
@@ -67,6 +71,30 @@ public interface ManagerInterface {
                                                   @Query("incluir_gestiones") boolean incluir_gestiones,
                                                   @Header("Authorization") String barer_token);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_CARTERA)
+    Call<List<MCartera>> getCartera(@Query("usuario_id") String usuario_id,
+                              @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_IND)
+    Call<List<MPrestamoRes>> getPrestamosInd(@Path("id_cliente") int id_cliente,
+                                          @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_GPO)
+    Call<List<MPrestamoGpoRes>> getPrestamosGpo(@Path("id_grupo") int id_grupo,
+                                             @Header("Authorization") String barer_token);
+
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
     Call<ModeloResSaveGeo> guardarGeo(@Header("Authorization") String token,
@@ -99,6 +127,15 @@ public interface ManagerInterface {
                                             @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
                                             @Part("fecha_envio") RequestBody fecha_envio,
                                             @Part MultipartBody.Part foto_fachada);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_RESPUESTA_GESTION)
+    Call<MRespuestaGestion> guardarRespuesta(@Header("Authorization") String token,
+                                             @Part("prestamo_id") RequestBody prestamo_id,
+                                             @Part("num_solicitud") RequestBody num_solicitud,
+                                             @Part("respuesta") RequestBody respuesta,
+                                             @Part MultipartBody.Part evidencia,
+                                             @Part MultipartBody.Part firma);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_ORIGINACION_IND)

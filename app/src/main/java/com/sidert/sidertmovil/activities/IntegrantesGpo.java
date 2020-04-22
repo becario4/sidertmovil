@@ -1,8 +1,9 @@
 package com.sidert.sidertmovil.activities;
 
-import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -11,7 +12,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,12 +19,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_integrantes_gpo;
-import com.sidert.sidertmovil.adapters.adapter_list_integrantes;
-import com.sidert.sidertmovil.models.ModeloGrupal;
+import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.MIntegrantePago;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Popups;
 
@@ -33,16 +32,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
+import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TOTAL;
 
 public class IntegrantesGpo extends AppCompatActivity {
 
-    @SuppressLint("UseSparseArrays")
-    private HashMap<Integer, ModeloGrupal.IntegrantesDelGrupo> _pagos = new HashMap<>();
-
-    private JSONArray jsonIntegrantes;
+    private ArrayList<MIntegrantePago> integrantePagos;
+    private String id_prestamo = "";
+    private String id_gestion = "";
 
     private CheckBox cbSelectAll;
 
@@ -52,14 +57,17 @@ public class IntegrantesGpo extends AppCompatActivity {
 
     boolean flag = false;
     double total = 0;
-    boolean isEditable = false;
 
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_integrantes_gpo);
         ctx = this;
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
         Toolbar tbMain = findViewById(R.id.tbMain);
 
         cbSelectAll     = findViewById(R.id.cbSelectAll);
@@ -72,16 +80,14 @@ public class IntegrantesGpo extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        final ModeloGrupal.Grupo grupo = (ModeloGrupal.Grupo) getIntent().getSerializableExtra(Constants.INTEGRANTES_GRUPO);
-        isEditable = getIntent().getBooleanExtra(Constants.EDITABLE, false);
+        integrantePagos = (ArrayList<MIntegrantePago>) getIntent().getSerializableExtra(INTEGRANTES);
+        id_prestamo =  getIntent().getStringExtra(ID_PRESTAMO);
+        id_gestion  =  getIntent().getStringExtra(ID_GESTION);
         invalidateOptionsMenu();
-        setTitle(grupo.getNombreGrupo());
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        adapter = new adapter_integrantes_gpo(ctx, isEditable, grupo.getIntegrantesDelGrupo());
-
-        cbSelectAll.setEnabled(isEditable);
+        adapter = new adapter_integrantes_gpo(ctx, integrantePagos);
 
         rvIntegrantesGpo.setAdapter(adapter);
         rvIntegrantesGpo.setItemViewCacheSize(20);
@@ -90,17 +96,25 @@ public class IntegrantesGpo extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                for (int i=0;i<grupo.getIntegrantesDelGrupo().size();i++){
-                    if (grupo.getIntegrantesDelGrupo().get(i).isPagoCompleto()){
+                //adapter.selectAllItem(isChecked);
+
+                //adapter.notifyDataSetChanged();
+                for (int i=0;i<integrantePagos.size();i++){
+
+                    integrantePagos.get(i).setPagoRequerido(isChecked);
+
+                    /*if (integrantePagos.get(i).isPagoRequerido()){
                         adapter.selectAllItem(false);
-                        adapter.notifyDataSetChanged();
                     }
                     else {
                         adapter.selectAllItem(true);
-                        adapter.notifyDataSetChanged();
-                    }
-                    break;
+                    }*/
+
                 }
+
+                adapter.notifyDataSetChanged();
+
+
             }
         });
     }
@@ -110,9 +124,6 @@ public class IntegrantesGpo extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_save, menu);
 
-        for (int i = 0; i < menu.size(); i++)
-            menu.getItem(i).setVisible(isEditable);
-
         return true;
     }
 
@@ -120,7 +131,6 @@ public class IntegrantesGpo extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (isEditable) {
                     SumarPagos();
 
                     if (flag) {
@@ -129,10 +139,22 @@ public class IntegrantesGpo extends AppCompatActivity {
                                 R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
                                     @Override
                                     public void OnClickListener(AlertDialog dialog) {
+                                        for(int i = 0; i < integrantePagos.size(); i++){
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                            cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                            cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                            cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                            if (ENVIROMENT)
+                                                db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                            else
+                                                db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                        }
                                         Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
-                                        i_resumen_int.putExtra("INTEGRANTES", jsonIntegrantes.toString());
-                                        i_resumen_int.putExtra("TOTAL", finalTotal + "");
-                                        startActivityForResult(i_resumen_int, Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                        i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                        i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                        i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                        startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
                                         dialog.dismiss();
 
                                     }
@@ -149,9 +171,7 @@ public class IntegrantesGpo extends AppCompatActivity {
                         confirm_dlg.show();
                     } else
                         finish();
-                }
-                else
-                    finish();
+
                 break;
             case  R.id.save:
                 SumarPagos();
@@ -162,10 +182,22 @@ public class IntegrantesGpo extends AppCompatActivity {
                             R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
                                 @Override
                                 public void OnClickListener(AlertDialog dialog) {
+                                    for(int i = 0; i < integrantePagos.size(); i++){
+                                        ContentValues cv = new ContentValues();
+                                        cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                        cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                        cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                        cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                        if (ENVIROMENT)
+                                            db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                        else
+                                            db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                    }
                                     Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
-                                    i_resumen_int.putExtra("INTEGRANTES", jsonIntegrantes.toString());
-                                    i_resumen_int.putExtra("TOTAL", finalTotal+"");
-                                    startActivityForResult(i_resumen_int, Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                    i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                    i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                    i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                    startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
                                     dialog.dismiss();
                                 }
                             }, R.string.cancel, new Popups.DialogMessage() {
@@ -198,7 +230,7 @@ public class IntegrantesGpo extends AppCompatActivity {
     }
 
     private void SumarPagos() {
-        jsonIntegrantes = new JSONArray();
+       JSONArray jsonIntegrantes = new JSONArray();
 
         for(int i = 0; i < adapter.data.size(); i++){
             if (Double.parseDouble(adapter.data.get(i).getPagoRealizado().toString()) > 0){
@@ -206,13 +238,13 @@ public class IntegrantesGpo extends AppCompatActivity {
                 try {
                     itemIntegrante.put("nombre", adapter.data.get(i).getNombre());
                     itemIntegrante.put("pago", adapter.data.get(i).getPagoRealizado());
-                    itemIntegrante.put("adelanto", adapter.data.get(i).getPagoAdelanto());
-                    itemIntegrante.put("solidario", adapter.data.get(i).getPagoSolidario());
-                    itemIntegrante.put("clave_cliente", adapter.data.get(i).getClaveCliente());
+                    itemIntegrante.put("adelanto", adapter.data.get(i).getAdelanto());
+                    itemIntegrante.put("solidario", adapter.data.get(i).getSolidario());
+                    itemIntegrante.put("id_integrante", adapter.data.get(i).getIdIntegrante());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                total += adapter.data.get(i).getPagoRealizado();
+                total += Double.parseDouble(adapter.data.get(i).getPagoRealizado());
                 jsonIntegrantes.put(itemIntegrante);
                 flag = true;
             }
@@ -221,7 +253,6 @@ public class IntegrantesGpo extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isEditable) {
             SumarPagos();
             if (flag) {
                 final double finalTotal = total;
@@ -229,10 +260,22 @@ public class IntegrantesGpo extends AppCompatActivity {
                         R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
+                                for(int i = 0; i < integrantePagos.size(); i++){
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                    cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                    cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                    cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                    if (ENVIROMENT)
+                                        db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                    else
+                                        db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                }
                                 Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
-                                i_resumen_int.putExtra("INTEGRANTES", jsonIntegrantes.toString());
-                                i_resumen_int.putExtra("TOTAL", finalTotal + "");
-                                startActivityForResult(i_resumen_int, Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
                                 dialog.dismiss();
 
                             }
@@ -249,9 +292,6 @@ public class IntegrantesGpo extends AppCompatActivity {
                 confirm_dlg.show();
             } else
                 super.onBackPressed();
-        }
-        else
-            super.onBackPressed();
     }
 
 
@@ -261,8 +301,7 @@ public class IntegrantesGpo extends AppCompatActivity {
         switch (requestCode){
             case Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO:
                 Intent i_resultado = new Intent();
-                i_resultado.putExtra(Constants.RESPONSE, data.getStringExtra("TOTAL"));
-                i_resultado.putExtra("integrantes", jsonIntegrantes.toString());
+                i_resultado.putExtra(Constants.RESPONSE, data.getStringExtra(TOTAL));
                 setResult(RESULT_OK,i_resultado);
                 finish();
                 break;

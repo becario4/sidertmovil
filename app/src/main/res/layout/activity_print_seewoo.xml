@@ -238,5 +238,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llReimpresion"
+            android:visibility="gone"
+            android:layout_weight="0"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp">
+            <Button
+                android:id="@+id/btnReprintOriginal"
+                android:drawableLeft="@drawable/ic_print_black"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/btn_rounded_yellow"
+                android:textColor="@android:color/black"
+                android:text="Reimprimir Original"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btnReprintCopia"
+                android:text="Reimprimir Copia"
+                android:drawableLeft="@drawable/ic_print_black"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/btn_rounded_yellow"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

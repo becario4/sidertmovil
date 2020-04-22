@@ -56,6 +56,10 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
 
+import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
+import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
+import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+
 
 public class VistaPreviaGestion extends AppCompatActivity {
 
@@ -105,8 +109,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private Button btnCancelar;
 
     private String integrantes = "";
-
-    private JSONObject jsonResp = null;
 
     private GoogleMap mMap;
     private Marker mMarker;
@@ -172,17 +174,9 @@ public class VistaPreviaGestion extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Bundle datos = this.getIntent().getBundleExtra(Constants.PARAMS);
-        jsonResp = new JSONObject();
 
         Log.e("DatosEnviar", datos.toString());
         ColocarUbicacionGestion(datos.getDouble(Constants.LATITUD), datos.getDouble(Constants.LONGITUD));
-        try {
-            jsonResp.put(Constants.LATITUD,datos.getDouble(Constants.LATITUD));
-            jsonResp.put(Constants.LONGITUD, datos.getDouble(Constants.LONGITUD));
-            jsonResp.put(Constants.CONTACTO, datos.getString(Constants.CONTACTO));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         if (datos.getString(Constants.CONTACTO).equals("SI")){ //Si contacto cliente
             etContacto.setText("SI CONTACTO AL CLIENTE");
@@ -190,20 +184,9 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 NuevoTelefono.setVisibility(View.VISIBLE);
                 etNuevoTelefono.setText(datos.getString(Constants.NUEVO_TELEFONO));
                 etNuevoTelefono.setVisibility(View.VISIBLE);
-                try {
-                    jsonResp.put(Constants.NUEVO_TELEFONO, datos.getString(Constants.NUEVO_TELEFONO));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
-            try {
-                jsonResp.put(Constants.ACTUALIZAR_TELEFONO, datos.getString(Constants.ACTUALIZAR_TELEFONO));
-                jsonResp.put(Constants.RESULTADO_PAGO, datos.getString(Constants.RESULTADO_PAGO));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (datos.getString(Constants.RESULTADO_PAGO).equals("PAGO")){ //Pago
 
+            if (datos.getString(Constants.RESULTADO_PAGO).equals("PAGO")){ //Pago
                 ResultadoGestion.setVisibility(View.VISIBLE);
                 etResultadoGestion.setText("SI PAGO");
                 etResultadoGestion.setVisibility(View.VISIBLE);
@@ -229,20 +212,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 etSaldoActual.setText(String.valueOf(Miscellaneous.doubleFormatTV(etSaldoCorte) - Miscellaneous.doubleFormatTV(etPagoRealizado)));
                 etSaldoActual.setVisibility(View.VISIBLE);
 
-                try {
-                    jsonResp.put(Constants.MEDIO_PAGO, datos.getString(Constants.MEDIO_PAGO));
-                    if (datos.containsKey(Constants.PAGO_REQUERIDO))
-                        jsonResp.put(Constants.PAGO_REQUERIDO, datos.getString(Constants.PAGO_REQUERIDO));
-                    else
-                        jsonResp.put(Constants.DETALLE_FICHA, datos.getString(Constants.DETALLE_FICHA));
-                    jsonResp.put(Constants.PAGO_REALIZADO, datos.getString(Constants.PAGO_REALIZADO));
-                    jsonResp.put(Constants.SALDO_CORTE, datos.getDouble(Constants.SALDO_CORTE));
-                    jsonResp.put(Constants.SALDO_ACTUAL, etSaldoActual.getText().toString().trim());
-                    jsonResp.put(Constants.ESTATUS, etEstatusPago.getText().toString().trim());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
                 etMedioPago.setText(datos.getString(Constants.MEDIO_PAGO));
                 if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
@@ -258,20 +227,12 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
                     }
                     if (datos.containsKey(Constants.RESUMEN_INTEGRANTES)){
+                        NoDetalle.setVisibility(View.VISIBLE);
+                        etNoDetalle.setVisibility(View.VISIBLE);
                         if (datos.getBoolean(Constants.RESUMEN_INTEGRANTES)){
-                            integrantes = datos.getString(Constants.INTEGRANTES);
-                            try {
-                                jsonResp.put(Constants.INTEGRANTES, integrantes);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            Log.v("--","---------------------------------------------------------------");
-                            Log.v("Integrantes", integrantes);
-                            Log.v("--","---------------------------------------------------------------");
+                            etNoDetalle.setText("Si cuenta con el detalle de la ficha");
                         }
                         else{
-                            NoDetalle.setVisibility(View.VISIBLE);
-                            etNoDetalle.setVisibility(View.VISIBLE);
                             etNoDetalle.setText("No cuenta con el detalle de la ficha");
                         }
                     }
@@ -284,23 +245,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
                         Firma.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
-                        try {
-                            jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA), 3));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    try {
-                        jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-                        jsonResp.put(Constants.FECHA_DEPOSITO, datos.getString(Constants.FECHA_DEPOSITO));
-                        jsonResp.put(Constants.EVIDENCIA, Miscellaneous.save(datos.getByteArray(Constants.EVIDENCIA), 2));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
                 else if (Miscellaneous.MedioPago(etMedioPago) == 6 || datos.getString(Constants.MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
@@ -309,17 +253,12 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     etMedioPago.setVisibility(View.VISIBLE);
                     PagoRealizado.setVisibility(View.VISIBLE);
                     if (datos.containsKey(Constants.RESUMEN_INTEGRANTES)){
+                        NoDetalle.setVisibility(View.VISIBLE);
+                        etNoDetalle.setVisibility(View.VISIBLE);
                         if (datos.getBoolean(Constants.RESUMEN_INTEGRANTES)){
-                            integrantes = datos.getString(Constants.INTEGRANTES);
-                            try {
-                                jsonResp.put(Constants.INTEGRANTES, integrantes);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            etNoDetalle.setText("Si cuenta con el detalle de la ficha");
                         }
                         else{
-                            NoDetalle.setVisibility(View.VISIBLE);
-                            etNoDetalle.setVisibility(View.VISIBLE);
                             etNoDetalle.setText("No cuenta con el detalle de la ficha");
                         }
                     }
@@ -336,26 +275,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                         Firma.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
-                        try {
-                            jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA), 3));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
-
-                    try {
-                        jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-                        jsonResp.put(Constants.FOLIO_TICKET, datos.getString(Constants.FOLIO_TICKET));
-                        jsonResp.put(Constants.IMPRESORA, datos.getString(Constants.IMPRESORA));
-                        jsonResp.put(Constants.EVIDENCIA, Miscellaneous.save(datos.getByteArray(Constants.EVIDENCIA), 2));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                 }
                 else {
                     Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
@@ -367,11 +287,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 etResultadoGestion.setText(datos.getString(Constants.RESULTADO_PAGO));
                 etResultadoGestion.setVisibility(View.VISIBLE);
 
-                try {
-                    jsonResp.put(Constants.MOTIVO_NO_PAGO, datos.getString(Constants.MOTIVO_NO_PAGO));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 etMotivoNoPago.setText(datos.getString(Constants.MOTIVO_NO_PAGO));
                 if (Miscellaneous.MotivoNoPago(etMotivoNoPago) == 1){ //Motivo de no pago Fallecimiento
                     MotivoNoPago.setVisibility(View.VISIBLE);
@@ -386,31 +301,11 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    try {
-                        jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                     if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
-                        try {
-                            jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA),3));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    try {
-                        jsonResp.put(Constants.FECHA_DEFUNCION, datos.getString(Constants.FECHA_DEFUNCION));
-                        jsonResp.put(Constants.COMENTARIO, datos.getString(Constants.COMENTARIO));
-                        jsonResp.put(Constants.FACHADA, Miscellaneous.save(datos.getByteArray(Constants.EVIDENCIA),1));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
                 else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  0|| Miscellaneous.MotivoNoPago(etMotivoNoPago) == 2){ //Motivo de no pago Negación u Otro
@@ -423,32 +318,12 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    try {
-                        jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                     if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
-                        try {
-                            jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA),3));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
-                    try {
-                        jsonResp.put(Constants.COMENTARIO, datos.getString(Constants.COMENTARIO));
-                        jsonResp.put(Constants.FACHADA, Miscellaneous.save(datos.getByteArray(Constants.EVIDENCIA),1));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                 }
                 else {
                     Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
@@ -472,20 +347,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 Firma.setVisibility(View.VISIBLE);
                 Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
                 ivFirma.setVisibility(View.VISIBLE);
-                try {
-                    jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA),3));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                jsonResp.put(Constants.MOTIVO_ACLARACION, datos.getString(Constants.MOTIVO_ACLARACION));
-                jsonResp.put(Constants.COMENTARIO, datos.getString(Constants.COMENTARIO));
-                jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
         else if (datos.getString(Constants.CONTACTO).equals("NO")){ // No Contacto cliente
@@ -500,31 +361,13 @@ public class VistaPreviaGestion extends AppCompatActivity {
             etComentario.setText(datos.getString(Constants.COMENTARIO));
             Evidencia.setVisibility(View.VISIBLE);
             Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
-            try {
-                jsonResp.put(Constants.FACHADA, Miscellaneous.save(datos.getByteArray(Constants.EVIDENCIA),1));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
             ivEvidencia.setVisibility(View.VISIBLE);
             if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
                 Firma.setVisibility(View.VISIBLE);
                 Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
-                try {
-                    jsonResp.put(Constants.FIRMA, Miscellaneous.save(datos.getByteArray(Constants.FIRMA),3));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
                 ivFirma.setVisibility(View.VISIBLE);
-            }
-            try {
-                jsonResp.put(Constants.COMENTARIO, datos.getString(Constants.COMENTARIO));
-                jsonResp.put(Constants.GERENTE, datos.getString(Constants.GERENTE));
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
         else{ //No hay información
@@ -580,24 +423,13 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private void addMarker (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
 
-        //LatLng coordenada = new LatLng(19.201745,-96.162134);
         CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,15);
 
         mMap.addMarker(new MarkerOptions()
                 .position(coordenadas)
                 .title(""));
 
-//        mMap.addMarker(new MarkerOptions()
-//                .position(coordenada)
-//                .title(""));
-
         mMap.animateCamera(ubication);
-
-//        Polyline line = mMap.addPolyline(new PolylineOptions()
-//                .add(new LatLng(lat, lng), new LatLng(19.201745,-96.162134))
-//                .width(5)
-//                .color(Color.RED));
-
     }
 
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
@@ -610,9 +442,12 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private View.OnClickListener btnConfirmar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.e("jsonRes", jsonResp.toString());
             Intent i_result = new Intent();
-            i_result.putExtra(Constants.RESPUESTA_GESTION, jsonResp.toString());
+            if (etEstatusPago.getVisibility() == View.VISIBLE){
+                i_result.putExtra(ESTATUS, etEstatusPago.getText().toString().trim().toUpperCase());
+                i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
+                i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
+            }
             i_result.putExtra(Constants.RESPONSE, true);
             setResult(RESULT_OK, i_result);
             finish();

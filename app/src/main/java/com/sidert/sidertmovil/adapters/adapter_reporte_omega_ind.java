@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.ModeloIndividual;
 
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.List;
 public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_reporte_omega_ind.ViewHolder>{
 
     private Context ctx;
-    private List<ModeloIndividual.ReporteAnaliticoOmega> data;
+    private List<MAmortizacion> data;
 
-    public adapter_reporte_omega_ind(Context ctx, List<ModeloIndividual.ReporteAnaliticoOmega> data) {
+    public adapter_reporte_omega_ind(Context ctx, List<MAmortizacion> data) {
         this.ctx = ctx;
         this.data = data;
     }
@@ -30,13 +31,13 @@ public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_repo
 
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
-        ModeloIndividual.ReporteAnaliticoOmega item = data.get(position);
+        MAmortizacion item = data.get(position);
 
-        holder.tvNumber.setText(String.valueOf(item.getNo()));
-        holder.tvFechaAmortizacion.setText(item.getFechaAmortizacion());
+        holder.tvNumber.setText((item.getNumero()<10)?"0"+String.valueOf(item.getNumero()):String.valueOf(item.getNumero()));
+        holder.tvFechaAmortizacion.setText(item.getFecha());
         holder.tvFechaPago.setText(item.getFechaPago());
-        holder.tvEstatus.setText(item.getEstatus());
-        holder.tvDays.setText(String.valueOf(item.getDias()));
+        holder.tvEstatus.setText("PENDIENTE");
+        holder.tvDays.setText(String.valueOf(item.getDiasAtraso()));
     }
 
     @Override

@@ -47,11 +47,11 @@ public class cvg_pagos_fragment extends Fragment {
                 rvPagos.setAdapter(null);
                 switch (checkedId){
                     case R.id.rbTablaPagos:
-                        adapter_pagos = new adapter_pagos_gpo(ctx, parent.ficha_cvg.getTablaPagosGrupo());
+                        //adapter_pagos = new adapter_pagos_gpo(ctx, parent.ficha_cvg.getTablaPagosGrupo());
                         rvPagos.setAdapter(adapter_pagos);
                         break;
                     case R.id.rbReporteOmega:
-                        adapter_omega = new adapter_reporte_omega_gpo(ctx, parent.ficha_cvg.getReporteAnaliticoOmega());
+                        //adapter_omega = new adapter_reporte_omega_gpo(ctx, parent.ficha_cvg.getReporteAnaliticoOmega());
                         rvPagos.setAdapter(adapter_omega);
                         break;
                 }

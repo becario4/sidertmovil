@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Constants;
@@ -34,15 +37,15 @@ import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
 public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fichas_pendientes.ViewHolder> {
 
     private Context ctx;
-    private List<ModeloFichaGeneral> data;
+    private List<MCarteraGnral> data;
     private Event evento;
 
     public interface Event {
-        void FichaOnClick(ModeloFichaGeneral item);
-        void IsRutaOnClick(ModeloFichaGeneral item, boolean is_ruta);
+        void FichaOnClick(MCarteraGnral item);
+        void IsRutaOnClick(MCarteraGnral item, boolean is_ruta);
     }
 
-    public adapter_fichas_pendientes(Context ctx, List<ModeloFichaGeneral> data, Event evento) {
+    public adapter_fichas_pendientes(Context ctx, List<MCarteraGnral> data, Event evento) {
         this.ctx = ctx;
         this.data = data;
         this.evento = evento;
@@ -57,29 +60,32 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final ModeloFichaGeneral item = data.get(position);
-        if (item.getTipoFormulario().equals(RECUPERACION_IND)) {
+        final MCarteraGnral item = data.get(position);
+        if (item.getTipo().equals("INDIVIDUAL")) {
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipoFicha);
             holder.tvNombreTesorera.setText("");
         }
         else {
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipoFicha);
-            holder.tvNombreTesorera.setText(item.getNombreTesorera());
+            holder.tvNombreTesorera.setText(item.getTesorera());
         }
 
         holder.tvDiaSemana.setText(item.getDiaSemana());
-        holder.tvNombre.setText(item.getNombreClienteGpo());
+        holder.tvNombre.setText(item.getNombre());
         holder.tvDireccion.setText(item.getDireccion());
 
         holder.cbRuta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                item.setChecked(isChecked);
+                item.setIs_ruta(isChecked);
                 evento.IsRutaOnClick(item, isChecked);
 
             }
         });
-        holder.cbRuta.setChecked(item.isChecked());
+        holder.cbRuta.setChecked(item.isIs_ruta());
+
+        Log.e("Enable", ""+item.isIs_obligatorio());
+        holder.cbRuta.setEnabled(!item.isIs_obligatorio());
 
         holder.bind(item);
 
@@ -119,7 +125,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
             //tvStatus    = itemView.findViewById(R.id.tvStatus);
         }
 
-        public void bind (final ModeloFichaGeneral item){
+        public void bind (final MCarteraGnral item){
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -164,7 +170,13 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
                 }
             });
         }
-
-
     }
+
+    public void UpdateData(List<MCarteraGnral> _data){
+        if (data != null)
+            data.clear();
+        data = _data;
+        notifyDataSetChanged();
+    }
+
 }

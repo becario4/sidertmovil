@@ -15,10 +15,13 @@ public class NameFragments {
     public final static String COMPLAINT_TEMP         = "fragment_complaint_temp";
 
     //TODO:   Nombre de fragmentos del viewpager
-    public final static String INDRECOVERY          = "ri_detalle_fragment";
-    public final static String INDMANAGEMENT        = "ri_gestion_fragment";
+    public final static String DETALLE_GPO          = "rg_detalle_fragment";
+    public final static String RECUPERACION_GPO     = "recuperacion_gpo_fragment";
+    public final static String REPORTE_PAGOS_GPO    = "rg_pagos_fragment";
 
-    public final static String PAYMENTLOG           = "ri_pagos_fragment";
+    public final static String DETALLE_IND          = "ri_detalle_fragment";
+    public final static String RECUPERACION_IND     = "recuperacion_ind_fragment";
+    public final static String REPORTE_PAGOS_IND    = "ri_pagos_fragment";
     public final static String FINANCIALINFO        = "financial_info_fragment";
     public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
     public final static String ERASE_TABLES         = "erase_table_fragment";

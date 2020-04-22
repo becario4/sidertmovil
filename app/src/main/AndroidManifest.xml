@@ -24,9 +24,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.FormatoRecibos"></activity>
-        <activity android:name=".activities.CirculoCredito" />
-        <activity android:name=".activities.CameraActivity" />
+        <activity
+            android:name=".activities.Integrantes"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.ComunicadoCovid"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.VistaGestion"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.Gestionadas"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.PrestamosClientes"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.FormatoRecibos"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.CirculoCredito"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.CameraActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.Catalogos"
             android:screenOrientation="portrait" />

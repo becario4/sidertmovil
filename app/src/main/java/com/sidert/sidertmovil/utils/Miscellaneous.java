@@ -54,6 +54,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import static com.sidert.sidertmovil.utils.Constants.DATE;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.FECHA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+
 public class Miscellaneous {
 
     /*Validación de que no sea null ni vacio y colocar primera leta mayúscula*/
@@ -223,7 +232,11 @@ public class Miscellaneous {
             case "fecha":
                 sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
                 break;
+            case "fecha_atraso":
+                sdf = new SimpleDateFormat("dd-MM-yyyy");
+                break;
         }
+        Log.e("fecha_hoy",sdf.format(cal.getTime()));
         return sdf.format(cal.getTime());
     }
 
@@ -1902,7 +1915,7 @@ public class Miscellaneous {
     }
 
     public static int Gerente(TextView tv){
-        int gerente = 0;
+        int gerente = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
             case "SI":
                 gerente = 0;
@@ -1930,4 +1943,337 @@ public class Miscellaneous {
         return motivoNoPago;
     }
 
+    public static int GetTipoCartera (String str_tipo_cartera){
+        int tipo = 0;
+        if (str_tipo_cartera.toUpperCase().equals("INDIVIDUAL")){
+            tipo = 1;
+        }
+        else if (str_tipo_cartera.toUpperCase().equals("GRUPAL")){
+            tipo = 2;
+        }
+
+        return tipo;
+    }
+
+    public static JSONObject RowTOJson (Cursor row, Context ctx){
+        JSONObject json_respuesta = new JSONObject();
+        DBhelper dBhelper = new DBhelper(ctx);
+
+        try {
+            json_respuesta.put("tipo_gestion", row.getInt(28));
+            json_respuesta.put("latitud", row.getDouble(2));
+            json_respuesta.put("longitud", row.getDouble(3));
+            json_respuesta.put("contacto", GetIdContacto(row.getString(4)));
+            switch (GetIdContacto(row.getString(4))){
+                case 0: //SI CONTACTO
+                    json_respuesta.put("actualizar_telefono", GetIdConfirmacion(row.getString(7).trim()));
+                    if (GetIdConfirmacion(row.getString(7).trim()) == 0){
+                        json_respuesta.put("telefono_nuevo", row.getString(8).trim());
+                    }
+                    json_respuesta.put("resultado_pago", GetIdPago(row.getString(9).trim()));
+                    switch (GetIdPago(row.getString(9).trim())){
+                        case 0: //PAGO
+                            json_respuesta.put("medio_pago", GetIdMedioPago(row.getString(12).trim()));
+                            switch (GetIdMedioPago(row.getString(12))){
+                                case 0://BANAMEX
+                                case 1://BANORTE
+                                case 2://BANCOMER
+                                case 3://TELECOM
+                                case 4://BANSEFI
+                                case 5://OXXO
+                                    json_respuesta.put("fecha_pago", GetIdMedioPago(row.getString(13).trim()));
+                                    break;
+                                case 6://EFECTIVO
+                                    json_respuesta.put("imprimir_recibo", GetIdImpresion(row.getString(16)));
+                                    json_respuesta.put("folio", 17);
+                                    json_respuesta.put("res_impresion", row.getInt(24));
+                                    if (row.getInt(28) == 2 && row.getDouble(15) >= 10000){
+                                        Cursor row_arqueo;
+                                        if (ENVIROMENT)
+                                            row_arqueo = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+                                        else
+                                            row_arqueo = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+
+                                        if (row_arqueo.getCount() > 0){
+                                            row_arqueo.moveToFirst();
+                                            JSONObject json_arqueo = new JSONObject();
+                                            json_arqueo.put("mil", row_arqueo.getInt(2));
+                                            json_arqueo.put("quinientos", row_arqueo.getInt(3));
+                                            json_arqueo.put("doscientos", row_arqueo.getInt(4));
+                                            json_arqueo.put("cien", row_arqueo.getInt(5));
+                                            json_arqueo.put("cincuenta", row_arqueo.getInt(6));
+                                            json_arqueo.put("veinte", row_arqueo.getInt(7));
+                                            json_arqueo.put("diez", row_arqueo.getInt(8));
+                                            json_arqueo.put("cinco", row_arqueo.getInt(9));
+                                            json_arqueo.put("dos", row_arqueo.getInt(10));
+                                            json_arqueo.put("peso", row_arqueo.getInt(11));
+                                            json_arqueo.put("c_cincuenta", row_arqueo.getInt(12));
+                                            json_arqueo.put("c_veinte", row_arqueo.getInt(13));
+                                            json_arqueo.put("c_diez", row_arqueo.getInt(14));
+
+                                            double total = (row_arqueo.getInt(2) * 1000) + (row_arqueo.getInt(3) * 500) + (row_arqueo.getInt(4) * 200) + (row_arqueo.getInt(5) * 100) + (row_arqueo.getInt(6) * 50) + (row_arqueo.getInt(7) * 20) + (row_arqueo.getInt(8) * 10) + (row_arqueo.getInt(9) * 5) + (row_arqueo.getInt(10) * 2) + row_arqueo.getInt(11) + (row_arqueo.getInt(12) * 0.50) + (row_arqueo.getInt(13) * 0.20) + (row_arqueo.getInt(14) * 0.10);
+                                            json_arqueo.put("total", total);
+                                            json_respuesta.put("arqueo_caja", row_arqueo);
+
+                                        }
+                                        row_arqueo.close();
+                                    }
+                                    break;
+                                case 7://SIDERT
+                                    json_respuesta.put("imprimir_recibo", 1);
+                                    json_respuesta.put("folio", 17);
+                                    break;
+                            }
+                            switch (row.getInt(28)){
+                                case 1: //INDIVIDUAL
+                                    json_respuesta.put("pagara_requerido", GetIdConfirmacion(row.getString(14).trim()));
+                                    break;
+                                case 2: //GRUPAL
+                                    json_respuesta.put("detalle_ficha", GetIdConfirmacion(row.getString(14).trim()));
+                                    if (GetIdConfirmacion(row.getString(14)) == 0){
+                                        JSONArray pagos_integrantes = new JSONArray();
+                                        Cursor row_integrantes;
+                                        if (ENVIROMENT)
+                                            row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+                                        else
+                                            row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+
+                                        if (row_integrantes.getCount() > 0){
+                                            row_integrantes.moveToFirst();
+                                            for (int i = 0; i < row_integrantes.getCount(); i++){
+                                                JSONObject detalle_integrante = new JSONObject();
+                                                detalle_integrante.put("integrante_id", row_integrantes.getInt(2));
+                                                detalle_integrante.put("monto_requerido", row_integrantes.getDouble(5));
+                                                detalle_integrante.put("pago_realizado", row_integrantes.getDouble(6));
+                                                detalle_integrante.put("pago_adelanto", row_integrantes.getDouble(7));
+                                                detalle_integrante.put("pago_solidario", row_integrantes.getDouble(8));
+                                                pagos_integrantes.put(detalle_integrante);
+                                                row_integrantes.moveToNext();
+                                            }
+                                            json_respuesta.put("pagos_integrantes", pagos_integrantes);
+                                        }
+
+                                        row_integrantes.close();
+                                    }
+                            }
+
+                            json_respuesta.put("pago_realizado", row.getString(15).trim());
+                            json_respuesta.put("estatus", row.getString(25));
+                            json_respuesta.put("saldo_corte", row.getDouble(26));
+                            json_respuesta.put("saldo_actual", row.getDouble(27));
+                            json_respuesta.put("evidencia", row.getString(18).trim());
+                            json_respuesta.put("tipo_imagen", GetIdImagen(row.getString(19).trim()));
+
+                            break;
+                        case 1: //NO PAGO
+                            json_respuesta.put("motivo_no_pago", GetIdMotivoNoPago(row.getString(10).trim()));
+                            if (GetIdMotivoNoPago(row.getString(10).trim()) == 2){
+                                json_respuesta.put("fecha_defuncion", row.getString(11));
+                            }
+                            json_respuesta.put("comentario", row.getString(6).toUpperCase().trim());
+                            json_respuesta.put("evidencia", row.getString(18).trim());
+                            json_respuesta.put("tipo_imagen", GetIdImagen(row.getString(19).trim()));
+                            break;
+                    }
+                    break;
+                case 1: //NO CONTACTO
+                    json_respuesta.put("comentario", row.getString(6).toUpperCase().trim());
+                    json_respuesta.put("evidencia", row.getString(18).trim());
+                    json_respuesta.put("tipo_imagen", GetIdImagen(row.getString(19).trim()));
+                    break;
+                case 2: //ACLARACION
+                    json_respuesta.put("motivo_aclaracion", GetIdAclaracion(row.getString(5)));
+                    json_respuesta.put("comentario", row.getString(6).toUpperCase().trim());
+                    break;
+            }
+
+            json_respuesta.put("supervision_gerente", GetIdConfirmacion(row.getString(20)));
+            if(GetIdConfirmacion(row.getString(20)) == 0)
+                json_respuesta.put("firma", row.getString(21).trim());
+
+            json_respuesta.put("fecha_inicio_gestion", row.getString(22));
+            json_respuesta.put("fecha_fin_gestion", row.getString(23));
+            json_respuesta.put("fecha_establecida", row.getString(30));
+            json_respuesta.put("dia_semana", row.getString(31));
+            json_respuesta.put("monto_requerido", row.getDouble(32));
+            json_respuesta.put("fecha_envio_dispositivo", ObtenerFecha(TIMESTAMP));
+            json_respuesta.put("tipo_prestamo_id", GetIdTipoPrestamo(row.getString(33)));
+            json_respuesta.put("monto_amortizacion", row.getDouble(34));
+            json_respuesta.put("atraso", row.getDouble(35));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return json_respuesta;
+    }
+
+    public static int GetIdTipoPrestamo (String str){
+        int id = -1;
+        switch (str){
+            case "VIGENTE":
+                id = 0;
+                break;
+            case "COBRANZA":
+                id = 1;
+                break;
+            case "VENCIDA":
+                id = 2;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdContacto (String str){
+        int id = -1;
+        switch (str){
+            case "SI":
+                id = 0;
+                break;
+            case "NO":
+                id = 1;
+                break;
+            case "ACLARACION":
+                id = 2;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdConfirmacion (String str){
+        int id = -1;
+        switch (str){
+            case "SI":
+                id = 0;
+                break;
+            case "NO":
+                id = 1;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdPago (String str){
+        int id = -1;
+        switch (str){
+            case "PAGO":
+                id = 0;
+                break;
+            case "NO PAGO":
+                id = 1;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdMotivoNoPago (String str){
+        int id = -1;
+        switch (str){
+            case "NEGACION DE PAGO":
+                id = 0;
+                break;
+            case "FALLECIMIENTO":
+                id = 1;
+                break;
+            case "OTRO":
+                id = 2;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdMedioPago (String str){
+        int id = -1;
+        switch (str){
+            case "BANAMEX":
+                id = 0;
+                break;
+            case "BANORTE":
+                id = 1;
+                break;
+            case "BANCOMER":
+                id = 2;
+                break;
+            case "OXXO":
+                id = 3;
+                break;
+            case "TELECOM":
+                id = 4;
+                break;
+            case "BANSEFI":
+                id = 5;
+                break;
+            case "EFECTIVO":
+                id = 6;
+                break;
+            case "SIDERT":
+                id = 7;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdAclaracion (String str){
+        int id = -1;
+        switch (str){
+            case "GARANTIA":
+                id = 0;
+                break;
+            case "REFINACIAMIENTO":
+                id = 1;
+                break;
+            case "CONDONACION":
+                id = 2;
+                break;
+            case "CAPTURA DE PAGO":
+                id = 3;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdImpresion (String str){
+        int id = -1;
+        switch (str){
+            case "SI":
+                id = 0;
+                break;
+            case "NO CUENTA CON BATERIA":
+                id = 1;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetIdImagen (String str){
+        int id = -1;
+        switch (str){
+            case "FACHADA":
+                id = 0;
+                break;
+            case "FOTOGRAFIA":
+                id = 1;
+                break;
+            case "GALERIA":
+                id = 2;
+                break;
+        }
+        return id;
+    }
+
+    public static int GetDiasAtraso (String fecha_establecida){
+        int dias_atraso = 0;
+        try {
+            Date date1 = new SimpleDateFormat("dd-MM-yyyy").parse(fecha_establecida);
+            Date date2 = new SimpleDateFormat("dd-MM-yyyy").parse(ObtenerFecha("fecha_atraso"));
+
+            dias_atraso = (int) ((date2.getTime()-date1.getTime())/86400000);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return dias_atraso;
+    }
 }

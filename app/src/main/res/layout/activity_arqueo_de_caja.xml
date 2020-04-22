@@ -23,14 +23,7 @@
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.AppBarLayout>
-        <TextView
-            android:id="@+id/tvExternalID"
-            android:textSize="17sp"
-            android:textColor="@android:color/white"
-            android:background="@color/shadowdrawer"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="30dp" />
+
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

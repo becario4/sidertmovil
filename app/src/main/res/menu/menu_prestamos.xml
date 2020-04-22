@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nvRecuperacion"
+        android:title="Recuperacion"
+        android:icon="@drawable/ic_recuperacion_blue" />
+
+    <item
+        android:id="@+id/nvGestionadas"
+        android:title="Gestionadas"
+        android:icon="@drawable/ic_gestionadas_blue"/>
+
+    <item
+        android:id="@+id/nvGeolocalizacion"
+        android:title="Geolocalizacion"
+        android:icon="@drawable/pin_user_blue"/>
+
+</menu>

@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <!--  ID external order -->
-    <TextView
-        android:id="@+id/tvExternalID"
-        android:textSize="17sp"
-        android:textColor="@android:color/white"
-        android:background="@color/shadowdrawer"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -43,7 +34,8 @@
                     android:id="@+id/etNumeroPrestamo"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -65,7 +57,8 @@
                     android:id="@+id/etFechaCreditoOtorgado"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -87,7 +80,8 @@
                     android:id="@+id/etClaveGrupo"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -109,7 +103,8 @@
                     android:id="@+id/etNombreGrupo"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -131,7 +126,8 @@
                     android:id="@+id/etTotalIntegrantes"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -152,7 +148,8 @@
                     android:id="@+id/etMontoPrestamoOtorgado"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -173,7 +170,8 @@
                     android:id="@+id/etMontoTotalPrestamo"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -195,7 +193,8 @@
                     android:id="@+id/etNumeroAmortizacion"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -216,7 +215,8 @@
                     android:id="@+id/etPagoRequerido"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -238,7 +238,8 @@
                     android:id="@+id/etMontoAmortizacion"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -260,7 +261,8 @@
                     android:id="@+id/etFechaPagoEstablecida"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
@@ -299,10 +301,38 @@
                     android:id="@+id/etNombreTesorera"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
+
+            <!--  Direccion con el tesorera  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Dirección Tesorera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etDireccionTesorera"
+                    android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
 
             <!--  Llamer al teléfono de la tesorera  -->
             <LinearLayout
@@ -346,7 +376,7 @@
                     android:layout_height="1dp"/>
             </LinearLayout>
 
-            <!--  Nombre de la presidenta  -->
+            <!--  Nombre de la presidente  -->
             <LinearLayout
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
@@ -363,9 +393,36 @@
                     android:id="@+id/etNombrePresidenta"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Direccion con el presidente  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Dirección Presiedente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etDireccionPresidente"
+                    android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  Llamer al teléfono de la presidenta  -->
@@ -427,12 +484,39 @@
                     android:id="@+id/etNombreSecretaria"
                     android:enabled="false"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>
 
-            <!--  Llamer al teléfono de la secretaria  -->
+            <!--  Direccion con el secretaria  -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Dirección Secretaria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etDireccionSecretaria"
+                    android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!--  Llamar al teléfono de la secretaria  -->
             <LinearLayout
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
@@ -453,6 +537,42 @@
                     android:background="@drawable/btn_rounded_blue"
                     android:text="@string/call"
                     android:textColor="@android:color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+            </LinearLayout>
+
+            <!--  Integrantes  -->
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:text="Integrantes del grupo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:background="@color/blue_sidert"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btnIntegrantes"
+                    android:drawableRight="@drawable/ic_grupo_black"
+                    android:paddingRight="10dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/btn_rounded_yellow"
+                    android:text="Integrantes"
+                    android:textColor="@android:color/black"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
             </LinearLayout>

@@ -11,6 +11,8 @@ public class Constants {
     public final static String CONTROLLER_FICHAS      = "fichas";
     public final static String CONTROLLER_CATALOGOS   = "catalogos";
     public final static String CONTROLLER_SOLICITUDES = "solicitudes";
+    public final static String CONTROLLER_MOVIL       = "movil";
+    public final static String CONTROLLER_DENUNCIAS   = "denuncias";
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -26,6 +28,8 @@ public class Constants {
     public final static String ERROR            = "Error";
 
     public final static String FICHA            = "ficha";
+
+    public final static String TIMESTAMP            = "timestamp";
 
     public final static String FORMAT_DATE_GNRAL        = "yyyy-MM-dd";
     public final static String FORMAT_TIMESTAMP         = "yyyy-MM-dd HH:mm:ss";
@@ -99,6 +103,7 @@ public class Constants {
 
     //======================  TAGS DE FICHAS  ===================================================
     public final static String ORDER_ID                     = "id";
+    public final static String ID_CARTERA                   = "id_cartera";
     public final static String TYPE                         = "type";
     public final static String ASSIGN_DATE                  = "assignDate";
     public final static String EXPIRATION_DATE              = "expirationDate";
@@ -302,6 +307,16 @@ public class Constants {
     public final static String TBL_RECIBOS_VIGENTE_T = "tbl_recibos_vigente_t";
     public final static String TBL_RECIBOS_VENCIDA_T = "tbl_recibos_vencida_t";
     public final static String TBL_REIMPRESION_T    = "tbl_reimpresion_t";
+    public final static String TBL_CARTERA_IND_T    = "cartera_individual_t";
+    public final static String TBL_CARTERA_GPO_T    = "cartera_grupo_t";
+    public final static String TBL_CARTERA_IND      = "cartera_individual";
+    public final static String TBL_CARTERA_GPO      = "cartera_grupo";
+    public final static String TBL_PRESTAMOS_IND_T    = "tbl_prestamos_ind_t";
+    public final static String TBL_PRESTAMOS_IND      = "tbl_prestamos_ind";
+    public final static String TBL_AMORTIZACIONES     = "tbl_amortizaciones";
+    public final static String TBL_AMORTIZACIONES_T   = "tbl_amortizaciones_t";
+    public final static String TBL_PAGOS_IND_T        = "tbl_pagos_ind_t";
+    public final static String TBL_PAGOS_IND          = "tbl_pagos_ind";
 
     public final static String SOLICITUDES              = "solicitudes";
     public final static String SOLICITUDES_T            = "solicitudes_t";
@@ -339,9 +354,28 @@ public class Constants {
     public final static String DOCUMENTOS_INTEGRANTE        = "documentos_integrante";
     public final static String DOCUMENTOS_INTEGRANTE_T      = "documentos_integrante_t";
     public final static String RECIBOS_CIRCULO_CREDITO_T    = "recibos_circulo_credito_t";
+    public final static String TBL_RESPUESTAS_IND_T         = "respuestas_ind_t";
+    public final static String TBL_RESPUESTAS_IND           = "respuestas_ind";
+    public final static String TBL_RESPUESTAS_GPO_T         = "respuestas_gpo_t";
+    public final static String TBL_RESPUESTAS_GPO           = "respuestas_gpo";
+    public final static String TBL_IMPRESIONES_VIGENTE_T    = "tbl_impresiones_vigente_t";
+    public final static String TBL_IMPRESIONES_VIGENTE      = "tbl_impresiones_vigente";
+    public final static String TBL_REIMPRESION_VIGENTE_T    = "tbl_reimpresion_vigente_t";
+    public final static String TBL_REIMPRESION_VIGENTE      = "tbl_reimpresion_vigente";
 
-    public final static String TBL_RECUPERACION_INDIVIDUAL_T = "recuperacion_individual_t";
-    public final static String TBL_RECUPERACION_INDIVIDUAL   = "recuperacion_individual";
+    public final static String TBL_PRESTAMOS_GPO            = "tbl_prestamos_gpo";
+    public final static String TBL_PRESTAMOS_GPO_T          = "tbl_prestamos_gpo_t";
+    public final static String TBL_MIEMBROS_GPO             = "tbl_miembros_gpo";
+    public final static String TBL_MIEMBROS_GPO_T           = "tbl_miembros_gpo_t";
+    public final static String TBL_MIEMBROS_PAGOS           = "tbl_miembros_pagos";
+    public final static String TBL_MIEMBROS_PAGOS_T         = "tbl_miembros_pagos_t";
+    public final static String TBL_PAGOS                    = "tbl_pagos";
+    public final static String TBL_PAGOS_T                  = "tbl_pagos_t";
+    public final static String TBL_ARQUEO_CAJA_T            = "tbl_arqueo_caja_t";
+    public final static String TBL_ARQUEO_CAJA              = "tbl_arqueo_caja";
+
+    public final static String TBL_AVAL_T = "tbl_aval_t";
+    public final static String TBL_AVAL   = "tbl_aval";
 
 
 
@@ -385,6 +419,10 @@ public class Constants {
     public final static String TERMINADO                = "Terminado";
     public final static String EDITABLE                 = "Editable";
     public final static String TIPO                     = "Tipo";
+    public final static String ID_PRESTAMO              = "id_prestamo";
+    public final static String ID_GESTION               = "id_gestion";
+    public final static String TOTAL                    = "total";
+    public final static String TBL_NAME                 = "tbl_name";
 
     public final static String TITULO                   = "titulo";
     public final static String CATALOGO                 = "catalogo";

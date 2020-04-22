@@ -102,7 +102,7 @@
                         <ImageView
                             android:padding="10dp"
                             android:elevation="8dp"
-                            android:src="@drawable/ic_person_blue"
+                            android:src="@drawable/ic_cliente"
                             android:background="@drawable/circle_et"
                             android:layout_width="50dp"
                             android:layout_height="50dp" />
@@ -129,7 +129,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <AutoCompleteTextView
                             android:layout_marginLeft="23dp"
                             android:id="@+id/aetDia"
                             android:layout_marginTop="6dp"
@@ -142,7 +142,7 @@
                         <ImageView
                             android:padding="10dp"
                             android:elevation="8dp"
-                            android:src="@drawable/ic_cal_blue"
+                            android:src="@drawable/ic_cal"
                             android:background="@drawable/circle_et"
                             android:layout_width="50dp"
                             android:layout_height="50dp" />
@@ -183,7 +183,7 @@
                         <ImageView
                             android:padding="10dp"
                             android:elevation="8dp"
-                            android:src="@drawable/ic_marker_blue"
+                            android:src="@drawable/pin_user_blue"
                             android:background="@drawable/circle_et"
                             android:layout_width="50dp"
                             android:layout_height="50dp" />
@@ -210,20 +210,20 @@
                         android:layout_height="wrap_content">
 
                         <AutoCompleteTextView
-                            android:layout_marginLeft="23dp"
                             android:id="@+id/aetAsesor"
-                            android:inputType="textCapCharacters"
-                            android:layout_marginTop="6dp"
-                            android:drawablePadding="10dp"
-                            android:paddingLeft="30dp"
-                            android:background="@drawable/et_rounded_edges"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/et_height" />
+                            android:layout_height="@dimen/et_height"
+                            android:layout_marginLeft="23dp"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/et_rounded_edges"
+                            android:drawablePadding="10dp"
+                            android:inputType="textCapCharacters"
+                            android:paddingLeft="30dp" />
 
                         <ImageView
                             android:padding="10dp"
                             android:elevation="8dp"
-                            android:src="@drawable/ic_person_blue"
+                            android:src="@drawable/ic_user_blue_dark"
                             android:background="@drawable/circle_et"
                             android:layout_width="50dp"
                             android:layout_height="50dp" />

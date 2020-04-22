@@ -2,26 +2,45 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.PrestamosClientes;
 import com.sidert.sidertmovil.adapters.adapter_fichas_pendientes;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_details_order;
+import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,10 +65,13 @@ import static com.sidert.sidertmovil.utils.Constants.COBRANZA_IND;
 import static com.sidert.sidertmovil.utils.Constants.COLONIA;
 import static com.sidert.sidertmovil.utils.Constants.DIA_SEMANA;
 import static com.sidert.sidertmovil.utils.Constants.DIRECCION;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.EXTERNAL_ID;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_PAGO_ESTABLECIDA;
 import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
 import static com.sidert.sidertmovil.utils.Constants.GRUPAL;
 import static com.sidert.sidertmovil.utils.Constants.GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.INDIVIDUAL;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
@@ -63,7 +85,12 @@ import static com.sidert.sidertmovil.utils.Constants.REPORTE_ANALITICO_OMEGA;
 import static com.sidert.sidertmovil.utils.Constants.SECRETARIA;
 import static com.sidert.sidertmovil.utils.Constants.TABLA_PAGOS_CLIENTE;
 import static com.sidert.sidertmovil.utils.Constants.TABLA_PAGOS_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TESORERA;
+import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TYPE;
 
 
@@ -81,8 +108,31 @@ public class fichas_pendientes_fragment extends Fragment{
     private JSONObject fichas = null;
 
     private ModeloFichaGeneral mFichaGeneral;
+    private MCarteraGnral mCarteraGeneral;
+    private List<MCarteraGnral> _m_carteraGral;
     private SQLiteDatabase db;
     private DBhelper dBhelper;
+
+    private SessionManager session;
+
+    private TextView tvNoInfo;
+    public TextView tvContFiltros;
+    private AutoCompleteTextView aetNombre;
+    private AutoCompleteTextView aetDia;
+    private AutoCompleteTextView aetColonia;
+    private AutoCompleteTextView aetAsesor;
+    private CheckBox cbInd;
+    private CheckBox cbGpo;
+    private int cont_filtros = 0;
+
+    private String[] dataNombre;
+    private String[] dataDia;
+    private String[] dataColonia;
+    private String[] dataAsesor;
+    private ArrayAdapter<String> adapterNombre;
+    private ArrayAdapter<String> adapterDia;
+    private ArrayAdapter<String> adapterColonia;
+    private ArrayAdapter<String> adapterAsesor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,13 +140,18 @@ public class fichas_pendientes_fragment extends Fragment{
         ctx = getContext();
         boostrap = (Home) getActivity();
 
+        session = new SessionManager(ctx);
+
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
+        tvNoInfo = view.findViewById(R.id.tvNoInfo);
         rvFichas = view.findViewById(R.id.rvFichas);
 
         rvFichas.setLayoutManager(new LinearLayoutManager(ctx));
         rvFichas.setHasFixedSize(false);
+
+        _m_carteraGral = new ArrayList<>();
 
         return view;
     }
@@ -104,201 +159,380 @@ public class fichas_pendientes_fragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
 
-        Cursor row = dBhelper.getRecords(FICHAS_T, "", "", null);
 
-        if (row.getCount() == 0){
-            GuardarFichas();
-        }
-        else {
-            GetFichas();
-        }
-
-        adapter = new adapter_fichas_pendientes(ctx, _m_fichaGeneral, new adapter_fichas_pendientes.Event() {
+        adapter = new adapter_fichas_pendientes(ctx, _m_carteraGral, new adapter_fichas_pendientes.Event() {
             @Override
-            public void FichaOnClick(ModeloFichaGeneral item) {
-                Cursor row = dBhelper.getRecords(FICHAS_T, " WHERE external_id = '"+item.getTipoFicha()+"'", "", null);
-                row.moveToFirst();
-                switch (item.getTipoFormulario()) {
-                    case RECUPERACION_IND:
-                    case COBRANZA_IND:
-                    case CARTERA_VENCIDA_IND:
-                        ShowOrderSelected(row.getString(2),row.getString(3));
-                        break;
-                    case RECUPERACION_GPO:
-                    case COBRANZA_GPO:
-                    case CARTERA_VENCIDA_GPO:
-                        ShowOrderSelected(row.getString(2),row.getString(3));
-                        //ShowOrderSelected(null, _m_grupal.get(item.getPosicion()));
-                        break;
-                    default:
-                        Toast.makeText(ctx, "No se encuentra registrado este formulario", Toast.LENGTH_SHORT).show();
-                        break;
-                }
+            public void FichaOnClick(MCarteraGnral item) {
+
+                Intent i_prestamos = new Intent(boostrap, PrestamosClientes.class);
+                i_prestamos.putExtra(ID_CARTERA, item.getId_cliente());
+                i_prestamos.putExtra(TIPO, item.getTipo());
+                startActivity(i_prestamos);
             }
 
             @Override
-            public void IsRutaOnClick(ModeloFichaGeneral item, boolean is_ruta) {
+            public void IsRutaOnClick(MCarteraGnral item, boolean is_ruta) {
                 ContentValues cv = new ContentValues();
+                String tbl = "";
                 int ruta = 0;
                 if (is_ruta)
                     ruta = 1;
 
                 cv.put("is_ruta", ruta);
-                db.update(FICHAS_T, cv, "external_id = ?", new String[]{item.getTipoFicha()});
+
+                switch (item.getTipo()){
+                    case "INDIVIDUAL":
+                        if (ENVIROMENT)
+                            tbl = TBL_CARTERA_IND;
+                        else
+                            tbl = TBL_CARTERA_IND_T;
+                        break;
+                    case "GRUPAL":
+                        if (ENVIROMENT)
+                            tbl = TBL_CARTERA_GPO;
+                        else
+                            tbl = TBL_CARTERA_GPO_T;
+                        break;
+                }
+                db.update(tbl, cv, "id_cartera = ?", new String[]{item.getId_cliente()});
             }
         });
+        GetCartera("");
+
+
         rvFichas.setAdapter(adapter);
     }
 
-    //public void ShowOrderSelected (ModeloIndividual ind, ModeloGrupal gpo){
-    public void ShowOrderSelected (String id, String formName){
-        dialog_details_order detailsOrder = new dialog_details_order();
-        Bundle b = new Bundle();
-        b.putString(ORDER_ID,id);
-        b.putString(TYPE, formName);
-        /*if (ind != null)
-            b.putSerializable(Constants.INDIVIDUAL,ind);
+    private boolean GetCartera(String where){
+        Cursor row;
+        _m_carteraGral = new ArrayList<>();
+
+        String query = "";
+        //Log.e("queryFichas", query);
+        if (ENVIROMENT)
+            query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia FROM " + TBL_CARTERA_IND + " UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia FROM "+TBL_CARTERA_GPO +") AS cartera "+where;
         else
-            b.putSerializable(Constants.GRUPO,gpo);*/
-        detailsOrder.setArguments(b);
-        detailsOrder.show(getChildFragmentManager(), NameFragments.DIALOGDETAILSORDER);
+            query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia FROM "+TBL_CARTERA_GPO_T +") AS cartera "+where;
+
+        row = dBhelper.executeQuery(query);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            dataNombre = new String[row.getCount()];
+            dataDia = new String[row.getCount()];
+            dataAsesor = new String[row.getCount()];
+            List<String> nombre = new ArrayList<>();
+            List<String> dia = new ArrayList<>();
+            List<String> colonia = new ArrayList<>();
+            List<String> asesor = new ArrayList<>();
+            for (int i = 0; i < row.getCount(); i++){
+                nombre.add(row.getString(1));
+                dia.add(row.getString(5));
+                colonia.add(row.getString(9));
+                asesor.add(row.getString(7));
+                mCarteraGeneral = new MCarteraGnral();
+                mCarteraGeneral.setId_cliente(row.getString(0));
+                mCarteraGeneral.setTipo(row.getString(8));
+                mCarteraGeneral.setNombre(row.getString(1));
+                mCarteraGeneral.setTesorera(row.getString(6));
+                mCarteraGeneral.setDireccion(row.getString(2));
+                mCarteraGeneral.setDiaSemana(row.getString(5));
+                mCarteraGeneral.setIs_ruta(row.getInt(3)==1);
+                mCarteraGeneral.setIs_obligatorio(row.getInt(4)==1);
+                _m_carteraGral.add(mCarteraGeneral);
+                row.moveToNext();
+            }
+
+            dataNombre = RemoverRepetidos(nombre);
+            dataColonia = RemoverRepetidos(colonia);
+            dataAsesor = RemoverRepetidos(asesor);
+            dataDia = RemoverRepetidos(dia);
+
+            adapterNombre = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
+
+            adapterDia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataDia);
+
+            adapterColonia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
+
+            adapterAsesor = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+        }
+        row.close();
+
+        if(_m_carteraGral.size() > 0) {
+            adapter.UpdateData(_m_carteraGral);
+            rvFichas.setVisibility(View.VISIBLE);
+            tvNoInfo.setVisibility(View.GONE);
+        }
+        else {
+            rvFichas.setVisibility(View.GONE);
+            tvNoInfo.setVisibility(View.VISIBLE);
+        }
+
+        return true;
     }
 
-    private void GuardarFichas (){
-        InputStream is = ctx.getResources().openRawResource(R.raw.fichas_ri);
-        try {
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            String json = new String(buffer, "UTF-8");
-            fichas = new JSONObject(json);
-
-            JSONArray ind = fichas.getJSONArray(INDIVIDUAL);
-            JSONArray gpo = fichas.getJSONArray(GRUPAL);
-
-            _m_fichaGeneral = new ArrayList<>();
-
-            if (ind.length() > 0){
-                //_m_individual = new ArrayList<>();
-
-                for(int i = 0; i < ind.length(); i++){
-                    JSONObject item_ri = ind.getJSONObject(i);
-                    _fichas = new HashMap<>();
-                    _fichas.put(0,"002");
-                    _fichas.put(1,item_ri.getString(ORDER_ID));
-                    _fichas.put(2, item_ri.getString(TYPE));
-                    _fichas.put(3, item_ri.getString(ASSIGN_DATE));
-                    _fichas.put(4, item_ri.getJSONObject(PRESTAMO).getString(DIA_SEMANA));
-                    _fichas.put(5, item_ri.getJSONObject(PRESTAMO).getString(FECHA_PAGO_ESTABLECIDA));
-                    _fichas.put(6, item_ri.getJSONObject(PRESTAMO).toString());
-                    _fichas.put(7, item_ri.getJSONObject(CLIENTE).getString(NOMBRE));
-                    _fichas.put(8, item_ri.getJSONObject(CLIENTE).getString(NUMERO_CLIENTE));
-                    _fichas.put(9, item_ri.getJSONObject(CLIENTE).toString());
-                    _fichas.put(10, item_ri.getJSONObject(AVAL).toString());
-                    _fichas.put(11, ""); // Datos de presidenta
-                    _fichas.put(12, ""); //Datos de Tesorera
-                    _fichas.put(13, ""); // Datos de Secretaria
-                    _fichas.put(14, item_ri.getJSONArray(REPORTE_ANALITICO_OMEGA).toString());
-                    _fichas.put(15, item_ri.getJSONArray(TABLA_PAGOS_CLIENTE).toString());
-                    _fichas.put(16, "0"); // Impresion
-                    _fichas.put(17, ""); // Fecha Inicio
-                    _fichas.put(18, ""); // Fecha Terminado
-                    _fichas.put(19, ""); // Fecha Enviado
-                    _fichas.put(20, ""); // Fecha Confirmado
-                    _fichas.put(21, ""); // Respuesta
-                    _fichas.put(22, "0"); // Estatus
-                    _fichas.put(23, "");  //Timestamp
-
-                    dBhelper.saveRecordsFichas(db, FICHAS_T, _fichas);
-                }
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_cartera, menu);
+        final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        tvContFiltros = actionView.findViewById(R.id.filtro_bagde);
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
             }
+        });
+        setupBadge();
+    }
 
-            if (gpo.length() > 0){
-                //_m_grupal = new ArrayList<>();
-                for (int i = 0; i < gpo.length(); i++) {
-                    JSONObject item_rg = gpo.getJSONObject(i);
-                    Log.v("--","-------------------------------------------------------------");
-                    Log.v("GRUPO", item_rg.getJSONObject(GRUPO).toString());
-                    Log.v("--","-------------------------------------------------------------");
-                    _fichas = new HashMap<>();
-                    _fichas.put(0,"002");
-                    _fichas.put(1,item_rg.getString(ORDER_ID));
-                    _fichas.put(2, item_rg.getString(TYPE));
-                    _fichas.put(3, item_rg.getString(ASSIGN_DATE));
-                    _fichas.put(4, item_rg.getJSONObject(PRESTAMO).getString(DIA_SEMANA));
-                    _fichas.put(5, item_rg.getJSONObject(PRESTAMO).getString(FECHA_PAGO_ESTABLECIDA));
-                    _fichas.put(6, item_rg.getJSONObject(PRESTAMO).toString());
-                    _fichas.put(7, item_rg.getJSONObject(GRUPO).getString(NOMBRE_GRUPO));
-                    _fichas.put(8, item_rg.getJSONObject(GRUPO).getString(CLAVE_GRUPO));
-                    _fichas.put(9, item_rg.getJSONObject(GRUPO).toString());
-                    _fichas.put(10, ""); // Datos de aval
-                    _fichas.put(11, item_rg.getJSONObject(PRESIDENTA).toString()); // Datos de presidenta
-                    _fichas.put(12, item_rg.getJSONObject(TESORERA).toString()); //Datos de Tesorera
-                    _fichas.put(13, item_rg.getJSONObject(SECRETARIA).toString()); // Datos de Secretaria
-                    _fichas.put(14, item_rg.getJSONArray(REPORTE_ANALITICO_OMEGA).toString());
-                    _fichas.put(15, item_rg.getJSONArray(TABLA_PAGOS_GRUPO).toString());
-                    _fichas.put(16, "0"); // Impresion
-                    _fichas.put(17, ""); // Fecha inicio
-                    _fichas.put(18, ""); // Fecha Terminado
-                    _fichas.put(19, ""); // Fecha Enviado
-                    _fichas.put(20, ""); // Fecha Confirmado
-                    _fichas.put(21, ""); // Respuesta
-                    _fichas.put(22, "0"); // Estatus
-                    _fichas.put(23, "");  // Timestamp
-                    dBhelper.saveRecordsFichas(db, FICHAS_T, _fichas);
-                }
-            }
-
-            GetFichas();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nvFiltro:
+                Filtros();
+                return true;
+            case R.id.nvInfo:
+                Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.nvSynchronized:
+                Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    private void GetFichas() {
-        Cursor row = dBhelper.getRecords(FICHAS_T, " WHERE status IN (0,1)", "", null);
-        _m_fichaGeneral = new ArrayList<>();
-        row.moveToFirst();
-        for (int i = 0; i < row.getCount(); i++){
-            mFichaGeneral = new ModeloFichaGeneral();
-            mFichaGeneral.setTipoFormulario(row.getString(3));
-            mFichaGeneral.setNombreClienteGpo(row.getString(8));
+    private void Filtros (){
+        DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
+                .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_cartera))
+                .setGravity(Gravity.TOP)
+                .setPadding(20,10,20,10)
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(DialogPlus dialog, View view) {
+                        String where = "";
+                        cont_filtros = 0;
+                        HashMap<String, String> filtros = new HashMap<>();
+                        InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        switch (view.getId()) {
+                            case R.id.btnFiltrar:
+                                if (!aetNombre.getText().toString().trim().isEmpty()){
+                                    filtros.put("nombre_cartera_p",aetNombre.getText().toString().trim());
+                                    cont_filtros += 1;
+                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
+                                }
+                                else filtros.put("nombre_cartera_p","");
 
-            mFichaGeneral.setFechaPago(row.getString(6));
-            mFichaGeneral.setDiaSemana(row.getString(5));
-            mFichaGeneral.setTipoFicha(row.getString(2));
+                                if (!aetDia.getText().toString().trim().isEmpty()) {
+                                    filtros.put("dia_semana_p",aetDia.getText().toString().trim());
+                                    cont_filtros += 1;
+                                    where += " AND dia LIKE '%" + aetDia.getText().toString().trim() + "%'";
+                                }
+                                else filtros.put("dia_semana_p","");
 
-            if(!row.getString(13).isEmpty()) {
-                try {
-                    JSONObject jsonTesorera = new JSONObject(row.getString(13));
-                    mFichaGeneral.setNombreTesorera(jsonTesorera.getString(NOMBRE));
-                    mFichaGeneral.setDireccion(jsonTesorera.getJSONObject(DIRECCION).getString(ADDRESS));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                                if (!aetColonia.getText().toString().trim().isEmpty()) {
+                                    filtros.put("colonia_cartera_p",aetColonia.getText().toString().trim());
+                                    cont_filtros += 1;
+                                    where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
+                                }
+                                else filtros.put("colonia_cartera_p","");
+
+                                if (!aetAsesor.getText().toString().trim().isEmpty()) {
+                                    filtros.put("asesor_cartera_p",aetAsesor.getText().toString().trim());
+                                    cont_filtros += 1;
+                                    where += " AND asesor_nombre LIKE '%" + aetAsesor.getText().toString().trim() + "%'";
+                                }
+                                else filtros.put("asesor_cartera_p","");
+
+                                if (cbInd.isChecked() && cbGpo.isChecked()){
+                                    filtros.put("tipo_cartera_ind_p","1");
+                                    filtros.put("tipo_cartera_gpo_p","1");
+                                    cont_filtros += 2;
+                                    where += " AND tipo IN ('INDIVIDUAL','GRUPAL')";
+                                }
+                                else if (cbInd.isChecked()){
+                                    filtros.put("tipo_cartera_ind_p","1");
+                                    filtros.put("tipo_cartera_gpo_p","0");
+                                    cont_filtros += 1;
+                                    where += " AND tipo = 'INDIVIDUAL'";
+                                }
+                                else if (cbGpo.isChecked()){
+                                    filtros.put("tipo_cartera_ind_p","0");
+                                    filtros.put("tipo_cartera_gpo_p","1");
+                                    cont_filtros += 1;
+                                    where += " AND tipo = 'GRUPAL'";
+                                }else {
+                                    filtros.put("tipo_cartera_ind_p","0");
+                                    filtros.put("tipo_cartera_gpo_p","0");
+                                }
+                                filtros.put("contador_cartera_p", String.valueOf(cont_filtros));
+                                session.setFiltrosCartera(filtros);
+
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                Log.e("where",where);
+                                if (where.length() > 4)
+                                    GetCartera("WHERE" + where.substring(4));
+                                else
+                                    GetCartera("");
+                                dialog.dismiss();
+
+                                break;
+                            case R.id.btnBorrarFiltros:
+
+                                cont_filtros = 0;
+                                filtros = new HashMap<>();
+                                filtros.put("nombre_cartera_p","");
+                                filtros.put("dia_semana_p","");
+                                filtros.put("colonia_carteta_p","");
+                                filtros.put("asesor_cartera_p","");
+                                filtros.put("tipo_cartera_ind_p","0");
+                                filtros.put("tipo_cartera_gpo_p","0");
+                                filtros.put("contador_cartera_p", "0");
+
+                                session.setFiltrosGeoPend(filtros);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                GetCartera("");
+                                dialog.dismiss();
+
+                                break;
+                        }
+                        setupBadge();
+
+                    }
+                })
+                .setExpanded(true, 900)
+                .create();
+        aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
+        aetDia      = filtros_dg.getHolderView().findViewById(R.id.aetDia);
+        aetColonia  = filtros_dg.getHolderView().findViewById(R.id.aetColonia);
+        aetAsesor   = filtros_dg.getHolderView().findViewById(R.id.aetAsesor);
+        cbInd       = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+        cbGpo       = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+
+        aetNombre.setAdapter(adapterNombre);
+        aetDia.setAdapter(adapterDia);
+        aetColonia.setAdapter(adapterColonia);
+        aetAsesor.setAdapter(adapterAsesor);
+
+        aetDia.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                aetDia.showDropDown();
+                return false;
             }
-            else {
-                try {
-                    JSONObject jsonCliente = new JSONObject(row.getString(10));
-                    mFichaGeneral.setDireccion(jsonCliente.getJSONObject(DIRECCION).getString(CALLE)+", col. "+jsonCliente.getJSONObject(DIRECCION).getString(COLONIA));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                mFichaGeneral.setNombreTesorera("");
+        });
 
+        aetNombre.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                aetNombre.showDropDown();
+                return false;
             }
+        });
 
-            mFichaGeneral.setPosicion(i);
-            mFichaGeneral.setStatus(row.getString(23));
-            mFichaGeneral.setChecked(row.getInt(25) == 1);
-            _m_fichaGeneral.add(mFichaGeneral);
-            row.moveToNext();
+        aetColonia.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                aetColonia.showDropDown();
+                return false;
+            }
+        });
+
+        aetAsesor.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                aetAsesor.showDropDown();
+                return false;
+            }
+        });
+
+        if (!session.getFiltrosCartera().get(2).isEmpty())
+            aetNombre.setText(session.getFiltrosCartera().get(2));
+        if (!session.getFiltrosCartera().get(3).isEmpty())
+            aetDia.setText(session.getFiltrosCartera().get(3));
+        if (!session.getFiltrosCartera().get(4).isEmpty())
+            aetColonia.setText(session.getFiltrosCartera().get(4));
+        if (!session.getFiltrosCartera().get(5).isEmpty())
+            aetAsesor.setText(session.getFiltrosCartera().get(5));
+        if (session.getFiltrosCartera().get(0).equals("1"))
+            cbInd.setChecked(true);
+        if (session.getFiltrosCartera().get(1).equals("1"))
+            cbGpo.setChecked(true);
+        filtros_dg.show();
+    }
+
+    private void setupBadge() {
+        Log.v("contador",session.getFiltrosCartera().get(6));
+        if (tvContFiltros != null) {
+            Log.e("tvcontador", "visible");
+            tvContFiltros.setText(String.valueOf(session.getFiltrosCartera().get(6)));
+            tvContFiltros.setVisibility(View.VISIBLE);
         }
+
+    }
+
+    private String[] RemoverRepetidos(List<String> nombres){
+        String[] data;
+        List<String> nombreUnico = new ArrayList<>();
+
+        for (int i = 0; i < nombres.size(); i++){
+            String nombre = nombres.get(i);
+            if (nombreUnico.indexOf(nombre) < 0) {
+                nombreUnico.add(nombre);
+            }
+        }
+
+        data = new String[nombreUnico.size()];
+        for (int j = 0; j < nombreUnico.size(); j++){
+            data[j] = nombreUnico.get(j);
+        }
+
+        return data;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("-----------","Resumen pendientes");
+        setupBadge();
+        String where = "";
+        if (!session.getFiltrosCartera().get(2).isEmpty())
+            where = " AND nombre LIKE '%" + session.getFiltrosCartera().get(2) + "%'";
+
+        if (!session.getFiltrosCartera().get(3).isEmpty()) {
+            where += " AND dia LIKE '%" + session.getFiltrosCartera().get(3) + "%'";
+        }
+
+        if (!session.getFiltrosCartera().get(4).isEmpty()) {
+            where += " AND colonia LIKE '%" + session.getFiltrosCartera().get(4) + "%'";
+        }
+
+        if (!session.getFiltrosCartera().get(5).isEmpty()) {
+            where += " AND asesor_nombre LIKE '%" + session.getFiltrosCartera().get(5) + "%'";
+        }
+
+        if (session.getFiltrosCartera().get(0).equals("1") && session.getFiltrosCartera().get(1).equals("1")){
+            where += " AND tipo IN ('INDIVIDUAL','GRUPAL')";
+        }
+        else if (session.getFiltrosCartera().get(0).equals("1")){
+            where += " AND tipo = 'INDIVIDUAL' ";
+        }
+        else if (session.getFiltrosCartera().get(1).equals("1")){
+            where += " AND tipo = 'GRUPAL'";
+        }
+
+        if (where.length() > 4)
+            GetCartera("WHERE" + where.substring(4));
+        else
+            GetCartera("");
     }
 }
 

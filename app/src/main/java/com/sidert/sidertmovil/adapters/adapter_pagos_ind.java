@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -17,9 +18,9 @@ import java.util.List;
 public class adapter_pagos_ind extends RecyclerView.Adapter<adapter_pagos_ind.ViewHolder> {
 
     private Context ctx;
-    private List<ModeloIndividual.TablaPagosCliente> data;
+    private List<MPago> data;
 
-    public adapter_pagos_ind(Context ctx, List<ModeloIndividual.TablaPagosCliente> data) {
+    public adapter_pagos_ind(Context ctx, List<MPago> data) {
         this.ctx = ctx;
         this.data = data;
     }
@@ -33,11 +34,11 @@ public class adapter_pagos_ind extends RecyclerView.Adapter<adapter_pagos_ind.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ModeloIndividual.TablaPagosCliente item = data.get(position);
+        MPago item = data.get(position);
 
-        holder.tvNumero.setText(String.valueOf(position +1));
+        holder.tvNumero.setText((position<9)?"0"+String.valueOf(position +1):String.valueOf(position +1));
         holder.tvFecha.setText(": " + item.getFecha());
-        holder.tvPago.setText(": " + Miscellaneous.moneyFormat(String.valueOf(item.getPago())));
+        holder.tvPago.setText(": " + Miscellaneous.moneyFormat(String.valueOf(item.getMonto())));
         holder.tvBanco.setText(": " + item.getBanco());
     }
 

@@ -4,16 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--  ID external order -->
-    <TextView
-        android:id="@+id/tvExternalID"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:background="@color/shadowdrawer"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="17sp" />
-
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -129,13 +119,16 @@
                 <EditText
                     android:id="@+id/etNombreCliente"
                     android:enabled="false"
-                    android:inputType="textCapCharacters"
+                    android:ems="10"
                     android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  Llamer al cliente a su domicilio  -->
@@ -407,13 +400,47 @@
                 <EditText
                     android:id="@+id/etNombreAval"
                     android:enabled="false"
-                    android:inputType="textCapCharacters"
+                    android:ems="10"
                     android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!--  Direccion con el aval  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dirección Aval"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/textsize" />
+
+                <EditText
+                    android:id="@+id/etDireccionAval"
+                    android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  Parentesco con el aval  -->

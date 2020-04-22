@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nvDatos"
+        android:title="Detalle"
+        android:icon="@drawable/ic_detalle" />
+
+    <item
+        android:id="@+id/nvGestion"
+        android:title="Recuperación"
+        android:icon="@drawable/ic_recuperacion_blue"/>
+
+    <item
+        android:id="@+id/nvReporte"
+        android:title="Pagos"
+        android:icon="@drawable/ic_reporte"/>
+</menu>
