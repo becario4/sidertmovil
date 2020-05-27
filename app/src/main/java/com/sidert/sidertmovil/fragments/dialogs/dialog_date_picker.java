@@ -18,6 +18,8 @@ import android.widget.NumberPicker;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
+import com.sidert.sidertmovil.activities.TrackerAsesor;
+import com.sidert.sidertmovil.activities.VencidaIntegrante;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -154,6 +156,17 @@ public class dialog_date_picker extends DialogFragment {
                             getTargetFragment().onActivityResult(123,321,i);
                             dismiss();
                         }
+                        else if(identifer == 10){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(213, 312,i);
+                            dismiss();
+                        }
+                        else if(identifer == 12){
+                            VencidaIntegrante integrante = (VencidaIntegrante) getActivity();
+                            integrante.setDate(sdf.format(myCalendar.getTime()), "fecha_promesa");
+                            dismiss();
+                        }
                         else {
                             Intent i = new Intent();
                             i.putExtra(DATE, sdf.format(myCalendar.getTime()));
@@ -248,6 +261,21 @@ public class dialog_date_picker extends DialogFragment {
                             Intent i = new Intent();
                             i.putExtra(DATE,sdf.format(myCalendar.getTime()));
                             getTargetFragment().onActivityResult(812,321,i);
+                            dismiss();
+                        }
+                        else if(identifer == 9){
+                            TrackerAsesor tracker = (TrackerAsesor) getActivity();
+                            tracker.setDate(sdf.format(myCalendar.getTime()));
+                            dismiss();
+                        }
+                        else if(identifer == 10){
+                            VencidaIntegrante integrante = (VencidaIntegrante) getActivity();
+                            integrante.setDate(sdf.format(myCalendar.getTime()), "fecha_pago");
+                            dismiss();
+                        }
+                        else if(identifer == 11){
+                            VencidaIntegrante integrante = (VencidaIntegrante) getActivity();
+                            integrante.setDate(sdf.format(myCalendar.getTime()), "fecha_defuncion");
                             dismiss();
                         }
                         else {

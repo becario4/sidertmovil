@@ -13,6 +13,7 @@ public class MPrestamo implements Serializable {
     private String montoAmortiz;
     private String estatus;
     private int tipo;
+    private String saldoCorte;
 
     public String getNombre() {
         return nombre;
@@ -84,5 +85,13 @@ public class MPrestamo implements Serializable {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    public String getSaldoCorte() {
+        return saldoCorte;
+    }
+
+    public void setSaldoCorte(String saldoCorte) {
+        this.saldoCorte = saldoCorte;
     }
 }

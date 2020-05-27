@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.database.CursorWindowCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_prestamos;
@@ -19,6 +25,8 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MPrestamo;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.NetworkStatus;
+import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 
 import org.json.JSONException;
@@ -34,6 +42,8 @@ import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
@@ -60,6 +70,9 @@ public class PrestamosClientes extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
+    private int id_carteta;
+    private int tipo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,25 +84,31 @@ public class PrestamosClientes extends AppCompatActivity {
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
+        tbMain = findViewById(R.id.tbMain);
+
+        setSupportActionBar(tbMain);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         rvPrestamos = findViewById(R.id.rvPrestamos);
 
         rvPrestamos.setLayoutManager(new LinearLayoutManager(ctx));
         rvPrestamos.setHasFixedSize(false);
 
-        Log.e("ID_cliente", getIntent().getStringExtra(ID_CARTERA));
+        id_carteta = Integer.parseInt(getIntent().getStringExtra(ID_CARTERA));
 
         switch (getIntent().getStringExtra(TIPO)){
             case "INDIVIDUAL":
+                tipo = 1;
                 GetPrestamosInd(getIntent().getStringExtra(ID_CARTERA));
                 break;
             case "GRUPAL":
+                tipo = 2;
                 GetPrestamosGpo(getIntent().getStringExtra(ID_CARTERA));
                 break;
         }
 
     }
-
-
 
     private void GetPrestamosInd (String id_cliente){
 
@@ -104,6 +123,8 @@ public class PrestamosClientes extends AppCompatActivity {
         if (row.getCount() > 0) {
             row.moveToFirst();
 
+            Log.e("_idPrestamo",row.getString(1));
+
             for (int i = 0; i < row.getCount(); i++) {
                 MPrestamo item = new MPrestamo();
                 item.setId(row.getString(2));
@@ -116,6 +137,18 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setEstatus(row.getString(14));
                 item.setTipo(1);
 
+                Cursor rowSaldoCorte;
+                if (ENVIROMENT)
+                    rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
+                else
+                    rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
+
+                if (rowSaldoCorte.getCount() > 0){
+                    rowSaldoCorte.moveToFirst();
+                    item.setSaldoCorte(rowSaldoCorte.getString(0));
+                }
+                rowSaldoCorte.close();
+
                 mPrestamos.add(item);
                 row.moveToNext();
             }
@@ -124,7 +157,8 @@ public class PrestamosClientes extends AppCompatActivity {
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
             @Override
             public void PrestamoClick(MPrestamo item) {
-                Intent intent_order = new Intent(ctx, RecuperacionIndividual.class);
+                Intent intent_order;
+                intent_order = new Intent(ctx, RecuperacionIndividual.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
                 startActivity(intent_order);
@@ -167,6 +201,18 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setMontoAmortiz(row.getString(9));
                 item.setIdPrestamo(row.getString(4));
                 item.setEstatus(row.getString(14));
+
+                Cursor rowSaldoCorte;
+                if (ENVIROMENT)
+                    rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
+                else
+                    rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
+
+                if (rowSaldoCorte.getCount() > 0){
+                    rowSaldoCorte.moveToFirst();
+                    item.setSaldoCorte(rowSaldoCorte.getString(0));
+                }
+                rowSaldoCorte.close();
                 item.setTipo(2);
 
                 mPrestamos.add(item);
@@ -195,6 +241,40 @@ public class PrestamosClientes extends AppCompatActivity {
             }
         });
         rvPrestamos.setAdapter(adatper);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_actualizar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.actualizar:
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                if (NetworkStatus.haveNetworkConnection(ctx))
+                    ss.GetPrestamo(ctx, id_carteta, tipo);
+                else{
+                    final AlertDialog error_network = Popups.showDialogMessage(ctx, Constants.not_network,
+                            R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    error_network.show();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

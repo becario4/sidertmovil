@@ -52,6 +52,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
+
 public class geo_completadas_fragment extends Fragment {
 
     private Context ctx;
@@ -103,60 +109,152 @@ public class geo_completadas_fragment extends Fragment {
         rvGeolocalizacion.setLayoutManager(new LinearLayoutManager(ctx));
         rvGeolocalizacion.setHasFixedSize(false);
 
+        _m_geolocalizacion = new ArrayList<>();
+
         setHasOptionsMenu(true);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        adapter = new adapter_geo_pendientes(ctx, _m_geolocalizacion, new adapter_geo_pendientes.Event() {
+            @Override
+            public void GeoOnClick(ModelGeolocalizacion item, int modulo) {
+                Cursor row;
+                if (Constants.ENVIROMENT)
+                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
+                else
+                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
+                row.moveToFirst();
+                Intent i_geolocalizacion;
+                switch (item.getTipo_form()) {
+                    case 1:
+                        i_geolocalizacion = new Intent(ctx, GeolocalizacionInd.class);
+                        i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
+                        i_geolocalizacion.putExtra(Constants._ID, item.getId());
+                        i_geolocalizacion.putExtra(Constants.MODULO, modulo);
+                        startActivity(i_geolocalizacion);
+                        break;
+                    case 2:
+                        i_geolocalizacion = new Intent(ctx, GeolocalizacionGpo.class);
+                        i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
+                        i_geolocalizacion.putExtra(Constants._ID, item.getId());
+                        i_geolocalizacion.putExtra(Constants.MODULO, modulo);
+                        startActivity(i_geolocalizacion);
+                        break;
+                    default:
+                        Toast.makeText(ctx, "No se encuentra registrado este formulario", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+
+        });
+
+        GetGeolocalizacion("");
+
+        rvGeolocalizacion.setAdapter(adapter);
     }
 
     private void GetGeolocalizacion(String where) {
         Cursor row;
 
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE status = 3" + where, " ORDER BY nombre ASC", null);
-        else
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE status = 3" + where, " ORDER BY nombre ASC", null);
+        String sql = "SELECT * FROM (SELECT ci.id_cartera, ci.clave, ci.nombre, ci.direccion, ci.colonia, ci.num_solicitud, ci.asesor_nombre, 1 AS tipo_ficha, 1 AS total_integrantes, 0 AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'CLIENTE' AND g.id_cartera = ci.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'NEGOCIO' AND g.id_cartera = ci.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'AVAL' AND g.id_cartera = ci.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_IND_T + " AS ci UNION SELECT cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre, 2 AS tipo_ficha, COUNT(m._id) AS total_integrantes, SUM(CASE WHEN gr._id IS NOT NULL THEN 1 ELSE 0 END) AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'PRESIDENTE' AND g.id_cartera = cg.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'TESORERO' AND g.id_cartera = cg.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'SECRETARIO' AND g.id_cartera = cg.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_GPO_T + " AS cg LEFT JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = cg.id_cartera LEFT JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON m.id_prestamo = pg.id_prestamo LEFT JOIN "+TBL_GEO_RESPUESTAS_T+" AS gr ON gr.id_integrante = m.id_integrante GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre ) AS geo_res" + where +" ORDER BY nombre ASC";
 
-        parent.SetUpBagde(1, row.getCount());
+        row = db.rawQuery(sql, null);
+
         _m_geolocalizacion = new ArrayList<>();
-        row.moveToFirst();
-        dataNombre = new String[row.getCount()];
-        dataColonia = new String[row.getCount()];
-        dataAsesor = new String[row.getCount()];
-        List<String> nombre = new ArrayList<>();
-        List<String> colonia = new ArrayList<>();
-        List<String> asesor = new ArrayList<>();
-        for (int i = 0; i < row.getCount(); i++){
-            nombre.add(row.getString(4));
-            colonia.add(row.getString(9));
-            asesor.add(row.getString(2));
-            mGeo = new ModelGeolocalizacion();
-            mGeo.setId(Integer.parseInt(row.getString(0)));
-            mGeo.setAsesor_nombre(row.getString(2));
-            mGeo.setTipo_form(Integer.parseInt(row.getString(3)));
-            mGeo.setNombre(row.getString(4));
-            mGeo.setNum_solicitud(row.getString(5));
-            mGeo.setDireccion(row.getString(8));
-            mGeo.setColonia(row.getString(9));
-            mGeo.setRes_uno(row.getString(13));
-            mGeo.setRes_dos(row.getString(14));
-            mGeo.setRes_tres(row.getString(15));
-            mGeo.setFecha_env(row.getString(19));
-            mGeo.setStatus(Integer.parseInt(row.getString(21)));
-            _m_geolocalizacion.add(mGeo);
-            row.moveToNext();
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+
+            dataNombre = new String[row.getCount()];
+            dataColonia = new String[row.getCount()];
+            dataAsesor = new String[row.getCount()];
+            List<String> nombre = new ArrayList<>();
+            List<String> colonia = new ArrayList<>();
+            List<String> asesor = new ArrayList<>();
+
+            for (int i = 0; i < row.getCount(); i++) {
+
+                switch (row.getInt(7)) { //Tipo de ficha
+                    case 1: //Individuales
+                        if (!row.getString(10).trim().isEmpty() && !row.getString(11).trim().isEmpty() && !row.getString(12).trim().isEmpty()) {
+                            nombre.add(row.getString(2));
+                            colonia.add(row.getString(4));
+                            asesor.add(row.getString(6));
+                            mGeo = new ModelGeolocalizacion();
+                            mGeo.setId(row.getInt(0));
+                            mGeo.setAsesor_nombre(row.getString(6));
+                            mGeo.setTipo_form(row.getInt(7));
+                            mGeo.setNombre(row.getString(2));
+                            mGeo.setNum_solicitud(row.getString(5));
+                            mGeo.setDireccion(row.getString(3));
+                            mGeo.setColonia(row.getString(4));
+                            mGeo.setRes_uno(row.getString(10));
+                            mGeo.setRes_dos(row.getString(11));
+                            mGeo.setRes_tres(row.getString(12));
+                            mGeo.setTotal_integrantes(row.getInt(8));
+                            mGeo.setTotal_contestadas(row.getInt(9));
+                            mGeo.setStatus(0);
+                            _m_geolocalizacion.add(mGeo);
+
+                        }
+
+                        break;
+                    case 2: //Grupales
+                        if (row.getInt(9) > 0 && row.getInt(9) == row.getInt(8)) {
+                            nombre.add(row.getString(2));
+                            colonia.add(row.getString(4));
+                            asesor.add(row.getString(6));
+                            mGeo = new ModelGeolocalizacion();
+                            mGeo.setId(row.getInt(0));
+                            mGeo.setAsesor_nombre(row.getString(6));
+                            mGeo.setTipo_form(row.getInt(7));
+                            mGeo.setNombre(row.getString(2));
+                            mGeo.setNum_solicitud(row.getString(5));
+                            mGeo.setDireccion(row.getString(3));
+                            mGeo.setColonia(row.getString(4));
+                            mGeo.setRes_uno(row.getString(10));
+                            mGeo.setRes_dos(row.getString(11));
+                            mGeo.setRes_tres(row.getString(12));
+                            mGeo.setTotal_integrantes(row.getInt(8));
+                            mGeo.setTotal_contestadas(row.getInt(9));
+                            mGeo.setStatus(0);
+                            _m_geolocalizacion.add(mGeo);
+
+                        }
+                        break;
+                }
+
+                row.moveToNext();
+            }
+
+            parent.SetUpBagde(1, _m_geolocalizacion.size());
+
+            dataNombre = RemoverRepetidos(nombre);
+            dataAsesor = RemoverRepetidos(asesor);
+            dataColonia = RemoverRepetidos(colonia);
+
+            adapterNombre = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
+
+            adapterColonia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
+
+            adapterAsesor = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
         }
 
-        dataNombre = RemoverRepetidos(nombre);
-        dataAsesor = RemoverRepetidos(asesor);
-        dataColonia = RemoverRepetidos(colonia);
-
-        adapterNombre = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
-
-        adapterColonia = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
-
-        adapterAsesor = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+        if(_m_geolocalizacion.size() > 0) {
+            adapter.UpdateData(_m_geolocalizacion);
+            rvGeolocalizacion.setVisibility(View.VISIBLE);
+            tvNoInfo.setVisibility(View.GONE);
+        }
+        else {
+            rvGeolocalizacion.setVisibility(View.GONE);
+            tvNoInfo.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -220,8 +318,11 @@ public class geo_completadas_fragment extends Fragment {
                                 session.setFiltrosGeoComp(filtros);
 
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                GetGeolocalizacion(where);
-                                adapter.UpdateData(_m_geolocalizacion);
+                                if (where.length() > 0)
+                                    GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
+                                else
+                                    GetGeolocalizacion("");
+                                //adapter.UpdateData(_m_geolocalizacion);
                                 dialog.dismiss();
 
                                 break;
@@ -239,7 +340,7 @@ public class geo_completadas_fragment extends Fragment {
                                 session.setFiltrosGeoComp(filtros);
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                                 GetGeolocalizacion("");
-                                adapter.UpdateData(_m_geolocalizacion);
+                                //adapter.UpdateData(_m_geolocalizacion);
                                 dialog.dismiss();
 
                                 break;
@@ -346,48 +447,10 @@ public class geo_completadas_fragment extends Fragment {
             where += " AND tipo_ficha = "+2;
         }
 
-        GetGeolocalizacion(where);
-        adapter = new adapter_geo_pendientes(ctx, _m_geolocalizacion, new adapter_geo_pendientes.Event() {
-            @Override
-            public void GeoOnClick(ModelGeolocalizacion item, int modulo) {
-                Cursor row;
-                if (Constants.ENVIROMENT)
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
-                else
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
-                row.moveToFirst();
-                Intent i_geolocalizacion;
-                switch (item.getTipo_form()) {
-                    case 1:
-                        i_geolocalizacion = new Intent(ctx, GeolocalizacionInd.class);
-                        i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
-                        i_geolocalizacion.putExtra(Constants._ID, item.getId());
-                        i_geolocalizacion.putExtra(Constants.MODULO, modulo);
-                        startActivity(i_geolocalizacion);
-                        break;
-                    case 2:
-                        i_geolocalizacion = new Intent(ctx, GeolocalizacionGpo.class);
-                        i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
-                        i_geolocalizacion.putExtra(Constants._ID, item.getId());
-                        i_geolocalizacion.putExtra(Constants.MODULO, modulo);
-                        startActivity(i_geolocalizacion);
-                        break;
-                    default:
-                        Toast.makeText(ctx, "No se encuentra registrado este formulario", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-
-        });
-        if (_m_geolocalizacion.size() > 0){
-            rvGeolocalizacion.setAdapter(adapter);
-            rvGeolocalizacion.setVisibility(View.VISIBLE);
-            tvNoInfo.setVisibility(View.GONE);
-        }
-        else{
-            rvGeolocalizacion.setVisibility(View.GONE);
-            tvNoInfo.setVisibility(View.VISIBLE);
-        }
+        if (where.length()> 0)
+            GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
+        else
+            GetGeolocalizacion("");
 
     }
 

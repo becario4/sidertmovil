@@ -34,14 +34,15 @@ public class ImpressionsAdapter extends RecyclerView.Adapter<ImpressionsAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImpressionsFields item = data.get(position);
 
-        holder.tvExternalID.setText(Html.fromHtml("<b>ID:</b> "+item.getExternalID()));
-        holder.tvAsessor.setText(Html.fromHtml("<b>Asesor:</b> "+item.getAsessorID()));
-        holder.tvType.setText(Html.fromHtml("<b>Tipo:</b> "+item.getType()));
+        holder.tvNombre.setText(Html.fromHtml("<b>"+item.getNombre()+"</b> "));
+        holder.tvNumPrestamo.setText(Html.fromHtml("<b>NPrestamo:</b> "+item.getNumPrestamo()));
+        holder.tvClave.setText(Html.fromHtml("<b>Clave:</b> "+item.getClave()));
+        holder.tvAsesor.setText(Html.fromHtml("<b>Asesor:</b> "+item.getAsesor()));
+        holder.tvTipoImpresion.setText(Html.fromHtml("<b>Tipo:</b> "+item.getTipoImpresion()));
         holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.getFolio()));
-        holder.tvAmount.setText(Html.fromHtml("<b>Monto:</b> "+"$"+item.getAmount()));
-        holder.tvStatus.setText(Html.fromHtml("<b>Estatus:</b> "+((item.getStatus().equals("0"))?"Enviada":"No Enviada")));
-        holder.tvGeneratedAt.setText(Html.fromHtml("<b>Impreso:</b> "+item.getGeneratedAt()));
-        holder.tvSendedAt.setText(Html.fromHtml("<b>Enviado:</b> "+item.getSendedAt()));
+        holder.tvMonto.setText(Html.fromHtml("<b>Monto:</b> "+"$"+item.getMonto()));
+        holder.tvImpreso.setText(Html.fromHtml("<b>Impreso:</b> "+item.getImpreso()));
+        holder.tvEnviado.setText(Html.fromHtml("<b>Enviado:</b> "+item.getEnviado()));
     }
 
     @Override
@@ -50,25 +51,28 @@ public class ImpressionsAdapter extends RecyclerView.Adapter<ImpressionsAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvExternalID;
-        private TextView tvAsessor;
-        private TextView tvType;
+        private TextView tvNombre;
+        private TextView tvNumPrestamo;
+        private TextView tvClave;
+        private TextView tvAsesor;
+        private TextView tvTipoImpresion;
         private TextView tvFolio;
-        private TextView tvAmount;
-        private TextView tvStatus;
-        private TextView tvGeneratedAt;
-        private TextView tvSendedAt;
+        private TextView tvMonto;
+        private TextView tvImpreso;
+        private TextView tvEnviado;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvExternalID    = itemView.findViewById(R.id.tvExternalId);
-            tvAsessor       = itemView.findViewById(R.id.tvAsessor);
-            tvType          = itemView.findViewById(R.id.tvType);
-            tvFolio         = itemView.findViewById(R.id.tvFolio);
-            tvAmount        = itemView.findViewById(R.id.tvAmount);
-            tvStatus        = itemView.findViewById(R.id.tvStatus);
-            tvGeneratedAt   = itemView.findViewById(R.id.tvGeneratedAt);
-            tvSendedAt      = itemView.findViewById(R.id.tvSendedAt);
+            tvNombre    = itemView.findViewById(R.id.tvNombre);
+            tvNumPrestamo       = itemView.findViewById(R.id.tvNumPrestamo);
+            tvClave          = itemView.findViewById(R.id.tvClave);
+            tvAsesor         = itemView.findViewById(R.id.tvAsesor);
+            tvTipoImpresion        = itemView.findViewById(R.id.tvTipoImpresion);
+            tvFolio        = itemView.findViewById(R.id.tvFolio);
+            tvMonto   = itemView.findViewById(R.id.tvMonto);
+            tvImpreso      = itemView.findViewById(R.id.tvImpreso);
+            tvEnviado      = itemView.findViewById(R.id.tvEnviado);
+
         }
     }
 }

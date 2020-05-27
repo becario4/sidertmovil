@@ -10,6 +10,7 @@
     <color name="gray_light">#ECECEC</color>
     <!--<color name="blue_sidert">#3C88C4</color>-->
     <color name="blue_sidert">#1576ba</color>
+    <color name="dark">#E53C3E40</color>
     <color name="blue_sidert_middle">#267FB9</color>
     <color name="blue_sidert_push">#3896E0</color>
     <color name="blue_sidert_flourecente">#14ffff</color>

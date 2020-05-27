@@ -23,6 +23,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,6 +41,7 @@ import com.sidert.sidertmovil.activities.FormatoRecibos;
 import com.sidert.sidertmovil.activities.OriginacionI;
 import com.sidert.sidertmovil.activities.Perfil;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
+import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
@@ -49,8 +52,6 @@ import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.fragments.solicitud_credito_fragment;
-import com.sidert.sidertmovil.utils.BkgJobServiceLogout;
-import com.sidert.sidertmovil.utils.BkgJobServiceSincronizado;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
@@ -60,12 +61,22 @@ import com.sidert.sidertmovil.utils.PrintRecibos;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
+
+import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
+import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
+import static com.sidert.sidertmovil.utils.NameFragments.ORDERS;
 
 
 public class Home extends AppCompatActivity{
@@ -83,6 +94,7 @@ public class Home extends AppCompatActivity{
     private ImageView ivLogout;
     private boolean canExitApp = false;
     private SessionManager session;
+    private Menu menuGeneral;
 
     public interface Sidert {
         void initTabLayout(TabLayout Tabs);
@@ -107,6 +119,7 @@ public class Home extends AppCompatActivity{
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
 
+        //menuGeneral = NVmenu.getMenu();
         final Bundle data = getIntent().getExtras();
         if (true){
             initNavigationDrawer();
@@ -128,9 +141,9 @@ public class Home extends AppCompatActivity{
 
                         Cursor row;
                         if (Constants.ENVIROMENT)
-                            row = dBhelper.getRecords(Constants.SINCRONIZADO, ""," ORDER BY _id DESC", null);
+                            row = dBhelper.getRecords(SINCRONIZADO, ""," ORDER BY _id DESC", null);
                         else
-                            row = dBhelper.getRecords(Constants.SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
+                            row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -141,6 +154,25 @@ public class Home extends AppCompatActivity{
                             }
 
                         }
+
+                        if (Constants.ENVIROMENT)
+                            row = dBhelper.getRecords(TBL_TRACKER_ASESOR, ""," ORDER BY _id DESC", null);
+                        else
+                            row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
+
+                        if (row.getCount() > 0){
+                            row.moveToFirst();
+
+                            for (int i = 0; i < row.getCount(); i++){
+                                Log.e("Bateria"+i, row.getString(6));
+                                Log.e("Timestamp"+i, row.getString(7));
+                                Log.e("Estatus"+i, row.getString(9));
+                                Log.e("-","---------------------------------------");
+                                row.moveToNext();
+                            }
+
+                        }
+
                     }
 
                     @Override
@@ -159,71 +191,11 @@ public class Home extends AppCompatActivity{
                 });
             }
 
+            menuGeneral = NVmenu.getMenu();
+            ShowMenuItems();
             tvNameUser.setText(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
-            if(session.getUser().get(5) != null && (session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") || session.getUser().get(5).contains("ROLE_GERENTEREGIONAL") || session.getUser().get(5).contains("ROLE_COORDINADOR") || session.getUser().get(5).contains("ROLE_DIRECCION"))) {
-                NVmenu.getMenu().clear();
-                NVmenu.inflateMenu(R.menu.navigation_menu_gerente_sucursal);
-                if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                    Log.e("sincronizado", "On Start Service Job");
-                    ComponentName serviceComponent;
-                    serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
-                    JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setPeriodic(15 * 60 * 1000);
-                    //builder.setMinimumLatency(100);
-                    //builder.setOverrideDeadline(100);
-                    JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                    jobScheduler.schedule(builder.build());
-                } else
-                    Log.e("Login", "Enable Service Job");
-                setFragment(NameFragments.GEOLOCALIZACION, null);
-            }
-            else if(session.getUser().get(5) != null && session.getUser().get(5).contains("PROGRAMADOR")){
-                NVmenu.getMenu().clear();
-                NVmenu.inflateMenu(R.menu.navigation_menu_programador);
-                setFragment(NameFragments.ERASE_TABLES, null);
-            }
-            else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_ANALISTA")){
-                NVmenu.getMenu().clear();
-                NVmenu.inflateMenu(R.menu.navigation_menu_analista);
-                if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                    Log.e("Login", "On Start Service Job");
-                    ComponentName serviceComponent;
-                    serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
-                    JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    builder.setPeriodic(15 * 60 * 1000);
-                    //builder.setMinimumLatency(100);
-                    //builder.setOverrideDeadline(100);
-                    JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                    jobScheduler.schedule(builder.build());
-                } else
-                    Log.e("Login", "Enable Service Job");
-                setFragment(NameFragments.GEOLOCALIZACION, null);
-            }
-            else if(session.getUser().get(5) != null && session.getUser().get(5).contains("ROLE_SUPER")){
-                NVmenu.getMenu().clear();
-                NVmenu.inflateMenu(R.menu.navigation_menu_super);
-                if(data != null && data.getBoolean("login")){
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.GetCartera(this);
-                }
 
-                /*if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                    Log.e("Sincronizado", "On Start Service Job 15 min");
-                    ComponentName serviceComponent;
-                    serviceComponent = new ComponentName(ctx, BkgJobServiceSincronizado.class);
-                    JobInfo.Builder builder = new JobInfo.Builder(Constants.ID_JOB_SINCRONIZADO, serviceComponent);
-                    //builder.setPeriodic(15 * 60 * 1000);
-                    builder.setMinimumLatency(15 * 60 * 1000);
-                    builder.setOverrideDeadline(15 * 60 * 1000);
-                    JobScheduler jobScheduler = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                    jobScheduler.schedule(builder.build());
-                } else
-                    Log.e("Sincronizado", "Disabled Service Job");*/
-                setFragment(NameFragments.ORDERS, null);
-            }
-            else {
-                setFragment(NameFragments.ORDERS, null);
-            }
+            setFragment(ORDERS, null);
 
             NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
             llProfile.setOnClickListener(LLprofile_OnClick);
@@ -243,8 +215,8 @@ public class Home extends AppCompatActivity{
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.NVorders:
-                    setFragment(NameFragments.ORDERS, null);
+                case R.id.nvCartera:
+                    setFragment(ORDERS, null);
                     break;
                 case R.id.NVsolicitudCredito:
                     //setFragment(NameFragments.SOLICITUD_CREDITO, null);
@@ -258,6 +230,10 @@ public class Home extends AppCompatActivity{
                 case R.id.NVsettings:
                     Intent i_configuracion = new Intent(getApplicationContext(), Configuracion.class);
                     startActivity(i_configuracion);
+                    break;
+                case R.id.nvConfiguraciones:
+                    Intent i_config = new Intent(getApplicationContext(), Configuracion.class);
+                    startActivity(i_config);
                     break;
                 case R.id.NVcomplaint:
                     dialog_mailbox complaint = new dialog_mailbox();
@@ -277,15 +253,25 @@ public class Home extends AppCompatActivity{
                 case R.id.NVlogPrint:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
+                case R.id.nvImpresiones:
+                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    break;
                 case R.id.NVcc:
                     Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
                     startActivity(i_cc);
                     //setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
+                case R.id.nvRuta:
+                    Intent i_ruta = new Intent(getApplicationContext(), TrackerAsesor.class);
+                    startActivity(i_ruta);
+                    break;
                 case R.id.NVeraseTable:
                     setFragment(NameFragments.ERASE_TABLES, null);
                     break;
                 case R.id.NVgeolocalizacion:
+                    setFragment(NameFragments.GEOLOCALIZACION, null);
+                    break;
+                case R.id.nvGeolocalizar:
                     setFragment(NameFragments.GEOLOCALIZACION, null);
                     break;
                 default:
@@ -306,13 +292,13 @@ public class Home extends AppCompatActivity{
         FragmentTransaction transaction = manager.beginTransaction();
         String tokenFragment = "";
         switch (fragment) {
-            case NameFragments.ORDERS:
+            case ORDERS:
                 mTabLayout.setVisibility(View.VISIBLE);
                 if (!(current instanceof orders_fragment)){
                     orders_fragment myAppointments = new orders_fragment();
                     myAppointments.setArguments(extras);
-                    transaction.replace(R.id.FLmain, myAppointments, NameFragments.ORDERS);
-                    tokenFragment = NameFragments.ORDERS;
+                    transaction.replace(R.id.FLmain, myAppointments, ORDERS);
+                    tokenFragment = ORDERS;
                 } else
                     return;
                 break;
@@ -375,14 +361,15 @@ public class Home extends AppCompatActivity{
                 break;
             default:
                 if (!(current instanceof orders_fragment)){
-                    transaction.replace(R.id.FLmain, new orders_fragment(), NameFragments.ORDERS);
-                    tokenFragment = NameFragments.ORDERS;
+                    transaction.replace(R.id.FLmain, new orders_fragment(), ORDERS);
+                    tokenFragment = ORDERS;
                 } else
                     return;
                 break;
         }
 
-        if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP) && !tokenFragment.equals(NameFragments.IMPRESSION_HISTORY) && !tokenFragment.equals(NameFragments.ORDERS) && !tokenFragment.equals(NameFragments.GEOLOCALIZACION)) {
+        //if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP) && !tokenFragment.equals(NameFragments.IMPRESSION_HISTORY) && !tokenFragment.equals(NameFragments.ORDERS) && !tokenFragment.equals(NameFragments.GEOLOCALIZACION)) {
+        if(!tokenFragment.equals(ORDERS)) {
             int count = manager.getBackStackEntryCount();
             if(count > 0) {
                 int index = count - 1;
@@ -423,7 +410,6 @@ public class Home extends AppCompatActivity{
 
     public void hasTabLayout(Sidert callback) {
         callback.initTabLayout(mTabLayout);
-
     }
 
     public void setActionBar(Toolbar TBmain, HashMap<String, String> options) {
@@ -484,4 +470,49 @@ public class Home extends AppCompatActivity{
         Crashlytics.setUserName("Alejandro Isaias Lopez Jim");
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mDrawerLayout.isDrawerOpen(Gravity.LEFT)){
+            mDrawerLayout.closeDrawer(Gravity.LEFT);
+        }else{
+            super.onBackPressed();
+        }
+    }
+
+    private void ShowMenuItems (){
+        try {
+            if (session.getUser().get(8) != null) {
+                JSONArray jsonModulos = new JSONArray(session.getUser().get(8));
+                for (int i = 0; i < jsonModulos.length(); i++) {
+                    JSONObject item = jsonModulos.getJSONObject(i);
+                    switch (item.getString("nombre").toLowerCase()) {
+                        case "cartera":
+                            menuGeneral.getItem(0).setVisible(true);
+                            break;
+                        case "geolocalizar":
+                            menuGeneral.getItem(1).setVisible(true);
+                            break;
+                        case "impresion":
+                            menuGeneral.getItem(2).setVisible(true);
+                            break;
+                        case "ruta":
+                            menuGeneral.getItem(3).setVisible(true);
+                            break;
+                        case "circulocredito":
+                            menuGeneral.getItem(4).setVisible(true);
+                            break;
+                        case "agf":
+                            menuGeneral.getItem(5).setVisible(true);
+                            break;
+                        case "originacion":
+                            menuGeneral.getItem(6).setVisible(true);
+                            break;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

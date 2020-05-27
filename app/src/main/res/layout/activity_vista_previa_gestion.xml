@@ -45,6 +45,20 @@
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvNoMapa"
+                    android:textStyle="bold"
+                    android:textColor="@color/red"
+                    android:text="No se logró obtener la ubicación"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    style="@android:style/Widget.EditText"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/mapGestion"
                     android:layout_width="match_parent"
@@ -230,6 +244,32 @@
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
+
+                <TextView
+                    android:id="@+id/MontoPromesa"
+                    android:visibility="gone"
+                    android:layout_marginTop="5dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Monto de Promesa"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvMontoPromesa"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:drawableStart="@drawable/ic_money"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
                 <TextView
                     android:id="@+id/Comentario"
                     android:visibility="gone"
@@ -328,36 +368,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
                 <TextView
-                    android:id="@+id/SaldoActual"
-                    android:visibility="gone"
-                    android:layout_marginTop="5dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/balance_cutting"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:id="@+id/tvSaldoActual"
-                    android:visibility="gone"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:drawableStart="@drawable/ic_money"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/bkg_rounded_edges_blocked"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
-                <TextView
                     android:id="@+id/SaldoCorte"
                     android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
-                    android:text="@string/current_balance"
+                    android:text="Saldo al Corte"
                     android:focusable="false"
                     android:textSize="@dimen/labelsize"
                     android:focusableInTouchMode="false"
@@ -375,6 +391,31 @@
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
+                <TextView
+                    android:id="@+id/SaldoActual"
+                    android:visibility="gone"
+                    android:layout_marginTop="5dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_sidert"
+                    android:text="Saldo Actual"
+                    android:focusable="false"
+                    android:textSize="@dimen/labelsize"
+                    android:focusableInTouchMode="false"
+                    android:background="@android:color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvSaldoActual"
+                    android:visibility="gone"
+                    android:textSize="17sp"
+                    android:textColor="@color/black"
+                    android:drawableStart="@drawable/ic_money"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
                 <TextView
                     android:id="@+id/FolioRecibo"
                     android:visibility="gone"

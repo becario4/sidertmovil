@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 
@@ -29,11 +30,9 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
     private Context ctx;
     public List<MIntegrantePago> data;
-    //private boolean isEditable;
 
     public adapter_integrantes_gpo(Context ctx, List<MIntegrantePago> data) {
         this.ctx = ctx;
-        //this.isEditable = isEditable;
         this.data = data;
     }
 
@@ -48,7 +47,6 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int pos) {
 
         final MIntegrantePago integrante = data.get(pos);
-        Log.v("NotifyData", "----- "+integrante.getMontoRequerido() + " --------");
         holder.bind(integrante, pos);
 
     }
@@ -67,8 +65,6 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
         private EditText etPagoAdelanto;
         private CheckBox cbPagoCompleto;
 
-        //private ImageView ibEditar, ibGuardar;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre        = itemView.findViewById(R.id.tvNombre);
@@ -78,44 +74,54 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
             etPagoAdelanto  = itemView.findViewById(R.id.etPagoAdelanto);
             cbPagoCompleto  = itemView.findViewById(R.id.cbPagoCompleto);
 
-            etPagoRealizado.requestFocus();
-
-            //ibEditar        = itemView.findViewById(R.id.ibEditar);
-            //ibGuardar       = itemView.findViewById(R.id.ibGuardar);
+            etPagoRealizado.clearFocus();
+            etPagoRealizado.setFocusableInTouchMode(true);
 
         }
 
         public void bind (final MIntegrantePago item, final int position) {
 
-            Log.v("-","==================================================================");
-            Log.v("Realizado",item.getPagoRealizado()+"");
-            Log.v("Solidario",item.getSolidario()+"");
-            Log.v("Adelanto",item.getAdelanto()+"");
-            Log.v("-","==================================================================");
             tvNombre.setText(item.getNombre());
             tvPagoSemanal.setText(Miscellaneous.moneyFormat(String.valueOf(item.getMontoRequerido())));
             etPagoRealizado.setText(String.valueOf(item.getPagoRealizado()));
             etPagoSolidario.setText(String.valueOf((item.getSolidario() != null)?redondearDecimales(Double.parseDouble(item.getSolidario())):redondearDecimales((double)0)));
             etPagoAdelanto.setText(String.valueOf((item.getAdelanto() != null)?redondearDecimales(Double.parseDouble(item.getAdelanto())):redondearDecimales((double)0)));
 
-            cbPagoCompleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            cbPagoCompleto.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    //ibGuardar.setVisibility(View.VISIBLE);
-                    data.get(position).setPagoRequerido(isChecked);
-                    if (isChecked){
-                        //etPagoRealizado.requestFocus();
+                public void onClick(View view) {
+
+                    if (!data.get(position).isPagoRequerido()){
+                        etPagoRealizado.requestFocus();
                         etPagoRealizado.setText(String.valueOf(redondearDecimales(Double.parseDouble(item.getMontoRequerido()))));
                         etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
                         etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
                     }else {
-                        //etPagoRealizado.requestFocus();
+                        etPagoRealizado.requestFocus();
+                        etPagoRealizado.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
+                    }
+                    data.get(position).setPagoRequerido(!item.isPagoRequerido());
+                }
+            });
+            /*cbPagoCompleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    data.get(position).setPagoRequerido(isChecked);
+                    if (isChecked){
+                        etPagoRealizado.requestFocus();
+                        etPagoRealizado.setText(String.valueOf(redondearDecimales(Double.parseDouble(item.getMontoRequerido()))));
+                        etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
+                        etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
+                    }else {
+                        etPagoRealizado.requestFocus();
                         etPagoRealizado.setText(String.valueOf(redondearDecimales((double)0)));
                         etPagoSolidario.setText(String.valueOf(redondearDecimales((double)0)));
                         etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
                     }
                 }
-            });
+            });*/
 
             cbPagoCompleto.setChecked(data.get(position).isPagoRequerido());
 
@@ -141,11 +147,17 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                     if(etPagoRealizado.hasFocus()) {
                         if (s.length() > 0) {
-                            if (Double.parseDouble(s.toString()) > Double.parseDouble(item.getMontoRequerido())) {
-                                etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(s.toString()) - Double.parseDouble(item.getMontoRequerido()))));
-                            } else {
+                            try{
+                                if (Double.parseDouble(s.toString()) > Double.parseDouble(item.getMontoRequerido())) {
+                                    etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(s.toString()) - Double.parseDouble(item.getMontoRequerido()))));
+                                } else {
+                                    etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
+                                }
+                            }
+                            catch (NumberFormatException e){
                                 etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
                             }
+
 
                         } else {
                             etPagoRealizado.setText(String.valueOf(redondearDecimales((double) 0)));
@@ -178,12 +190,15 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                     if(etPagoSolidario.hasFocus()) {
                         if (s.length() > 0) {
-                            if (Double.parseDouble(s.toString()) + Double.parseDouble(item.getMontoRequerido()) > Double.parseDouble(etPagoRealizado.getText().toString())) {
-                                etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString().trim()) - Double.parseDouble(item.getMontoRequerido()))));
-                                etPagoAdelanto.setText(String.valueOf(redondearDecimales((double) 0)));
-                            } else if (Double.parseDouble(s.toString()) + Double.parseDouble(item.getMontoRequerido()) < Double.parseDouble(etPagoRealizado.getText().toString())) {
-                                etPagoAdelanto.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString()) - Double.parseDouble(item.getMontoRequerido()) - Double.parseDouble(s.toString()))));
-                            }
+
+                                if (Double.parseDouble(s.toString()) + Double.parseDouble(item.getMontoRequerido()) > Double.parseDouble(etPagoRealizado.getText().toString())) {
+                                    etPagoSolidario.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString().trim()) - Double.parseDouble(item.getMontoRequerido()))));
+                                    etPagoAdelanto.setText(String.valueOf(redondearDecimales((double) 0)));
+                                } else if (Double.parseDouble(s.toString()) + Double.parseDouble(item.getMontoRequerido()) < Double.parseDouble(etPagoRealizado.getText().toString())) {
+                                    etPagoAdelanto.setText(String.valueOf(redondearDecimales(Double.parseDouble(etPagoRealizado.getText().toString()) - Double.parseDouble(item.getMontoRequerido()) - Double.parseDouble(s.toString()))));
+                                }
+
+
                         } else {
                             if (Double.parseDouble(etPagoRealizado.getText().toString()) > Double.parseDouble(item.getMontoRequerido())){
                                 etPagoSolidario.setText(String.valueOf(redondearDecimales((double) 0)));
@@ -211,14 +226,12 @@ public class adapter_integrantes_gpo extends RecyclerView.Adapter<adapter_integr
 
                 @Override
                 public void afterTextChanged(Editable s) {
-
                         if (s.length() > 0) {
                             data.get(position).setAdelanto(s.toString());
 
                         } else {
                             data.get(position).setAdelanto("0");
                         }
-
                 }
             });
 

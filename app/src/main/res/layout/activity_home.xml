@@ -58,7 +58,7 @@
         app:itemTextAppearance="@style/TextoMenu"
         app:headerLayout="@layout/header_menu"
         app:itemIconTint="@color/blue_sidert"
-        app:menu="@menu/navigation_menu" >
+        app:menu="@menu/menu_general" >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

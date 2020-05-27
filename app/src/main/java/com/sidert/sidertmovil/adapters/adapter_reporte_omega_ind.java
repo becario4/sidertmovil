@@ -33,10 +33,10 @@ public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_repo
     public void onBindViewHolder( ViewHolder holder, int position) {
         MAmortizacion item = data.get(position);
 
-        holder.tvNumber.setText((item.getNumero()<10)?"0"+String.valueOf(item.getNumero()):String.valueOf(item.getNumero()));
+        holder.tvNumber.setText((item.getNumero()<10)?"0"+(item.getNumero()):String.valueOf(item.getNumero()));
         holder.tvFechaAmortizacion.setText(item.getFecha());
         holder.tvFechaPago.setText(item.getFechaPago());
-        holder.tvEstatus.setText("PENDIENTE");
+        holder.tvEstatus.setText(item.getPagado());
         holder.tvDays.setText(String.valueOf(item.getDiasAtraso()));
     }
 

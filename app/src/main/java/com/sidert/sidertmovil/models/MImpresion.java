@@ -10,6 +10,7 @@ public class MImpresion implements Serializable {
     private String montoPrestamo;
     private String numeroPrestamo;
     private String numeroCliente;
+    private String nombreGrupo;
     private String nombre;
     private String pagoRequerido;
     private String nombreAsesor;
@@ -66,6 +67,14 @@ public class MImpresion implements Serializable {
 
     public void setNumeroCliente(String numeroCliente) {
         this.numeroCliente = numeroCliente;
+    }
+
+    public String getNombreGrupo() {
+        return nombreGrupo;
+    }
+
+    public void setNombreGrupo(String nombreGrupo) {
+        this.nombreGrupo = nombreGrupo;
     }
 
     public String getNombre() {

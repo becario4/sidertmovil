@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,16 @@ public class adapter_integrantes extends RecyclerView.Adapter<adapter_integrante
     private Context ctx;
     private List<MIntegrante> data;
 
-    public adapter_integrantes(Context ctx, List<MIntegrante> data) {
+    private Event evento;
+
+    public interface Event {
+        void IntegranteOnClick(MIntegrante item);
+    }
+
+    public adapter_integrantes(Context ctx, List<MIntegrante> data, Event evento) {
         this.ctx = ctx;
         this.data = data;
+        this.evento = evento;
     }
 
     @NonNull
@@ -37,6 +45,9 @@ public class adapter_integrantes extends RecyclerView.Adapter<adapter_integrante
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MIntegrante item = data.get(position);
+        Log.e("id_prestamo: ", item.getGrupoId()+"asd");
+        Log.e("id_integrante: ", item.getId()+"asd");
+
         holder.tvTipoIntegrante.setText(item.getTipo());
         holder.tvNombre.setText(item.getNombre());
         holder.tvDireccion.setText(item.getDireccion());
@@ -57,6 +68,8 @@ public class adapter_integrantes extends RecyclerView.Adapter<adapter_integrante
                 Glide.with(ctx).load(R.drawable.ic_integrante).into(holder.ivTipoIntegrante);
                 break;
         }
+
+        holder.bind(item);
     }
 
     @Override
@@ -81,6 +94,15 @@ public class adapter_integrantes extends RecyclerView.Adapter<adapter_integrante
             tvTelCasa = v.findViewById(R.id.tvTelCasa);
             tvTelCel = v.findViewById(R.id.tvTelCel);
             ivTipoIntegrante = v.findViewById(R.id.ivTipoIntegrante);
+        }
+
+        public void bind (final MIntegrante item){
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    evento.IntegranteOnClick(item);
+                }
+            });
         }
     }
 

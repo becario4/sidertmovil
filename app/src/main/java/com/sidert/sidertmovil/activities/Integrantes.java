@@ -87,7 +87,7 @@ public class Integrantes extends AppCompatActivity {
                 row.moveToNext();
             }
 
-            adapter = new adapter_integrantes(ctx, data);
+            adapter = new adapter_integrantes(ctx, data, null);
             rvIntegrantes.setAdapter(adapter);
         }
     }

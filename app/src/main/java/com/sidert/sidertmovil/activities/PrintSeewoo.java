@@ -58,6 +58,9 @@ import java.util.Objects;
 import java.util.Vector;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
@@ -145,40 +148,17 @@ public class PrintSeewoo extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
-        /*File archivo;
-        if (ENVIROMENT)
-            archivo = new File(DBRecibosVigente);
-        else
-            archivo = new File(DBRecibosVigente_t);
-        if (!archivo.exists()){
-            try {
-                Writer out = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(DBRecibosVigente), "ISO-8859-1"));
-                String headers = "_ID,ID_PRESTAMO_ID_CLIENTE_ID_GESTION,ASESOR_ID,FOLIO,TIPO_IMPRESION,MONTO,CLV_CLIENTE,FECHA_IMPRESO,FECHA_ENVIO,ESTATUS"+"\n";
-                out.append(headers);
-                out.flush();
-                out.close();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-
         item = (MImpresion) getIntent().getSerializableExtra("order");
 
         if (item.getResultPrint() == 0){
-            if (item.getTipoPrestamo().equals("VIGENTE"))
+            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
                 tvSignature.setText("Firma Asesor:");
-            else if (item.getTipoPrestamo().equals("VENCIDA"))
+            else if (item.getTipoPrestamo().contains("VENCIDA"))
                 tvSignature.setText("Firma Gestor:");
             tvNameSignature.setText(item.getNombreAsesor());
         }
         else if (item.getResultPrint() == 1){
-            if (item.getTipoPrestamo().equals("VIGENTE")){
+            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA")){
                 if (item.getTipoGestion().equals("INDIVIDUAL")){
                     tvSignature.setText("Firma Cliente:");
                     tvNameSignature.setText(item.getNombre());
@@ -188,7 +168,7 @@ public class PrintSeewoo extends AppCompatActivity {
                     tvNameSignature.setText(item.getNombreFirma());
                 }
             }
-            else if (item.getTipoPrestamo().equals("VENCIDA")){
+            else if (item.getTipoPrestamo().contains("VENCIDA")){
                 tvSignature.setText("Firma Cliente:");
                 tvNameSignature.setText(item.getNombre());
             }
@@ -198,11 +178,10 @@ public class PrintSeewoo extends AppCompatActivity {
             mReimpresion = new MReimpresion();
             Cursor row;
             if (ENVIROMENT)
-                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion(), "O"});
+                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
             else
-                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion(), "O"});
+                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
 
-            Log.e("row", row.getCount()+"    asdasda");
             if (row.getCount() > 0){
                 row.moveToFirst();
                 mReimpresion.setIdPrestamo(item.getIdPrestamo());
@@ -227,6 +206,9 @@ public class PrintSeewoo extends AppCompatActivity {
             Toast.makeText(ctx, ctx.getResources().getString(R.string.print_original_copy), Toast.LENGTH_SHORT).show();
         }
 
+        Log.e("NumPRestamo",item.getNumeroPrestamo());
+        Log.e("NumGrupo",item.getNumeroCliente());
+
         tvNumLoan.setText(item.getNumeroPrestamo());
         tvNumClient.setText(item.getNumeroCliente());
         tvNameClient.setText(item.getNombre());
@@ -240,7 +222,7 @@ public class PrintSeewoo extends AppCompatActivity {
             tvName.setText(ctx.getResources().getString(R.string.client_name)+":");
             tvTotalLoan.setText(ctx.getResources().getString(R.string.loan_amount)+":");
             llPaymentRequired.setVisibility(View.VISIBLE);
-            if (item.getTipoPrestamo().equals("VENCIDA")){
+            if (item.getTipoPrestamo().contains("VENCIDA")){
                 llPaymentRequired.setVisibility(View.GONE);
             }
         }
@@ -249,7 +231,7 @@ public class PrintSeewoo extends AppCompatActivity {
             tvName.setText(ctx.getResources().getString(R.string.group_name)+":");
             tvTotalLoan.setText(ctx.getResources().getString(R.string.amount_total_loan_group)+":");
             llPaymentRequired.setVisibility(View.VISIBLE);
-            if (item.getTipoPrestamo().equals("VENCIDA")){
+            if (item.getTipoPrestamo().contains("VENCIDA")){
                 llPaymentRequired.setVisibility(View.GONE);
             }
         }
@@ -496,9 +478,9 @@ public class PrintSeewoo extends AppCompatActivity {
 
                     Cursor row;
                     if (ENVIROMENT)
-                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion()});
+                        row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
                     else
-                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getIdPrestamo()+item.getIdGestion()});
+                        row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
                     row.moveToFirst();
                     mReimpresion = new MReimpresion();
                     mReimpresion.setIdPrestamo(item.getIdPrestamo());
@@ -510,6 +492,7 @@ public class PrintSeewoo extends AppCompatActivity {
                     mReimpresion.setNumeroPrestamo(item.getNumeroPrestamo());
                     mReimpresion.setNumeroCliente(item.getNumeroCliente());
                     mReimpresion.setNombre(item.getNombre());
+                    mReimpresion.setNombreGrupo(item.getNombreGrupo());
                     mReimpresion.setPagoRequerido(item.getPagoRequerido());
                     mReimpresion.setNombreAsesor(item.getNombreAsesor());
                     mReimpresion.setAsesorId(item.getAsesorId());
@@ -756,13 +739,21 @@ public class PrintSeewoo extends AppCompatActivity {
         if(success){
             Cursor row;
             if (ENVIROMENT)
-                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getIdPrestamo()+this.item.getIdGestion()});
+                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getNumeroPrestamo()+"-"+this.item.getIdGestion()});
             else
-                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getIdPrestamo()+this.item.getIdGestion()});
+                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getNumeroPrestamo()+"-"+this.item.getIdGestion()});
             row.moveToFirst();
+            Log.e("Folio", row.getCount()+"xxxxxxxxxx");
+
             intent.putExtra(Constants.MESSAGE, resultMess);
             intent.putExtra(Constants.RES_PRINT, resultPrint);
-            intent.putExtra(Constants.FOLIO, row.getInt(3));
+            try {
+                intent.putExtra(Constants.FOLIO, row.getInt(3));
+            }
+            catch (Exception e){
+                intent.putExtra(FOLIO, 0);
+            }
+
             setResult(RESULT_OK, intent);
         }else{
             intent.putExtra(Constants.MESSAGE, resultMess);

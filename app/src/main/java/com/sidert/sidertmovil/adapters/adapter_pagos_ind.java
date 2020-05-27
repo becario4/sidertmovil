@@ -36,7 +36,7 @@ public class adapter_pagos_ind extends RecyclerView.Adapter<adapter_pagos_ind.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MPago item = data.get(position);
 
-        holder.tvNumero.setText((position<9)?"0"+String.valueOf(position +1):String.valueOf(position +1));
+        holder.tvNumero.setText((position<9)?"0"+(position +1):String.valueOf(position +1));
         holder.tvFecha.setText(": " + item.getFecha());
         holder.tvPago.setText(": " + Miscellaneous.moneyFormat(String.valueOf(item.getMonto())));
         holder.tvBanco.setText(": " + item.getBanco());

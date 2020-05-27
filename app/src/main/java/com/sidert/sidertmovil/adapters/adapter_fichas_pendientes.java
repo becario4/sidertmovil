@@ -42,7 +42,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
 
     public interface Event {
         void FichaOnClick(MCarteraGnral item);
-        void IsRutaOnClick(MCarteraGnral item, boolean is_ruta);
+        void IsRutaOnClick(MCarteraGnral item, boolean is_ruta, int pos);
     }
 
     public adapter_fichas_pendientes(Context ctx, List<MCarteraGnral> data, Event evento) {
@@ -59,16 +59,32 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         final MCarteraGnral item = data.get(position);
         if (item.getTipo().equals("INDIVIDUAL")) {
-            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipoFicha);
+            if (item.getParcial() == 0)
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_user_yellow)).into(holder.ivTipoFicha);
+            else if (item.getParcial() == -1 || item.getParcial() > 0)
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipoFicha);
             holder.tvNombreTesorera.setText("");
         }
         else {
-            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipoFicha);
+            if (item.getParcial() == 0)
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_cliente)).into(holder.ivTipoFicha);
+            else if (item.getParcial() == -1 || item.getParcial() > 0)
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipoFicha);
             holder.tvNombreTesorera.setText(item.getTesorera());
         }
+
+        holder.tvTipoPrestamo.setText(item.getTipoPrestamo());
+        if (item.getTipoPrestamo().toUpperCase().equals("VIGENTE"))
+            holder.tvTipoPrestamo.setTextColor(ctx.getColor(R.color.env_verde));
+        else if (item.getTipoPrestamo().toUpperCase().equals("COBRANZA"))
+            holder.tvTipoPrestamo.setTextColor(ctx.getColor(R.color.env_anar));
+        else if (item.getTipoPrestamo().toUpperCase().contains("VENCIDA"))
+            holder.tvTipoPrestamo.setTextColor(ctx.getColor(R.color.env_rojo));
+        else
+            holder.tvTipoPrestamo.setTextColor(ctx.getColor(R.color.shadowdrawer));
 
         holder.tvDiaSemana.setText(item.getDiaSemana());
         holder.tvNombre.setText(item.getNombre());
@@ -78,7 +94,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 item.setIs_ruta(isChecked);
-                evento.IsRutaOnClick(item, isChecked);
+                evento.IsRutaOnClick(item, isChecked, position);
 
             }
         });
@@ -97,28 +113,21 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        //private TextView tvNombre;
-        //private TextView tvDireccion;
-        //private TextView tvFechaPago;
-        //private TextView tvDiaSemana;
-        //private CheckBox cbRuta;
-        //private ImageView ivTipoFicha;
-        //private TextView tvStatus;
         private TextView tvNombre;
         private TextView tvNombreTesorera;
         private TextView tvDiaSemana;
         private TextView tvDireccion;
+        private TextView tvTipoPrestamo;
 
         private ImageView ivTipoFicha;
         private CheckBox cbRuta;
-
 
         public ViewHolder(@NonNull View v) {
             super(v);
             tvNombre    = v.findViewById(R.id.tvNombre);
             tvDireccion = v.findViewById(R.id.tvDireccion);
             tvDiaSemana = v.findViewById(R.id.tvDiaSemana);
-            //tvDiaSemana = itemView.findViewById(R.id.tvDiaSemana);
+            tvTipoPrestamo = v.findViewById(R.id.tvTipoPrestamo);
             cbRuta      = v.findViewById(R.id.cbRuta);
             ivTipoFicha = v.findViewById(R.id.ivTipoFicha);
             tvNombreTesorera = v.findViewById(R.id.tvNombreTesorera);
@@ -176,6 +185,12 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
         if (data != null)
             data.clear();
         data = _data;
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        data.remove(position);
+        notifyItemRemoved(position);
         notifyDataSetChanged();
     }
 

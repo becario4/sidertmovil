@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ import com.sidert.sidertmovil.models.MAval;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+
+import java.util.Calendar;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
@@ -81,6 +84,9 @@ public class ri_detalle_fragment extends Fragment {
         mAval                    = new MAval();
 
         parent                   = (RecuperacionIndividual) getActivity();
+        assert parent != null;
+        parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         etNumeroPrestamo         = view.findViewById(R.id.etNumeroPrestamo);
         etFechaCreditoOtorgado   = view.findViewById(R.id.etFechaCreditoOtorgado);
         etNumeroCliente          = view.findViewById(R.id.etNumeroCliente);
@@ -108,16 +114,17 @@ public class ri_detalle_fragment extends Fragment {
         Cursor row;
 
         if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " INNER JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
+            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
         else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " INNER JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
+            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
 
+            Log.e("Detalle", row.getString(0));
             etNumeroPrestamo.setText(row.getString(3));
             etFechaCreditoOtorgado.setText(row.getString(5));
-            etNumeroCliente.setText(row.getString(2));
+            etNumeroCliente.setText(row.getString(26));
             etNombreCliente.setText(row.getString(25));
             etMontoPrestamoOtorgado.setText(Miscellaneous.moneyFormat(row.getString(6)));
             etMontoTotalPrestamo.setText(Miscellaneous.moneyFormat(String.valueOf(row.getString(7))));
@@ -178,20 +185,24 @@ public class ri_detalle_fragment extends Fragment {
     private View.OnClickListener btnCallEndorsement_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
-            } else {
-                /*if (!parent.ficha_ri.getAval().getTelefonoAval().isEmpty()) {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getAval().getTelefonoAval()));
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(ctx, "No cuenta con número de telefono", Toast.LENGTH_SHORT).show();
-                }*/
-            }
+            Call(tel_aval);
         }
     };
 
+
+    private void Call(String strPhone){
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
+        } else {
+            if (!strPhone.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + strPhone));
+                startActivity(intent);
+            }
+            else {
+                Toast.makeText(ctx, "No cuenta con número de telefono", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 }

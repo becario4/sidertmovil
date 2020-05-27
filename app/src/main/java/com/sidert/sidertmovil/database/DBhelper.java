@@ -39,10 +39,22 @@ import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 
 public class DBhelper extends SQLiteOpenHelper {
 
@@ -122,11 +134,18 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_GPO);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VIGENTE_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VIGENTE);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REIMPRESION_VIGENTE_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REIMPRESION_VIGENTE);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ARQUEO_CAJA);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ARQUEO_CAJA_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_GEO_RESPUESTAS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_V_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_INTEGRANTE_T);
 
         Log.v("CreacionTablas", "se crearon tablas");
     }
@@ -334,6 +353,12 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VIGENTE_T); }
         catch (Exception e) {  Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla MPRESIONES_VIGENTE"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA_T); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T"); }
+
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REIMPRESION_VIGENTE); }
         catch (Exception e) {  Log.e("Tablas", "Catch tabla MPRESIONES_VIGENTE"); }
 
@@ -421,10 +446,53 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_T); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
         try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_RIM); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
         try{ db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T); }
+        catch (Exception e) {}
+
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR_T); }
+        catch (Exception e) {}
+
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR); }
+        catch (Exception e) {}
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_GEO_RESPUESTAS); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla GEO_RESPUESTAS"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE); }
+        catch (Exception e) { Log.e("ADD CLAVE INTEGRANTE", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE_T); }
+        catch (Exception e) { Log.e("ADD CLAVE INTEGRANTE T", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE); }
+        catch (Exception e) { Log.e("ADD ID PRESTAMO INTE", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE_T); }
+        catch (Exception e) { Log.e("ADD ID PRESTAMO INTE T", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_GEO_RESP); }
+        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_CLIENTE_IND); }
+        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_AVAL_IND); }
+        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_NEGOCIO_IND); }
+        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GEOLOCALIZADAS_GPO); }
+        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_V_T); }
+        catch (Exception e) {}
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_INTEGRANTE_T); }
         catch (Exception e) {}
 
     }
@@ -793,9 +861,61 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveReimpresionVigente(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
+    public void saveGeoRespuestas(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
-        String sql = "INSERT INTO " + table_name + "(" +
+        String tbl = "geo";
+        String sql = "INSERT INTO " + tbl + "(" +
+                "id_cartera, " +
+                "num_solicitud, " +
+                "tipo_ficha, " +
+                "tipo_geolocalizacion, " +
+                "id_integrante, " +
+                "nombre, " +
+                "direccion, " +
+                "latitud, " +
+                "longitud, " +
+                "direccion_capturada, " +
+                "codigo_barras, " +
+                "fachada, " +
+                "comentario, " +
+                "fecha_fin_geo, " +
+                "fecha_envio_geo, " +
+                "estatus, " +
+                "clave) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                           //ID_CARTERA                 1
+        pInsert.bindString(2, params.get(1));                           //NUM_SOLICITUD              2
+        pInsert.bindLong(3, Integer.parseInt(params.get(2)));           //TIPO_FICHA                 3
+        pInsert.bindString(4, params.get(3));                           //TIPO_GEOLOCALIZACION       4
+        pInsert.bindString(5, params.get(4));                           //ID_INTEGRANTE              5
+        pInsert.bindString(6, params.get(5));                           //NOMBRE                     6
+        pInsert.bindString(7, params.get(6));                           //DIRECCION                  7
+        pInsert.bindString(8, params.get(7));                           //LATITUD                    8
+        pInsert.bindString(9, params.get(8));                           //LONGITUD                   9
+        pInsert.bindString(10, params.get(9));                          //DIRECCION_CAPTURADA       10
+        pInsert.bindString(11, params.get(10));                         //CODIGO_BARRAS             11
+        pInsert.bindString(12, params.get(11));                         //FACHADA                   12
+        pInsert.bindString(13, params.get(12));                         //COMENTARIO                13
+        pInsert.bindString(14, params.get(13));                         //FECHA_FIN_GEO             14
+        pInsert.bindString(15, params.get(14));                         //FECHA_ENVIO_GEO           15
+        pInsert.bindLong(16, Integer.parseInt(params.get(15)));         //ESTATUS                   16
+        pInsert.bindString(17, params.get(16));                         //CLAVE                     17
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveReimpresionVigente(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+        String tbl;
+        if (ENVIROMENT)
+            tbl = TBL_REIMPRESION_VIGENTE;
+        else
+            tbl = TBL_REIMPRESION_VIGENTE_T;
+
+        String sql = "INSERT INTO " + tbl + "(" +
                 "num_prestamo_id_gestion, " +
                 "tipo_reimpresion, " +
                 "folio, " +
@@ -805,7 +925,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "serie_id, " +
                 "create_at, " +
                 "sent_at, " +
-                "estatus) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "estatus, " +
+                "num_prestamo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //1  NUM_PRESTAMO_ID_GESTION
         pInsert.bindString(2, params.get(1));                   //2  TIPO_IMPRESION
@@ -817,6 +938,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(8, params.get(7));                   //8  FECHA IMPRESION
         pInsert.bindString(9, params.get(8));                   //9  FECHA_ENVIO
         pInsert.bindLong(10, Integer.parseInt(params.get(9)));  //10 ESTATUS
+        pInsert.bindString(11, params.get(10));                 //11 NUM PRESTAMO
 
         pInsert.execute();
 
@@ -824,9 +946,14 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveImpresiones(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
+    public void saveImpresiones(SQLiteDatabase db, HashMap<Integer, String> params) {
+        String tbl;
+        if (ENVIROMENT)
+            tbl = TBL_IMPRESIONES_VIGENTE;
+        else
+            tbl = TBL_IMPRESIONES_VIGENTE_T;
         db.beginTransaction();
-        String sql = "INSERT INTO " + table_name + "(" +
+        String sql = "INSERT INTO " + tbl + "(" +
                 "num_prestamo_id_gestion, " +
                 "asesor_id, " +
                 "folio, " +
@@ -835,7 +962,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "clave_cliente, " +
                 "create_at, " +
                 "sent_at, " +
-                "estatus) VALUES(?,?,?,?,?,?,?,?,?)";
+                "estatus, " +
+                "num_prestamo) VALUES(?,?,?,?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //NUM PRESTAMO + ID_GESTION    1
         pInsert.bindString(2, params.get(1));                   //ASESOR ID                    2
@@ -846,6 +974,77 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(7, params.get(6));                   //FECHA IMPRESION              7
         pInsert.bindString(8, params.get(7));                   //FECHA ENVIO                  8
         pInsert.bindLong(9, Integer.parseInt(params.get(8)));   //ESTATUS                      9
+        pInsert.bindString(10, params.get(9));                  //NUM PRESTAMO                 10
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveImpresionesVencida(SQLiteDatabase db, HashMap<Integer, String> params) {
+        String tbl;
+        if (ENVIROMENT)
+            tbl = TBL_IMPRESIONES_VENCIDA;
+        else
+            tbl = TBL_IMPRESIONES_VENCIDA_T;
+        db.beginTransaction();
+        String sql = "INSERT INTO " + tbl + "(" +
+                "num_prestamo_id_gestion, " +
+                "asesor_id, " +
+                "folio, " +
+                "tipo_impresion, " +
+                "monto, " +
+                "clave_cliente, " +
+                "create_at, " +
+                "sent_at, " +
+                "estatus, " +
+                "num_prestamo) VALUES(?,?,?,?,?,?,?,?,?,?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //NUM PRESTAMO + ID_GESTION    1
+        pInsert.bindString(2, params.get(1));                   //ASESOR ID                    2
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));     //FOLIO                        3
+        pInsert.bindString(4, params.get(3));                   //TIPO IMPRESION               4
+        pInsert.bindString(5, params.get(4));                   //MONTO                        5
+        pInsert.bindString(6, params.get(5));                   //CLAVE CLIENTE                6
+        pInsert.bindString(7, params.get(6));                   //FECHA IMPRESION              7
+        pInsert.bindString(8, params.get(7));                   //FECHA ENVIO                  8
+        pInsert.bindLong(9, Integer.parseInt(params.get(8)));   //ESTATUS                      9
+        pInsert.bindString(10, params.get(9));                  //NUM PRESTAMO                 10
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveTrackerAsesor(SQLiteDatabase db, HashMap<Integer, String> params) {
+        String tbl;
+        if (ENVIROMENT)
+            tbl = TBL_TRACKER_ASESOR;
+        else
+            tbl = TBL_TRACKER_ASESOR_T;
+        db.beginTransaction();
+        String sql = "INSERT INTO " + tbl + "(" +
+                "asesor_id, " +
+                "serie_id, " +
+                "nombre, " +
+                "latitud, " +
+                "longitud, " +
+                "bateria, " +
+                "created_at, " +
+                "sended_at, " +
+                "estatus) VALUES(?,?,?,?,?,?,?,?,?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //ASESOR_ID    1
+        pInsert.bindString(2, params.get(1));                   //SERIE ID     2
+        pInsert.bindString(3, params.get(2));                   //NOMBRE       3
+        pInsert.bindString(4, params.get(3));                   //LATITUD      4
+        pInsert.bindString(5, params.get(4));                   //LONGITUD     5
+        pInsert.bindString(6, params.get(5));                   //BATERIA      6
+        pInsert.bindString(7, params.get(6));                   //CREATED AT   7
+        pInsert.bindString(8, params.get(7));                   //SENDED AT    8
+        pInsert.bindString(9, params.get(8));                   //ESTATUS      9
 
         pInsert.execute();
 
@@ -1502,8 +1701,11 @@ public class DBhelper extends SQLiteOpenHelper {
                 "num_solicitud, " +
                 "fecha_dispositivo, " +
                 "fecha_actualizado, " +
-                "colonia) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "colonia, " +
+                "geo_cliente, " +
+                "geo_aval, " +
+                "geo_negocio) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                  //(1) id_cartera
         pInsert.bindString(2, params.get(1));                  //(2) clave
@@ -1519,6 +1721,9 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(12, params.get(11));                //(12) fecha_dispositivo
         pInsert.bindString(13, params.get(12));                //(13) fecha_actualizado
         pInsert.bindString(14, params.get(13));                //(14) colonia
+        pInsert.bindLong(15, Long.parseLong(params.get(14)));  //(15) geo_cliente
+        pInsert.bindLong(16, Long.parseLong(params.get(15)));  //(16) geo_aval
+        pInsert.bindLong(17, Long.parseLong(params.get(16)));  //(17) geo_negocio
 
         Long id = pInsert.executeInsert();
 
@@ -1817,6 +2022,160 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Long saveRespuestasVencidasInd(SQLiteDatabase db, HashMap<Integer, String> params){
+        String tbl;
+        tbl = TBL_RESPUESTAS_IND_V_T;
+        db.beginTransaction();
+        String sql = "INSERT INTO " + tbl + " (" +
+                "id_prestamo, " +
+                "latitud, " +
+                "longitud, " +
+                "contacto, " +
+                "comentario, " +
+                "actualizar_telefono, " +
+                "nuevo_telefono, " +
+                "resultado_gestion, " +
+                "motivo_no_pago, " +
+                "fecha_fallecimiento, " +
+                "fecha_monto_promesa," +
+                "monto_promesa," +
+                "medio_pago, " +
+                "fecha_pago, " +
+                "pagara_requerido, " +
+                "pago_realizado, " +
+                "imprimir_recibo, " +
+                "folio, " +
+                "evidencia, " +
+                "tipo_imagen, " +
+                "gerente, " +
+                "firma, " +
+                "fecha_inicio, " +
+                "fecha_fin, " +
+                "fecha_envio, " +
+                "estatus, " +
+                "res_impresion, " +
+                "estatus_pago, " +
+                "saldo_corte, " +
+                "saldo_actual, " +
+                "dias_atraso) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                                                   //(1) id_prestamo
+        pInsert.bindString(2, params.get(1));                                                   //(2) latitud
+        pInsert.bindString(3, params.get(2));                                                   //(3) longitud
+        pInsert.bindString(4, params.get(3));                                                   //(4) contacto
+        pInsert.bindString(5, params.get(4));                                                   //(5) comentario
+        pInsert.bindString(6, params.get(5));                                                   //(6) actualizar_telefono
+        pInsert.bindString(7, params.get(6));                                                   //(7) nuevo_telefono
+        pInsert.bindString(8, params.get(7));                                                   //(8) resultado_gestion
+        pInsert.bindString(9, params.get(8));                                                   //(9) motivo_no_pago
+        pInsert.bindString(10, params.get(9));                                                  //(10) fecha_fallecimiento
+        pInsert.bindString(11, params.get(10));                                                 //(11) fecha_monto_promesa
+        pInsert.bindString(12, params.get(11));                                                 //(12) monto_promesa
+        pInsert.bindString(13, params.get(12));                                                 //(13) medio_pago
+        pInsert.bindString(14, params.get(13));                                                 //(14) fecha_pago
+        pInsert.bindString(15, params.get(14));                                                 //(15) pagara_requerido
+        pInsert.bindString(16, params.get(15));                                                 //(16) pago_realizado
+        pInsert.bindString(17, params.get(16));                                                 //(17) imprimir_recibo
+        pInsert.bindString(18, params.get(17));                                                 //(18) folio
+        pInsert.bindString(19, params.get(18));                                                 //(19) evidencia
+        pInsert.bindString(20, params.get(19));                                                 //(20) tipo_imagen
+        pInsert.bindString(21, params.get(20));                                                 //(21) gerente
+        pInsert.bindString(22, params.get(21));                                                 //(22) firma
+        pInsert.bindString(23, params.get(22));                                                 //(23) fecha_inicio
+        pInsert.bindString(24, params.get(23));                                                 //(24) fecha_fin
+        pInsert.bindString(25, params.get(24));                                                 //(25) fecha_envio
+        pInsert.bindString(26, params.get(25));                                                 //(26) estatus
+        pInsert.bindString(27, params.get(26));                                                 //(27) res_impresion
+        pInsert.bindString(28, params.get(27));                                                 //(28) estatus_pago
+        pInsert.bindString(29, params.get(28));                                                 //(29) saldo_corte
+        pInsert.bindString(30, params.get(29));                                                 //(30) saldo_actual
+        pInsert.bindString(31, params.get(30));                                                 //(31) dias_atraso
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        return id;
+    }
+
+    public Long saveRespuestasVencidasInt(SQLiteDatabase db, HashMap<Integer, String> params){
+        String tbl;
+        tbl = TBL_RESPUESTAS_INTEGRANTE_T;
+        db.beginTransaction();
+        String sql = "INSERT INTO " + tbl + " (" +
+                "id_prestamo, " +
+                "id_integrante, " +
+                "latitud, " +
+                "longitud, " +
+                "contacto, " +
+                "comentario, " +
+                "actualizar_telefono, " +
+                "nuevo_telefono, " +
+                "resultado_gestion, " +
+                "motivo_no_pago, " +
+                "fecha_fallecimiento, " +
+                "fecha_monto_promesa," +
+                "monto_promesa," +
+                "medio_pago, " +
+                "fecha_pago, " +
+                "pagara_requerido, " +
+                "pago_realizado, " +
+                "imprimir_recibo, " +
+                "folio, " +
+                "evidencia, " +
+                "tipo_imagen, " +
+                "gerente, " +
+                "firma, " +
+                "fecha_inicio, " +
+                "fecha_fin, " +
+                "fecha_envio, " +
+                "estatus, " +
+                "res_impresion, " +
+                "estatus_pago, " +
+                "saldo_corte, " +
+                "saldo_actual, " +
+                "dias_atraso) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?, ?,?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                                                   //(1) id_prestamo
+        pInsert.bindString(2, params.get(1));                                                   //(2) id_integrante
+        pInsert.bindString(3, params.get(2));                                                   //(3) latitud
+        pInsert.bindString(4, params.get(3));                                                   //(4) longitud
+        pInsert.bindString(5, params.get(4));                                                   //(5) contacto
+        pInsert.bindString(6, params.get(5));                                                   //(6) comentario
+        pInsert.bindString(7, params.get(6));                                                   //(7) actualizar_telefono
+        pInsert.bindString(8, params.get(7));                                                   //(8) nuevo_telefono
+        pInsert.bindString(9, params.get(8));                                                   //(9) resultado_gestion
+        pInsert.bindString(10, params.get(9));                                                  //(10) motivo_no_pago
+        pInsert.bindString(11, params.get(10));                                                 //(11) fecha_fallecimiento
+        pInsert.bindString(12, params.get(11));                                                 //(12) fecha_monto_promesa
+        pInsert.bindString(13, params.get(12));                                                 //(13) monto_promesa
+        pInsert.bindString(14, params.get(13));                                                 //(14) medio_pago
+        pInsert.bindString(15, params.get(14));                                                 //(15) fecha_pago
+        pInsert.bindString(16, params.get(15));                                                 //(16) pagara_requerido
+        pInsert.bindString(17, params.get(16));                                                 //(17) pago_realizado
+        pInsert.bindString(18, params.get(17));                                                 //(18) imprimir_recibo
+        pInsert.bindString(19, params.get(18));                                                 //(19) folio
+        pInsert.bindString(20, params.get(19));                                                 //(20) evidencia
+        pInsert.bindString(21, params.get(20));                                                 //(21) tipo_imagen
+        pInsert.bindString(22, params.get(21));                                                 //(22) gerente
+        pInsert.bindString(23, params.get(22));                                                 //(23) firma
+        pInsert.bindString(24, params.get(23));                                                 //(24) fecha_inicio
+        pInsert.bindString(25, params.get(24));                                                 //(25) fecha_fin
+        pInsert.bindString(26, params.get(25));                                                 //(26) fecha_envio
+        pInsert.bindString(27, params.get(26));                                                 //(27) estatus
+        pInsert.bindString(28, params.get(27));                                                 //(28) res_impresion
+        pInsert.bindString(29, params.get(28));                                                 //(29) estatus_pago
+        pInsert.bindString(30, params.get(29));                                                 //(30) saldo_corte
+        pInsert.bindString(31, params.get(30));                                                 //(31) saldo_actual
+        pInsert.bindString(32, params.get(31));                                                 //(32) dias_atraso
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        return id;
+    }
+
     public Long savePagos(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
@@ -1869,9 +2228,15 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveMiembros(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveMiembros(SQLiteDatabase db, HashMap<Integer, String> params){
         db.beginTransaction();
-        String sql = "INSERT INTO " + table_name + " (" +
+        String tbl;
+        if (ENVIROMENT)
+            tbl = TBL_MIEMBROS_GPO;
+        else
+            tbl = TBL_MIEMBROS_GPO_T;
+
+        String sql = "INSERT INTO " + tbl + " (" +
                 "id_prestamo, " +
                 "id_integrante, " +
                 "num_solicitud, " +
@@ -1884,8 +2249,10 @@ public class DBhelper extends SQLiteOpenHelper {
                 "monto_prestamo, " +
                 "monto_requerido, " +
                 "fecha_dispositivo, " +
-                "fecha_actualizado) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "fecha_actualizado, " +
+                "clave, " +
+                "id_prestamo_integrante) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                                                   //(1) id_prestamo
         pInsert.bindString(2, params.get(1));                                                   //(2) id_integrante
@@ -1898,8 +2265,10 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(9, params.get(8));                                                   //(9) tipo_integrante
         pInsert.bindString(10, params.get(9));                                                  //(10) monto_prestamo
         pInsert.bindString(11, params.get(10));                                                 //(11) monto_requerido
-        pInsert.bindString(12, params.get(11));                                                 //(11) fecha_dispositivo
-        pInsert.bindString(13, params.get(12));                                                 //(12) fecha_actualizado
+        pInsert.bindString(12, params.get(11));                                                 //(12) fecha_dispositivo
+        pInsert.bindString(13, params.get(12));                                                 //(13) fecha_actualizado
+        pInsert.bindString(14, params.get(13));                                                 //(14) clave
+        pInsert.bindString(15, params.get(14));                                                 //(15) id_prestamo_integrante
         Long id = pInsert.executeInsert();
 
         db.setTransactionSuccessful();
@@ -1960,8 +2329,9 @@ public class DBhelper extends SQLiteOpenHelper {
                 "num_solicitud, " +
                 "fecha_dispositivo, " +
                 "fecha_actualizado, " +
-                "colonia) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "colonia, " +
+                "geolocalizadas) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                                                   //(1) id_cartera
         pInsert.bindString(2, params.get(1));                                                   //(2) clave
@@ -1978,6 +2348,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(13, params.get(12));                                                 //(13) fecha_dispositivo
         pInsert.bindString(14, params.get(13));                                                 //(14) fecha_actualizado
         pInsert.bindString(15, params.get(14));                                                 //(15) colonia
+        pInsert.bindString(16, params.get(15));                                                 //(16) geolocalizadas
         Long id = pInsert.executeInsert();
 
         db.setTransactionSuccessful();
@@ -2110,7 +2481,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Cursor getRecords(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
-        //Log.v("SQL", "SELECT * FROM " + table + where + order);
+        Log.v("SQL", "SELECT * FROM " + table + where + order);
         Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
         return res;
     }

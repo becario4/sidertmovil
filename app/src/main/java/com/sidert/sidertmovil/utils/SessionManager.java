@@ -12,6 +12,7 @@ public class SessionManager {
     private final String APP_PREF       = "com.sidert.sidertmovil";
     private final String MAILBOX        = "mailbox";
     private final String DATE           = "date";
+    private final String ID_CARTERA     = "id_cartera";
     private final String SERIE_ID       = "serie_id";
     private final String NOMBRE         = "nombre";
     private final String AP_PATERNO     = "ap_paterno";
@@ -38,7 +39,7 @@ public class SessionManager {
     private final String TIPO_CARTERA_IND_R = "tipo_cartera_ind_r";
     private final String TIPO_CARTERA_GPO_R = "tipo_cartera_gpo_r";
     private final String NOMBRE_CARTERA_P   = "nombre_cartera_p";
-    private final String NOMBRE_CARTERA_R   = "nombre_cartera_R";
+    private final String NOMBRE_CARTERA_R   = "nombre_cartera_r";
     private final String DIA_SEMANA_P       = "dia_semana_p";
     private final String DIA_SEMANA_R       = "dia_semana_r";
     private final String COLONIA_CARTERA_P  = "colonia_cartera_p";
@@ -47,6 +48,13 @@ public class SessionManager {
     private final String ASESOR_CARTERA_R   = "asesor_cartera_r";
     private final String CONTADOR_CARTERA_P = "contador_cartera_p";
     private final String CONTADOR_CARTERA_R = "contador_cartera_r";
+    private final String NOMBRE_CARTERA_C   = "nombre_cartera_c";
+    private final String TIPO_CARTERA_IND_C = "tipo_cartera_ind_c";
+    private final String TIPO_CARTERA_GPO_C = "tipo_cartera_gpo_c";
+    private final String ESTATUS_FICHA_ENV_C = "estatus_ficha_env_c";
+    private final String ESTATUS_FICHA_PEN_C = "estatus_ficha_pen_c";
+    private final String CONTADOR_CARTERA_C = "contador_cartera_c";
+    private final String MODULOS            = "modulos";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -73,12 +81,12 @@ public class SessionManager {
     public ArrayList<String> getFiltrosGeoPend (){
         ArrayList<String> filtros = new ArrayList<>();
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
-        filtros.add(preferences.getString(CLIENTE_GRUPO_P, ""));
-        filtros.add(preferences.getString(COLONIA_P,""));
-        filtros.add(preferences.getString(ASESOR_P, ""));
-        filtros.add(preferences.getString(INDIVIDUAL_P, ""));
-        filtros.add(preferences.getString(GRUPAL_P, ""));
-        filtros.add(preferences.getString(CONTADOR_P, "0"));
+        filtros.add(preferences.getString(CLIENTE_GRUPO_P, "")); //0
+        filtros.add(preferences.getString(COLONIA_P,""));        //1
+        filtros.add(preferences.getString(ASESOR_P, ""));        //2
+        filtros.add(preferences.getString(INDIVIDUAL_P, ""));    //3
+        filtros.add(preferences.getString(GRUPAL_P, ""));        //4
+        filtros.add(preferences.getString(CONTADOR_P, "0"));     //5
         return filtros;
     }
 
@@ -133,8 +141,58 @@ public class SessionManager {
         return filtros;
     }
 
+    public void setFiltrosCarteraRuta (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_CARTERA_IND_R, filtros.get(TIPO_CARTERA_IND_R));
+        editor.putString(TIPO_CARTERA_GPO_R, filtros.get(TIPO_CARTERA_GPO_R));
+        editor.putString(NOMBRE_CARTERA_R, filtros.get(NOMBRE_CARTERA_R));
+        editor.putString(DIA_SEMANA_R, filtros.get(DIA_SEMANA_R));
+        editor.putString(COLONIA_CARTERA_R, filtros.get(COLONIA_CARTERA_R));
+        editor.putString(ASESOR_CARTERA_R, filtros.get(ASESOR_CARTERA_R));
+        editor.putString(CONTADOR_CARTERA_R, filtros.get(CONTADOR_CARTERA_R));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCarteraRuta (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_CARTERA_IND_R, ""));
+        filtros.add(preferences.getString(TIPO_CARTERA_GPO_R, ""));
+        filtros.add(preferences.getString(NOMBRE_CARTERA_R,""));
+        filtros.add(preferences.getString(DIA_SEMANA_R, ""));
+        filtros.add(preferences.getString(COLONIA_CARTERA_R, ""));
+        filtros.add(preferences.getString(ASESOR_CARTERA_R, ""));
+        filtros.add(preferences.getString(CONTADOR_CARTERA_R, "0"));
+        return filtros;
+    }
+
+    public void setFiltrosCarteraContestadas (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_CARTERA_IND_C, filtros.get(TIPO_CARTERA_IND_C));
+        editor.putString(TIPO_CARTERA_GPO_C, filtros.get(TIPO_CARTERA_GPO_C));
+        editor.putString(ESTATUS_FICHA_ENV_C, filtros.get(ESTATUS_FICHA_ENV_C));
+        editor.putString(ESTATUS_FICHA_PEN_C, filtros.get(ESTATUS_FICHA_PEN_C));
+        editor.putString(NOMBRE_CARTERA_C, filtros.get(NOMBRE_CARTERA_C));
+        editor.putString(CONTADOR_CARTERA_C, filtros.get(CONTADOR_CARTERA_C));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCarteraContestadas (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_CARTERA_IND_C, ""));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_CARTERA_GPO_C, ""));  // 1 -> GPO
+        filtros.add(preferences.getString(ESTATUS_FICHA_ENV_C,""));  // 2 -> ENV
+        filtros.add(preferences.getString(ESTATUS_FICHA_PEN_C, "")); // 3 -> PEN
+        filtros.add(preferences.getString(NOMBRE_CARTERA_C, ""));    // 4 -> NOMBRE
+        filtros.add(preferences.getString(CONTADOR_CARTERA_C, "0")); // 5 -> CONTADOR
+        return filtros;
+    }
+
     // ===================  Info User ==============================================================
-    public void setUser (String serieID, String nombre, String apPaterno, String apMaterno, String userName, String type_user, boolean flag, String access_token){
+    public void setUser (String serieID, String nombre, String apPaterno, String apMaterno, String userName, String type_user, boolean flag, String access_token, String modulos, String ID){
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
         editor = preferences.edit();
         editor.putString(SERIE_ID, serieID);           //0
@@ -145,6 +203,8 @@ public class SessionManager {
         editor.putString(TYPE_USER, type_user);        //5
         editor.putBoolean(FLAG, flag);                 //6
         editor.putString(ACCESS_TOKEN, access_token);  //7
+        editor.putString(MODULOS, modulos);            //8
+        editor.putString(ID_CARTERA, ID);            //9
         editor.commit();
     }
 
@@ -159,6 +219,8 @@ public class SessionManager {
         user.add(preferences.getString(TYPE_USER, null));                      //5
         user.add(String.valueOf(preferences.getBoolean(FLAG, false)));         //6
         user.add(preferences.getString(ACCESS_TOKEN, null));                   //7
+        user.add(preferences.getString(MODULOS, null));                        //8
+        user.add(preferences.getString(ID_CARTERA, null));                     //9
         return user;
     }
 

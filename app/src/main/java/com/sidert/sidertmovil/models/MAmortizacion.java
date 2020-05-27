@@ -55,7 +55,7 @@ public class MAmortizacion {
     private Double totalPagado;
     @SerializedName("pagado")
     @Expose
-    private Boolean pagado;
+    private String pagado;
     @SerializedName("numero")
     @Expose
     private Integer numero;
@@ -191,11 +191,11 @@ public class MAmortizacion {
         this.totalPagado = totalPagado;
     }
 
-    public Boolean getPagado() {
+    public String getPagado() {
         return pagado;
     }
 
-    public void setPagado(Boolean pagado) {
+    public void setPagado(String pagado) {
         this.pagado = pagado;
     }
 

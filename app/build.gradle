@@ -23,7 +23,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
-        versionName "2.0.1"
+        versionName "2.4.0"
         //multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -74,6 +74,9 @@ dependencies {
     implementation 'com.github.myinnos:AlphabetIndex-Fast-Scroll-RecyclerView:1.0.92'
     implementation 'android.arch.work:work-runtime:1.0.1'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.5.0'
+
+    implementation 'com.github.santalu:mask-edittext:1.0.2'
 
     implementation 'io.card:android-sdk:5.5.0'
 

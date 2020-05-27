@@ -5,10 +5,16 @@ import android.provider.ContactsContract;
 import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
+import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
+import com.sidert.sidertmovil.models.MSendImpresion;
+import com.sidert.sidertmovil.models.MSucursales;
+import com.sidert.sidertmovil.models.MTracker;
+import com.sidert.sidertmovil.models.MTrackerAsesor;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.models.ModeloColonia;
@@ -23,6 +29,7 @@ import com.sidert.sidertmovil.models.SynchronizeBD;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.List;
 
@@ -60,6 +67,7 @@ public interface ManagerInterface {
     Call<LoginResponse> login(@Field(Constants.USERNAME) String username,
                               @Field(Constants.PASSWORD) String password,
                               @Field(Constants.GRANT_TYPE) String grant_type,
+                              @Field(Constants.BATTERY) Float battery,
                               @Header("Authorization") String auth);
 
     @Headers({
@@ -67,9 +75,7 @@ public interface ManagerInterface {
             "Content-Type: application/json"
     })
     @GET(WebServicesRoutes.WS_GET_GEOLOCALIZACIONES)
-    Call<ModeloGeolocalizacion> getGeolocalizcion(@Query("ficha_estado_id") String ficha_estado,
-                                                  @Query("incluir_gestiones") boolean incluir_gestiones,
-                                                  @Header("Authorization") String barer_token);
+    Call<ModeloGeolocalizacion> getGeolocalizacion(@Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -91,6 +97,49 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET(WebServicesRoutes.WS_GET_ULTIMAS_IMPRESIONES)
+    Call<List<MImpresionRes>> getUltimasImpresiones(@Query("asesorid") String asesorid,
+                                                    @Query("nivelBateria") String nivelBateria,
+                                                    @Query("versionApp") String versionApp,
+                                                    @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_IMPRESIONES)
+    Call<List<String>> guardarImpresiones(@Body List<MSendImpresion> impresion,
+                                    @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_TRACKER)
+    Call<MResponseTracker> guardarTracker(@Body MTracker tracker,
+                                          @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_TRACKER_ASESOR)
+    Call<List<MTrackerAsesor>> getTrackerAsesor(@Query("usuario_id") int usuario_id,
+                                                @Query("fecha_inicio") String fecha_inicio,
+                                                @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_SUCURSALES)
+    Call<List<MSucursales>> getSucursales(@Query("usuario_id") int usuario_id,
+                                          @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @GET(WebServicesRoutes.WS_GET_PRESTAMOS_GPO)
     Call<List<MPrestamoGpoRes>> getPrestamosGpo(@Path("id_grupo") int id_grupo,
                                              @Header("Authorization") String barer_token);
@@ -98,19 +147,22 @@ public interface ManagerInterface {
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
     Call<ModeloResSaveGeo> guardarGeo(@Header("Authorization") String token,
-                                      @Part("ficha_id") RequestBody ficha_id,
+                                      @Part("tipo") RequestBody tipo,
+                                      @Part("ficha_tipo") RequestBody fichaTipo,
+                                      @Part("prestamo_id") RequestBody prestamoId,
                                       @Part("latitud") RequestBody latitud,
                                       @Part("longitud") RequestBody longitud,
                                       @Part("direccion") RequestBody direccion,
                                       @Part("barcode") RequestBody barcode,
                                       @Part("comentario") RequestBody comentario,
-                                      @Part("tipo") RequestBody tipo,
-                                      @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
-                                      @Part("fecha_gestion_inicio") RequestBody fecha_inicio,
+                                      @Part("fecha_respuesta") RequestBody fecha_respuesta,
+                                      @Part("fecha_gestion_inicio") RequestBody fecha_gestion_inicio,
                                       @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
+                                      @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
                                       @Part("fecha_envio") RequestBody fecha_envio,
                                       @Part MultipartBody.Part foto_fachada);
 
+    /*Serivicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
     Call<ModeloResSaveGeo> guardarGeoUpdate(@Header("Authorization") String token,

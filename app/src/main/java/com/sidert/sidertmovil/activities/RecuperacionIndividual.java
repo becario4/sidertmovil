@@ -43,6 +43,7 @@ import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -65,6 +66,7 @@ import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
+import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
 import static com.sidert.sidertmovil.utils.Constants.RESPUESTA_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
@@ -76,6 +78,8 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_IND;
+import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_IND;
 
 public class RecuperacionIndividual extends AppCompatActivity {
 
@@ -96,14 +100,26 @@ public class RecuperacionIndividual extends AppCompatActivity {
     public String clave_cliente = "";
     public double saldo_corte = 0;
     public String fecha_establecida = "";
+    public String tipo_cartera = "";
+    public String id_cartera = "";
+
+    public String latitud = "";
+    public String longitud = "";
 
     private BottomNavigationView nvMenu;
+
+    private Menu menu;
+
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_individual);
         ctx             = this;
+
+        session = new SessionManager(ctx);
+
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
         TBmain          = findViewById(R.id.TBmain);
@@ -111,6 +127,8 @@ public class RecuperacionIndividual extends AppCompatActivity {
         nvMenu          = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
+
+        menu = nvMenu.getMenu();
 
         setSupportActionBar(TBmain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -120,7 +138,6 @@ public class RecuperacionIndividual extends AppCompatActivity {
         Bundle data = getIntent().getExtras();
         id_prestamo = data.getString(ID_PRESTAMO);
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
-
 
         Cursor row;
         if (ENVIROMENT)
@@ -132,24 +149,29 @@ public class RecuperacionIndividual extends AppCompatActivity {
         if (row.getCount() > 0){
             if (row.getInt(25) == 0){
                 id_respuesta = row.getString(0);
+                latitud = row.getString(2);
+                longitud = row.getString(3);
             }
         }
 
         if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " INNER JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
         else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " INNER JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0) {
             row.moveToFirst();
+            id_cartera = row.getString(2);
             num_prestamo = row.getString(3);
-            num_cliente = row.getString(2);
+            num_cliente = row.getString(26);
             nombre = row.getString(25);
             monto_amortiz = row.getString(8);
             monto_prestamo = row.getString(6);
             monto_requerido = row.getString(9);
             clave_cliente = row.getString(26);
             fecha_establecida = row.getString(11);
+            tipo_cartera = row.getString(12);
+            //tipo_cartera = "VENCIDA";
         }
         row.close();
 
@@ -162,7 +184,40 @@ public class RecuperacionIndividual extends AppCompatActivity {
             row.moveToFirst();
             saldo_corte = row.getDouble(0);
         }
-        nvMenu.setSelectedItemId(R.id.nvGestion);
+
+
+        boolean is_recuperacion = false;
+
+        try {
+            JSONArray modulos = new JSONArray(session.getUser().get(8));
+            for (int i = 0; i < modulos.length(); i++){
+
+                JSONObject item = modulos.getJSONObject(i);
+                if (item.getString("nombre").trim().toLowerCase().equals("cartera")){
+                    JSONArray permisos = item.getJSONArray("permisos");
+                    for(int j = 0; j < permisos.length(); j++){
+                        JSONObject item_permiso = permisos.getJSONObject(j);
+                        if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
+                            is_recuperacion = true;
+                        }
+                    }
+                }
+            }
+
+            if (is_recuperacion) {
+                nvMenu.setSelectedItemId(R.id.nvGestion);
+            }
+            else{
+                menu.getItem(1).setEnabled(false);
+                nvMenu.setSelectedItemId(R.id.nvDatos);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //nvMenu.setSelectedItemId(R.id.nvGestion);
+
     }
 
     @Override
@@ -180,7 +235,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.nvDatos:
-                    setFragment(NameFragments.DETALLE_IND, null);
+                    setFragment(DETALLE_IND, null);
                     break;
                 case R.id.nvGestion:
                     setFragment(NameFragments.RECUPERACION_IND, null);
@@ -201,12 +256,12 @@ public class RecuperacionIndividual extends AppCompatActivity {
         String tokenFragment = "";
 
         switch (fragment) {
-            case NameFragments.DETALLE_IND:
+            case DETALLE_IND:
                 if (!(current instanceof ri_detalle_fragment)){
                     ri_detalle_fragment detalle = new ri_detalle_fragment();
                     detalle.setArguments(extras);
-                    transaction.replace(R.id.flMain, detalle, NameFragments.DETALLE_IND);
-                    tokenFragment = NameFragments.DETALLE_IND;
+                    transaction.replace(R.id.flMain, detalle, DETALLE_IND);
+                    tokenFragment = DETALLE_IND;
                 } else
                     return;
                 break;
@@ -232,7 +287,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
         }
 
-        if(!tokenFragment.equals(NameFragments.RECUPERACION_IND)) {
+        if(!tokenFragment.equals(RECUPERACION_IND) && !tokenFragment.equals(DETALLE_IND) && !tokenFragment.equals(REPORTE_PAGOS_IND)) {
             int count = manager.getBackStackEntryCount();
             if(count > 0) {
                 int index = count - 1;

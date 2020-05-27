@@ -64,7 +64,9 @@ public class dialog_logout extends DialogFragment {
                     session.getUser().get(4),
                     session.getUser().get(5),
                     false,
-                    session.getUser().get(7));
+                    session.getUser().get(7),
+                    session.getUser().get(8),
+                    session.getUser().get(9));
 
             WorkManager mWorkManager = WorkManager.getInstance();
             mWorkManager.cancelAllWork();

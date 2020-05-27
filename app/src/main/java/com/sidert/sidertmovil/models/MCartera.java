@@ -38,12 +38,24 @@ public class MCartera {
     @SerializedName("tesorero")
     @Expose
     private String tesorero;
-    @SerializedName("ruta")
-    @Expose
-    private Boolean ruta;
     @SerializedName("colonia")
     @Expose
     private String colonia;
+    @SerializedName("ruta")
+    @Expose
+    private Boolean ruta;
+    @SerializedName("geo_cliente")
+    @Expose
+    private Boolean geoCliente;
+    @SerializedName("geo_aval")
+    @Expose
+    private Boolean geoAval;
+    @SerializedName("geo_negocio")
+    @Expose
+    private Boolean geoNegocio;
+    @SerializedName("geolocalizadas")
+    @Expose
+    private String geolocalizadas;
 
     public Integer getId() {
         return id;
@@ -133,6 +145,14 @@ public class MCartera {
         this.tesorero = tesorero;
     }
 
+    public String getColonia() {
+        return colonia;
+    }
+
+    public void setColonia(String colonia) {
+        this.colonia = colonia;
+    }
+
     public Boolean getRuta() {
         return ruta;
     }
@@ -141,11 +161,35 @@ public class MCartera {
         this.ruta = ruta;
     }
 
-    public String getColonia() {
-        return colonia;
+    public Boolean getGeoCliente() {
+        return geoCliente;
     }
 
-    public void setColonia(String colonia) {
-        this.colonia = colonia;
+    public void setGeoCliente(Boolean geoCliente) {
+        this.geoCliente = geoCliente;
+    }
+
+    public Boolean getGeoAval() {
+        return geoAval;
+    }
+
+    public void setGeoAval(Boolean geoAval) {
+        this.geoAval = geoAval;
+    }
+
+    public Boolean getGeoNegocio() {
+        return geoNegocio;
+    }
+
+    public void setGeoNegocio(Boolean geoNegocio) {
+        this.geoNegocio = geoNegocio;
+    }
+
+    public String getGeolocalizadas() {
+        return geolocalizadas;
+    }
+
+    public void setGeolocalizadas(String geolocalizadas) {
+        this.geolocalizadas = geolocalizadas;
     }
 }

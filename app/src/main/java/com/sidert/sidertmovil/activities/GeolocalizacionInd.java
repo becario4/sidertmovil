@@ -39,7 +39,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_geolocalizacion_ind);
 
         ctx     = this;
@@ -79,7 +79,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_negocio_fragment) current).latLngUbicacion != null ||
                                     !((geo_negocio_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_negocio_fragment) current).byteFotoFachada != null ||
-                                    !((geo_negocio_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_negocio_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -111,7 +111,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_aval_fragment) current).latLngUbicacion != null ||
                                     !((geo_aval_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_aval_fragment) current).byteFotoFachada != null ||
-                                    !((geo_aval_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_aval_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -149,7 +149,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_cliente_fragment) current).latLngUbicacion != null ||
                                     !((geo_cliente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_cliente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_cliente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_cliente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -181,7 +181,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_aval_fragment) current).latLngUbicacion != null ||
                                     !((geo_aval_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_aval_fragment) current).byteFotoFachada != null ||
-                                    !((geo_aval_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_aval_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -218,7 +218,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_cliente_fragment) current).latLngUbicacion != null ||
                                     !((geo_cliente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_cliente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_cliente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_cliente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -250,7 +250,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                             if (((geo_negocio_fragment) current).latLngUbicacion != null ||
                                     !((geo_negocio_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_negocio_fragment) current).byteFotoFachada != null ||
-                                    !((geo_negocio_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_negocio_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -358,7 +358,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                 if (((geo_cliente_fragment) current).latLngUbicacion != null ||
                         !((geo_cliente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_cliente_fragment) current).byteFotoFachada != null ||
-                        !((geo_cliente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_cliente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override
@@ -390,7 +390,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                 if (((geo_negocio_fragment) current).latLngUbicacion != null ||
                         !((geo_negocio_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_negocio_fragment) current).byteFotoFachada != null ||
-                        !((geo_negocio_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_negocio_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override
@@ -421,7 +421,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                 if (((geo_aval_fragment) current).latLngUbicacion != null ||
                         !((geo_aval_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_aval_fragment) current).byteFotoFachada != null ||
-                        !((geo_aval_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_aval_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override

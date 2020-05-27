@@ -13,6 +13,7 @@ public class MIntegrantePago implements Serializable {
     private String adelanto;
     private String solidario;
     private boolean pagoRequerido;
+    private String tipoCartera;
 
     public String getIdIntegrante() {
         return idIntegrante;
@@ -85,4 +86,13 @@ public class MIntegrantePago implements Serializable {
     public void setPagoRequerido(boolean pagoRequerido) {
         this.pagoRequerido = pagoRequerido;
     }
+
+    public String getTipoCartera() {
+        return tipoCartera;
+    }
+
+    public void setTipoCartera(String tipoCartera) {
+        this.tipoCartera = tipoCartera;
+    }
+
 }

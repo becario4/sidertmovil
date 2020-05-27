@@ -20,7 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
@@ -38,10 +41,11 @@ public class ResumenIntegrantes extends AppCompatActivity {
     private TextView tvTotal;
     private ListView lvIntegrantes;
 
-    //private JSONArray integrantes;
     ArrayList<String> resumen = new ArrayList<String>();
 
     private String total = "";
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+    private DecimalFormat dFormat = new DecimalFormat("#.00",symbols);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,7 @@ public class ResumenIntegrantes extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         total = getIntent().getStringExtra(TOTAL);
-        tvTotal.setText("Total: $" + total);
+        tvTotal.setText("Total: $" + dFormat.format(Double.parseDouble(total)));
         String id_prestamo =  getIntent().getStringExtra(ID_PRESTAMO);
         String id_gestion =  getIntent().getStringExtra(ID_GESTION);
         DBhelper dBhelper = new DBhelper(ctx);

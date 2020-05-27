@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">SidertM</string>
-    <string name="app_version">2.0.1</string>
+    <string name="app_name">Sidert Móvil</string>
+    <string name="app_version">2.4.0</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -219,7 +219,7 @@
     <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
     <string name="total_billetes_monedas">Total de billetes y monedas</string>
     <string name="valor_pago_realizado">Valores del Pago Realizado</string>
-    <string name="copy_rigth">© 2019 SIDERT. Derechos reservados.</string>
+    <string name="copy_rigth">© 2020 SIDERT. Derechos reservados.</string>
 
     <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 
@@ -234,6 +234,7 @@
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
+    <string name="error_image">Favor de adjuntar una IMAGEN del recibo de pago.</string>
     <string name="loading_info">Cargando información, por favor espere . . .</string>
     <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA D DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
@@ -255,6 +256,7 @@
     <string name="guardar_cambios">¿Desea guardar los cambios?</string>
     <string name="error_guardar_arqueo">Ingrese la cantidad de billetes y monedas en su respectiva denominación</string>
     <string name="no_telefono">No cuenta con número de teléfono</string>
+    <string name="not_found">No se encontró información.</string>
     <string name="complete_campos_faltantes">Complete los campos faltantes</string>
     <string name="no_ubicacion">No se logró obtener tu ubicación, intente de nuevo.</string>
     <string name="error_login">Usuario y/o contraseña incorrecta, intente de nuevo.</string>
@@ -262,6 +264,7 @@
     <string name="datos_correctos">¿Los datos son los correctos?</string>
     <string name="borrar_solicitud">¿Desea borrar la solicitud?</string>
     <string name="confirm_borrar_solicitud">¿Está completamente seguro que desea borrar la solicitud?</string>
+    <string name="mess_integrantes_cv">Solo se puede capturar un pago por integrante, favor de corregir el pago</string>
     <string name="guardando_info">Guardando información, por favor espere . . .</string>
     <string name="no_capturado_pagos">No ha capturado los pagos de los integrantes</string>
     <string name="mess_arqueo_caja">El monto total registrado en el arqueo de caja no coincide con el pago realizado</string>
@@ -294,6 +297,13 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>OTRO</item>
     </string-array>
 
+    <string-array name="motivo_no_pago_cv">
+        <item>NEGACION DE PAGO</item>
+        <item>FALLECIMIENTO</item>
+        <item>OTRO</item>
+        <item>PROMESA DE PAGO</item>
+    </string-array>
+
     <string-array name="reason_no_pay_cv">
         <item>Seleccione una opción</item>
         <item>Insolvente</item>
@@ -309,6 +319,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>CAPTURA DE PAGO</item>        <!-- 3 -->
     </string-array>
 
+    //Deprecated
     <string-array name="method_pay">
         <item>BANAMEX</item>                <!-- 0 -->
         <item>BANORTE</item>                <!-- 1 -->
@@ -318,6 +329,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>BANSEFI</item>                <!-- 5 -->
         <item>EFECTIVO</item>               <!-- 6 -->
         <item>SIDERT</item>                 <!-- 7 -->
+        <item>BANAMEX722</item>             <!-- 8 -->
     </string-array>
 
     <string-array name="medio_pago">

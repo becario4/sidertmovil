@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -88,6 +89,9 @@ public class rg_detalle_fragment extends Fragment {
         dBhelper                 = new DBhelper(ctx);
 
         parent                   = (RecuperacionGrupal) getActivity();
+        assert parent != null;
+        parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         etNumeroPrestamo         = view.findViewById(R.id.etNumeroPrestamo);
         etFechaCreditoOtorgado   = view.findViewById(R.id.etFechaCreditoOtorgado);
         etClaveGrupo             = view.findViewById(R.id.etClaveGrupo);

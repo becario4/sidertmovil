@@ -38,7 +38,7 @@ public class adapter_pagos_gpo extends RecyclerView.Adapter<adapter_pagos_gpo.Vi
         MPago item = data.get(position);
         Log.v("Tabla", item.getBanco());
 
-        holder.tvNumero.setText(String.valueOf(position +1));
+        holder.tvNumero.setText((position<9)?"0"+(position +1):String.valueOf(position +1));
         holder.tvFecha.setText(": " + item.getFecha());
         holder.tvPago.setText(": " + Miscellaneous.moneyFormat(String.valueOf(item.getMonto())));
         holder.tvBanco.setText(": " + item.getBanco());

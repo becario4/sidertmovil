@@ -4,16 +4,21 @@
     <item
         android:id="@+id/nvPresidente"
         android:title="@string/presidente"
-        android:icon="@drawable/ic_person" />
+        android:icon="@drawable/ic_corbata" />
 
     <item
         android:id="@+id/nvTesorera"
         android:title="@string/tesorera"
-        android:icon="@drawable/ic_person"/>
+        android:icon="@drawable/ic_tesoro"/>
 
     <item
         android:id="@+id/nvSecretaria"
         android:title="@string/secretaria"
-        android:icon="@drawable/ic_person"/>
+        android:icon="@drawable/ic_lapiz"/>
+
+    <item
+        android:id="@+id/nvIntegrantes"
+        android:title="Integrantes"
+        android:icon="@drawable/ic_group"/>
 
 </menu>

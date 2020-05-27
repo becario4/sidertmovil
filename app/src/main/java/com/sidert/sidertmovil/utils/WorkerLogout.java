@@ -34,7 +34,9 @@ public class WorkerLogout extends Worker {
                         session.getUser().get(4),
                         session.getUser().get(5),
                         false,
-                        session.getUser().get(7));
+                        session.getUser().get(7),
+                        session.getUser().get(8),
+                        session.getUser().get(9));
 
                 WorkManager workManager = WorkManager.getInstance();
 

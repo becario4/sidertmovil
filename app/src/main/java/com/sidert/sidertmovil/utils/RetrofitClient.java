@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CATALOGOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_IMPRESIONES;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_LOGIN;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
@@ -44,6 +45,9 @@ public class RetrofitClient {
                 break;
             case CONTROLLER_MOVIL:
                 base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_MOVIL;
+                break;
+            case CONTROLLER_IMPRESIONES:
+                base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_IMPRESIONES;
                 break;
             case CONTROLLER_DENUNCIAS:
                 base_url = "http://sidert.ddns.net:81/serviciosidert/Api.svc/";

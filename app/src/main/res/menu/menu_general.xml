@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 0 -->
+    <item
+        android:id="@+id/nvCartera"
+        android:title="Cartera"
+        android:icon="@drawable/item_orders" />
+    <!-- 1 -->
+    <item
+        android:id="@+id/nvGeolocalizar"
+        android:title="Geolocalizar"
+        android:visible="false"
+        android:icon="@drawable/ic_pin" />
+    <!-- 2 -->
+    <item
+        android:id="@+id/nvImpresiones"
+        android:title="Impresiones"
+        android:visible="false"
+        android:icon="@drawable/ic_print" />
+    <!-- 3 -->
+    <item
+        android:id="@+id/nvRuta"
+        android:title="Ruta Asesor"
+        android:visible="false"
+        android:icon="@drawable/ic_pin" />
+    <!-- 4 -->
+    <item
+        android:id="@+id/nvCC"
+        android:title="Círculo Crédito"
+        android:visible="false"
+        android:icon="@drawable/item_orders" />
+    <!-- 5 -->
+    <item
+        android:id="@+id/nvAGF"
+        android:title="A G F"
+        android:visible="false"
+        android:icon="@drawable/item_orders" />
+    <!-- 6 -->
+    <item
+        android:id="@+id/nvOriginacion"
+        android:title="Originación"
+        android:visible="false"
+        android:icon="@drawable/item_orders" />
+    <!-- 7 -->
+    <item
+        android:id="@+id/nvConfiguraciones"
+        android:title="Configuraciones"
+        android:icon="@drawable/item_settings" />
+
+</menu>

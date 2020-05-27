@@ -46,7 +46,7 @@ public class MPrestamoGpoRes implements Serializable {
     private String tipoCartera;
     @SerializedName("pagada")
     @Expose
-    private Boolean pagada;
+    private String pagada;
     @SerializedName("amortizaciones")
     @Expose
     private List<MAmortizacion> amortizaciones = null;
@@ -153,11 +153,11 @@ public class MPrestamoGpoRes implements Serializable {
         this.tipoCartera = tipoCartera;
     }
 
-    public Boolean getPagada() {
+    public String getPagada() {
         return pagada;
     }
 
-    public void setPagada(Boolean pagada) {
+    public void setPagada(String pagada) {
         this.pagada = pagada;
     }
 

@@ -39,6 +39,7 @@ public class geolocalizacion_fragment extends Fragment {
         boostrap    = (Home) getActivity();
         ctx         = getContext();
         mViewPager  = view.findViewById(R.id.mViewPager);
+        setHasOptionsMenu(true);
         return view;
     }
 

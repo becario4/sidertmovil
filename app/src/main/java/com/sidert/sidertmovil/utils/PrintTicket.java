@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
 
@@ -45,12 +47,16 @@ public class PrintTicket {
         db = dBhelper.getWritableDatabase();
         HeadTicket(ctx, ticket);
         BodyTicket(ticket);
-        FooterTicket(ticket);
+        FooterTicket(ctx, ticket);
     }
 
     private void HeadTicket (Context ctx, MImpresion ticket){
         try {
-            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
+            Bitmap bm;
+            if (ticket.getTipoPrestamo().contains("VENCIDA"))
+                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_cv);
+            else
+                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
             if (ticket.getResultPrint() == 0){
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
@@ -72,40 +78,79 @@ public class PrintTicket {
 
     private void BodyTicket (MImpresion data){
         try {
-            String nombreCampo;
-
-            if (data.getTipoGestion().equals("INDIVIDUAL")){
-                nombreCampo = "Numero De Prestamo: ";
-                linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+            if (data.getTipoPrestamo().contains("VENCIDA")) {
+                linea = line("Empresa:", "SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)");
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
             }
 
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Numero De Prestamo: " : "Numero de Cliente: ";
-            linea = line(nombreCampo, data.getNumeroCliente().trim());
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Nombre del Grupo: " : "Nombre del Cliente: ";
-            linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Monto total del prestamo grupal: " : "Monto del prestamo: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getMontoPrestamo()).trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = "Monto pago requerido: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getPagoRequerido()).trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = "Monto pago realizado: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+            String nombreCampo;
+
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+
+                nombreCampo = "Numero De Prestamo: ";
+                linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Clave de Grupo: " : "Numero de Cliente: ";
+                linea = line(nombreCampo, data.getNumeroCliente().trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Nombre del Grupo: " : "Nombre del Cliente: ";
+                linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Monto total del prestamo grupal: " : "Monto del prestamo: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getMontoPrestamo()).trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = "Monto pago requerido: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getPagoRequerido()).trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = "Monto pago realizado: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+            }
+            else{
+                if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
+                    nombreCampo = "Numero De Prestamo: ";
+                    linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Numero de Cliente: ";
+                    linea = line(nombreCampo, data.getNumeroCliente().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Cliente: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Monto pago realizado: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                }
+                else{ //Grupal vencida
+                    nombreCampo = "Numero De Prestamo: ";
+                    linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Numero de Cliente: ";
+                    linea = line(nombreCampo, data.getNumeroCliente().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Grupo: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombreGrupo().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Integrante: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Monto pago realizado: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                }
+
+            }
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    private void FooterTicket(MImpresion data){
+    private void FooterTicket(Context ctx, MImpresion data){
         try {
             dobleEspacio();
 
-            if (data.getTipoPrestamo().equals("VIGENTE")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
                 if (data.getResultPrint()== 0){
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Asesor:");
                     dobleEspacio();
@@ -128,32 +173,23 @@ public class PrintTicket {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreAsesor().trim()));
                 }
                 else{
-                    if (data.getTipoPrestamo().equals("VENCIDA") && data .getTipoGestion().equals("INDIVIDUAL")){
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
-                        dobleEspacio();
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
-                    }
-                    else {
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "");
-                        dobleEspacio();
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "NOMBRE Y FIRMA DEL CLIENTE");
-                    }
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
+                    dobleEspacio();
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
                 }
             }
 
-            if (data.getTipoPrestamo().equals("VIGENTE")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
                 Cursor row;
                 if (ENVIROMENT)
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, "", " ORDER BY _id ASC", null);
+                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, "", " ORDER BY folio ASC", null);
                 else
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY _id ASC", null);
+                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY folio ASC", null);
 
                 if (row.getCount() == 0){
-                    linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+1);
                     HashMap<Integer, String> params = new HashMap<>();
-                    params.put(0, data.getIdPrestamo()+data.getIdGestion());
+                    params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
                     params.put(1, data.getAsesorId());
                     params.put(2, "1");
                     params.put(3, "O");
@@ -162,18 +198,19 @@ public class PrintTicket {
                     params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
                     params.put(7, "");
                     params.put(8, "0");
-                    if (ENVIROMENT)
-                        dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE, params);
-                    else
-                        dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE_T, params);
+                    params.put(9, data.getNumeroPrestamo());
+
+                    dBhelper.saveImpresiones(db, params);
+
+                    linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+1);
                 }
                 else{
                     row.moveToLast();
-                    Log.e("id_prestamo_id_gestion", row.getString(1)+"="+data.getIdPrestamo()+data.getIdGestion());
-                    if (row.getString(1).equals(data.getIdPrestamo()+data.getIdGestion()) &&
+                    Log.e("num_prestamo_id_gestion", row.getString(4)+"  "+row.getString(1)+" = "+data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                    if (row.getString(1).equals(data.getNumeroPrestamo()+"-"+data.getIdGestion()) &&
                     row.getString(4).equals("O")){
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getIdPrestamo()+data.getIdGestion());
+                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
                         params.put(1, data.getAsesorId());
                         params.put(2, row.getString(3));
                         params.put(3, "C");
@@ -182,16 +219,15 @@ public class PrintTicket {
                         params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
                         params.put(7, "");
                         params.put(8, "0");
-                        if (ENVIROMENT)
-                            dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE, params);
-                        else
-                            dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE_T, params);
+                        params.put(9, data.getNumeroPrestamo());
+
+                        dBhelper.saveImpresiones(db, params);
 
                         linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row.getString(3));
                     }
                     else {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getIdPrestamo()+data.getIdGestion());
+                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
                         params.put(1, data.getAsesorId());
                         params.put(2, String.valueOf(row.getInt(3)+1));
                         params.put(3, "O");
@@ -200,17 +236,80 @@ public class PrintTicket {
                         params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
                         params.put(7, "");
                         params.put(8, "0");
-                        if (ENVIROMENT)
-                            dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE, params);
-                        else
-                            dBhelper.saveImpresiones(db,TBL_IMPRESIONES_VIGENTE_T, params);
+                        params.put(9, data.getNumeroPrestamo());
+
+                        dBhelper.saveImpresiones(db, params);
                         linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(row.getInt(3)+1));
                     }
                 }
                 row.close();
             }
             else if (data.getTipoPrestamo().equals("VENCIDA")){
+                //-----------------------------------------------------------------------------------------------------------------
+                Cursor row;
+                if (ENVIROMENT)
+                    row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA, "", " ORDER BY folio ASC", null);
+                else
+                    row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, "", " ORDER BY folio ASC", null);
 
+                if (row.getCount() == 0){
+
+                    HashMap<Integer, String> params = new HashMap<>();
+                    params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                    params.put(1, data.getAsesorId());
+                    params.put(2, "1");
+                    params.put(3, "O");
+                    params.put(4, data.getMonto());
+                    params.put(5, data.getClaveCliente());
+                    params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                    params.put(7, "");
+                    params.put(8, "0");
+                    params.put(9, data.getNumeroPrestamo());
+
+                    dBhelper.saveImpresionesVencida(db, params);
+
+                    linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+1);
+                }
+                else{
+                    row.moveToLast();
+                    Log.e("num_prestamo_id_gesVE", row.getString(4)+"  "+row.getString(1)+" = "+data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                    if (row.getString(1).equals(data.getNumeroPrestamo()+"-"+data.getIdGestion()) &&
+                            row.getString(4).equals("O")){
+                        HashMap<Integer, String> params = new HashMap<>();
+                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                        params.put(1, data.getAsesorId());
+                        params.put(2, row.getString(3));
+                        params.put(3, "C");
+                        params.put(4, data.getMonto());
+                        params.put(5, data.getClaveCliente());
+                        params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                        params.put(7, "");
+                        params.put(8, "0");
+                        params.put(9, data.getNumeroPrestamo());
+
+                        dBhelper.saveImpresionesVencida(db, params);
+
+                        linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+row.getString(3));
+                    }
+                    else {
+                        HashMap<Integer, String> params = new HashMap<>();
+                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                        params.put(1, data.getAsesorId());
+                        params.put(2, String.valueOf(row.getInt(3)+1));
+                        params.put(3, "O");
+                        params.put(4, data.getMonto());
+                        params.put(5, data.getClaveCliente());
+                        params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                        params.put(7, "");
+                        params.put(8, "0");
+                        params.put(9, data.getNumeroPrestamo());
+
+                        dBhelper.saveImpresionesVencida(db, params);
+                        linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+                    }
+                }
+                row.close();
+                //-----------------------------------------------------------------------------------------------------------------
             }
 
             dobleEspacio();
@@ -220,6 +319,9 @@ public class PrintTicket {
 
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "En caso de dudas o aclaraciones ");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comuniquese al 01 800 112 6666");
+
+            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+            ss.SendImpresionesVi(ctx, false);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

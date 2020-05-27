@@ -69,8 +69,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 
 public class geo_negocio_fragment extends Fragment {
@@ -81,8 +87,8 @@ public class geo_negocio_fragment extends Fragment {
     private TextView tvDireccionCap;
     private EditText etNombre;
     public EditText etCodigoBarras;
-    public MultiAutoCompleteTextView metComentario;
-    private MultiAutoCompleteTextView metDireccionCap;
+    public EditText etComentario;
+    private EditText etDireccionCap;
     private EditText etFechaFinalizacion;
     private EditText etFechaEnvio;
     private ImageButton ibUbicacion;
@@ -112,10 +118,12 @@ public class geo_negocio_fragment extends Fragment {
     public boolean flag_edit = true;
     public boolean isUbicacion = false;
 
-    private String ficha_id;
-    private int _id;
-    private int status;
+    //private String ficha_id;
+    private String id_cartera;
+    //private int status;
     private String direccion = "No se encontró la dirección";
+
+    private boolean isSave = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,8 +140,8 @@ public class geo_negocio_fragment extends Fragment {
         etNombre = view.findViewById(R.id.etNombre);
         etCodigoBarras = view.findViewById(R.id.etCodigoBarras);
 
-        metComentario   = view.findViewById(R.id.metComentario);
-        metDireccionCap = view.findViewById(R.id.metDireccionCap);
+        etComentario   = view.findViewById(R.id.etComentario);
+        etDireccionCap = view.findViewById(R.id.etDireccionCap);
 
         etFechaFinalizacion = view.findViewById(R.id.etFechaFinalizacion);
         etFechaEnvio        = view.findViewById(R.id.etFechaEnvio);
@@ -253,7 +261,7 @@ public class geo_negocio_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent i = new Intent(boostrap, CameraVertical.class);
-            i.putExtra(Constants.ORDER_ID, ficha_id+"_negocio");
+            i.putExtra(Constants.ORDER_ID, "_negocio");
             startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
         }
     };
@@ -267,7 +275,7 @@ public class geo_negocio_fragment extends Fragment {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(boostrap, CameraVertical.class);
-                                i.putExtra(Constants.ORDER_ID, ficha_id+"_negocio");
+                                i.putExtra(Constants.ORDER_ID, "_negocio");
                                 startActivityForResult(i, Constants.REQUEST_CODE_CAMARA_FACHADA);
                                 dialog.dismiss();
 
@@ -370,7 +378,7 @@ public class geo_negocio_fragment extends Fragment {
                 locationManager.removeUpdates(locationListener);
                 pbLoading.setVisibility(View.GONE);
                 ibUbicacion.setEnabled(true);
-                metDireccionCap.setText("No se logró obtener la ubicación");
+                etDireccionCap.setText("No se logró obtener la ubicación");
                 tvDireccionCap.setText("No se logró obtener la ubicación");
                 tvDireccionCap.setTextColor(getResources().getColor(R.color.red));
                 tvDireccionCap.setVisibility(View.VISIBLE);
@@ -411,10 +419,10 @@ public class geo_negocio_fragment extends Fragment {
 
     private void addMarker (double lat, double lng){
         if (flag_edit)
-            metDireccionCap.setText(Miscellaneous.ObtenerDireccion(ctx, lat, lng));
+            etDireccionCap.setText(Miscellaneous.ObtenerDireccion(ctx, lat, lng));
         else
-            metDireccionCap.setText(direccion);
-        metDireccionCap.setVisibility(View.VISIBLE);
+            etDireccionCap.setText(direccion);
+        etDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
         LatLng coordenadas = new LatLng(lat,lng);
@@ -469,82 +477,33 @@ public class geo_negocio_fragment extends Fragment {
         Toast.makeText(ctx, mess, Toast.LENGTH_SHORT).show();
     }
 
-    public void GuardarGeo () throws JSONException {
-        JSONObject jsonGeo = new JSONObject();
-
-        jsonGeo.put(Constants.TIPO, "NEGOCIO");
-        if (isUbicacion){
-            jsonGeo.put(Constants.LATITUD, 0);
-            jsonGeo.put(Constants.LONGITUD, 0);
-        }
-        else{
-            jsonGeo.put(Constants.LATITUD, latLngUbicacion.latitude);
-            jsonGeo.put(Constants.LONGITUD, latLngUbicacion.longitude);
-        }
-
-        jsonGeo.put(Constants.DIRECCION, metDireccionCap.getText().toString().trim());
-        jsonGeo.put(Constants.CODEBARS, etCodigoBarras.getText().toString().trim());
-        jsonGeo.put(Constants.FECHA_INI, Miscellaneous.ObtenerFecha("timestamp"));
-        try {
-            jsonGeo.put(Constants.FACHADA, Miscellaneous.save(byteFotoFachada, 1));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        jsonGeo.put(Constants.COMENTARIO, metComentario.getText().toString().trim());
-        jsonGeo.put(Constants.FECHA, Miscellaneous.ObtenerFecha("timestamp"));
-
-        JSONObject val = new JSONObject();
-        JSONArray params = new JSONArray();
-        JSONObject values = new JSONObject();
-
-        values.put(Constants.KEY, "res_dos");
-        values.put(Constants.VALUE, jsonGeo.toString());
-
-        params.put(values);
-
-        values = new JSONObject();
-
-        values.put(Constants.KEY, "status");
-        values.put(Constants.VALUE, (status + 1));
-
-        params.put(values);
-
-        if ((status + 1) == 3){
-            values = new JSONObject();
-            values.put(Constants.KEY, "fecha_ter");
-            values.put(Constants.VALUE, Miscellaneous.ObtenerFecha("timestamp"));
-            params.put(values);
-        }
+    public void GuardarGeo () {
 
         try {
-            val.put(Constants.PARAMS, params);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            HashMap<Integer, String> params = new HashMap<>();
+            params.put(0, id_cartera);
+            params.put(1, getArguments().getString(Constants.NUM_SOLICITUD));
+            params.put(2, "1");
+            params.put(3, "NEGOCIO");
+            params.put(4, "0");
+            params.put(5, etNombre.getText().toString().trim().toUpperCase());
+            params.put(6, "");
+            params.put(7, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.latitude)));
+            params.put(8, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.longitude)));
+            params.put(9, etDireccionCap.getText().toString().trim().toUpperCase());
+            params.put(10, etCodigoBarras.getText().toString().trim());
+            params.put(11, Miscellaneous.save(byteFotoFachada, 1));
+            params.put(12, etComentario.getText().toString().trim().toUpperCase());
+            params.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            params.put(14, "");
+            params.put(15, "0");
+            params.put(16, "0");
 
-        try {
-            values = new JSONObject();
-            values.put(Constants.KEY, "_id");
-            values.put(Constants.VALUE, _id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        params = new JSONArray();
-        params.put(values);
-
-        try {
-            val.put(Constants.CONDITIONALS, params);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-
-            if (Constants.ENVIROMENT)
-                dBhelper.updateRecords(ctx, Constants.GEOLOCALIZACION, val);
+            if (isSave)
+                dBhelper.saveGeoRespuestas(db, params);
             else
-                dBhelper.updateRecords(ctx, Constants.GEOLOCALIZACION_T, val);
-        } catch (JSONException e) {
+                Toast.makeText(ctx, "No hay Cliente registrado, no se puede guardar la geolocalización", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -557,127 +516,96 @@ public class geo_negocio_fragment extends Fragment {
 
     private void initComponents (){
         Cursor row;
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE _id = "+ getArguments().getInt(Constants._ID) + " AND num_solicitud = '" + getArguments().getString(Constants.NUM_SOLICITUD) + "'", "", null);
-        else
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE _id = "+ getArguments().getInt(Constants._ID) + " AND num_solicitud = '" + getArguments().getString(Constants.NUM_SOLICITUD) + "'", "", null);
 
-        row.moveToFirst();
-        _id = row.getInt(0);
-        status = row.getInt(21);
-        ficha_id = row.getString(1);
-        try {
-            JSONObject jsonData = new JSONObject(row.getString(12));
-            etNombre.setText((!jsonData.getString("negocio_nombre").trim().isEmpty())?jsonData.getString("negocio_nombre"):"No se tiene información");
-            if (!row.getString(14).isEmpty()){
-                flag_edit = false;
-                JSONObject jsonRes = new JSONObject(row.getString(14));
+        String sql = "SELECT c.id_cartera FROM " + TBL_CARTERA_IND_T + " AS c LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_cliente = c.id_cartera WHERE c.num_solicitud = ?";
+
+        row = db.rawQuery(sql, new String[]{getArguments().getString(Constants.NUM_SOLICITUD)});
+
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+            id_cartera = row.getString(0);
+            isSave = true;
+        }
+
+        row.close();
+
+        sql = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T +" WHERE id_cartera = ? AND tipo_ficha = 1 AND tipo_geolocalizacion = 'NEGOCIO'";
+
+        row = db.rawQuery(sql, new String[]{id_cartera});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            flag_edit = false;
+
+            etNombre.setEnabled(false);
+            etNombre.setText(row.getString(6));
+            etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            direccion = row.getString(10);
+            if (row.getDouble(8) == 0 && row.getDouble(9) == 0){
                 ibUbicacion.setVisibility(View.GONE);
-                direccion = jsonRes.getString(Constants.DIRECCION);
-                if (jsonRes.getDouble(Constants.LATITUD) == 0 && jsonRes.getDouble(Constants.LONGITUD) == 0){
-                    tvMapa.setVisibility(View.GONE);
-                    tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
-                    tvDireccionCap.setText(getResources().getString(R.string.direccion));
-                    tvDireccionCap.setVisibility(View.VISIBLE);
-                    metDireccionCap.setText(direccion);
-                    metDireccionCap.setVisibility(View.VISIBLE);
-                }
-                else {
-                    mapUbicacion.setVisibility(View.VISIBLE);
-                    ColocarUbicacionGestion(jsonRes.getDouble(Constants.LATITUD), jsonRes.getDouble(Constants.LONGITUD));
-                }
-
-                ibCodigoBarras.setVisibility(View.GONE);
-                etCodigoBarras.setVisibility(View.VISIBLE);
-                etCodigoBarras.setText(jsonRes.getString(Constants.CODEBARS));
-                ibFotoFachada.setVisibility(View.GONE);
-                File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+jsonRes.getString(Constants.FACHADA));
-                Uri uriFachada = Uri.fromFile(fachadaFile);
-                byteFotoFachada = getBytesUri(uriFachada,0);
-                Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
-                ivFotoFachada.setVisibility(View.VISIBLE);
-                metComentario.setText(jsonRes.getString(Constants.COMENTARIO));
-                metComentario.setEnabled(false);
-                llFechaFinalizacion.setVisibility(View.VISIBLE);
-                llFechaEnvio.setVisibility(View.VISIBLE);
-                etFechaFinalizacion.setText(jsonRes.getString(Constants.FECHA));
-                etFechaEnvio.setText((!row.getString(17).isEmpty())?row.getString(17):"Pendiente por enviar");
-                btnGuardar.setVisibility(View.GONE);
+                tvMapa.setVisibility(View.GONE);
+                tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
+                tvDireccionCap.setText(getResources().getString(R.string.direccion));
+                tvDireccionCap.setVisibility(View.VISIBLE);
+                etDireccionCap.setText(direccion);
+                etDireccionCap.setVisibility(View.VISIBLE);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            else {
+                mapUbicacion.setVisibility(View.VISIBLE);
+                ColocarUbicacionGestion(row.getDouble(8), row.getDouble(9));
+            }
+
+            ibCodigoBarras.setVisibility(View.GONE);
+            etCodigoBarras.setVisibility(View.VISIBLE);
+            etCodigoBarras.setText(row.getString(11));
+            etCodigoBarras.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            ibFotoFachada.setVisibility(View.GONE);
+            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(12));
+            Uri uriFachada = Uri.fromFile(fachadaFile);
+            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
+            ivFotoFachada.setVisibility(View.VISIBLE);
+            etComentario.setText(row.getString(13));
+            etComentario.setEnabled(false);
+            etComentario.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            llFechaFinalizacion.setVisibility(View.VISIBLE);
+            llFechaEnvio.setVisibility(View.VISIBLE);
+            etFechaFinalizacion.setText(row.getString(14));
+            etFechaEnvio.setText((!row.getString(15).isEmpty())?row.getString(15):"Pendiente por enviar");
+            btnGuardar.setVisibility(View.GONE);
+
         }
-    }
-
-    private byte[] getBytesUri (Uri uri_img, int tipo_imagen){
-        byte[] compressedByteArray = null;
-
-        switch (tipo_imagen){
-            case 0:
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver() , uri_img);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                    compressedByteArray = stream.toByteArray();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 1:
-                try {
-                    InputStream iStream =   ctx.getContentResolver().openInputStream(uri_img);
-                    ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-                    int bufferSize = 1024;
-                    byte[] buffer = new byte[bufferSize];
-
-                    int len = 0;
-                    while ((len = iStream.read(buffer)) != -1) {
-                        byteBuffer.write(buffer, 0, len);
-                    }
-                    compressedByteArray = byteBuffer.toByteArray();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-        return compressedByteArray;
     }
 
     public void ValidarInformacion() {
-        if (latLngUbicacion != null || isUbicacion){
-            if (byteFotoFachada != null){
-                if (!metComentario.getText().toString().trim().isEmpty()){
-                    final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                            R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    try {
+        if (!etNombre.getText().toString().trim().isEmpty()) {
+            if (latLngUbicacion != null || isUbicacion) {
+                if (byteFotoFachada != null) {
+                    if (!etComentario.getText().toString().trim().isEmpty()) {
+                        final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
                                         GuardarGeo();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    dialog.dismiss();
+                                        dialog.dismiss();
 
-                                }
-                            }, R.string.cancel, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    Objects.requireNonNull(guardar_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                    guardar_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    guardar_dlg.show();
-                }
-                else
-                    SendMessError("Falta capturar el comentario");
-            }
-            else
-                SendMessError("Falta Capturar la foto de fachada.");
-        }
-        else
-            SendMessError("Falta obtener la ubicación actual.");
+                                    }
+                                }, R.string.cancel, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        Objects.requireNonNull(guardar_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                        guardar_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        guardar_dlg.show();
+                    } else
+                        SendMessError("Falta capturar el comentario");
+                } else
+                    SendMessError("Falta Capturar la foto de fachada.");
+            } else
+                SendMessError("Falta obtener la ubicación actual.");
+        } else
+            SendMessError("Falta ingresar el nombre del negocio");
     }
 }

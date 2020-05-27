@@ -7,12 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -35,8 +37,8 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Miscellaneous.BorrarDuplicadosGeo(this);
 
-        Handler handler=new Handler();
-        handler.postDelayed(new Runnable() {
+        Handler handler_home=new Handler();
+        handler_home.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent start = new Intent(ctx, MainActivity.class);

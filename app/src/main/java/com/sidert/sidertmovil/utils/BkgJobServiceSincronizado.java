@@ -46,6 +46,9 @@ public class BkgJobServiceSincronizado extends JobService {
                         Log.e("JOB", "Con conexion a internet Geolocalizacion");
                         servicios.GetGeolocalizacion(getApplicationContext(), false, false);
                         servicios.SaveGeolocalizacion(getApplicationContext(), false);
+                        servicios.SaveRespuestaGestion(getApplicationContext(), false);
+                        servicios.SendImpresionesVi(getApplicationContext(), false);
+                        servicios.SendReimpresionesVi(getApplicationContext(), false);
                     }
                     else
                         Log.e("JOB", "Sin conexion a internet Geolocalizacion");

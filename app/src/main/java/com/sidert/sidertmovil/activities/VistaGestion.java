@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
@@ -77,6 +78,7 @@ public class VistaGestion extends AppCompatActivity {
 
     private MapView mapGestion;
 
+    private TextView tvNoMapa;
     private TextView NuevoTelefono;
     private TextView MotivoAclaracion;
     private TextView MotivoNoPago;
@@ -111,6 +113,8 @@ public class VistaGestion extends AppCompatActivity {
     private ImageView ivEvidencia;
     private ImageView ivFirma;
 
+    private byte[] byteEvidencia;
+
 
     private GoogleMap mMap;
     private Marker mMarker;
@@ -130,6 +134,7 @@ public class VistaGestion extends AppCompatActivity {
 
         mapGestion  = findViewById(R.id.mapGestion);
 
+        tvNoMapa          = findViewById(R.id.tvNoMapa);
         NuevoTelefono     = findViewById(R.id.NuevoTelefono);
         MotivoAclaracion  = findViewById(R.id.MotivoAclaracion);
         MotivoNoPago      = findViewById(R.id.MotivoNoPago);
@@ -170,11 +175,16 @@ public class VistaGestion extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Bundle datos = this.getIntent().getBundleExtra(Constants.PARAMS);
+        final Bundle datos = this.getIntent().getBundleExtra(Constants.PARAMS);
 
         Log.e("latitud", String.valueOf(datos.getDouble(LATITUD)));
         Log.e("longitud", String.valueOf(datos.getDouble(LONGITUD)));
-        ColocarUbicacionGestion(datos.getDouble(LATITUD), datos.getDouble(LONGITUD));
+        if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
+            tvNoMapa.setVisibility(View.VISIBLE);
+            mapGestion.setVisibility(View.GONE);
+        }
+        else
+            ColocarUbicacionGestion(datos.getDouble(LATITUD), datos.getDouble(LONGITUD));
 
         if (datos.getString(CONTACTO).equals("SI")){ //Si contacto cliente
             etContacto.setText("SI CONTACTO AL CLIENTE");
@@ -193,7 +203,7 @@ public class VistaGestion extends AppCompatActivity {
                 etPagoRealizado.setVisibility(View.VISIBLE);
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
-                Log.e("xsxsxsxs",datos.getString(FECHA_DEPOSITO)+"aefsdfsd");
+
                 if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
@@ -208,9 +218,6 @@ public class VistaGestion extends AppCompatActivity {
                     if (datos.containsKey(RESUMEN_INTEGRANTES)){
                         if (datos.getBoolean(RESUMEN_INTEGRANTES)){
 
-                            Log.v("--","---------------------------------------------------------------");
-                            //Log.v("Integrantes", integrantes);
-                            Log.v("--","---------------------------------------------------------------");
                         }
                         else{
                             NoDetalle.setVisibility(View.VISIBLE);
@@ -225,6 +232,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setText("Comprobante");
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -256,6 +264,7 @@ public class VistaGestion extends AppCompatActivity {
                     etTipoImagen.setText(datos.getString(TIPO_IMAGEN));
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
                     Gerente.setVisibility(View.VISIBLE);
@@ -298,6 +307,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -327,6 +337,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -386,6 +397,7 @@ public class VistaGestion extends AppCompatActivity {
             Evidencia.setVisibility(View.VISIBLE);
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
             Uri uriFachada = Uri.fromFile(fachadaFile);
+            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
 
             Gerente.setVisibility(View.VISIBLE);
@@ -406,7 +418,64 @@ public class VistaGestion extends AppCompatActivity {
             finish();
         }
 
+        mapGestion.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        final AlertDialog ubicacion_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                R.string.ver_en_maps, R.string.ver_maps, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        Intent i_maps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:"+datos.getDouble(LATITUD)+","+datos.getDouble(LONGITUD)+"?z=16&q="+datos.getDouble(LATITUD)+","+datos.getDouble(LONGITUD)+"()"));
+                                        i_maps.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                                        startActivity(i_maps);
+                                        dialog.dismiss();
+
+                                    }
+                                }, R.string.cancel, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        Objects.requireNonNull(ubicacion_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                        ubicacion_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        ubicacion_dlg.show();
+                    }
+                });
+            }
+        });
+
+        ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
+
     }
+
+    private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                    R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            Intent i = new Intent(VistaGestion.this, VerImagen.class);
+                            i.putExtra(Constants.IMAGEN, byteEvidencia);
+                            startActivity(i);
+                            dialog.dismiss();
+
+                        }
+                    }, R.string.cancel, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+            Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+            fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            fachada_dlg.show();
+        }
+    };
 
     private void ColocarUbicacionGestion (final double lat, final double lon){
         mapGestion.onResume();
@@ -432,6 +501,12 @@ public class VistaGestion extends AppCompatActivity {
 
                 addMarker(lat,lon);
 
+                mGooglemap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+
+                    }
+                });
             }
         });
     }

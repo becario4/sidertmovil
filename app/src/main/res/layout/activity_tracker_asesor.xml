@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/CLcontainer"
+    android:clipChildren="false"
+    android:layout_marginStart="@dimen/paddingcl">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tbMain"
+                app:titleTextColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        </android.support.design.widget.AppBarLayout>
+        <!--  Asesor  -->
+        <LinearLayout
+            android:layout_marginTop="3dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/blue_sidert"
+                android:text="Sucursal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/spSucursal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:layout_marginLeft="23dp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/et_rounded_edges"
+                    android:paddingLeft="30dp" />
+
+                <ImageView
+                    android:padding="10dp"
+                    android:elevation="8dp"
+                    android:src="@drawable/ic_sucursal_blue"
+                    android:background="@drawable/circle_et"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <!--  Asesor  -->
+        <LinearLayout
+            android:layout_marginTop="3dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/blue_sidert"
+                android:text="Asesor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/spAsesor"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:layout_marginLeft="23dp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/et_rounded_edges"
+                    android:paddingLeft="30dp" />
+
+                <ImageView
+                    android:padding="10dp"
+                    android:elevation="8dp"
+                    android:src="@drawable/ic_user_blue_dark"
+                    android:background="@drawable/circle_et"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <!--  Fecha  -->
+        <LinearLayout
+            android:layout_marginTop="3dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/blue_sidert"
+                android:text="Fecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:hint="Fecha"
+                    android:textSize="17sp"
+                    android:layout_marginLeft="23dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/black"
+                    android:id="@+id/tvFecha"
+                    android:layout_marginTop="6dp"
+                    android:drawablePadding="10dp"
+                    android:paddingLeft="50dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height" />
+
+                <ImageView
+                    android:padding="10dp"
+                    android:elevation="8dp"
+                    android:src="@drawable/ic_cal"
+                    android:background="@drawable/circle_et"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapTracker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

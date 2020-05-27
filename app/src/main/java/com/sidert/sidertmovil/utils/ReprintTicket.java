@@ -26,6 +26,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.face_dissatisfied;
 
 public class ReprintTicket {
@@ -35,7 +36,6 @@ public class ReprintTicket {
     private final char LF = ESCPOS.LF;
     private String linea;
 
-    private String date = "";
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private SessionManager session;
@@ -47,7 +47,7 @@ public class ReprintTicket {
         session = new SessionManager(ctx);
 
         HashMap<Integer, String> params = new HashMap<>();
-        params.put(0,ticket.getNumeroPrestamo()+ticket.getIdGestion());
+        params.put(0,ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
         params.put(1, ticket.getTipo_impresion());
         params.put(2, ticket.getFolio());
         params.put(3, ticket.getMonto());
@@ -57,11 +57,12 @@ public class ReprintTicket {
         params.put(7, Miscellaneous.ObtenerFecha("timestamp"));
         params.put(8, "");
         params.put(9, "0");
+        params.put(10, ticket.getNumeroPrestamo());
 
-        if (ENVIROMENT)
-            dBhelper.saveReimpresionVigente(db, TBL_REIMPRESION_VIGENTE, params);
-        else
-            dBhelper.saveReimpresionVigente(db, TBL_REIMPRESION_VIGENTE_T, params);
+        dBhelper.saveReimpresionVigente(db, params);
+
+        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+        ss.SendReimpresionesVi(ctx, false);
 
         HeadTicket(ctx, ticket);
         BodyTicket(ticket);
@@ -70,7 +71,11 @@ public class ReprintTicket {
 
     private void HeadTicket (Context ctx, MReimpresion ticket){
         try {
-            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
+            Bitmap bm;
+            if (ticket.getTipoPrestamo().contains("VENCIDA"))
+                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_cv);
+            else
+                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
             if (ticket.getTipo_impresion().equals("O")){
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
@@ -81,7 +86,7 @@ public class ReprintTicket {
             dobleEspacio();
             posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|4C" + "REIMPRESION");
             dobleEspacio();
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:"+date);
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:"+Miscellaneous.ObtenerFecha(TIMESTAMP));
             dobleEspacio();
 
         } catch (UnsupportedEncodingException e) {
@@ -94,15 +99,18 @@ public class ReprintTicket {
 
     private void BodyTicket (MReimpresion data){
         try {
-            String nombreCampo;
 
-            if (data.getTipoGestion().equals("INDIVIDUAL")){
-                nombreCampo = "Numero De Prestamo: ";
-                linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+            if (data.getTipoPrestamo().contains("VENCIDA")) {
+                linea = line("Empresa:", "SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)");
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
             }
 
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Numero de Prestamo: " : "Numero de Cliente: ";
+            String nombreCampo;
+
+            nombreCampo = "Numero De Prestamo: ";
+            linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Clave de Grupo: " : "Numero de Cliente: ";
             linea = line(nombreCampo, data.getNumeroCliente().trim());
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
             nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Nombre del Grupo: " : "Nombre del Cliente: ";
@@ -127,7 +135,7 @@ public class ReprintTicket {
         try {
             dobleEspacio();
 
-            if (data.getTipoPrestamo().equals("VIGENTE")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
                 if (data.getTipo_impresion().equals("O")){
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Asesor:");
                     dobleEspacio();
@@ -165,7 +173,7 @@ public class ReprintTicket {
                 }
             }
 
-            if (data.getTipoPrestamo().equals("VIGENTE")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
                 linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(data.getFolio()));
             }
             else if (data.getTipoPrestamo().equals("VENCIDA")){

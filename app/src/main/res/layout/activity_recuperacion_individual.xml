@@ -51,5 +51,3 @@
         </LinearLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
-
-    <!--android:background="?android:attr/windowBackground"-->

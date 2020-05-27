@@ -78,9 +78,9 @@ public class rg_pagos_fragment extends Fragment {
     private void GetPagos(){
         Cursor row;
         if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_PAGOS, " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+            row = dBhelper.getRecords(TBL_PAGOS, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{id_prestamo});
         else
-            row = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+            row = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{id_prestamo});
 
         ArrayList<MPago> _pagos = new ArrayList<>();
         if (row.getCount() > 0){
@@ -130,7 +130,7 @@ public class rg_pagos_fragment extends Fragment {
                 mAmortizacion.setIvaMoratorioPagado(row.getDouble(14));
                 mAmortizacion.setComisionPagada(row.getDouble(15));
                 mAmortizacion.setTotalPagado(row.getDouble(16));
-                mAmortizacion.setPagado(row.getInt(17)==1);
+                mAmortizacion.setPagado(row.getString(17));
                 mAmortizacion.setNumero(row.getInt(18));
                 mAmortizacion.setDiasAtraso(row.getString(19));
                 _amortiz.add(mAmortizacion);

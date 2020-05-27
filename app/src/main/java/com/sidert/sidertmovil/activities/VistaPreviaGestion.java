@@ -17,12 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,27 +34,44 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.UUID;
 
+import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
+import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
+import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_PROMESA_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.FIRMA;
+import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.GERENTE;
+import static com.sidert.sidertmovil.utils.Constants.LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.MONTO_PROMESA;
+import static com.sidert.sidertmovil.utils.Constants.MONTO_REQUERIDO;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_CONTACTO;
+import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
+import static com.sidert.sidertmovil.utils.Constants.PARAMS;
+import static com.sidert.sidertmovil.utils.Constants.RESPONSE;
+import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.warning;
 
 
 public class VistaPreviaGestion extends AppCompatActivity {
@@ -69,6 +82,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
     private MapView mapGestion;
 
+    private TextView tvNoMapa;
     private TextView NuevoTelefono;
     private TextView MotivoAclaracion;
     private TextView MotivoNoPago;
@@ -77,6 +91,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private TextView ResultadoGestion;
     private TextView MedioPago;
     private TextView Fecha;
+    private TextView MontoPromesa;
     private TextView PagoRealizado;
     private TextView SaldoCorte;
     private TextView SaldoActual;
@@ -95,6 +110,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private TextView etResultadoGestion;
     private TextView etMedioPago;
     private TextView etFecha;
+    private TextView etMontoPromesa;
     private TextView etPagoRealizado;
     private TextView etEstatusPago;
     private TextView etSaldoCorte;
@@ -108,14 +124,13 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private Button btnConfirmar;
     private Button btnCancelar;
 
-    private String integrantes = "";
-
     private GoogleMap mMap;
-    private Marker mMarker;
-    private String root = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.sidert.sidertmovil/Files/";
 
     private Calendar mCalendar;
-    private SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP, Locale.US);
+    private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_TIMESTAMP, Locale.US);
+
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+    private DecimalFormat nFormat = new DecimalFormat("#,###.##", symbols);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +143,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
         mapGestion  = findViewById(R.id.mapGestion);
 
+        tvNoMapa          = findViewById(R.id.tvNoMapa);
         NuevoTelefono     = findViewById(R.id.NuevoTelefono);
         MotivoAclaracion  = findViewById(R.id.MotivoAclaracion);
         MotivoNoPago      = findViewById(R.id.MotivoNoPago);
@@ -136,6 +152,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
         ResultadoGestion  = findViewById(R.id.ResultadoGestion);
         MedioPago         = findViewById(R.id.MedioPago);
         Fecha             = findViewById(R.id.Fecha);
+        MontoPromesa      = findViewById(R.id.MontoPromesa);
         PagoRealizado     = findViewById(R.id.PagoRealizado);
         SaldoActual       = findViewById(R.id.SaldoActual);
         SaldoCorte        = findViewById(R.id.SaldoCorte);
@@ -154,6 +171,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
         etResultadoGestion  = findViewById(R.id.tvResultadoGestion);
         etMedioPago         = findViewById(R.id.tvMedioPago);
         etFecha             = findViewById(R.id.tvFecha);
+        etMontoPromesa      = findViewById(R.id.tvMontoPromesa);
         etPagoRealizado     = findViewById(R.id.tvPagoRealizado);
         etEstatusPago       = findViewById(R.id.tvEstatusPago);
         etSaldoActual       = findViewById(R.id.tvSaldoActual);
@@ -173,63 +191,70 @@ public class VistaPreviaGestion extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Bundle datos = this.getIntent().getBundleExtra(Constants.PARAMS);
+        Bundle datos = this.getIntent().getBundleExtra(PARAMS);
 
         Log.e("DatosEnviar", datos.toString());
-        ColocarUbicacionGestion(datos.getDouble(Constants.LATITUD), datos.getDouble(Constants.LONGITUD));
 
-        if (datos.getString(Constants.CONTACTO).equals("SI")){ //Si contacto cliente
+        if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
+            mapGestion.setVisibility(View.GONE);
+            tvNoMapa.setVisibility(View.VISIBLE);
+        }
+        else
+            ColocarUbicacionGestion(datos.getDouble(LATITUD), datos.getDouble(LONGITUD));
+
+        if (datos.getString(CONTACTO).equals("SI")){ //Si contacto cliente
             etContacto.setText("SI CONTACTO AL CLIENTE");
-            if (datos.getString(Constants.ACTUALIZAR_TELEFONO).equals("SI")){
+            if (datos.getString(ACTUALIZAR_TELEFONO).equals("SI")){
                 NuevoTelefono.setVisibility(View.VISIBLE);
-                etNuevoTelefono.setText(datos.getString(Constants.NUEVO_TELEFONO));
+                etNuevoTelefono.setText(datos.getString(NUEVO_TELEFONO));
                 etNuevoTelefono.setVisibility(View.VISIBLE);
             }
 
-            if (datos.getString(Constants.RESULTADO_PAGO).equals("PAGO")){ //Pago
+            if (datos.getString(RESULTADO_PAGO).equals("PAGO")){ //Pago
                 ResultadoGestion.setVisibility(View.VISIBLE);
                 etResultadoGestion.setText("SI PAGO");
                 etResultadoGestion.setVisibility(View.VISIBLE);
-                etPagoRealizado.setText(datos.getString(Constants.PAGO_REALIZADO));
+                etPagoRealizado.setText(String.valueOf(nFormat.format(Double.parseDouble(datos.getString(PAGO_REALIZADO).replace(",","")))));
                 etPagoRealizado.setVisibility(View.VISIBLE);
 
                 SaldoCorte.setVisibility(View.VISIBLE);
-                etSaldoCorte.setText(String.valueOf(datos.getDouble(Constants.SALDO_CORTE)));
+                etSaldoCorte.setText(String.valueOf(nFormat.format(datos.getDouble(SALDO_CORTE))));
                 etSaldoCorte.setVisibility(View.VISIBLE);
 
+                Log.e("MONTOREQUERIDO", "# "+datos.getDouble(MONTO_REQUERIDO,0));
                 EstusPago.setVisibility(View.VISIBLE);
-                if (datos.getDouble(Constants.MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) == 0)
+                if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) == 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo));
-                else if (datos.getDouble(Constants.MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) < 0)
+                else if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) < 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo_adelanto));
-                else if (datos.getDouble(Constants.MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) > 0)
+                else if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) > 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_parcial));
                 else
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pay_status));
                 etEstatusPago.setVisibility(View.VISIBLE);
 
                 SaldoActual.setVisibility(View.VISIBLE);
-                etSaldoActual.setText(String.valueOf(Miscellaneous.doubleFormatTV(etSaldoCorte) - Miscellaneous.doubleFormatTV(etPagoRealizado)));
+                etSaldoActual.setText(String.valueOf(nFormat.format(Miscellaneous.doubleFormatTV(etSaldoCorte) - Miscellaneous.doubleFormatTV(etPagoRealizado))));
                 etSaldoActual.setVisibility(View.VISIBLE);
 
-                etMedioPago.setText(datos.getString(Constants.MEDIO_PAGO));
+                etMedioPago.setText(datos.getString(MEDIO_PAGO));
                 if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
                     Fecha.setText("Fecha de Depósito");
-                    etFecha.setText(datos.getString(Constants.FECHA_DEPOSITO));
+                    etFecha.setText(datos.getString(FECHA_DEPOSITO));
                     etFecha.setVisibility(View.VISIBLE);
                     PagoRealizado.setVisibility(View.VISIBLE);
-                    etPagoRealizado.setText(datos.getString(Constants.PAGO_REALIZADO));
+                    etPagoRealizado.setText(String.valueOf(nFormat.format(Double.parseDouble(datos.getString(PAGO_REALIZADO)))));
                     etPagoRealizado.setVisibility(View.VISIBLE);
                     if (Miscellaneous.MedioPago(etMedioPago) == 7){
 
                     }
-                    if (datos.containsKey(Constants.RESUMEN_INTEGRANTES)){
+                    if (datos.containsKey(RESUMEN_INTEGRANTES)){
                         NoDetalle.setVisibility(View.VISIBLE);
                         etNoDetalle.setVisibility(View.VISIBLE);
-                        if (datos.getBoolean(Constants.RESUMEN_INTEGRANTES)){
+                        if (datos.getBoolean(RESUMEN_INTEGRANTES)){
                             etNoDetalle.setText("Si cuenta con el detalle de la ficha");
                         }
                         else{
@@ -238,24 +263,24 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     }
                     Evidencia.setVisibility(View.VISIBLE);
                     Evidencia.setText("Comprobante");
-                    Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
+                    Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
-                    if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+                    if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
-                        Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                        Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
-                else if (Miscellaneous.MedioPago(etMedioPago) == 6 || datos.getString(Constants.MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
+                else if (Miscellaneous.MedioPago(etMedioPago) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
                     MedioPago.setVisibility(View.VISIBLE);
-                    etMedioPago.setText(datos.getString(Constants.MEDIO_PAGO));
+                    etMedioPago.setText(datos.getString(MEDIO_PAGO));
                     etMedioPago.setVisibility(View.VISIBLE);
                     PagoRealizado.setVisibility(View.VISIBLE);
-                    if (datos.containsKey(Constants.RESUMEN_INTEGRANTES)){
+                    if (datos.containsKey(RESUMEN_INTEGRANTES)){
                         NoDetalle.setVisibility(View.VISIBLE);
                         etNoDetalle.setVisibility(View.VISIBLE);
-                        if (datos.getBoolean(Constants.RESUMEN_INTEGRANTES)){
+                        if (datos.getBoolean(RESUMEN_INTEGRANTES)){
                             etNoDetalle.setText("Si cuenta con el detalle de la ficha");
                         }
                         else{
@@ -266,14 +291,14 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     Evidencia.setText("Comprobante");
 
                     FolioRecibo.setVisibility(View.VISIBLE);
-                    etFolioRecibo.setText(datos.getString(Constants.FOLIO_TICKET));
+                    etFolioRecibo.setText(datos.getString(FOLIO_TICKET));
                     etFolioRecibo.setVisibility(View.VISIBLE);
 
-                    Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
+                    Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+                    if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
-                        Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                        Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
@@ -282,46 +307,66 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     finish();
                 }
             }
-            else if (datos.getString(Constants.RESULTADO_PAGO).equals("NO PAGO")){//No Pago
+            else if (datos.getString(RESULTADO_PAGO).equals("NO PAGO")){//No Pago
                 ResultadoGestion.setVisibility(View.VISIBLE);
-                etResultadoGestion.setText(datos.getString(Constants.RESULTADO_PAGO));
+                etResultadoGestion.setText(datos.getString(RESULTADO_PAGO));
                 etResultadoGestion.setVisibility(View.VISIBLE);
 
-                etMotivoNoPago.setText(datos.getString(Constants.MOTIVO_NO_PAGO));
+                etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
                 if (Miscellaneous.MotivoNoPago(etMotivoNoPago) == 1){ //Motivo de no pago Fallecimiento
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
                     Fecha.setText("Fecha de Defunción");
-                    etFecha.setText(datos.getString(Constants.FECHA_DEFUNCION));
+                    etFecha.setText(datos.getString(FECHA_DEFUNCION));
                     etFecha.setVisibility(View.VISIBLE);
                     Comentario.setVisibility(View.VISIBLE);
-                    etComentario.setText(datos.getString(Constants.COMENTARIO));
+                    etComentario.setText(datos.getString(COMENTARIO));
                     etComentario.setVisibility(View.VISIBLE);
                     Evidencia.setVisibility(View.VISIBLE);
-                    Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
+                    Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
-                    if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+                    if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
-                        Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                        Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
                 else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  0|| Miscellaneous.MotivoNoPago(etMotivoNoPago) == 2){ //Motivo de no pago Negación u Otro
                     MotivoNoPago.setVisibility(View.VISIBLE);
-                    etMotivoNoPago.setText(datos.getString(Constants.MOTIVO_NO_PAGO));
+                    etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
                     etMotivoNoPago.setVisibility(View.VISIBLE);
                     Comentario.setVisibility(View.VISIBLE);
-                    etComentario.setText(datos.getString(Constants.COMENTARIO));
+                    etComentario.setText(datos.getString(COMENTARIO));
                     etComentario.setVisibility(View.VISIBLE);
                     Evidencia.setVisibility(View.VISIBLE);
-                    Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
+                    Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
-                    if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+                    if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                         Firma.setVisibility(View.VISIBLE);
-                        Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                        Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
+                        ivFirma.setVisibility(View.VISIBLE);
+                    }
+                }
+                else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  3){ //PROMESA DE PAGO
+                    Fecha.setVisibility(View.VISIBLE);
+                    Fecha.setText("Fecha de Promesa de Pago");
+                    etFecha.setText(datos.getString(FECHA_PROMESA_PAGO));
+                    etFecha.setVisibility(View.VISIBLE);
+
+                    MontoPromesa.setVisibility(View.VISIBLE);
+                    etMontoPromesa.setText(datos.getString(MONTO_PROMESA));
+                    etMontoPromesa.setVisibility(View.VISIBLE);
+
+                    Evidencia.setVisibility(View.VISIBLE);
+                    Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
+                    ivEvidencia.setVisibility(View.VISIBLE);
+
+                    if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
+                        Firma.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
@@ -335,37 +380,40 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 finish();
             }
         }
-        else if (datos.getString(Constants.CONTACTO).equals("ACLARACION")){ // Aclaración
+        else if (datos.getString(CONTACTO).equals("ACLARACION")){ // Aclaración
             etContacto.setText("ACLARACION DE FICHA");
-            MotivoAclaracion.setVisibility(View.VISIBLE);
-            etMotivoAclaracion.setText(datos.getString(Constants.MOTIVO_ACLARACION));
-            etMotivoAclaracion.setVisibility(View.VISIBLE);
+
+            if (datos.containsKey(MOTIVO_ACLARACION)) {
+                MotivoAclaracion.setVisibility(View.VISIBLE);
+                etMotivoAclaracion.setText(datos.getString(MOTIVO_ACLARACION));
+                etMotivoAclaracion.setVisibility(View.VISIBLE);
+            }
             Comentario.setVisibility(View.VISIBLE);
-            etComentario.setText(datos.getString(Constants.COMENTARIO));
+            etComentario.setText(datos.getString(COMENTARIO));
             etComentario.setVisibility(View.VISIBLE);
-            if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+            if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                 Firma.setVisibility(View.VISIBLE);
-                Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
                 ivFirma.setVisibility(View.VISIBLE);
             }
         }
-        else if (datos.getString(Constants.CONTACTO).equals("NO")){ // No Contacto cliente
+        else if (datos.getString(CONTACTO).equals("NO")){ // No Contacto cliente
             etContacto.setText("NO CONTACTO AL CLIENTE");
             Comentario.setVisibility(View.VISIBLE);
             etComentario.setVisibility(View.VISIBLE);
-            if (datos.containsKey(Constants.MOTIVO_NO_CONTACTO)){
+            if (datos.containsKey(MOTIVO_NO_CONTACTO)){
                 MotivoNoContacto.setVisibility(View.VISIBLE);
-                etMotivoNoContacto.setText(datos.getString(Constants.MOTIVO_NO_CONTACTO));
+                etMotivoNoContacto.setText(datos.getString(MOTIVO_NO_CONTACTO));
                 etMotivoNoContacto.setVisibility(View.VISIBLE);
             }
-            etComentario.setText(datos.getString(Constants.COMENTARIO));
+            etComentario.setText(datos.getString(COMENTARIO));
             Evidencia.setVisibility(View.VISIBLE);
-            Glide.with(ctx).load(datos.getByteArray(Constants.EVIDENCIA)).centerCrop().into(ivEvidencia);
+            Glide.with(ctx).load(datos.getByteArray(EVIDENCIA)).centerCrop().into(ivEvidencia);
 
             ivEvidencia.setVisibility(View.VISIBLE);
-            if (datos.getString(Constants.GERENTE).equals("SI")) { //Si está el gerente
+            if (datos.getString(GERENTE).equals("SI")) { //Si está el gerente
                 Firma.setVisibility(View.VISIBLE);
-                Glide.with(ctx).load(datos.getByteArray(Constants.FIRMA)).into(ivFirma);
+                Glide.with(ctx).load(datos.getByteArray(FIRMA)).into(ivFirma);
 
                 ivFirma.setVisibility(View.VISIBLE);
             }
@@ -375,7 +423,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
             finish();
         }
 
-        final AlertDialog success = Popups.showDialogMessage(this, Constants.warning,
+        final AlertDialog success = Popups.showDialogMessage(this, warning,
                 R.string.leyenda_guardar_gestion, R.string.accept, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
@@ -448,7 +496,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
                 i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
             }
-            i_result.putExtra(Constants.RESPONSE, true);
+            i_result.putExtra(RESPONSE, true);
             setResult(RESULT_OK, i_result);
             finish();
         }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MGestionada;
@@ -22,6 +23,7 @@ public class adapter_gestionadas_ind extends RecyclerView.Adapter<adapter_gestio
 
     public interface Event {
         void GestionadaClick(MGestionada item);
+        void SendClickLong(MGestionada item);
     }
 
 
@@ -77,6 +79,14 @@ public class adapter_gestionadas_ind extends RecyclerView.Adapter<adapter_gestio
                 @Override
                 public void onClick(View view) {
                     evento.GestionadaClick(item);
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    evento.SendClickLong(item);
+                    return true;
                 }
             });
         }

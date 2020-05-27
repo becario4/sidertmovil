@@ -33,10 +33,16 @@
                 <EditText
                     android:id="@+id/etNombre"
                     android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  Direccion  -->
@@ -51,17 +57,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/metDireccion"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:ems="10"
-                    android:ellipsize="end"
-                    android:gravity="start"
+                <EditText
+                    android:id="@+id/etDireccion"
                     android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  GPS ubicacion  -->
@@ -110,18 +118,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/metDireccionCap"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:ems="10"
-                    android:ellipsize="end"
+                <EditText
+                    android:id="@+id/etDireccionCap"
                     android:visibility="gone"
-                    android:gravity="start"
                     android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!--  Lector de codigo de Barras  -->
@@ -214,18 +224,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/metComentario"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:ems="10"
-                    android:maxLength="100"
-                    android:ellipsize="end"
-                    android:gravity="start"
-                    android:paddingTop="3dp"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                <EditText
+                    android:id="@+id/etComentario"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/comentario"
+                    android:ems="10"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/et_rounded_edges"
+                    android:inputType="textMultiLine|textCapCharacters" />
             </LinearLayout>
 
             <!--  Fecha de finalizacion  -->
@@ -244,10 +255,17 @@
                 <EditText
                     android:id="@+id/etFechaFinalizacion"
                     android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
 
             <!--  Fecha de envio  -->
@@ -266,10 +284,16 @@
                 <EditText
                     android:id="@+id/etFechaEnvio"
                     android:enabled="false"
+                    android:ems="10"
+                    android:textColor="@drawable/edit_text_selector"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/et_rounded_edges"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:maxLength="45"
+                    android:inputType="textMultiLine|textCapCharacters"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <Button

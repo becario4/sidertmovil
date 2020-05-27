@@ -20,7 +20,7 @@ public class MyCurrentListener implements LocationListener {
     public void onLocationChanged(Location location) {
         location.getLatitude();
         location.getLongitude();
-        Log.v("LatLon", String.valueOf(location.getLatitude())+" "+String.valueOf(location.getLongitude()));
+        Log.v("LatLon", location.getLatitude()+" "+location.getLongitude());
         event.onComplete(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()));
     }
 

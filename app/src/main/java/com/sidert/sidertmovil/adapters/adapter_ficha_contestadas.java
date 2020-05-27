@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.MFichaContestada;
 import com.sidert.sidertmovil.models.ModelFichaContestada;
 import com.sidert.sidertmovil.models.ModeloFichaGeneral;
@@ -53,10 +54,10 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_send_black)).into(holder.ivEstatus);
                 break;
             case "1":
-                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_update)).into(holder.ivEstatus);
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_pendiente)).into(holder.ivEstatus);
                 break;
             case "2":
-                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_add)).into(holder.ivEstatus);
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_enviado_yellow)).into(holder.ivEstatus);
                 break;
         }
 
@@ -85,5 +86,12 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
             ivTipoFicha = itemView.findViewById(R.id.ivTipoFicha);
             ivEstatus  = itemView.findViewById(R.id.ivEstatus);
         }
+    }
+
+    public void UpdateData(List<MFichaContestada> _data){
+        if (data != null)
+            data.clear();
+        data = _data;
+        notifyDataSetChanged();
     }
 }

@@ -24,30 +24,43 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activities.VencidaIntegrante"></activity>
+        <activity android:name=".activities.VencidaGrupal" />
+        <activity android:name=".activities.VencidaIndividual" />
+        <activity android:name=".activities.ResumenCartera" />
+        <activity
+            android:name=".activities.GeoIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.TrackerAsesor"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.DescargaDatos"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Integrantes"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ComunicadoCovid"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.VistaGestion"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Gestionadas"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.PrestamosClientes"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.FormatoRecibos"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CirculoCredito"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Catalogos"
             android:screenOrientation="portrait" />
@@ -166,6 +179,10 @@
         <activity
             android:name=".activities.LectorCodigoBarras"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".utils.BkgJobServiceLogout"
@@ -201,6 +218,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".AlarmaManager.AlarmaTrackerReciver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +33,7 @@ import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.view_pager.recuperacion_gpo_fragment;
+import com.sidert.sidertmovil.fragments.view_pager.recuperacion_gpo_int_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_gestion_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_pagos_fragment;
@@ -43,6 +45,7 @@ import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
 import org.json.JSONArray;
@@ -147,6 +150,7 @@ import static com.sidert.sidertmovil.utils.Constants.TOTAL_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.VALUE;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_GPO;
 import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO;
+import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO_INT;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_GPO;
 
 public class RecuperacionGrupal extends AppCompatActivity {
@@ -169,22 +173,31 @@ public class RecuperacionGrupal extends AppCompatActivity {
     public String clave_grupo = "";
     public double saldo_corte = 0;
     public String fecha_establecida = "";
+    public String tipo_cartera = "";
+    public String latitud = "";
+    public String longitud = "";
 
     private BottomNavigationView nvMenu;
+
+    private Menu menu;
+
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_grupal);
         ctx             = this;
+
+        session = new SessionManager(ctx);
+
         dBhelper        = new DBhelper(ctx);
         TBmain          = findViewById(R.id.TBmain);
         nvMenu          = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
-        //mTabLayout      = findViewById(R.id.mTabLayout);
-        //mViewPager      = findViewById(R.id.mViewPager);
 
+        menu = nvMenu.getMenu();
         setSupportActionBar(TBmain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -204,6 +217,8 @@ public class RecuperacionGrupal extends AppCompatActivity {
         if (row.getCount() > 0){
             if (row.getInt(25) == 0){
                 id_respuesta = row.getString(0);
+                latitud = row.getString(2);
+                longitud = row.getString(3);
             }
         }
 
@@ -223,6 +238,8 @@ public class RecuperacionGrupal extends AppCompatActivity {
             fecha_establecida = row.getString(11);
             tesorera = row.getString(17);
             clave_grupo = row.getString(18);
+            tipo_cartera = row.getString(12);
+            //tipo_cartera = "VENCIDA";
         }
         row.close();
 
@@ -236,7 +253,35 @@ public class RecuperacionGrupal extends AppCompatActivity {
             saldo_corte = row.getDouble(0);
         }
 
-        nvMenu.setSelectedItemId(R.id.nvGestion);
+        boolean is_recuperacion = false;
+
+        try {
+            JSONArray modulos = new JSONArray(session.getUser().get(8));
+            for (int i = 0; i < modulos.length(); i++){
+                JSONObject item = modulos.getJSONObject(i);
+                if (item.getString("nombre").trim().toLowerCase().equals("cartera")){
+                    JSONArray permisos = item.getJSONArray("permisos");
+                    for(int j = 0; j < permisos.length(); j++){
+                        JSONObject item_permiso = permisos.getJSONObject(j);
+                        if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
+                            is_recuperacion = true;
+                        }
+                    }
+                }
+            }
+
+            if (is_recuperacion)
+                nvMenu.setSelectedItemId(R.id.nvGestion);
+            else{
+                menu.getItem(1).setEnabled(false);
+                nvMenu.setSelectedItemId(R.id.nvDatos);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //nvMenu.setSelectedItemId(R.id.nvGestion);
+
     }
 
     @Override
@@ -255,6 +300,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.nvDatos:
                     setFragment(DETALLE_GPO, null);
+                    break;
+                case R.id.nvIntegrantes:
+                    setFragment(RECUPERACION_GPO_INT, null);
                     break;
                 case R.id.nvGestion:
                     setFragment(RECUPERACION_GPO, null);
@@ -302,10 +350,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
                 } else
                     return;
                 break;
-
         }
 
-        if(!tokenFragment.equals(RECUPERACION_GPO)) {
+        if(!tokenFragment.equals(RECUPERACION_GPO) && !tokenFragment.equals(DETALLE_GPO) && !tokenFragment.equals(REPORTE_PAGOS_GPO)) {
             int count = manager.getBackStackEntryCount();
             if(count > 0) {
                 int index = count - 1;
@@ -327,621 +374,4 @@ public class RecuperacionGrupal extends AppCompatActivity {
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
-    private void setUpViewPager() {
-        TabsRecentsAdapter adapter = new TabsRecentsAdapter(getSupportFragmentManager());
-
-        adapter.addFragment(new rg_detalle_fragment(), "");
-        adapter.addFragment(new recuperacion_gpo_fragment(), "");
-        adapter.addFragment(new rg_pagos_fragment(), "");
-
-        /*mViewPager.setAdapter(adapter);
-        mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.setVisibility(View.VISIBLE);
-        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
-
-        mViewPager.setSwipeable(true);
-        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_group).setContentDescription("Detalle");
-        mTabLayout.getTabAt(1).setIcon(R.drawable.give_mone_white).setContentDescription("Gestión");
-        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_payment_log).setContentDescription("Historial de Pagos");*/
-
-    }
-
-    /*@Override
-    public void onBackPressed() {
-        if (flagRespuesta) {
-            final AlertDialog confirm_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                    R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.guardando_info);
-                            loading.show();
-                            GuardarTemp();
-                            dialog.dismiss();
-
-                        }
-                    }, R.string.cancel, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            finish();
-                            dialog.dismiss();
-                        }
-                    });
-            Objects.requireNonNull(confirm_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-            confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            confirm_dlg.setCancelable(true);
-            confirm_dlg.show();
-        }
-        else
-            finish();
-
-    }*/
-
-    /*private void GuardarTemp (){
-        recuperacion_gpo_fragment rg_data = ((recuperacion_gpo_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
-        Miscellaneous m = new Miscellaneous();
-        jsonTemp = new JSONObject();
-
-        try {
-            if (rg_data.latLngGestion != null){
-                jsonTemp.put(LATITUD,rg_data.latLngGestion.latitude);
-                jsonTemp.put(LONGITUD, rg_data.latLngGestion.longitude);
-            }
-
-            if (!rg_data.tvContacto.getText().toString().trim().isEmpty()){
-
-                switch (m.ContactoCliente(rg_data.tvContacto)){
-                    case 0: //====================================================================== Si Contacto
-                        jsonTemp.put(CONTACTO, rg_data.tvContacto.getText().toString());
-                        if (!rg_data.tvActualizarTelefono.getText().toString().trim().isEmpty()){
-                            switch (m.ActualizarTelefono(rg_data.tvActualizarTelefono)){
-                                case 0:
-                                    jsonTemp.put(ACTUALIZAR_TELEFONO, "SI");
-                                    if (!rg_data.etActualizarTelefono.getText().toString().trim().isEmpty())
-                                        jsonTemp.put(NUEVO_TELEFONO, rg_data.etActualizarTelefono.getText().toString().trim());
-                                    break;
-                                case  1:
-                                    jsonTemp.put(ACTUALIZAR_TELEFONO, "NO");
-                                    break;
-                            }
-                        } //======================================================================== Cierre Actualizar Telefono
-
-                        if (!rg_data.tvResultadoGestion.getText().toString().trim().isEmpty()){
-                            switch (m.ResultadoGestion(rg_data.tvResultadoGestion)){
-                                case 0: //========================================================== Si Pago
-                                    jsonTemp.put(RESULTADO_PAGO, rg_data.tvResultadoGestion.getText().toString());
-
-                                    if (!rg_data.tvMedioPago.getText().toString().trim().isEmpty()){
-                                        jsonTemp.put(MEDIO_PAGO, rg_data.tvMedioPago.getText().toString());
-                                        switch (m.PagoRequerido(rg_data.tvDetalleFicha)){
-                                            case 0:
-                                                jsonTemp.put(DETALLE_FICHA, "SI");
-                                                if (!rg_data.etPagoRealizado.getText().toString().trim().isEmpty())
-                                                    jsonTemp.put(INTEGRANTES, rg_data._Integrantes);
-                                                    jsonTemp.put(PAGO_REALIZADO, rg_data.etPagoRealizado.getText().toString().trim());
-                                                break;
-                                            case 1:
-                                                jsonTemp.put(DETALLE_FICHA, "NO");
-                                                if (!rg_data.etPagoRealizado.getText().toString().trim().isEmpty())
-                                                    jsonTemp.put(PAGO_REALIZADO, rg_data.etPagoRealizado.getText().toString().trim());
-                                                break;
-                                        }
-
-                                        switch (m.MedioPago(rg_data.tvMedioPago)){
-                                            case 0: //Banamex
-                                            case 1: //Banorte
-                                            case 2: //Bancomer
-                                            case 3: //Oxxo
-                                            case 4: //Telecom
-                                            case 5: //Bansefi
-                                            case 7: //Sidert
-                                                if (!rg_data.tvFechaDeposito.getText().toString().trim().isEmpty())
-                                                    jsonTemp.put(FECHA_DEPOSITO, rg_data.tvFechaDeposito.getText().toString().trim());
-                                                break;
-                                            case 6: //Efectivo
-                                                switch (m.Impresion(rg_data.tvImprimirRecibo)){
-                                                    case 0:
-                                                        jsonTemp.put(IMPRESORA, rg_data.tvImprimirRecibo.getText().toString());
-                                                        if (!rg_data.etFolioRecibo.getText().toString().trim().isEmpty())
-                                                            jsonTemp.put(FOLIO_TICKET, rg_data.etFolioRecibo.getText().toString().trim());
-                                                        break;
-                                                    case 1:
-                                                        jsonTemp.put(IMPRESORA, rg_data.tvImprimirRecibo.getText().toString());
-                                                        if (!rg_data.etFolioRecibo.getText().toString().trim().isEmpty())
-                                                            jsonTemp.put(FOLIO_TICKET, rg_data.etFolioRecibo.getText().toString().trim());
-                                                        break;
-                                                }
-                                                break;
-                                        }
-
-                                        if (rg_data.byteEvidencia != null)
-                                            jsonTemp.put(EVIDENCIA, Miscellaneous.save(rg_data.byteEvidencia, 2));
-                                    }
-                                    break; //======================================================= Cierre Si Pago
-                                case 1: //============================================== No Pago
-                                    jsonTemp.put(RESULTADO_PAGO, rg_data.tvResultadoGestion.getText().toString());
-
-                                    jsonTemp.put(MOTIVO_NO_PAGO, rg_data.tvMotivoNoPago.getText().toString());
-
-                                    if (rg_data.tvMotivoNoPago.getText().toString().trim().equals("FALLECIMIENTO")){
-                                        if (!rg_data.tvFechaDefuncion.getText().toString().trim().isEmpty())
-                                            jsonTemp.put(FECHA_DEFUNCION, rg_data.tvFechaDefuncion.getText().toString().trim());
-                                    }
-
-                                    if (!rg_data.etComentario.getText().toString().trim().isEmpty())
-                                        jsonTemp.put(COMENTARIO, rg_data.etComentario.getText().toString().trim());
-
-                                    if (rg_data.byteEvidencia != null)
-                                        jsonTemp.put(FACHADA, Miscellaneous.save(rg_data.byteEvidencia, 1));
-                                    break; //======================================================= Cierre No Pago
-                            }
-                        } //======================================================================== Cierre de Resultado Pago
-                        break; //=================================================================== Cierre Si Contacto
-                    case 1: //====================================================================== No Contacto
-                        jsonTemp.put(CONTACTO, rg_data.tvContacto.getText().toString());
-                        if (!rg_data.etComentario.getText().toString().trim().isEmpty())
-                            jsonTemp.put(COMENTARIO, rg_data.etComentario.getText().toString().trim());
-                        if (rg_data.byteEvidencia != null)
-                            jsonTemp.put(FACHADA, Miscellaneous.save(rg_data.byteEvidencia, 1));
-                        break; //=================================================================== Cierre No Contacto
-                    case 2: //====================================================================== Aclaración
-                        jsonTemp.put(CONTACTO, rg_data.tvContacto.getText().toString());
-                        if (!rg_data.tvMotivoAclaracion.getText().toString().trim().isEmpty())
-                            jsonTemp.put(MOTIVO_ACLARACION, rg_data.tvMotivoAclaracion.getText().toString().trim());
-                        if (!rg_data.etComentario.getText().toString().trim().isEmpty())
-                            jsonTemp.put(COMENTARIO, rg_data.etComentario.getText().toString().trim());
-                        break; //=================================================================== Cierre Aclaración
-                }
-
-                if (!rg_data.tvGerente.getText().toString().trim().isEmpty()){
-                    switch (m.Gerente(rg_data.tvGerente)){
-                        case 0:
-                            jsonTemp.put(GERENTE, "SI");
-                            if (rg_data.byteFirma != null) {
-                                jsonTemp.put(FIRMA, Miscellaneous.save(rg_data.byteFirma, 3));
-                            }
-                            break;
-                        case 1:
-                            jsonTemp.put(GERENTE, "NO");
-                            break;
-                    }
-                }
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.v("JsonTemp", jsonTemp.toString());
-
-        ContentValues cv = new ContentValues();
-        cv.put("respuesta", jsonTemp.toString());
-        cv.put("status", "1");
-        if (ENVIROMENT)
-            db.update(FICHAS, cv, "external_id = ?", new String[]{ficha_rg.getId()});
-        else
-            db.update(FICHAS_T, cv, "external_id = ?", new String[]{ficha_rg.getId()});
-
-        Toast.makeText(ctx, "Ficha Guardada Temporalmente con éxito.", Toast.LENGTH_SHORT).show();
-
-        finish();
-        loading.dismiss();
-    }*/
-
-    /*private void GuardarGestion(recuperacion_gpo_fragment data){
-        Validator validator = new Validator();
-        Bundle b = new Bundle();
-        Miscellaneous m = new Miscellaneous();
-        if (data.latLngGestion != null) {
-            b.putDouble(LATITUD, data.latLngGestion.latitude);
-            b.putDouble(LONGITUD, data.latLngGestion.longitude);
-            if (m.ContactoCliente(data.tvContacto) == 0){ //Si Contacto cliente
-                b.putString(CONTACTO, data.tvContacto.getText().toString());
-                if (!data.tvActualizarTelefono.getText().toString().isEmpty()){
-                    if ((m.ActualizarTelefono(data.tvActualizarTelefono) == 0 && validator.validate(data.etActualizarTelefono, new String[]{validator.REQUIRED,validator.PHONE})) || m.ActualizarTelefono(data.tvActualizarTelefono) == 1){
-                        b.putString(ACTUALIZAR_TELEFONO, data.tvActualizarTelefono.getText().toString());
-                        if (m.ActualizarTelefono(data.tvActualizarTelefono) == 0){
-                            b.putString(NUEVO_TELEFONO, data.etActualizarTelefono.getText().toString().trim());
-                        }
-                        Log.e("xxxxxxxxx", String.valueOf(m.ResultadoGestion(data.tvResultadoGestion)));
-                        if (m.ResultadoGestion(data.tvResultadoGestion) == 0) { // Si pago
-                            b.putString(RESULTADO_PAGO, data.tvResultadoGestion.getText().toString());
-                            if (m.MedioPago(data.tvMedioPago) >= 0 && m.MedioPago(data.tvMedioPago) < 6 || m.MedioPago(data.tvMedioPago) == 7) { // Medio de pago Bancos, Oxxo, SIDERT
-                                b.putString(MEDIO_PAGO, data.tvMedioPago.getText().toString());
-                                if (!data.tvFechaDeposito.getText().toString().trim().isEmpty()) {
-                                    b.putString(FECHA_DEPOSITO, data.tvFechaDeposito.getText().toString().trim());
-                                    if (!data.tvDetalleFicha.getText().toString().isEmpty()) { //Selecionó que cuenta con el detalle o no
-                                        b.putString(DETALLE_FICHA, data.tvDetalleFicha.getText().toString());
-                                        if (!data.etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(data.etPagoRealizado.getText().toString()) > 0) { //El pago realizado es mayor a cero
-                                            b.putDouble(SALDO_CORTE, ficha_rg.getPrestamo().getSaldoActual());
-                                            //b.putDouble(PAGO_REQUERIDO, ficha_rg.getPrestamo().getPagoSemanal());
-                                            b.putString(PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
-                                            if (data.byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
-                                                b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                                if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
-                                                    b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                    if (data.byteFirma != null) { //Capturó una firma
-                                                        b.putByteArray(FIRMA, data.byteFirma);
-                                                        if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 1) {
-                                                            if (m.PagoRequerido(data.tvDetalleFicha) == 0) {
-                                                                b.putBoolean(RESUMEN_INTEGRANTES, true);
-                                                                b.putString(INTEGRANTES, data._Integrantes);
-                                                            } else {
-                                                                b.putBoolean(RESUMEN_INTEGRANTES, false);
-                                                            }
-                                                            b.putBoolean(TERMINADO,true);
-
-                                                        }
-                                                        else
-                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                    } else //No ha capturado la firma
-                                                        Toast.makeText(RecuperacionGrupal.this, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
-                                                    b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                    if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 1) {
-
-                                                        if (m.PagoRequerido(data.tvDetalleFicha) == 0) {
-                                                            b.putBoolean(RESUMEN_INTEGRANTES, true);
-                                                            b.putString(INTEGRANTES, data._Integrantes);
-                                                        } else {
-                                                            b.putBoolean(RESUMEN_INTEGRANTES, false);
-                                                        }
-                                                        b.putBoolean(TERMINADO, true);
-                                                    }
-                                                    else
-                                                        Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                } else //No ha seleccionado si está el gerente
-                                                    Toast.makeText(RecuperacionGrupal.this, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                                            } else //No ha capturado fotografía evidencia
-                                                Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
-                                        } else //El monto ingresado es igual a cero
-                                            Toast.makeText(ctx, "No se pueden capturar montos iguales a cero", Toast.LENGTH_SHORT).show();
-                                    } else // No ha seleccionado si tiene el detalle de la ficha
-                                        Toast.makeText(RecuperacionGrupal.this, "No se seleccionado si cuenta con el detalle de la ficha", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    data.tvFechaDeposito.setError("");
-                                    Toast.makeText(ctx, "No ha ingresado la fecha de depósito", Toast.LENGTH_SHORT).show();
-                                }
-                            } else if (m.MedioPago(data.tvMedioPago) == 6) { //Medio de pago Efectivo
-                                b.putString(MEDIO_PAGO, data.tvMedioPago.getText().toString());
-                                if (!data.tvDetalleFicha.getText().toString().isEmpty()) { //Selecionó que cuenta con el detalle o no
-                                    b.putString(DETALLE_FICHA, data.tvDetalleFicha.getText().toString());
-                                    if (!data.etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(data.etPagoRealizado.getText().toString()) > 0) { //El pago realizado es mayor a cero
-                                        b.putDouble(SALDO_CORTE, ficha_rg.getPrestamo().getSaldoActual());
-                                        //b.putDouble(PAGO_REQUERIDO, ficha_rg.getPrestamo().getPagoSemanal());
-                                        if (m.Impresion(data.tvImprimirRecibo) == 0) { //Si imprimirá recibos
-                                            b.putString(IMPRESORA, data.tvImprimirRecibo.getText().toString());
-                                            if (!data.etFolioRecibo.getText().toString().trim().isEmpty()) {
-                                                b.putString(FOLIO_TICKET, data.etFolioRecibo.getText().toString().trim());
-                                                if (data.byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
-                                                    b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                                    if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
-                                                        b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                        if (data.byteFirma != null) { //Capturó una firma
-                                                            b.putByteArray(FIRMA, data.byteFirma);
-                                                            if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 1) {
-                                                                b.putString(PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
-                                                                if (m.PagoRequerido(data.tvDetalleFicha) == 0) {
-                                                                    b.putString(RESUMEN_INTEGRANTES, data.tvDetalleFicha.getText().toString());
-                                                                    b.putString(INTEGRANTES, data._Integrantes);
-                                                                } else {
-                                                                    b.putBoolean(RESUMEN_INTEGRANTES, false);
-                                                                }
-                                                                b.putBoolean(TERMINADO, true);
-                                                            }
-                                                            else
-                                                                Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                        } else //No ha capturado la firma
-                                                            Toast.makeText(RecuperacionGrupal.this, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
-                                                        if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 1) {
-                                                            if (m.PagoRequerido(data.tvDetalleFicha) == 0) {
-                                                                b.putBoolean(RESUMEN_INTEGRANTES, true);
-                                                                b.putString(INTEGRANTES, data._Integrantes);
-                                                            } else {
-                                                                b.putBoolean(RESUMEN_INTEGRANTES, false);
-                                                            }
-                                                            b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                            b.putBoolean(TERMINADO, true);
-                                                        }
-                                                        else
-                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                    } else //No ha seleccionado si está el gerente
-                                                        Toast.makeText(RecuperacionGrupal.this, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                                                } else //No ha capturado fotografía evidencia
-                                                    Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
-                                            } else //No ha impreso ningun ticket
-                                                Toast.makeText(ctx, "No ha realizado nignuna impresión", Toast.LENGTH_SHORT).show();
-                                        } else if (m.Impresion(data.tvImprimirRecibo) == 1) { //No imprimirá recibos
-                                            b.putString(IMPRESORA, data.tvImprimirRecibo.getText().toString());
-                                            if (!data.etFolioRecibo.getText().toString().trim().isEmpty()) {
-                                                b.putString(FOLIO_TICKET, data.etFolioRecibo.getText().toString().trim());
-                                                if (data.byteEvidencia != null) { //Ha capturado una evidencia (Fotografía al ticket)
-                                                    b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                                    if (m.Gerente(data.tvGerente) == 1) { //Selecciono que si está el gerente
-                                                        b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                        if (data.byteFirma != null) { //Capturó una firma
-                                                            if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 0 ) {
-                                                                b.putString(PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
-                                                                b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                                                b.putBoolean(TERMINADO, true);
-                                                            }
-                                                            else
-                                                                Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                        } else //No ha capturado la firma
-                                                            Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
-                                                        if ((m.PagoRequerido(data.tvDetalleFicha) == 0 && data.rbIntegrantes.isChecked()) || m.PagoRequerido(data.tvDetalleFicha) == 0) {
-                                                            b.putString(PAGO_REALIZADO, data.etPagoRealizado.getText().toString().trim());
-                                                            b.putBoolean(GERENTE, false);
-                                                            b.putBoolean(TERMINADO, true);
-                                                        }
-                                                        else
-                                                            Toast.makeText(ctx, "No ha capturado el pago de los integrantes", Toast.LENGTH_SHORT).show();
-                                                    } else //No ha seleccionado si está el gerente
-                                                        Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                                                } else //No ha capturado fotografía evidencia
-                                                    Toast.makeText(ctx, "No ha capturado una fotografía al ticket", Toast.LENGTH_SHORT).show();
-                                            } else
-                                                Toast.makeText(ctx, "No ha capturado el folio del recibo", Toast.LENGTH_SHORT).show();
-                                        } else //No ha seleccionado si imprimirá recibos
-                                            Toast.makeText(ctx, "No ha confirmado si va imprimir recibos", Toast.LENGTH_SHORT).show();
-                                    } else //El monto ingresado es igual a cero
-                                        Toast.makeText(ctx, "No se pueden capturar montos iguales a cero", Toast.LENGTH_SHORT).show();
-                                } else // No ha seleccionado si tiene el detalle de la ficha
-                                    Toast.makeText(ctx, "No se seleccionado si cuenta con el detalle de la ficha", Toast.LENGTH_SHORT).show();
-                            } else //No ha seleccionado algun medio de pago
-                                Toast.makeText(ctx, "No ha seleccionado un medio de pago", Toast.LENGTH_SHORT).show();
-                        } // =================  Termina Si Pago  ==============================================
-                        else if (m.ResultadoGestion(data.tvResultadoGestion) == 1) { //No pago
-                            b.putString(RESULTADO_PAGO, data.tvResultadoGestion.getText().toString());
-                            if (m.MotivoNoPago(data.tvMotivoNoPago) == 0 || m.MotivoNoPago(data.tvMotivoNoPago) == 2) { //Motivo de no pago Negacion u Otra
-                                b.putString(MOTIVO_NO_PAGO, data.tvMotivoNoPago.getText().toString());
-                                if (!data.etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
-                                    b.putString(COMENTARIO, data.etComentario.getText().toString());
-                                    if (data.byteEvidencia != null) {
-                                        b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                        if (m.Gerente(data.tvGerente) == 0) { //Selecciono que si está el gerente
-                                            b.putString(GERENTE, data.tvGerente.getText().toString());
-                                            if (data.byteFirma != null) { //Capturó una firma
-                                                b.putByteArray(FIRMA, data.byteFirma);
-                                                b.putBoolean(TERMINADO, true);
-                                            } else //No ha capturado la firma
-                                                Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                        } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el Gerente
-                                            b.putString(GERENTE, data.tvGerente.getText().toString());
-                                            b.putBoolean(TERMINADO, true);
-                                        } else //No ha seleccionado si está el gerente
-                                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                                    } else //no ha capturado la fotografía de la fachada
-                                        Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
-                                } else // No ha ingresado alguno comentario
-                                    Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
-                            } else if (m.MotivoNoPago(data.tvMotivoNoPago) == 1) { //Motivo de no pago fue Fallecimiento
-                                b.putString(MOTIVO_NO_PAGO, data.tvMotivoNoPago.getText().toString());
-                                if (!data.tvFechaDefuncion.getText().toString().trim().isEmpty()) { //El campo Fecha es diferente de vacio
-                                    b.putString(FECHA_DEFUNCION, data.tvFechaDefuncion.getText().toString());
-                                    if (!data.etComentario.getText().toString().trim().isEmpty()) { // El campo Comentario es diferente de vacio
-                                        b.putString(COMENTARIO, data.etComentario.getText().toString());
-                                        if (data.byteEvidencia != null) { //Capturo una fotografia de fachada
-                                            b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                                            if (m.Gerente(data.tvGerente) == 0) { //Si está el gerente
-                                                b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                if (data.byteFirma != null) { //Capturó un firma
-                                                    b.putByteArray(FIRMA, data.byteFirma);
-                                                    b.putBoolean(TERMINADO, true);
-                                                } else //No ha Capturado un Firma
-                                                    Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                            } else if (m.Gerente(data.tvGerente) == 1) { //No está el gerente
-                                                b.putString(GERENTE, data.tvGerente.getText().toString());
-                                                b.putBoolean(TERMINADO, true);
-                                            } else //No ha seleccionado si está el gerente
-                                                Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                                        } else //No ha capturado una fotografia
-                                            Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
-                                    } else //No ha ingresado algun comentario
-                                        Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
-                                } else //No ha seleccionado la fecha de defuncion
-                                    Toast.makeText(ctx, "No ha seleccionado la fecha de defunción", Toast.LENGTH_SHORT).show();
-                            } else  //No ha seleccionado algun motivo de no pago
-                                Toast.makeText(ctx, "No ha seleccionado motivo de no pago", Toast.LENGTH_SHORT).show();
-                        } // =================  Termina No Pago  ==============================================
-                        else //No ha seleccionado si pagó o no el cliente
-                            Toast.makeText(ctx, "No ha seleccionado el resultado de la gestión", Toast.LENGTH_SHORT).show();
-                    }
-                    else //No ha ingresado el nuevo teléfono
-                        Toast.makeText(ctx, "No ha ingresado el nuevo teléfono", Toast.LENGTH_SHORT).show();
-                }
-                else //No ha seleccionado si va actualizar el telefono
-                    Toast.makeText(ctx, "No ha seleccionado si va actualizar el teléfono", Toast.LENGTH_SHORT).show();
-            }// ============  Termina Si Contacto  =============================
-            else if(m.ContactoCliente(data.tvContacto) == 1) { //No contactó al cliente
-                b.putInt(CONTACTO, 0);
-                if (!data.etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
-                    b.putString(COMENTARIO, data.etComentario.getText().toString());
-                    if (data.byteEvidencia != null) { //Ha capturado una fotografia de la fachada
-                        b.putByteArray(EVIDENCIA, data.byteEvidencia);
-                        if (m.Gerente(data.tvGerente) == 1) { // Seleccionó que está el gerente
-                            if (data.byteFirma != null) { // Ha capturado un firma
-                                b.putString(GERENTE, data.tvGerente.getText().toString());
-                                b.putByteArray(FIRMA, data.byteFirma);
-                                b.putBoolean(TERMINADO, true);
-                            } else //No ha capturado un firma
-                                Toast.makeText(RecuperacionGrupal.this, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (m.Gerente(data.tvGerente) == 1) { //No se encuentra el gerente
-                            b.putString(GERENTE, data.tvGerente.getText().toString());
-                            b.putBoolean(TERMINADO, true);
-                        } else //No ha seleccionado si está el gerente
-                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                    } else // No ha capturado una fotografia de fachada
-                        Toast.makeText(ctx, "La Fotografía de la fachada es requerida.", Toast.LENGTH_SHORT).show();
-                } else //No ha ingresado algun comentario
-                    Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
-            } //============  Termina No Contacto  =============================
-            else if(m.ContactoCliente(data.tvContacto) == 2) { //Seleccionó Aclaración
-                b.putInt(CONTACTO, 2);
-                if (!data.tvMotivoAclaracion.getText().toString().trim().isEmpty()) { //Motivo de aclaración es diferente de vacio
-                    b.putString(MOTIVO_ACLARACION, data.tvMotivoAclaracion.getText().toString());
-                    if (!data.etComentario.getText().toString().trim().isEmpty()) { // Ingresó algun comentario
-                        b.putString(COMENTARIO, data.etComentario.getText().toString());
-                        if (m.Gerente(data.tvGerente) == 0) { //Seleccionó que está el gerente
-                            if (data.byteFirma != null) { //Ha capturado una firma
-                                b.putString(GERENTE, data.tvGerente.getText().toString());
-                                b.putByteArray(FIRMA, data.byteFirma);
-                                b.putBoolean(TERMINADO, true);
-                            }
-                            else //No ha capturado una firma
-                                Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        }
-                        else if (m.Gerente(data.tvGerente) == 1) { //Seleccionó que no está el gerente
-                            b.putString(GERENTE, data.tvGerente.getText().toString());
-                            b.putBoolean(TERMINADO, true);
-                        }
-                        else //No ha confirmado si está el gerente
-                            Toast.makeText(ctx, "Confirme si el gerente está con usted", Toast.LENGTH_SHORT).show();
-                    }
-                    else //No ha ingresado algun comentario
-                        Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
-                }
-                else //No ha seleccionado el motivo de aclaración
-                    Toast.makeText(ctx, "Seleccione el motivo de aclaración", Toast.LENGTH_SHORT).show();
-            } //============  Termina Aclaración  ==============================
-            else //No ha seleccionadosi conectado al cliente o es una aclaración
-                Toast.makeText(ctx, "No ha seleccionado si contacto al cliente", Toast.LENGTH_SHORT).show();
-        }
-        else //No ha capturado la ubicación
-            Toast.makeText(ctx,"Falta obtener la ubicación de la gestión", Toast.LENGTH_SHORT).show();
-
-        if (!b.isEmpty() && b.containsKey(TERMINADO)){
-            Intent i_preview = new Intent(RecuperacionGrupal.this,VistaPreviaGestion.class);
-            i_preview.putExtra(PARAMS,b);
-            startActivityForResult(i_preview,Constants.REQUEST_CODE_PREVIEW);
-        }
-        else{
-            //Toast.makeText(ctx, "No contiene el parámetro TERMINADO", Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_save, menu);
-        if (!flagRespuesta)
-        {
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).setVisible(flagRespuesta);
-        }
-        return true;
-    }*/
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                        R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.guardando_info);
-                                loading.show();
-                                GuardarTemp();
-                                dialog.dismiss();
-
-                            }
-                        }, R.string.cancel, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                finish();
-                                dialog.dismiss();
-                            }
-                        });
-                Objects.requireNonNull(firma_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                firma_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                firma_dlg.show();
-                break;
-            case R.id.save:
-                recuperacion_gpo_fragment rg_data = ((recuperacion_gpo_fragment) mViewPager.getAdapter().instantiateItem(mViewPager, 1));
-                GuardarGestion(rg_data);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
-
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case Constants.REQUEST_CODE_PREVIEW:
-                if (resultCode == RESULT_OK){
-                    if (data != null){
-                        Log.v("resultado", data.getStringExtra(RESPUESTA_GESTION));
-                        JSONObject val = new JSONObject();
-                        JSONArray params = new JSONArray();
-                        JSONObject values = new JSONObject();
-
-                        try {
-                            values.put(KEY, SidertTables.SidertEntry.RESPUESTA);
-                            values.put(VALUE, data.getStringExtra(RESPUESTA_GESTION));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        params.put(values);
-
-                        //Toast.makeText(ctx, "Fecha_termino"+Miscellaneous.ObtenerFecha(), Toast.LENGTH_LONG).show();
-                        try {
-                            values = new JSONObject();
-                            values.put(KEY, SidertTables.SidertEntry.FECHA_TER);
-                            values.put(VALUE, Miscellaneous.ObtenerFecha("timestamp"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        params.put(values);
-
-                        try {
-                            values = new JSONObject();
-                            values.put(KEY, SidertTables.SidertEntry.STATUS);
-                            values.put(VALUE, "2");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        params.put(values);
-
-                        try {
-                            val.put(PARAMS, params);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        try {
-                            values = new JSONObject();
-                            values.put(KEY, Constants.EXTERNAL_ID);
-                            values.put(VALUE, ficha_rg.getId());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        params = new JSONArray();
-                        params.put(values);
-
-                        try {
-                            val.put(CONDITIONALS, params);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        try {
-                            dBhelper.updateRecords(ctx, Constants.FICHAS_T, val);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
-                break;
-        }
-    }*/
 }

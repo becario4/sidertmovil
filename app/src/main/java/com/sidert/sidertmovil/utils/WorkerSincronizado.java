@@ -46,11 +46,15 @@ public class WorkerSincronizado extends Worker {
                     Log.e("Timestamp Sincronizado", Miscellaneous.ObtenerFecha("timestamp"));
                     //Toast.makeText(getApplicationContext(),"cerrar sesion job services", Toast.LENGTH_SHORT).show();
 
-                    Servicios_Sincronizado servicios = new Servicios_Sincronizado();
+
                     if (NetworkStatus.haveNetworkConnection(getApplicationContext())) {
                         Log.e("JOB", "Con conexion a internet Geolocalizacion");
+                        Servicios_Sincronizado servicios = new Servicios_Sincronizado();
                         servicios.GetGeolocalizacion(getApplicationContext(), false, false);
                         servicios.SaveGeolocalizacion(getApplicationContext(), false);
+                        servicios.SaveRespuestaGestion(getApplicationContext(), false);
+                        servicios.SendImpresionesVi(getApplicationContext(), false);
+                        servicios.SendReimpresionesVi(getApplicationContext(), false);
                     }
                     else
                         Log.e("JOB", "Sin conexion a internet Geolocalizacion");

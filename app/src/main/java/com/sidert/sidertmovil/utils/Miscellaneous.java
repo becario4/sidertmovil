@@ -43,6 +43,8 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,6 +74,12 @@ public class Miscellaneous {
         } else {
             return  Character.toUpperCase(str.charAt(0)) + str.substring(1).toLowerCase();
         }
+    }
+
+    public static String StringFormatCurrency(String s){
+        String str = "0.00";
+
+        return str;
     }
 
     /* Obtener que tipo de orden */
@@ -236,7 +244,7 @@ public class Miscellaneous {
                 sdf = new SimpleDateFormat("dd-MM-yyyy");
                 break;
         }
-        Log.e("fecha_hoy",sdf.format(cal.getTime()));
+        //Log.e("fecha_hoy",sdf.format(cal.getTime()));
         return sdf.format(cal.getTime());
     }
 
@@ -303,7 +311,7 @@ public class Miscellaneous {
         byte[] compressedByteArray = null;
 
         switch (tipo_imagen){
-            case 0:
+            case 0: //Fachada
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver() , uri_img);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -313,7 +321,7 @@ public class Miscellaneous {
                     e.printStackTrace();
                 }
                 break;
-            case 1:
+            case 1: //Evidencia
                 try {
                     InputStream iStream =   ctx.getContentResolver().openInputStream(uri_img);
                     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
@@ -627,7 +635,7 @@ public class Miscellaneous {
         return flag;
     }
 
-    public static ModeloGeolocalizacion.Integrante GetIntegrante (List<ModeloGeolocalizacion.Integrante> integrantes, String tipo){
+    /*public static ModeloGeolocalizacion.Integrante GetIntegrante (List<ModeloGeolocalizacion.Integrante> integrantes, String tipo){
         ModeloGeolocalizacion.Integrante integrante = null;
 
         for (int i = 0; i<integrantes.size(); i++){
@@ -667,7 +675,7 @@ public class Miscellaneous {
     public static String JsonConvertInd (ModeloGeolocalizacion.Individuale modelo){
         Log.v("JsonConvert", new GsonBuilder().create().toJson(modelo));
         return new GsonBuilder().create().toJson(modelo);
-    }
+    }*/
 
     public static JSONObject GetIntegrante (JSONArray integrantes, String tipo){
         JSONObject item = null;
@@ -802,6 +810,7 @@ public class Miscellaneous {
 
     /* Descarga una imagen de un URL */
     public static byte[] descargarImagen (String urlImage){
+        Log.e("UrlImage", urlImage);
         URL imageUrl = null;
         Bitmap imagen = null;
         byte[] compressedByteArray = null;
@@ -812,7 +821,7 @@ public class Miscellaneous {
             imagen = BitmapFactory.decodeStream(conn.getInputStream());
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            imagen.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+            imagen.compress(Bitmap.CompressFormat.JPEG, 90, stream);
             compressedByteArray = stream.toByteArray();
         }catch(IOException ex){
             ex.printStackTrace();
@@ -1882,13 +1891,13 @@ public class Miscellaneous {
             case "BANCOMER":
                 medioPago = 2;
                 break;
-            case "OXXO":
+            case "TELECOM":
                 medioPago = 3;
                 break;
-            case "TELECOM":
+            case "BANSEFI":
                 medioPago = 4;
                 break;
-            case "BANSEFI":
+            case "OXXO":
                 medioPago = 5;
                 break;
             case "EFECTIVO":
@@ -1896,6 +1905,9 @@ public class Miscellaneous {
                 break;
             case "SIDERT":
                 medioPago = 7;
+                break;
+            case "BANAMEX722":
+                medioPago = 8;
                 break;
         }
         return medioPago;
@@ -1939,6 +1951,9 @@ public class Miscellaneous {
             case "OTRO":
                 motivoNoPago = 2;
                 break;
+            case "PROMESA DE PAGO":
+                motivoNoPago = 3;
+                break;
         }
         return motivoNoPago;
     }
@@ -1958,6 +1973,8 @@ public class Miscellaneous {
     public static JSONObject RowTOJson (Cursor row, Context ctx){
         JSONObject json_respuesta = new JSONObject();
         DBhelper dBhelper = new DBhelper(ctx);
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat nFormat = new DecimalFormat("#,##0.00", symbols);
 
         try {
             json_respuesta.put("tipo_gestion", row.getInt(28));
@@ -1981,11 +1998,11 @@ public class Miscellaneous {
                                 case 3://TELECOM
                                 case 4://BANSEFI
                                 case 5://OXXO
-                                    json_respuesta.put("fecha_pago", GetIdMedioPago(row.getString(13).trim()));
+                                    json_respuesta.put("fecha_pago", row.getString(13).trim());
                                     break;
                                 case 6://EFECTIVO
                                     json_respuesta.put("imprimir_recibo", GetIdImpresion(row.getString(16)));
-                                    json_respuesta.put("folio", 17);
+                                    json_respuesta.put("folio", row.getString(17));
                                     json_respuesta.put("res_impresion", row.getInt(24));
                                     if (row.getInt(28) == 2 && row.getDouble(15) >= 10000){
                                         Cursor row_arqueo;
@@ -2012,8 +2029,8 @@ public class Miscellaneous {
                                             json_arqueo.put("c_diez", row_arqueo.getInt(14));
 
                                             double total = (row_arqueo.getInt(2) * 1000) + (row_arqueo.getInt(3) * 500) + (row_arqueo.getInt(4) * 200) + (row_arqueo.getInt(5) * 100) + (row_arqueo.getInt(6) * 50) + (row_arqueo.getInt(7) * 20) + (row_arqueo.getInt(8) * 10) + (row_arqueo.getInt(9) * 5) + (row_arqueo.getInt(10) * 2) + row_arqueo.getInt(11) + (row_arqueo.getInt(12) * 0.50) + (row_arqueo.getInt(13) * 0.20) + (row_arqueo.getInt(14) * 0.10);
-                                            json_arqueo.put("total", total);
-                                            json_respuesta.put("arqueo_caja", row_arqueo);
+                                            json_arqueo.put("total", nFormat.format(total).replace(",",""));
+                                            json_respuesta.put("arqueo_caja", json_arqueo);
 
                                         }
                                         row_arqueo.close();
@@ -2021,7 +2038,7 @@ public class Miscellaneous {
                                     break;
                                 case 7://SIDERT
                                     json_respuesta.put("imprimir_recibo", 1);
-                                    json_respuesta.put("folio", 17);
+                                    json_respuesta.put("folio", row.getString(17));
                                     break;
                             }
                             switch (row.getInt(28)){
@@ -2042,11 +2059,11 @@ public class Miscellaneous {
                                             row_integrantes.moveToFirst();
                                             for (int i = 0; i < row_integrantes.getCount(); i++){
                                                 JSONObject detalle_integrante = new JSONObject();
-                                                detalle_integrante.put("integrante_id", row_integrantes.getInt(2));
-                                                detalle_integrante.put("monto_requerido", row_integrantes.getDouble(5));
-                                                detalle_integrante.put("pago_realizado", row_integrantes.getDouble(6));
-                                                detalle_integrante.put("pago_adelanto", row_integrantes.getDouble(7));
-                                                detalle_integrante.put("pago_solidario", row_integrantes.getDouble(8));
+                                                detalle_integrante.put("cliente_id", row_integrantes.getInt(2));
+                                                detalle_integrante.put("monto_requerido", nFormat.format(row_integrantes.getDouble(5)).replace(",",""));
+                                                detalle_integrante.put("pago_realizado", nFormat.format(row_integrantes.getDouble(6)).replace(",",""));
+                                                detalle_integrante.put("pago_adelanto", nFormat.format(row_integrantes.getDouble(7)).replace(",",""));
+                                                detalle_integrante.put("pago_solidario", nFormat.format(row_integrantes.getDouble(8)).replace(",",""));
                                                 pagos_integrantes.put(detalle_integrante);
                                                 row_integrantes.moveToNext();
                                             }
@@ -2057,10 +2074,10 @@ public class Miscellaneous {
                                     }
                             }
 
-                            json_respuesta.put("pago_realizado", row.getString(15).trim());
+                            json_respuesta.put("pago_realizado", nFormat.format(row.getDouble(15)).replace(",",""));
                             json_respuesta.put("estatus", row.getString(25));
-                            json_respuesta.put("saldo_corte", row.getDouble(26));
-                            json_respuesta.put("saldo_actual", row.getDouble(27));
+                            json_respuesta.put("saldo_corte", nFormat.format(row.getDouble(26)).replace(",",""));
+                            json_respuesta.put("saldo_actual", nFormat.format(row.getDouble(27)).replace(",",""));
                             json_respuesta.put("evidencia", row.getString(18).trim());
                             json_respuesta.put("tipo_imagen", GetIdImagen(row.getString(19).trim()));
 
@@ -2095,11 +2112,12 @@ public class Miscellaneous {
             json_respuesta.put("fecha_fin_gestion", row.getString(23));
             json_respuesta.put("fecha_establecida", row.getString(30));
             json_respuesta.put("dia_semana", row.getString(31));
-            json_respuesta.put("monto_requerido", row.getDouble(32));
+            String monto_requerido = row.getString(32).trim().replace(",","");
+            json_respuesta.put("monto_requerido", nFormat.format(Double.parseDouble(monto_requerido)).replace(",",""));
             json_respuesta.put("fecha_envio_dispositivo", ObtenerFecha(TIMESTAMP));
             json_respuesta.put("tipo_prestamo_id", GetIdTipoPrestamo(row.getString(33)));
-            json_respuesta.put("monto_amortizacion", row.getDouble(34));
-            json_respuesta.put("atraso", row.getDouble(35));
+            json_respuesta.put("monto_amortizacion", nFormat.format(row.getDouble(34)).replace(",",""));
+            json_respuesta.put("atraso", row.getInt(35));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2110,6 +2128,7 @@ public class Miscellaneous {
     }
 
     public static int GetIdTipoPrestamo (String str){
+        Log.e("Tipo::::", str);
         int id = -1;
         switch (str){
             case "VIGENTE":
@@ -2118,8 +2137,14 @@ public class Miscellaneous {
             case "COBRANZA":
                 id = 1;
                 break;
-            case "VENCIDA":
+            case "VENCIDA VIGENTE":
                 id = 2;
+                break;
+            case "VENCIDA 2019":
+                id = 3;
+                break;
+            case "VENCIDA":
+                id = 4;
                 break;
         }
         return id;
@@ -2195,13 +2220,13 @@ public class Miscellaneous {
             case "BANCOMER":
                 id = 2;
                 break;
-            case "OXXO":
+            case "TELECOM":
                 id = 3;
                 break;
-            case "TELECOM":
+            case "BANSEFI":
                 id = 4;
                 break;
-            case "BANSEFI":
+            case "OXXO":
                 id = 5;
                 break;
             case "EFECTIVO":
@@ -2209,6 +2234,9 @@ public class Miscellaneous {
                 break;
             case "SIDERT":
                 id = 7;
+                break;
+            case "BANAMEX722":
+                id = 8;
                 break;
         }
         return id;
@@ -2265,8 +2293,9 @@ public class Miscellaneous {
     public static int GetDiasAtraso (String fecha_establecida){
         int dias_atraso = 0;
         try {
+
             Date date1 = new SimpleDateFormat("dd-MM-yyyy").parse(fecha_establecida);
-            Date date2 = new SimpleDateFormat("dd-MM-yyyy").parse(ObtenerFecha("fecha_atraso"));
+            Date date2 = new SimpleDateFormat("dd-MM-yyy").parse(ObtenerFecha("fecha_atraso"));
 
             dias_atraso = (int) ((date2.getTime()-date1.getTime())/86400000);
 
@@ -2275,5 +2304,79 @@ public class Miscellaneous {
         }
 
         return dias_atraso;
+    }
+
+    public static HashMap<Integer, String> GetNumPrestamo (String externalID){
+        HashMap<Integer, String> params = new HashMap<>();
+        if (externalID.contains("cvg") || externalID.contains("cvi")){
+            String subS = "";
+
+            if (externalID.contains("cvg")){
+                //202016528975863cvg
+                subS = externalID.substring(9,15);
+                Log.e("NumPrestamoVe", subS);
+            }
+            else{
+                //202016528965103-L007cvi1
+                subS = externalID.substring(9,20);
+                Log.e("NumPrestamoVe", subS);
+            }
+            params.put(0, "Vencida");
+            params.put(1, subS);
+        }
+        else{
+            String subS = "";
+            if (externalID.contains("rg") || externalID.contains("cg")){
+                //202016528975863cvg
+                subS = externalID.substring(9,15);
+                Log.e("NumPrestamoVi", subS);
+            }
+            else{
+                //202016528965103-L007cvi1
+                subS = externalID.substring(9,20);
+                Log.e("NumPrestamoVi", subS);
+            }
+            params.put(0, "Vigente");
+            params.put(1, subS);
+        }
+        return params;
+    }
+
+    public static String GetNomenclatura(int tipoGestion, String tipoPrestamo){
+        String nomenclatura = "";
+        switch (tipoPrestamo){
+            case "VIGENTE":
+                if (tipoGestion == 1)
+                    nomenclatura = "ri";
+                else
+                    nomenclatura = "rg";
+                break;
+            case "COBRANZA":
+                if (tipoGestion == 1)
+                    nomenclatura = "ci";
+                else
+                    nomenclatura = "cg";
+                break;
+            case "VENCIDA VIGENTE":
+                if (tipoGestion == 1)
+                    nomenclatura = "vicvi";
+                else
+                    nomenclatura = "vicvg";
+                break;
+            case "VENCIDA 2019":
+                if (tipoGestion == 1)
+                    nomenclatura = "vncvi";
+                else
+                    nomenclatura = "vncvg";
+                break;
+            case "VENCIDA":
+                if (tipoGestion == 1)
+                    nomenclatura = "cvi";
+                else
+                    nomenclatura = "cvg";
+                break;
+        }
+
+        return nomenclatura;
     }
 }

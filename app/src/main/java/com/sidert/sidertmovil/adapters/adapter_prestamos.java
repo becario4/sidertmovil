@@ -52,18 +52,16 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
 
         holder.tvNombre.setText(item.getNombre());
         holder.tvDesembolso.setText("Desembolso: "+item.getDesembolso());
-        holder.tvMontoPrestamo.setText(Miscellaneous.moneyFormat(item.getMontoPrestamo()));
+        holder.tvMontoPrestamo.setText("Otorgado: "+Miscellaneous.moneyFormat(item.getMontoPrestamo()));
         holder.tvIdPrestamo.setText(item.getIdPrestamo());
         if (item.getEstatus().equals("1")) {
             holder.tvEstatus.setText("PAGADO");
             holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.green));
         }
         else{
-            holder.tvEstatus.setText(Miscellaneous.moneyFormat(item.getMontoRestante()));
+            holder.tvEstatus.setText("S Corte: "+Miscellaneous.moneyFormat(item.getSaldoCorte()));
             holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.shadowdrawer));
         }
-
-
 
         holder.bind(item);
     }

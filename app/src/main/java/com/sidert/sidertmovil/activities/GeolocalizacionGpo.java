@@ -19,6 +19,7 @@ import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.fragments.geo_aval_fragment;
 import com.sidert.sidertmovil.fragments.geo_cliente_fragment;
+import com.sidert.sidertmovil.fragments.geo_miembros_fragment;
 import com.sidert.sidertmovil.fragments.geo_negocio_fragment;
 import com.sidert.sidertmovil.fragments.geo_presidente_fragment;
 import com.sidert.sidertmovil.fragments.geo_secretaria_fragment;
@@ -41,7 +42,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_geolocalizacion_gpo);
 
         ctx     = this;
@@ -81,7 +82,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
                                     !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_tesorera_fragment) current).byteFotoFachada != null ||
-                                    !((geo_tesorera_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -113,7 +114,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
                                     !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_secretaria_fragment) current).byteFotoFachada != null ||
-                                    !((geo_secretaria_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -139,6 +140,9 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         else
                             setFragment(NameFragments.GEO_PRESIDENTE, b);
                     }
+                    else if((current instanceof geo_miembros_fragment)){
+                        setFragment(NameFragments.GEO_PRESIDENTE, b);
+                    }
                     else
                         setFragment(NameFragments.GEO_PRESIDENTE, b);
                     break;
@@ -150,7 +154,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_presidente_fragment) current).latLngUbicacion != null ||
                                     !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_presidente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_presidente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -182,7 +186,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
                                     !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_secretaria_fragment) current).byteFotoFachada != null ||
-                                    !((geo_secretaria_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -208,6 +212,9 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         else
                             setFragment(NameFragments.GEO_TESORERA, b);
                     }
+                    else if((current instanceof geo_miembros_fragment)){
+                        setFragment(NameFragments.GEO_PRESIDENTE, b);
+                    }
                     else
                         setFragment(NameFragments.GEO_TESORERA, b);
                     break;
@@ -219,7 +226,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_presidente_fragment) current).latLngUbicacion != null ||
                                     !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_presidente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_presidente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -251,7 +258,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                             if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
                                     !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                                     ((geo_tesorera_fragment) current).byteFotoFachada != null ||
-                                    !((geo_tesorera_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                                    !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                         R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                             @Override
@@ -277,8 +284,14 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         } else
                             setFragment(NameFragments.GEO_SECRETARIA, b);
                     }
+                    else if((current instanceof geo_miembros_fragment)){
+                        setFragment(NameFragments.GEO_PRESIDENTE, b);
+                    }
                     else
                         setFragment(NameFragments.GEO_SECRETARIA, b);
+                    break;
+                case R.id.nvIntegrantes:
+                    setFragment(NameFragments.GEO_MIEMBROS, b);
                     break;
             }
             return true;
@@ -319,10 +332,19 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                 } else
                     return;
                 break;
+            case NameFragments.GEO_MIEMBROS:
+                if (!(current instanceof geo_miembros_fragment)){
+                    geo_miembros_fragment miembros = new geo_miembros_fragment();
+                    miembros.setArguments(extras);
+                    transaction.replace(R.id.flMain, miembros, NameFragments.GEO_MIEMBROS);
+                    tokenFragment = NameFragments.GEO_MIEMBROS;
+                } else
+                    return;
+                break;
 
         }
 
-        if(!tokenFragment.equals(NameFragments.GEO_PRESIDENTE) && !tokenFragment.equals(NameFragments.GEO_TESORERA) && !tokenFragment.equals(NameFragments.GEO_SECRETARIA)) {
+        if(!tokenFragment.equals(NameFragments.GEO_PRESIDENTE) && !tokenFragment.equals(NameFragments.GEO_TESORERA) && !tokenFragment.equals(NameFragments.GEO_SECRETARIA) && !tokenFragment.equals(NameFragments.GEO_MIEMBROS)) {
             int count = manager.getBackStackEntryCount();
             Toast.makeText(ctx, String.valueOf(count), Toast.LENGTH_SHORT).show();
             if(count > 0) {
@@ -355,7 +377,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                 if (((geo_presidente_fragment) current).latLngUbicacion != null ||
                         !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_presidente_fragment) current).byteFotoFachada != null ||
-                        !((geo_presidente_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override
@@ -387,7 +409,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                 if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
                         !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_tesorera_fragment) current).byteFotoFachada != null ||
-                        !((geo_tesorera_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override
@@ -418,7 +440,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                 if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
                         !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
                         ((geo_secretaria_fragment) current).byteFotoFachada != null ||
-                        !((geo_secretaria_fragment) current).metComentario.getText().toString().trim().isEmpty()){
+                        !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()){
                     guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
                                 @Override
@@ -443,6 +465,9 @@ public class GeolocalizacionGpo extends AppCompatActivity {
             }
             else
                 flag[0] = true;
+        }
+        else if ((current instanceof geo_miembros_fragment)){
+            flag[0] = true;
         }
         if (flag[0]){
             super.onBackPressed();

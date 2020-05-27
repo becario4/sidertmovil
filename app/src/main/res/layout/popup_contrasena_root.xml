@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="400dp"
+android:layout_height="wrap_content"
+android:layout_gravity="center">
+
+<FrameLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="15dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/congratulation_card"
+        app:cardBackgroundColor="#FAFAFA"
+        app:cardElevation="0dp"
+        android:layout_gravity="bottom">
+        <LinearLayout
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Escriba la contraseña de super usuario"
+                android:padding="10dp"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="35dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/et_rounded_edges"
+                android:drawablePadding="12dp"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:maxLength="255"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@color/safe_mode_text"
+                android:textSize="17sp" />
+
+            <Button
+                android:id="@+id/btnAceptar"
+                android:text="Aceptar"
+                android:layout_marginTop="10dp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_rounded_white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="300dp"
+                android:layout_height="40dp" />
+            <Button
+                android:id="@+id/btnCancelar"
+                android:text="Cancelar"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_rounded_white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="300dp"
+                android:layout_height="40dp" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+    <ImageView
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:padding="18dp"
+        android:src="@drawable/ic_android"
+        android:background="@drawable/circle_green"
+        android:layout_gravity="center_horizontal|top" />
+
+</FrameLayout>
+</LinearLayout>

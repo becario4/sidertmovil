@@ -5,17 +5,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <!--  ID external order -->
-    <TextView
-        android:id="@+id/tvExternalID"
-        android:textSize="17sp"
-        android:textColor="@android:color/white"
-        android:background="@color/shadowdrawer"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
-
     <RadioGroup
         android:id="@+id/rgHistorialPagos"
         android:layout_width="match_parent"
@@ -64,7 +53,7 @@
     </RadioGroup>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvPagosCiente"
+        android:id="@+id/rvPagos"
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

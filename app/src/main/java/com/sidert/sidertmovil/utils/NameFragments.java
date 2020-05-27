@@ -17,10 +17,13 @@ public class NameFragments {
     //TODO:   Nombre de fragmentos del viewpager
     public final static String DETALLE_GPO          = "rg_detalle_fragment";
     public final static String RECUPERACION_GPO     = "recuperacion_gpo_fragment";
+    public final static String RECUPERACION_GPO_INT = "recuperacion_gpo_int_fragment";
     public final static String REPORTE_PAGOS_GPO    = "rg_pagos_fragment";
 
     public final static String DETALLE_IND          = "ri_detalle_fragment";
     public final static String RECUPERACION_IND     = "recuperacion_ind_fragment";
+    public final static String VENCIDA_IND          = "vencida_ind_fragment";
+    public final static String VENCIDA_GPO          = "vencida_gpo_fragment";
     public final static String REPORTE_PAGOS_IND    = "ri_pagos_fragment";
     public final static String FINANCIALINFO        = "financial_info_fragment";
     public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
@@ -52,6 +55,7 @@ public class NameFragments {
     public final static String GEO_PRESIDENTE        = "geo_presidente_fragment";
     public final static String GEO_TESORERA          = "geo_tesorera_fragment";
     public final static String GEO_SECRETARIA        = "geo_secretaria_fragment";
+    public final static String GEO_MIEMBROS          = "geo_miembros_fragment";
 
     //TODO: Programador
     public final static String TABLAS                = "tablas_fragment";

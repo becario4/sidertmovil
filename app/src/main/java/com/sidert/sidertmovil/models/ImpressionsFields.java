@@ -2,55 +2,85 @@ package com.sidert.sidertmovil.models;
 
 public class ImpressionsFields {
 
-    private String externalID;
-    private String asessorID;
-    private String type;
+    private String nombre;
+    private String numPrestamo;
+    private String clave;
+    private String asesor;
+    private String tipoImpresion;
     private String folio;
-    private String amount;
-    private String status;
-    private String generatedAt;
-    private String sendedAt;
+    private String monto;
+    private String impreso;
+    private String enviado;
 
-    public ImpressionsFields(String externalID, String asessorID, String type, String folio, String amount, String status, String generatedAt, String sendedAt) {
-        this.externalID = externalID;
-        this.asessorID = asessorID;
-        this.type = type;
-        this.folio = folio;
-        this.amount = amount;
-        this.status = status;
-        this.generatedAt = generatedAt;
-        this.sendedAt = sendedAt;
+    public String getNombre() {
+        return nombre;
     }
 
-    public String getExternalID() {
-        return externalID;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getAsessorID() {
-        return asessorID;
+    public String getNumPrestamo() {
+        return numPrestamo;
     }
 
-    public String getType() {
-        return type;
+    public void setNumPrestamo(String numPrestamo) {
+        this.numPrestamo = numPrestamo;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getAsesor() {
+        return asesor;
+    }
+
+    public void setAsesor(String asesor) {
+        this.asesor = asesor;
+    }
+
+    public String getTipoImpresion() {
+        return tipoImpresion;
+    }
+
+    public void setTipoImpresion(String tipoImpresion) {
+        this.tipoImpresion = tipoImpresion;
     }
 
     public String getFolio() {
         return folio;
     }
 
-    public String getAmount() {
-        return amount;
+    public void setFolio(String folio) {
+        this.folio = folio;
     }
 
-    public String getStatus() {
-        return status;
+    public String getMonto() {
+        return monto;
     }
 
-    public String getGeneratedAt() {
-        return generatedAt;
+    public void setMonto(String monto) {
+        this.monto = monto;
     }
 
-    public String getSendedAt() {
-        return sendedAt;
+    public String getImpreso() {
+        return impreso;
+    }
+
+    public void setImpreso(String impreso) {
+        this.impreso = impreso;
+    }
+
+    public String getEnviado() {
+        return enviado;
+    }
+
+    public void setEnviado(String enviado) {
+        this.enviado = enviado;
     }
 }

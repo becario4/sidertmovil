@@ -177,7 +177,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
                 R.string.guardar_cambios, R.string.save, new Popups.DialogMessage() {
             @Override
             public void OnClickListener(AlertDialog dialog) {
-                if (Double.parseDouble(etPagoRealizado.getText().toString()) == Double.parseDouble(etTotal.getText().toString())) {
+                if (Double.parseDouble(etPagoRealizado.getText().toString()) >= Double.parseDouble(etTotal.getText().toString())) {
                     boolean b = ArqueoCaja();
                     i_save_caja.putExtra(Constants.SAVE, b);
                     setResult(RESULT_OK, i_save_caja);

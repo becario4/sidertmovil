@@ -61,6 +61,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION;
+import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+
 public class geo_pendientes_fragment extends Fragment {
 
     private Context ctx;
@@ -130,12 +139,6 @@ public class geo_pendientes_fragment extends Fragment {
         adapter = new adapter_geo_pendientes(ctx, _m_geolocalizacion, new adapter_geo_pendientes.Event() {
             @Override
             public void GeoOnClick(ModelGeolocalizacion item, int modulo) {
-                Cursor row;
-                if (Constants.ENVIROMENT)
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
-                else
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
-                row.moveToFirst();
                 Intent i_geolocalizacion;
                 switch (item.getTipo_form()) {
                     case 1:
@@ -160,195 +163,97 @@ public class geo_pendientes_fragment extends Fragment {
 
         });
 
-        Cursor row;
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE status < 3", "", null);
-        else
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE status < 3", "", null);
-
-        Log.e("contRows", String.valueOf(row.getCount()));
-
-        if (row.getCount() == 0){
-            if (!Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "SINCRONIZADO")) {
-                GuardarGeolocalizacion();
-            }
-            else{
-                GuardarGeolocalizacion();
-            }
-        }
-        else {
-            GetGeolocalizacion("");
-        }
-
+        GetGeolocalizacion("");
 
         rvGeolocalizacion.setAdapter(adapter);
 
     }
 
-    private void GuardarGeolocalizacion (){
-
-        final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
-        loading.show();
-
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS).create(ManagerInterface.class);
-
-        Call<ModeloGeolocalizacion> call = api.getGeolocalizcion("1",
-                                                                false,
-                                                                "Bearer "+ session.getUser().get(7));
-        call.enqueue(new Callback<ModeloGeolocalizacion>() {
-            @Override
-            public void onResponse(Call<ModeloGeolocalizacion> call, Response<ModeloGeolocalizacion> response) {
-
-                Log.e("CODE GETGEO", String.valueOf(response.code()));
-                switch (response.code()) {
-                    case 200:
-                        ModeloGeolocalizacion modeloGeo = response.body();
-                        HashMap<Integer, String> params;
-                        if (modeloGeo.getGrupales().size() > 0){
-                            for (int i = 0; i < modeloGeo.getGrupales().size(); i++){
-                                Cursor rowGeo;
-                                if (Constants.ENVIROMENT)
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getGrupales().get(i).getFicha_id()+"'", "", null);
-                                else
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getGrupales().get(i).getFicha_id()+"'", "", null);
-                                if (rowGeo.getCount() == 0) {
-                                    Log.e("item", "gruaples "+i+" "+modeloGeo.getGrupales().get(i).getGrupoNombre());
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(modeloGeo.getGrupales().get(i).getFicha_id()));
-                                    params.put(1, modeloGeo.getGrupales().get(i).getAsesor_nombre());
-                                    params.put(2, "2");
-                                    params.put(3, modeloGeo.getGrupales().get(i).getGrupoNombre());
-                                    params.put(4, String.valueOf(modeloGeo.getGrupales().get(i).getNumSolicitud()));
-                                    params.put(5, String.valueOf(modeloGeo.getGrupales().get(i).getGrupoId()));
-                                    params.put(6, String.valueOf(modeloGeo.getGrupales().get(i).getGrupoId()));
-                                    params.put(7, Miscellaneous.GetIntegrante(modeloGeo.getGrupales().get(i).getIntegrantes(), "TESORERO").getClienteDireccion());
-                                    params.put(8, Miscellaneous.GetIntegrante(modeloGeo.getGrupales().get(i).getIntegrantes(), "TESORERO").getClienteColonia());
-                                    params.put(9, modeloGeo.getGrupales().get(i).getFechaEntrega());
-                                    params.put(10, modeloGeo.getGrupales().get(i).getFechaVencimiento());
-                                    params.put(11, Miscellaneous.JsonConvertGpo(modeloGeo.getGrupales().get(i)));
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    params.put(14, "");
-                                    params.put(15, "");
-                                    params.put(16, "");
-                                    params.put(17, "");
-                                    params.put(18, "");
-                                    params.put(19, "");
-                                    params.put(20, "0");
-                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
-                                    if (Constants.ENVIROMENT)
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
-                                    else
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }
-
-                            }
-                        }
-
-                        if (modeloGeo.getIndividuales().size() > 0){
-                            for (int i = 0; i < modeloGeo.getIndividuales().size(); i++){
-                                Cursor rowGeo;
-                                if (Constants.ENVIROMENT)
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getIndividuales().get(i).getFicha_id()+"'", "", null);
-                                else
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getIndividuales().get(i).getFicha_id()+"'", "", null);
-                                if (rowGeo.getCount() == 0) {
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(modeloGeo.getIndividuales().get(i).getFicha_id()));
-                                    params.put(1, modeloGeo.getIndividuales().get(i).getAsesor_nombre());
-                                    params.put(2, "1");
-                                    params.put(3, modeloGeo.getIndividuales().get(i).getClienteNombre());
-                                    params.put(4, String.valueOf(modeloGeo.getIndividuales().get(i).getNumSolicitud()));
-                                    params.put(5, String.valueOf(modeloGeo.getIndividuales().get(i).getClienteId()));
-                                    params.put(6, String.valueOf(modeloGeo.getIndividuales().get(i).getClienteClave()));
-                                    params.put(7, modeloGeo.getIndividuales().get(i).getClienteDireccion());
-                                    params.put(8, modeloGeo.getIndividuales().get(i).getClienteColonia());
-                                    params.put(9, modeloGeo.getIndividuales().get(i).getFechaEntrega());
-                                    params.put(10, modeloGeo.getIndividuales().get(i).getFechaVencimiento());
-                                    params.put(11, Miscellaneous.JsonConvertInd(modeloGeo.getIndividuales().get(i)));
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    params.put(14, "");
-                                    params.put(15, "");
-                                    params.put(16, "");
-                                    params.put(17, "");
-                                    params.put(18, "");
-                                    params.put(19, "");
-                                    params.put(20, "0");
-                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
-                                    if (Constants.ENVIROMENT)
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
-                                    else
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }
-                            }
-                        }
-
-                        GetGeolocalizacion("");
-                        break;
-                    default:
-                        break;
-                }
-
-                loading.dismiss();
-            }
-
-            @Override
-            public void onFailure(Call<ModeloGeolocalizacion> call, Throwable t) {
-
-            }
-        });
-    }
-
     private void GetGeolocalizacion(String where) {
         Cursor row;
 
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE status in (0,1,2)" + where, " ORDER BY nombre ASC", null);
-        else
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE status in (0,1,2)" + where, " ORDER BY nombre ASC", null);
+        String sql = "SELECT * FROM (SELECT ci.id_cartera, ci.clave, ci.nombre, ci.direccion, ci.colonia, ci.num_solicitud, ci.asesor_nombre, 1 AS tipo_ficha, 1 AS total_integrantes, 0 AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'CLIENTE' AND g.id_cartera = ci.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'NEGOCIO' AND g.id_cartera = ci.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'AVAL' AND g.id_cartera = ci.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_IND_T + " AS ci UNION SELECT cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre, 2 AS tipo_ficha, COUNT(m._id) AS total_integrantes, SUM(CASE WHEN gr._id IS NOT NULL THEN 1 ELSE 0 END) AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'PRESIDENTE' AND g.id_cartera = cg.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'TESORERO' AND g.id_cartera = cg.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'SECRETARIO' AND g.id_cartera = cg.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_GPO_T + " AS cg LEFT JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = cg.id_cartera LEFT JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON m.id_prestamo = pg.id_prestamo LEFT JOIN "+TBL_GEO_RESPUESTAS_T+" AS gr ON gr.id_integrante = m.id_integrante GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre ) AS geo_res" + where +" ORDER BY nombre ASC";
+
+        row = db.rawQuery(sql, null);
         _m_geolocalizacion = new ArrayList<>();
-        Log.e("rowGet", String.valueOf(row.getCount()));
-        row.moveToFirst();
-        parent.SetUpBagde(0, row.getCount());
-        dataNombre = new String[row.getCount()];
-        dataColonia = new String[row.getCount()];
-        dataAsesor = new String[row.getCount()];
-        List<String> nombre = new ArrayList<>();
-        List<String> colonia = new ArrayList<>();
-        List<String> asesor = new ArrayList<>();
-        for (int i = 0; i < row.getCount(); i++){
-            nombre.add(row.getString(4));
-            colonia.add(row.getString(9));
-            asesor.add(row.getString(2));
-            mGeo = new ModelGeolocalizacion();
-            mGeo.setId(Integer.parseInt(row.getString(0)));
-            mGeo.setAsesor_nombre(row.getString(2));
-            mGeo.setTipo_form(Integer.parseInt(row.getString(3)));
-            mGeo.setNombre(row.getString(4));
-            mGeo.setNum_solicitud(row.getString(5));
-            mGeo.setDireccion(row.getString(8));
-            mGeo.setColonia(row.getString(9));
-            mGeo.setRes_uno(row.getString(13));
-            mGeo.setRes_dos(row.getString(14));
-            mGeo.setRes_tres(row.getString(15));
-            mGeo.setStatus(Integer.parseInt(row.getString(21)));
-            _m_geolocalizacion.add(mGeo);
-            row.moveToNext();
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+
+            dataNombre = new String[row.getCount()];
+            dataColonia = new String[row.getCount()];
+            dataAsesor = new String[row.getCount()];
+            List<String> nombre = new ArrayList<>();
+            List<String> colonia = new ArrayList<>();
+            List<String> asesor = new ArrayList<>();
+
+            for (int i = 0; i < row.getCount(); i++) {
+
+                switch (row.getInt(7)) { //Tipo de ficha
+                    case 1: //Individuales
+                        if (row.getString(10).trim().isEmpty() || row.getString(11).trim().isEmpty() || row.getString(12).trim().isEmpty()) {
+                            nombre.add(row.getString(2));
+                            colonia.add(row.getString(4));
+                            asesor.add(row.getString(6));
+                            mGeo = new ModelGeolocalizacion();
+                            mGeo.setId(row.getInt(0));
+                            mGeo.setAsesor_nombre(row.getString(6));
+                            mGeo.setTipo_form(row.getInt(7));
+                            mGeo.setNombre(row.getString(2));
+                            mGeo.setNum_solicitud(row.getString(5));
+                            mGeo.setDireccion(row.getString(3));
+                            mGeo.setColonia(row.getString(4));
+                            mGeo.setRes_uno(row.getString(10));
+                            mGeo.setRes_dos(row.getString(11));
+                            mGeo.setRes_tres(row.getString(12));
+                            mGeo.setTotal_integrantes(row.getInt(8));
+                            mGeo.setTotal_contestadas(row.getInt(9));
+                            mGeo.setStatus(0);
+                            _m_geolocalizacion.add(mGeo);
+                        }
+
+                        break;
+                    case 2: //Grupales
+                        if (row.getInt(9) < row.getInt(8)) {
+                            nombre.add(row.getString(2));
+                            colonia.add(row.getString(4));
+                            asesor.add(row.getString(6));
+                            mGeo = new ModelGeolocalizacion();
+                            mGeo.setId(row.getInt(0));
+                            mGeo.setAsesor_nombre(row.getString(6));
+                            mGeo.setTipo_form(row.getInt(7));
+                            mGeo.setNombre(row.getString(2));
+                            mGeo.setNum_solicitud(row.getString(5));
+                            mGeo.setDireccion(row.getString(3));
+                            mGeo.setColonia(row.getString(4));
+                            mGeo.setRes_uno(row.getString(10));
+                            mGeo.setRes_dos(row.getString(11));
+                            mGeo.setRes_tres(row.getString(12));
+                            mGeo.setTotal_integrantes(row.getInt(8));
+                            mGeo.setTotal_contestadas(row.getInt(9));
+                            mGeo.setStatus(0);
+                            _m_geolocalizacion.add(mGeo);
+                        }
+                        break;
+                }
+
+                row.moveToNext();
+            }
+
+            parent.SetUpBagde(0, _m_geolocalizacion.size());
+
+            dataNombre = RemoverRepetidos(nombre);
+            dataAsesor = RemoverRepetidos(asesor);
+            dataColonia = RemoverRepetidos(colonia);
+
+            adapterNombre = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
+
+            adapterColonia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
+
+            adapterAsesor = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
         }
-
-        dataNombre = RemoverRepetidos(nombre);
-        dataAsesor = RemoverRepetidos(asesor);
-        dataColonia = RemoverRepetidos(colonia);
-
-        adapterNombre = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
-
-        adapterColonia = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
-
-        adapterAsesor = new ArrayAdapter<String>(ctx,
-                R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
 
         if(_m_geolocalizacion.size() > 0) {
             adapter.UpdateData(_m_geolocalizacion);
@@ -398,31 +303,34 @@ public class geo_pendientes_fragment extends Fragment {
                                 else filtros.put("asesor_p","");
 
                                 if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    filtros.put("tipo_cartera_ind_p","1");
-                                    filtros.put("tipo_cartera_gpo_p","1");
+                                    filtros.put("individual_p","1");
+                                    filtros.put("grupal_p","1");
                                     cont_filtros += 2;
                                     where += " AND tipo_ficha IN (1,2)";
                                 }
                                 else if (cbInd.isChecked()){
-                                    filtros.put("tipo_cartera_ind_p","1");
-                                    filtros.put("tipo_cartera_gpo_p","0");
+                                    filtros.put("individual_p","1");
+                                    filtros.put("grupal_p","0");
                                     cont_filtros += 1;
                                     where += " AND tipo_ficha = "+1;
                                 }
                                 else if (cbGpo.isChecked()){
-                                    filtros.put("tipo_cartera_ind_p","0");
-                                    filtros.put("tipo_cartera_gpo_p","1");
+                                    filtros.put("individual_p","0");
+                                    filtros.put("grupal_p","1");
                                     cont_filtros += 1;
                                     where += " AND tipo_ficha = "+2;
                                 }else {
-                                    filtros.put("tipo_cartera_ind_p","0");
-                                    filtros.put("tipo_cartera_gpo_p","0");
+                                    filtros.put("individual_p","0");
+                                    filtros.put("grupal_p","0");
                                 }
                                 filtros.put("contador_p", String.valueOf(cont_filtros));
                                 session.setFiltrosGeoPend(filtros);
 
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                GetGeolocalizacion(where);
+                                if (where.length() > 0)
+                                    GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
+                                else
+                                    GetGeolocalizacion("");
                                 dialog.dismiss();
 
                                 break;
@@ -434,8 +342,8 @@ public class geo_pendientes_fragment extends Fragment {
                                 filtros.put("colonia_cartera_p","");
                                 filtros.put("dia_semana_p","");
                                 filtros.put("asesor_cartera_p","");
-                                filtros.put("tipo_cartera_ind_p","0");
-                                filtros.put("tipo_cartera_gpo_p","0");
+                                filtros.put("individual_p","0");
+                                filtros.put("grupal_p","0");
                                 filtros.put("contador_cartera_p", "0");
 
                                 session.setFiltrosGeoPend(filtros);
@@ -564,7 +472,10 @@ public class geo_pendientes_fragment extends Fragment {
             where += " AND tipo_ficha = "+2;
         }
 
-        GetGeolocalizacion(where);
+        if (where.length()> 0)
+            GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
+        else
+            GetGeolocalizacion("");
 
     }
 

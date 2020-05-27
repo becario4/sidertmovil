@@ -35,23 +35,18 @@ public class adapter_list_integrantes extends ArrayAdapter<ModeloGrupal.Integran
         private CheckBox cbPagoCompleto;
     }
 
-
     public adapter_list_integrantes(ArrayList<ModeloGrupal.IntegrantesDelGrupo> data, Context context) {
         super(context, R.layout.item_cliente_pago_demo, data);
         this.dataSet = data;
         this.mContext=context;
-
     }
-
 
     @Override
     public void onClick(View v) {
 
-
         int position=(Integer) v.getTag();
         Object object= getItem(position);
         ModeloGrupal.IntegrantesDelGrupo dataModel=(ModeloGrupal.IntegrantesDelGrupo)object;
-
 
     }
 
@@ -67,7 +62,6 @@ public class adapter_list_integrantes extends ArrayAdapter<ModeloGrupal.Integran
         final View result;
 
         if (convertView == null) {
-
 
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -97,7 +91,8 @@ public class adapter_list_integrantes extends ArrayAdapter<ModeloGrupal.Integran
         viewHolder.etPagoSolidario.setText(String.valueOf((dataModel.getPagoSolidario() != null)?redondearDecimales(dataModel.getPagoSolidario()):redondearDecimales((double)0)));
         viewHolder.etPagoAdelanto.setText(String.valueOf((dataModel.getPagoAdelanto() != null)?redondearDecimales(dataModel.getPagoAdelanto()):redondearDecimales((double)0)));
 
-        viewHolder.cbPagoCompleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+        /*viewHolder.cbPagoCompleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 dataSet.get(position).setPagoCompleto(isChecked);
@@ -113,7 +108,7 @@ public class adapter_list_integrantes extends ArrayAdapter<ModeloGrupal.Integran
                     viewHolder.etPagoAdelanto.setText(String.valueOf(redondearDecimales((double)0)));
                 }
             }
-        });
+        });*/
 
         viewHolder.cbPagoCompleto.setChecked(dataSet.get(position).isPagoCompleto());
 

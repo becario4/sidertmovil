@@ -11,6 +11,7 @@ public class MReimpresion implements Serializable {
     private String numeroPrestamo;
     private String numeroCliente;
     private String nombre;
+    private String nombreGrupo;
     private String pagoRequerido;
     private String nombreAsesor;
     private String asesorId;
@@ -75,6 +76,14 @@ public class MReimpresion implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getNombreGrupo() {
+        return nombreGrupo;
+    }
+
+    public void setNombreGrupo(String nombreGrupo) {
+        this.nombreGrupo = nombreGrupo;
     }
 
     public String getPagoRequerido() {

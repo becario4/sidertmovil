@@ -12,74 +12,73 @@
 
     <LinearLayout
         android:background="@android:color/white"
+        android:padding="3dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <!-- Nombre Cliente/Grupo -->
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <!-- Numero de Prestamo -->
+        <TextView
+            android:id="@+id/tvNumPrestamo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <!-- Clave y Asesor -->
         <LinearLayout
-            android:layout_margin="3dp"
+            android:padding="3dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/tvExternalId"
-                android:textColor="@android:color/black"
+                android:id="@+id/tvClave"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/tvAsessor"
-                android:textColor="@android:color/black"
+                android:id="@+id/tvAsesor"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tvType"
-                android:textColor="@android:color/black"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
         </LinearLayout>
+        <!-- Tipo, Folio y Monto -->
         <LinearLayout
-            android:layout_margin="3dp"
+            android:padding="3dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvTipoImpresion"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/tvFolio"
-                android:textColor="@android:color/black"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/tvAmount"
-                android:textColor="@android:color/black"
+                android:id="@+id/tvMonto"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tvStatus"
-                android:textColor="@android:color/black"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
         </LinearLayout>
+        <!-- Impreso y Enviado -->
         <LinearLayout
-            android:layout_margin="3dp"
-            android:orientation="horizontal"
+            android:padding="3dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/tvGeneratedAt"
-                android:textColor="@android:color/black"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:id="@+id/tvImpreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/tvSendedAt"
-                android:textColor="@android:color/black"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:id="@+id/tvEnviado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 

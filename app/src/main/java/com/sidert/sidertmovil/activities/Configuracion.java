@@ -78,6 +78,10 @@ public class Configuracion extends AppCompatActivity {
             Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
             sincronizado.GetGeolocalizacion(ctx, true, false);
             sincronizado.SaveGeolocalizacion(ctx, true);
+            sincronizado.SaveRespuestaGestion(ctx, true);
+            sincronizado.SendImpresionesVi(ctx, true);
+            sincronizado.SendReimpresionesVi(ctx, true);
+            sincronizado.SendTracker(ctx, true);
         }
     };
 

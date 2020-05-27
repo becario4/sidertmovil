@@ -13,6 +13,9 @@ public class MIntegrante implements Serializable {
     @SerializedName("num_solicitud")
     @Expose
     private Integer numSolicitud;
+    @SerializedName("prestamo_id")
+    @Expose
+    private Integer prestamoId;
     @SerializedName("grupo_id")
     @Expose
     private Integer grupoId;
@@ -37,6 +40,9 @@ public class MIntegrante implements Serializable {
     @SerializedName("monto_prestamo")
     @Expose
     private String montoPrestamo;
+    @SerializedName("clave")
+    @Expose
+    private String clave;
 
     public Integer getId() {
         return id;
@@ -52,6 +58,14 @@ public class MIntegrante implements Serializable {
 
     public void setNumSolicitud(Integer numSolicitud) {
         this.numSolicitud = numSolicitud;
+    }
+
+    public Integer getPrestamoId() {
+        return prestamoId;
+    }
+
+    public void setPrestamoId(Integer prestamoId) {
+        this.prestamoId = prestamoId;
     }
 
     public Integer getGrupoId() {
@@ -116,5 +130,13 @@ public class MIntegrante implements Serializable {
 
     public void setMontoPrestamo(String montoPrestamo) {
         this.montoPrestamo = montoPrestamo;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 }

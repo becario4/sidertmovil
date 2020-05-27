@@ -10,6 +10,8 @@ public class MCarteraGnral {
     private String direccion = "";
     private boolean is_ruta = false;
     private boolean is_obligatorio = false;
+    private String tipoPrestamo = "";
+    private int parcial = 0;
 
     public String getId_cliente() {
         return id_cliente;
@@ -73,5 +75,21 @@ public class MCarteraGnral {
 
     public void setIs_obligatorio(boolean is_obligatorio) {
         this.is_obligatorio = is_obligatorio;
+    }
+
+    public String getTipoPrestamo() {
+        return tipoPrestamo;
+    }
+
+    public void setTipoPrestamo(String tipoPrestamo) {
+        this.tipoPrestamo = tipoPrestamo;
+    }
+
+    public int getParcial() {
+        return parcial;
+    }
+
+    public void setParcial(int parcial) {
+        this.parcial = parcial;
     }
 }

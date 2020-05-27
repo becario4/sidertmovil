@@ -14,6 +14,8 @@ public class ModelGeolocalizacion implements Serializable {
     private String res_uno, res_dos, res_tres;
     private String fecha_env;
     private int status;
+    private int total_integrantes = 0;
+    private int total_contestadas = 0;
 
     public int getId() {
         return id;
@@ -109,5 +111,21 @@ public class ModelGeolocalizacion implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getTotal_integrantes() {
+        return total_integrantes;
+    }
+
+    public void setTotal_integrantes(int total_integrantes) {
+        this.total_integrantes = total_integrantes;
+    }
+
+    public int getTotal_contestadas() {
+        return total_contestadas;
+    }
+
+    public void setTotal_contestadas(int total_contestadas) {
+        this.total_contestadas = total_contestadas;
     }
 }

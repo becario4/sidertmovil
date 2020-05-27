@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.DoubleBuffer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -41,6 +44,7 @@ import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_RESUMEN_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.TOTAL;
 
 public class IntegrantesGpo extends AppCompatActivity {
@@ -48,6 +52,7 @@ public class IntegrantesGpo extends AppCompatActivity {
     private ArrayList<MIntegrantePago> integrantePagos;
     private String id_prestamo = "";
     private String id_gestion = "";
+    private String tipo_cartera = "";
 
     private CheckBox cbSelectAll;
 
@@ -60,6 +65,8 @@ public class IntegrantesGpo extends AppCompatActivity {
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+
+    private DecimalFormat dFormat = new DecimalFormat("#.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,7 @@ public class IntegrantesGpo extends AppCompatActivity {
         integrantePagos = (ArrayList<MIntegrantePago>) getIntent().getSerializableExtra(INTEGRANTES);
         id_prestamo =  getIntent().getStringExtra(ID_PRESTAMO);
         id_gestion  =  getIntent().getStringExtra(ID_GESTION);
+        tipo_cartera = getIntent().getStringExtra(TIPO_CARTERA);
         invalidateOptionsMenu();
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -99,20 +107,23 @@ public class IntegrantesGpo extends AppCompatActivity {
                 //adapter.selectAllItem(isChecked);
 
                 //adapter.notifyDataSetChanged();
+                final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+                loading.show();
                 for (int i=0;i<integrantePagos.size();i++){
+
+                    if (isChecked)
+                        integrantePagos.get(i).setPagoRealizado(dFormat.format(Double.parseDouble(integrantePagos.get(i).getMontoRequerido()))+"");
+                    else
+                        integrantePagos.get(i).setPagoRealizado(dFormat.format(Double.parseDouble("0"))+"");
 
                     integrantePagos.get(i).setPagoRequerido(isChecked);
 
-                    /*if (integrantePagos.get(i).isPagoRequerido()){
-                        adapter.selectAllItem(false);
-                    }
-                    else {
-                        adapter.selectAllItem(true);
-                    }*/
+                    Log.e("PagoIntegrante", dFormat.format(Double.parseDouble(integrantePagos.get(i).getPagoRealizado()))+"##############");
 
                 }
 
                 adapter.notifyDataSetChanged();
+                loading.dismiss();
 
 
             }
@@ -130,10 +141,11 @@ public class IntegrantesGpo extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case  R.id.save:
             case android.R.id.home:
                     SumarPagos();
 
-                    if (flag) {
+                    if (flag && !tipo_cartera.contains("VENCIDA")) {
                         final double finalTotal = total;
                         final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
                                 R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
@@ -169,12 +181,78 @@ public class IntegrantesGpo extends AppCompatActivity {
                         confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                         confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                         confirm_dlg.show();
-                    } else
+                    }
+                    else if (flag && tipo_cartera.contains("VENCIDA")){
+                        int count = 0;
+                        for (int x = 0; x < integrantePagos.size(); x++){
+                            double pago = 0;
+                            try{
+                                pago = Double.parseDouble(integrantePagos.get(x).getPagoRealizado());
+                            }catch (NumberFormatException e){
+                                pago = 0;
+                            }
+                            if (pago > 0){
+                                count += 1;
+                            }
+                        }
+
+                        if (count > 1){
+                            final AlertDialog mess_dlg = Popups.showDialogMessage(IntegrantesGpo.this, "default", R.string.mess_integrantes_cv, R.string.accept, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dg) {
+                                    dg.dismiss();
+                                }
+                            });
+                            mess_dlg.setCancelable(true);
+                            mess_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            mess_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            mess_dlg.show();
+                        }else{
+                            final double finalTotal = total;
+                            final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
+                                    R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            for(int i = 0; i < integrantePagos.size(); i++){
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                                cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                                cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                                cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                                if (ENVIROMENT)
+                                                    db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                                else
+                                                    db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                            }
+                                            Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
+                                            i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                            i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                            i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                            startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                            dialog.dismiss();
+
+                                        }
+                                    }, R.string.cancel, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            finish();
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            confirm_dlg.setCancelable(true);
+                            confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            confirm_dlg.show();
+                        }
+
+                    }
+                    else
                         finish();
 
                 break;
-            case  R.id.save:
-                SumarPagos();
+
+
+                /*SumarPagos();
 
                 if (flag){
                     final double finalTotal = total;
@@ -223,8 +301,7 @@ public class IntegrantesGpo extends AppCompatActivity {
                     dlg_error.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                     dlg_error.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     dlg_error.show();
-                }
-                break;
+                }*/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -232,8 +309,29 @@ public class IntegrantesGpo extends AppCompatActivity {
     private void SumarPagos() {
        JSONArray jsonIntegrantes = new JSONArray();
 
-        for(int i = 0; i < adapter.data.size(); i++){
-            if (Double.parseDouble(adapter.data.get(i).getPagoRealizado().toString()) > 0){
+       for (int i = 0; i < integrantePagos.size(); i++){
+           Log.e("PAgoRealizado", integrantePagos.get(i).getPagoRealizado());
+           if (Double.parseDouble(integrantePagos.get(i).getPagoRealizado()) > 0){
+               JSONObject itemIntegrante = new JSONObject();
+               try {
+                   itemIntegrante.put("nombre", integrantePagos.get(i).getNombre());
+                   itemIntegrante.put("pago", integrantePagos.get(i).getPagoRealizado());
+                   itemIntegrante.put("adelanto", integrantePagos.get(i).getAdelanto());
+                   itemIntegrante.put("solidario", integrantePagos.get(i).getSolidario());
+                   itemIntegrante.put("id_integrante", integrantePagos.get(i).getIdIntegrante());
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
+               total += Double.parseDouble(integrantePagos.get(i).getPagoRealizado());
+               jsonIntegrantes.put(itemIntegrante);
+               flag = true;
+           }
+           Log.e("Flag", String.valueOf(flag));
+       }
+
+        /*for(int i = 0; i < adapter.data.size(); i++){
+            Log.e("PAgoRealizado", adapter.data.get(i).getPagoRealizado());
+            if (Double.parseDouble(adapter.data.get(i).getPagoRealizado()) > 0){
                 JSONObject itemIntegrante = new JSONObject();
                 try {
                     itemIntegrante.put("nombre", adapter.data.get(i).getNombre());
@@ -248,12 +346,117 @@ public class IntegrantesGpo extends AppCompatActivity {
                 jsonIntegrantes.put(itemIntegrante);
                 flag = true;
             }
-        }
+        }*/
     }
 
     @Override
     public void onBackPressed() {
-            SumarPagos();
+        SumarPagos();
+
+        if (flag && !tipo_cartera.contains("VENCIDA")) {
+            final double finalTotal = total;
+            final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
+                    R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            for(int i = 0; i < integrantePagos.size(); i++){
+                                ContentValues cv = new ContentValues();
+                                cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                if (ENVIROMENT)
+                                    db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                else
+                                    db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                            }
+                            Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
+                            i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                            i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                            i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                            startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                            dialog.dismiss();
+
+                        }
+                    }, R.string.cancel, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            finish();
+                            dialog.dismiss();
+                        }
+                    });
+            confirm_dlg.setCancelable(true);
+            confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            confirm_dlg.show();
+        }
+        else if (flag && tipo_cartera.contains("VENCIDA")){
+            int count = 0;
+            for (int x = 0; x < integrantePagos.size(); x++){
+                double pago = 0;
+                try{
+                    pago = Double.parseDouble(integrantePagos.get(x).getPagoRealizado());
+                }catch (NumberFormatException e){
+                    pago = 0;
+                }
+                if (pago > 0){
+                    count += 1;
+                }
+            }
+
+            if (count > 1){
+                final AlertDialog mess_dlg = Popups.showDialogMessage(IntegrantesGpo.this, "default", R.string.mess_integrantes_cv, R.string.accept, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dg) {
+                        dg.dismiss();
+                    }
+                });
+                mess_dlg.setCancelable(true);
+                mess_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                mess_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                mess_dlg.show();
+            }else{
+                final double finalTotal = total;
+                final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
+                        R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                for(int i = 0; i < integrantePagos.size(); i++){
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                    cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                    cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                    cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
+                                    if (ENVIROMENT)
+                                        db.update(TBL_MIEMBROS_PAGOS, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                    else
+                                        db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                }
+                                Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
+                                i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                confirm_dlg.setCancelable(true);
+                confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                confirm_dlg.show();
+            }
+
+        }
+        else
+            super.onBackPressed();
+            /*SumarPagos();
             if (flag) {
                 final double finalTotal = total;
                 final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
@@ -291,7 +494,7 @@ public class IntegrantesGpo extends AppCompatActivity {
                 confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 confirm_dlg.show();
             } else
-                super.onBackPressed();
+                super.onBackPressed();*/
     }
 
 

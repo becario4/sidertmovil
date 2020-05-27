@@ -84,6 +84,8 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
             holder.tvTituloDos.setText(ctx.getResources().getString(R.string.negocio));
             holder.tvTituloTres.setText(ctx.getResources().getString(R.string.aval));
 
+            holder.tvtotal.setText("");
+
             Drawable icon_uno = (item.getRes_uno().equals(""))?ctx.getResources().getDrawable(R.drawable.ic_home_red):ctx.getResources().getDrawable(R.drawable.ic_home_green);
             Glide.with(ctx).load(icon_uno).into(holder.ivResUno);
 
@@ -97,6 +99,7 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
         else {
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipo);
 
+            holder.tvtotal.setText(item.getTotal_contestadas()+"/"+item.getTotal_integrantes());
             holder.tvTituloUno.setText(ctx.getResources().getString(R.string.presidente));
             holder.tvTituloDos.setText(ctx.getResources().getString(R.string.tesorera));
             holder.tvTituloTres.setText(ctx.getResources().getString(R.string.secretaria));
@@ -141,6 +144,7 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre;
         private TextView tvDireccion;
+        private TextView tvtotal;
         private LinearLayout llResUno;
         private LinearLayout llResDos;
         private LinearLayout llResTres;
@@ -155,6 +159,7 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre     = itemView.findViewById(R.id.tvNombre);
+            tvtotal      = itemView.findViewById(R.id.tvTotal);
             tvDireccion  = itemView.findViewById(R.id.tvDireccion);
             llResUno     = itemView.findViewById(R.id.llResUno);
             llResDos     = itemView.findViewById(R.id.llResDos);

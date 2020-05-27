@@ -277,7 +277,7 @@ public class CameraVertical extends AppCompatActivity {
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
-            captureBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 90);
+            captureBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 100);
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,270);
 
             //file = new File(Environment.getExternalStorageDirectory()+"/"+name_photo+".jpg");
@@ -365,7 +365,7 @@ public class CameraVertical extends AppCompatActivity {
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
             //captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
-            captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 90);
+            captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 100);
             captureRequestBuilder.addTarget(surface);
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,270);
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {

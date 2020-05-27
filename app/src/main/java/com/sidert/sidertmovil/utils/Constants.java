@@ -13,6 +13,7 @@ public class Constants {
     public final static String CONTROLLER_SOLICITUDES = "solicitudes";
     public final static String CONTROLLER_MOVIL       = "movil";
     public final static String CONTROLLER_DENUNCIAS   = "denuncias";
+    public final static String CONTROLLER_IMPRESIONES = "impresiones";
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -31,6 +32,7 @@ public class Constants {
 
     public final static String TIMESTAMP            = "timestamp";
 
+    public final static String FORMAT_DATE              = "dd-MM-yyyy";
     public final static String FORMAT_DATE_GNRAL        = "yyyy-MM-dd";
     public final static String FORMAT_TIMESTAMP         = "yyyy-MM-dd HH:mm:ss";
 
@@ -99,6 +101,7 @@ public class Constants {
     public final static String USER_NAME              = "user_name";
     public final static String EMAIL                  = "email";
     public final static String AUTHORITIES            = "authorities";
+    public final static String MODULOS                = "modulos";
 
 
     //======================  TAGS DE FICHAS  ===================================================
@@ -193,6 +196,7 @@ public class Constants {
     public final static String CODEBARS                     = "code_bars";
 
     public final static String NUM_SOLICITUD                = "num_solicitud";
+    public final static String ID_INTEGRANTE                = "id_integrante";
     public final static String MODULO                       = "modulo";
     public final static String _ID                          = "_id";
     public final static String IMAGEN                       = "imagen";
@@ -213,6 +217,7 @@ public class Constants {
     public final static String USERNAME                  = "username";
     public final static String PASSWORD                  = "password";
     public final static String GRANT_TYPE                = "grant_type";
+    public final static String BATTERY                   = "battery";
 
     //==========================   REQUEST CODE   ==================================================
     public final static int REQUEST_CODE_FIRMA                     = 456;
@@ -250,6 +255,9 @@ public class Constants {
     public final static int REQUEST_CODE_FOTO_INE_REVERSO          = 798;
     public final static int REQUEST_CODE_FOTO_CURP                 = 768;
     public final static int REQUEST_CODE_FOTO_COMPROBATE           = 715;
+    public final static int REQUEST_CODE_MIEMBRO_GEO               = 668;
+
+    public final static int CANCEL_TRACKER_ID                      = 300;
 
     //=========================== PARÁMETROS FECHAS  ===============================================
     public final static String DAY_CURRENT    = "day_current";
@@ -355,11 +363,17 @@ public class Constants {
     public final static String DOCUMENTOS_INTEGRANTE_T      = "documentos_integrante_t";
     public final static String RECIBOS_CIRCULO_CREDITO_T    = "recibos_circulo_credito_t";
     public final static String TBL_RESPUESTAS_IND_T         = "respuestas_ind_t";
+    public final static String TBL_RESPUESTAS_IND_V_T       = "respuestas_ind_v_t";
+    public final static String TBL_RESPUESTAS_INTEGRANTE_T  = "respuestas_integrante_v_t";
     public final static String TBL_RESPUESTAS_IND           = "respuestas_ind";
     public final static String TBL_RESPUESTAS_GPO_T         = "respuestas_gpo_t";
+    public final static String TBL_RESPUESTAS_GPO_V_T       = "respuestas_gpo_v_t";
     public final static String TBL_RESPUESTAS_GPO           = "respuestas_gpo";
+
     public final static String TBL_IMPRESIONES_VIGENTE_T    = "tbl_impresiones_vigente_t";
     public final static String TBL_IMPRESIONES_VIGENTE      = "tbl_impresiones_vigente";
+    public final static String TBL_IMPRESIONES_VENCIDA_T    = "tbl_impresiones_vencida_t";
+    public final static String TBL_IMPRESIONES_VENCIDA      = "tbl_impresiones_vencida";
     public final static String TBL_REIMPRESION_VIGENTE_T    = "tbl_reimpresion_vigente_t";
     public final static String TBL_REIMPRESION_VIGENTE      = "tbl_reimpresion_vigente";
 
@@ -373,6 +387,10 @@ public class Constants {
     public final static String TBL_PAGOS_T                  = "tbl_pagos_t";
     public final static String TBL_ARQUEO_CAJA_T            = "tbl_arqueo_caja_t";
     public final static String TBL_ARQUEO_CAJA              = "tbl_arqueo_caja";
+    public final static String TBL_TRACKER_ASESOR_T         = "tbl_tracker_asesor_t";
+    public final static String TBL_TRACKER_ASESOR           = "tbl_tracker_asesor";
+
+    public final static String TBL_GEO_RESPUESTAS_T         = "geo";
 
     public final static String TBL_AVAL_T = "tbl_aval_t";
     public final static String TBL_AVAL   = "tbl_aval";
@@ -410,6 +428,8 @@ public class Constants {
     public final static String POS_MOTIVO_NO_PAGO       = "PosMotivoNoPago";
     public final static String MOTIVO_NO_PAGO           = "MotivoNoPago";
     public final static String FECHA_DEFUNCION          = "FechaDefuncion";
+    public final static String FECHA_PROMESA_PAGO       = "FechaPromesaPago";
+    public final static String MONTO_PROMESA            = "MontoPromesa";
     public final static String RESUMEN_INTEGRANTES      = "ResumenInegrantes";
     public final static String INTEGRANTES              = "Integrantes";
     public final static String MOTIVO_NO_CONTACTO       = "MotivoNoContacto";
@@ -423,6 +443,16 @@ public class Constants {
     public final static String ID_GESTION               = "id_gestion";
     public final static String TOTAL                    = "total";
     public final static String TBL_NAME                 = "tbl_name";
+    public final static String TIPO_CARTERA             = "tipo_cartera";
+    public final static String FICHA_TIPO               = "ficha_tipo";
+    public final static String PRESTAMO_ID              = "prestamo_id";
+    public final static String FECHA_DISPOSITIVO        = "fecha_dispositivo";
+    public final static String FECHA_RESPUESTA          = "fecha_respuesta";
+    public final static String FECHA_INI_GEO            = "fecha_ini_geo";
+    public final static String FECHA_FIN_GEO            = "fecha_fin_geo";
+    public final static String FECHA_ENVIO              = "fecha_envio";
+
+
 
     public final static String TITULO                   = "titulo";
     public final static String CATALOGO                 = "catalogo";
