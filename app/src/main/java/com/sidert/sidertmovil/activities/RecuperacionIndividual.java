@@ -102,6 +102,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
     public String fecha_establecida = "";
     public String tipo_cartera = "";
     public String id_cartera = "";
+    public String num_amortizacion = "";
 
     public String latitud = "";
     public String longitud = "";
@@ -171,6 +172,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
             clave_cliente = row.getString(26);
             fecha_establecida = row.getString(11);
             tipo_cartera = row.getString(12);
+            num_amortizacion = row.getString(10);
             //tipo_cartera = "VENCIDA";
         }
         row.close();

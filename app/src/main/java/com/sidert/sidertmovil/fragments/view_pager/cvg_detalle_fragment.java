@@ -17,14 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CarteraVencidaGrupal;
-import com.sidert.sidertmovil.activities.GroupMembersInfo;
 import com.sidert.sidertmovil.activities.Integrantes;
-import com.sidert.sidertmovil.activities.RecuperacionGrupal;
 import com.sidert.sidertmovil.activities.VencidaGrupal;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;

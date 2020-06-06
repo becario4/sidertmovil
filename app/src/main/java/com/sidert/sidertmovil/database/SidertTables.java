@@ -39,6 +39,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
@@ -1241,41 +1242,6 @@ public class SidertTables {
                 "saldo_actual TEXT DEFAULT '',"+
                 "dias_atraso TEXT DEFAULT '0')";
 
-        public static final String CREATE_TBL_RESPUESTAS_INTEGRANTE_T = "CREATE TABLE " + TBL_RESPUESTAS_INTEGRANTE_T + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "id_integrante TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "contacto TEXT," +
-                "comentario TEXT," +
-                "actualizar_telefono TEXT," +
-                "nuevo_telefono TEXT," +
-                "resultado_gestion TEXT," +
-                "motivo_no_pago TEXT," +
-                "fecha_fallecimiento TEXT," +
-                "fecha_monto_promesa TEXT," +
-                "monto_promesa TEXT," +
-                "medio_pago TEXT," +
-                "fecha_pago TEXT," +
-                "pagara_requerido TEXT," +
-                "pago_realizado TEXT," +
-                "imprimir_recibo TEXT," +
-                "folio TEXT," +
-                "evidencia TEXT," +
-                "tipo_imagen TEXT," +
-                "gerente TEXT," +
-                "firma TEXT," +
-                "fecha_inicio TEXT," +
-                "fecha_fin TEXT," +
-                "fecha_envio TEXT," +
-                "estatus TEXT," +
-                "res_impresion TEXT DEFAULT '0',"+
-                "estatus_pago TEXT DEFAULT '',"+
-                "saldo_corte TEXT DEFAULT '',"+
-                "saldo_actual TEXT DEFAULT '',"+
-                "dias_atraso TEXT DEFAULT '0')";
-
         public static final String CREATE_TBL_PRESTAMOS_GPO_T = "CREATE TABLE " + TBL_PRESTAMOS_GPO_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_prestamo TEXT," +
@@ -1489,11 +1455,13 @@ public class SidertTables {
                 "estatus_pago TEXT DEFAULT '',"+
                 "saldo_corte TEXT DEFAULT '',"+
                 "saldo_actual TEXT DEFAULT '',"+
-                "dias_atraso TEXT DEFAULT '0')";
+                "dias_atraso TEXT DEFAULT '0',"+
+                "serial_id TEXT DEFAULT '0')";
 
-        public static final String CREATE_TBL_RESPUESTAS_GPO_V_T = "CREATE TABLE " + TBL_RESPUESTAS_GPO_V_T + " (" +
+        public static final String CREATE_TBL_RESPUESTAS_INTEGRANTE_T = "CREATE TABLE " + TBL_RESPUESTAS_INTEGRANTE_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_prestamo TEXT," +
+                "id_integrante TEXT," +
                 "latitud TEXT," +
                 "longitud TEXT," +
                 "contacto TEXT," +
@@ -1503,9 +1471,11 @@ public class SidertTables {
                 "resultado_gestion TEXT," +
                 "motivo_no_pago TEXT," +
                 "fecha_fallecimiento TEXT," +
+                "fecha_monto_promesa TEXT," +
+                "monto_promesa TEXT," +
                 "medio_pago TEXT," +
                 "fecha_pago TEXT," +
-                "detalle_ficha TEXT," +
+                "pagara_requerido TEXT," +
                 "pago_realizado TEXT," +
                 "imprimir_recibo TEXT," +
                 "folio TEXT," +
@@ -1517,12 +1487,30 @@ public class SidertTables {
                 "fecha_fin TEXT," +
                 "fecha_envio TEXT," +
                 "estatus TEXT," +
-                "res_impresion TEXT DEFAULT '0'," +
-                "arqueo_caja TEXT DEFAULT '0'," +
+                "res_impresion TEXT DEFAULT '0',"+
                 "estatus_pago TEXT DEFAULT '',"+
                 "saldo_corte TEXT DEFAULT '',"+
                 "saldo_actual TEXT DEFAULT '',"+
-                "dias_atraso TEXT DEFAULT '0')";
+                "dias_atraso TEXT DEFAULT '0',"+
+                "serial_id TEXT DEFAULT '0')";
+
+        public static final String CREATE_TBL_CIERRE_DIA = "CREATE TABLE " + TBL_CIERRE_DIA_T + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "asesor_id TEXT," +
+                "id_respuesta TEXT," +
+                "num_prestamo TEXT," +
+                "clave_cliente TEXT," +
+                "medio_pago TEXT," +
+                "monto_depositado TEXT," +
+                "evidencia TEXT," +
+                "tipo_cierre TEXT," +
+                "tipo_prestamo TEXT," +
+                "fecha_inicio TEXT," +
+                "fecha_fin TEXT," +
+                "fecha_envio TEXT," +
+                "estatus INTEGER," +
+                "nombre TEXT," +
+                "serial_id TEXT)";
 
         //================  TABLAS GENERALES  ===================================
 
@@ -1731,6 +1719,22 @@ public class SidertTables {
 
         static final String ADD_GEOLOCALIZADAS_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
                 " ADD COLUMN geolocalizadas" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_SERIAL_INDIVIDUAL = "ALTER TABLE " + TBL_RESPUESTAS_IND_V_T +
+                " ADD COLUMN serial_id" +
+                " TEXT DEFAULT '0'";
+
+        static final String ADD_SERIAL_INTEGRANTE = "ALTER TABLE " + TBL_RESPUESTAS_INTEGRANTE_T +
+                " ADD COLUMN serial_id" +
+                " TEXT DEFAULT '0'";
+
+        static final String ADD_NOMBRE_CIERRE_DIA = "ALTER TABLE " + TBL_CIERRE_DIA_T +
+                " ADD COLUMN nombre" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_SERIAL_ID_CIERRE_DIA = "ALTER TABLE " + TBL_CIERRE_DIA_T +
+                " ADD COLUMN serial_id" +
                 " TEXT DEFAULT ''";
 
     }

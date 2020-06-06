@@ -89,6 +89,7 @@ public class vencida_gpo_fragment extends Fragment {
                 item.setTipo(row.getString(9));
                 item.setMontoPrestamo(row.getString(10));
                 item.setMontoRequerido(row.getString(11));
+                item.setPrestamoId(row.getInt(1));
                 data.add(item);
                 row.moveToNext();
             }
@@ -97,7 +98,7 @@ public class vencida_gpo_fragment extends Fragment {
                 @Override
                 public void IntegranteOnClick(MIntegrante item) {
                     Intent view = new Intent(parent, VencidaIntegrante.class);
-                    view.putExtra(ID_PRESTAMO, String.valueOf(item.getGrupoId()));
+                    view.putExtra(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
                     view.putExtra(ID_INTEGRANTE, String.valueOf(item.getId()));
                     view.putExtra(NOMBRE, item.getNombre());
                     view.putExtra(NUMERO_DE_PRESTAMO, parent.num_prestamo);

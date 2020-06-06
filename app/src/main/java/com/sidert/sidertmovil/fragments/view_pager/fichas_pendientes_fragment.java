@@ -29,89 +29,44 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.MisCierresDeDia;
 import com.sidert.sidertmovil.activities.PrestamosClientes;
 import com.sidert.sidertmovil.activities.ResumenCartera;
-import com.sidert.sidertmovil.activities.ResumenGeo;
 import com.sidert.sidertmovil.adapters.adapter_fichas_pendientes;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_details_order;
 import com.sidert.sidertmovil.fragments.orders_fragment;
-import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MCarteraGnral;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.ADDRESS;
-import static com.sidert.sidertmovil.utils.Constants.ASSIGN_DATE;
-import static com.sidert.sidertmovil.utils.Constants.AVAL;
-import static com.sidert.sidertmovil.utils.Constants.CALLE;
-import static com.sidert.sidertmovil.utils.Constants.CARTERA_VENCIDA_GPO;
-import static com.sidert.sidertmovil.utils.Constants.CARTERA_VENCIDA_IND;
-import static com.sidert.sidertmovil.utils.Constants.CLAVE_GRUPO;
-import static com.sidert.sidertmovil.utils.Constants.CLIENTE;
-import static com.sidert.sidertmovil.utils.Constants.COBRANZA_GPO;
-import static com.sidert.sidertmovil.utils.Constants.COBRANZA_IND;
-import static com.sidert.sidertmovil.utils.Constants.COLONIA;
-import static com.sidert.sidertmovil.utils.Constants.DIA_SEMANA;
-import static com.sidert.sidertmovil.utils.Constants.DIRECCION;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.EXTERNAL_ID;
-import static com.sidert.sidertmovil.utils.Constants.FECHA_PAGO_ESTABLECIDA;
-import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
-import static com.sidert.sidertmovil.utils.Constants.GRUPAL;
-import static com.sidert.sidertmovil.utils.Constants.GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
-import static com.sidert.sidertmovil.utils.Constants.INDIVIDUAL;
-import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
-import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
-import static com.sidert.sidertmovil.utils.Constants.NUMERO_CLIENTE;
-import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
-import static com.sidert.sidertmovil.utils.Constants.PRESIDENTA;
-import static com.sidert.sidertmovil.utils.Constants.PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_GPO;
-import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
-import static com.sidert.sidertmovil.utils.Constants.REPORTE_ANALITICO_OMEGA;
-import static com.sidert.sidertmovil.utils.Constants.SECRETARIA;
-import static com.sidert.sidertmovil.utils.Constants.TABLA_PAGOS_CLIENTE;
-import static com.sidert.sidertmovil.utils.Constants.TABLA_PAGOS_GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TESORERA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
-import static com.sidert.sidertmovil.utils.Constants.TYPE;
-
 
 public class fichas_pendientes_fragment extends Fragment{
 
@@ -129,6 +84,7 @@ public class fichas_pendientes_fragment extends Fragment{
 
     private TextView tvNoInfo;
     public TextView tvContFiltros;
+    public TextView tvContCierre;
     private AutoCompleteTextView aetNombre;
     private AutoCompleteTextView aetDia;
     private AutoCompleteTextView aetColonia;
@@ -150,6 +106,7 @@ public class fichas_pendientes_fragment extends Fragment{
 
     List<String> asesor;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fichas_pendientes, container,false);
@@ -170,6 +127,8 @@ public class fichas_pendientes_fragment extends Fragment{
         rvFichas.setHasFixedSize(false);
 
         _m_carteraGral = new ArrayList<>();
+
+        GetAsesores();
 
         return view;
     }
@@ -219,25 +178,21 @@ public class fichas_pendientes_fragment extends Fragment{
         //GetCartera("");
 
         rvFichas.setAdapter(adapter);
+
     }
 
     private boolean GetCartera(String where){
         Cursor row;
         _m_carteraGral = new ArrayList<>();
 
-        String query = "";
-        //Log.e("queryFichas", query);
-        if (ENVIROMENT)
-            query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia, COALESCE(pi.tipo_cartera,'NO ENCONTRADO'), COALESCE(ri.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND + " AS ci LEFT JOIN " + TBL_PRESTAMOS_IND + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND +" AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id is null UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, COALESCE(pg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rg.estatus, -1) AS parcial FROM "+TBL_CARTERA_GPO +" AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO +" AS rg ON pg.id_prestamo = rg.id_prestamo WHERE rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER by rg2._id DESC LIMIT 1) OR rg._id IS null) AS cartera "+where;
-        else
-            query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia, COALESCE(pi.tipo_cartera,'NO ENCONTRADO'), COALESCE(ri.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T +" AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id is null UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, COALESCE(pg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rg.estatus, -1) AS parcial FROM "+TBL_CARTERA_GPO_T +" AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T +" AS rg ON pg.id_prestamo = rg.id_prestamo WHERE rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER by rg2._id DESC LIMIT 1) OR rg._id IS null) AS cartera "+where;
+        String query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia, COALESCE(pi.tipo_cartera,'NO ENCONTRADO'), COALESCE(ri.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T +" AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id is null AND pi.tipo_cartera IN ('VIGENTE', 'COBRANZA') UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, COALESCE(pg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rg.estatus, -1) AS parcial FROM "+TBL_CARTERA_GPO_T +" AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T +" AS rg ON pg.id_prestamo = rg.id_prestamo WHERE rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER by rg2._id DESC LIMIT 1) OR rg._id IS null AND pg.tipo_cartera IN ('VIGENTE', 'COBRANZA') UNION SELECT cvi.id_cartera, cvi.nombre, cvi.direccion, cvi.is_ruta, cvi.ruta_obligado, cvi.dia, '' as tesorera, cvi.asesor_nombre, 'INDIVIDUAL' AS tipo, cvi.colonia, COALESCE(pvi.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvi.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND_T + " AS cvi LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON cvi.id_cartera = pvi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_V_T + " AS rvi ON pvi.id_prestamo = rvi.id_prestamo WHERE rvi._id = (SELECT rvi2._id FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi2 WHERE rvi2.id_prestamo = pvi.id_prestamo ORDER BY rvi2._id DESC LIMIT 1) OR rvi._id is null AND pvi.tipo_cartera IN ('VENCIDA') UNION SELECT cvg.id_cartera,cvg.nombre, cvg.direccion,cvg.is_ruta, cvg.ruta_obligado,cvg.dia,cvg.tesorera,cvg.asesor_nombre,'GRUPAL' AS tipo, cvg.colonia, COALESCE(pvg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvg.estatus, -1) AS parcial FROM " + TBL_CARTERA_GPO_T + " AS cvg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON cvg.id_cartera = pvg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_INTEGRANTE_T +" AS rvg ON pvg.id_prestamo = rvg.id_prestamo WHERE rvg._id = (SELECT rvg2._id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg2 WHERE rvg2.id_prestamo = pvg.id_prestamo ORDER by rvg2._id DESC LIMIT 1) OR rvg._id IS null AND pvg.tipo_cartera IN ('VENCIDA')) AS cartera "+where;
 
-        Log.e("queryXXX", query);
-        row = dBhelper.executeQuery(query);
+        row = db.rawQuery(query, null);
 
         parent.SetUpBagde(0, row.getCount());
         asesor = new ArrayList<>();
         asesor.add("");
+
         if (row.getCount() > 0){
             row.moveToFirst();
             dataNombre = new String[row.getCount()];
@@ -267,10 +222,10 @@ public class fichas_pendientes_fragment extends Fragment{
                 row.moveToNext();
             }
 
-            dataNombre = RemoverRepetidos(nombre);
-            dataColonia = RemoverRepetidos(colonia);
-            dataAsesor = RemoverRepetidos(asesor);
-            dataDia = RemoverRepetidos(dia);
+            dataNombre = Miscellaneous.RemoverRepetidos(nombre);
+            dataColonia = Miscellaneous.RemoverRepetidos(colonia);
+            dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
+            dataDia = Miscellaneous.RemoverRepetidos(dia);
 
             adapterNombre = new ArrayAdapter<String>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
@@ -289,6 +244,21 @@ public class fichas_pendientes_fragment extends Fragment{
             dataAsesor[0] = "";
             adapterAsesor = new ArrayAdapter<String>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+
+            dataNombre = new String[1];
+            dataNombre[0] = "";
+            adapterNombre = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
+
+            dataDia = new String[1];
+            dataDia[0] = "";
+            adapterDia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataDia);
+
+            dataColonia = new String[1];
+            dataColonia[0] = "";
+            adapterColonia = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
         }
         row.close();
 
@@ -310,6 +280,10 @@ public class fichas_pendientes_fragment extends Fragment{
         menu.clear();
         onResume();
         inflater.inflate(R.menu.menu_cartera, menu);
+
+        if (session.getUser().get(5).contains("ROLE_GESTOR"))
+            menu.getItem(0).setVisible(true);
+
         final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
         View actionView = MenuItemCompat.getActionView(menuItem);
         tvContFiltros = actionView.findViewById(R.id.filtro_bagde);
@@ -319,6 +293,17 @@ public class fichas_pendientes_fragment extends Fragment{
                 onOptionsItemSelected(menuItem);
             }
         });
+
+        final MenuItem menuItemCierre = menu.findItem(R.id.nvCierreDia);
+        View actionViewCierre = MenuItemCompat.getActionView(menuItemCierre);
+        tvContCierre = actionViewCierre.findViewById(R.id.filtro_bagde);
+        actionViewCierre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItemCierre);
+            }
+        });
+
         setupBadge();
     }
 
@@ -329,7 +314,6 @@ public class fichas_pendientes_fragment extends Fragment{
                 Filtros();
                 return true;
             case R.id.nvInfo:
-                //Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
                 Intent i_resumen = new Intent(boostrap, ResumenCartera.class);
                 startActivity(i_resumen);
                 return true;
@@ -350,6 +334,10 @@ public class fichas_pendientes_fragment extends Fragment{
                     error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     error_network.show();
                 }
+                return true;
+            case R.id.nvCierreDia:
+                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+                startActivity(i_cierre_dia);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -473,6 +461,10 @@ public class fichas_pendientes_fragment extends Fragment{
         cbInd       = filtros_dg.getHolderView().findViewById(R.id.cbInd);
         cbGpo       = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
 
+        Log.e("Adater", dataNombre.length + " xxx");
+        Log.e("Adater", dataDia.length + " xxx");
+        Log.e("Adater", dataColonia.length + " xxx");
+        Log.e("Adater", dataAsesor.length + " xxx");
         try {
             aetNombre.setAdapter(adapterNombre);
             aetDia.setAdapter(adapterDia);
@@ -507,6 +499,14 @@ public class fichas_pendientes_fragment extends Fragment{
             }
         });
 
+        Log.e("filtros", session.getFiltrosCartera().get(0)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(1)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(2)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(3)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(4)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(5)+" 0");
+        Log.e("filtros", session.getFiltrosCartera().get(6)+" 0");
+
         try {
             if (!session.getFiltrosCartera().get(2).isEmpty())
                 aetNombre.setText(session.getFiltrosCartera().get(2));
@@ -535,31 +535,41 @@ public class fichas_pendientes_fragment extends Fragment{
             tvContFiltros.setVisibility(View.VISIBLE);
         }
 
-    }
-
-    private String[] RemoverRepetidos(List<String> nombres){
-        String[] data;
-        List<String> nombreUnico = new ArrayList<>();
-
-        for (int i = 0; i < nombres.size(); i++){
-            String nombre = nombres.get(i);
-            if (nombreUnico.indexOf(nombre) < 0) {
-                nombreUnico.add(nombre);
+        if (tvContCierre != null){
+            Cursor row = dBhelper.getRecords(TBL_CIERRE_DIA_T, " WHERE estatus = 0", "", null);
+            if (row.getCount() > 0){
+                Log.e("Cierre", row.getCount()+" zzz");
+                tvContCierre.setText(String.valueOf(row.getCount()));
+                tvContCierre.setVisibility(View.VISIBLE);
             }
+
         }
 
-        data = new String[nombreUnico.size()];
-        for (int j = 0; j < nombreUnico.size(); j++){
-            data[j] = nombreUnico.get(j);
-        }
-
-        return data;
     }
+
+    private void GetAsesores (){
+        String sql = "SELECT * FROM (SELECT DISTINCT(ci.asesor_nombre) FROM "+TBL_CARTERA_IND_T + " AS ci UNION SELECT DISTINCT(cg.asesor_nombre) FROM " + TBL_CARTERA_GPO_T + " AS cg) AS asesores ORDER BY asesor_nombre ASC";
+        Cursor row = db.rawQuery(sql, null);
+        asesor = new ArrayList<>();
+        asesor.add("");
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            dataAsesor = new String[row.getCount()];
+            for(int i = 0; i < row.getCount(); i++){
+                asesor.add(row.getString(0));
+                row.moveToNext();
+            }
+            dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
+
+            adapterAsesor = new ArrayAdapter<String>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+        }
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("-----------","Resumen pendientes");
         setupBadge();
         String where = "";
         if (!session.getFiltrosCartera().get(2).isEmpty())
@@ -573,8 +583,8 @@ public class fichas_pendientes_fragment extends Fragment{
             where += " AND colonia LIKE '%" + session.getFiltrosCartera().get(4) + "%'";
         }
 
-        if (!session.getFiltrosCartera().get(5).isEmpty() && Integer.parseInt(session.getFiltrosCartera().get(5)) > 0) {
-            where += " AND asesor_nombre LIKE '%" + session.getFiltrosCartera().get(5) + "%'";
+        if (!session.getFiltrosCartera().get(5).isEmpty() && Integer.parseInt(session.getFiltrosCartera().get(5)) > 0 && asesor.size() > 0) {
+            where += " AND asesor_nombre LIKE '%" + asesor.get(Integer.parseInt(session.getFiltrosCartera().get(5))) + "%'";
         }
 
         if (session.getFiltrosCartera().get(0).equals("1") && session.getFiltrosCartera().get(1).equals("1")){

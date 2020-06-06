@@ -13,9 +13,11 @@ public class MIntegrante implements Serializable {
     @SerializedName("num_solicitud")
     @Expose
     private Integer numSolicitud;
+
     @SerializedName("prestamo_id")
     @Expose
     private Integer prestamoId;
+
     @SerializedName("grupo_id")
     @Expose
     private Integer grupoId;

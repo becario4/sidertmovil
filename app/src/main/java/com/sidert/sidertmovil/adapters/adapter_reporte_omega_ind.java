@@ -38,6 +38,7 @@ public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_repo
         holder.tvFechaPago.setText(item.getFechaPago());
         holder.tvEstatus.setText(item.getPagado());
         holder.tvDays.setText(String.valueOf(item.getDiasAtraso()));
+
     }
 
     @Override
@@ -51,6 +52,7 @@ public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_repo
         private TextView tvEstatus;
         private TextView tvNumber;
         private TextView tvDays;
+
         public ViewHolder(View itemView) {
             super(itemView);
             tvFechaAmortizacion = itemView.findViewById(R.id.tvFechaAmortizacion);
@@ -58,6 +60,7 @@ public class adapter_reporte_omega_ind extends RecyclerView.Adapter<adapter_repo
             tvEstatus           = itemView.findViewById(R.id.tvEstatus);
             tvNumber            = itemView.findViewById(R.id.tvNumber);
             tvDays              = itemView.findViewById(R.id.tvDays);
+
         }
     }
 }

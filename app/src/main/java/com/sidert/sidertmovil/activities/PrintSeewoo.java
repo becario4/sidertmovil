@@ -67,6 +67,8 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 
 public class PrintSeewoo extends AppCompatActivity {
 
@@ -150,6 +152,7 @@ public class PrintSeewoo extends AppCompatActivity {
 
         item = (MImpresion) getIntent().getSerializableExtra("order");
 
+        Log.e("ResImpresion", item.getResultPrint()+" as");
         if (item.getResultPrint() == 0){
             if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
                 tvSignature.setText("Firma Asesor:");
@@ -182,6 +185,7 @@ public class PrintSeewoo extends AppCompatActivity {
             else
                 row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
 
+            Log.e("CountRecibos", "XXX: "+row.getCount());
             if (row.getCount() > 0){
                 row.moveToFirst();
                 mReimpresion.setIdPrestamo(item.getIdPrestamo());
@@ -445,10 +449,21 @@ public class PrintSeewoo extends AppCompatActivity {
                             db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
                     }
                     else {
-                        if (item.getTipoGestion().equals("INDIVIDUAL"))
-                            db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                        else
-                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        if (item.getTipoGestion().equals("INDIVIDUAL")) {
+                            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
+                                db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                            else
+                                db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        }
+                        else {
+                            Log.e("TipoPres", item.getTipoPrestamo());
+                            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA")) {
+                                Log.e("ACtualiza","Respuesta");
+                                db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                            }
+                            else
+                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        }
                     }
                     btnPrintOriginal.setVisibility(View.GONE);
                     btnPrintCopy.setVisibility(View.VISIBLE);
@@ -465,10 +480,18 @@ public class PrintSeewoo extends AppCompatActivity {
                             db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
                     }
                     else {
-                        if (item.getTipoGestion().equals("INDIVIDUAL"))
-                            db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                        else
-                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        if (item.getTipoGestion().equals("INDIVIDUAL")) {
+                            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
+                                db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                            else
+                                db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        }
+                        else {
+                            if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
+                                db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                            else
+                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
+                        }
                     }
 
                     btnPrintCopy.setVisibility(View.GONE);

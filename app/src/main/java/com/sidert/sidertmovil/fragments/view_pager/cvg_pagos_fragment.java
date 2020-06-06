@@ -11,11 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CarteraVencidaGrupal;
-import com.sidert.sidertmovil.activities.RecuperacionGrupal;
 import com.sidert.sidertmovil.activities.VencidaGrupal;
 import com.sidert.sidertmovil.adapters.adapter_pagos_gpo;
 import com.sidert.sidertmovil.adapters.adapter_reporte_omega_gpo;

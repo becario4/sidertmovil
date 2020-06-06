@@ -26,6 +26,10 @@ import com.sidert.sidertmovil.utils.BottomNavigationViewHelper;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
@@ -38,8 +42,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_IND;
@@ -105,14 +107,12 @@ public class VencidaIndividual extends AppCompatActivity {
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
 
         Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_RESPUESTAS_IND, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
+
+        row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
 
         row.moveToLast();
         if (row.getCount() > 0){
-            if (row.getInt(25) == 0){
+            if (row.getInt(26) == 0){
                 id_respuesta = row.getString(0);
                 latitud = row.getString(2);
                 longitud = row.getString(3);
@@ -151,7 +151,7 @@ public class VencidaIndividual extends AppCompatActivity {
         }
 
 
-        /*boolean is_recuperacion = false;
+        boolean is_recuperacion = false;
 
         try {
             JSONArray modulos = new JSONArray(session.getUser().get(8));
@@ -179,7 +179,7 @@ public class VencidaIndividual extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
 
         nvMenu.setSelectedItemId(R.id.nvGestion);
     }

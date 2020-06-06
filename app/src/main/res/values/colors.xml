@@ -10,6 +10,7 @@
     <color name="gray_light">#ECECEC</color>
     <!--<color name="blue_sidert">#3C88C4</color>-->
     <color name="blue_sidert">#1576ba</color>
+    <color name="blue_sidert_transparent">#C51576BA</color>
     <color name="dark">#E53C3E40</color>
     <color name="blue_sidert_middle">#267FB9</color>
     <color name="blue_sidert_push">#3896E0</color>
@@ -17,6 +18,7 @@
     <color name="transparente">#00e1ce2a</color>
     <color name="blackopacity">#C1918F8F</color>
     <color name="bkg_transparent">#00FFFFFF</color>
+    <color name="morado">#9070CB</color>
     <color name="red">#ffff0000</color>
     <color name="black">#000000</color>
     <color name="red_push">#E94747</color>

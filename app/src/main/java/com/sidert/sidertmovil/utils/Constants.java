@@ -13,7 +13,7 @@ public class Constants {
     public final static String CONTROLLER_SOLICITUDES = "solicitudes";
     public final static String CONTROLLER_MOVIL       = "movil";
     public final static String CONTROLLER_DENUNCIAS   = "denuncias";
-    public final static String CONTROLLER_IMPRESIONES = "impresiones";
+    public final static String CONTROLLER_API         = "api";
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -256,6 +256,7 @@ public class Constants {
     public final static int REQUEST_CODE_FOTO_CURP                 = 768;
     public final static int REQUEST_CODE_FOTO_COMPROBATE           = 715;
     public final static int REQUEST_CODE_MIEMBRO_GEO               = 668;
+    public final static int REQUEST_CODE_CAMERA_CIERRE_DIA         = 416;
 
     public final static int CANCEL_TRACKER_ID                      = 300;
 
@@ -370,6 +371,8 @@ public class Constants {
     public final static String TBL_RESPUESTAS_GPO_V_T       = "respuestas_gpo_v_t";
     public final static String TBL_RESPUESTAS_GPO           = "respuestas_gpo";
 
+    public final static String TBL_CIERRE_DIA_T             = "tbl_cierre_dia_t";
+
     public final static String TBL_IMPRESIONES_VIGENTE_T    = "tbl_impresiones_vigente_t";
     public final static String TBL_IMPRESIONES_VIGENTE      = "tbl_impresiones_vigente";
     public final static String TBL_IMPRESIONES_VENCIDA_T    = "tbl_impresiones_vencida_t";
@@ -440,6 +443,8 @@ public class Constants {
     public final static String EDITABLE                 = "Editable";
     public final static String TIPO                     = "Tipo";
     public final static String ID_PRESTAMO              = "id_prestamo";
+    public final static String TIPO_PRESTAMO            = "tipo_prestamo";
+    public final static String TIPO_GESTION             = "tipo_gestion";
     public final static String ID_GESTION               = "id_gestion";
     public final static String TOTAL                    = "total";
     public final static String TBL_NAME                 = "tbl_name";

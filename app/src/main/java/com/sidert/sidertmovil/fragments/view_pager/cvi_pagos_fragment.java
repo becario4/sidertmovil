@@ -11,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CarteraVencidaIndividual;
 import com.sidert.sidertmovil.activities.VencidaIndividual;
 import com.sidert.sidertmovil.adapters.adapter_pagos_ind;
 import com.sidert.sidertmovil.adapters.adapter_reporte_omega_ind;

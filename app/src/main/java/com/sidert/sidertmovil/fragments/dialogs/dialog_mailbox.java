@@ -223,7 +223,7 @@ public class dialog_mailbox extends DialogFragment {
                 e.printStackTrace();
             }
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_DENUNCIAS).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_DENUNCIAS, ctx).create(ManagerInterface.class);
 
             MailBoxPLD obj = new MailBoxPLD(encode,
                     sdf.format(calendar.getTime()),

@@ -12,18 +12,28 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.Login;
+import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.Validator;
 
 public class dialog_contrasena_root extends DialogFragment {
 
     private Context ctx;
 
-    private EditText etPassword;
+    private EditText etKeyMaster;
     private Button btnAceptar;
-    private Button btnCancelar;
+
+    private EditText etDominio;
+    private EditText etPuerto;
+    private Button btnGuardar;
+
+    private ImageView ivClose;
+
+    SessionManager session;
 
 
     @Override
@@ -32,9 +42,16 @@ public class dialog_contrasena_root extends DialogFragment {
 
         ctx = getContext();
 
-        etPassword = v.findViewById(R.id.etPassword);
+        session = new SessionManager(ctx);
+
+        etKeyMaster = v.findViewById(R.id.etKeyMaster);
         btnAceptar = v.findViewById(R.id.btnAceptar);
-        btnCancelar = v.findViewById(R.id.btnCancelar);
+
+        etDominio = v.findViewById(R.id.etDominio);
+        etPuerto = v.findViewById(R.id.etPuerto);
+        btnGuardar = v.findViewById(R.id.btnGuardar);
+
+        ivClose = v.findViewById(R.id.ivClose);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -47,13 +64,14 @@ public class dialog_contrasena_root extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         btnAceptar.setOnClickListener(btnAceptar_OnClick);
-        btnCancelar.setOnClickListener(btnCancelar_OnClick);
+        btnGuardar.setOnClickListener(btnGuardar_OnClick);
+        ivClose.setOnClickListener(ivClose_OnClick);
     }
 
     private View.OnClickListener btnAceptar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (etPassword.getText().toString().trim().equals("Qvv123")){
+            if (etKeyMaster.getText().toString().trim().equals("Qvv123")){
                 Login loginActivity = (Login) getActivity();
                 loginActivity.SetPass(true);
                 dismiss();
@@ -63,7 +81,21 @@ public class dialog_contrasena_root extends DialogFragment {
         }
     };
 
-    private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
+    private View.OnClickListener btnGuardar_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Validator validator = new Validator();
+            if (!validator.validate(etDominio, new String[]{validator.REQUIRED}) &&
+                !validator.validate(etPuerto, new String[]{validator.REQUIRED})){
+                session.setDominio(etDominio.getText().toString().trim(), etPuerto.getText().toString().trim());
+                Login loginActivity = (Login) getActivity();
+                loginActivity.SetPass(false);
+                dismiss();
+            }
+        }
+    };
+
+    private View.OnClickListener ivClose_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Login loginActivity = (Login) getActivity();

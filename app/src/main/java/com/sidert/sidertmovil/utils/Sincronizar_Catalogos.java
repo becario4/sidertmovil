@@ -42,7 +42,7 @@ public class Sincronizar_Catalogos {
         pDialog.show();
         SessionManager session = new SessionManager(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloEstados>> call = api.getEstados("Bearer "+ session.getUser().get(7));
 
@@ -75,7 +75,7 @@ public class Sincronizar_Catalogos {
         pDialog.show();
         final SessionManager session = new SessionManager(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloMunicipio>> call = api.getMunicipios("Bearer "+ session.getUser().get(7));
 
@@ -106,7 +106,7 @@ public class Sincronizar_Catalogos {
         SessionManager session = new SessionManager(ctx);
 
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloColonia>> call = api.getColonias("Bearer "+ session.getUser().get(7));
 
@@ -138,7 +138,7 @@ public class Sincronizar_Catalogos {
         pDialog.show();
         SessionManager session = new SessionManager(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloSectores>> call = api.getSectores("Bearer "+ session.getUser().get(7));
 
@@ -171,7 +171,7 @@ public class Sincronizar_Catalogos {
         pDialog.show();
         SessionManager session = new SessionManager(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloOcupaciones>> call = api.getOcupaciones("Bearer "+ session.getUser().get(7));
 
@@ -202,7 +202,7 @@ public class Sincronizar_Catalogos {
         pDialog.show();
         SessionManager session = new SessionManager(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloIdentificacion>> call = api.getIdentificaciones("Bearer "+ session.getUser().get(7));
 

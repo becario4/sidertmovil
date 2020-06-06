@@ -60,8 +60,8 @@ public class adapter_ficha_ruta extends RecyclerView.Adapter<adapter_ficha_ruta.
         }
 
         holder.tvDiaSemana.setText(item.getDiaSemana());
-        holder.tvNombre.setText(item.getNombre());
-        holder.tvDireccion.setText(item.getDireccion());
+        holder.tvNombre.setText(item.getNombre().toUpperCase());
+        holder.tvDireccion.setText(item.getDireccion().toUpperCase());
 
         holder.cbRuta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

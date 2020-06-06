@@ -11,6 +11,8 @@ public class SessionManager {
 
     private final String APP_PREF       = "com.sidert.sidertmovil";
     private final String MAILBOX        = "mailbox";
+    private final String DOMINIO        = "dominio";
+    private final String PUERTO         = "puerto";
     private final String DATE           = "date";
     private final String ID_CARTERA     = "id_cartera";
     private final String SERIE_ID       = "serie_id";
@@ -55,6 +57,12 @@ public class SessionManager {
     private final String ESTATUS_FICHA_PEN_C = "estatus_ficha_pen_c";
     private final String CONTADOR_CARTERA_C = "contador_cartera_c";
     private final String MODULOS            = "modulos";
+
+
+    private final String NOMBRE_CIERRE          = "nombre_cierre";
+    private final String ESTATUS_CONTE_CIERRE   = "estatus_conte_cierre";
+    private final String ESTATUS_PENDI_CIERRE   = "estatus_pendi_cierre";
+    private final String CONTADOR_CIERRE        = "contador_cierre";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -114,6 +122,45 @@ public class SessionManager {
         return filtros;
     }
 
+    //==================== Dominio Dinamico ========================================================
+    public void setDominio (String dominio, String puerto){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(DOMINIO, dominio);
+        editor.putString(PUERTO, puerto);
+        editor.commit();
+    }
+
+    public ArrayList<String> getDominio (){
+        ArrayList<String> baseUrl = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        baseUrl.add(preferences.getString(DOMINIO, "http://sidert.ddns.net:"));
+        baseUrl.add(preferences.getString(PUERTO,"83"));
+
+        return baseUrl;
+    }
+
+    //==================== Filtros de Cierre de Dia ================================================
+    public void setFiltrosCierre (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(ESTATUS_CONTE_CIERRE, filtros.get(ESTATUS_CONTE_CIERRE));
+        editor.putString(ESTATUS_PENDI_CIERRE, filtros.get(ESTATUS_PENDI_CIERRE));
+        editor.putString(NOMBRE_CIERRE, filtros.get(NOMBRE_CIERRE));
+        editor.putString(CONTADOR_CIERRE, filtros.get(CONTADOR_CIERRE));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCierre (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(ESTATUS_CONTE_CIERRE, "0"));
+        filtros.add(preferences.getString(ESTATUS_PENDI_CIERRE, "0"));
+        filtros.add(preferences.getString(NOMBRE_CIERRE,""));
+        filtros.add(preferences.getString(CONTADOR_CIERRE, "0"));
+        return filtros;
+    }
+
     //==================== Filtros de Cartera ======================================================
     public void setFiltrosCartera (HashMap<String, String> filtros){
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
@@ -136,7 +183,7 @@ public class SessionManager {
         filtros.add(preferences.getString(NOMBRE_CARTERA_P,""));
         filtros.add(preferences.getString(DIA_SEMANA_P, ""));
         filtros.add(preferences.getString(COLONIA_CARTERA_P, ""));
-        filtros.add(preferences.getString(ASESOR_CARTERA_P, ""));
+        filtros.add(preferences.getString(ASESOR_CARTERA_P, "0"));
         filtros.add(preferences.getString(CONTADOR_CARTERA_P, "0"));
         return filtros;
     }
@@ -162,7 +209,7 @@ public class SessionManager {
         filtros.add(preferences.getString(NOMBRE_CARTERA_R,""));
         filtros.add(preferences.getString(DIA_SEMANA_R, ""));
         filtros.add(preferences.getString(COLONIA_CARTERA_R, ""));
-        filtros.add(preferences.getString(ASESOR_CARTERA_R, ""));
+        filtros.add(preferences.getString(ASESOR_CARTERA_R, "0"));
         filtros.add(preferences.getString(CONTADOR_CARTERA_R, "0"));
         return filtros;
     }
@@ -222,6 +269,22 @@ public class SessionManager {
         user.add(preferences.getString(MODULOS, null));                        //8
         user.add(preferences.getString(ID_CARTERA, null));                     //9
         return user;
+    }
+
+    public void deleteUser (){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.remove(SERIE_ID);
+        editor.remove(NOMBRE);
+        editor.remove(AP_PATERNO);
+        editor.remove(AP_MATERNO);
+        editor.remove(USER_NAME);
+        editor.remove(TYPE_USER);
+        editor.remove(FLAG);
+        editor.remove(ACCESS_TOKEN);
+        editor.remove(MODULOS);
+        editor.remove(ID_CARTERA);
+        editor.apply();
     }
 
     // ===================  Count MailBox ==========================================================

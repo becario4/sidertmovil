@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/nvCierreDia"
+        android:visible="false"
+        android:title="Cierre de Día"
+        android:icon="@drawable/ic_cierre_blanco"
+        app:showAsAction="always"
+        app:actionLayout="@layout/custom_badge_cierre_dia"/>
+
+    <item
         android:id="@+id/nvFiltro"
         android:title="@string/filtros"
         android:icon="@drawable/ic_filtro"

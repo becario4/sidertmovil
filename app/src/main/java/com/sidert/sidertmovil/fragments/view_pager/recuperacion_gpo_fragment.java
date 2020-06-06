@@ -163,11 +163,13 @@ import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
 import static com.sidert.sidertmovil.utils.Constants.SAVE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
@@ -1924,7 +1926,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 row.moveToFirst();
 
                 Log.e("res_impresion", row.getString(26));
-                res_impresion = row.getInt(26);
+                res_impresion = Integer.parseInt(row.getString(26));
 
                 if (!row.getString(2).isEmpty() && !row.getString(3).isEmpty()){
                     tvmapa.setError(null);
@@ -2153,7 +2155,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                             break;
                         case 2:
                             SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
-                            Log.e("aclaracion",row.getString(5));
                             if (!row.getString(5).isEmpty()){//MOTIVO ACLARACION
                                 tvMotivoAclaracion.setText(row.getString(5));
                                 tvMotivoAclaracion.setVisibility(View.VISIBLE);
@@ -2441,6 +2442,65 @@ public class recuperacion_gpo_fragment extends Fragment {
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
+
+                            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                                    Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
+
+                                    if (abono > pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = abono - pendiente;
+                                    }
+                                    else if (abono == pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = 0.0;
+                                    }
+                                    else if (abono > 0 && abono < pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("pagado", "PARCIAL");
+                                        abono = 0.0;
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+
+                                    }
+                                    else
+                                        break;
+
+                                    row_amortiz.moveToNext();
+                                }
+
+                            }
+                            row_amortiz.close();
+
+                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                    ContentValues c = new ContentValues();
+                                    c.put("pagada", 1);
+                                    db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{parent.id_prestamo});
+                                }
+
+                            }
+                            row_amortiz.close();
+
+
                             int weekFechaEst = 0;
                             Calendar calFechaEst = Calendar.getInstance();
 
@@ -2706,7 +2766,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                                                 b.putBoolean(TERMINADO, true);
                                             } else { //No ha capturado la firma
                                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                Log.e("aaaaaaaaaa","aaaaaaaaaaaaaaaaa");
                                             }
                                         } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
                                             b.putString(GERENTE, tvGerente.getText().toString());
@@ -2812,14 +2871,10 @@ public class recuperacion_gpo_fragment extends Fragment {
         else //No ha capturado la ubicación
             Toast.makeText(ctx,"Falta obtener la ubicación de la gestión", Toast.LENGTH_SHORT).show();
 
-        if (!b.isEmpty() && b.containsKey(TERMINADO)){
-            Log.e("paramsX", b.toString()+" tttttttttttttttttttttt");
+        if (!b.isEmpty() && b.containsKey(TERMINADO)) {
             Intent i_preview = new Intent(parent, VistaPreviaGestion.class);
-            i_preview.putExtra(PARAMS,b);
-            startActivityForResult(i_preview,REQUEST_CODE_PREVIEW);
-        }
-        else{
-            //Toast.makeText(ctx, "No contiene el parámetro TERMINADO", Toast.LENGTH_SHORT).show();
+            i_preview.putExtra(PARAMS, b);
+            startActivityForResult(i_preview, REQUEST_CODE_PREVIEW);
         }
 
     }

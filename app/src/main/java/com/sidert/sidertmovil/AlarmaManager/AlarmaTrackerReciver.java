@@ -15,12 +15,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NetworkStatus;
@@ -32,6 +28,9 @@ import java.util.HashMap;
 
 import static android.content.Context.ALARM_SERVICE;
 import static com.sidert.sidertmovil.utils.Constants.CANCEL_TRACKER_ID;
+import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
+import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class AlarmaTrackerReciver extends BroadcastReceiver {
@@ -61,6 +60,7 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                 PendingIntent sender = PendingIntent.getBroadcast(ctx, CANCEL_TRACKER_ID, intento, 0);
                 AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
                 alarmManager.cancel(sender);
+                //session.deleteUser();
                 session.setUser(session.getUser().get(0),
                         session.getUser().get(1),
                         session.getUser().get(2),
@@ -80,10 +80,11 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                     params_sincro.put(0, session.getUser().get(0));
                     params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
-                    if (Constants.ENVIROMENT)
-                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
+                    if (ENVIROMENT)
+                        dBhelper.saveSincronizado(db, SINCRONIZADO, params_sincro);
                     else
-                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+                        dBhelper.saveSincronizado(db, SINCRONIZADO_T, params_sincro);
+                        dBhelper.saveSincronizado(db, SINCRONIZADO_T, params_sincro);
 
                     locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
                     final Handler myHandler = new Handler();
@@ -103,10 +104,7 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
 
                             dBhelper.saveTrackerAsesor(db, params);
 
-                            Log.e("Latitud", latitud);
-                            Log.e("Longitud", longitud);
-                            Log.e("Timestamp", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                            Log.e("-", "--------------------------------------------");
+
                             myHandler.removeCallbacksAndMessages(null);
 
                         }
@@ -141,6 +139,8 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                         ss.SendImpresionesVi(ctx, false);
                         ss.SendReimpresionesVi(ctx, false);
                         ss.SendTracker(ctx, false);
+                        ss.SaveCierreDia(ctx, false);
+                        ss.SaveCierreDia(ctx, false);
                     }
                     else
                         Log.e("JOB", "Sin conexion a internet Geolocalizacion");

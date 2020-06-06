@@ -1,12 +1,10 @@
 package com.sidert.sidertmovil.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.database.CursorWindowCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,24 +22,16 @@ import com.sidert.sidertmovil.adapters.adapter_prestamos;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MPrestamo;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.EXTERNAL_ID;
-import static com.sidert.sidertmovil.utils.Constants.FECHA_CREDITO_OTORGADO;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
-import static com.sidert.sidertmovil.utils.Constants.MONTO_PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
@@ -53,12 +43,13 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
-import static com.sidert.sidertmovil.utils.Constants.camara;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
 
 public class PrestamosClientes extends AppCompatActivity {
 
@@ -97,23 +88,13 @@ public class PrestamosClientes extends AppCompatActivity {
 
         id_carteta = Integer.parseInt(getIntent().getStringExtra(ID_CARTERA));
 
-        switch (getIntent().getStringExtra(TIPO)){
-            case "INDIVIDUAL":
-                tipo = 1;
-                GetPrestamosInd(getIntent().getStringExtra(ID_CARTERA));
-                break;
-            case "GRUPAL":
-                tipo = 2;
-                GetPrestamosGpo(getIntent().getStringExtra(ID_CARTERA));
-                break;
-        }
-
     }
 
     private void GetPrestamosInd (String id_cliente){
 
         String nombre = "";
         Cursor row;
+
         if (ENVIROMENT)
             row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_IND+" AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?", "", new String[]{id_cliente});
         else
@@ -122,8 +103,6 @@ public class PrestamosClientes extends AppCompatActivity {
         ArrayList<MPrestamo> mPrestamos = new ArrayList<>();
         if (row.getCount() > 0) {
             row.moveToFirst();
-
-            Log.e("_idPrestamo",row.getString(1));
 
             for (int i = 0; i < row.getCount(); i++) {
                 MPrestamo item = new MPrestamo();
@@ -136,6 +115,7 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setIdPrestamo(row.getString(4));
                 item.setEstatus(row.getString(14));
                 item.setTipo(1);
+                item.setTipoPrestamo(row.getString(13));
 
                 Cursor rowSaldoCorte;
                 if (ENVIROMENT)
@@ -158,7 +138,10 @@ public class PrestamosClientes extends AppCompatActivity {
             @Override
             public void PrestamoClick(MPrestamo item) {
                 Intent intent_order;
-                intent_order = new Intent(ctx, RecuperacionIndividual.class);
+                if (item.getTipoPrestamo().equals("VENCIDA"))
+                    intent_order = new Intent(ctx, VencidaIndividual.class);
+                else
+                    intent_order = new Intent(ctx, RecuperacionIndividual.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
                 startActivity(intent_order);
@@ -168,17 +151,29 @@ public class PrestamosClientes extends AppCompatActivity {
             public void GestionadasClick(MPrestamo item) {
                 Intent intent_order = new Intent(ctx, Gestionadas.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
-                if (ENVIROMENT)
-                    intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_IND);
-                else
+                if (item.getTipoPrestamo().equals("VENCIDA")) {
+                    intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_IND_V_T);
+                    intent_order.putExtra(TIPO_PRESTAMO, "VENCIDA");
+                    intent_order.putExtra(TIPO_GESTION, 1);
+                }
+                else {
                     intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_IND_T);
+                    intent_order.putExtra(TIPO_PRESTAMO, "VIGENTE");
+                    intent_order.putExtra(TIPO_GESTION, 1);
+                }
                 startActivity(intent_order);
+            }
+
+            @Override
+            public void CierreDiaClick(MPrestamo item) {
+                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+                startActivity(i_cierre_dia);
             }
         });
         rvPrestamos.setAdapter(adatper);
     }
 
-    private void GetPrestamosGpo (String id_grupo){
+    private void GetPrestamosGpo (final String id_grupo){
 
         String nombre = "";
         Cursor row;
@@ -200,7 +195,10 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setMontoRestante(row.getString(8));
                 item.setMontoAmortiz(row.getString(9));
                 item.setIdPrestamo(row.getString(4));
+                Log.e("estatus", row.getString(14));
                 item.setEstatus(row.getString(14));
+                item.setTipoPrestamo(row.getString(13));
+                item.setTipo(2);
 
                 Cursor rowSaldoCorte;
                 if (ENVIROMENT)
@@ -223,7 +221,12 @@ public class PrestamosClientes extends AppCompatActivity {
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
             @Override
             public void PrestamoClick(MPrestamo item) {
-                Intent intent_order = new Intent(ctx, RecuperacionGrupal.class);
+                Intent intent_order;
+
+                if (item.getTipoPrestamo().equals("VENCIDA"))
+                    intent_order = new Intent(ctx, VencidaGrupal.class);
+                else
+                    intent_order = new Intent(ctx, RecuperacionGrupal.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
                 startActivity(intent_order);
@@ -233,11 +236,24 @@ public class PrestamosClientes extends AppCompatActivity {
             public void GestionadasClick(MPrestamo item) {
                 Intent intent_order = new Intent(ctx, Gestionadas.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
-                if (ENVIROMENT)
-                    intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_GPO);
-                else
+
+                if (item.getTipoPrestamo().equals("VENCIDA")){
+                    intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_INTEGRANTE_T);
+                    intent_order.putExtra(TIPO_PRESTAMO, "VENCIDA");
+                    intent_order.putExtra(TIPO_GESTION, 2);
+                }
+                else {
                     intent_order.putExtra(TBL_NAME, TBL_RESPUESTAS_GPO_T);
+                    intent_order.putExtra(TIPO_PRESTAMO, "VIGENTE");
+                    intent_order.putExtra(TIPO_GESTION, 2);
+                }
                 startActivity(intent_order);
+            }
+
+            @Override
+            public void CierreDiaClick(MPrestamo item) {
+                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+                startActivity(i_cierre_dia);
             }
         });
         rvPrestamos.setAdapter(adatper);
@@ -247,6 +263,7 @@ public class PrestamosClientes extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_actualizar, menu);
+        menu.getItem(0).setVisible(false);
         return true;
     }
 
@@ -280,6 +297,18 @@ public class PrestamosClientes extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        switch (getIntent().getStringExtra(TIPO)){
+            case "INDIVIDUAL":
+                tipo = 1;
+                GetPrestamosInd(getIntent().getStringExtra(ID_CARTERA));
+                break;
+            case "GRUPAL":
+                tipo = 2;
+                GetPrestamosGpo(getIntent().getStringExtra(ID_CARTERA));
+                break;
+        }
+
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
         ss.SaveRespuestaGestion(ctx, false);
     }

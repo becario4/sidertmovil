@@ -87,8 +87,8 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
             holder.tvTipoPrestamo.setTextColor(ctx.getColor(R.color.shadowdrawer));
 
         holder.tvDiaSemana.setText(item.getDiaSemana());
-        holder.tvNombre.setText(item.getNombre());
-        holder.tvDireccion.setText(item.getDireccion());
+        holder.tvNombre.setText(item.getNombre().toUpperCase());
+        holder.tvDireccion.setText(item.getDireccion().toUpperCase());
 
         holder.cbRuta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

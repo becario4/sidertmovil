@@ -86,6 +86,68 @@ public class Popups {
         return dialog;
     }
 
+    public static AlertDialog showDialogMessage(Context ctx, String icon, String message,
+                                                int btOk, final DialogMessage btnOkClick) {
+        // LOADING VIEWS
+        View view           = LayoutInflater.from(ctx).inflate(DIALOG_MESSAGE, null);
+        TextView tvMessage  = view.findViewById(R.id.tvMessage);
+        Button btnOk        = view.findViewById(R.id.btnAccept);
+        ImageView ivIcon    = view.findViewById(R.id.ivIcon);
+
+
+        switch (icon){
+            case Constants.not_network:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_wifi_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.face_happy:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_face_satisfied)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            case Constants.face_dissatisfied:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_dissatisfied)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.money:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_money_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.print_off:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_print_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.login:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_error)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.warning:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_warning)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
+                break;
+            default:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_question)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
+                break;
+        }
+        // FILLING VIEWS
+        tvMessage.setText(message);
+
+        final AlertDialog dialog = new AlertDialog.Builder(ctx)
+                .setCancelable(false)
+                .setView(view).create();
+
+
+        btnOk.setText(ctx.getResources().getString(btOk));
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOkClick.OnClickListener(dialog);
+            }
+        });
+
+        return dialog;
+    }
+
     public static AlertDialog showDialogConfirm(Context ctx, String icon, int message,
                                                 int btOk, final DialogMessage btnOkClick,
                                                 int btFail, final DialogMessage btnFailClick) {

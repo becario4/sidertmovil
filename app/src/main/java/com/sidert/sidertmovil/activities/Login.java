@@ -1,13 +1,8 @@
 package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.app.job.JobService;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -33,11 +28,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
@@ -45,42 +38,27 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_contrasena_root;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_message;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.MyFireBaseInstanceIDService;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
-import com.sidert.sidertmovil.utils.WebServicesRoutes;
-import com.sidert.sidertmovil.utils.WorkerLogout;
-import com.sidert.sidertmovil.utils.WorkerSincronizado;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.sidert.sidertmovil.utils.Constants.AUTHORITIES;
 import static com.sidert.sidertmovil.utils.Constants.CANCEL_TRACKER_ID;
@@ -158,7 +136,7 @@ public class Login extends AppCompatActivity {
     private View.OnClickListener IVlogo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            /*countClick += 1;
+            countClick += 1;
 
             if (countClick == 3)
                 Toast.makeText(ctx, "Estas a 3 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
@@ -169,7 +147,7 @@ public class Login extends AppCompatActivity {
             if (countClick >= 9) {
                 dialog_contrasena_root dialogRoot = new dialog_contrasena_root();
                 dialogRoot.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
-            }*/
+            }
 
         }
     };
@@ -240,7 +218,7 @@ public class Login extends AppCompatActivity {
 
             float battery = (level / (float)scale)*100;
 
-            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, ctx).create(ManagerInterface.class);
 
             Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
                                                  etPassword.getText().toString().trim(),

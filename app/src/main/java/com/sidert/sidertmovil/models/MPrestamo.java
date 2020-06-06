@@ -14,6 +14,7 @@ public class MPrestamo implements Serializable {
     private String estatus;
     private int tipo;
     private String saldoCorte;
+    private String tipoPrestamo;
 
     public String getNombre() {
         return nombre;
@@ -93,5 +94,13 @@ public class MPrestamo implements Serializable {
 
     public void setSaldoCorte(String saldoCorte) {
         this.saldoCorte = saldoCorte;
+    }
+
+    public String getTipoPrestamo() {
+        return tipoPrestamo;
+    }
+
+    public void setTipoPrestamo(String tipoPrestamo) {
+        this.tipoPrestamo = tipoPrestamo;
     }
 }

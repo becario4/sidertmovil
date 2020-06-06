@@ -57,7 +57,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_IMPRESIONES;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
@@ -136,7 +136,7 @@ public class DescargaDatos extends AppCompatActivity {
     }
 
     private void GetUltimasImpresiones (){
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_IMPRESIONES).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = ctx.registerReceiver(null, ifilter);
@@ -146,6 +146,7 @@ public class DescargaDatos extends AppCompatActivity {
 
         final float battery = (level / (float)scale)*100;
 
+        Log.e("SerieID",session.getUser().get(0));
         Call<List<MImpresionRes>> call = api.getUltimasImpresiones(session.getUser().get(0),
                                                                     String.valueOf(battery),
                                                                     getString(R.string.app_version),
@@ -238,7 +239,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         params.put(8, "1");                                             //estatus
                                         params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
 
-                                        dBhelper.saveImpresiones(db, params);
+                                        dBhelper.saveImpresionesVencida(db, params);
                                     }
                                     row.close();
                                 }
@@ -278,12 +279,16 @@ public class DescargaDatos extends AppCompatActivity {
                                     }
                                     row.close();
                                 }
-                                else if (item.getTipoCartera() == 2){//VENCIDA
+                                else if (item.getTipoCartera() == 4){//VENCIDA
+
+                                    Log.e("ValidParams", data.get(1) + " - " + String.valueOf(item.getFolio()) + " - " + String.valueOf(item.getTipo()));
+
                                     if (ENVIROMENT)
                                         row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
                                     else
                                         row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
+                                    Log.e("RowImpresion", "as"+row.getCount());
                                     if (row.getCount() > 0){
                                         ContentValues cv = new ContentValues();
                                         cv.put("sent_at", item.getSendedAt());
@@ -306,9 +311,9 @@ public class DescargaDatos extends AppCompatActivity {
                                         params.put(6, item.getGeneratedAt());                           //created_at
                                         params.put(7, item.getSendedAt());                              //sent_at
                                         params.put(8, "1");                                             //estatus
-                                        params.put(9, item.getExternalId());                            //num_prestamo                                              //num_prestamo
+                                        params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
 
-                                        dBhelper.saveImpresiones(db, params);
+                                        dBhelper.saveImpresionesVencida(db, params);
                                     }
                                     row.close();
                                 }
@@ -345,200 +350,9 @@ public class DescargaDatos extends AppCompatActivity {
         });
     }
 
-    private void GetGeolocalizaciones (){
-        cbGeolocalizaciones.setChecked(true);
-        GetCartera();
-        /*ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_FICHAS).create(ManagerInterface.class);
-        Call<ModeloGeolocalizacion> call = api.getGeolocalizcion("1",
-                false,
-                "Bearer "+ session.getUser().get(7));
-        call.enqueue(new Callback<ModeloGeolocalizacion>() {
-            @Override
-            public void onResponse(Call<ModeloGeolocalizacion> call, Response<ModeloGeolocalizacion> response) {
-
-                Log.e("Geolocalizacion Code", ""+response.code());
-                switch (response.code()) {
-                    case 200:
-                        ModeloGeolocalizacion modeloGeo = response.body();
-                        HashMap<Integer, String> params;
-                        if (modeloGeo.getGrupales().size() > 0){
-                            for (int i = 0; i < modeloGeo.getGrupales().size(); i++){
-                                Cursor rowGeo;
-                                if (ENVIROMENT)
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getGrupales().get(i).getFicha_id()+"'", "", null);
-                                else
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getGrupales().get(i).getFicha_id()+"'", "", null);
-                                if (rowGeo.getCount() == 0) {
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(modeloGeo.getGrupales().get(i).getFicha_id()));
-                                    params.put(1, modeloGeo.getGrupales().get(i).getAsesor_nombre());
-                                    params.put(2, "2");
-                                    params.put(3, modeloGeo.getGrupales().get(i).getGrupoNombre());
-                                    params.put(4, String.valueOf(modeloGeo.getGrupales().get(i).getNumSolicitud()));
-                                    params.put(5, String.valueOf(modeloGeo.getGrupales().get(i).getGrupoId()));
-                                    params.put(6, String.valueOf(modeloGeo.getGrupales().get(i).getGrupoId()));
-                                    params.put(7, Miscellaneous.GetIntegrante(modeloGeo.getGrupales().get(i).getIntegrantes(), "TESORERO").getClienteDireccion());
-                                    params.put(8, Miscellaneous.GetIntegrante(modeloGeo.getGrupales().get(i).getIntegrantes(), "TESORERO").getClienteColonia());
-                                    params.put(9, modeloGeo.getGrupales().get(i).getFechaEntrega());
-                                    params.put(10, modeloGeo.getGrupales().get(i).getFechaVencimiento());
-                                    params.put(11, Miscellaneous.JsonConvertGpo(modeloGeo.getGrupales().get(i)));
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    params.put(14, "");
-                                    params.put(15, "");
-                                    params.put(16, "");
-                                    params.put(17, "");
-                                    params.put(18, "");
-                                    params.put(19, "");
-                                    params.put(20, "0");
-                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
-                                    if (ENVIROMENT)
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
-                                    else
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }//Fin de IF que no existe registro de gestion para ser guardado
-                                rowGeo.close();
-                            }//Fin For de Guardado de gestiones grupales
-                        }//Fin de Grupales
-
-
-                        if (modeloGeo.getIndividuales().size() > 0){
-                            for (int i = 0; i < modeloGeo.getIndividuales().size(); i++){
-                                Cursor rowGeo;
-                                if (ENVIROMENT)
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getIndividuales().get(i).getFicha_id()+"'", "", null);
-                                else
-                                    rowGeo = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getIndividuales().get(i).getFicha_id()+"'", "", null);
-                                if (rowGeo.getCount() == 0) {
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(modeloGeo.getIndividuales().get(i).getFicha_id()));
-                                    params.put(1, modeloGeo.getIndividuales().get(i).getAsesor_nombre());
-                                    params.put(2, "1");
-                                    params.put(3, modeloGeo.getIndividuales().get(i).getClienteNombre());
-                                    params.put(4, String.valueOf(modeloGeo.getIndividuales().get(i).getNumSolicitud()));
-                                    params.put(5, String.valueOf(modeloGeo.getIndividuales().get(i).getClienteId()));
-                                    params.put(6, String.valueOf(modeloGeo.getIndividuales().get(i).getClienteClave()));
-                                    params.put(7, modeloGeo.getIndividuales().get(i).getClienteDireccion());
-                                    params.put(8, modeloGeo.getIndividuales().get(i).getClienteColonia());
-                                    params.put(9, modeloGeo.getIndividuales().get(i).getFechaEntrega());
-                                    params.put(10, modeloGeo.getIndividuales().get(i).getFechaVencimiento());
-                                    params.put(11, Miscellaneous.JsonConvertInd(modeloGeo.getIndividuales().get(i)));
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    params.put(14, "");
-                                    params.put(15, "0");
-                                    params.put(16, "0");
-                                    params.put(17, "0");
-                                    params.put(18, "");
-                                    params.put(19, "");
-                                    params.put(20, "0");
-                                    params.put(21, Miscellaneous.ObtenerFecha("timestamp"));
-                                    if (ENVIROMENT)
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, params);
-                                    else
-                                        dBhelper.saveRecordsGeo(db, SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, params);
-                                }//Fin de IF que no existe registro de gestion para ser guardado
-                                rowGeo.close();
-                            }//Fin de For de Guardado de individuales
-                        }//Fin de Individuales
-
-                        if(modeloGeo.getGrupalesGestionadas().size() > 0){
-                            for (int h = 0; h < modeloGeo.getGrupalesGestionadas().size(); h++){
-                                Cursor rowGeoGG;
-                                if (ENVIROMENT)
-                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getGrupalesGestionadas().get(h).getFichaId()+"'", "", null);
-                                else
-                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getGrupalesGestionadas().get(h).getFichaId()+"'", "", null);
-
-                                if (rowGeoGG.getCount() > 0){
-                                    rowGeoGG.moveToFirst();
-
-                                    switch(modeloGeo.getGrupalesGestionadas().get(h).getIntegranteTipo()){
-                                        case Constants.TIPO_PRESIDENTE:
-                                            if (rowGeoGG.getString(13).trim().isEmpty() && (rowGeoGG.getString(16).trim().isEmpty() || rowGeoGG.getString(16).equals("0"))){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-                                        case Constants.TIPO_TESORERO:
-                                            if (rowGeoGG.getString(14).trim().isEmpty() && (rowGeoGG.getString(17).trim().isEmpty() || rowGeoGG.getString(17).equals("0"))){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-                                        case Constants.TIPO_SECRETARIO:
-                                            if (rowGeoGG.getString(15).trim().isEmpty() && (rowGeoGG.getString(18).trim().isEmpty() || rowGeoGG.getString(18).equals("0"))){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getGrupalesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-                                    }//Fin switch para ser actilizado el registro
-                                }//Fin de IF que existe registro de gestion
-                                rowGeoGG.close();
-                            }//Fin de For para guardado de Grupales Gestionadas
-                        }//Fin de Grupales Gestionadas
-
-                        Log.e("Individuales conte", modeloGeo.getIndividualesGestionadas().size()+" ------------");
-                        if(modeloGeo.getIndividualesGestionadas().size() > 0){
-                            for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++){
-                                Cursor rowGeoGG;
-                                if (ENVIROMENT)
-                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION, " WHERE ficha_id = '"+modeloGeo.getIndividualesGestionadas().get(h).getFichaId()+"'", "", null);
-                                else
-                                    rowGeoGG = dBhelper.getRecords(SidertTables.SidertEntry.TABLE_GEOLOCALIZACION_T, " WHERE ficha_id = '"+modeloGeo.getIndividualesGestionadas().get(h).getFichaId()+"'", "", null);
-
-                                Log.e("siContiene", rowGeoGG.getCount()+"++++++++++");
-                                if (rowGeoGG.getCount() > 0){
-                                    rowGeoGG.moveToFirst();
-
-                                    switch(modeloGeo.getIndividualesGestionadas().get(h).getTipo()){
-                                        case Constants.TIPO_CLIENTE:
-                                            Log.e("datos", rowGeoGG.getString(13));
-                                            Log.e("fecha", rowGeoGG.getString(16));
-                                            Log.e("Cliente", (rowGeoGG.getString(13).trim().isEmpty() && (rowGeoGG.getString(16).trim().isEmpty() || rowGeoGG.getString(16).equals("0")))+"  xxxxx   ");
-                                            if (rowGeoGG.getString(13).trim().isEmpty() && rowGeoGG.getString(16).trim().isEmpty()){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-                                        case Constants.TIPO_NEGOCIO:
-                                            if (rowGeoGG.getString(14).trim().isEmpty() && (rowGeoGG.getString(17).trim().isEmpty() || rowGeoGG.getString(17).equals("0"))){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-
-                                        case Constants.TIPO_AVAL:
-                                            if (rowGeoGG.getString(15).trim().isEmpty() && (rowGeoGG.getString(18).trim().isEmpty() || rowGeoGG.getString(18).equals("0"))){
-                                                new DescargarFotoFachada()
-                                                        .execute(new GsonBuilder().create().toJson(modeloGeo.getIndividualesGestionadas().get(h)), rowGeoGG.getString(21), ctx);
-                                            }
-                                            break;
-                                    }//Fin switch para ser actilizado el registro
-                                }//Fin de IF que existe registro de gestion
-                                rowGeoGG.close();
-                            }//Fin de For para guardado de Grupales Gestionadas
-                        }//Fin de Grupales Gestionadas
-
-                        break;
-                    default:
-                        break;
-                }
-                cbGeolocalizaciones.setChecked(true);
-                GetCartera();
-
-            }
-
-            @Override
-            public void onFailure(Call<ModeloGeolocalizacion> call, Throwable t) {
-
-            }
-        });*/
-    }
-
     private void GetCartera(){
 
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<List<MCartera>> call = api.getCartera(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
 
@@ -791,7 +605,7 @@ public class DescargaDatos extends AppCompatActivity {
     }
 
     private void GetPrestamoInd(final int id, final PrestamoIndCallbacks prestamoCallbacks){
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
         Call<List<MPrestamoRes>> call = api.getPrestamosInd(id,"Bearer "+ session.getUser().get(7));
         call.enqueue(new Callback<List<MPrestamoRes>>() {
             @Override
@@ -924,7 +738,9 @@ public class DescargaDatos extends AppCompatActivity {
                                     cv.put("num_amortizacion", String.valueOf(prestamos.get(i).getNumAmortizacion()));
                                     cv.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());
                                     cv.put("tipo_cartera", prestamos.get(i).getTipoCartera());
-                                    cv.put("pagada", (prestamos.get(i).getPagada())?"1":"0");
+
+                                    if (row.getInt(13) == 0)
+                                        cv.put("pagada", (prestamos.get(i).getPagada())?"1":"0");
                                     cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha("timestamp"));
 
                                     db.update((ENVIROMENT)?TBL_PRESTAMOS_IND:TBL_PRESTAMOS_IND_T, cv,
@@ -1000,31 +816,38 @@ public class DescargaDatos extends AppCompatActivity {
                                         for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
                                             MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                             ContentValues cv_amortiz = new ContentValues();
-                                            cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
-                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");  //FECHA PAGO
-                                            cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
-                                            cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                              //INTERES
-                                            cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                  //IVA
-                                            cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                             //COMISION
-                                            cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                //TOTAL
-                                            cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));                        //CAPITAL PAGADO
-                                            cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));                       //INTERES PAGADO
-                                            cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                           //IVA PAGADO
-                                            cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));              //INTERES MORATORIO PAGADO
-                                            cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));                  //IVA_MORATORIO PAGADO
-                                            cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                      //COMISION PAGADA
-                                            cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
-                                            cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                              //PAGADO
-                                            cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                              //NUMERO
-                                            cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
-                                            cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
+                                            cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                      //FECHA
+                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");   //FECHA PAGO
+                                            cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                                  //CAPITAL
+                                            cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                                  //INTERES
+                                            cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                          //IVA
+                                            cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                                //COMISION
+                                            cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                      //TOTAL
+                                            cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));                     //CAPITAL PAGADO
+                                            cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));                     //INTERES PAGADO
+                                            cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                             //IVA PAGADO
+                                            cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));  //INTERES MORATORIO PAGADO
+                                            cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));          //IVA_MORATORIO PAGADO
+                                            cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                   //COMISION PAGADA
+                                            String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
+                                            Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                            if (rowAmortiz.getCount() > 0) {
+                                                rowAmortiz.moveToFirst();
+                                                if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1))
+                                                cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
+                                                cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                                    //PAGADO
+                                                cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                                    //NUMERO
+                                                cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                           //DIAS ATRASO
+                                            }
+                                            rowAmortiz.close();
+                                            cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                             //FECHA ACTUALIZADO
 
                                             db.update((ENVIROMENT)?TBL_AMORTIZACIONES:TBL_AMORTIZACIONES_T, cv_amortiz,
                                                     "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
                                         }
                                     }
 
-                                    if (prestamos.get(i).getPagos() != null &&prestamos.get(i).getPagos().size() > 0){
+                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0){
                                         for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
                                             Cursor row_pago = dBhelper.getRecords((ENVIROMENT)?TBL_PAGOS:TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
@@ -1062,7 +885,7 @@ public class DescargaDatos extends AppCompatActivity {
     }
 
     private void GetPrestmoGpo(final int id, final PrestamoGpoCallbacks prestamoGpoCallbacks){
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
         Call<List<MPrestamoGpoRes>> call = api.getPrestamosGpo(id,"Bearer "+ session.getUser().get(7));
         call.enqueue(new Callback<List<MPrestamoGpoRes>>() {
             @Override
@@ -1130,9 +953,6 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_miembro.put(10, mIntegrante.getMontoRequerido());                     //MONTO REQUERIDO
                                         values_miembro.put(11, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA CREACION
                                         values_miembro.put(12, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZACION
-                                        //values_miembro.put(13, "0");                              //CLAVE
-                                        //values_miembro.put(14, "0");
-
                                         values_miembro.put(13, mIntegrante.getClave());                              //CLAVE
                                         values_miembro.put(14, String.valueOf(mIntegrante.getPrestamoId()));         //ID PRESTAMO
 
@@ -1203,7 +1023,8 @@ public class DescargaDatos extends AppCompatActivity {
                                 cv_prestamo.put("num_amortizacion", String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                 cv_prestamo.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                 cv_prestamo.put("tipo_cartera", prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                cv_prestamo.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
+                                if (row.getInt(13) == 0)
+                                    cv_prestamo.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
                                 cv_prestamo.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
                                 db.update((ENVIROMENT)?TBL_PRESTAMOS_GPO:TBL_PRESTAMOS_GPO_T, cv_prestamo,
@@ -1279,11 +1100,11 @@ public class DescargaDatos extends AppCompatActivity {
                                 }//Termina If de actualizado de integrantes
 
                                 if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                    for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                    for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
                                         MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
-                                        cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");  //FECHA PAGO
+                                        cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
                                         cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
                                         cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                              //INTERES
                                         cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                  //IVA
@@ -1295,10 +1116,17 @@ public class DescargaDatos extends AppCompatActivity {
                                         cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));              //INTERES MORATORIO PAGADO
                                         cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));                  //IVA_MORATORIO PAGADO
                                         cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                      //COMISION PAGADA
-                                        cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
-                                        cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                              //PAGADO
-                                        cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                              //NUMERO
-                                        cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
+                                        String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
+                                        Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                        if (rowAmortiz.getCount() > 0) {
+                                            rowAmortiz.moveToFirst();
+                                            if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)){
+                                                cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
+                                                cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                              //PAGADO
+                                                cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                              //NUMERO
+                                                cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
+                                            }
+                                        }
                                         cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
 
                                         db.update((ENVIROMENT)?TBL_AMORTIZACIONES:TBL_AMORTIZACIONES_T, cv_amortiz,

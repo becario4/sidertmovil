@@ -134,7 +134,8 @@ import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
@@ -548,7 +549,7 @@ public class vencida_ind_fragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                if (Miscellaneous.MedioPago(tvMedioPago) == 6){
                     if (s.length() > 0){
                         Update("folio", s.toString());
                     }
@@ -597,6 +598,7 @@ public class vencida_ind_fragment extends Fragment {
                     row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
+                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0,parent.id_prestamo);
                         if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -628,7 +630,7 @@ public class vencida_ind_fragment extends Fragment {
                         params.put(19, "");
                         params.put(20, "");
                         params.put(21, "");
-                        params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        params.put(22, fechaInicio);
                         params.put(23, "");
                         params.put(24, "");
                         params.put(25, "0");
@@ -637,6 +639,7 @@ public class vencida_ind_fragment extends Fragment {
                         params.put(28, "");
                         params.put(29, "");
                         params.put(30, "0");
+                        params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
 
                         long id;
                         id = dBhelper.saveRespuestasVencidasInd(db, params);
@@ -644,7 +647,8 @@ public class vencida_ind_fragment extends Fragment {
                         parent.id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(26) == 1 || row.getInt(26) == 2){
+                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -676,7 +680,7 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(19, "");
                             params.put(20, "");
                             params.put(21, "");
-                            params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(22, fechaInicio);
                             params.put(23, "");
                             params.put(24, "");
                             params.put(25, "0");
@@ -685,6 +689,7 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(28, "");
                             params.put(29, "");
                             params.put(30, "0");
+                            params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
                             long id;
 
                             id = dBhelper.saveRespuestasVencidasInd(db, params);
@@ -726,6 +731,7 @@ public class vencida_ind_fragment extends Fragment {
                     row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
+                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0,parent.id_prestamo);
                         parent.latitud = "0";
@@ -751,7 +757,7 @@ public class vencida_ind_fragment extends Fragment {
                         params.put(19, "");
                         params.put(20, "");
                         params.put(21, "");
-                        params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        params.put(22, fechaInicio);
                         params.put(23, "");
                         params.put(24, "");
                         params.put(25, "0");
@@ -760,6 +766,7 @@ public class vencida_ind_fragment extends Fragment {
                         params.put(28, "");
                         params.put(29, "");
                         params.put(30, "0");
+                        params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
 
                         long id;
 
@@ -768,7 +775,8 @@ public class vencida_ind_fragment extends Fragment {
                         parent.id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(26) == 1 || row.getInt(26) == 2){
+                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             parent.latitud = "0";
@@ -794,7 +802,7 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(19, "");
                             params.put(20, "");
                             params.put(21, "");
-                            params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(22, fechaInicio);
                             params.put(23, "");
                             params.put(24, "");
                             params.put(25, "0");
@@ -803,6 +811,7 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(28, "");
                             params.put(29, "");
                             params.put(30, "0");
+                            params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
                             long id;
 
                             id = dBhelper.saveRespuestasVencidasInd(db, params);
@@ -917,6 +926,7 @@ public class vencida_ind_fragment extends Fragment {
                             row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
                             row.moveToLast();
                             if (row.getCount() == 0) {
+                                String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, parent.id_prestamo);
                                 params.put(1, "");
@@ -940,7 +950,7 @@ public class vencida_ind_fragment extends Fragment {
                                 params.put(19, "");
                                 params.put(20, "");
                                 params.put(21, "");
-                                params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                params.put(22, fechaInicio);
                                 params.put(23, "");
                                 params.put(24, "");
                                 params.put(25, "0");
@@ -949,13 +959,15 @@ public class vencida_ind_fragment extends Fragment {
                                 params.put(28, "");
                                 params.put(29, "");
                                 params.put(30, "0");
+                                params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
                                 long id = 0;
 
                                 id = dBhelper.saveRespuestasVencidasInd(db, params);
 
                                 parent.id_respuesta = String.valueOf(id);
                             } else {
-                                if (row.getInt(25) == 1 || row.getInt(25) == 2) {
+                                if (row.getInt(26) == 1 || row.getInt(26) == 2) {
+                                    String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, parent.id_prestamo);
                                     params.put(1, "");
@@ -979,7 +991,7 @@ public class vencida_ind_fragment extends Fragment {
                                     params.put(19, "");
                                     params.put(20, "");
                                     params.put(21, "");
-                                    params.put(22, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(22, fechaInicio);
                                     params.put(23, "");
                                     params.put(24, "");
                                     params.put(25, "0");
@@ -988,6 +1000,7 @@ public class vencida_ind_fragment extends Fragment {
                                     params.put(28, "");
                                     params.put(29, "");
                                     params.put(30, "0");
+                                    params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
                                     long id = 0;
 
                                     id = dBhelper.saveRespuestasVencidasInd(db, params);
@@ -1842,7 +1855,7 @@ public class vencida_ind_fragment extends Fragment {
                                         }
 
                                         if (!row.getString(5).isEmpty()){//COMENTARIO
-                                            etComentario.setText(row.getString(6));
+                                            etComentario.setText(row.getString(5));
                                             etComentario.setVisibility(View.VISIBLE);
                                             etComentario.setError(null);
                                         }
@@ -2224,6 +2237,7 @@ public class vencida_ind_fragment extends Fragment {
                         cv.put("fecha_fin", Miscellaneous.ObtenerFecha("timestamp"));
                         cv.put("estatus", "1");
 
+                        Log.e("idPresta", parent.id_prestamo);
                         db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
 
                         Cursor row;
@@ -2232,47 +2246,62 @@ public class vencida_ind_fragment extends Fragment {
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
-                            int weekFechaEst = 0;
-                            Calendar calFechaEst = Calendar.getInstance();
+                            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                for (int i = 0; i < row_amortiz.getCount(); i++){
 
-                            try {
-                                Date dFechaEstablecida = sdf.parse(Miscellaneous.ObtenerFecha(FECHA.toLowerCase()));
-                                calFechaEst.setTime(dFechaEstablecida);
-                                weekFechaEst = calFechaEst.get(Calendar.WEEK_OF_YEAR);
+                                    Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
-                            double sumPago = 0;
-                            for (int i = 0; i < row.getCount(); i++){
-                                String[] fechaIni = row.getString(22).split(" ");
-                                Date dFechaEstablecida = null;
-                                try {
-                                    dFechaEstablecida = sdf.parse(fechaIni[0]);
-                                    calFechaEst.setTime(dFechaEstablecida);
-
-                                    if (calFechaEst.get(Calendar.WEEK_OF_YEAR) == weekFechaEst){
-                                        sumPago += row.getDouble(15);
+                                    if (abono > pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = abono - pendiente;
                                     }
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                                    else if (abono == pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = 0.0;
+                                    }
+                                    else if (abono > 0 && abono < pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("pagado", "PARCIAL");
+                                        abono = 0.0;
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+
+                                    }
+                                    else
+                                        break;
+
+                                    row_amortiz.moveToNext();
                                 }
 
-                                row.moveToNext();
                             }
-                            try {
-                                if (sumPago >= Double.parseDouble(parent.monto_requerido)){
-                                    ContentValues cvInd = new ContentValues();
-                                    cvInd.put("is_ruta", 0);
-                                    cvInd.put("ruta_obligado", 0);
+                            row_amortiz.close();
 
-                                    db.update(TBL_CARTERA_IND_T, cvInd, "id_cartera = ?", new String[]{parent.id_cartera});
+                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                    ContentValues c = new ContentValues();
+                                    c.put("pagada", 1);
+                                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{parent.id_prestamo});
                                 }
-                            }catch (NumberFormatException e){
 
                             }
-
+                            row_amortiz.close();
                         }
                         row.close();
 
@@ -2311,7 +2340,7 @@ public class vencida_ind_fragment extends Fragment {
                         }
                         if (m.ResultadoGestion(tvResultadoGestion) == 0){ // Si pago
                             b.putString(RESULTADO_PAGO, "PAGO");
-                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7 ){ // Medio de pago Bancos y Oxxo
+                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7 || m.MedioPago(tvMedioPago) == 8 ){ // Medio de pago Bancos y Oxxo
                                 b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
                                 if (!tvFechaDeposito.getText().toString().trim().isEmpty()){ //Fecha de deposito capturada
                                     b.putString(FECHA_DEPOSITO, tvFechaDeposito.getText().toString().trim());

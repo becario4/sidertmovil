@@ -148,7 +148,7 @@ public class TrackerAsesor extends AppCompatActivity {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<List<MSucursales>> call = api.getSucursales(Integer.parseInt(session.getUser().get(9)),
                                                         "Bearer "+ session.getUser().get(7));
@@ -222,7 +222,7 @@ public class TrackerAsesor extends AppCompatActivity {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<List<MTrackerAsesor>> call = api.getTrackerAsesor(user_id,
                                                                fecha,

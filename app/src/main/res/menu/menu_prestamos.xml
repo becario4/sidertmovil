@@ -12,8 +12,9 @@
         android:icon="@drawable/ic_gestionadas_blue"/>
 
     <item
-        android:id="@+id/nvGeolocalizacion"
-        android:title="Geolocalización"
-        android:icon="@drawable/pin_user_blue"/>
+        android:id="@+id/nvCierreDia"
+        android:title="Cierre de Día"
+        android:visible="false"
+        android:icon="@drawable/ic_cierre_dia"/>
 
 </menu>

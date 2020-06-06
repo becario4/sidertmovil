@@ -5,8 +5,10 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 
 public class NumberFormatTextWatcher implements TextWatcher {
 
@@ -21,9 +23,10 @@ public class NumberFormatTextWatcher implements TextWatcher {
 
     public NumberFormatTextWatcher(EditText et)
     {
-        df = new DecimalFormat("#,###.##");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        df = new DecimalFormat("#,###.##", symbols);
         df.setDecimalSeparatorAlwaysShown(true);
-        dfnd = new DecimalFormat("#,###");
+        dfnd = new DecimalFormat("#,###", symbols);
         this.et = et;
         hasFractionalPart = false;
     }

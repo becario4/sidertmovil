@@ -39,12 +39,14 @@ public class PrintTicket {
     private String date = "";
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+    private SessionManager session;
 
     public void WriteTicket (Context ctx, MImpresion ticket) {
         posPtr = new ESCPOSPrinter();
         date = df.format(Calendar.getInstance().getTime());
         this.dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
+        session = new SessionManager(ctx);
         HeadTicket(ctx, ticket);
         BodyTicket(ticket);
         FooterTicket(ctx, ticket);
@@ -226,20 +228,41 @@ public class PrintTicket {
                         linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row.getString(3));
                     }
                     else {
-                        HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
-                        params.put(1, data.getAsesorId());
-                        params.put(2, String.valueOf(row.getInt(3)+1));
-                        params.put(3, "O");
-                        params.put(4, data.getMonto());
-                        params.put(5, data.getClaveCliente());
-                        params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
-                        params.put(7, "");
-                        params.put(8, "0");
-                        params.put(9, data.getNumeroPrestamo());
+                        String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VIGENTE_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
+                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo()+"-"+data.getIdGestion(), "O"});
+                        if (row_folio.getCount() > 0) {
+                            row_folio.moveToFirst();
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(1, data.getAsesorId());
+                            params.put(2, row_folio.getString(0));
+                            params.put(3, "O");
+                            params.put(4, data.getMonto());
+                            params.put(5, data.getClaveCliente());
+                            params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                            params.put(7, "");
+                            params.put(8, "0");
+                            params.put(9, data.getNumeroPrestamo());
 
-                        dBhelper.saveImpresiones(db, params);
-                        linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+                            dBhelper.saveImpresiones(db, params);
+                            linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row_folio.getString(0));
+                        }
+                        else{
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(1, data.getAsesorId());
+                            params.put(2, String.valueOf(row.getInt(3)+1));
+                            params.put(3, "O");
+                            params.put(4, data.getMonto());
+                            params.put(5, data.getClaveCliente());
+                            params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                            params.put(7, "");
+                            params.put(8, "0");
+                            params.put(9, data.getNumeroPrestamo());
+
+                            dBhelper.saveImpresiones(db, params);
+                            linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+                        }
                     }
                 }
                 row.close();
@@ -269,6 +292,26 @@ public class PrintTicket {
                     dBhelper.saveImpresionesVencida(db, params);
 
                     linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+1);
+
+                    HashMap<Integer, String> paramsCD = new HashMap<>();
+                    paramsCD.put(0, session.getUser().get(0));
+                    paramsCD.put(1, data.getIdGestion());
+                    paramsCD.put(2, data.getNumeroPrestamo());
+                    paramsCD.put(3, data.getClaveCliente());
+                    paramsCD.put(4, "");
+                    paramsCD.put(5, "");
+                    paramsCD.put(6, "");
+                    paramsCD.put(7, data.getTipoGestion());
+                    paramsCD.put(8, "VENCIDA");
+                    paramsCD.put(9, "");
+                    paramsCD.put(10, "");
+                    paramsCD.put(11, "");
+                    paramsCD.put(12, "0");
+                    paramsCD.put(13, data.getNombre());
+                    paramsCD.put(14, "");
+
+                    dBhelper.saveCierreDia(db, paramsCD);
+
                 }
                 else{
                     row.moveToLast();
@@ -292,20 +335,62 @@ public class PrintTicket {
                         linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+row.getString(3));
                     }
                     else {
-                        HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
-                        params.put(1, data.getAsesorId());
-                        params.put(2, String.valueOf(row.getInt(3)+1));
-                        params.put(3, "O");
-                        params.put(4, data.getMonto());
-                        params.put(5, data.getClaveCliente());
-                        params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
-                        params.put(7, "");
-                        params.put(8, "0");
-                        params.put(9, data.getNumeroPrestamo());
+                        String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VENCIDA_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
+                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo()+"-"+data.getIdGestion(), "O"});
+                        if (row_folio.getCount() > 0){
+                            row_folio.moveToFirst();
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(1, data.getAsesorId());
+                            params.put(2, row_folio.getString(0));
+                            params.put(3, "C");
+                            params.put(4, data.getMonto());
+                            params.put(5, data.getClaveCliente());
+                            params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                            params.put(7, "");
+                            params.put(8, "0");
+                            params.put(9, data.getNumeroPrestamo());
 
-                        dBhelper.saveImpresionesVencida(db, params);
-                        linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+                            dBhelper.saveImpresionesVencida(db, params);
+
+                            linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+row_folio.getString(0));
+                        }
+                        else {
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
+                            params.put(1, data.getAsesorId());
+                            params.put(2, String.valueOf(row.getInt(3) + 1));
+                            params.put(3, "O");
+                            params.put(4, data.getMonto());
+                            params.put(5, data.getClaveCliente());
+                            params.put(6, Miscellaneous.ObtenerFecha("timestamp"));
+                            params.put(7, "");
+                            params.put(8, "0");
+                            params.put(9, data.getNumeroPrestamo());
+
+                            dBhelper.saveImpresionesVencida(db, params);
+                            linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + (row.getInt(3) + 1));
+
+                            HashMap<Integer, String> paramsCD = new HashMap<>();
+                            paramsCD.put(0, session.getUser().get(0));
+                            paramsCD.put(1, data.getIdGestion());
+                            paramsCD.put(2, data.getNumeroPrestamo());
+                            paramsCD.put(3, data.getClaveCliente());
+                            paramsCD.put(4, "");
+                            paramsCD.put(5, "");
+                            paramsCD.put(6, "");
+                            paramsCD.put(7, data.getTipoGestion());
+                            paramsCD.put(8, "VENCIDA");
+                            paramsCD.put(9, "");
+                            paramsCD.put(10, "");
+                            paramsCD.put(11, "");
+                            paramsCD.put(12, "0");
+                            paramsCD.put(13, data.getNombre());
+                            paramsCD.put(14, "");
+
+                            dBhelper.saveCierreDia(db, paramsCD);
+                        }
+                        row_folio.close();
                     }
                 }
                 row.close();

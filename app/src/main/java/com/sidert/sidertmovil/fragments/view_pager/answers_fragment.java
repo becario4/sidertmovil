@@ -36,41 +36,30 @@ import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.MisCierresDeDia;
 import com.sidert.sidertmovil.activities.ResumenCartera;
 import com.sidert.sidertmovil.adapters.adapter_ficha_contestadas;
-import com.sidert.sidertmovil.adapters.adapter_fichas_pendientes;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_details_order;
-import com.sidert.sidertmovil.fragments.orders_fragment;
 import com.sidert.sidertmovil.models.MFichaContestada;
-import com.sidert.sidertmovil.models.ModelFichaContestada;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 
 public class answers_fragment extends Fragment{
 
@@ -86,6 +75,7 @@ public class answers_fragment extends Fragment{
     private SessionManager session;
 
     public TextView tvContFiltros;
+    private TextView tvContCierre;
     private AutoCompleteTextView aetNombre;
     private CheckBox cbInd;
     private CheckBox cbGpo;
@@ -129,10 +119,7 @@ public class answers_fragment extends Fragment{
         Cursor row;
         String query;
 
-        if (ENVIROMENT)
-            query = "SELECT * FROM (SELECT r._id AS id, p.id_prestamo, r.contacto AS estatus_gestion, r.fecha_fin AS timestamp, r.estatus AS estatus_ficha, p.fecha_establecida AS dia_pago, c.nombre, 'INDIVIDUAL' AS tipo_ficha, p.monto_requerido, r.pago_realizado, r.resultado_gestion FROM " + TBL_RESPUESTAS_IND + " AS r INNER JOIN "+ TBL_PRESTAMOS_IND + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE r.estatus > 0 UNION SELECT rg._id AS id, pg.id_prestamo, rg.contacto AS estatus_gestion, rg.fecha_fin AS timestamp, rg.estatus AS estatus_ficha, pg.fecha_establecida AS dia_pago, cg.nombre, 'GRUPAL' AS tipo_ficha, pg.monto_requerido, rg.pago_realizado,rg.resultado_gestion FROM "+ TBL_RESPUESTAS_GPO + " AS rg INNER JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON rg.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rg.estatus > 0 ) AS contestadas" + where + " ORDER BY timestamp DESC";
-        else
-            query = "SELECT * FROM (SELECT r._id AS id, p.id_prestamo, r.contacto AS estatus_gestion, r.fecha_fin AS timestamp, r.estatus AS estatus_ficha, p.fecha_establecida AS dia_pago, c.nombre, 'INDIVIDUAL' AS tipo_ficha, p.monto_requerido, r.pago_realizado, r.resultado_gestion FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN "+ TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r.estatus > 0 UNION SELECT rg._id AS id, pg.id_prestamo, rg.contacto AS estatus_gestion, rg.fecha_fin AS timestamp, rg.estatus AS estatus_ficha, pg.fecha_establecida AS dia_pago, cg.nombre, 'GRUPAL' AS tipo_ficha, pg.monto_requerido, rg.pago_realizado,rg.resultado_gestion FROM "+ TBL_RESPUESTAS_GPO_T + " AS rg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON rg.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rg.estatus > 0) AS contestadas" + where + " ORDER BY timestamp DESC";
+        query = "SELECT * FROM (SELECT r._id AS id, p.id_prestamo, r.contacto AS estatus_gestion, r.fecha_fin AS timestamp, r.estatus AS estatus_ficha, p.fecha_establecida AS dia_pago, c.nombre, 'INDIVIDUAL' AS tipo_ficha, p.monto_requerido, r.pago_realizado, r.resultado_gestion FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN "+ TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r.estatus > 0 UNION SELECT rg._id AS id, pg.id_prestamo, rg.contacto AS estatus_gestion, rg.fecha_fin AS timestamp, rg.estatus AS estatus_ficha, pg.fecha_establecida AS dia_pago, cg.nombre, 'GRUPAL' AS tipo_ficha, pg.monto_requerido, rg.pago_realizado,rg.resultado_gestion FROM "+ TBL_RESPUESTAS_GPO_T + " AS rg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON rg.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rg.estatus > 0 UNION SELECT rvi._id AS id, pvi.id_prestamo, rvi.contacto AS estatus_gestion, rvi.fecha_fin AS timestamp, rvi.estatus AS estatus_ficha, pvi.fecha_establecida AS dia_pago, cvi.nombre, 'INDIVIDUAL' AS tipo_ficha, pvi.monto_requerido, rvi.pago_realizado, rvi.resultado_gestion FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi INNER JOIN "+ TBL_PRESTAMOS_IND_T + " AS pvi ON rvi.id_prestamo = pvi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS cvi ON pvi.id_cliente = cvi.id_cartera WHERE rvi.estatus > 0 UNION SELECT rvg._id AS id, pvg.id_prestamo, rvg.contacto AS estatus_gestion, rvg.fecha_fin AS timestamp, rvg.estatus AS estatus_ficha, pvg.fecha_establecida AS dia_pago, cvg.nombre, 'GRUPAL' AS tipo_ficha, pvg.monto_requerido, rvg.pago_realizado,rvg.resultado_gestion FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON rvg.id_prestamo = pvg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cvg ON pvg.id_grupo = cvg.id_cartera WHERE rvg.estatus > 0) AS contestadas" + where + " ORDER BY timestamp DESC";
 
         Log.e("QueryContesta",query);
         row = db.rawQuery(query, null);
@@ -354,6 +341,16 @@ public class answers_fragment extends Fragment{
             tvContFiltros.setVisibility(View.VISIBLE);
         }
 
+        if (tvContCierre != null){
+            Cursor row = dBhelper.getRecords(TBL_CIERRE_DIA_T, " WHERE estatus = 0", "", null);
+            if (row.getCount() > 0){
+                Log.e("Cierre", row.getCount()+" zzz");
+                tvContCierre.setText(String.valueOf(row.getCount()));
+                tvContCierre.setVisibility(View.VISIBLE);
+            }
+
+        }
+
     }
 
     private String[] RemoverRepetidos(List<String> nombres){
@@ -380,6 +377,9 @@ public class answers_fragment extends Fragment{
         menu.clear();
         onResume();
         inflater.inflate(R.menu.menu_cartera, menu);
+        if (session.getUser().get(5).contains("ROLE_GESTOR"))
+            menu.getItem(0).setVisible(true);
+
         final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
         View actionView = MenuItemCompat.getActionView(menuItem);
         tvContFiltros = actionView.findViewById(R.id.filtro_bagde);
@@ -389,6 +389,17 @@ public class answers_fragment extends Fragment{
                 onOptionsItemSelected(menuItem);
             }
         });
+
+        final MenuItem menuItemCierre = menu.findItem(R.id.nvCierreDia);
+        View actionViewCierre = MenuItemCompat.getActionView(menuItemCierre);
+        tvContCierre = actionViewCierre.findViewById(R.id.filtro_bagde);
+        actionViewCierre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItemCierre);
+            }
+        });
+
         setupBadge();
     }
 
@@ -420,6 +431,10 @@ public class answers_fragment extends Fragment{
                     error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     error_network.show();
                 }
+                return true;
+            case R.id.nvCierreDia:
+                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+                startActivity(i_cierre_dia);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

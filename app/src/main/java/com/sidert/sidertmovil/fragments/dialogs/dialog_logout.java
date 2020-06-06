@@ -57,6 +57,7 @@ public class dialog_logout extends DialogFragment {
     private View.OnClickListener btnAccept_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            //session.deleteUser();
             session.setUser(session.getUser().get(0),
                     session.getUser().get(1),
                     session.getUser().get(2),
@@ -68,8 +69,8 @@ public class dialog_logout extends DialogFragment {
                     session.getUser().get(8),
                     session.getUser().get(9));
 
-            WorkManager mWorkManager = WorkManager.getInstance();
-            mWorkManager.cancelAllWork();
+            //WorkManager mWorkManager = WorkManager.getInstance();
+            ////mWorkManager.cancelAllWork();
             Log.e("Servicio Activo", Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "Sincronizado") +" Enable");
             triggerRebirth();
             getDialog().dismiss();

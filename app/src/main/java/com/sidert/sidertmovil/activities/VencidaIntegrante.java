@@ -53,7 +53,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
-import com.sidert.sidertmovil.fragments.view_pager.vencida_ind_fragment;
 import com.sidert.sidertmovil.models.MImpresion;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
@@ -131,9 +130,12 @@ import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
@@ -230,7 +232,6 @@ public class VencidaIntegrante extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
-    private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
 
     private SessionManager session;
@@ -257,6 +258,8 @@ public class VencidaIntegrante extends AppCompatActivity {
     private String num_prestamo =  "";
     private String nombreGrupo = "";
 
+    private Calendar myCalendar = Calendar.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -269,15 +272,22 @@ public class VencidaIntegrante extends AppCompatActivity {
 
         tbMain              = findViewById(R.id.tbMain);
 
-        id_prestamo = getIntent().getStringExtra(ID_PRESTAMO);
-        id_integrante = getIntent().getStringExtra(ID_INTEGRANTE);
-        nombre = getIntent().getStringExtra(NOMBRE);
-        num_prestamo = getIntent().getStringExtra(NUMERO_DE_PRESTAMO);
-        nombreGrupo = getIntent().getStringExtra(NOMBRE_GRUPO);
+        id_prestamo     = getIntent().getStringExtra(ID_PRESTAMO);
+        id_integrante   = getIntent().getStringExtra(ID_INTEGRANTE);
+        nombre          = getIntent().getStringExtra(NOMBRE);
+        num_prestamo    = getIntent().getStringExtra(NUMERO_DE_PRESTAMO);
+        nombreGrupo     = getIntent().getStringExtra(NOMBRE_GRUPO);
+
+        Log.e("id_prestamo", id_prestamo);
+        Log.e("id_integrante", id_integrante);
+        Log.e("nombre", nombre);
+        Log.e("num_prestamo", num_prestamo);
+        Log.e("nombre_grupo", num_prestamo);
 
         Cursor row_integrante;
         String sql =  "SELECT monto_requerido, monto_prestamo, clave FROM "+ TBL_MIEMBROS_GPO_T + " WHERE id_integrante = ?";
         row_integrante = db.rawQuery(sql, new String[]{id_integrante});
+
         if (row_integrante.getCount() > 0){
             row_integrante.moveToFirst();
             monto_requerido = row_integrante.getString(0);
@@ -287,6 +297,17 @@ public class VencidaIntegrante extends AppCompatActivity {
             finish();
         }
 
+        Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
+        Log.e("Respuesta: ", row.getCount()+" xxx");
+        row.moveToLast();
+        if (row.getCount() > 0){
+            if (row.getInt(27) == 0){
+                id_respuesta = row.getString(0);
+                latitud = row.getString(3);
+                longitud = row.getString(4);
+            }
+        }
+        row.close();
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -584,7 +605,7 @@ public class VencidaIntegrante extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                if (Miscellaneous.MedioPago(tvMedioPago) == 6){
                     if (s.length() > 0){
                         Update("folio", s.toString());
                     }
@@ -628,12 +649,13 @@ public class VencidaIntegrante extends AppCompatActivity {
                     myHandler.removeCallbacksAndMessages(null);
 
                     Cursor row;
-                    row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{id_prestamo});
+                    row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC",new String[]{id_prestamo, id_integrante});
                     row.moveToLast();
                     if (row.getCount() == 0){
+                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0, id_prestamo);
-                        params.put(1, id_prestamo);
+                        params.put(1, id_integrante);
                         if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
                             latitud = "0";
                             longitud = "0";
@@ -663,7 +685,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         params.put(20, "");
                         params.put(21, "");
                         params.put(22, "");
-                        params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        params.put(23, fechaInicio);
                         params.put(24, "");
                         params.put(25, "");
                         params.put(26, "0");
@@ -672,17 +694,19 @@ public class VencidaIntegrante extends AppCompatActivity {
                         params.put(29, "");
                         params.put(30, "");
                         params.put(31, "0");
+                        params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
 
                         long id;
-                        id = dBhelper.saveRespuestasVencidasInd(db, params);
+                        id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                         id_respuesta = String.valueOf(id);
                     }
                     else{
                         if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, id_prestamo);
-                            params.put(1, id_prestamo);
+                            params.put(1, id_integrante);
                             if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
                                 latitud = "0";
                                 longitud = "0";
@@ -712,7 +736,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                             params.put(20, "");
                             params.put(21, "");
                             params.put(22, "");
-                            params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(23, fechaInicio);
                             params.put(24, "");
                             params.put(25, "");
                             params.put(26, "0");
@@ -721,9 +745,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                             params.put(29, "");
                             params.put(30, "");
                             params.put(31, "0");
+                            params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
                             long id;
 
-                            id = dBhelper.saveRespuestasVencidasInd(db, params);
+                            id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                             id_respuesta = String.valueOf(id);
                         }
@@ -759,9 +784,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                     latitud = "0";
                     longitud = "0";
                     Cursor row;
-                    row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{id_prestamo});
+                    row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC",new String[]{id_prestamo, id_integrante});
                     row.moveToLast();
                     if (row.getCount() == 0){
+                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0, id_prestamo);
                         params.put(1,id_integrante);
@@ -788,7 +814,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         params.put(20, "");
                         params.put(21, "");
                         params.put(22, "");
-                        params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        params.put(23, fechaInicio);
                         params.put(24, "");
                         params.put(25, "");
                         params.put(26, "0");
@@ -797,15 +823,17 @@ public class VencidaIntegrante extends AppCompatActivity {
                         params.put(29, "");
                         params.put(30, "");
                         params.put(31, "0");
+                        params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
 
                         long id;
 
-                        id = dBhelper.saveRespuestasVencidasInd(db, params);
+                        id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                         id_respuesta = String.valueOf(id);
                     }
                     else{
                         if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, id_prestamo);
                             params.put(1, id_integrante);
@@ -832,7 +860,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                             params.put(20, "");
                             params.put(21, "");
                             params.put(22, "");
-                            params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(23, fechaInicio);
                             params.put(24, "");
                             params.put(25, "");
                             params.put(26, "0");
@@ -841,9 +869,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                             params.put(29, "");
                             params.put(30, "");
                             params.put(31, "0");
+                            params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
                             long id;
 
-                            id = dBhelper.saveRespuestasVencidasInd(db, params);
+                            id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                             id_respuesta = String.valueOf(id);
                         }
@@ -945,9 +974,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                             tvFachada.setError(null);
 
                             Cursor row;
-                            row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
+                            row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
                             row.moveToLast();
                             if (row.getCount() == 0) {
+                                String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, id_prestamo);
                                 params.put(1, id_integrante);
@@ -972,7 +1002,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                                 params.put(20, "");
                                 params.put(21, "");
                                 params.put(22, "");
-                                params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                params.put(23, fechaInicio);
                                 params.put(24, "");
                                 params.put(25, "");
                                 params.put(26, "0");
@@ -981,16 +1011,18 @@ public class VencidaIntegrante extends AppCompatActivity {
                                 params.put(29, "");
                                 params.put(30, "");
                                 params.put(31, "0");
+                                params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
                                 long id = 0;
 
-                                id = dBhelper.saveRespuestasVencidasInd(db, params);
+                                id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                                 id_respuesta = String.valueOf(id);
                             } else {
                                 if (row.getInt(25) == 1 || row.getInt(25) == 2) {
+                                    String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, id_prestamo);
-                                    params.put(1, id_prestamo);
+                                    params.put(1, id_integrante);
                                     params.put(2, "");
                                     params.put(3, "");
                                     params.put(4, _contacto[position]);
@@ -1012,7 +1044,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                                     params.put(20, "");
                                     params.put(21, "");
                                     params.put(22, "");
-                                    params.put(23, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(23, fechaInicio);
                                     params.put(24, "");
                                     params.put(25, "");
                                     params.put(26, "0");
@@ -1021,9 +1053,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                                     params.put(29, "");
                                     params.put(30, "");
                                     params.put(31, "0");
+                                    params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
                                     long id = 0;
 
-                                    id = dBhelper.saveRespuestasVencidasInd(db, params);
+                                    id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                                     id_respuesta = String.valueOf(id);
                                 } else {
@@ -1770,62 +1803,62 @@ public class VencidaIntegrante extends AppCompatActivity {
         if (!id_respuesta.isEmpty()){
             Cursor row;
 
-            row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{id_respuesta, id_prestamo});
+            row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE _id = ? AND id_prestamo = ? AND id_integrante = ?", "", new String[]{id_respuesta, id_prestamo, id_integrante});
 
             Log.e("CointVencida", ": "+row.getCount());
             if (row.getCount() > 0){
                 row.moveToFirst();
 
-                res_impresion = row.getInt(27);
+                res_impresion = row.getInt(28);
 
-                if (!row.getString(2).isEmpty() && !row.getString(3).isEmpty()){
+                if (!row.getString(3).isEmpty() && !row.getString(4).isEmpty()){
                     tvmapa.setError(null);
                     mapView.setVisibility(View.VISIBLE);
-                    ColocarUbicacionGestion(row.getDouble(2), row.getDouble(3));
+                    ColocarUbicacionGestion(row.getDouble(3), row.getDouble(4));
                 }
 
-                if (!row.getString(4).isEmpty()){ //CONTACTO
-                    tvContacto.setText(row.getString(4));
+                if (!row.getString(5).isEmpty()){ //CONTACTO
+                    tvContacto.setText(row.getString(5));
                     switch (Miscellaneous.ContactoCliente(tvContacto)) {
                         case 0: //SI CONTACTO
                             SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
 
-                            if (!row.getString(6).isEmpty()){//ACTUALIZAR TELEFONO
-                                tvActualizarTelefono.setText(row.getString(6));
+                            if (!row.getString(7).isEmpty()){//ACTUALIZAR TELEFONO
+                                tvActualizarTelefono.setText(row.getString(7));
                                 if (Miscellaneous.ActualizarTelefono(tvActualizarTelefono) == 0){
-                                    if (!row.getString(7).isEmpty()){//NUEVO TELEFONO
-                                        etActualizarTelefono.setText(row.getString(7));
+                                    if (!row.getString(8).isEmpty()){//NUEVO TELEFONO
+                                        etActualizarTelefono.setText(row.getString(8));
                                         etActualizarTelefono.setError(null);
                                         etActualizarTelefono.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
 
-                            if (!row.getString(8).isEmpty()){//RESULTADO PAGO
-                                tvResultadoGestion.setText(row.getString(8));
+                            if (!row.getString(9).isEmpty()){//RESULTADO PAGO
+                                tvResultadoGestion.setText(row.getString(9));
                                 SelectResultadoGestion(Miscellaneous.ResultadoGestion(tvResultadoGestion));
                                 switch (Miscellaneous.ResultadoGestion(tvResultadoGestion)){
                                     case 1: //No Pago
-                                        tvMotivoNoPago.setText(row.getString(9));
+                                        tvMotivoNoPago.setText(row.getString(10));
                                         SelectMotivoNoPago(Miscellaneous.MotivoNoPago(tvMotivoNoPago));
                                         switch (Miscellaneous.MotivoNoPago(tvMotivoNoPago)){
                                             case 1:
-                                                tvFechaDefuncion.setText(row.getString(10));
+                                                tvFechaDefuncion.setText(row.getString(11));
                                                 break;
                                             case 3:
-                                                tvFechaPromesaPago.setText(row.getString(11));
-                                                etMontoPromesa.setText(row.getString(12));
+                                                tvFechaPromesaPago.setText(row.getString(12));
+                                                etMontoPromesa.setText(row.getString(13));
                                                 break;
                                         }
 
-                                        if (!row.getString(5).isEmpty()){//COMENTARIO
+                                        if (!row.getString(6).isEmpty()){//COMENTARIO
                                             etComentario.setText(row.getString(6));
                                             etComentario.setVisibility(View.VISIBLE);
                                             etComentario.setError(null);
                                         }
 
-                                        if (!row.getString(19).isEmpty() && !row.getString(20).isEmpty()){//FACHADA
-                                            File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(19));
+                                        if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){//FACHADA
+                                            File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(20));
                                             Uri uriFachada = Uri.fromFile(fachadaFile);
                                             Glide.with(ctx).load(uriFachada).into(ivFachada);
                                             ibFachada.setVisibility(View.GONE);
@@ -1835,14 +1868,14 @@ public class VencidaIntegrante extends AppCompatActivity {
                                         }
 
                                         tvGerente.setVisibility(View.VISIBLE);
-                                        if (!row.getString(21).isEmpty()){//ESTA GERENTE
-                                            tvGerente.setText(row.getString(21));
+                                        if (!row.getString(22).isEmpty()){//ESTA GERENTE
+                                            tvGerente.setText(row.getString(22));
                                             SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
 
                                             if (Miscellaneous.Gerente(tvGerente) == 0){
 
-                                                if (!row.getString(22).isEmpty()){//FIRMA
-                                                    File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
+                                                if (!row.getString(23).isEmpty()){//FIRMA
+                                                    File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
                                                     Uri uriFirma = Uri.fromFile(firmaFile);
                                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                     ibFirma.setVisibility(View.GONE);
@@ -1854,31 +1887,30 @@ public class VencidaIntegrante extends AppCompatActivity {
                                         }
                                         break;
                                     case 0: // Si Pago
-                                        if (!row.getString(13).isEmpty()){//MEDIO PAGO
-                                            tvMedioPago.setText(row.getString(13));
+                                        if (!row.getString(14).isEmpty()){//MEDIO PAGO
+                                            tvMedioPago.setText(row.getString(14));
                                             medio_pago_anterio = Miscellaneous.MedioPago(tvMedioPago);
                                             SelectMedioPago(Miscellaneous.MedioPago(tvMedioPago));
-                                            if (!row.getString(15).isEmpty()){//PAGARA REQUERIDO
-
-                                                tvPagaraRequerido.setText(row.getString(15));
+                                            if (!row.getString(16).isEmpty()){//PAGARA REQUERIDO
+                                                tvPagaraRequerido.setText(row.getString(16));
                                                 SelectPagoRequerido(Miscellaneous.PagoRequerido(tvPagaraRequerido));
-                                                etPagoRealizado.setText(row.getString(16));
+                                                etPagoRealizado.setText(row.getString(17));
                                             }
 
-                                            if (!row.getString(14).isEmpty()){//FECHA DEPOSITO
-                                                tvFechaDeposito.setText(row.getString(14));
+                                            if (!row.getString(15).isEmpty()){//FECHA DEPOSITO
+                                                tvFechaDeposito.setText(row.getString(15));
                                                 tvFechaDeposito.setError(null);
                                             }
 
                                             if (Miscellaneous.MedioPago(tvMedioPago) == 6){ //EFECTIVO
-                                                if (!row.getString(17).isEmpty()){//IMPRIMIRA RECIBOS
-                                                    tvImprimirRecibo.setText(row.getString(17));
+                                                if (!row.getString(18).isEmpty()){//IMPRIMIRA RECIBOS
+                                                    tvImprimirRecibo.setText(row.getString(18));
                                                     SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
                                                     etFolioRecibo.setEnabled(true);
 
                                                     if (Miscellaneous.Impresion(tvImprimirRecibo) == 0){ //SI IMPRIMIRA RECIBOS
 
-                                                        if (!row.getString(18).isEmpty()){//FOLIO
+                                                        if (!row.getString(19).isEmpty()){//FOLIO
                                                             etPagoRealizado.setEnabled(false);
                                                             etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
@@ -1896,9 +1928,9 @@ public class VencidaIntegrante extends AppCompatActivity {
 
                                                             etFolioRecibo.setEnabled(false);
                                                             llFolioRecibo.setVisibility(View.VISIBLE);
-                                                            etFolioRecibo.setText(row.getString(18));
+                                                            etFolioRecibo.setText(row.getString(19));
                                                             etFolioRecibo.setError(null);
-                                                            folio_impreso = row.getString(18);
+                                                            folio_impreso = row.getString(19);
                                                         }
                                                         else {
                                                             ibImprimir.setVisibility(View.VISIBLE);
@@ -1907,7 +1939,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                                                     else{
                                                         ibImprimir.setVisibility(View.GONE);
                                                         llFolioRecibo.setVisibility(View.VISIBLE);
-                                                        etFolioRecibo.setText(row.getString(18));
+                                                        etFolioRecibo.setText(row.getString(19));
                                                         etFolioRecibo.setError(null);
                                                     }
                                                 }
@@ -1915,12 +1947,12 @@ public class VencidaIntegrante extends AppCompatActivity {
                                             else if (Miscellaneous.MedioPago(tvMedioPago) == 7){
                                                 ibImprimir.setVisibility(View.GONE);
                                                 llFolioRecibo.setVisibility(View.VISIBLE);
-                                                etFolioRecibo.setText(row.getString(18));
+                                                etFolioRecibo.setText(row.getString(19));
                                                 etFolioRecibo.setError(null);
                                             }
 
-                                            if (!row.getString(19).isEmpty() && !row.getString(20).isEmpty()){//FOTOGRAFIA O GALERIA
-                                                File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+row.getString(19));
+                                            if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){//FOTOGRAFIA O GALERIA
+                                                File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+row.getString(20));
                                                 Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                                                 Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                                                 ibFoto.setVisibility(View.GONE);
@@ -1930,13 +1962,13 @@ public class VencidaIntegrante extends AppCompatActivity {
                                                 tvFotoGaleria.setError(null);
                                             }
 
-                                            if (!row.getString(21).isEmpty()){//ESTA GERENTE
-                                                tvGerente.setText(row.getString(21));
+                                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
+                                                tvGerente.setText(row.getString(22));
 
                                                 SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
                                                 if (Miscellaneous.Gerente(tvGerente) == 0){//SI ESTA GERENTE
-                                                    if (!row.getString(22).isEmpty()){//FIRMA
-                                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
+                                                    if (!row.getString(23).isEmpty()){//FIRMA
+                                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
                                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                         ibFirma.setVisibility(View.GONE);
@@ -1953,14 +1985,14 @@ public class VencidaIntegrante extends AppCompatActivity {
                             break;
                         case 1: //NO CONTACTO
                             SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
-                            if (!row.getString(5).isEmpty()){//COMENTARIO
-                                etComentario.setText(row.getString(5));
+                            if (!row.getString(6).isEmpty()){//COMENTARIO
+                                etComentario.setText(row.getString(6));
                                 etComentario.setVisibility(View.VISIBLE);
                                 etComentario.setError(null);
                             }
 
-                            if (!row.getString(19).isEmpty() && !row.getString(20).isEmpty()){
-                                File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(19));
+                            if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){
+                                File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(20));
                                 Uri uriFachada = Uri.fromFile(fachadaFile);
                                 Glide.with(ctx).load(uriFachada).into(ivFachada);
                                 ibFachada.setVisibility(View.GONE);
@@ -1970,13 +2002,13 @@ public class VencidaIntegrante extends AppCompatActivity {
                             }
 
                             tvGerente.setVisibility(View.VISIBLE);
-                            if (!row.getString(21).isEmpty()){//ESTA GERENTE
-                                tvGerente.setText(row.getString(21));
+                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
+                                tvGerente.setText(row.getString(22));
                                 SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
 
                                 if (Miscellaneous.Gerente(tvGerente) == 0){
-                                    if (!row.getString(22).isEmpty()){
-                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
+                                    if (!row.getString(23).isEmpty()){
+                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
@@ -1990,19 +2022,19 @@ public class VencidaIntegrante extends AppCompatActivity {
                         case 2:
                             SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
 
-                            if (!row.getString(5).isEmpty()){//COMENTARIO
-                                etComentario.setText(row.getString(5));
+                            if (!row.getString(6).isEmpty()){//COMENTARIO
+                                etComentario.setText(row.getString(6));
                                 etComentario.setVisibility(View.VISIBLE);
                                 etComentario.setError(null);
                             }
 
                             tvGerente.setVisibility(View.VISIBLE);
-                            if (!row.getString(21).isEmpty()){//ESTA GERENTE
-                                tvGerente.setText(row.getString(21));
+                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
+                                tvGerente.setText(row.getString(22));
                                 SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
                                 if (Miscellaneous.Gerente(tvGerente) == 0){
-                                    if (!row.getString(22).isEmpty()){
-                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
+                                    if (!row.getString(23).isEmpty()){
+                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
@@ -2025,7 +2057,7 @@ public class VencidaIntegrante extends AppCompatActivity {
         Log.e("update", key+": "+value);
         ContentValues cv = new ContentValues();
         cv.put(key, value);
-        db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
+        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
     }
 
     @Override
@@ -2201,55 +2233,70 @@ public class VencidaIntegrante extends AppCompatActivity {
                         cv.put("fecha_fin", Miscellaneous.ObtenerFecha("timestamp"));
                         cv.put("estatus", "1");
 
-                        db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
+                        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
 
                         Cursor row;
-                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_V_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
+                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
                         row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO"});
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
-                            int weekFechaEst = 0;
-                            Calendar calFechaEst = Calendar.getInstance();
 
-                            try {
-                                Date dFechaEstablecida = sdf.parse(Miscellaneous.ObtenerFecha(FECHA.toLowerCase()));
-                                calFechaEst.setTime(dFechaEstablecida);
-                                weekFechaEst = calFechaEst.get(Calendar.WEEK_OF_YEAR);
+                            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                for (int i = 0; i < row_amortiz.getCount(); i++){
 
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                                    Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                            double sumPago = 0;
-                            for (int i = 0; i < row.getCount(); i++){
-                                String[] fechaIni = row.getString(22).split(" ");
-                                Date dFechaEstablecida = null;
-                                try {
-                                    dFechaEstablecida = sdf.parse(fechaIni[0]);
-                                    calFechaEst.setTime(dFechaEstablecida);
-
-                                    if (calFechaEst.get(Calendar.WEEK_OF_YEAR) == weekFechaEst){
-                                        sumPago += row.getDouble(15);
+                                    if (abono > pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                        abono = abono - pendiente;
                                     }
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                                    else if (abono == pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                        abono = 0.0;
+                                    }
+                                    else if (abono > 0 && abono < pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("pagado", "PARCIAL");
+                                        abono = 0.0;
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                    }
+                                    else
+                                        break;
+
+                                    row_amortiz.moveToNext();
                                 }
 
-                                row.moveToNext();
                             }
-                            /*try {
-                                if (sumPago >= Double.parseDouble(parent.monto_requerido)){
-                                    ContentValues cvInd = new ContentValues();
-                                    cvInd.put("is_ruta", 0);
-                                    cvInd.put("ruta_obligado", 0);
+                            row_amortiz.close();
 
-                                    db.update(TBL_CARTERA_IND_T, cvInd, "id_cartera = ?", new String[]{parent.id_cartera});
+                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                    ContentValues c = new ContentValues();
+                                    c.put("pagada", 1);
+                                    db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{id_prestamo});
                                 }
-                            }catch (NumberFormatException e){
 
-                            }*/
-
+                            }
+                            row_amortiz.close();
                         }
                         row.close();
 
@@ -2288,7 +2335,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         }
                         if (m.ResultadoGestion(tvResultadoGestion) == 0){ // Si pago
                             b.putString(RESULTADO_PAGO, "PAGO");
-                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7 ){ // Medio de pago Bancos y Oxxo
+                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7 || m.MedioPago(tvMedioPago) == 8 ){ // Medio de pago Bancos y Oxxo
                                 b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
                                 if (!tvFechaDeposito.getText().toString().trim().isEmpty()){ //Fecha de deposito capturada
                                     b.putString(FECHA_DEPOSITO, tvFechaDeposito.getText().toString().trim());

@@ -107,24 +107,61 @@ public class ReprintTicket {
 
             String nombreCampo;
 
-            nombreCampo = "Numero De Prestamo: ";
-            linea = line(nombreCampo, data.getNumeroPrestamo().trim());
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Clave de Grupo: " : "Numero de Cliente: ";
-            linea = line(nombreCampo, data.getNumeroCliente().trim());
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Nombre del Grupo: " : "Nombre del Cliente: ";
-            linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = (data.getTipoGestion().equals("GRUPAL"))?"Monto total del prestamo grupal: " : "Monto del prestamo: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getMontoPrestamo()).trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = "Monto pago requerido: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getPagoRequerido()).trim()));
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-            nombreCampo = "Monto pago realizado: ";
-            linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+
+                nombreCampo = "Numero De Prestamo: ";
+                linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Clave de Grupo: " : "Numero de Cliente: ";
+                linea = line(nombreCampo, data.getNumeroCliente().trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Nombre del Grupo: " : "Nombre del Cliente: ";
+                linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = (data.getTipoGestion().equals("GRUPAL")) ? "Monto total del prestamo grupal: " : "Monto del prestamo: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getMontoPrestamo()).trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = "Monto pago requerido: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getPagoRequerido()).trim()));
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                nombreCampo = "Monto pago realizado: ";
+                linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+            }
+            else{
+                if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
+                    nombreCampo = "Numero De Prestamo: ";
+                    linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Numero de Cliente: ";
+                    linea = line(nombreCampo, data.getNumeroCliente().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Cliente: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Monto pago realizado: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                }
+                else{ //Grupal vencida
+                    nombreCampo = "Numero De Prestamo: ";
+                    linea = line(nombreCampo, data.getNumeroPrestamo().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Numero de Cliente: ";
+                    linea = line(nombreCampo, data.getNumeroCliente().trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Grupo: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombreGrupo().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Nombre del Integrante: ";
+                    linea = line(nombreCampo, replaceStr(data.getNombre().trim()));
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    nombreCampo = "Monto pago realizado: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                }
+
+            }
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -177,7 +214,7 @@ public class ReprintTicket {
                 linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(data.getFolio()));
             }
             else if (data.getTipoPrestamo().equals("VENCIDA")){
-
+                linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+(data.getFolio()));
             }
 
             dobleEspacio();

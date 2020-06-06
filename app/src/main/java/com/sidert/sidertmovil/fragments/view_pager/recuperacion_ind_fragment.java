@@ -150,7 +150,9 @@ import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
@@ -556,7 +558,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                if (Miscellaneous.MedioPago(tvMedioPago) == 6){
                     if (s.length() > 0){
                         Update("folio", s.toString());
                     }
@@ -2137,7 +2139,6 @@ public class recuperacion_ind_fragment extends Fragment {
             case REQUEST_CODE_GALERIA:
                 if (data != null){
                     try {
-
                         imageUri = data.getData();
 
                         byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
@@ -2288,9 +2289,67 @@ public class recuperacion_ind_fragment extends Fragment {
                         String sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
                         row = db.rawQuery(sql, new String[]{parent.id_prestamo, "SI", "PAGO"});
 
-                        Log.e("RowResp", ": "+row.getCount());
                         if (row.getCount() > 0){
                             row.moveToFirst();
+
+                            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                                    Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
+
+                                    if (abono > pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = abono - pendiente;
+                                    }
+                                    else if (abono == pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                        cv_amortiz.put("pagado", "PAGADO");
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+                                        abono = 0.0;
+                                    }
+                                    else if (abono > 0 && abono < pendiente){
+                                        ContentValues cv_amortiz = new ContentValues();
+                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("pagado", "PARCIAL");
+                                        abono = 0.0;
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
+
+                                    }
+                                    else
+                                        break;
+
+                                    row_amortiz.moveToNext();
+                                }
+
+                            }
+                            row_amortiz.close();
+
+                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
+
+                            if (row_amortiz.getCount() > 0){
+                                row_amortiz.moveToFirst();
+                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                    ContentValues c = new ContentValues();
+                                    c.put("pagada", 1);
+                                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{parent.id_prestamo});
+                                }
+
+                            }
+                            row_amortiz.close();
+
+
                             int weekFechaEst = 0;
                             Calendar calFechaEst = Calendar.getInstance();
 
@@ -2302,8 +2361,6 @@ public class recuperacion_ind_fragment extends Fragment {
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
-
-                            Log.e("NumeroWeek ", ": "+weekFechaEst);
 
                             double sumPago = 0;
                             for (int i = 0; i < row.getCount(); i++){
@@ -2331,9 +2388,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
                                     db.update(TBL_CARTERA_IND_T, cvInd, "id_cartera = ?", new String[]{parent.id_cartera});
                                 }
-                            }catch (NumberFormatException e){
-
-                            }
+                            }catch (NumberFormatException e){ }
 
                         }
                         row.close();

@@ -17,13 +17,13 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.view_pager.cvg_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.cvg_pagos_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.recuperacion_gpo_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.recuperacion_gpo_int_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.rg_detalle_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.rg_pagos_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.vencida_gpo_fragment;
 import com.sidert.sidertmovil.utils.BottomNavigationViewHelper;
 import com.sidert.sidertmovil.utils.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
@@ -143,7 +143,7 @@ public class VencidaGrupal extends AppCompatActivity {
             saldo_corte = row.getDouble(0);
         }
 
-        /*boolean is_recuperacion = false;
+        boolean is_recuperacion = false;
 
         try {
             JSONArray modulos = new JSONArray(session.getUser().get(8));
@@ -169,8 +169,8 @@ public class VencidaGrupal extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
-        nvMenu.setSelectedItemId(R.id.nvGestion);
+        }
+        //nvMenu.setSelectedItemId(R.id.nvGestion);
     }
 
     @Override

@@ -3,11 +3,9 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -19,12 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.CarteraVencidaIndividual;
-import com.sidert.sidertmovil.activities.RecuperacionIndividual;
 import com.sidert.sidertmovil.activities.VencidaIndividual;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MAval;

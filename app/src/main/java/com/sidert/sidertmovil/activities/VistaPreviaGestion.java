@@ -238,7 +238,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 etSaldoActual.setVisibility(View.VISIBLE);
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
-                if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7)){ //Banco y Oxxo
+                if (Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7 || Miscellaneous.MedioPago(etMedioPago) == 8){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);

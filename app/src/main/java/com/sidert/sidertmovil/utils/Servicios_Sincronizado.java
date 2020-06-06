@@ -17,12 +17,14 @@ import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.MAval;
 import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MCierreDia;
 import com.sidert.sidertmovil.models.MImpresion;
 import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
+import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
@@ -64,13 +66,11 @@ import retrofit2.http.Multipart;
 
 import static com.sidert.sidertmovil.utils.Constants.CODEBARS;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_IMPRESIONES;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.DIRECCION;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FACHADA;
-import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DISPOSITIVO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_ENVIO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN_GEO;
@@ -88,6 +88,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
@@ -107,6 +108,8 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TEL_CELULAR_SECRETARIA;
@@ -131,7 +134,7 @@ public class Servicios_Sincronizado {
             loading.show();
         GetGeolocalizadas(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<ModeloGeolocalizacion> call = api.getGeolocalizacion("Bearer "+ session.getUser().get(7));
         call.enqueue(new Callback<ModeloGeolocalizacion>() {
@@ -305,7 +308,7 @@ public class Servicios_Sincronizado {
                     body = MultipartBody.Part.createFormData("foto_fachada", image.getName(), imageBody);
                 }
 
-                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
                 Call<ModeloResSaveGeo> call = api.guardarGeo("Bearer "+ session.getUser().get(7),
                                                                 tipoBody,
@@ -369,14 +372,20 @@ public class Servicios_Sincronizado {
 
         Cursor row;
 
+        String x =  "SELECT * from " + TBL_RESPUESTAS_IND_V_T ;
+        row = db.rawQuery(x, null);
+        Log.e("countIndvidual", row.getCount()+" total");
+
         String query;
+
         if (ENVIROMENT)
-            query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso FROM "+ TBL_RESPUESTAS_IND + " AS i INNER JOIN " + TBL_PRESTAMOS_IND + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT  g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso FROM " + TBL_RESPUESTAS_GPO + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ?) AS respuestas";
+            query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso, '' AS fecha_promesa_pago, '' AS monto_promesa FROM "+ TBL_RESPUESTAS_IND + " AS i INNER JOIN " + TBL_PRESTAMOS_IND + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT  g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso, '' AS fecha_promesa_pago, '' AS monto_promesa FROM " + TBL_RESPUESTAS_GPO + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ?) AS respuestas";
         else
-            query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso FROM "+ TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT  g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ?) AS respuestas";
+            query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM "+ TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ? UNION SELECT vi._id, vi.id_prestamo, vi.latitud, vi.longitud, vi.contacto, '' AS motivo_aclaracion, vi.comentario, vi.actualizar_telefono, vi.nuevo_telefono, vi.resultado_gestion, vi.motivo_no_pago, vi.fecha_fallecimiento, vi.medio_pago, vi.fecha_pago, vi.pagara_requerido AS x, vi.pago_realizado, vi.imprimir_recibo, vi.folio, vi.evidencia, vi.tipo_imagen, vi.gerente, vi.firma, vi.fecha_inicio, vi.fecha_fin, vi.res_impresion, vi.estatus_pago, vi.saldo_corte, vi.saldo_actual,'1' AS tipo_gestion, pvi.num_solicitud, pvi.fecha_establecida, cvi.dia AS dia_semana, pvi.monto_requerido, 'VENCIDA' AS tipo_cartera, pvi.monto_amortizacion, vi.dias_atraso, vi.fecha_monto_promesa, vi.monto_promesa, 'VENCIDA' as tipo, 0 AS prestamo_id_integrante, vi.serial_id FROM "+TBL_RESPUESTAS_IND_V_T+" AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON vi.id_prestamo = pvi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS cvi ON pvi.id_cliente = cvi.id_cartera WHERE vi.estatus = ? UNION SELECT v._id, v.id_prestamo, v.latitud, v.longitud, v.contacto, '' AS motivo_aclaracion, v.comentario, v.actualizar_telefono, v.nuevo_telefono, v.resultado_gestion, v.motivo_no_pago, v.fecha_fallecimiento, v.medio_pago, v.fecha_pago,v.pagara_requerido AS x, v.pago_realizado, v.imprimir_recibo, v.folio, v.evidencia, v.tipo_imagen, v.gerente, v.firma, v.fecha_inicio, v.fecha_fin, v.res_impresion, v.estatus_pago,v.saldo_corte, v.saldo_actual,'2' AS tipo_gestion, pv.num_solicitud, pv.fecha_establecida, cv.dia AS dia_semana, mv.monto_requerido, 'VENCIDA' AS tipo_cartera, mv.monto_requerido AS monto_amortizacion, v.dias_atraso, v.fecha_monto_promesa, v.monto_promesa, 'VENCIDA' AS tipo, mv.id_prestamo_integrante AS prestamo_id_integrante, v.serial_id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS v INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pv ON v.id_prestamo = pv.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cv ON pv.id_grupo = cv.id_cartera INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS mv ON mv.id_integrante = v.id_integrante WHERE v.estatus = ?) AS respuestas";
 
-        row = db.rawQuery(query, new String[]{"1", "1"});
+        row = db.rawQuery(query, new String[]{"1", "1", "1", "1"});
 
+        Log.e("rowGestionada", row.getCount()+" total");
         if (row.getCount() > 0){
             row.moveToFirst();
 
@@ -405,6 +414,7 @@ public class Servicios_Sincronizado {
                 params.put("num_solicitud", row.getString(29));
                 JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
                 params.put("respuesta", json_res.toString());
+                params.put("tipo", row.getString(38));
 
                 String val = row.getString(1)+","+row.getString(29)+","+json_res.toString()+"\n";
                 try {
@@ -424,7 +434,7 @@ public class Servicios_Sincronizado {
                     if (json_res.has("firma"))
                         firma = json_res.getString("firma");
 
-                    Log.e("res_envio", json_res.toString());
+                    //Log.e("res_envio", json_res.toString());
 
                     SendrespuestaGestion(ctx, params, row.getInt(28), row.getString(0), evidencia, tipo_imagen, firma, showDG);
                 } catch (JSONException e) {
@@ -439,7 +449,6 @@ public class Servicios_Sincronizado {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         row.close();
 
@@ -448,7 +457,45 @@ public class Servicios_Sincronizado {
 
     }
 
-    private void SendrespuestaGestion(final Context ctx, HashMap<String, String> params, final int tipo_gestion, final String _id, String imagen, String tipo_imagen, String firma, final boolean DGshow){
+    public void SaveCierreDia(Context ctx, boolean showDG){
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row;
+
+        String query =  "SELECT * FROM " + TBL_CIERRE_DIA_T + " WHERE estatus = 1";
+        row = db.rawQuery(query, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            for (int i = 0; i < row.getCount(); i++){
+                MCierreDia item = new MCierreDia();
+                item.setId(row.getString(0));
+                item.setNombre(row.getString(14));
+                item.setMonto(row.getString(6));
+                item.setEvidencia(row.getString(7));
+                item.setIdRespuesta(row.getString(2));
+                item.setNumPrestamo(row.getString(3));
+                item.setClaveCliente(row.getString(4));
+                item.setTipoCierre(row.getInt(8));
+                item.setTipoPrestamo(row.getString(9));
+                item.setEstatus(row.getInt(13));
+                item.setSerialId(row.getString(15));
+                item.setMedioPago(Miscellaneous.GetIdMedioPago(row.getString(5)));
+                item.setFechaInicio(row.getString(10));
+                item.setFechaFin(row.getString(11));
+
+                new RegistrarCierreDia().execute(ctx, item);
+                row.moveToNext();
+            }
+        }
+
+    }
+
+
+
+    private void SendrespuestaGestion(final Context ctx, final HashMap<String, String> params, final int tipo_gestion, final String _id, String imagen, String tipo_imagen, String firma, final boolean DGshow){
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (DGshow)
@@ -460,6 +507,7 @@ public class Servicios_Sincronizado {
             RequestBody idPrestamoBody = RequestBody.create(MultipartBody.FORM, params.get("id_prestamo"));
             RequestBody numSolicitudBody = RequestBody.create(MultipartBody.FORM, params.get("num_solicitud"));
             RequestBody respuestaBody = RequestBody.create(MultipartBody.FORM, params.get("respuesta"));
+            RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, params.get("tipo"));
 
 
             MultipartBody.Part evidenciaBody = null;
@@ -501,15 +549,17 @@ public class Servicios_Sincronizado {
                 firmaBody = MultipartBody.Part.createFormData("firma", "", attachmentEmpty);
             }
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Log.e("idPRestamo", params.get("id_prestamo") );
             Log.e("numSolicitud", params.get("num_solicitud"));
             Log.e("RespuestaGes", params.get("respuesta"));
+            Log.e("RespuestaGes", params.get("tipo"));
             Call<MRespuestaGestion> call = api.guardarRespuesta("Bearer "+ session.getUser().get(7),
                     idPrestamoBody,
                     numSolicitudBody,
                     respuestaBody,
+                    tipoBody,
                     evidenciaBody,
                     firmaBody);
 
@@ -523,10 +573,11 @@ public class Servicios_Sincronizado {
                             ContentValues cv = new ContentValues();
                             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             cv.put("estatus", 2);
-                            if (ENVIROMENT)
-                                db.update((tipo_gestion == 1)?TBL_RESPUESTAS_IND:TBL_RESPUESTAS_GPO, cv, "_id = ?", new String[]{_id});
-                            else
+
+                            if (params.get("tipo").equals("VIGENTE"))
                                 db.update((tipo_gestion == 1)?TBL_RESPUESTAS_IND_T:TBL_RESPUESTAS_GPO_T, cv, "_id = ?", new String[]{_id});
+                            else
+                                db.update((tipo_gestion == 1)?TBL_RESPUESTAS_IND_V_T:TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{_id});
 
                             break;
                         default:
@@ -540,7 +591,7 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MRespuestaGestion> call, Throwable t) {
-                    Log.e("FailSaveImagexxxxxx", t.getMessage());
+                    Log.e("FailSaveGestion", t.getMessage());
                     if (DGshow)
                         loading.dismiss();
                 }
@@ -567,6 +618,7 @@ public class Servicios_Sincronizado {
             String _id = (String) params[2];
 
             DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = new SessionManager(ctx);
             SQLiteDatabase db = dBhelper.getWritableDatabase();
 
             ContentValues cv = new ContentValues();
@@ -574,7 +626,7 @@ public class Servicios_Sincronizado {
             try {
                 cv.put("fachada", Miscellaneous.save(
                         Miscellaneous.descargarImagen(
-                                WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_FICHAS +
+                                 session.getDominio().get(0)+session.getDominio().get(1)+ WebServicesRoutes.CONTROLLER_FICHAS +
                                         WebServicesRoutes.IMAGES_GEOLOCALIZACION +
                                         nombre_imagen.replace("\"","")), 1));
 
@@ -898,7 +950,7 @@ public class Servicios_Sincronizado {
 
 
                         Log.e("solicitud", json_solicitud.toString());
-                        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_SOLICITUDES).create(ManagerInterface.class);
+                        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
                         Call<MResSaveOriginacionInd> call = api.guardarOriginacionInd("Bearer "+ session.getUser().get(7),
                                 solicitudBody,
@@ -945,14 +997,13 @@ public class Servicios_Sincronizado {
 
     }
 
-
     //Obtiene los datos de un prestamo en especifico
     public void GetPrestamo(final Context ctx, final int id_cartera, int tipo_prestamo){
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
         SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL).create(ManagerInterface.class);
+        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         if(tipo_prestamo == 1){ //Obtiene prestamos individuales
             Log.e("IdCarteraInd", id_cartera+"ads");
@@ -1421,7 +1472,7 @@ public class Servicios_Sincronizado {
         if (ENVIROMENT)
             sql = "SELECT * FROM (SELECT vi.*, pi.tipo_cartera, '1' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND + " AS pi ON vi.num_prestamo = pi.num_prestamo WHERE vi.num_prestamo LIKE '%-L%' UNION SELECT vi2.*, pg.tipo_cartera, '2' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE + " AS vi2 INNER JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON vi2.num_prestamo = pg.num_prestamo WHERE vi2.num_prestamo NOT LIKE '%-L%') AS imp WHERE estatus = ?";
         else
-            sql = "SELECT * FROM (SELECT vi.*, pi.tipo_cartera, '1' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON vi.num_prestamo = pi.num_prestamo WHERE vi.num_prestamo LIKE '%-L%' UNION SELECT vi2.*, pg.tipo_cartera, '2' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS vi2 INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON vi2.num_prestamo = pg.num_prestamo WHERE vi2.num_prestamo NOT LIKE '%-L%') AS imp WHERE estatus = ?";
+            sql = "SELECT * FROM (SELECT vi.*, pi.tipo_cartera, '1' AS tipo_gestion, 'VIGENTE' AS tipo_prestamo FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON vi.num_prestamo = pi.num_prestamo WHERE vi.num_prestamo LIKE '%-L%' UNION SELECT vi2.*, pg.tipo_cartera, '2' AS tipo_gestion, 'VIGENTE' AS tipo_prestamo FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS vi2 INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON vi2.num_prestamo = pg.num_prestamo WHERE vi2.num_prestamo NOT LIKE '%-L%' UNION SELECT v.*, pvi.tipo_cartera, '1' AS tipo_gestion, 'VENCIDA' AS tipo_prestamo FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS v INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON v.num_prestamo = pvi.num_prestamo WHERE v.num_prestamo LIKE '%-L%' UNION SELECT vg.*, pvg.tipo_cartera, '2' AS tipo_gestion, 'VENCIDA' AS tipo_prestamo FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS vg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON vg.num_prestamo = pvg.num_prestamo WHERE vg.num_prestamo NOT LIKE '%-L%') AS imp WHERE estatus = ?";
 
         Log.e("sqlImpresion", sql);
         row = db.rawQuery(sql, new String[]{"0"});
@@ -1436,20 +1487,22 @@ public class Servicios_Sincronizado {
                 String external_id =  "";
                 String fInicio = "";
                 Cursor row_gestion;
-                if (row.getInt(12) == 1){
+                int tipo_impresion = (row.getString(13).equals("VIGENTE"))?1:2;
+                if (row.getInt(12) == 1){ //Busca respuestas en individual
                     String[] str = row.getString(1).split("-");
 
-                    if (ENVIROMENT)
-                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
-                    else
+                    if (row.getString(13).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
-                }
-                else{
-                    String[] str = row.getString(1).split("-");
-                    if (ENVIROMENT)
-                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_GPO, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
                     else
+                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_V_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
+                }
+                else{ //Busca respuestas en grupal
+                    String[] str = row.getString(1).split("-");
+
+                    if (row.getString(13).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_GPO_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
+                    else
+                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_INTEGRANTE_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
                 }
                 row_gestion.moveToFirst();
                 fInicio = row_gestion.getString(0);
@@ -1485,7 +1538,7 @@ public class Servicios_Sincronizado {
                             .execute(ctx,
                                     _impresiones,
                                     row.getString(0),
-                                    1);
+                                    tipo_impresion);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1513,10 +1566,8 @@ public class Servicios_Sincronizado {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Cursor row;
         String sql;
-        if (ENVIROMENT)
-            sql = "SELECT * FROM (SELECT vri.*, pi.tipo_cartera, '1' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND + " AS pi ON vi.num_prestamo = pi.num_prestamo WHERE vi.num_prestamo LIKE '%-L%' UNION SELECT vi2.*, pg.tipo_cartera, '2' AS tipo_gestion FROM " + TBL_IMPRESIONES_VIGENTE + " AS vi2 INNER JOIN " + TBL_PRESTAMOS_GPO + " AS pg ON vi2.num_prestamo = pg.num_prestamo WHERE vi2.num_prestamo NOT LIKE '%-L%') AS imp WHERE estatus = ?";
-        else
-            sql = "SELECT * FROM (SELECT vri.*, pi.tipo_cartera, '1' AS tipo_gestion FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vri INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON vri.num_prestamo = pi.num_prestamo WHERE vri.num_prestamo LIKE '%-L%' UNION SELECT vri2.*, pg.tipo_cartera, '2' AS tipo_gestion FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vri2 INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON vri2.num_prestamo = pg.num_prestamo WHERE vri2.num_prestamo NOT LIKE '%-L%') AS imp WHERE estatus = ?";
+
+        sql = "SELECT * FROM (SELECT vri.*, pi.tipo_cartera, '1' AS tipo_gestion, 'VIGENTE' AS tipo_prestamo FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vri INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON vri.num_prestamo = pi.num_prestamo WHERE vri.num_prestamo LIKE '%-L%' AND pi.tipo_cartera IN ('VIGENTE','COBRANZA') UNION SELECT vri2.*, pg.tipo_cartera, '2' AS tipo_gestion, 'VIGENTE' AS tipo_prestamo FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vri2 INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON vri2.num_prestamo = pg.num_prestamo WHERE vri2.num_prestamo NOT LIKE '%-L%' AND pg.tipo_cartera IN ('VIGENTE','COBRANZA') UNION SELECT vi.*, pvi.tipo_cartera, '1' AS tipo_gestion, 'VENCIDA' AS tipo_prestamo FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON vi.num_prestamo = pvi.num_prestamo WHERE vi.num_prestamo LIKE '%-L%' AND pvi.tipo_cartera IN ('VENCIDA') UNION SELECT vg.*, pvg.tipo_cartera, '2' AS tipo_gestion, 'VENCIDA' AS tipo_prestamo FROM " + TBL_REIMPRESION_VIGENTE_T + " AS vg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON vg.num_prestamo = pvg.num_prestamo WHERE vg.num_prestamo NOT LIKE '%-L%' AND pvg.tipo_cartera IN ('VENCIDA')) AS imp WHERE estatus = ?";
 
         row = db.rawQuery(sql, new String[]{"0"});
 
@@ -1534,19 +1585,21 @@ public class Servicios_Sincronizado {
                 Log.e("NumPresTamoGestion", row.getString(1));
                 if (row.getInt(13) == 1){
                     String[] str = row.getString(1).split("-");
-
-                    if (ENVIROMENT)
-                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
-                    else
+                    Log.e("iDGestion", str[2]+"   "+row.getString(14));
+                    if (row.getString(14).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
+                    else
+                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_V_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
                 }
                 else{
                     String[] str = row.getString(1).split("-");
-                    if (ENVIROMENT)
-                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_GPO, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
-                    else
+                    Log.e("iDGestion", str[1]);
+                    if (row.getString(14).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_GPO_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
+                    else
+                        row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_INTEGRANTE_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
                 }
+                Log.e("RowReimp", row_gestion.getCount()+" Reimpresion");
                 row_gestion.moveToFirst();
                 fInicio = row_gestion.getString(0);
 
@@ -1629,6 +1682,94 @@ public class Servicios_Sincronizado {
 
     }
 
+    public class RegistrarCierreDia extends AsyncTask<Object, Void, String>{
+
+        @Override
+        protected String doInBackground(Object... params) {
+            Context ctx = (Context) params[0];
+            final MCierreDia item = (MCierreDia) params[1];
+
+            Log.e("Cursor", item.getNombre());
+            Log.e("Cursor", item.getMonto());
+            Log.e("Cursor", "MedioPago: "+item.getMedioPago());
+            Log.e("Cursor", item.getClaveCliente());
+            Log.e("Cursor", item.getEvidencia());
+            Log.e("Cursor", item.getNumPrestamo());
+            Log.e("Cursor", item.getSerialId());
+            Log.e("Cursor", item.getFechaInicio());
+            Log.e("Cursor", item.getFechaFin());
+
+
+
+            DBhelper dBhelper = new DBhelper(ctx);
+            final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+            SessionManager session = new SessionManager(ctx);
+
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                RequestBody numPrestamoBody = RequestBody.create(MultipartBody.FORM, item.getNumPrestamo());
+                RequestBody claveClienteBody = RequestBody.create(MultipartBody.FORM, item.getClaveCliente());
+                RequestBody serialIdBody = RequestBody.create(MultipartBody.FORM, item.getSerialId());
+                RequestBody medioPagoBody = RequestBody.create(MultipartBody.FORM, String.valueOf(item.getMedioPago()));
+                RequestBody montoDepositadoBody = RequestBody.create(MultipartBody.FORM, item.getMonto());
+                RequestBody nombreImagenBody = RequestBody.create(MultipartBody.FORM, item.getEvidencia());
+                RequestBody fechaInicioBody = RequestBody.create(MultipartBody.FORM, item.getFechaInicio());
+                RequestBody fechaFinBody = RequestBody.create(MultipartBody.FORM, item.getFechaInicio());
+                RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                MultipartBody.Part envidenciaBody = null;
+                final File image_evidencia = new File(Constants.ROOT_PATH + "CierreDia/"+item.getEvidencia());
+                if (!item.getEvidencia().isEmpty() && image_evidencia != null) {
+                    RequestBody imageBody =
+                            RequestBody.create(
+                                    MediaType.parse("image/*"), image_evidencia);
+
+                    envidenciaBody = MultipartBody.Part.createFormData("fotografia", image_evidencia.getName(), imageBody);
+                }
+
+                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+
+
+                Call<MResCierreDia> call = api.saveCierreDia("Bearer "+ session.getUser().get(7),
+                                                                        numPrestamoBody,
+                                                                        claveClienteBody,
+                                                                        serialIdBody,
+                                                                        medioPagoBody,
+                                                                        montoDepositadoBody,
+                                                                        nombreImagenBody,
+                                                                        fechaInicioBody,
+                                                                        fechaFinBody,
+                                                                        fechaEnvioBody,
+                                                                        envidenciaBody);
+
+                call.enqueue(new Callback<MResCierreDia>() {
+                    @Override
+                    public void onResponse(Call<MResCierreDia> call, Response<MResCierreDia> response) {
+                        Log.e("CodeCierre", String.valueOf(response.code()));
+                        switch (response.code()){
+                            case 200:
+                                ContentValues cv = new ContentValues();
+                                cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                cv.put("estatus", 2);
+                                db.update(TBL_CIERRE_DIA_T, cv, "_id = ?", new String[]{item.getId()});
+
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MResCierreDia> call, Throwable t) {
+                        Log.e("FailCierre", t.getMessage());
+                    }
+                });
+
+
+            }
+
+
+            return "";
+        }
+    }
+
     public class RegistrarTracker extends AsyncTask<Object, Void, String>{
 
         @Override
@@ -1641,7 +1782,7 @@ public class Servicios_Sincronizado {
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
             SessionManager session = new SessionManager(ctx);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Call<MResponseTracker> call = api.guardarTracker(tracker,
                     "Bearer "+ session.getUser().get(7));
@@ -1690,7 +1831,7 @@ public class Servicios_Sincronizado {
             int tipo_prestamo = (int)params[2];
 
             SessionManager session = new SessionManager(ctx);
-            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             if(tipo_prestamo == 1){ //Obtiene prestamos individuales
                 Call<List<MPrestamoRes>> call = api.getPrestamosInd(id,"Bearer "+ session.getUser().get(7));
@@ -1902,7 +2043,6 @@ public class Servicios_Sincronizado {
 
                 try {
                     List<MPrestamoGpoRes> prestamos = call.execute().body();
-                    //List<MPrestamoRes> prestamos = response.body();
                     if (prestamos.size() > 0){
                         DBhelper dBhelper = new DBhelper(ctx);
                         SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -2135,14 +2275,13 @@ public class Servicios_Sincronizado {
         protected String doInBackground(final Object... params) {
             Context ctx = (Context) params[0];
             List<MSendImpresion> impresion = (List<MSendImpresion>) params[1];
-            //String impresion = (String) params[1];
             final String id_impresion = (String) params[2];
             final int tipo_impresion = (int) params[3];
             DBhelper dBhelper = new DBhelper(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
             SessionManager session = new SessionManager(ctx);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_IMPRESIONES).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
 
             Call<List<String>> call = api.guardarImpresiones(impresion,

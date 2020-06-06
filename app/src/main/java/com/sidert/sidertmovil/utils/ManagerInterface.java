@@ -6,8 +6,10 @@ import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MImpresionRes;
+import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
+import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
@@ -162,6 +164,13 @@ public interface ManagerInterface {
                                       @Part("fecha_envio") RequestBody fecha_envio,
                                       @Part MultipartBody.Part foto_fachada);
 
+    @GET(WebServicesRoutes.WS_GET_LOG_ASESORES)
+    Call<List<MLogLogin>> getLogAsesores(@Query("fechaInicial") String fechaInicial,
+                                   @Query("fechaFinal") String fechaFinal,
+                                   @Query("region") String region,
+                                   @Query("sucursal") String sucursal,
+                                   @Query("usuario") String usuario);
+
     /*Serivicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
@@ -186,6 +195,7 @@ public interface ManagerInterface {
                                              @Part("prestamo_id") RequestBody prestamo_id,
                                              @Part("num_solicitud") RequestBody num_solicitud,
                                              @Part("respuesta") RequestBody respuesta,
+                                             @Part("tipo") RequestBody tipo,
                                              @Part MultipartBody.Part evidencia,
                                              @Part MultipartBody.Part firma);
 
@@ -203,6 +213,20 @@ public interface ManagerInterface {
                                                        @Part MultipartBody.Part curp,
                                                        @Part MultipartBody.Part comprobante_domicilio,
                                                        @Part MultipartBody.Part firma_asesor);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_CIERRE_DIA)
+    Call<MResCierreDia> saveCierreDia(@Header("Authorization") String token,
+                                      @Part("num_prestamo") RequestBody numPrestamo,
+                                      @Part("clave_cliente") RequestBody claveCliente,
+                                      @Part("serial_id") RequestBody serialId,
+                                      @Part("medio_pago_id") RequestBody medioPagoId,
+                                      @Part("monto_depositado") RequestBody montoDepositado,
+                                      @Part("nombre_imagen") RequestBody nombreImagen,
+                                      @Part("fecha_inicio") RequestBody fechaInicio,
+                                      @Part("fecha_fin") RequestBody fechaFin,
+                                      @Part("fecha_envio") RequestBody fechaEnvio,
+                                      @Part MultipartBody.Part fotografia);
 
     @Headers({
             "Accept: application/json",

@@ -76,6 +76,15 @@ public class Miscellaneous {
         }
     }
 
+    /*Validación de que no sea null ni vacio*/
+    public static String validStr(Object str) {
+        if (str == null ||str.equals("null")) {
+            return "";
+        } else {
+            return String.valueOf(str);
+        }
+    }
+
     public static String StringFormatCurrency(String s){
         String str = "0.00";
 
@@ -134,78 +143,6 @@ public class Miscellaneous {
             table = Constants.ERROR;
         }
         return table;
-    }
-
-    /* Descomponer json para obteción de registros de DB  */
-    public static String readJson (JSONObject json) throws JSONException {
-        String conditionals = "";
-        JSONArray jsonWhere =(JSONArray) json.get(Constants.WHERE);
-        JSONArray jsonOrder =(JSONArray) json.get(Constants.ORDER);
-        if (jsonWhere.length() > 0)
-        {
-            conditionals = " WHERE ";
-            for (int i = 0; i < jsonWhere.length(); i++)
-            {
-                JSONObject item = jsonWhere.getJSONObject(i);
-
-                if (i == 0)
-                {
-                    conditionals +=  item.getString(Constants.KEY)+ " = " + item.getString(Constants.VALUE);
-                }
-                else {
-                    conditionals += " AND " + item.getString(Constants.KEY)+ " = " + item.getString(Constants.VALUE);
-                }
-            }
-        }
-
-        if (jsonOrder.length() > 0)
-        {
-            conditionals = (jsonWhere.length() > 0)?conditionals:"";
-
-            for (int i = 0; i < jsonOrder.length(); i++)
-            {
-                if (i == 0)
-                {
-                    conditionals +=  " ORDER BY " + jsonOrder.get(i);
-                }
-                else if(i > 0 && i < jsonOrder.length() - 1){
-                    conditionals += ", " + jsonOrder.get(i);
-                }
-                else {
-                    conditionals +=  jsonOrder.get(i);
-                }
-            }
-        }
-        return conditionals;
-    }
-
-    /* Obtiene el contenido de un archivo */
-    public static String loadSettingFile(String fileName) {
-        String text = "";
-        int rin;
-        char [] buf = new char[128];
-        try
-        {
-            FileReader fReader = new FileReader(fileName);
-            rin = fReader.read(buf);
-            if(rin > 0)
-            {
-                text = new String(buf,0,rin);
-            }
-            fReader.close();
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-            //Log.i(TAG, "Connection history not exists.");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            //Log.e(TAG, e.getMessage(), e);
-        }
-
-        return text;
     }
 
     /*Generar formato de moneda*/
@@ -290,6 +227,15 @@ public class Miscellaneous {
                 }
                 path = Constants.ROOT_PATH+"Documentos/" + name;
                 break;
+            case 5:     // Cierre de dia
+                tempDir = new File(Constants.ROOT_PATH+"CierreDia");
+                if(!tempDir.exists())
+                {
+                    Log.v("Carpeta", "No existe CierreDia");
+                    tempDir.mkdir();
+                }
+                path = Constants.ROOT_PATH+"CierreDia/" + name;
+                break;
         }
 
         File file = new File(path);
@@ -315,7 +261,7 @@ public class Miscellaneous {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver() , uri_img);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     compressedByteArray = stream.toByteArray();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -633,63 +579,6 @@ public class Miscellaneous {
             }
         }
         return flag;
-    }
-
-    /*public static ModeloGeolocalizacion.Integrante GetIntegrante (List<ModeloGeolocalizacion.Integrante> integrantes, String tipo){
-        ModeloGeolocalizacion.Integrante integrante = null;
-
-        for (int i = 0; i<integrantes.size(); i++){
-            if (integrantes.get(i).getIntegranteTipo().equals(tipo)){
-                integrante = integrantes.get(i);
-                break;
-            }
-        }
-
-        if (integrante == null){
-            for (int i = 0; i<integrantes.size(); i++){
-                if (integrantes.get(i).getIntegranteTipo().equals("PRESIDENTE")){
-                    integrante = integrantes.get(i);
-                    break;
-                }
-            }
-        }
-        return integrante;
-    }
-
-    public static String GetColoniaTesorera (List<ModeloGeolocalizacion.Integrante> integrantes){
-        String colonia = "";
-        for (int i = 0; i<integrantes.size(); i++){
-            if (integrantes.get(i).getIntegranteTipo().equals("TESORERO")){
-                colonia = integrantes.get(i).getClienteColonia();
-                break;
-            }
-        }
-        return colonia;
-    }
-
-    public static String JsonConvertGpo (ModeloGeolocalizacion.Grupale modelo){
-        Log.v("JsonConvert", new GsonBuilder().create().toJson(modelo));
-        return new GsonBuilder().create().toJson(modelo);
-    }
-
-    public static String JsonConvertInd (ModeloGeolocalizacion.Individuale modelo){
-        Log.v("JsonConvert", new GsonBuilder().create().toJson(modelo));
-        return new GsonBuilder().create().toJson(modelo);
-    }*/
-
-    public static JSONObject GetIntegrante (JSONArray integrantes, String tipo){
-        JSONObject item = null;
-        for (int i = 0; i < integrantes.length(); i++){
-            try {
-                item = integrantes.getJSONObject(i);
-                if (item.getString(Constants.INTEGRANTE_TIPO).equals(tipo)){
-                    break;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return item;
     }
 
     /* Obtener la edad de acorde a una fecha seleccionada */
@@ -1998,18 +1887,17 @@ public class Miscellaneous {
                                 case 3://TELECOM
                                 case 4://BANSEFI
                                 case 5://OXXO
+                                case 8://BANAMEX722
                                     json_respuesta.put("fecha_pago", row.getString(13).trim());
                                     break;
                                 case 6://EFECTIVO
                                     json_respuesta.put("imprimir_recibo", GetIdImpresion(row.getString(16)));
                                     json_respuesta.put("folio", row.getString(17));
                                     json_respuesta.put("res_impresion", row.getInt(24));
-                                    if (row.getInt(28) == 2 && row.getDouble(15) >= 10000){
+                                    if (row.getInt(28) == 2 && row.getDouble(15) >= 10000 && row.getString(30).equals("VIGENTE")){
                                         Cursor row_arqueo;
-                                        if (ENVIROMENT)
-                                            row_arqueo = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
-                                        else
-                                            row_arqueo = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+
+                                        row_arqueo = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
 
                                         if (row_arqueo.getCount() > 0){
                                             row_arqueo.moveToFirst();
@@ -2035,6 +1923,10 @@ public class Miscellaneous {
                                         }
                                         row_arqueo.close();
                                     }
+
+                                    if (row.getString(38).equals("VENCIDA")){
+                                        json_respuesta.put("serial_id", row.getString(40));
+                                    }
                                     break;
                                 case 7://SIDERT
                                     json_respuesta.put("imprimir_recibo", 1);
@@ -2046,32 +1938,36 @@ public class Miscellaneous {
                                     json_respuesta.put("pagara_requerido", GetIdConfirmacion(row.getString(14).trim()));
                                     break;
                                 case 2: //GRUPAL
-                                    json_respuesta.put("detalle_ficha", GetIdConfirmacion(row.getString(14).trim()));
-                                    if (GetIdConfirmacion(row.getString(14)) == 0){
-                                        JSONArray pagos_integrantes = new JSONArray();
-                                        Cursor row_integrantes;
-                                        if (ENVIROMENT)
-                                            row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
-                                        else
-                                            row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+                                    if (row.getString(38).equals("VIGENTE")) {
+                                        json_respuesta.put("detalle_ficha", GetIdConfirmacion(row.getString(14).trim()));
+                                        if (GetIdConfirmacion(row.getString(14)) == 0) {
+                                            JSONArray pagos_integrantes = new JSONArray();
+                                            Cursor row_integrantes;
+                                            if (ENVIROMENT)
+                                                row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+                                            else
+                                                row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
 
-                                        if (row_integrantes.getCount() > 0){
-                                            row_integrantes.moveToFirst();
-                                            for (int i = 0; i < row_integrantes.getCount(); i++){
-                                                JSONObject detalle_integrante = new JSONObject();
-                                                detalle_integrante.put("cliente_id", row_integrantes.getInt(2));
-                                                detalle_integrante.put("monto_requerido", nFormat.format(row_integrantes.getDouble(5)).replace(",",""));
-                                                detalle_integrante.put("pago_realizado", nFormat.format(row_integrantes.getDouble(6)).replace(",",""));
-                                                detalle_integrante.put("pago_adelanto", nFormat.format(row_integrantes.getDouble(7)).replace(",",""));
-                                                detalle_integrante.put("pago_solidario", nFormat.format(row_integrantes.getDouble(8)).replace(",",""));
-                                                pagos_integrantes.put(detalle_integrante);
-                                                row_integrantes.moveToNext();
+                                            if (row_integrantes.getCount() > 0) {
+                                                row_integrantes.moveToFirst();
+                                                for (int i = 0; i < row_integrantes.getCount(); i++) {
+                                                    JSONObject detalle_integrante = new JSONObject();
+                                                    detalle_integrante.put("cliente_id", row_integrantes.getInt(2));
+                                                    detalle_integrante.put("monto_requerido", nFormat.format(row_integrantes.getDouble(5)).replace(",", ""));
+                                                    detalle_integrante.put("pago_realizado", nFormat.format(row_integrantes.getDouble(6)).replace(",", ""));
+                                                    detalle_integrante.put("pago_adelanto", nFormat.format(row_integrantes.getDouble(7)).replace(",", ""));
+                                                    detalle_integrante.put("pago_solidario", nFormat.format(row_integrantes.getDouble(8)).replace(",", ""));
+                                                    pagos_integrantes.put(detalle_integrante);
+                                                    row_integrantes.moveToNext();
+                                                }
+                                                json_respuesta.put("pagos_integrantes", pagos_integrantes);
                                             }
-                                            json_respuesta.put("pagos_integrantes", pagos_integrantes);
-                                        }
 
-                                        row_integrantes.close();
-                                    }
+                                            row_integrantes.close();
+                                        }
+                                    }else
+                                        json_respuesta.put("pagara_requerido", GetIdConfirmacion(row.getString(14).trim()));
+                                    break;
                             }
 
                             json_respuesta.put("pago_realizado", nFormat.format(row.getDouble(15)).replace(",",""));
@@ -2083,9 +1979,15 @@ public class Miscellaneous {
 
                             break;
                         case 1: //NO PAGO
+                            Log.e("MOTIVONOPAGO", GetIdMotivoNoPago(row.getString(10).trim())+" ID");
                             json_respuesta.put("motivo_no_pago", GetIdMotivoNoPago(row.getString(10).trim()));
-                            if (GetIdMotivoNoPago(row.getString(10).trim()) == 2){
+                            if (GetIdMotivoNoPago(row.getString(10).trim()) == 1){
+                                Log.e("FECHADEFUNCION", row.getString(11)+" fecha");
                                 json_respuesta.put("fecha_defuncion", row.getString(11));
+                            }
+                            else if (GetIdMotivoNoPago(row.getString(10).trim()) == 3){
+                                json_respuesta.put("fecha_promesa_pago", row.getString(36));
+                                json_respuesta.put("monto_promesa", nFormat.format(row.getDouble(37)).replace(",",""));
                             }
                             json_respuesta.put("comentario", row.getString(6).toUpperCase().trim());
                             json_respuesta.put("evidencia", row.getString(18).trim());
@@ -2099,7 +2001,8 @@ public class Miscellaneous {
                     json_respuesta.put("tipo_imagen", GetIdImagen(row.getString(19).trim()));
                     break;
                 case 2: //ACLARACION
-                    json_respuesta.put("motivo_aclaracion", GetIdAclaracion(row.getString(5)));
+                    if (row.getString(38).equals("VIGENTE"))
+                        json_respuesta.put("motivo_aclaracion", GetIdAclaracion(row.getString(5)));
                     json_respuesta.put("comentario", row.getString(6).toUpperCase().trim());
                     break;
             }
@@ -2107,6 +2010,9 @@ public class Miscellaneous {
             json_respuesta.put("supervision_gerente", GetIdConfirmacion(row.getString(20)));
             if(GetIdConfirmacion(row.getString(20)) == 0)
                 json_respuesta.put("firma", row.getString(21).trim());
+
+            if (row.getString(38).equals("VENCIDA") && row.getInt(28) == 2)
+                json_respuesta.put("prestamo_id_integrante", row.getLong(39));
 
             json_respuesta.put("fecha_inicio_gestion", row.getString(22));
             json_respuesta.put("fecha_fin_gestion", row.getString(23));
@@ -2203,6 +2109,9 @@ public class Miscellaneous {
                 break;
             case "OTRO":
                 id = 2;
+                break;
+            case "PROMESA DE PAGO":
+                id = 3;
                 break;
         }
         return id;
@@ -2378,5 +2287,24 @@ public class Miscellaneous {
         }
 
         return nomenclatura;
+    }
+
+    public static String[] RemoverRepetidos(List<String> nombres){
+        String[] data;
+        List<String> nombreUnico = new ArrayList<>();
+
+        for (int i = 0; i < nombres.size(); i++){
+            String nombre = nombres.get(i);
+            if (nombreUnico.indexOf(nombre) < 0) {
+                nombreUnico.add(nombre);
+            }
+        }
+
+        data = new String[nombreUnico.size()];
+        for (int j = 0; j < nombreUnico.size(); j++){
+            data[j] = nombreUnico.get(j);
+        }
+
+        return data;
     }
 }

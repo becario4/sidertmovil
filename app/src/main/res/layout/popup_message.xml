@@ -30,6 +30,7 @@
                 <TextView
                     android:id="@+id/tvMessage"
                     android:padding="10dp"
+                    android:textSize="19dp"
                     android:gravity="center_horizontal"
                     android:layout_marginTop="35dp"
                     android:textColor="@android:color/black"

@@ -3,11 +3,13 @@ package com.sidert.sidertmovil.activities;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -37,6 +39,8 @@ public class Configuracion extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
+    private int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,23 +69,36 @@ public class Configuracion extends AppCompatActivity {
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Log.e("Count", "total"+(count++));
+            cvSincronizarFichas.setEnabled(false);
+            Handler handler_home=new Handler();
+            handler_home.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
-            HashMap<Integer, String> params_sincro = new HashMap<>();
-            params_sincro.put(0, session.getUser().get(0));
-            params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        if (Constants.ENVIROMENT)
+                            dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
+                        else
+                            dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-            if (Constants.ENVIROMENT)
-                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
-            else
-                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+                        Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
+                        sincronizado.GetGeolocalizacion(ctx, true, false);
+                        sincronizado.SaveCierreDia(ctx, true);
+                        sincronizado.SaveGeolocalizacion(ctx, true);
+                        sincronizado.SaveRespuestaGestion(ctx, true);
+                        sincronizado.SendImpresionesVi(ctx, true);
+                        sincronizado.SendReimpresionesVi(ctx, true);
+                        sincronizado.SendTracker(ctx, true);
 
-            Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
-            sincronizado.GetGeolocalizacion(ctx, true, false);
-            sincronizado.SaveGeolocalizacion(ctx, true);
-            sincronizado.SaveRespuestaGestion(ctx, true);
-            sincronizado.SendImpresionesVi(ctx, true);
-            sincronizado.SendReimpresionesVi(ctx, true);
-            sincronizado.SendTracker(ctx, true);
+                    }
+                    cvSincronizarFichas.setEnabled(true);
+                }
+            },3000);
+
         }
     };
 

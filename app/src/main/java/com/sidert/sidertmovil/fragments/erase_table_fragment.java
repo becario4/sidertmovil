@@ -167,7 +167,7 @@ public class erase_table_fragment extends Fragment {
                     body = MultipartBody.Part.createFormData("foto_fachada", image.getName(), imageBody);
                 }
 
-                ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS).create(ManagerInterface.class);
+                ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS, ctx).create(ManagerInterface.class);
 
                 Call<ModeloResSaveGeo> call = api.guardarGeoUpdate("Bearer "+ session.getUser().get(7),
                         actualizarBody,

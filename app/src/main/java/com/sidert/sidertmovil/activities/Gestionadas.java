@@ -51,6 +51,7 @@ import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_PROMESA_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
@@ -59,6 +60,7 @@ import static com.sidert.sidertmovil.utils.Constants.IMPRESORA;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
 import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.MONTO_PROMESA;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
@@ -74,7 +76,9 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
 
 public class Gestionadas extends AppCompatActivity {
 
@@ -91,6 +95,9 @@ public class Gestionadas extends AppCompatActivity {
     private String id_prestamo = "0";
 
     private String tbl = "";
+
+    private String tipo_prestamo = "";
+    private int tipo_gestion  = 0;
 
     private SessionManager session;
 
@@ -115,6 +122,8 @@ public class Gestionadas extends AppCompatActivity {
 
         id_prestamo = getIntent().getStringExtra(ID_PRESTAMO);
         tbl = getIntent().getStringExtra(TBL_NAME);
+        tipo_prestamo = getIntent().getStringExtra(TIPO_PRESTAMO);
+        tipo_gestion = getIntent().getIntExtra(TIPO_GESTION, 0);
 
         init();
     }
@@ -122,47 +131,78 @@ public class Gestionadas extends AppCompatActivity {
     private void init (){
         Cursor row = null;
         row = dBhelper.getRecords(tbl, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });
-        /*if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_RESPUESTAS_IND, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });
-        else
-            row = dBhelper.getRecords(TBL_RESPUESTAS_IND_T, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });*/
 
-        Log.e("xxxxx","asad"+row.getCount());
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<MGestionada> data = new ArrayList<>();
             for(int i = 0; i < row.getCount(); i++){
                 MGestionada gestionadas = new MGestionada();
                 gestionadas.setIdGestion(row.getString(0));
-                gestionadas.setFechaGestion(row.getString(23));
-                switch (row.getString(4)){
+                if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                    gestionadas.setFechaGestion(row.getString(24));
+                else
+                    gestionadas.setFechaGestion(row.getString(23));
+
+                String contacto = "";
+                if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                    contacto = row.getString(5);
+                else
+                    contacto = row.getString(4);
+
+                switch (contacto){
                     case "SI":
                         gestionadas.setContacto("SI CONTACTO");
-                        gestionadas.setResultado(row.getString(9));
-                        if (row.getString(9).equals("PAGO")) {
-                            gestionadas.setComentarioBanco("MEDIO PAGO: " + row.getString(12));
-                            gestionadas.setMonto(Miscellaneous.moneyFormat(row.getString(15)));
+                        if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                            gestionadas.setResultado(row.getString(9));
+                        else
+                            gestionadas.setResultado(row.getString(8));
+                        if (tipo_prestamo.equals("VIGENTE") && row.getString(9).equals("PAGO") || tipo_prestamo.equals("VENCIDA") && row.getString(8).equals("PAGO")) {
+                            if (tipo_prestamo.equals("VIGENTE")) {
+                                gestionadas.setComentarioBanco("MEDIO PAGO: " + row.getString(12));
+                                gestionadas.setMonto(Miscellaneous.moneyFormat(row.getString(15)));
+                            }
+                            else if(tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
+                                gestionadas.setComentarioBanco("MEDIO PAGO: " + row.getString(13));
+                                gestionadas.setMonto(Miscellaneous.moneyFormat(row.getString(16)));
+                            }
+                            else if(tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")){
+                                gestionadas.setComentarioBanco("MEDIO PAGO: " + row.getString(14));
+                                gestionadas.setMonto(Miscellaneous.moneyFormat(row.getString(17)));
+                            }
+
                         }
                         else {
-                            gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(6));
+                            if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                                gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(6));
+                            else
+                                gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(5));
                             gestionadas.setMonto("");
                         }
                         break;
                     case "NO":
                         gestionadas.setContacto("NO CONTACTO");
-                        gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(6));
-                        gestionadas.setResultado(row.getString(9));
+                        if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
+                            gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(6));
+                            gestionadas.setResultado(row.getString(9));
+                        }
+                        else {
+                            gestionadas.setComentarioBanco("COMENTARIO: " + row.getString(5));
+                            gestionadas.setResultado(row.getString(8));
+                        }
+
                         gestionadas.setMonto("");
                         break;
                     case "ACLARACION":
                         gestionadas.setContacto("ACLARACION");
-                        gestionadas.setComentarioBanco("MOTIVO: " + row.getString(5));
+                        if (tipo_prestamo.equals("VIGENTE"))
+                            gestionadas.setComentarioBanco("MOTIVO: " + row.getString(5));
                         gestionadas.setResultado("");
                         gestionadas.setMonto("");
                         break;
                 }
 
                 data.add(gestionadas);
+                Log.e("Gestionadas", Miscellaneous.ConvertToJson(gestionadas));
                 row.moveToNext();
             }
 
@@ -172,58 +212,132 @@ public class Gestionadas extends AppCompatActivity {
                 public void GestionadaClick(MGestionada item) {
                     Cursor row;
                     row = dBhelper.getRecords(tbl, " WHERE _id = ?", "", new String[]{item.getIdGestion()});
-                    /*if (ENVIROMENT)
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_IND, " WHERE _id = ?", "", new String[]{item.getId_gestion()});
-                    else
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_IND_T, " WHERE _id = ?", "", new String[]{item.getId_gestion()});*/
 
-                    Log.e("count",""+row.getCount()+"ccccc");
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         row.moveToFirst();
                         Bundle b = new Bundle();
-                        b.putDouble(LATITUD, row.getDouble(2));
-                        b.putDouble(LONGITUD, row.getDouble(3));
-                        b.putString(CONTACTO, row.getString(4));
-                        switch (row.getString(4)){
+                        String contacto = "";
+                        if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
+                            b.putDouble(LATITUD, row.getDouble(3));
+                            b.putDouble(LONGITUD, row.getDouble(4));
+                            b.putString(CONTACTO, row.getString(5));
+                            contacto = row.getString(5);
+                        }
+                        else{
+                            b.putDouble(LATITUD, row.getDouble(2));
+                            b.putDouble(LONGITUD, row.getDouble(3));
+                            b.putString(CONTACTO, row.getString(4));
+                            contacto = row.getString(4);
+                        }
+                        switch (contacto) {
                             case "SI":
                                 b.putString(ACTUALIZAR_TELEFONO, row.getString(7));
                                 if (row.getString(7).equals("SI"))
                                     b.putString(NUEVO_TELEFONO, row.getString(8));
 
-                                b.putString(RESULTADO_PAGO, row.getString(9));
-                                switch (row.getString(9)){
+                                String medio_pago = "";
+                                if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
+                                    b.putString(RESULTADO_PAGO, row.getString(9));
+                                    medio_pago = row.getString(9);
+                                } else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
+                                    b.putString(RESULTADO_PAGO, row.getString(8));
+                                    medio_pago = row.getString(8);
+                                }
+
+                                switch (medio_pago) {
                                     case "PAGO":
-                                        b.putString(MEDIO_PAGO, row.getString(12));
-                                        b.putString(FECHA_DEPOSITO,row.getString(13));
-                                        b.putString(PAGO_REQUERIDO, row.getString(14));
-                                        b.putString(PAGO_REALIZADO, row.getString(15));
-                                        if (row.getString(12).equals("EFECTIVO") || row.getString(12).equals("SIDERT")) {
-                                            b.putString(IMPRESORA, row.getString(16));
-                                            b.putString(FOLIO_TICKET, row.getString(17));
+                                        if (tipo_prestamo.equals("VIGENTE")) {
+                                            b.putString(MEDIO_PAGO, row.getString(12));
+                                            b.putString(FECHA_DEPOSITO, row.getString(13));
+                                            b.putString(PAGO_REQUERIDO, row.getString(14));
+                                            b.putString(PAGO_REALIZADO, row.getString(15));
+                                            if (row.getString(12).equals("EFECTIVO") || row.getString(12).equals("SIDERT")) {
+                                                b.putString(IMPRESORA, row.getString(16));
+                                                b.putString(FOLIO_TICKET, row.getString(17));
+                                            }
+                                        } else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
+                                            b.putString(MEDIO_PAGO, row.getString(13));
+                                            b.putString(FECHA_DEPOSITO, row.getString(14));
+                                            b.putString(PAGO_REQUERIDO, row.getString(15));
+                                            b.putString(PAGO_REALIZADO, row.getString(16));
+                                            if (row.getString(13).equals("EFECTIVO") || row.getString(13).equals("SIDERT")) {
+                                                b.putString(IMPRESORA, row.getString(17));
+                                                b.putString(FOLIO_TICKET, row.getString(18));
+                                            }
+                                        }
+                                        else if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")){
+                                            b.putString(MEDIO_PAGO, row.getString(14));
+                                            b.putString(FECHA_DEPOSITO, row.getString(15));
+                                            b.putString(PAGO_REQUERIDO, row.getString(16));
+                                            b.putString(PAGO_REALIZADO, row.getString(17));
+                                            if (row.getString(14).equals("EFECTIVO") || row.getString(17).equals("SIDERT")) {
+                                                b.putString(IMPRESORA, row.getString(18));
+                                                b.putString(FOLIO_TICKET, row.getString(19));
+                                            }
                                         }
                                         break;
                                     case "NO PAGO":
-                                        b.putString(MOTIVO_NO_PAGO, row.getString(10));
-                                        if (row.getString(10).equals("FALLECIMIENTO"))
-                                            b.putString(FECHA_DEFUNCION, row.getString(11));
-                                        b.putString(COMENTARIO, row.getString(6));
+                                        if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
+                                            b.putString(MOTIVO_NO_PAGO, row.getString(10));
+                                            if (row.getString(10).equals("FALLECIMIENTO"))
+                                                b.putString(FECHA_DEFUNCION, row.getString(11));
+                                            else if (row.getString(9).equals("PROMESA DE PAGO")){
+                                                b.putString(FECHA_PROMESA_PAGO, row.getString(12));
+                                                b.putString(MONTO_PROMESA, row.getString(13).trim().replace(",",""));
+                                            }
+                                            b.putString(COMENTARIO, row.getString(6));
+                                        } else {
+                                            b.putString(MOTIVO_NO_PAGO, row.getString(9));
+                                            if (row.getString(9).equals("FALLECIMIENTO"))
+                                                b.putString(FECHA_DEFUNCION, row.getString(10));
+                                            else if (row.getString(9).equals("PROMESA DE PAGO")){
+                                                b.putString(FECHA_PROMESA_PAGO, row.getString(11));
+                                                b.putString(MONTO_PROMESA, row.getString(12).trim().replace(",",""));
+                                            }
+
+                                            b.putString(COMENTARIO, row.getString(5));
+                                        }
                                         break;
                                 }
                                 break;
                             case "NO":
-                                b.putString(COMENTARIO, row.getString(6));
+                                if (tipo_prestamo.equals("VIGENTE") || tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                                    b.putString(COMENTARIO, row.getString(6));
+                                else
+                                    b.putString(COMENTARIO, row.getString(5));
                                 break;
                             case "ACLARACION":
-                                b.putString(MOTIVO_ACLARACION, row.getString(5));
-                                b.putString(COMENTARIO, row.getString(6));
+                                if (tipo_prestamo.equals("VIGENTE")) {
+                                    b.putString(MOTIVO_ACLARACION, row.getString(5));
+                                    b.putString(COMENTARIO, row.getString(6));
+                                } else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA"))
+                                    b.putString(COMENTARIO, row.getString(5));
+                                else if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
+                                    b.putString(COMENTARIO, row.getString(6));
                                 break;
                         }
 
-                        b.putString(EVIDENCIA, row.getString(18));
-                        b.putString(TIPO_IMAGEN, row.getString(19));
-                        b.putString(GERENTE, row.getString(20));
-                        if (row.getString(20).equals("SI"))
-                            b.putString(FIRMA, row.getString(21));
+                        if (tipo_prestamo.equals("VIGENTE")){
+                            b.putString(EVIDENCIA, row.getString(18));
+                            b.putString(TIPO_IMAGEN, row.getString(19));
+                            b.putString(GERENTE, row.getString(20));
+                            if (row.getString(20).equals("SI"))
+                                b.putString(FIRMA, row.getString(21));
+                        }
+                        else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
+                            b.putString(EVIDENCIA, row.getString(19));
+                            b.putString(TIPO_IMAGEN, row.getString(20));
+                            b.putString(GERENTE, row.getString(21));
+                            if (row.getString(21).equals("SI"))
+                                b.putString(FIRMA, row.getString(22));
+                        }
+                        else if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")){
+                            b.putString(EVIDENCIA, row.getString(20));
+                            b.putString(TIPO_IMAGEN, row.getString(21));
+                            b.putString(GERENTE, row.getString(22));
+                            if (row.getString(22).equals("SI"))
+                                b.putString(FIRMA, row.getString(23));
+                        }
 
                         Log.e("SIDERTMOVIL", b.toString());
 
@@ -235,8 +349,8 @@ public class Gestionadas extends AppCompatActivity {
 
                 @Override
                 public void SendClickLong(MGestionada item) {
-                    Toast.makeText(ctx, "Enviando Gestion", Toast.LENGTH_SHORT).show();
-                    SendForceGestion(item);
+                    //Toast.makeText(ctx, "Enviando Gestion", Toast.LENGTH_SHORT).show();
+                    //SendForceGestion(item);
                 }
             });
 
@@ -322,7 +436,7 @@ public class Gestionadas extends AppCompatActivity {
                             firmaBody = MultipartBody.Part.createFormData("firma", "", attachmentEmpty);
                         }
 
-                        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL).create(ManagerInterface.class);
+                        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
                         Log.e("idPRestamo", params.get("id_prestamo") );
                         Log.e("numSolicitud", params.get("num_solicitud"));
@@ -330,6 +444,7 @@ public class Gestionadas extends AppCompatActivity {
                         Call<MRespuestaGestion> call = api.guardarRespuesta("Bearer "+ session.getUser().get(7),
                                 idPrestamoBody,
                                 numSolicitudBody,
+                                respuestaBody,
                                 respuestaBody,
                                 evidenciaBody,
                                 firmaBody);

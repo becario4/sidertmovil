@@ -1,8 +1,5 @@
 package com.sidert.sidertmovil;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,26 +24,21 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
 import com.sidert.sidertmovil.activities.CirculoCredito;
 import com.sidert.sidertmovil.activities.Configuracion;
-import com.sidert.sidertmovil.activities.FormatoRecibos;
-import com.sidert.sidertmovil.activities.OriginacionI;
 import com.sidert.sidertmovil.activities.Perfil;
+import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.fragments.ComplaintTemp;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_synchronize_db;
 import com.sidert.sidertmovil.fragments.erase_table_fragment;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
@@ -55,21 +47,16 @@ import com.sidert.sidertmovil.fragments.solicitud_credito_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
-import com.sidert.sidertmovil.utils.PrintRecibos;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
 
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
@@ -246,15 +233,13 @@ public class Home extends AppCompatActivity{
                     Intent i_about = new Intent(getApplicationContext(), AcercaDe.class);
                     startActivity(i_about);
                     break;
-                case R.id.NVsynchronized:
-                    dialog_synchronize_db synchronize_db = new dialog_synchronize_db();
-                    synchronize_db.show(getSupportFragmentManager(), NameFragments.DIALOGSYNCHRONIZE);
-                    break;
                 case R.id.NVlogPrint:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.nvImpresiones:
-                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
+                    startActivity(i_log_login);
+                    //setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.NVcc:
                     Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
@@ -299,16 +284,6 @@ public class Home extends AppCompatActivity{
                     myAppointments.setArguments(extras);
                     transaction.replace(R.id.FLmain, myAppointments, ORDERS);
                     tokenFragment = ORDERS;
-                } else
-                    return;
-                break;
-            case NameFragments.COMPLAINT_TEMP:
-                mTabLayout.setVisibility(View.VISIBLE);
-                if (!(current instanceof orders_fragment)){
-                    ComplaintTemp complaintTemp = new ComplaintTemp();
-                    complaintTemp.setArguments(extras);
-                    transaction.replace(R.id.FLmain, complaintTemp, NameFragments.COMPLAINT_TEMP);
-                    tokenFragment = NameFragments.COMPLAINT_TEMP;
                 } else
                     return;
                 break;

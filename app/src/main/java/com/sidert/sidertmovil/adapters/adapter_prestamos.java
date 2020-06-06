@@ -31,6 +31,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
     public interface Event {
         void PrestamoClick(MPrestamo item);
         void GestionadasClick(MPrestamo item);
+        void CierreDiaClick(MPrestamo item);
     }
 
     public adapter_prestamos(Context ctx, List<MPrestamo> data, Event evento) {
@@ -112,7 +113,8 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                             popup.getMenuInflater().inflate(R.menu.menu_prestamos, popup.getMenu());
                             if (item_prestamo.getEstatus().equals("1"))
                                 popup.getMenu().getItem(0).setEnabled(false);
-                            popup.getMenu().getItem(2).setEnabled(false);
+                            if (item_prestamo.getTipoPrestamo().equals("VENCIDA"))
+                                popup.getMenu().getItem(2).setVisible(false);
                             popup.setGravity(Gravity.RIGHT);
                             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                 @Override
@@ -124,8 +126,8 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                         case R.id.nvGestionadas:
                                             evento.GestionadasClick(item_prestamo);
                                             return true;
-                                        case R.id.nvGeolocalizacion:
-                                            Toast.makeText(view.getContext(), "Estamos trabajando....", Toast.LENGTH_LONG).show();
+                                        case R.id.nvCierreDia:
+                                            evento.CierreDiaClick(item_prestamo);
                                             return true;
                                         default:
                                             return false;
