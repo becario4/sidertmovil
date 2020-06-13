@@ -14,6 +14,7 @@ public class Constants {
     public final static String CONTROLLER_MOVIL       = "movil";
     public final static String CONTROLLER_DENUNCIAS   = "denuncias";
     public final static String CONTROLLER_API         = "api";
+    public final static String CONTROLLER_CODIGOS     = "codigos";
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -145,6 +146,7 @@ public class Constants {
     public final static String PAGO_REALIZADO               = "PagoRealizado";
     public final static String NUMERO_AMORTIZACION          = "NumeroAmortizacion";
     public final static String MONTO_AMORTIZACION           = "MontoAmortizacion";
+    public final static String CLAVE                        = "Clave";
     public final static String FECHA_PAGO_ESTABLECIDA       = "FechaPagoEstablecida";
     public final static String HORA_PAGO_ESTABLECIDA        = "HoraPagoEstablecida";
     public final static String SALDO_ACTUAL                 = "SaldoActual";
@@ -326,7 +328,9 @@ public class Constants {
     public final static String TBL_AMORTIZACIONES_T   = "tbl_amortizaciones_t";
     public final static String TBL_PAGOS_IND_T        = "tbl_pagos_ind_t";
     public final static String TBL_PAGOS_IND          = "tbl_pagos_ind";
-
+    public final static String TBL_REPORTE_SESIONES     = "tbl_reporte_sesiones";
+    public final static String TBL_SUCURSALES           = "tbl_sucursales";
+    public final static String TBL_CODIGOS_OXXO         = "tbl_codigos_oxxo";
     public final static String SOLICITUDES              = "solicitudes";
     public final static String SOLICITUDES_T            = "solicitudes_t";
     public final static String DATOS_CREDITO_IND        = "datos_credito_ind";

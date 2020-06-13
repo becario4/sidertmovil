@@ -15,7 +15,8 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_LOGIN         = "/oauth/"; //Controlador login
     public final static String CONTROLLER_FICHAS        = "/api/fichas/"; //Controlador para fichas
     public final static String CONTROLLER_CATALOGOS     = "/api/catalogos/"; //Controlador para catalogos
-    public final static String CONTROLLER_API           = "/api/"; //Controlador para impresiones
+    public final static String CONTROLLER_CODIGOS       = "/api/movil/codigosoxxo/"; //Controlador para catalogos
+    public final static String CONTROLLER_API           = "/api/"; //Controlador
     public final static String CONTROLLER_SOLICITUDES   = "/api/solicitudes/creditos/"; //Controlador para solicitudes
     public final static String CONTROLLER_MOVIL         = "/api/movil/"; //Controlador para movil
     public final static String IMAGES_GEOLOCALIZACION   = "uploads/img/";
@@ -36,7 +37,9 @@ public class WebServicesRoutes {
     public final static String WS_MAILBOX                   = "Denuncia"; //Servicio para buzón de quejas o sugerencias
     public final static String WS_SYNCHRONIZEBD             = "UltimosRegistrosLog"; //Servicio para obtener los registros de impresiones y actualizar su BD local
     public final static String WS_GET_GEOLOCALIZACIONES     = "GetGeolocalizadas"; //Servicio para obtener las fichas de geolocalización
-    public final static String WS_GET_LOG_ASESORES          = "logAsesores"; //Servicio para obtener las fichas de geolocalización
+    public final static String WS_GET_LOG_ASESORES          = "logAsesores"; //Servicio para obtener el inicio de sesion de los asesores
+    public final static String WS_GET_GENERAR_CODIGO_OXXO   = "generarCodigo"; //Servicio para obtener el inicio de sesion de los asesores
+    public final static String WS_GET_MIS_SUCURSALES        = "GetSucursalesByUsuario/{usuarioId}"; //Servicio para obtener mis sucursales
     public final static String WS_SAVE_GEO                  = "SaveGeolocalizacion"; //Guarda la informacipon capturada de GEOLOCALIZACION
     public final static String WS_POST_ORIGINACION_IND      = "individuales"; //Guarda la solicitud de credito individual (originacion)
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día

@@ -50,20 +50,36 @@ public class adapter_inicio_sesion extends RecyclerView.Adapter<adapter_inicio_s
         if (!Miscellaneous.validStr(item.getNivelbateria()).isEmpty())
             holder.ivBateria.setVisibility(VISIBLE);
         else
-            holder.ivBateria.setVisibility(GONE);
+            holder.ivBateria.setVisibility(View.INVISIBLE);
 
         if (!Miscellaneous.validStr(item.getVersionapp()).isEmpty())
             holder.ivVersion.setVisibility(VISIBLE);
         else
-            holder.ivVersion.setVisibility(GONE);
+            holder.ivVersion.setVisibility(View.INVISIBLE);
 
         holder.tvNivelBateria.setText((!Miscellaneous.validStr(item.getNivelbateria()).isEmpty())?Miscellaneous.validStr(item.getNivelbateria())+"%":"");
         holder.tvVersionApp.setText(Miscellaneous.validStr(item.getVersionapp()));
         holder.tvNombre.setText(item.getNombreAsesor());
         holder.tvSucursal.setText(item.getSucursal());
 
-        holder.tvPrimeraGestion.setText(Html.fromHtml((!Miscellaneous.validStr(item.getPrimeragestion()).isEmpty())?"<b>Primera Gestión: </b>"+item.getPrimeragestion():""));
-        holder.tvUltimaGestion.setText(Html.fromHtml((!Miscellaneous.validStr(item.getUltimagestion()).isEmpty())?"<b>Última Gestión: </b>"+item.getUltimagestion():""));
+        if (!Miscellaneous.validStr(item.getPrimeragestion()).isEmpty())
+            holder.tvTprimera.setVisibility(VISIBLE);
+        else
+            holder.tvTprimera.setVisibility(View.INVISIBLE);
+        holder.tvPrimeraGestion.setText(Miscellaneous.validStr(item.getPrimeragestion()));
+
+        if (!Miscellaneous.validStr(item.getUltimagestion()).isEmpty())
+            holder.tvTultima.setVisibility(VISIBLE);
+        else
+            holder.tvTultima.setVisibility(View.INVISIBLE);
+        holder.tvUltimaGestion.setText(Miscellaneous.validStr(item.getUltimagestion()));
+
+        if (!Miscellaneous.validStr(item.getSerieId()).isEmpty())
+            holder.ivIdAsesor.setVisibility(VISIBLE);
+        else
+            holder.ivIdAsesor.setVisibility(View.INVISIBLE);
+
+        holder.tvIdAsesor.setText(Miscellaneous.validStr(item.getSerieId()));
     }
 
     @Override
@@ -79,10 +95,14 @@ public class adapter_inicio_sesion extends RecyclerView.Adapter<adapter_inicio_s
         private TextView tvVersionApp;
         private TextView tvNombre;
         private TextView tvSucursal;
+        private TextView tvTprimera;
         private TextView tvPrimeraGestion;
+        private TextView tvTultima;
         private TextView tvUltimaGestion;
         private ImageView ivBateria;
         private ImageView ivVersion;
+        private ImageView ivIdAsesor;
+        private TextView tvIdAsesor;
         public ViewHolder(@NonNull View v) {
             super(v);
             vEstatus            = v.findViewById(R.id.vEstatus);
@@ -91,10 +111,21 @@ public class adapter_inicio_sesion extends RecyclerView.Adapter<adapter_inicio_s
             tvVersionApp        = v.findViewById(R.id.tvVersionApp);
             tvNombre            = v.findViewById(R.id.tvNombre);
             tvSucursal          = v.findViewById(R.id.tvSucursal);
+            tvTprimera          = v.findViewById(R.id.tvTprimera);
             tvPrimeraGestion    = v.findViewById(R.id.tvPrimeraGestion);
+            tvTultima           = v.findViewById(R.id.tvTultima);
             tvUltimaGestion     = v.findViewById(R.id.tvUltimaGestion);
             ivBateria           = v.findViewById(R.id.ivBateria);
             ivVersion           = v.findViewById(R.id.ivVersion);
+            ivIdAsesor          = v.findViewById(R.id.ivIdAsesor);
+            tvIdAsesor          = v.findViewById(R.id.tvIdAsesor);
         }
+    }
+
+    public void UpdateData(List<MLogLogin> _data){
+        if (data != null)
+            data.clear();
+        data = _data;
+        notifyDataSetChanged();
     }
 }

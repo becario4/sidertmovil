@@ -17,6 +17,11 @@ import android.widget.Toast;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MPrestamo;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -27,17 +32,18 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
     private Context ctx;
     private List<MPrestamo> data;
     private Event evento;
-
+    private SessionManager session;
     public interface Event {
         void PrestamoClick(MPrestamo item);
         void GestionadasClick(MPrestamo item);
-        void CierreDiaClick(MPrestamo item);
+        void CodigoOxxoClick(MPrestamo item);
     }
 
     public adapter_prestamos(Context ctx, List<MPrestamo> data, Event evento) {
         this.ctx = ctx;
         this.data = data;
         this.evento = evento;
+        this.session = new SessionManager(ctx);
     }
 
     @NonNull
@@ -113,8 +119,40 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                             popup.getMenuInflater().inflate(R.menu.menu_prestamos, popup.getMenu());
                             if (item_prestamo.getEstatus().equals("1"))
                                 popup.getMenu().getItem(0).setEnabled(false);
-                            if (item_prestamo.getTipoPrestamo().equals("VENCIDA"))
-                                popup.getMenu().getItem(2).setVisible(false);
+
+                            if (session.getUser().get(5).contains("ROLE_SUPER") ||
+                                session.getUser().get(5).contains("ROLE_ANALISTA") ||
+                                session.getUser().get(5).contains("ROLE_DIRECCION") ||
+                                session.getUser().get(5).contains("ROLE_ASESOR") ||
+                                session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") ||
+                                session.getUser().get(5).contains("ROLE_GERENTEREGIONAL")) {
+                                if (session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") ||
+                                    session.getUser().get(5).contains("ROLE_GERENTEREGIONAL")){
+                                    JSONArray modulos = null;
+                                    try {
+                                        modulos = new JSONArray(session.getUser().get(8));
+                                        for (int i = 0; i < modulos.length(); i++){
+
+                                            JSONObject item = modulos.getJSONObject(i);
+                                            if (item.getString("nombre").trim().toLowerCase().equals("cartera")){
+                                                JSONArray permisos = item.getJSONArray("permisos");
+                                                for(int j = 0; j < permisos.length(); j++){
+                                                    JSONObject item_permiso = permisos.getJSONObject(j);
+                                                    if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
+                                                        popup.getMenu().getItem(2).setVisible(true);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }else
+                                    popup.getMenu().getItem(2).setVisible(true);
+                            }
+
                             popup.setGravity(Gravity.RIGHT);
                             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                 @Override
@@ -126,8 +164,8 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                         case R.id.nvGestionadas:
                                             evento.GestionadasClick(item_prestamo);
                                             return true;
-                                        case R.id.nvCierreDia:
-                                            evento.CierreDiaClick(item_prestamo);
+                                        case R.id.nvCodigoOxxo:
+                                            evento.CodigoOxxoClick(item_prestamo);
                                             return true;
                                         default:
                                             return false;

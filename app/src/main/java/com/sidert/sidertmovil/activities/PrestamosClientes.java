@@ -21,23 +21,35 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_prestamos;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MPrestamo;
+import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+
+import static com.sidert.sidertmovil.utils.Constants.CLAVE;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CODIGOS;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
+import static com.sidert.sidertmovil.utils.Constants.NUMERO_DE_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NAME;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
@@ -63,6 +75,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
     private int id_carteta;
     private int tipo;
+    private SessionManager session;
 
 
     @Override
@@ -71,6 +84,8 @@ public class PrestamosClientes extends AppCompatActivity {
         setContentView(R.layout.activity_prestamos_clientes);
 
         ctx = this;
+
+        session = new SessionManager(ctx);
 
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
@@ -92,7 +107,6 @@ public class PrestamosClientes extends AppCompatActivity {
 
     private void GetPrestamosInd (String id_cliente){
 
-        String nombre = "";
         Cursor row;
 
         if (ENVIROMENT)
@@ -165,17 +179,28 @@ public class PrestamosClientes extends AppCompatActivity {
             }
 
             @Override
-            public void CierreDiaClick(MPrestamo item) {
-                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
-                startActivity(i_cierre_dia);
+            public void CodigoOxxoClick(MPrestamo item) {
+                String sql = "SELECT p.num_prestamo, a.fecha, a.total,c.nombre, c.clave FROM "+ TBL_PRESTAMOS_GPO_T +" AS p INNER JOIN "+TBL_AMORTIZACIONES_T+" AS a ON p.num_amortizacion = a.numero INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = m.id_cartera WHERE p.id_prestamo = ?";
+                Cursor row = db.rawQuery(sql, new String[]{item.getId()});
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+
+                    Intent i_codigos = new Intent(ctx, CodigosOxxo.class);
+                    i_codigos.putExtra(ID_PRESTAMO, Long.parseLong(item.getId()));
+                    i_codigos.putExtra(TIPO, item.getTipo());
+                    i_codigos.putExtra(NUMERO_DE_PRESTAMO, row.getString(0));
+                    i_codigos.putExtra(FECHA_AMORTIZACION, row.getString(1));
+                    i_codigos.putExtra(MONTO_AMORTIZACION, row.getString(2));
+                    i_codigos.putExtra(NOMBRE, row.getString(3));
+                    i_codigos.putExtra(CLAVE, row.getString(4));
+                    startActivity(i_codigos);
+                }
             }
         });
         rvPrestamos.setAdapter(adatper);
     }
 
     private void GetPrestamosGpo (final String id_grupo){
-
-        String nombre = "";
         Cursor row;
         if (ENVIROMENT)
             row = dBhelper.customSelect(TBL_PRESTAMOS_GPO + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_GPO+" AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ?", "", new String[]{id_grupo});
@@ -251,9 +276,24 @@ public class PrestamosClientes extends AppCompatActivity {
             }
 
             @Override
-            public void CierreDiaClick(MPrestamo item) {
-                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
-                startActivity(i_cierre_dia);
+            public void CodigoOxxoClick(MPrestamo item) {
+                String sql = "SELECT p.num_prestamo, a.fecha, a.total,m.nombre, m.clave FROM "+ TBL_PRESTAMOS_GPO_T +" AS p INNER JOIN "+TBL_AMORTIZACIONES_T+" AS a ON p.num_amortizacion = a.numero INNER JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON p.id_prestamo = m.id_prestamo WHERE p.id_prestamo = ? AND m.tipo_integrante = 'TESORERO'";
+                Cursor row = db.rawQuery(sql, new String[]{item.getId()});
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+
+                    Intent i_codigos = new Intent(ctx, CodigosOxxo.class);
+                    i_codigos.putExtra(ID_PRESTAMO, Long.parseLong(item.getId()));
+                    i_codigos.putExtra(TIPO, item.getTipo());
+                    i_codigos.putExtra(NUMERO_DE_PRESTAMO, row.getString(0));
+                    i_codigos.putExtra(FECHA_AMORTIZACION, row.getString(1));
+                    i_codigos.putExtra(MONTO_AMORTIZACION, row.getString(2));
+                    i_codigos.putExtra(NOMBRE, row.getString(3));
+                    i_codigos.putExtra(CLAVE, row.getString(4));
+                    startActivity(i_codigos);
+                }
+
+                //GenerarCodigo(item, fechaAmortiz, montoAmortiz, clave, nombreTesorera);
             }
         });
         rvPrestamos.setAdapter(adatper);

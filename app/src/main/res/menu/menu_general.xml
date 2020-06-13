@@ -23,7 +23,7 @@
         android:id="@+id/nvRuta"
         android:title="Ruta Asesor"
         android:visible="false"
-        android:icon="@drawable/ic_pin" />
+        android:icon="@drawable/ic_ruta" />
     <!-- 4 -->
     <item
         android:id="@+id/nvCC"
@@ -47,5 +47,19 @@
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"
         android:icon="@drawable/item_settings" />
+
+    <!-- 8 -->
+    <item
+        android:id="@+id/nvLogin"
+        android:title="Sesiones "
+        android:visible="true"
+        android:icon="@drawable/ic_users" />
+
+    <!-- 8 -->
+    <item
+        android:id="@+id/nvShare"
+        android:title="Compartir "
+        android:visible="false"
+        android:icon="@drawable/ic_users" />
 
 </menu>

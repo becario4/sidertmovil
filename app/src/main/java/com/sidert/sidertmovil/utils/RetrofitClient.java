@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CATALOGOS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CODIGOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_LOGIN;
@@ -60,6 +61,10 @@ public class RetrofitClient {
             case CONTROLLER_API:
                 base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_API;
                 //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_IMPRESIONES;
+                break;
+            case CONTROLLER_CODIGOS:
+                base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_CODIGOS;
+                //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CODIGOS;
                 break;
             case CONTROLLER_DENUNCIAS:
                 base_url = "http://sidert.ddns.net:81/serviciosidert/Api.svc/";

@@ -10,10 +10,12 @@ import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MResCierreDia;
+import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MSendImpresion;
+import com.sidert.sidertmovil.models.MSucursal;
 import com.sidert.sidertmovil.models.MSucursales;
 import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.MTrackerAsesor;
@@ -99,6 +101,13 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET(WebServicesRoutes.WS_GET_MIS_SUCURSALES)
+    Call<List<MSucursal>> getMisSucursales(@Path("usuarioId") int usuarioIId);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @GET(WebServicesRoutes.WS_GET_ULTIMAS_IMPRESIONES)
     Call<List<MImpresionRes>> getUltimasImpresiones(@Query("asesorid") String asesorid,
                                                     @Query("nivelBateria") String nivelBateria,
@@ -170,6 +179,18 @@ public interface ManagerInterface {
                                    @Query("region") String region,
                                    @Query("sucursal") String sucursal,
                                    @Query("usuario") String usuario);
+
+    @GET(WebServicesRoutes.WS_GET_GENERAR_CODIGO_OXXO)
+    Call<MResCodigoOxxo> generarCodigo(@Header("Authorization") String token,
+                                       @Query("usuario_id") String usuarioId,
+                                       @Query("num_prestamo") String numPrestamo,
+                                       @Query("fecha_amortizacion") String fechaAmortizacion,
+                                       @Query("monto_amortizacion") String montoAmortizacion,
+                                       @Query("tipo_prestamo") int tipoPrestamo,
+                                       @Query("prestamo_id") Long prestamoId,
+                                       @Query("clave") String clave,
+                                       @Query("nombre") String nombre,
+                                       @Query("nombre_asesor") String nombreAsesor);
 
     /*Serivicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
     @Multipart

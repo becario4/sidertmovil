@@ -384,16 +384,16 @@ public class Login extends AppCompatActivity {
             });
         }
         else{
-            final AlertDialog success = Popups.showDialogMessage(context, Constants.not_network,
+            final AlertDialog error_connect = Popups.showDialogMessage(context, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
                             dialog.dismiss();
                         }
                     });
-            success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            success.show();
+            error_connect.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            error_connect.show();
         }
     }
 

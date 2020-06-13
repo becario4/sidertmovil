@@ -17,6 +17,7 @@ import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
+import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.activities.VencidaIntegrante;
@@ -276,6 +277,11 @@ public class dialog_date_picker extends DialogFragment {
                         else if(identifer == 11){
                             VencidaIntegrante integrante = (VencidaIntegrante) getActivity();
                             integrante.setDate(sdf.format(myCalendar.getTime()), "fecha_defuncion");
+                            dismiss();
+                        }
+                        else if(identifer == 12){
+                            ReporteInicioSesion inicioSesion = (ReporteInicioSesion) getActivity();
+                            inicioSesion.setDate(sdf.format(myCalendar.getTime()));
                             dismiss();
                         }
                         else {

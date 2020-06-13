@@ -12,8 +12,8 @@
         android:icon="@drawable/ic_gestionadas_blue"/>
 
     <item
-        android:id="@+id/nvCierreDia"
-        android:title="Cierre de Día"
+        android:id="@+id/nvCodigoOxxo"
+        android:title="Código de OXXO"
         android:visible="false"
         android:icon="@drawable/ic_cierre_dia"/>
 

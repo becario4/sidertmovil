@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
@@ -237,9 +238,7 @@ public class Home extends AppCompatActivity{
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.nvImpresiones:
-                    Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
-                    startActivity(i_log_login);
-                    //setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.NVcc:
                     Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
@@ -258,6 +257,29 @@ public class Home extends AppCompatActivity{
                     break;
                 case R.id.nvGeolocalizar:
                     setFragment(NameFragments.GEOLOCALIZACION, null);
+                    break;
+                case R.id.nvLogin:
+                    Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
+                    startActivity(i_log_login);
+                    break;
+                case R.id.nvShare:
+                    String link = "Estimado cliente de SIDERT: \n" +
+                            "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
+                            "Click Aquí para descargarlo: www.sidert.ddns.net:83/referencias/cliente.pdf \uD83D\uDC48\n" +
+                            "Atención‼️ No aceptes imágenes y/o archivos adjuntos \n" +
+                            "Cualquier duda y/o aclaración comunícate al 01 800 122 6666 \uD83D\uDCDE\n" +
+                            "El enlace tiene una vigencia de 48 hrs";
+                    Intent waIntent = new Intent(Intent.ACTION_SEND);
+                    waIntent.setType("text/plain");
+                    waIntent.setPackage("com.whatsapp");
+                    if (waIntent != null) {
+                        waIntent.putExtra(
+                                Intent.EXTRA_TEXT,
+                                link);
+                        startActivity(Intent.createChooser(waIntent, "Share with"));
+                    } else
+                        Toast.makeText(ctx, "WhatsApp not Installed", Toast.LENGTH_SHORT)
+                                .show();
                     break;
                 default:
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);

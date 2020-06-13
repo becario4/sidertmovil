@@ -18,16 +18,19 @@
             android:layout_height="match_parent"/>
         <LinearLayout
             android:orientation="vertical"
+            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/tvFechaLogin"
                 android:gravity="center"
+                android:lines="2"
                 android:layout_gravity="center"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -45,7 +48,6 @@
                     android:layout_weight="1"
                     android:id="@+id/tvNivelBateria"
                     android:textColor="@android:color/black"
-                    android:text="96%"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -68,6 +70,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/ivIdAsesor"
+                    android:src="@drawable/ic_user_blue_dark"
+                    android:visibility="visible"
+                    android:padding="3dp"
+                    android:layout_weight="0"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"/>
+                <TextView
+                    android:id="@+id/tvIdAsesor"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <View
@@ -92,14 +116,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/tvPrimeraGestion"
-                android:gravity="center"
+                android:id="@+id/tvTprimera"
+                android:text="Primera Gestión"
+                android:visibility="gone"
                 android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/tvPrimeraGestion"
+                android:paddingLeft="20dp"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvTultima"
+                android:text="Última Gestión"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
                 android:id="@+id/tvUltimaGestion"
-                android:gravity="center"
+                android:paddingLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

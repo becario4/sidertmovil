@@ -40,6 +40,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
@@ -50,10 +51,12 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REPORTE_SESIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 
@@ -148,6 +151,9 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_V_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_INTEGRANTE_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CIERRE_DIA);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REPORTE_SESIONES);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CODIGOS_OXXO);
 
         Log.v("CreacionTablas", "se crearon tablas");
     }
@@ -507,6 +513,12 @@ public class DBhelper extends SQLiteOpenHelper {
         catch (Exception e) { Log.e("ADD NOMBRE CIERRE", "ya contiene la columna"); }
         try { db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_ID_CIERRE_DIA); }
         catch (Exception e) { Log.e("ADD SERIAL CIERRE", "ya contiene la columna"); }
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REPORTE_SESIONES); }
+        catch (Exception e) {}
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES); }
+        catch (Exception e) {}
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CODIGOS_OXXO); }
+        catch (Exception e) {}
 
     }
 
@@ -1324,6 +1336,31 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public void saveCodigosOxxo(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " + TBL_CODIGOS_OXXO + " (" +
+                "id, " +
+                "id_asesor, " +
+                "num_prestamo, " +
+                "fecha_amortiz, " +
+                "monto_amortiz, " +
+                "nombre_pdf, " +
+                "created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(4, params.get(3));
+        pInsert.bindString(5, params.get(4));
+        pInsert.bindString(6, params.get(5));
+        pInsert.bindString(7, params.get(6));
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     public void saveDatosEconomicos(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
@@ -1741,6 +1778,64 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public Long saveReporteSesiones(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " + TBL_REPORTE_SESIONES + " (" +
+                "id, " +
+                "serie_id, " +
+                "nombre_asesor, " +
+                "usuario, " +
+                "sucursal, " +
+                "sucursalid, " +
+                "horariologin, " +
+                "nivelbateria, " +
+                "versionapp, " +
+                "primeragestion, " +
+                "ultimagestion, " +
+                "totalgestiones) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));    //(1) id
+        pInsert.bindString(2, params.get(1));                  //(2) serie_id
+        pInsert.bindString(3, params.get(2));                  //(3) nombre_asesore
+        pInsert.bindString(4, params.get(3));                  //(4) usuario
+        pInsert.bindString(5, params.get(4));                  //(5) sucursal
+        pInsert.bindString(6, params.get(5));                  //(6) sucursalid
+        pInsert.bindString(7, params.get(6));                  //(7) horariologin
+        pInsert.bindString(8, params.get(7));                  //(8) nivelbateria
+        pInsert.bindString(9, params.get(8));                  //(9) versionapp
+        pInsert.bindString(10, params.get(9));                 //(10) primeragestion
+        pInsert.bindString(11, params.get(10));                //(11) ultimagestion
+        pInsert.bindString(12, params.get(11));                //(12) totalgestiones
+
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        return id;
+    }
+
+    public Long saveSucursales(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " + TBL_SUCURSALES + " (" +
+                "id, " +
+                "nombre, " +
+                "region_id, " +
+                "centrocosto_id) " +
+                "VALUES (?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));    //(1) id
+        pInsert.bindString(2, params.get(1));                  //(2) nombre
+        pInsert.bindLong(3, Long.parseLong(params.get(2)));    //(3) region_id
+        pInsert.bindLong(4, Long.parseLong(params.get(3)));    //(4) centrocosto_id
+
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        return id;
+    }
+
     public Long saveCarteraInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
@@ -1806,7 +1901,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 "pagada, " +
                 "fecha_dispositivo, " +
                 "fecha_actualizado) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ? )";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                                                   //(1) id_prestamo
         pInsert.bindString(2, params.get(1));                                                   //(2) id_cliente

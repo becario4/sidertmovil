@@ -59,6 +59,8 @@ import java.util.UUID;
 import static com.sidert.sidertmovil.utils.Constants.DATE;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FECHA;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
@@ -172,10 +174,10 @@ public class Miscellaneous {
         SimpleDateFormat sdf = null;
         switch (tipo_formato){
             case "timestamp":
-                sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP);
+                sdf = new SimpleDateFormat(FORMAT_TIMESTAMP);
                 break;
             case "fecha":
-                sdf = new SimpleDateFormat(Constants.FORMAT_DATE_GNRAL);
+                sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
                 break;
             case "fecha_atraso":
                 sdf = new SimpleDateFormat("dd-MM-yyyy");

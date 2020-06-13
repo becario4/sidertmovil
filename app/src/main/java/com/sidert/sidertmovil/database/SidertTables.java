@@ -40,6 +40,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
@@ -65,6 +66,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REPORTE_SESIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_V_T;
@@ -72,6 +74,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 
@@ -1511,6 +1514,38 @@ public class SidertTables {
                 "estatus INTEGER," +
                 "nombre TEXT," +
                 "serial_id TEXT)";
+
+        public static final String CREATE_TBL_REPORTE_SESIONES = "CREATE TABLE " + TBL_REPORTE_SESIONES + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "serie_id TEXT," +
+                "nombre_asesor TEXT," +
+                "usuario TEXT," +
+                "sucursal TEXT," +
+                "sucursalid TEXT," +
+                "horariologin TEXT," +
+                "nivelbateria TEXT," +
+                "versionapp TEXT," +
+                "primeragestion TEXT," +
+                "ultimagestion TEXT," +
+                "totalgestiones TEXT)";
+
+        public static final String CREATE_TBL_SUCURSALES = "CREATE TABLE " + TBL_SUCURSALES + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT," +
+                "region_id INTEGER," +
+                "centrocosto_id INTEGER)";
+        
+        public static final String CREATE_TBL_CODIGOS_OXXO = "CREATE TABLE " + TBL_CODIGOS_OXXO + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id TEXT," +
+                "id_asesor TEXT," +
+                "num_prestamo TEXT," +
+                "fecha_amortiz TEXT," +
+                "monto_amortiz TEXT," +
+                "nombre_pdf TEXT," +
+                "created_at TEXT)";
 
         //================  TABLAS GENERALES  ===================================
 

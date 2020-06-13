@@ -291,6 +291,13 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Bancomer</item>
     </string-array>
 
+    <string-array name="regiones">
+        <item>TODOS</item>
+        <item>1.VERACRUZ</item>
+        <item>2.PUEBLA</item>
+        <item>3.TLAXCALA</item>
+    </string-array>
+
     <string-array name="reason_no_pay">
         <item>NEGACION DE PAGO</item>
         <item>FALLECIMIENTO</item>

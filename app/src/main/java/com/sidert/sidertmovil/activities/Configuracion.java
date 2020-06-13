@@ -86,7 +86,7 @@ public class Configuracion extends AppCompatActivity {
                             dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
                         Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
-                        sincronizado.GetGeolocalizacion(ctx, true, false);
+                        //sincronizado.GetGeolocalizacion(ctx, true, false);
                         sincronizado.SaveCierreDia(ctx, true);
                         sincronizado.SaveGeolocalizacion(ctx, true);
                         sincronizado.SaveRespuestaGestion(ctx, true);
