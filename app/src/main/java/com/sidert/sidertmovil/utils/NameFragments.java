@@ -41,6 +41,7 @@ public class NameFragments {
     public final static String DIALOGINTEGRANTE                 = "dialog_integrante_gpo";
     public final static String INFO_GEOLOCALIZACIONES           = "dialog_info_geo";
     public final static String DIALOGDATEPICKER                 = "dialog_date_picker";
+    public final static String DIALOGUPDATEAPK                  = "dialog_update_apk";
     public final static String DIALOGTIMEPICKER                 = "dialog_time_picker";
     public final static String DIALOGORIGINACIONGPO             = "dialog_originacion_gpo";
     public final static String DIALOGOCIRCULOCREDITO            = "dialog_circulo_credito";

@@ -15,6 +15,7 @@ public class MPrestamo implements Serializable {
     private int tipo;
     private String saldoCorte;
     private String tipoPrestamo;
+    private String numAmortiz;
 
     public String getNombre() {
         return nombre;
@@ -102,5 +103,13 @@ public class MPrestamo implements Serializable {
 
     public void setTipoPrestamo(String tipoPrestamo) {
         this.tipoPrestamo = tipoPrestamo;
+    }
+
+    public String getNumAmortiz() {
+        return numAmortiz;
+    }
+
+    public void setNumAmortiz(String numAmortiz) {
+        this.numAmortiz = numAmortiz;
     }
 }

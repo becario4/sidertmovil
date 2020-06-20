@@ -42,8 +42,9 @@ public class adapter_codigos_oxxo extends RecyclerView.Adapter<adapter_codigos_o
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final MCodigoOxxo item = data.get(position);
 
-        holder.tvFecha.setText(item.getFechaAmortizacion());
+        holder.tvFecha.setText("Amortización: "+item.getFechaAmortizacion().substring(0,10));
         holder.tvMonto.setText(Miscellaneous.moneyFormat(String.valueOf(item.getMontoAmortizacion())));
+        holder.tvFechaVencimiento.setText("Vencimiento: "+item.getFechaVencimiento().substring(0,10));
 
         holder.ivCompartir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,12 +64,14 @@ public class adapter_codigos_oxxo extends RecyclerView.Adapter<adapter_codigos_o
         private TextView tvFecha;
         private TextView tvMonto;
         private ImageView ivCompartir;
+        private TextView tvFechaVencimiento;
 
         public ViewHolder(@NonNull View v) {
             super(v);
             tvFecha = v.findViewById(R.id.tvFecha);
             tvMonto = v.findViewById(R.id.tvMonto);
             ivCompartir   = v.findViewById(R.id.ivCompartir);
+            tvFechaVencimiento = v.findViewById(R.id.tvFechaVencimiento);
         }
     }
 }

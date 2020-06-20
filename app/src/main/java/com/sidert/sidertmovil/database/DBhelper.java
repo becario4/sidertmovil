@@ -519,6 +519,12 @@ public class DBhelper extends SQLiteOpenHelper {
         catch (Exception e) {}
         try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CODIGOS_OXXO); }
         catch (Exception e) {}
+        try { db.execSQL(SidertTables.SidertEntry.ADD_FECHA_VENCIMIENTO_CODIGOS); }
+        catch (Exception e) { Log.e("ADD FECHA VENCI", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_IND); }
+        catch (Exception e) { Log.e("ADD ESTATUS CAR IND", "ya contiene la columna"); }
+        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_GPO); }
+        catch (Exception e) { Log.e("ADD ESTATUS CAR GPO", "ya contiene la columna"); }
 
     }
 
@@ -1345,8 +1351,9 @@ public class DBhelper extends SQLiteOpenHelper {
                 "fecha_amortiz, " +
                 "monto_amortiz, " +
                 "nombre_pdf, " +
-                "created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "created_at, " +
+                "fecha_vencimiento) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));
         pInsert.bindString(2, params.get(1));
@@ -1355,6 +1362,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(5, params.get(4));
         pInsert.bindString(6, params.get(5));
         pInsert.bindString(7, params.get(6));
+        pInsert.bindString(8, params.get(7));
         pInsert.executeInsert();
 
         db.setTransactionSuccessful();

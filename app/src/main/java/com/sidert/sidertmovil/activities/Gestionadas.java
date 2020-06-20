@@ -211,6 +211,7 @@ public class Gestionadas extends AppCompatActivity {
                 @Override
                 public void GestionadaClick(MGestionada item) {
                     Cursor row;
+                    Log.e("id_ges", item.getIdGestion());
                     row = dBhelper.getRecords(tbl, " WHERE _id = ?", "", new String[]{item.getIdGestion()});
 
                     if (row.getCount() > 0) {

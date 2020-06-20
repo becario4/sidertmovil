@@ -142,5 +142,45 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvDownloadApk"
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:src="@drawable/ic_device_black"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:text="Descargar APK"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@android:color/black"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

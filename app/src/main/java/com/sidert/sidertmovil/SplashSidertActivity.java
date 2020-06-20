@@ -13,11 +13,11 @@ import android.view.WindowManager;
 
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
-import com.crashlytics.android.Crashlytics;
+//import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import io.fabric.sdk.android.Fabric;
+//import io.fabric.sdk.android.Fabric;
 
 import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
@@ -32,7 +32,7 @@ public class SplashSidertActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
         DBhelper dBhelper = new DBhelper(this);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         dBhelper.onUpgrade(db, 1, 2);

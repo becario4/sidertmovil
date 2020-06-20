@@ -187,9 +187,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <meta-data
+        <!--<meta-data
             android:name="io.fabric.ApiKey"
-            android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" />
+            android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" /> -->
 
         <uses-library
             android:name="org.apache.http.legacy"

@@ -130,6 +130,7 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setEstatus(row.getString(14));
                 item.setTipo(1);
                 item.setTipoPrestamo(row.getString(13));
+                item.setNumAmortiz(row.getString(11));
 
                 Cursor rowSaldoCorte;
                 if (ENVIROMENT)
@@ -180,8 +181,9 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void CodigoOxxoClick(MPrestamo item) {
-                String sql = "SELECT p.num_prestamo, a.fecha, a.total,c.nombre, c.clave FROM "+ TBL_PRESTAMOS_GPO_T +" AS p INNER JOIN "+TBL_AMORTIZACIONES_T+" AS a ON p.num_amortizacion = a.numero INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = m.id_cartera WHERE p.id_prestamo = ?";
-                Cursor row = db.rawQuery(sql, new String[]{item.getId()});
+                String sql = "SELECT p.num_prestamo, a.fecha, a.total,c.nombre, c.clave FROM "+ TBL_AMORTIZACIONES_T +" AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = c.id_cartera WHERE a.id_prestamo = ? AND a.numero = ?";
+                //String sql = "SELECT p.num_prestamo, a.fecha, a.total,m.nombre, m.clave FROM "+ TBL_AMORTIZACIONES_T +" AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON p.id_prestamo = m.id_prestamo WHERE a.id_prestamo = ? AND m.tipo_integrante = 'TESORERO' AND a.numero = ?";
+                Cursor row = db.rawQuery(sql, new String[]{item.getId(), item.getNumAmortiz()});
                 if (row.getCount() > 0){
                     row.moveToFirst();
 
@@ -224,6 +226,7 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setEstatus(row.getString(14));
                 item.setTipoPrestamo(row.getString(13));
                 item.setTipo(2);
+                item.setNumAmortiz(row.getString(11));
 
                 Cursor rowSaldoCorte;
                 if (ENVIROMENT)
@@ -277,8 +280,11 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void CodigoOxxoClick(MPrestamo item) {
-                String sql = "SELECT p.num_prestamo, a.fecha, a.total,m.nombre, m.clave FROM "+ TBL_PRESTAMOS_GPO_T +" AS p INNER JOIN "+TBL_AMORTIZACIONES_T+" AS a ON p.num_amortizacion = a.numero INNER JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON p.id_prestamo = m.id_prestamo WHERE p.id_prestamo = ? AND m.tipo_integrante = 'TESORERO'";
-                Cursor row = db.rawQuery(sql, new String[]{item.getId()});
+
+                String sql = "SELECT p.num_prestamo, a.fecha, a.total,m.nombre, m.clave FROM "+ TBL_AMORTIZACIONES_T +" AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON p.id_prestamo = m.id_prestamo WHERE a.id_prestamo = ? AND m.tipo_integrante = 'TESORERO' AND a.numero = ?";
+
+                Cursor row = db.rawQuery(sql, new String[]{item.getId(), item.getNumAmortiz()});
+                Log.e("ROWOXXO", row.getCount()+" as");
                 if (row.getCount() > 0){
                     row.moveToFirst();
 

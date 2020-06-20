@@ -212,7 +212,6 @@ public class CierreDeDia extends AppCompatActivity {
             }catch (NumberFormatException e){
                 ShowMessage(1);
             }
-
         }
     }
 

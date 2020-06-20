@@ -1129,7 +1129,8 @@ public class SidertTables {
                 "colonia TEXT," +
                 "geo_cliente INTEGER," +
                 "geo_aval INTEGER," +
-                "geo_negocio INTEGER)";
+                "geo_negocio INTEGER," +
+                "estatus TEXT DEFAULT '1')";
 
         public static final String CREATE_TBL_CARTERA_GPO_T = "CREATE TABLE " + TBL_CARTERA_GPO_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1148,7 +1149,8 @@ public class SidertTables {
                 "fecha_dispositivo TEXT," +
                 "fecha_actualizado TEXT," +
                 "colonia TEXT," +
-                "geolocalizadas TEXT)";
+                "geolocalizadas TEXT," +
+                "estatus TEXT DEFAULT '1')";
         
         public static final String CREATE_TBL_PRESTAMOS_IND_T = "CREATE TABLE " + TBL_PRESTAMOS_IND_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1545,7 +1547,8 @@ public class SidertTables {
                 "fecha_amortiz TEXT," +
                 "monto_amortiz TEXT," +
                 "nombre_pdf TEXT," +
-                "created_at TEXT)";
+                "created_at TEXT," +
+                "fecha_vencimiento TEXT)";
 
         //================  TABLAS GENERALES  ===================================
 
@@ -1771,6 +1774,18 @@ public class SidertTables {
         static final String ADD_SERIAL_ID_CIERRE_DIA = "ALTER TABLE " + TBL_CIERRE_DIA_T +
                 " ADD COLUMN serial_id" +
                 " TEXT DEFAULT ''";
+
+        static final String ADD_FECHA_VENCIMIENTO_CODIGOS = "ALTER TABLE " + TBL_CODIGOS_OXXO +
+                " ADD COLUMN fecha_vencimiento" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_ESTATUS_CARTERA_IND = "ALTER TABLE " + TBL_CARTERA_IND_T +
+                " ADD COLUMN estatus" +
+                " TEXT DEFAULT '1'";
+
+        static final String ADD_ESTATUS_CARTERA_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
+                " ADD COLUMN estatus" +
+                " TEXT DEFAULT '1'";
 
     }
 }

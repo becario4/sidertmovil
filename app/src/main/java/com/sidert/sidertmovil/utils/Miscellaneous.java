@@ -2309,4 +2309,14 @@ public class Miscellaneous {
 
         return data;
     }
+
+    public static String GetFechaDomingo(){
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = null;
+        sdf = new SimpleDateFormat("dd-MM-yyyy");
+        int dias_add = (7 - cal.get(Calendar.DAY_OF_WEEK)) + 1;
+        cal.add(Calendar.DAY_OF_MONTH, dias_add);
+
+        return sdf.format(cal.getTime());
+    }
 }

@@ -42,6 +42,7 @@ import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.MyFireBaseInstanceIDService;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
@@ -294,6 +295,9 @@ public class Login extends AppCompatActivity {
                                     OneTimeWorkRequest mRequestUnique = new OneTimeWorkRequest.Builder(WorkerLogout.class).setInitialDelay((22 - c.get(Calendar.HOUR_OF_DAY))-1, TimeUnit.HOURS).build();
                                     mWorkManager.enqueue(mRequestUnique);
                                 }*/
+
+                                MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
+
 
                                 Intent home = new Intent(context, DescargaDatos.class);
                                 home.putExtra("login", true);

@@ -77,7 +77,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
-import com.theartofdev.edmodo.cropper.CropImage;
+//import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -2189,47 +2189,6 @@ public class recuperacion_ind_fragment extends Fragment {
 
                 }
                 break;
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (data != null){
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    //final Uri selectedImage = result.getUri();
-                    ibFoto.setVisibility(View.GONE);
-                    ibGaleria.setVisibility(View.GONE);
-                    tvFotoGaleria.setError(null);
-                    imageUri = result.getUri();
-                    ivEvidencia.setVisibility(View.VISIBLE);
-
-                    byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
-
-                    View vCanvas = new CanvasCustom(ctx,new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
-
-                    Bitmap newBitMap = null;
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
-
-                    Bitmap.Config config = bitmap.getConfig();
-
-                    newBitMap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),config);
-                    Canvas canvas = new Canvas(newBitMap);
-                    canvas.drawBitmap(bitmap,0,0, null);
-
-                    vCanvas.draw(canvas);
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-
-                    byteEvidencia = baos.toByteArray();
-
-                    Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-
-                    try {
-                        Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
-                        Update("tipo_imagen", "GALERIA");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                break;
             case REQUEST_CODE_CAMARA_TICKET:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
@@ -2296,7 +2255,9 @@ public class recuperacion_ind_fragment extends Fragment {
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
-                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                Double abono = 0.0;
+                                if (!etPagoRealizado.getText().toString().trim().isEmpty())
+                                    abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);

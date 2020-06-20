@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.utils;
 
+import com.sidert.sidertmovil.R;
+
 public class WebServicesRoutes {
 
     //public final static String DOMAIN = "http://sidert.ddns.net:"; // Dominio
@@ -20,6 +22,7 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_SOLICITUDES   = "/api/solicitudes/creditos/"; //Controlador para solicitudes
     public final static String CONTROLLER_MOVIL         = "/api/movil/"; //Controlador para movil
     public final static String IMAGES_GEOLOCALIZACION   = "uploads/img/";
+    public final static String PDF_CODIGOS_OXXO         = "/uploads/codigos_oxxo/";
 
 
     //public final static String BASE_URL = DOMAIN + PORT;
@@ -44,6 +47,7 @@ public class WebServicesRoutes {
     public final static String WS_POST_ORIGINACION_IND      = "individuales"; //Guarda la solicitud de credito individual (originacion)
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día
     public final static String WS_POST_RESPUESTA_GESTION    = "gestiones"; //Guarda la respuesta gestion de recuperaciones
+    public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México

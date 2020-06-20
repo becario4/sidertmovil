@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.fabric.sdk.android.Fabric;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.AcercaDe;
 import com.sidert.sidertmovil.activities.CirculoCredito;
@@ -58,7 +59,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.fabric.sdk.android.Fabric;
+//import io.fabric.sdk.android.Fabric;
 
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
@@ -93,9 +94,11 @@ public class Home extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
-        Fabric.with(this, new Crashlytics());
-        //logUserFabric();
         session         = new SessionManager(ctx);
+
+        Fabric.with(this, new Crashlytics());
+        logUserFabric();
+
         TBmain          = findViewById(R.id.TBmain);
         mDrawerLayout   = findViewById(R.id.mDrawerLayout);
         NVmenu          = findViewById(R.id.NVmenu);
@@ -259,11 +262,12 @@ public class Home extends AppCompatActivity{
                     setFragment(NameFragments.GEOLOCALIZACION, null);
                     break;
                 case R.id.nvLogin:
-                    Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
-                    startActivity(i_log_login);
+                    Crashlytics.getInstance().crash();
+                    //Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
+                    //startActivity(i_log_login);
                     break;
                 case R.id.nvShare:
-                    String link = "Estimado cliente de SIDERT: \n" +
+                    /*String link = "Estimado cliente de SIDERT: \n" +
                             "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
                             "Click Aquí para descargarlo: www.sidert.ddns.net:83/referencias/cliente.pdf \uD83D\uDC48\n" +
                             "Atención‼️ No aceptes imágenes y/o archivos adjuntos \n" +
@@ -279,7 +283,7 @@ public class Home extends AppCompatActivity{
                         startActivity(Intent.createChooser(waIntent, "Share with"));
                     } else
                         Toast.makeText(ctx, "WhatsApp not Installed", Toast.LENGTH_SHORT)
-                                .show();
+                                .show();*/
                     break;
                 default:
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
@@ -463,8 +467,8 @@ public class Home extends AppCompatActivity{
     };
 
     private void logUserFabric() {
-        Crashlytics.setUserIdentifier("12345");
-        Crashlytics.setUserName("Alejandro Isaias Lopez Jim");
+        Crashlytics.setUserIdentifier(session.getUser().get(0));
+        Crashlytics.setUserName(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
     }
 
     @Override

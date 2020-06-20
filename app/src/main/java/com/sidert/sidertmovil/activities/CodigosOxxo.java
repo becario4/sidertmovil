@@ -14,6 +14,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
@@ -112,6 +114,8 @@ public class CodigosOxxo extends AppCompatActivity {
 
         fbGenerar.setOnClickListener(fbGenerar_OnClick);
 
+        GetCodigos();
+
     }
 
     private View.OnClickListener fbGenerar_OnClick = new View.OnClickListener() {
@@ -135,17 +139,6 @@ public class CodigosOxxo extends AppCompatActivity {
 
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CODIGOS, ctx).create(ManagerInterface.class);
 
-            Log.e("token", session.getUser().get(7));
-            Log.e("serie_id", session.getUser().get(9));
-            Log.e("num_prestamo", numPrestamo);
-            Log.e("fechaAmortiz", fechaAmortiz);
-            Log.e("montoAmortiz", montoAmortiz);
-            Log.e("tipo", String.valueOf(tipo));
-            Log.e("id_prestamo", id_prestamo+"");
-            Log.e("clave", clave);
-            Log.e("nombre", nombre);
-            Log.e("nombreAsesor", session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
-
             Call<MResCodigoOxxo> call = api.generarCodigo(session.getUser().get(7),
                     session.getUser().get(9),
                     numPrestamo,
@@ -155,7 +148,8 @@ public class CodigosOxxo extends AppCompatActivity {
                     id_prestamo,
                     clave,
                     nombre,
-                    session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
+                    session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3),
+                    Miscellaneous.GetFechaDomingo());
 
             call.enqueue(new Callback<MResCodigoOxxo>() {
                 @Override
@@ -172,6 +166,7 @@ public class CodigosOxxo extends AppCompatActivity {
                             params.put(4, String.valueOf(oxxo.getData().getMontoAmortizacion()));
                             params.put(5, oxxo.getData().getNombrePdf());
                             params.put(6, oxxo.getData().getCreatedAt());
+                            params.put(7, oxxo.getData().getFechaVencimiento());
 
                             dBhelper.saveCodigosOxxo(db, params);
 
@@ -211,9 +206,12 @@ public class CodigosOxxo extends AppCompatActivity {
     }
 
     private void GetCodigos(){
-        String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf FROM " + TBL_CODIGOS_OXXO + " WHERE fecha_amortiz >= ?";
-        Cursor row = db.rawQuery(sql, new String[]{Miscellaneous.ObtenerFecha("fecha_atraso")});
+        String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf, fecha_vencimiento FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? ORDER BY created_at DESC";
+        //String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf FROM " + TBL_CODIGOS_OXXO + " WHERE fecha_amortiz >= ?";
+        Cursor row = db.rawQuery(sql, new String[]{numPrestamo});
+        //Cursor row = db.rawQuery(sql, new String[]{Miscellaneous.ObtenerFecha("fecha_atraso")});
 
+        Log.e("CodigosGenrrados", ""+row.getCount());
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<MCodigoOxxo> data = new ArrayList<>();
@@ -222,6 +220,7 @@ public class CodigosOxxo extends AppCompatActivity {
                 item.setFechaAmortizacion(row.getString(0));
                 item.setMontoAmortizacion(row.getDouble(1));
                 item.setNombrePdf(row.getString(2));
+                item.setFechaVencimiento(row.getString(3));
                 data.add(item);
                 row.moveToNext();
             }
@@ -230,13 +229,13 @@ public class CodigosOxxo extends AppCompatActivity {
                 @Override
                 public void CompartirClick(String nombrePDF) {
                     String url = session.getDominio().get(0)+session.getDominio().get(1)+ WebServicesRoutes.CONTROLLER_FICHAS +
-                            WebServicesRoutes.IMAGES_GEOLOCALIZACION + nombrePDF;
+                            WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
 
                     Log.e("url_pdf", url);
 
                     String mensaje = "Estimado cliente de SIDERT: \n" +
                             "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
-                            "Click Aquí para descargarlo: "+url+" \uD83D\uDC48\n" +
+                            "Click Aquí para descargarlo: " + url + " \uD83D\uDC48\n" +
                             "Atención‼️ No aceptes imágenes y/o archivos adjuntos \n" +
                             "Cualquier duda y/o aclaración comunícate al 01 800 122 6666 \uD83D\uDCDE\n" +
                             "El enlace tiene una vigencia de 48 hrs";
@@ -253,7 +252,19 @@ public class CodigosOxxo extends AppCompatActivity {
                                 .show();
                 }
             });
+
+            rvCodigos.setAdapter(adapter);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

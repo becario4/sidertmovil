@@ -35,7 +35,6 @@ public class dialog_contrasena_root extends DialogFragment {
 
     SessionManager session;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.popup_contrasena_root, container, false);
@@ -85,12 +84,18 @@ public class dialog_contrasena_root extends DialogFragment {
         @Override
         public void onClick(View view) {
             Validator validator = new Validator();
-            if (!validator.validate(etDominio, new String[]{validator.REQUIRED}) &&
+            if (!validator.validate(etKeyMaster, new String[]{validator.REQUIRED}) &&
+                !validator.validate(etDominio, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etPuerto, new String[]{validator.REQUIRED})){
-                session.setDominio(etDominio.getText().toString().trim(), etPuerto.getText().toString().trim());
-                Login loginActivity = (Login) getActivity();
-                loginActivity.SetPass(false);
-                dismiss();
+                if(etKeyMaster.getText().toString().trim().equals("Qvv123")){
+                    session.setDominio("http://"+etDominio.getText().toString().trim()+":", etPuerto.getText().toString().trim());
+                    Login loginActivity = (Login) getActivity();
+                    loginActivity.SetPass(false);
+                    dismiss();
+                }
+                else{
+                    etKeyMaster.setError("La Clave es incorrecta");
+                }
             }
         }
     };

@@ -139,7 +139,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                                 for(int j = 0; j < permisos.length(); j++){
                                                     JSONObject item_permiso = permisos.getJSONObject(j);
                                                     if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
-                                                        popup.getMenu().getItem(2).setVisible(true);
+                                                        popup.getMenu().getItem(2).setVisible(false);
                                                         break;
                                                     }
                                                 }
@@ -150,7 +150,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                     }
 
                                 }else
-                                    popup.getMenu().getItem(2).setVisible(true);
+                                    popup.getMenu().getItem(2).setVisible(false);
                             }
 
                             popup.setGravity(Gravity.RIGHT);

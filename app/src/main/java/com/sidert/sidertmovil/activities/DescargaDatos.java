@@ -870,6 +870,11 @@ public class DescargaDatos extends AppCompatActivity {
                                 row.close();
                             } //Fin Ciclo For
                         }//Fin IF
+                    else{
+                        ContentValues cv = new ContentValues();
+                        cv.put("estatus", "0");
+                        db.update(TBL_CARTERA_IND_T, cv, "id_cartera = ?", new String[]{String.valueOf(id)});
+                    }
                     if (prestamoCallbacks != null)
                         prestamoCallbacks.onPrestamoInd(true);
                 }
@@ -1166,6 +1171,11 @@ public class DescargaDatos extends AppCompatActivity {
                             row.close();
                         } //Fin Ciclo For
                     }//Fin IF
+                    else{
+                        ContentValues cv = new ContentValues();
+                        cv.put("estatus", "0");
+                        db.update(TBL_CARTERA_GPO_T, cv, "id_cartera = ?", new String[]{String.valueOf(id)});
+                    }
                 }
 
                 if (prestamoGpoCallbacks != null)

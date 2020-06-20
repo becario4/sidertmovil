@@ -39,6 +39,10 @@ public class MCodigoOxxo implements Serializable {
     @Expose
     private String createdAt;
 
+    @SerializedName("fechaVencimiento")
+    @Expose
+    private String fechaVencimiento;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +105,13 @@ public class MCodigoOxxo implements Serializable {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setFechaVencimiento(String fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 }

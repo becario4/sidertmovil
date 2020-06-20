@@ -39,6 +39,7 @@ import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -64,6 +65,9 @@ public interface ManagerInterface {
 
     @POST(WebServicesRoutes.WS_SYNCHRONIZEBD)
     Call<List<SynchronizeBD>> getImpressions(@Body AsesorID obj);
+
+    @GET(WebServicesRoutes.WS_GET_DOWNLOAD_APK)
+    Call<ResponseBody> downloadApk();
 
 
     @POST(WebServicesRoutes.WS_LOGIN)
@@ -182,15 +186,16 @@ public interface ManagerInterface {
 
     @GET(WebServicesRoutes.WS_GET_GENERAR_CODIGO_OXXO)
     Call<MResCodigoOxxo> generarCodigo(@Header("Authorization") String token,
-                                       @Query("usuario_id") String usuarioId,
-                                       @Query("num_prestamo") String numPrestamo,
-                                       @Query("fecha_amortizacion") String fechaAmortizacion,
-                                       @Query("monto_amortizacion") String montoAmortizacion,
-                                       @Query("tipo_prestamo") int tipoPrestamo,
-                                       @Query("prestamo_id") Long prestamoId,
+                                       @Query("usuarioId") String usuarioId,
+                                       @Query("numPrestamo") String numPrestamo,
+                                       @Query("fechaAmortizacion") String fechaAmortizacion,
+                                       @Query("montoAmortizacion") String montoAmortizacion,
+                                       @Query("tipoPrestamo") int tipoPrestamo,
+                                       @Query("prestamoId") Long prestamoId,
                                        @Query("clave") String clave,
                                        @Query("nombre") String nombre,
-                                       @Query("nombre_asesor") String nombreAsesor);
+                                       @Query("nombreAsesor") String nombreAsesor,
+                                       @Query("fechaVencimiento") String fechaVencimiento);
 
     /*Serivicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
     @Multipart

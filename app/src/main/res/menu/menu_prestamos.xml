@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/nvCodigoOxxo"
-        android:title="Código de OXXO"
+        android:title="Referencias Bancarias"
         android:visible="false"
         android:icon="@drawable/ic_cierre_dia"/>
 

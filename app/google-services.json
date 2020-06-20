@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:309594653367:android:b432065c7d1755ed378332",
+        "mobilesdk_app_id": "1:309594653367:android:add4cfdad9d9ff1a378332",
         "android_client_info": {
           "package_name": "com.sidert.sidertmovil"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "309594653367-ouai4960jhfvnjucjpujgltrttn40b8c.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sidert.sidertmovil",
-            "certificate_hash": "3635672816faf5ead618d61899fbc9cc01cb736a"
-          }
-        },
         {
           "client_id": "309594653367-l4trm32tl8rdfq4rncukc72lihpc0d90.apps.googleusercontent.com",
           "client_type": 3

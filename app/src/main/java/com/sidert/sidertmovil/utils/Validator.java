@@ -166,7 +166,7 @@ public class Validator {
                         return error;
                     }
                     else {
-                        if (Double.parseDouble(etx.getText().toString()) == 0){
+                        if (Double.parseDouble(etx.getText().toString().replace(",","")) == 0){
                             etx.setError("No se permiten cantidades iguales a 0");
                             error = true;
                             return error;

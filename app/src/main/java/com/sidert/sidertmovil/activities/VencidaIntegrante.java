@@ -299,8 +299,9 @@ public class VencidaIntegrante extends AppCompatActivity {
 
         Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
         Log.e("Respuesta: ", row.getCount()+" xxx");
-        row.moveToLast();
+
         if (row.getCount() > 0){
+            row.moveToLast();
             if (row.getInt(27) == 0){
                 id_respuesta = row.getString(0);
                 latitud = row.getString(3);
@@ -702,7 +703,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(27) == 1 || row.getInt(27) == 2){
                             String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, id_prestamo);
@@ -753,6 +754,8 @@ public class VencidaIntegrante extends AppCompatActivity {
                             id_respuesta = String.valueOf(id);
                         }
                         else{
+                            Log.e("idRespuesta", row.getString(0));
+                            id_respuesta = row.getString(0);
                             Update("latitud", latitud);
                             Update("longitud", longitud);
                         }
@@ -976,6 +979,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                             Cursor row;
                             row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
                             row.moveToLast();
+                            Log.e("TotasResp", "asd"+row.getCount());
                             if (row.getCount() == 0) {
                                 String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                 HashMap<Integer, String> params = new HashMap<>();
@@ -1018,7 +1022,7 @@ public class VencidaIntegrante extends AppCompatActivity {
 
                                 id_respuesta = String.valueOf(id);
                             } else {
-                                if (row.getInt(25) == 1 || row.getInt(25) == 2) {
+                                if (row.getInt(27) == 1 || row.getInt(27) == 2) {
                                     String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, id_prestamo);
@@ -1060,6 +1064,8 @@ public class VencidaIntegrante extends AppCompatActivity {
 
                                     id_respuesta = String.valueOf(id);
                                 } else {
+                                    Log.e("idRespuesta", row.getString(0));
+                                    id_respuesta = row.getString(0);
                                     Update("contacto", _contacto[position]);
 
                                     Update("gerente", "");
@@ -2246,7 +2252,9 @@ public class VencidaIntegrante extends AppCompatActivity {
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
-                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                Double abono = 0.0;
+                                if (!etPagoRealizado.getText().toString().trim().isEmpty())
+                                    abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);

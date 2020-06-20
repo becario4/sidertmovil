@@ -72,7 +72,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
-import com.theartofdev.edmodo.cropper.CropImage;
+//import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -2250,7 +2250,9 @@ public class vencida_ind_fragment extends Fragment {
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{parent.id_prestamo});
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
-                                Double abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                Double abono = 0.0;
+                                if (!etPagoRealizado.getText().toString().trim().isEmpty())
+                                    abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);

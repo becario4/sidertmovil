@@ -104,6 +104,12 @@ public class MisCierresDeDia extends AppCompatActivity {
             List<String> nombre = new ArrayList<>();
 
             for (int i = 0; i < row.getCount(); i++){
+                Log.e("-","-------------------------------------------");
+                Log.e("id_gestion", row.getString(1));
+                Log.e("Null", String.valueOf(row.getString(5)));
+                Log.e("Null", String.valueOf(row.getString(6)));
+                Log.e("Null", String.valueOf(row.getString(12)));
+
                 MCierreDia item = new MCierreDia();
                 nombre.add(row.getString(7));
                 item.setId(row.getString(0));
