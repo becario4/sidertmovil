@@ -5,6 +5,7 @@ import android.provider.ContactsContract;
 import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MGestionCancelada;
 import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
@@ -15,6 +16,7 @@ import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MSendImpresion;
+import com.sidert.sidertmovil.models.MSolicitudCancelacion;
 import com.sidert.sidertmovil.models.MSucursal;
 import com.sidert.sidertmovil.models.MSucursales;
 import com.sidert.sidertmovil.models.MTracker;
@@ -92,6 +94,14 @@ public interface ManagerInterface {
     @GET(WebServicesRoutes.WS_GET_CARTERA)
     Call<List<MCartera>> getCartera(@Query("usuario_id") String usuario_id,
                               @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_GESTIONES_CANCELADAS)
+    Call<MGestionCancelada> getGestionesCanceladas(@Query("usuario_id") String usuarioId,
+                                                   @Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -176,6 +186,16 @@ public interface ManagerInterface {
                                       @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
                                       @Part("fecha_envio") RequestBody fecha_envio,
                                       @Part MultipartBody.Part foto_fachada);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_SOLICITUD_CANCELAR)
+    Call<MSolicitudCancelacion> solicitudCancelar(@Header("Authorization") String token,
+                                                  @Part("prestamo_id") RequestBody prestamoId,
+                                                  @Part("num_solicitud") RequestBody numSolicitu,
+                                                  @Part("respuesta") RequestBody respuesta,
+                                                  @Part("tipo") RequestBody tipo,
+                                                  @Part("comentario") RequestBody comentario,
+                                                  @Part("fecha_solicitud") RequestBody fechaSolicitud);
 
     @GET(WebServicesRoutes.WS_GET_LOG_ASESORES)
     Call<List<MLogLogin>> getLogAsesores(@Query("fechaInicial") String fechaInicial,

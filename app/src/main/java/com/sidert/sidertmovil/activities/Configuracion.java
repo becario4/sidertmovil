@@ -84,7 +84,7 @@ public class Configuracion extends AppCompatActivity {
         cvCatalogos         = findViewById(R.id.cvCatalogos);
         cvDownloadApk       = findViewById(R.id.cvDownloadApk);
 
-        cvDownloadApk.setVisibility(View.GONE);
+        //cvDownloadApk.setVisibility(View.GONE);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -120,14 +120,14 @@ public class Configuracion extends AppCompatActivity {
                         else
                             dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-                        Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
-                        //sincronizado.GetGeolocalizacion(ctx, true, false);
-                        sincronizado.SaveCierreDia(ctx, true);
-                        sincronizado.SaveGeolocalizacion(ctx, true);
-                        sincronizado.SaveRespuestaGestion(ctx, true);
-                        sincronizado.SendImpresionesVi(ctx, true);
-                        sincronizado.SendReimpresionesVi(ctx, true);
-                        sincronizado.SendTracker(ctx, true);
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                        ss.SaveCierreDia(ctx, true);
+                        ss.SaveGeolocalizacion(ctx, true);
+                        ss.SaveRespuestaGestion(ctx, true);
+                        ss.SendImpresionesVi(ctx, true);
+                        ss.SendReimpresionesVi(ctx, true);
+                        ss.SendTracker(ctx, true);
+                        ss.CancelGestiones(ctx, true);
 
                     }
                     cvSincronizarFichas.setEnabled(true);

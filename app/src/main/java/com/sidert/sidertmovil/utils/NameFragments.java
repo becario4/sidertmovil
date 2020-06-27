@@ -49,6 +49,7 @@ public class NameFragments {
     public final static String DIALOGREGISTROINTEGRANTE         = "dialog_registro_integrante";
     public final static String DIALOGCARGOINTEGRANTE            = "dialog_cargo_integrante";
     public final static String DIALOGCODIGOOXXO                 = "dialog_generar_codigo_oxxo";
+    public final static String DIALOGCANCELGESTION              = "dialog_cancel_gestion";
 
     //TODO: Geolocalizacion
     public final static String GEO_CLIENTE           = "geo_cliente_fragment";

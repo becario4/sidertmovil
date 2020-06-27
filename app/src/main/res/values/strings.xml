@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.5</string>
+    <string name="app_version">2.4.6</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -274,6 +274,7 @@
     <string name="privacy_polices">SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TRÓPICO, S.A. DE C.V., con domicilio en Sarapes 74, Fracc. Rincón Mexicano, C.P. 91880, Veracruz, Ver., México.  En cumplimiento a lo establecido en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (la “Ley”), su Reglamento y los Lineamientos del Aviso de Privacidad, es responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su protección. Su información personal será utilizada para proveer los servicios y productos que ha solicitado, informarle sobre cambios en los mismos y evaluar la calidad del servicio que le brindamos. Mantener el buen uso de sus datos personales y datos personales sensibles, considerándolos como confidenciales en Los términos de este aviso y para uso exclusivo de las finalidades previstas.
 Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página de internet: www.sidert.com.mx
 </string>
+    <string name="mess_solicitud_cancel_gestion">Está completamente seguro que desea cancelar está gestión, requerirá la aceptación del administrador para proceder a cancelar dicha gestión</string>
 
 
     <!-- TODO: Arrays -->

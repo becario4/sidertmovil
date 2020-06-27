@@ -4,19 +4,52 @@ import java.io.Serializable;
 
 public class MFormatoRecibo implements Serializable {
 
-    private String nombreCliente;
-    private String folio;
-    private int tipoRecibo;
+    private String idPrestamo = "";
+    private String asesorId;
+    private String tipoRecibo;
     private boolean tipoImpresion;
+    private String folio;
+    private String monto;
+    private String clave = "";
+    private String nombre;
+    private String apPaterno;
+    private String apMaterno;
+    private String fechaImpreso;
+    private String fechaEnvio;
     private boolean reeimpresion;
     private int resImpresion;
+    private String nombreCliente;
 
-    public String getNombreCliente() {
-        return nombreCliente;
+    public String getIdPrestamo() {
+        return idPrestamo;
     }
 
-    public void setNombreCliente(String nombreCliente) {
-        this.nombreCliente = nombreCliente;
+    public void setIdPrestamo(String idPrestamo) {
+        this.idPrestamo = idPrestamo;
+    }
+
+    public String getAsesorId() {
+        return asesorId;
+    }
+
+    public void setAsesorId(String asesorId) {
+        this.asesorId = asesorId;
+    }
+
+    public String getTipoRecibo() {
+        return tipoRecibo;
+    }
+
+    public void setTipoRecibo(String tipoRecibo) {
+        this.tipoRecibo = tipoRecibo;
+    }
+
+    public boolean isTipoImpresion() {
+        return tipoImpresion;
+    }
+
+    public void setTipoImpresion(boolean tipoImpresion) {
+        this.tipoImpresion = tipoImpresion;
     }
 
     public String getFolio() {
@@ -27,20 +60,60 @@ public class MFormatoRecibo implements Serializable {
         this.folio = folio;
     }
 
-    public int getTipoRecibo() {
-        return tipoRecibo;
+    public String getMonto() {
+        return monto;
     }
 
-    public void setTipoRecibo(int tipoRecibo) {
-        this.tipoRecibo = tipoRecibo;
+    public void setMonto(String monto) {
+        this.monto = monto;
     }
 
-    public boolean isTipoImpresion() {
-        return tipoImpresion;
+    public String getClave() {
+        return clave;
     }
 
-    public void setTipoImpresion(boolean tipoImpresion) {
-        this.tipoImpresion = tipoImpresion;
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApPaterno() {
+        return apPaterno;
+    }
+
+    public void setApPaterno(String apPaterno) {
+        this.apPaterno = apPaterno;
+    }
+
+    public String getApMaterno() {
+        return apMaterno;
+    }
+
+    public void setApMaterno(String apMaterno) {
+        this.apMaterno = apMaterno;
+    }
+
+    public String getFechaImpreso() {
+        return fechaImpreso;
+    }
+
+    public void setFechaImpreso(String fechaImpreso) {
+        this.fechaImpreso = fechaImpreso;
+    }
+
+    public String getFechaEnvio() {
+        return fechaEnvio;
+    }
+
+    public void setFechaEnvio(String fechaEnvio) {
+        this.fechaEnvio = fechaEnvio;
     }
 
     public boolean isReeimpresion() {
@@ -57,5 +130,9 @@ public class MFormatoRecibo implements Serializable {
 
     public void setResImpresion(int resImpresion) {
         this.resImpresion = resImpresion;
+    }
+
+    public String getNombreCliente() {
+        return nombre+" "+apPaterno+" "+apMaterno;
     }
 }

@@ -33,7 +33,7 @@ public class dialog_contrasena_root extends DialogFragment {
 
     private ImageView ivClose;
 
-    SessionManager session;
+    private SessionManager session;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

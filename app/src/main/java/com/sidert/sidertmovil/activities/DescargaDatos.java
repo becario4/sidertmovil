@@ -1132,6 +1132,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
                                             }
                                         }
+                                        rowAmortiz.close();
                                         cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
 
                                         db.update((ENVIROMENT)?TBL_AMORTIZACIONES:TBL_AMORTIZACIONES_T, cv_amortiz,

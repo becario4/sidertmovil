@@ -45,8 +45,8 @@ public class adapter_integrantes extends RecyclerView.Adapter<adapter_integrante
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MIntegrante item = data.get(position);
-        Log.e("id_prestamo: ", item.getPrestamoId()+"asd");
-        Log.e("id_integrante: ", item.getId()+"asd");
+        //Log.e("id_prestamo: ", item.getPrestamoId()+"asd");
+        //Log.e("id_integrante: ", item.getId()+"asd");
 
         holder.tvTipoIntegrante.setText(item.getTipo());
         holder.tvNombre.setText(item.getNombre());

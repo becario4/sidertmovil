@@ -8,6 +8,9 @@ public class MGestionada {
     private String contacto;
     private String comentarioBanco;
     private String monto;
+    private String estatusCancel;
+    private String estatisGestion;
+    private String comentario = "";
 
     public String getIdGestion() {
         return idGestion;
@@ -55,5 +58,29 @@ public class MGestionada {
 
     public void setMonto(String monto) {
         this.monto = monto;
+    }
+
+    public String getEstatusCancel() {
+        return estatusCancel;
+    }
+
+    public void setEstatusCancel(String estatusCancel) {
+        this.estatusCancel = estatusCancel;
+    }
+
+    public String getEstatisGestion() {
+        return estatisGestion;
+    }
+
+    public void setEstatisGestion(String estatisGestion) {
+        this.estatisGestion = estatisGestion;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 }

@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_clientes_cc;
@@ -66,8 +67,10 @@ public class CirculoCredito extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_circulo_credito);
 
+
         ctx = this;
 
+        Toast.makeText(ctx, "Iniciar CC", Toast.LENGTH_SHORT).show();
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
@@ -81,7 +84,7 @@ public class CirculoCredito extends AppCompatActivity {
 
         fbAgregarCC.setOnClickListener(fbAgregarCC_OnClick);
 
-        init();
+        //init();
     }
 
     private View.OnClickListener fbAgregarCC_OnClick = new View.OnClickListener() {
@@ -99,6 +102,7 @@ public class CirculoCredito extends AppCompatActivity {
         else
             row = dBhelper.getRecords(RECIBOS_CIRCULO_CREDITO_T, " WHERE tipo_impresion = 'O'", "", null);
 
+        Log.e("CC", row.getCount()+"asdasd");
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<MTicketCC> data = new ArrayList<>();
@@ -133,6 +137,7 @@ public class CirculoCredito extends AppCompatActivity {
                             mRecibo.setNombreCliente(item.getNombre_cliente().trim());
                             mRecibo.setTipoRecibo(1);
                             mRecibo.setTipoImpresion(false);
+                            mRecibo.setMonto("17.5");
                             mRecibo.setResImpresion(1);
                             mRecibo.setFolio("");
                             mRecibo.setReeimpresion(false);
@@ -140,6 +145,7 @@ public class CirculoCredito extends AppCompatActivity {
                         case 2:
                             mRecibo.setNombreCliente(item.getNombre_cliente().trim());
                             mRecibo.setTipoRecibo(1);
+                            mRecibo.setMonto("17.5");
                             mRecibo.setTipoImpresion(true);
                             mRecibo.setFolio(String.valueOf(item.getFolio()));
                             mRecibo.setReeimpresion(true);

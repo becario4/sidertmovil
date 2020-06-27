@@ -703,7 +703,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(27) == 1 || row.getInt(27) == 2){
+                        if (row.getInt(27) > 0){
                             String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, id_prestamo);
@@ -835,7 +835,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(25) > 0){
                             String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, id_prestamo);
@@ -1022,7 +1022,7 @@ public class VencidaIntegrante extends AppCompatActivity {
 
                                 id_respuesta = String.valueOf(id);
                             } else {
-                                if (row.getInt(27) == 1 || row.getInt(27) == 2) {
+                                if (row.getInt(27) > 0) {
                                     String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, id_prestamo);
@@ -2242,8 +2242,8 @@ public class VencidaIntegrante extends AppCompatActivity {
                         db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
 
                         Cursor row;
-                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
-                        row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO"});
+                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
+                        row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO","1","2"});
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -2253,7 +2253,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
                                 Double abono = 0.0;
-                                if (!etPagoRealizado.getText().toString().trim().isEmpty())
+                                if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
                                     abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 

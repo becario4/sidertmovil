@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
@@ -18,6 +19,7 @@ import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.MAval;
 import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MCierreDia;
+import com.sidert.sidertmovil.models.MGestionCancelada;
 import com.sidert.sidertmovil.models.MImpresion;
 import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MIntegrante;
@@ -28,6 +30,7 @@ import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
+import com.sidert.sidertmovil.models.MRespuestaSolicitud;
 import com.sidert.sidertmovil.models.MSendImpresion;
 import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
@@ -71,12 +74,14 @@ import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.DIRECCION;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FACHADA;
+import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DISPOSITIVO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_ENVIO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN_GEO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_INI_GEO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_RESPUESTA;
 import static com.sidert.sidertmovil.utils.Constants.FICHA_TIPO;
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
 import static com.sidert.sidertmovil.utils.Constants.PRESTAMO_ID;
@@ -84,6 +89,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
@@ -372,9 +378,9 @@ public class Servicios_Sincronizado {
 
         Cursor row;
 
-        String x =  "SELECT * from " + TBL_RESPUESTAS_IND_V_T ;
+        /*String x =  "SELECT * from " + TBL_RESPUESTAS_IND_V_T ;
         row = db.rawQuery(x, null);
-        Log.e("countIndvidual", row.getCount()+" total");
+        Log.e("countIndvidual", row.getCount()+" total");*/
 
         String query;
 
@@ -492,8 +498,6 @@ public class Servicios_Sincronizado {
         }
 
     }
-
-
 
     private void SendrespuestaGestion(final Context ctx, final HashMap<String, String> params, final int tipo_gestion, final String _id, String imagen, String tipo_imagen, String firma, final boolean DGshow){
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
@@ -1682,6 +1686,453 @@ public class Servicios_Sincronizado {
             }
         }
 
+    }
+
+    public void CancelGestiones(final Context ctx, final boolean showDG){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (showDG)
+            loading.show();
+
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+
+        Call<MGestionCancelada> call = api.getGestionesCanceladas(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
+        call.enqueue(new Callback<MGestionCancelada>() {
+            @Override
+            public void onResponse(Call<MGestionCancelada> call, Response<MGestionCancelada> response) {
+                Log.e("CodeCancel","asd "+response.code());
+                MGestionCancelada data = response.body();
+                switch (response.code()){
+                    case 200:
+                        if (data.getData().size() > 0){
+                            List<MRespuestaSolicitud> items = data.getData();
+                            Log.e("Size", items.get(0).getEstatus());
+                            for(int i = 0; i < items.size(); i++) {
+                                MRespuestaSolicitud item = items.get(i);
+
+                                Cursor row_cancel = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE fecha_aplicacion <> '' AND id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                if (row_cancel.getCount() > 0) {
+                                    Log.e("Comentario", item.getComentario());
+                                    if (item.getTipoGestion() == 1 && item.getTipoPrestamo().equals("VIGENTE")) {
+                                        if (item.getEstatus().equals("CANCELADA")) {
+                                            Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                            if (row.getCount() > 0) {
+                                                row.moveToFirst();
+
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("estatus", 3);
+                                                db.update(TBL_RESPUESTAS_IND_T, cv, "_id = ?", new String[]{row.getString(1)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus", item.getEstatus());
+                                                cv.put("comentario_admin", item.getComentario());
+                                                cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                                db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+
+                                                Toast.makeText(ctx, "Cancelada", Toast.LENGTH_SHORT).show();
+                                                ActualiziaAmortizIndVi(ctx, item.getPrestamoId(), item.getPagoRealizado());
+
+                                            }
+                                        } else if (item.getEstatus().equals("RECHAZADA")) {
+                                            //db.delete(TBL_CANCELACIONES, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("estatus", item.getEstatus());
+                                            cv.put("comentario_admin", item.getComentario());
+                                            cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                            db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                        }
+
+                                    } else if (item.getTipoGestion() == 2 && item.getTipoPrestamo().equals("VIGENTE")) {
+                                        if (item.getEstatus().equals("CANCELADA")) {
+                                            Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                            if (row.getCount() > 0) {
+                                                row.moveToFirst();
+                                                Log.e("Cancela", "grupal vigente");
+
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("estatus", 3);
+                                                db.update(TBL_RESPUESTAS_GPO_T, cv, "_id = ?", new String[]{row.getString(1)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus", item.getEstatus());
+                                                cv.put("comentario_admin", item.getComentario());
+                                                cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                                db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+
+                                                ActualiziaAmortizGpoVi(ctx, item.getPrestamoId(), item.getPagoRealizado());
+                                            }
+                                        } else if (item.getEstatus().equals("RECHAZADA")) {
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("estatus", item.getEstatus());
+                                            cv.put("comentario_admin", item.getComentario());
+                                            cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                            db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                            //db.delete(TBL_CANCELACIONES, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                        }
+                                    } else if (item.getTipoGestion() == 1 && item.getTipoPrestamo().equals("VENCIDA")) {
+                                        if (item.getEstatus().equals("CANCELADA")) {
+                                            Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                            if (row.getCount() > 0) {
+                                                row.moveToFirst();
+
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("estatus", 3);
+                                                db.update(TBL_RESPUESTAS_IND_V_T, cv, "_id = ?", new String[]{row.getString(1)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus", item.getEstatus());
+                                                cv.put("comentario_admin", item.getComentario());
+                                                cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                                db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+
+                                                ActualiziaAmortizIndVe(ctx, item.getPrestamoId(), item.getPagoRealizado());
+                                            }
+                                        } else if (item.getEstatus().equals("RECHAZADA")) {
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("estatus", item.getEstatus());
+                                            cv.put("comentario_admin", item.getComentario());
+                                            cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                            db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                            //db.delete(TBL_CANCELACIONES, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                        }
+                                    } else if (item.getTipoGestion() == 2 && item.getTipoPrestamo().equals("VENCIDA")) {
+                                        if (item.getEstatus().equals("CANCELADA")) {
+                                            Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                            if (row.getCount() > 0) {
+                                                row.moveToFirst();
+
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("estatus", 3);
+                                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{row.getString(1)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus", item.getEstatus());
+                                                cv.put("comentario_admin", item.getComentario());
+                                                cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                                db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+
+                                                ActualiziaAmortizIntVe(ctx, item.getPrestamoId(), item.getPagoRealizado());
+                                            }
+                                        } else if (item.getEstatus().equals("RECHAZADA")) {
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("estatus", item.getEstatus());
+                                            cv.put("comentario_admin", item.getComentario());
+                                            cv.put("fecha_aplicacion", item.getFechaAplicacion());
+                                            db.update(TBL_CANCELACIONES, cv, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                            //db.delete(TBL_CANCELACIONES, "id_solicitud = ?", new String[]{String.valueOf(item.getId())});
+                                        }
+                                    }
+                                }
+                                row_cancel.close();
+                            }
+                        }
+                        break;
+                }
+                if (showDG)
+                    loading.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<MGestionCancelada> call, Throwable t) {
+                Log.e("FailCancel", "asd "+ t.getMessage());
+                if (showDG)
+                    loading.dismiss();
+            }
+        });
+    }
+
+    public void ActualiziaAmortizIndVi(Context ctx, String idPrestamo, String pagoRealizado){
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
+
+            Log.e("amortizaciones", "Actualiza");
+            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
+            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+            if (row_amortiz.getCount() > 0){
+                row_amortiz.moveToFirst();
+                Double abono = 0.0;
+                if (!pagoRealizado.trim().isEmpty())
+                    abono = Double.parseDouble(pagoRealizado);
+
+                for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                    Double pendiente = row_amortiz.getDouble(2);
+
+                    Double res = abono - pendiente;
+
+                    if (res >= 0){
+                        ContentValues cv_amortiz = new ContentValues();
+                        cv_amortiz.put("total_pagado", "0");
+                        cv_amortiz.put("pagado", "PENDIENTE");
+                        cv_amortiz.put("dias_atraso", 0);
+                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                        abono = res;
+                    }
+                    else{
+                        ContentValues cv_amortiz = new ContentValues();
+                        cv_amortiz.put("total_pagado", abono);
+                        cv_amortiz.put("pagado", "PARCIAL");
+
+                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                        break;
+                    }
+
+                    row_amortiz.moveToNext();
+                }
+
+            }
+            row_amortiz.close();
+
+            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+
+            if (row_amortiz.getCount() > 0){
+                row_amortiz.moveToFirst();
+                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                    ContentValues c = new ContentValues();
+                    c.put("pagada", 1);
+                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+                }
+                else{
+                    ContentValues c = new ContentValues();
+                    c.put("pagada", 0);
+                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+                }
+
+            }
+            row_amortiz.close();
+
+    }
+
+    public void ActualiziaAmortizGpoVi(Context ctx, String idPrestamo, String pagoRealizado){
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Log.e("Comienza", "Actualiza amortizaciones gpo");
+        String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
+        Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+        Log.e("AmortiGPo", row_amortiz.getCount()+ " total");
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+            Double abono = 0.0;
+            if (!pagoRealizado.trim().isEmpty())
+                abono = Double.parseDouble(pagoRealizado);
+
+            for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                Double pendiente = row_amortiz.getDouble(2);
+
+                Double res = abono - pendiente;
+
+                if (res >= 0){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", "0");
+                    cv_amortiz.put("pagado", "PENDIENTE");
+                    cv_amortiz.put("dias_atraso", 0);
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    abono = res;
+                }
+                else{
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", abono);
+                    cv_amortiz.put("pagado", "PARCIAL");
+
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    break;
+                }
+
+                /*if (abono > pendiente){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                    cv_amortiz.put("pagado", "PAGADO");
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+                    abono = abono - pendiente;
+                }
+                else if (abono == pendiente){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                    cv_amortiz.put("pagado", "PAGADO");
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+                    abono = 0.0;
+                }
+                else if (abono > 0 && abono < pendiente){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", abono);
+                    cv_amortiz.put("pagado", "PARCIAL");
+                    abono = 0.0;
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                }
+                else
+                    break;*/
+
+                row_amortiz.moveToNext();
+            }
+
+        }
+        row_amortiz.close();
+
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                ContentValues c = new ContentValues();
+                c.put("pagada", 1);
+                db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+            else{
+                ContentValues c = new ContentValues();
+                c.put("pagada", 0);
+                db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+
+        }
+        row_amortiz.close();
+    }
+
+    public void ActualiziaAmortizIndVe(Context ctx, String idPrestamo, String pagoRealizado){
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
+        Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+
+            Double abono = 0.0;
+            if (!pagoRealizado.trim().isEmpty())
+                abono = Double.parseDouble(pagoRealizado);
+
+            for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                Double pendiente = row_amortiz.getDouble(2);
+
+                Double res = abono - pendiente;
+
+                if (res >= 0){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", "0");
+                    cv_amortiz.put("pagado", "PENDIENTE");
+                    cv_amortiz.put("dias_atraso", 0);
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    abono = res;
+                }
+                else{
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", abono);
+                    cv_amortiz.put("pagado", "PARCIAL");
+
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    break;
+                }
+                row_amortiz.moveToNext();
+            }
+
+        }
+        row_amortiz.close();
+
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                ContentValues c = new ContentValues();
+                c.put("pagada", 1);
+                db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+            else{
+                ContentValues c = new ContentValues();
+                c.put("pagada", 0);
+                db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+
+        }
+        row_amortiz.close();
+    }
+
+    public void ActualiziaAmortizIntVe(Context ctx, String idPrestamo, String pagoRealizado){
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
+        Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+
+            Double abono = 0.0;
+            if (!pagoRealizado.trim().isEmpty())
+                abono = Double.parseDouble(pagoRealizado);
+
+            for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                Double pendiente = row_amortiz.getDouble(2);
+
+                Double res = abono - pendiente;
+
+                if (res >= 0){
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", "0");
+                    cv_amortiz.put("pagado", "PENDIENTE");
+                    cv_amortiz.put("dias_atraso", 0);
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    abono = res;
+                }
+                else{
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", abono);
+                    cv_amortiz.put("pagado", "PARCIAL");
+
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    break;
+                }
+
+                row_amortiz.moveToNext();
+            }
+
+        }
+        row_amortiz.close();
+
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+
+        if (row_amortiz.getCount() > 0){
+            row_amortiz.moveToFirst();
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                ContentValues c = new ContentValues();
+                c.put("pagada", 1);
+                db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+            else{
+                ContentValues c = new ContentValues();
+                c.put("pagada", 0);
+                db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+
+        }
+        row_amortiz.close();
     }
 
     public class RegistrarCierreDia extends AsyncTask<Object, Void, String>{

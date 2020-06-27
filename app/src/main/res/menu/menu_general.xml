@@ -44,22 +44,14 @@
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
-        android:id="@+id/nvConfiguraciones"
-        android:title="Configuraciones"
-        android:icon="@drawable/item_settings" />
-
-    <!-- 8 -->
-    <item
         android:id="@+id/nvLogin"
         android:title="Sesiones "
         android:visible="false"
         android:icon="@drawable/ic_users" />
-
     <!-- 8 -->
     <item
-        android:id="@+id/nvShare"
-        android:title="Compartir "
-        android:visible="false"
-        android:icon="@drawable/ic_users" />
+        android:id="@+id/nvConfiguraciones"
+        android:title="Configuraciones"
+        android:icon="@drawable/item_settings" />
 
 </menu>

@@ -48,6 +48,8 @@ public class adapter_gestionadas_ind extends RecyclerView.Adapter<adapter_gestio
         holder.tvMonto.setText(item.getMonto());
         holder.tvComBan.setText(item.getComentarioBanco());
         holder.tvResultado.setText(item.getResultado());
+        holder.tvEstatus.setText(item.getEstatusCancel());
+        holder.tvcomentario.setText(item.getComentario());
 
         holder.bind(item);
     }
@@ -63,6 +65,8 @@ public class adapter_gestionadas_ind extends RecyclerView.Adapter<adapter_gestio
         private TextView tvComBan;
         private TextView tvResultado;
         private TextView tvMonto;
+        private TextView tvEstatus;
+        private TextView tvcomentario;
 
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -71,7 +75,8 @@ public class adapter_gestionadas_ind extends RecyclerView.Adapter<adapter_gestio
             tvComBan = v.findViewById(R.id.tvComBan);
             tvResultado = v.findViewById(R.id.tvResultado);
             tvMonto = v.findViewById(R.id.tvMonto);
-
+            tvEstatus   = v.findViewById(R.id.tvEstatus);
+            tvcomentario = v.findViewById(R.id.tvComentario);
         }
 
         public void bind (final MGestionada item){

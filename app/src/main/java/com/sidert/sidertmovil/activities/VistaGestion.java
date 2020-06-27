@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -34,8 +36,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_cancel_gestion;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 
 import org.json.JSONException;
@@ -49,14 +53,18 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.CANCELACION;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
+import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
 import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
+import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.ID_RESPUESTA;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
 import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
@@ -68,7 +76,10 @@ import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
+import static com.sidert.sidertmovil.utils.NameFragments.DIALOGCANCELGESTION;
 
 public class VistaGestion extends AppCompatActivity {
 
@@ -115,6 +126,9 @@ public class VistaGestion extends AppCompatActivity {
 
     private byte[] byteEvidencia;
 
+    private String idRespuesta = "";
+    private String tipoGestion = "0";
+    private String tipoPrestamo = "";
 
     private GoogleMap mMap;
     private Marker mMarker;
@@ -122,6 +136,8 @@ public class VistaGestion extends AppCompatActivity {
 
     private Calendar mCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat(Constants.FORMAT_TIMESTAMP, Locale.US);
+
+    private boolean is_solicitud = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,8 +193,23 @@ public class VistaGestion extends AppCompatActivity {
 
         final Bundle datos = this.getIntent().getBundleExtra(Constants.PARAMS);
 
-        Log.e("latitud", String.valueOf(datos.getDouble(LATITUD)));
-        Log.e("longitud", String.valueOf(datos.getDouble(LONGITUD)));
+        idRespuesta = datos.getString(ID_RESPUESTA);
+        tipoGestion = datos.getString(TIPO_GESTION);
+        tipoPrestamo = datos.getString(TIPO_PRESTAMO);
+
+        Log.e("--------------","----------------------------------");
+        Log.e("Cancelacion", datos.getString(CANCELACION)+ " asf");
+        Log.e("estatus", datos.getString(ESTATUS) + " asfas");
+        Log.e("--------------","----------------------------------");
+
+        if (datos.getString(CANCELACION).isEmpty() && datos.getString(ESTATUS).equals("2"))
+            is_solicitud = true;
+
+        invalidateOptionsMenu();
+
+
+        //Log.e("latitud", String.valueOf(datos.getDouble(LATITUD)));
+        //Log.e("longitud", String.valueOf(datos.getDouble(LONGITUD)));
         if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
             tvNoMapa.setVisibility(View.VISIBLE);
             mapGestion.setVisibility(View.GONE);
@@ -522,11 +553,35 @@ public class VistaGestion extends AppCompatActivity {
         mMap.animateCamera(ubication);
     }
 
+    public void solicitudCancel(){
+        is_solicitud = false;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_cancel_gestiones, menu);
+        if (!is_solicitud)
+            menu.getItem(0).setVisible(is_solicitud);
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.nvCancel:
+                dialog_cancel_gestion dlg_cancel = new dialog_cancel_gestion();
+                Bundle b = new Bundle();
+                b.putString(ID_RESPUESTA, idRespuesta);
+                b.putString(TIPO_GESTION, tipoGestion);
+                b.putString(TIPO_PRESTAMO, tipoPrestamo);
+                dlg_cancel.setArguments(b);
+                dlg_cancel.show(getSupportFragmentManager(), DIALOGCANCELGESTION);
                 break;
         }
         return super.onOptionsItemSelected(item);

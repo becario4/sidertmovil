@@ -44,6 +44,8 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         SessionManager session = new SessionManager(this);
 
+        //session.setDominio("http://192.168.100.5:", "8080");
+
         String sqlPrestamos = "SELECT * FROM (SELECT ci._id, ci.id_cartera, coalesce(pi.id_prestamo, 'no existe') AS id_prestamo, 'INDIVIDUAL' AS tipo FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN "+TBL_PRESTAMOS_IND_T+" AS pi ON pi.id_cliente = ci.id_cartera UNION SELECT cg._id, cg.id_cartera, coalesce(pg.id_prestamo, 'no existe') as id_prestamo, 'GRUPAL' AS tipo FROM "+TBL_CARTERA_GPO_T+" AS cg LEFT JOIN "+TBL_PRESTAMOS_GPO_T +" AS pg ON pg.id_grupo = cg.id_cartera) AS cartera";
         Cursor rowPrestamos = db.rawQuery(sqlPrestamos, null);
         Log.e("CountPrestamo", String.valueOf(rowPrestamos.getCount()));

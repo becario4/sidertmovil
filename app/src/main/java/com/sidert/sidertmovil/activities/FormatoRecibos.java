@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MFormatoRecibo;
 import com.sidert.sidertmovil.models.MTicketCC;
 import com.sidert.sidertmovil.utils.Constants;
@@ -92,6 +95,9 @@ public class FormatoRecibos extends AppCompatActivity {
     private MFormatoRecibo mRecibo;
     private MTicketCC mTicket;
 
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -100,6 +106,9 @@ public class FormatoRecibos extends AppCompatActivity {
         setContentView(R.layout.activity_formato_recibos);
 
         ctx = this;
+
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
 
         session = new SessionManager(ctx);
 
@@ -124,7 +133,7 @@ public class FormatoRecibos extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
-        int tipo_recibo = 0;
+        String tipo_recibo = "";
 
             mRecibo = (MFormatoRecibo) getIntent().getSerializableExtra(TICKET_CC);
             tipo_recibo = mRecibo.getTipoRecibo();
@@ -146,12 +155,15 @@ public class FormatoRecibos extends AppCompatActivity {
 
 
         switch (tipo_recibo){
-            case 1: //Formato circulo de credito
+            case "CC": //Formato circulo de credito
                 tvTipoRecibo.setText("CIRCULO DE CREDITO");
-                tvPago.setText(Miscellaneous.moneyFormat("17.5"));
+                tvPago.setText(Miscellaneous.moneyFormat(mRecibo.getMonto()));
                 tvCantidadLetra.setText("Diecisiete pesos 50/100 M.N.");
                 break;
-            case 2: //Formato de gastos funerarios
+            case "AGF": //Formato de gastos funerarios
+                tvTipoRecibo.setText("APOYO PARA GASTOS FUNERARIOS");
+                tvPago.setText(Miscellaneous.moneyFormat(mRecibo.getMonto()));
+                tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + "00/100 M.N.");
                 break;
         }
 
@@ -250,7 +262,6 @@ public class FormatoRecibos extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            loading.dismiss();
             if(result == 0)	// Connection success.
             {
                 RequestHandler rh = new RequestHandler();
@@ -271,6 +282,8 @@ public class FormatoRecibos extends AppCompatActivity {
                         btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
                         btnCopia.setEnabled(true);
                     } else {
+                        //String sql = "SELECT * FROM " + ;
+                        //Cursor row = db.rawQuery(sql, new String[]{mRecibo.getNombreCliente().toUpperCase()});
                         bluetoothPort.disconnect();
                         btnCopia.setVisibility(View.GONE);
                         btnCopiaRe.setVisibility(View.VISIBLE);
@@ -304,6 +317,8 @@ public class FormatoRecibos extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
+            loading.dismiss();
         }
     }
 

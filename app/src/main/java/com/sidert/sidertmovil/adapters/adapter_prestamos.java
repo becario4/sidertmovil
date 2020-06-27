@@ -101,7 +101,6 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                         public void onClick(final View view) {
                             PopupMenu popup = new PopupMenu(view.getContext(), view);
                             try {
-                                // Reflection apis to enforce show icon
                                 Field[] fields = popup.getClass().getDeclaredFields();
                                 for (Field field : fields) {
                                     if (field.getName().equals("mPopup")) {

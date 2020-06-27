@@ -207,6 +207,9 @@ public class Constants {
 
     public final static String PICTURE                      = "picture";
 
+    public final static String ID_RESPUESTA                 = "id_respuesta";
+    public final static String CANCELACION                  = "cancelacion";
+
     //==========================  TIPO INTEGRANTE  =================================================
     public final static String TIPO_CLIENTE                 = "CLIENTE";
     public final static String TIPO_NEGOCIO                 = "NEGOCIO";
@@ -329,6 +332,7 @@ public class Constants {
     public final static String TBL_AMORTIZACIONES_T   = "tbl_amortizaciones_t";
     public final static String TBL_PAGOS_IND_T        = "tbl_pagos_ind_t";
     public final static String TBL_PAGOS_IND          = "tbl_pagos_ind";
+    public final static String TBL_RECIBOS            = "tbl_recibos";
     public final static String TBL_REPORTE_SESIONES     = "tbl_reporte_sesiones";
     public final static String TBL_SUCURSALES           = "tbl_sucursales";
     public final static String TBL_CODIGOS_OXXO         = "tbl_codigos_oxxo";
@@ -402,6 +406,8 @@ public class Constants {
 
     public final static String TBL_AVAL_T = "tbl_aval_t";
     public final static String TBL_AVAL   = "tbl_aval";
+
+    public static final String TBL_CANCELACIONES       = "tbl_cancelaciones";
 
 
 

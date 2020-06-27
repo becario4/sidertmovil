@@ -141,6 +141,7 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                         ss.SendTracker(ctx, false);
                         ss.SaveCierreDia(ctx, false);
                         ss.SaveCierreDia(ctx, false);
+                        ss.CancelGestiones(ctx, false);
                     }
                     else
                         Log.e("JOB", "Sin conexion a internet Geolocalizacion");

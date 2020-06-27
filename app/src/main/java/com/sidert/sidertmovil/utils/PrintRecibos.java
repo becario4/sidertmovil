@@ -56,8 +56,11 @@ public class PrintRecibos {
 
             posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "--------------------------------");
             switch (ticket.getTipoRecibo()){
-                case 1: //Circulo de credito
+                case "CC": //Circulo de credito
                     posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "CIRCULO DE CREDITO");
+                    break;
+                case "AGF": //Apoyo a gastos funerario
+                    posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "APOYO PARA GASTOS FUNERARIO");
                     break;
             }
 
@@ -90,14 +93,16 @@ public class PrintRecibos {
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
             posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|2C" + " Monto del pago      ");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C");
-            posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|2C" + Miscellaneous.moneyFormat("17.5"));
+
+            posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|2C" + Miscellaneous.moneyFormat(ticket.getMonto()));
+
 
             linea = line("", "");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
 
             posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "      Cantidad  en  letra       ");
             switch (ticket.getTipoRecibo()){
-                case 1: //Circulo de credito
+                case "CC": //Circulo de credito
                     posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "  Diecisiete pesos 50/100 M.N.  ");
                     break;
             }
@@ -138,7 +143,7 @@ public class PrintRecibos {
         }
 
         switch (ticket.getTipoRecibo()){
-            case 1: //Circulo de credito
+            case "CC": //Circulo de credito
                 if (ticket.isReeimpresion()){
                     linea = line("Folio:", "CC-" + session.getUser().get(0) + "-" + ticket.getFolio());
                 }

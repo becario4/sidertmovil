@@ -48,6 +48,8 @@ public class WebServicesRoutes {
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día
     public final static String WS_POST_RESPUESTA_GESTION    = "gestiones"; //Guarda la respuesta gestion de recuperaciones
     public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
+    public final static String WS_POST_SOLICITUD_CANCELAR   = "solicitudCancelarGestion"; //Servicio para cancelar solicitud de una gestion
+    public final static String WS_GET_GESTIONES_CANCELADAS  = "getGestionesCanceladas"; //Servicio para obtener las gestiones canceladas por el administrador
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México

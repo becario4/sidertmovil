@@ -35,6 +35,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
@@ -58,6 +59,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VENCIDA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VIGENTE;
@@ -113,6 +115,7 @@ public class SidertTables {
         public static final String TABLE_RECIBOS_VIGENTE_T = TBL_RECIBOS_VIGENTE_T;
         public static final String TABLE_RECIBOS_VENCIDA_T = TBL_RECIBOS_VENCIDA_T;
         public static final String TABLE_REIMPRESION_T     = TBL_REIMPRESION_T;
+
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS      = STATUS_FICHAS;
@@ -1110,6 +1113,22 @@ public class SidertTables {
                 "fecha_impresion TEXT," +
                 "fecha_envio TEXT," +
                 "estatus INTEGER)";
+
+        public static final String CREATE_TBL_RECIBOS = "CREATE TABLE "+TBL_RECIBOS+" (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+	            "prestamo_id TEXT DEFAULT '',"+
+                "asesor_id TEXT,"+
+                "tipo_recibo TEXT," +
+                "tipo_impresion TEXT," +
+                "folio TEXT,"+
+                "monto TEXT,"+
+                "clave TEXT DEFAULT '',"+
+                "nombre TEXT,"+
+                "ap_paterno	TEXT,"+
+                "ap_materno	TEXT,"+
+                "fecha_impreso	TEXT,"+
+                "fecha_envio TEXT,"+
+                "estatus INTEGER);";
         
         public static final String CREATE_TBL_CARTERA_IND_T = "CREATE TABLE " + TBL_CARTERA_IND_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1549,6 +1568,18 @@ public class SidertTables {
                 "nombre_pdf TEXT," +
                 "created_at TEXT," +
                 "fecha_vencimiento TEXT)";
+        
+        public static final String CREATE_TBL_CANCEL_GESTIONES = "CREATE TABLE " + TBL_CANCELACIONES + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_respuesta TEXT," +
+                "id_solicitud TEXT," +
+                "tipo_gestion INTEGER," +
+                "tipo_prestamo TEXT," +
+                "comentario_asesor TEXT," +
+                "comentario_admin TEXT," +
+                "estatus TEXT," +
+                "fecha_solicitud TEXT," +
+                "fecha_aplicacion TEXT)";
 
         //================  TABLAS GENERALES  ===================================
 

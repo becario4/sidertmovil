@@ -83,11 +83,17 @@ public class Integrantes extends AppCompatActivity {
                 item.setTipo(row.getString(9));
                 item.setMontoPrestamo(row.getString(10));
                 item.setMontoRequerido(row.getString(11));
+                item.setPrestamoId(row.getInt(15));
                 data.add(item);
                 row.moveToNext();
             }
 
-            adapter = new adapter_integrantes(ctx, data, null);
+            adapter = new adapter_integrantes(ctx, data, new adapter_integrantes.Event() {
+                @Override
+                public void IntegranteOnClick(MIntegrante item) {
+
+                }
+            });
             rvIntegrantes.setAdapter(adapter);
         }
     }

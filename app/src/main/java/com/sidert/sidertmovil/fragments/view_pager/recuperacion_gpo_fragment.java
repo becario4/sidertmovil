@@ -682,7 +682,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         parent.id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(25) > 0){
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -803,7 +803,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                         parent.id_respuesta = String.valueOf(id);
                     }
                     else{
-                        if (row.getInt(25) == 1 || row.getInt(25) == 2){
+                        if (row.getInt(25) > 0){
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             params.put(1, "0");
@@ -1126,7 +1126,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                                 parent.id_respuesta = String.valueOf(id);
                             } else {
                                 Log.e("RespuestaEstatus", row.getString(25)+" xxxxx");
-                                if (row.getInt(25) == 1 || row.getInt(25) == 2) {
+                                if (row.getInt(25) > 0) {
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, parent.id_prestamo);
                                     params.put(1, "");
@@ -2333,7 +2333,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                     }
                 }
                 break;
-
             case REQUEST_CODE_CAMARA_TICKET:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
@@ -2398,8 +2397,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                             db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
 
                         Cursor row;
-                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
-                        row = db.rawQuery(sql, new String[]{parent.id_prestamo, "SI", "PAGO"});
+                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
+                        row = db.rawQuery(sql, new String[]{parent.id_prestamo, "SI", "PAGO", "1", "2"});
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -2409,7 +2408,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
                                 Double abono;
-                                if (!etPagoRealizado.getText().toString().trim().isEmpty())
+                                if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
                                     abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
                                 else
                                     abono = 0.0;

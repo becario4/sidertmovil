@@ -44,10 +44,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
+import static com.sidert.sidertmovil.utils.Constants.CANCELACION;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
 import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
@@ -56,6 +58,7 @@ import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
+import static com.sidert.sidertmovil.utils.Constants.ID_RESPUESTA;
 import static com.sidert.sidertmovil.utils.Constants.IMPRESORA;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
@@ -68,6 +71,7 @@ import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.PARAMS;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NAME;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
@@ -125,12 +129,15 @@ public class Gestionadas extends AppCompatActivity {
         tipo_prestamo = getIntent().getStringExtra(TIPO_PRESTAMO);
         tipo_gestion = getIntent().getIntExtra(TIPO_GESTION, 0);
 
-        init();
+        //init();
     }
 
     private void init (){
         Cursor row = null;
-        row = dBhelper.getRecords(tbl, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });
+        Log.e("Tabla", tbl);
+        String sql = "SELECT r.*, COALESCE(c.estatus, '') AS estatus_cancel, COALESCE(c.comentario_admin, '') AS comentario_cancel FROM " + tbl + " r LEFT JOIN " + TBL_CANCELACIONES + " AS c ON r._id = c.id_respuesta AND c.tipo_gestion = ? WHERE r.id_prestamo = ? AND r.estatus  IN (?,?,?) ORDER BY r.fecha_inicio DESC";
+        row = db.rawQuery(sql, new String[]{String.valueOf(tipo_gestion),id_prestamo, "1","2","3"});
+        //row = dBhelper.getRecords(tbl, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -140,8 +147,9 @@ public class Gestionadas extends AppCompatActivity {
                 gestionadas.setIdGestion(row.getString(0));
                 if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
                     gestionadas.setFechaGestion(row.getString(24));
-                else
+                else {
                     gestionadas.setFechaGestion(row.getString(23));
+                }
 
                 String contacto = "";
                 if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
@@ -201,6 +209,36 @@ public class Gestionadas extends AppCompatActivity {
                         break;
                 }
 
+                Log.e("--------------","----------------------------------");
+                Log.e("tipo_gestion", String.valueOf(tipo_gestion));
+                Log.e("tipo_prestamo", tipo_prestamo);
+                Log.e("EstatusCancel", row.getString(31));
+                Log.e("EstatusCancel", row.getColumnName(31));
+                Log.e("estatusGestion", row.getString(25) + "aasfas");
+                Log.e("--------------","----------------------------------");
+
+                if (tipo_gestion == 1 && tipo_prestamo.equals("VIGENTE")) {
+                    gestionadas.setEstatisGestion(row.getString(25));
+                    Log.e("EstatusCancel", row.getString(31));
+                    gestionadas.setEstatusCancel(row.getString(31));
+                    gestionadas.setComentario(row.getString(32));
+                }
+                else if (tipo_gestion == 2 && tipo_prestamo.equals("VIGENTE")) {
+                    gestionadas.setEstatisGestion(row.getString(25));
+                    gestionadas.setEstatusCancel(row.getString(32));
+                    gestionadas.setComentario(row.getString(33));
+                }
+                else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")) {
+                    gestionadas.setEstatisGestion(row.getString(26));
+                    gestionadas.setEstatusCancel(row.getString(33));
+                    gestionadas.setComentario(row.getString(34));
+                }
+                else if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
+                    gestionadas.setEstatisGestion(row.getString(27));
+                    gestionadas.setEstatusCancel(row.getString(34));
+                    gestionadas.setComentario(row.getString(35));
+                }
+
                 data.add(gestionadas);
                 Log.e("Gestionadas", Miscellaneous.ConvertToJson(gestionadas));
                 row.moveToNext();
@@ -217,6 +255,11 @@ public class Gestionadas extends AppCompatActivity {
                     if (row.getCount() > 0) {
                         row.moveToFirst();
                         Bundle b = new Bundle();
+                        b.putString(ESTATUS, item.getEstatisGestion());
+                        b.putString(CANCELACION, item.getEstatusCancel());
+                        b.putString(ID_RESPUESTA, row.getString(0));
+                        b.putString(TIPO_GESTION, String.valueOf(tipo_gestion));
+                        b.putString(TIPO_PRESTAMO, tipo_prestamo);
                         String contacto = "";
                         if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")) {
                             b.putDouble(LATITUD, row.getDouble(3));
@@ -359,150 +402,7 @@ public class Gestionadas extends AppCompatActivity {
         }
     }
 
-    private void SendForceGestion(final MGestionada item){
-        if (NetworkStatus.haveNetworkConnection(ctx)){
-            final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
-            loading.show();
 
-            Cursor row;
-
-            String query = "SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso FROM "+ TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i._id = ?";
-
-            row = db.rawQuery(query, new String[]{item.getIdGestion()});
-
-            if (row.getCount() > 0){
-                row.moveToFirst();
-
-                for (int i = 0; i < row.getCount(); i++){
-                    HashMap<String, String> params = new HashMap<>();
-                    params.put("id_prestamo", row.getString(1));
-                    params.put("num_solicitud", row.getString(29));
-                    JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
-                    params.put("respuesta", json_res.toString());
-
-                    try {
-                        String evidencia = "";
-                        String tipo_imagen = "-1";
-                        String firma = "";
-                        if (json_res.has("evidencia"))
-                            evidencia = json_res.getString("evidencia");
-                        if (json_res.has("tipo_imagen"))
-                            tipo_imagen = json_res.getString("tipo_imagen");
-                        if (json_res.has("firma"))
-                            firma = json_res.getString("firma");
-
-                        Log.e("res_envio", json_res.toString());
-
-                        RequestBody idPrestamoBody = RequestBody.create(MultipartBody.FORM, params.get("id_prestamo"));
-                        RequestBody numSolicitudBody = RequestBody.create(MultipartBody.FORM, params.get("num_solicitud"));
-                        RequestBody respuestaBody = RequestBody.create(MultipartBody.FORM, params.get("respuesta"));
-
-
-                        MultipartBody.Part evidenciaBody = null;
-                        File imagen_evidencia = null;
-
-                        switch (tipo_imagen){
-                            case "0":
-                                imagen_evidencia = new File(Constants.ROOT_PATH + "Fachada/" + evidencia);
-                                break;
-                            case "1":
-                            case "2":
-                                imagen_evidencia = new File(Constants.ROOT_PATH + "Evidencia/" + evidencia);
-                                break;
-                        }
-
-                        if (!evidencia.isEmpty() && imagen_evidencia != null) {
-                            RequestBody imageBody =
-                                    RequestBody.create(
-                                            MediaType.parse("image/*"), imagen_evidencia);
-
-                            evidenciaBody = MultipartBody.Part.createFormData("evidencia", imagen_evidencia.getName(), imageBody);
-                        }
-                        else {
-                            RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
-                            evidenciaBody = MultipartBody.Part.createFormData("evidencia", "", attachmentEmpty);
-                        }
-
-                        MultipartBody.Part firmaBody = null;
-                        final File image_firma = new File(Constants.ROOT_PATH + "Firma/"+firma);
-                        if (!firma.isEmpty() && image_firma != null) {
-                            RequestBody imageBody =
-                                    RequestBody.create(
-                                            MediaType.parse("image/*"), image_firma);
-
-                            firmaBody = MultipartBody.Part.createFormData("firma", image_firma.getName(), imageBody);
-                        }
-                        else {
-                            RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
-                            firmaBody = MultipartBody.Part.createFormData("firma", "", attachmentEmpty);
-                        }
-
-                        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
-
-                        Log.e("idPRestamo", params.get("id_prestamo") );
-                        Log.e("numSolicitud", params.get("num_solicitud"));
-                        Log.e("RespuestaGes", params.get("respuesta"));
-                        Call<MRespuestaGestion> call = api.guardarRespuesta("Bearer "+ session.getUser().get(7),
-                                idPrestamoBody,
-                                numSolicitudBody,
-                                respuestaBody,
-                                respuestaBody,
-                                evidenciaBody,
-                                firmaBody);
-
-                        call.enqueue(new Callback<MRespuestaGestion>() {
-                            @Override
-                            public void onResponse(Call<MRespuestaGestion> call, Response<MRespuestaGestion> response) {
-                                Log.e("Response", "Code: "+response.code());
-                                switch (response.code()){
-                                    case 200:
-                                        Toast.makeText(ctx, "Ficha Sincronizada con éxito", Toast.LENGTH_SHORT).show();
-                                        MRespuestaGestion r = response.body();
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                        cv.put("estatus", 2);
-
-                                        db.update(TBL_RESPUESTAS_IND_T, cv, "_id = ?", new String[]{item.getIdGestion()});
-
-                                        break;
-                                    default:
-                                        //Log.e("Mensaje Code", response.code()+" : "+response.message());
-                                        Toast.makeText(ctx, "No se logró enviar codigo: " +response.code(), Toast.LENGTH_SHORT).show();
-                                        break;
-                                }
-                                loading.dismiss();
-                                Toast.makeText(ctx, "Ficha Sincronizada con éxito", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onFailure(Call<MRespuestaGestion> call, Throwable t) {
-                                Log.e("FailSaveImagexxxxxx", t.getMessage());
-                                loading.dismiss();
-                                Toast.makeText(ctx, "Falló al Sincronizar la ficha", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    row.moveToNext();
-                }
-
-            }
-            row.close();
-        }else{
-            final AlertDialog error_network = Popups.showDialogMessage(ctx, Constants.not_network,
-                    R.string.not_network, R.string.accept, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            dialog.dismiss();
-                        }
-                    });
-            error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            error_network.show();
-        }
-    }
 
     @Override
     protected void onResume() {
