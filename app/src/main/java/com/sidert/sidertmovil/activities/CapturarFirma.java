@@ -1,13 +1,10 @@
 package com.sidert.sidertmovil.activities;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,8 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +29,7 @@ import java.util.Objects;
 public class CapturarFirma extends AppCompatActivity {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final int REQUEST_READ_EXTERNAL_STORAGE = 2;
-    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private static String[] PERMISSIONS_READ_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE};
+
     private SignaturePad mSignaturePad;
 
     private Context ctx;

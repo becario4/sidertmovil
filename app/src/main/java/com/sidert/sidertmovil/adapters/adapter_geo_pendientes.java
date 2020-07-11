@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -18,7 +17,6 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.ModelGeolocalizacion;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pendientes.ViewHolder> implements SectionIndexer {

@@ -24,7 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.CodigosOxxo"></activity>
+        <activity android:name=".activities.SolicitudTicket"></activity>
+        <activity android:name=".activities.GenerarCurp" />
+        <activity android:name=".activities.CodigosOxxo" />
         <activity
             android:name=".activities.ReporteInicioSesion"
             android:screenOrientation="portrait" />
@@ -113,9 +115,6 @@
             android:name=".activities.ResumenIntegrantes"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.OriginacionI"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.AcercaDe"
             android:screenOrientation="portrait" />
         <activity
@@ -126,9 +125,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Perfil"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.GroupMembersInfo"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraVertical"
@@ -187,10 +183,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <!--<meta-data
+        <!--
+<meta-data
             android:name="io.fabric.ApiKey"
-            android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" /> -->
-
+            android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" />
+        -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

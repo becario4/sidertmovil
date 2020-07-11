@@ -12,15 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
-//import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.fragments.geo_aval_fragment;
-import com.sidert.sidertmovil.fragments.geo_cliente_fragment;
 import com.sidert.sidertmovil.fragments.geo_miembros_fragment;
-import com.sidert.sidertmovil.fragments.geo_negocio_fragment;
 import com.sidert.sidertmovil.fragments.geo_presidente_fragment;
 import com.sidert.sidertmovil.fragments.geo_secretaria_fragment;
 import com.sidert.sidertmovil.fragments.geo_tesorera_fragment;
@@ -31,7 +26,7 @@ import com.sidert.sidertmovil.utils.Popups;
 
 import java.util.Objects;
 
-//import io.fabric.sdk.android.Fabric;
+
 
 public class GeolocalizacionGpo extends AppCompatActivity {
 

@@ -34,6 +34,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
@@ -41,7 +42,12 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
@@ -51,10 +57,12 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PLAZOS_PRESTAMOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
@@ -76,46 +84,27 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOPORTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
+import static com.sidert.sidertmovil.utils.Constants.TICKETS;
 
 public class SidertTables {
 
     public static class SidertEntry implements BaseColumns {
 
         // == TABLE
-        public static final String TABLE_NAME_LOG_ASESSOR  = LOG_ASESSOR;        //Tabla de Recuperación y Cobranza
-        public static final String TABLE_NAME_LOG_MANAGER  = LOG_MANAGER;        //Tabla de Cartera Vencida
-        public static final String TABLE_IND               = IND;                //Tabla para formularios individual vigente (RI, CI)
-        public static final String TABLE_GPO               = GPO;                //Tabla para formularios grupales vigente (RG, CG)
-        public static final String TABLE_FICHAS            = FICHAS;             //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG
-        //public static final String TABLE_IND_VE          = IND_VE;             //Tabla para formularios individual vencida (CVI)
-        //public static final String TABLE_GPO_VE          = GPO_VE;             //Tabla para formularios grupales vencida (CVG)
         public static final String TABLE_GEOLOCALIZACION   = GEOLOCALIZACION;    //Tabla para formularios de golocaliacion
         public static final String TABLE_LOGIN_REPORT      = LOGIN_REPORT;       //Tabla para timestamp de inicio de sesión
-        public static final String TABLE_SINCRONIZADO      = SINCRONIZADO;       //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion
-        public static final String TABLE_SOLICITUDES_IND   = SOLICITUDES_IND;    //Tabla para registrar las solicitudes de crédito
-        public static final String TABLE_RECIBOS_VIGENTE   = TBL_RECIBOS_VIGENTE;
-        public static final String TABLE_RECIBOS_VENCIDA   = TBL_RECIBOS_VENCIDA;
-        public static final String TABLE_REIMPRESION       = TBL_REIMPRESION;
+
 
         //======================= TABLES TEST  =====================================================
-        public static final String TABLE_LOG_ASESSOR_T     = LOG_ASESSOR_T;      //Tabla de Recuperación y Cobranza Pruebas
-        public static final String TABLE_LOG_MANAGER_T     = LOG_MANAGER_T;      //Tabla de Cartera Vencida Pruebas
-        public static final String TABLE_IND_T             = IND_T;              //Tabla para formularios individual vigente (RI, CI) Pruebas
-        public static final String TABLE_GPO_T             = GPO_T;              //Tabla para formularios grupales vigente (RG, CG) Pruebas
         public static final String TABLE_FICHAS_T          = FICHAS_T;           //Tabla para todos los formularios RI, RG, CI, CG, CVI, CVG para pruebas
-        //public static final String TABLE_IND_VE_T        = IND_VE_T;           //Tabla para formularios individual vencida (CVI) Pruebas
-        //public static final String TABLE_GPO_VE_T        = GPO_VE_T;           //Tabla para formularios grupales vencida (CVG) Pruebas
         public static final String TABLE_GEOLOCALIZACION_T = GEOLOCALIZACION_T;  //Tabla para formularios de golocaliacion Pruebas
         public static final String TABLE_LOGIN_REPORT_T    = LOGIN_REPORT_T;     //Tabla para timestamp de inicio de sesión Pruebas
         public static final String TABLE_SINCRONIZADO_T    = SINCRONIZADO_T;     //Tabla para registrar el timestamp de fecha y hora de ultima sincronizacion Pruebas
-        public static final String TABLE_SOLICITUDES_IND_T = SOLICITUDES_IND_T;  //Tabla para registrar las solicitudes de crédito Pruebas
-        public static final String TABLE_RECIBOS_VIGENTE_T = TBL_RECIBOS_VIGENTE_T;
-        public static final String TABLE_RECIBOS_VENCIDA_T = TBL_RECIBOS_VENCIDA_T;
-        public static final String TABLE_REIMPRESION_T     = TBL_REIMPRESION_T;
-
 
         // ====================== TABLAS GENERALES  ========================================
         public static final String TABLE_STATUS_FICHAS      = STATUS_FICHAS;
@@ -216,459 +205,9 @@ public class SidertTables {
 
 
         // == QUERIES CREATE
-        static final String CREATE_TABLE_ASESSORS   = "CREATE TABLE " + TABLE_NAME_LOG_ASESSOR + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO             + " INTEGER,"
-                + SidertEntry.ASSESOR_ID        + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.AMOUNT            + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
-                + SidertEntry.ERRORS            + " TEXT,"
-                + SidertEntry.GENERATED_AT      + " TEXT,"
-                + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
-
-        static final String CREATE_TABLE_GESTORS   = "CREATE TABLE " + TABLE_NAME_LOG_MANAGER + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO             + " INTEGER,"
-                + SidertEntry.ASSESOR_ID        + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.AMOUNT            + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
-                + SidertEntry.ERRORS            + " TEXT,"
-                + SidertEntry.GENERATED_AT      + " TEXT,"
-                + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
-
-        static final String CREATE_TABLE_FICHAS = "CREATE TABLE " + TABLE_FICHAS + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.ASESOR_ID         + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.FORM              + " TEXT,"
-                + SidertEntry.FECHA_ASIGNACION  + " TEXT,"
-                + SidertEntry.DIA_SEMANA        + " TEXT,"
-                + SidertEntry.FECHA_PAGO        + " TEXT,"
-                + SidertEntry.PRESTAMO_OBJ      + " TEXT,"
-                + SidertEntry.NOMBRE            + " TEXT,"
-                + SidertEntry.CLAVE             + " TEXT,"
-                + SidertEntry.DATOS_OBJ         + " TEXT,"
-                + SidertEntry.AVAL_OBJ          + " TEXT,"
-                + SidertEntry.PRESIDENTA_OBJ    + " TEXT,"
-                + SidertEntry.TESORERA_OBJ      + " TEXT,"
-                + SidertEntry.SECRETARIA_OBJ    + " TEXT,"
-                + SidertEntry.REPORTE_OMEGA_OBJ + " TEXT,"
-                + SidertEntry.TABLA_PAGOS_OBJ   + " TEXT,"
-                + SidertEntry.IMPRESION         + " INTEGER,"
-                + SidertEntry.FECHA_INI         + " TEXT,"
-                + SidertEntry.FECHA_TER         + " TEXT,"
-                + SidertEntry.FECHA_ENV         + " TEXT,"
-                + SidertEntry.FECHA_CON         + " TEXT,"
-                + SidertEntry.RESPUESTA         + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER,"
-                + SidertEntry.TIMESTAMP         + " TEXT)";
-
-        static final String CREATE_TABLE_GEOLOCALIZACION = "CREATE TABLE " + TABLE_GEOLOCALIZACION + "("
-                + SidertEntry._ID                + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FICHA_ID           + " TEXT,"
-                + SidertEntry.ASESOR_NOMBRE      + " TEXT,"
-                + SidertEntry.TIPO_FICHA         + " INTEGER,"
-                + SidertEntry.NOMBRE             + " TEXT,"
-                + SidertEntry.NUM_SOLICITUD      + " TEXT,"
-                + SidertEntry.CLIE_GPO_ID        + " TEXT,"
-                + SidertEntry.CLIE_GPO_CLV       + " TEXT,"
-                + SidertEntry.DIRECCION          + " TEXT,"
-                + SidertEntry.COLONIA            + " TEXT,"
-                + SidertEntry.FECHA_ENT          + " TEXT,"
-                + SidertEntry.FECHA_VEN          + " TEXT,"
-                + SidertEntry.DATA               + " TEXT,"
-                + SidertEntry.RES_UNO            + " TEXT,"
-                + SidertEntry.RES_DOS            + " TEXT,"
-                + SidertEntry.RES_TRES           + " TEXT,"
-                + SidertEntry.FECHA_ENV_UNO      + " TEXT,"
-                + SidertEntry.FECHA_ENV_DOS      + " TEXT,"
-                + SidertEntry.FECHA_ENV_TRES     + " TEXT,"
-                + SidertEntry.FECHA_ENV          + " TEXT,"
-                + SidertEntry.FECHA_TER          + " TEXT,"
-                + SidertEntry.STATUS             + " INTEGER,"
-                + SidertEntry.CREATE_AT          + " TEXT)";
-
-        static final String CREATE_TABLE_LOGIN_REPORT   = "CREATE TABLE " + TABLE_LOGIN_REPORT + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.SERIE_ID          + " TEXT,"
-                + SidertEntry.NOMBRE            + " TEXT,"
-                + SidertEntry.LOGIN_TIMESTAMP   + " TEXT,"
-                + SidertEntry.FECHA_ENV         + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
-
-        static final String CREATE_TABLE_SINCRONIZADO   = "CREATE TABLE " + TABLE_SINCRONIZADO + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.SERIE_ID          + " TEXT,"
-                + SidertEntry.TIMESTAMP         + " TEXT)";
-
-        static final String CREATE_TABLE_SOLICITUDES_IND   = "CREATE TABLE " + TABLE_SOLICITUDES_IND + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.SERIE_ID          + " TEXT,"
-                + SidertEntry.CREDITO           + " TEXT,"
-                + SidertEntry.PERSONALES        + " TEXT,"
-                + SidertEntry.CONYUGE           + " TEXT,"
-                + SidertEntry.ECONOMICOS        + " TEXT,"
-                + SidertEntry.NEGOCIO           + " TEXT,"
-                + SidertEntry.AVAL              + " TEXT,"
-                + SidertEntry.REFERENCIA        + " TEXT,"
-                + SidertEntry.FECHA_INI         + " TEXT,"
-                + SidertEntry.FECHA_TER         + " TEXT,"
-                + SidertEntry.FECHA_ENV         + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
-
-        static final String CREATE_TABLE_VIGENTE   = "CREATE TABLE " + TABLE_RECIBOS_VIGENTE + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT)";
-
-        static final String CREATE_TABLE_VENCIDA   = "CREATE TABLE " + TABLE_RECIBOS_VENCIDA + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT)";
-
-        public static final String CREATE_TABLE_REIMPRESION   = "CREATE TABLE " + TABLE_REIMPRESION + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.SERIE_ID + " TEXT,"
-                + SidertEntry.CLV_IMPRESION + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.NUEVO_FOLIO + " INTEGER,"
-                + SidertEntry.FOLIO_ANTERIOR + " INTEGER,"
-                + SidertEntry.INCIDENCIA + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT,"
-                + SidertEntry.STATUS + " INTEGER)";
-
-        public static final String CREATE_TBL_CARTERA_IND = "CREATE TABLE " + TBL_CARTERA_IND + "(" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_cartera TEXT," +
-                "clave TEXT," +
-                "nombre TEXT," +
-                "direccion TEXT," +
-                "asesor_nombre TEXT," +
-                "serie_id TEXT," +
-                "is_ruta INTEGER," +
-                "ruta_obligado INTEGER," +
-                "usuario_id TEXT," +
-                "dia TEXT," +
-                "num_solicitud TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT," +
-                "colonia TEXT)";
-
-        public static final String CREATE_TBL_CARTERA_GPO = "CREATE TABLE " + TBL_CARTERA_GPO + "(" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_cartera TEXT," +
-                "clave TEXT," +
-                "nombre TEXT," +
-                "tesorera TEXT," +
-                "direccion TEXT," +
-                "asesor_nombre TEXT," +
-                "serie_id TEXT," +
-                "is_ruta INTEGER," +
-                "ruta_obligado INTEGER," +
-                "usuario_id TEXT," +
-                "dia TEXT," +
-                "num_solicitud TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT," +
-                "colonia TEXT)";
-
-        public static final String CREATE_TBL_PRESTAMOS_IND = "CREATE TABLE " + TBL_PRESTAMOS_IND + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "id_cliente TEXT," +
-                "num_prestamo TEXT," +
-                "num_solicitud TEXT," +
-                "fecha_entrega TEXT," +
-                "monto_otorgado TEXT," +
-                "monto_total TEXT," +
-                "monto_amortizacion TEXT," +
-                "monto_requerido TEXT," +
-                "num_amortizacion INTEGER," +
-                "fecha_establecida TEXT," +
-                "tipo_cartera TEXT," +
-                "pagada INTEGER," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT)";
-
-        public static final String CREATE_TBL_AMORTIZACIONES = "CREATE TABLE " + TBL_AMORTIZACIONES +" (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_amortizacion TEXT," +
-                "id_prestamo TEXT," +
-                "fecha TEXT," +
-                "fecha_pago TEXT," +
-                "capital TEXT," +
-                "interes TEXT," +
-                "iva TEXT," +
-                "comision TEXT," +
-                "total TEXT," +
-                "capital_pagado TEXT," +
-                "interes_pagado TEXT," +
-                "iva_pagado TEXT," +
-                "interes_moratorio_pagado TEXT," +
-                "iva_moratorio_pagado TEXT," +
-                "comision_pagada TEXT," +
-                "total_pagado TEXT," +
-                "pagado TEXT," +
-                "numero INTEGER," +
-                "dias_atraso TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT)";
-
-        public static final String CREATE_TBL_PAGOS_IND = "CREATE TABLE " + TBL_PAGOS_IND + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "fecha TEXT," +
-                "monto TEXT," +
-                "banco TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT)";
-        
-        public static final String CREATE_TBL_AVAL =  "CREATE TABLE " + TBL_AVAL + "(" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "id_aval TEXT," +
-                "nombre TEXT," +
-                "parentesco TEXT," +
-                "direccion TEXT," +
-                "telefono TEXT," +
-                "fecha_dispositivo TEXT," +
-                "ficha_actualizado TEXT)";
-
-        public static final String CREATE_TBL_RESPUESTAS_IND = "CREATE TABLE " + TBL_RESPUESTAS_IND + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "contacto TEXT," +
-                "motivo_aclaracion TEXT," +
-                "comentario TEXT," +
-                "actualizar_telefono TEXT," +
-                "nuevo_telefono TEXT," +
-                "resultado_gestion TEXT," +
-                "motivo_no_pago TEXT," +
-                "fecha_fallecimiento TEXT," +
-                "medio_pago TEXT," +
-                "fecha_pago TEXT," +
-                "pagara_requerido TEXT," +
-                "pago_realizado TEXT," +
-                "imprimir_recibo TEXT," +
-                "folio TEXT," +
-                "evidencia TEXT," +
-                "tipo_imagen TEXT," +
-                "gerente TEXT," +
-                "firma TEXT," +
-                "fecha_inicio TEXT," +
-                "fecha_fin TEXT," +
-                "fecha_envio TEXT," +
-                "estatus TEXT," +
-                "res_impresion TEXT DEFAULT \"0\")";
-
-        public static final String CREATE_TBL_RESPUESTAS_GPO = "CREATE TABLE " + TBL_RESPUESTAS_GPO + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "contacto TEXT," +
-                "motivo_aclaracion TEXT," +
-                "comentario TEXT," +
-                "actualizar_telefono TEXT," +
-                "nuevo_telefono TEXT," +
-                "resultado_gestion TEXT," +
-                "motivo_no_pago TEXT," +
-                "fecha_fallecimiento TEXT," +
-                "medio_pago TEXT," +
-                "fecha_pago TEXT," +
-                "detalle_ficha TEXT," +
-                "pago_realizado TEXT," +
-                "imprimir_recibo TEXT," +
-                "folio TEXT," +
-                "evidencia TEXT," +
-                "tipo_imagen TEXT," +
-                "gerente TEXT," +
-                "firma TEXT," +
-                "fecha_inicio TEXT," +
-                "fecha_fin TEXT," +
-                "fecha_envio TEXT," +
-                "estatus TEXT," +
-                "res_impresion TEXT DEFAULT '0'," +
-                "arqueo_caja TEXT DEFAULT '0'," +
-                "estatus_pago TEXT DEFAULT '',"+
-                "saldo_corde TEXT DEFAULT '',"+
-                "saldo_actual TEXT DEFAULT '')";
-
-        public static final String CREATE_TBL_PRESTAMOS_GPO = "CREATE TABLE " + TBL_PRESTAMOS_GPO + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "id_grupo TEXT," +
-                "num_prestamo TEXT," +
-                "num_solicitud TEXT," +
-                "fecha_entrega TEXT," +
-                "monto_otorgado TEXT," +
-                "monto_total TEXT," +
-                "monto_amortizacion TEXT," +
-                "monto_requerido TEXT," +
-                "num_amortizacion INTEGER," +
-                "fecha_establecida TEXT," +
-                "tipo_cartera TEXT," +
-                "pagada INTEGER," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT)";
-
-        public static final String CREATE_TBL_MIEMBROS = "CREATE TABLE " + TBL_MIEMBROS_GPO + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "id_integrante TEXT," +
-                "num_solicitud TEXT," +
-                "id_grupo TEXT," +
-                "nombre TEXT," +
-                "direccion TEXT," +
-                "tel_casa TEXT," +
-                "tel_celular TEXT," +
-                "tipo_integrante TEXT," +
-                "monto_prestamo TEXT," +
-                "monto_requerido TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT," +
-                "clave TEXT," +
-                "id_prestamo_integrante TEXT)";
-
-        public static final String CREATE_TBL_PAGOS = "CREATE TABLE " + TBL_PAGOS + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_prestamo TEXT," +
-                "fecha TEXT," +
-                "monto TEXT," +
-                "banco TEXT," +
-                "fecha_dispositivo TEXT," +
-                "fecha_actualizado TEXT)";
-
-        public static final String CREATE_TBL_MIEMBROS_PAGOS = "CREATE TABLE " + TBL_MIEMBROS_PAGOS + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_integrante TEXT," +
-                "id_prestamo TEXT," +
-                "id_gestion TEXT," +
-                "nombre TEXT," +
-                "monto_requerido TEXT," +
-                "pago_realizado TEXT," +
-                "adelanto TEXT," +
-                "solidario TEXT," +
-                "pago_requerido TEXT)";
-
-        static final String CREATE_TBL_IMPRESIONES_VIGENTE = "CREATE TABLE " + TBL_IMPRESIONES_VIGENTE + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "num_prestamo_id_gestion TEXT," +
-                "asesor_id TEXT," +
-                "folio INTEGER," +
-                "tipo_impresion TEXT," +
-                "monto TEXT," +
-                "clave_cliente TEXT," +
-                "create_at TEXT," +
-                "sent_at TEXT," +
-                "estatus INTEGER)";
-
-        public static final String CREATE_TBL_IMPRESIONES_VENCIDA = "CREATE TABLE " + TBL_IMPRESIONES_VENCIDA + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "num_prestamo_id_gestion TEXT," +
-                "asesor_id TEXT," +
-                "folio INTEGER," +
-                "tipo_impresion TEXT," +
-                "monto TEXT," +
-                "clave_cliente TEXT," +
-                "create_at TEXT," +
-                "sent_at TEXT," +
-                "estatus INTEGER," +
-                "num_prestamo TEXT)";
-
-        static final String CREATE_TBL_REIMPRESION_VIGENTE = "CREATE TABLE " + TBL_REIMPRESION_VIGENTE + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "num_prestamo_id_gestion TEXT," +
-                "tipo_reimpresion TEXT," +
-                "folio INTEGER," +
-                "monto TEXT," +
-                "clv_cliente TEXT," +
-                "asesor_id TEXT," +
-                "serie_id TEXT," +
-                "create_at TEXT," +
-                "sent_at TEXT," +
-                "estatus INTEGER)";
-
-        static final String CREATE_TBL_ARQUEO_CAJA = "CREATE TABLE " + TBL_ARQUEO_CAJA + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_gestion TEXT," +
-                "mil TEXT," +
-                "quinientos TEXT," +
-                "doscientos TEXT," +
-                "cien TEXT," +
-                "cincuenta TEXT," +
-                "veinte TEXT," +
-                "diez TEXT," +
-                "cinco TEXT," +
-                "dos TEXT," +
-                "peso TEXT," +
-                "c_cincuenta TEXT," +
-                "c_veinte TEXT," +
-                "c_diez TEXT)";
-
-        static final String CREATE_TBL_TRACKER_ASESOR = "CREATE TABLE " + TBL_TRACKER_ASESOR + " (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "asesor_id TEXT," +
-                "serie_id TEXT," +
-                "nombre TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "bateria TEXT," +
-                "created_at TEXT," +
-                "sended_at TEXT," +
-                "estatus TEXT)";
 
         //=============================== TABLES TEST  ===============================================
-        static final String CREATE_TABLE_ASESSORS_T = "CREATE TABLE " + TABLE_LOG_ASESSOR_T + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO             + " INTEGER,"
-                + SidertEntry.ASSESOR_ID        + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.AMOUNT            + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
-                + SidertEntry.ERRORS            + " TEXT,"
-                + SidertEntry.GENERATED_AT      + " TEXT,"
-                + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
 
-        static final String CREATE_TABLE_GESTORS_T = "CREATE TABLE " + TABLE_LOG_MANAGER_T + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.FOLIO             + " INTEGER,"
-                + SidertEntry.ASSESOR_ID        + " TEXT,"
-                + SidertEntry.EXTERNAL_ID       + " TEXT,"
-                + SidertEntry.AMOUNT            + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION   + " TEXT,"
-                + SidertEntry.ERRORS            + " TEXT,"
-                + SidertEntry.GENERATED_AT      + " TEXT,"
-                + SidertEntry.SENT_AT           + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
 
         static final String CREATE_TABLE_FICHAS_T = "CREATE TABLE " + TABLE_FICHAS_T + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"   //0
@@ -730,21 +269,6 @@ public class SidertTables {
                 + SidertEntry.FECHA_ENV         + " TEXT,"
                 + SidertEntry.STATUS            + " INTEGER)";
 
-        static final String CREATE_TABLE_SOLICITUDES_IND_T   = "CREATE TABLE " + TABLE_SOLICITUDES_IND_T + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.SERIE_ID          + " TEXT,"
-                + SidertEntry.CREDITO           + " TEXT,"
-                + SidertEntry.PERSONALES        + " TEXT,"
-                + SidertEntry.CONYUGE           + " TEXT,"
-                + SidertEntry.ECONOMICOS        + " TEXT,"
-                + SidertEntry.NEGOCIO           + " TEXT,"
-                + SidertEntry.AVAL              + " TEXT,"
-                + SidertEntry.REFERENCIA        + " TEXT,"
-                + SidertEntry.FECHA_INI         + " TEXT,"
-                + SidertEntry.FECHA_TER         + " TEXT,"
-                + SidertEntry.FECHA_ENV         + " TEXT,"
-                + SidertEntry.STATUS            + " INTEGER)";
-
         static final String CREATE_TABLE_SINCRONIZADO_T   = "CREATE TABLE " + TABLE_SINCRONIZADO_T + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
                 + SidertEntry.SERIE_ID          + " TEXT,"
@@ -775,7 +299,34 @@ public class SidertTables {
                 "destino TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TABLE_CLIENTE_IND_T = "CREATE TABLE datos_cliente_ind_t (" +
+        static final String CREATE_TBL_SOLICITUDES = "CREATE TABLE " + TBL_SOLICITUDES + " (" +
+                "id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "vol_solicitud TEXT," +
+                "usuario_id INTEGER," +
+                "tipo_solicitud INTEGER," +
+                "id_originacion INTEGER," +
+                "nombre TEXT," +
+                "fecha_inicio TEXT," +
+                "fecha_termino TEXT," +
+                "fecha_envio TEXT," +
+                "fecha_dispositivo TEXT," +
+                "fecha_guardado TEXT," +
+                "estatus INTEGER)";
+
+        static final String CREATE_TBL_CREDITO_IND = "CREATE TABLE " + TBL_CREDITO_IND + " (" +
+                "id_credito INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "plazo TEXT," +
+                "periodicidad TEXT," +
+                "fecha_desembolso TEXT," +
+                "dia_desembolso TEXT," +
+                "hora_visita TEXT," +
+                "monto_prestamo TEXT," +
+                "destino TEXT," +
+                "clasificacion_riesgo TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_CLIENTE_IND = "CREATE TABLE " + TBL_CLIENTE_IND + " (" +
                 "id_cliente INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "nombre TEXT," +
@@ -786,7 +337,6 @@ public class SidertTables {
                 "genero INTEGER," +
                 "estado_nacimiento TEXT," +
                 "rfc TEXT," +
-                "homoclave TEXT," +
                 "curp TEXT," +
                 "curp_digito_veri TEXT," +
                 "ocupacion TEXT," +
@@ -823,23 +373,147 @@ public class SidertTables {
                 "comentario_rechazo TEXT," +
                 "estatus_completado INTEGER)";
         
-        static final String CREATE_TABLE_CONYUGE_IND_T = "CREATE TABLE datos_conyuge_ind_t (" +
+        static final String CREATE_TBL_CONYUGE_IND = "CREATE TABLE " + TBL_CONYUGE_IND + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "nombre TEXT," +
                 "paterno TEXT," +
                 "materno TEXT," +
                 "ocupacion TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "ing_mensual TEXT," +
+                "gasto_mensual TEXT," +
+                "tel_casa TEXT," +
                 "tel_celular TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TABLE_ECONOMICOS_IND_T = "CREATE TABLE datos_economicos_ind_t (" +
+        static final String CREATE_TBL_ECONOMICOS_IND = "CREATE TABLE " + TBL_ECONOMICOS_IND + " (" +
                 "id_economico INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "propiedades TEXT," +
                 "valor_aproximado TEXT," +
                 "ubicacion TEXT," +
                 "ingreso TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_NEGOCIO_IND = "CREATE TABLE " + TBL_NEGOCIO_IND + " (" +
+                "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "actividad_economica TEXT," +
+                "destino_credito TEXT," +
+                "otro_destino TEXT," +
+                "antiguedad INTEGER," +
+                "ing_mensual TEXT," +
+                "ing_otros TEXT," +
+                "gasto_semanal TEXT," +
+                "gasto_agua TEXT," +
+                "gasto_luz TEXT," +
+                "gasto_telefono TEXT," +
+                "gasto_renta TEXT," +
+                "gasto_otros TEXT," +
+                "capacidad_pago TEXT," +
+                "medio_pago TEXT," +
+                "otro_medio_pago TEXT," +
+                "monto_maximo TEXT," +
+                "num_operacion_mensuales INTEGER," +
+                "num_operacion_efectivo INTEGER," +
+                "dias_venta TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_AVAL_IND = "CREATE TABLE " + TBL_AVAL_IND + " (" +
+                "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "fecha_nacimiento TEXT," +
+                "edad TEXT," +
+                "genero INTEGER," +
+                "estado_nacimiento TEXT," +
+                "rfc TEXT," +
+                "curp TEXT," +
+                "curp_digito TEXT," +
+                "tipo_identificacion TEXT," +
+                "no_identificacion TEXT," +
+                "ocupacion TEXT," +
+                "actividad_economica TEXT," +
+                "destino_credito TEXT," +
+                "otro_destino TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "tipo_vivienda TEXT," +
+                "nombre_titular TEXT," +
+                "parentesco TEXT," +
+                "antigueda INTEGER," +
+                "ing_mensual TEXT," +
+                "ing_otros TEXT," +
+                "gasto_semanal TEXT," +
+                "gasto_agua TEXT," +
+                "gasto_luz TEXT," +
+                "gasto_telefono TEXT," +
+                "gasto_renta TEXT," +
+                "gasto_otros TEXT," +
+                "capacidad_pagos TEXT," +
+                "medio_pago TEXT," +
+                "otro_medio_pago TEXT," +
+                "monto_maximo TEXT," +
+                "horario_localizacion TEXT," +
+                "tel_casa TEXT," +
+                "tel_celular TEXT," +
+                "foto_fachada TEXT," +
+                "ref_domiciliaria TEXT," +
+                "firma TEXT," +
+                "estatus_rechazo INTEGER," +
+                "comentario_rechazo TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_REFERENCIA_IND = "CREATE TABLE datos_referencia_ind_t (" +
+                "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "calle TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "municipio TEXT," +
+                "tel_celular TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_DOCUMENTOS = "CREATE TABLE " + TBL_DOCUMENTOS + " (" +
+                "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "ine_frontal TEXT," +
+                "ine_reverso TEXT," +
+                "curp TEXT," +
+                "comprobante TEXT," +
+                "codigo_barras TEXT," +
+                "firma_asesor TEXT," +
                 "estatus_completado INTEGER)";
 
         static final String CREATE_TABLE_NEGOCIO_IND_T = "CREATE TABLE datos_negocio_ind_t (" +
@@ -1062,58 +736,6 @@ public class SidertTables {
                 "comprobante TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TABLE_VIGENTE_T   = "CREATE TABLE " + TABLE_RECIBOS_VIGENTE_T + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT)";
-
-        static final String CREATE_TABLE_VENCIDA_T   = "CREATE TABLE " + TABLE_RECIBOS_VENCIDA_T + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.FOLIO + " INTEGER,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ERRORS + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.STATUS + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT)";
-
-        public static final String CREATE_TABLE_REIMPRESION_T   = "CREATE TABLE " + TABLE_REIMPRESION_T + "("
-                + SidertEntry._ID + " INTEGER PRIMARY KEY,"
-                + SidertEntry.EXTERNAL_ID + " TEXT,"
-                + SidertEntry.ASSESOR_ID + " TEXT,"
-                + SidertEntry.SERIE_ID + " TEXT,"
-                + SidertEntry.CLV_IMPRESION + " TEXT,"
-                + SidertEntry.GENERATED_AT + " TEXT,"
-                + SidertEntry.SENT_AT + " TEXT,"
-                + SidertEntry.TYPE_IMPRESSION + " TEXT,"
-                + SidertEntry.AMOUNT + " TEXT,"
-                + SidertEntry.NUEVO_FOLIO + " INTEGER,"
-                + SidertEntry.FOLIO_ANTERIOR + " INTEGER,"
-                + SidertEntry.INCIDENCIA + " TEXT,"
-                + SidertEntry.CLV_CLIENTE + " TEXT,"
-                + SidertEntry.STATUS + " INTEGER)";
-        
-        public static final String CREATE_TABLE_RECIBOS_CIRCULO_CREDITO_T = "CREATE TABLE recibos_circulo_credito_t (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "asesor_id TEXT," +
-                "tipo_impresion TEXT," +
-                "nombre_cliente TEXT," +
-                "folio INTEGER," +
-                "fecha_impresion TEXT," +
-                "fecha_envio TEXT," +
-                "estatus INTEGER)";
-
         public static final String CREATE_TBL_RECIBOS = "CREATE TABLE "+TBL_RECIBOS+" (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
 	            "prestamo_id TEXT DEFAULT '',"+
@@ -1128,7 +750,8 @@ public class SidertTables {
                 "ap_materno	TEXT,"+
                 "fecha_impreso	TEXT,"+
                 "fecha_envio TEXT,"+
-                "estatus INTEGER);";
+                "estatus INTEGER,"+
+                "curp TEXT DEFAULT '');";
         
         public static final String CREATE_TBL_CARTERA_IND_T = "CREATE TABLE " + TBL_CARTERA_IND_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1149,7 +772,10 @@ public class SidertTables {
                 "geo_cliente INTEGER," +
                 "geo_aval INTEGER," +
                 "geo_negocio INTEGER," +
-                "estatus TEXT DEFAULT '1')";
+                "estatus TEXT DEFAULT '1'," +
+                "cc TEXT DEFAULT ''," +
+                "agf TEXT DEFAULT ''," +
+                "curp TEXT DEFAULT '')";
 
         public static final String CREATE_TBL_CARTERA_GPO_T = "CREATE TABLE " + TBL_CARTERA_GPO_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1169,7 +795,9 @@ public class SidertTables {
                 "fecha_actualizado TEXT," +
                 "colonia TEXT," +
                 "geolocalizadas TEXT," +
-                "estatus TEXT DEFAULT '1')";
+                "estatus TEXT DEFAULT '1',"+
+                "cc TEXT DEFAULT ''," +
+                "agf TEXT DEFAULT '')";
         
         public static final String CREATE_TBL_PRESTAMOS_IND_T = "CREATE TABLE " + TBL_PRESTAMOS_IND_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1300,7 +928,8 @@ public class SidertTables {
                 "fecha_dispositivo TEXT," +
                 "fecha_actualizado TEXT," +
                 "clave TEXT," +
-                "id_prestamo_integrante TEXT)";
+                "id_prestamo_integrante TEXT," +
+                "curp TEXT DEFAULT '')";
 
         public static final String CREATE_TBL_PAGOS_T = "CREATE TABLE " + TBL_PAGOS_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1427,7 +1056,7 @@ public class SidertTables {
                 "sended_at TEXT," +
                 "estatus TEXT)";
 
-        static final String CREATE_TBL_GEO_RESPUESTAS = "CREATE TABLE geo (" +
+        static final String CREATE_TBL_GEO_RESPUESTAS = "CREATE TABLE "+TBL_GEO_RESPUESTAS_T+" (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_cartera TEXT," +
                 "num_solicitud TEXT," +
@@ -1580,13 +1209,26 @@ public class SidertTables {
                 "estatus TEXT," +
                 "fecha_solicitud TEXT," +
                 "fecha_aplicacion TEXT)";
+        
+        public static final String CREATE_TBL_SOPORTE = "CREATE TABLE " + TBL_SOPORTE +" (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "categoria_id INTEGER," +
+                "tipo_ficha INTEGER," +
+                "nombre TEXT," +
+                "grupo_id INTEGER," +
+                "cliente_id INTEGER," +
+                "num_solicitud INTEGER," +
+                "folio_impresion INTEGER," +
+                "comentario TEXT," +
+                "folio_solicitud TEXT," +
+                "turno INTEGER," +
+                "comentario_admin TEXT," +
+                "fecha_solicitud TEXT," +
+                "fecha_envio TEXT," +
+                "estatus_ticket TEXT," +
+                "estatus_envio INTEGER)";
 
         //================  TABLAS GENERALES  ===================================
-
-        static final String CREATE_TABLE_STATUS_FICHAS = "CREATE TABLE " + TABLE_STATUS_FICHAS + "("
-                + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
-                + SidertEntry.STATUS            + " INTEGER,"
-                + SidertEntry.NOMBRE            + " TEXT)";
 
         static final String CREATE_TABLE_ESTADOS = "CREATE TABLE " + TABLE_ESTADOS + "("
                 + SidertEntry._ID               + " INTEGER PRIMARY KEY,"
@@ -1625,6 +1267,23 @@ public class SidertTables {
                 + SidertEntry._ID                    + " INTEGER PRIMARY KEY,"
                 + SidertEntry.IDENTIFICACION_ID      + " INTEGER,"
                 + SidertEntry.IDENTIFICACION_NOMBRE  + " TEXT)";
+        
+        
+        static final String CREATE_TBL_CATEGORIA_TICKETS = "CREATE TABLE " + TICKETS + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "ticket_id INTEGER," +
+                "nombre TEXT," +
+                "prioridad INTEGER," +
+                "estatus TEXT)";
+        
+        static final String CREATE_TBL_PLAZOS_PRESTAMOS = "CREATE TABLE " + TBL_PLAZOS_PRESTAMOS + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_plazo_prestamo INTEGER," +
+                "nombre TEXT," +
+                "numero_plazos INTEGER," +
+                "estatus INTEGER)";
+
+        
 
         static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
                                                 " ADD COLUMN " + SidertEntry.CREATE_AT +
@@ -1817,6 +1476,34 @@ public class SidertTables {
         static final String ADD_ESTATUS_CARTERA_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
                 " ADD COLUMN estatus" +
                 " TEXT DEFAULT '1'";
+
+        static final String ADD_CURP_RECIBOS = "ALTER TABLE " + TBL_RECIBOS +
+                " ADD COLUMN curp" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CC_IND = "ALTER TABLE " + TBL_CARTERA_IND_T +
+                " ADD COLUMN cc" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_AGF_IND = "ALTER TABLE " + TBL_CARTERA_IND_T +
+                " ADD COLUMN agf" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CC_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
+                " ADD COLUMN cc" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_AGF_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
+                " ADD COLUMN agf" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CURP_MIEMBROS = "ALTER TABLE " + TBL_MIEMBROS_GPO_T +
+                " ADD COLUMN curp" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CURP_CARTERA = "ALTER TABLE " + TBL_CARTERA_IND_T +
+                " ADD COLUMN curp" +
+                " TEXT DEFAULT ''";
 
     }
 }

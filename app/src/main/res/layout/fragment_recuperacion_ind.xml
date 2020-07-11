@@ -583,20 +583,6 @@
                     android:paddingLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/et_height" />
-                <!--<EditText
-                    android:id="@+id/etFechaDefuncion"
-                    android:hint="@string/date_death"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:drawableEnd="@drawable/ic_date"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="3dp"
-                    android:paddingTop="3dp"
-                    android:paddingLeft="10dp"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />-->
             </LinearLayout>
 
             <!-- Comentario -->

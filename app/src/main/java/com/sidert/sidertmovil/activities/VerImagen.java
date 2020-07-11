@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
@@ -14,7 +13,7 @@ import com.sidert.sidertmovil.utils.Constants;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class VerImagen<onOptionsItemSelect> extends AppCompatActivity {
+public class VerImagen extends AppCompatActivity {
 
     private Context ctx;
 

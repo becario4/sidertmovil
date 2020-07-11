@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MAmortizacion;
-import com.sidert.sidertmovil.models.ModeloGrupal;
 
 import java.util.List;
 

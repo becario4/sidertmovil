@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -15,10 +14,6 @@ import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

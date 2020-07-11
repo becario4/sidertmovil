@@ -381,6 +381,49 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!-- Destino del crédito -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Destino del crédito"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvDestinoAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+        <EditText
+            android:id="@+id/etOtroDestinoAval"
+            android:visibility="gone"
+            android:hint="Otro Destino del Crédito"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
     <!-- Ubicacion del Aval -->
     <LinearLayout
         android:layout_marginTop="15dp"
@@ -1037,6 +1080,106 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/et_height" />
         </LinearLayout>
+
+    </LinearLayout>
+
+    <!--  Tipo de Moneda  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tipo de Moneda"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="Pesos Mexicanos"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Medios de pago -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Medios de Pago"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvMediosPagoAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+        <EditText
+            android:id="@+id/etOtroMedioPagoAval"
+            android:visibility="gone"
+            android:hint="Otro Medio de Pago"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!-- Monto Máximo -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Máximo"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etMontoMaxAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="number"
+            android:maxLength="6"
+            android:drawableStart="@drawable/ic_money"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
 
     </LinearLayout>
 

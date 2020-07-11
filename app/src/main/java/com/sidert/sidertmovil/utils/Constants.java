@@ -15,6 +15,8 @@ public class Constants {
     public final static String CONTROLLER_DENUNCIAS   = "denuncias";
     public final static String CONTROLLER_API         = "api";
     public final static String CONTROLLER_CODIGOS     = "codigos";
+    public final static String CONTROLLER_RECIBOS     = "recibos";
+    public final static String CONTROLLER_SOPORTE     = "soporte";
 
 
     // ACTION BAR CONSTANTS
@@ -104,6 +106,7 @@ public class Constants {
     public final static String EMAIL                  = "email";
     public final static String AUTHORITIES            = "authorities";
     public final static String MODULOS                = "modulos";
+    public final static String SUCURSALES             = "sucursales";
 
 
     //======================  TAGS DE FICHAS  ===================================================
@@ -163,6 +166,7 @@ public class Constants {
     public final static String FECHA_AMORTIZACION           = "FechaAmortizacion";
     public final static String FECHA_PAGO                   = "FechaPago";
     public final static String ESTATUS                      = "Estatus";
+    public final static String ID                           = "id";
     public final static String DIAS                         = "Dias";
     public final static String TABLA_PAGOS_CLIENTE          = "TablaPagosCliente";
     public final static String FECHA                        = "Fecha";
@@ -247,6 +251,7 @@ public class Constants {
     public final static int REQUEST_CODE_OCUPACION_AVAL            = 671;
     public final static int REQUEST_CODE_ESTADO_AVAL               = 846;
     public final static int REQUEST_CODE_COLONIA_CLIE              = 934;
+    public final static int REQUEST_CODE_COLONIA_CONY              = 446;
     public final static int REQUEST_CODE_COLONIA_AVAL              = 168;
     public final static int REQUEST_CODE_COLONIA_NEG               = 336;
     public final static int REQUEST_CODE_COLONIA_REF               = 794;
@@ -263,6 +268,7 @@ public class Constants {
     public final static int REQUEST_CODE_FOTO_COMPROBATE           = 715;
     public final static int REQUEST_CODE_MIEMBRO_GEO               = 668;
     public final static int REQUEST_CODE_CAMERA_CIERRE_DIA         = 416;
+    public final static int REQUEST_CODE_SOPORTE                   = 685;
 
     public final static int CANCEL_TRACKER_ID                      = 300;
 
@@ -333,27 +339,23 @@ public class Constants {
     public final static String TBL_PAGOS_IND_T        = "tbl_pagos_ind_t";
     public final static String TBL_PAGOS_IND          = "tbl_pagos_ind";
     public final static String TBL_RECIBOS            = "tbl_recibos";
+    public final static String TBL_SOPORTE            = "tbl_soporte";
     public final static String TBL_REPORTE_SESIONES     = "tbl_reporte_sesiones";
     public final static String TBL_SUCURSALES           = "tbl_sucursales";
     public final static String TBL_CODIGOS_OXXO         = "tbl_codigos_oxxo";
     public final static String SOLICITUDES              = "solicitudes";
     public final static String SOLICITUDES_T            = "solicitudes_t";
-    public final static String DATOS_CREDITO_IND        = "datos_credito_ind";
-    public final static String DATOS_CREDITO_IND_T      = "datos_credito_ind_t";
-    public final static String DATOS_CLIENTE_IND        = "datos_cliente_ind";
-    public final static String DATOS_CLIENTE_IND_T      = "datos_cliente_ind_t";
-    public final static String DATOS_CONYUGE_IND        = "datos_conyuge_ind";
-    public final static String DATOS_CONYUGE_IND_T      = "datos_conyuge_ind_t";
-    public final static String DATOS_ECONOMICOS_IND     = "datos_economicos_ind";
-    public final static String DATOS_ECONOMICOS_IND_T   = "datos_economicos_ind_t";
-    public final static String DATOS_NEGOCIO_IND        = "datos_negocio_ind";
-    public final static String DATOS_NEGOCIO_IND_T      = "datos_negocio_ind_t";
-    public final static String DATOS_AVAL_IND           = "datos_aval_ind";
-    public final static String DATOS_AVAL_IND_T         = "datos_aval_ind_t";
-    public final static String DATOS_REFERENCIA_IND     = "datos_referencia_ind";
-    public final static String DATOS_REFERENCIA_IND_T   = "datos_referencia_ind_t";
-    public final static String DOCUMENTOS               = "documentos";
-    public final static String DOCUMENTOS_T             = "documentos_t";
+
+    public final static String TBL_SOLICITUDES      = "tbl_solicitudes";
+
+    public final static String TBL_CREDITO_IND      = "tbl_credito_ind";
+    public final static String TBL_CLIENTE_IND      = "tbl_cliente_ind";
+    public final static String TBL_CONYUGE_IND      = "tbl_conyuge_ind";
+    public final static String TBL_ECONOMICOS_IND   = "tbl_economicos_ind";
+    public final static String TBL_NEGOCIO_IND      = "tbl_negocio_ind";
+    public final static String TBL_AVAL_IND         = "tbl_aval_ind";
+    public final static String TBL_REFERENCIA_IND   = "tbl_referencia_ind";
+    public final static String TBL_DOCUMENTOS       = "tbl_documentos";
 
     public final static String DATOS_CREDITO_GPO            = "datos_credito_gpo";
     public final static String DATOS_CREDITO_GPO_T          = "datos_credito_gpo_t";
@@ -379,6 +381,8 @@ public class Constants {
     public final static String TBL_RESPUESTAS_GPO_T         = "respuestas_gpo_t";
     public final static String TBL_RESPUESTAS_GPO_V_T       = "respuestas_gpo_v_t";
     public final static String TBL_RESPUESTAS_GPO           = "respuestas_gpo";
+
+    public final static String TBL_PLAZOS_PRESTAMOS         = "tbl_plazos_prestamos";
 
     public final static String TBL_CIERRE_DIA_T             = "tbl_cierre_dia_t";
 
@@ -419,6 +423,7 @@ public class Constants {
     public final static String OCUPACIONES         = "ocupaciones";
     public final static String SECTORES            = "sectores";
     public final static String IDENTIFICACIONES    = "identificaciones";
+    public final static String TICKETS             = "tickets";
 
     //====================   TAGS  PARA  JSON  DE  RESPUESTA  DE  GESTION  =========================
     public final static String LATITUD                  = "Latitud";

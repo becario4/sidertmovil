@@ -1,73 +1,36 @@
 package com.sidert.sidertmovil.activities;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.view_pager.recuperacion_ind_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.ri_gestion_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.ri_pagos_fragment;
-import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.BottomNavigationViewHelper;
-import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.CustomViewPager;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
-import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.utils.Validator;
-import com.sidert.sidertmovil.utils.ValidatorTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.FICHAS;
-import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.LATITUD;
-import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
-import static com.sidert.sidertmovil.utils.Constants.RESPUESTA_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
@@ -240,10 +203,10 @@ public class RecuperacionIndividual extends AppCompatActivity {
                     setFragment(DETALLE_IND, null);
                     break;
                 case R.id.nvGestion:
-                    setFragment(NameFragments.RECUPERACION_IND, null);
+                    setFragment(RECUPERACION_IND, null);
                     break;
                 case R.id.nvReporte:
-                    setFragment(NameFragments.REPORTE_PAGOS_IND, null);
+                    setFragment(REPORTE_PAGOS_IND, null);
                     break;
 
             }
@@ -267,22 +230,22 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 } else
                     return;
                 break;
-            case NameFragments.RECUPERACION_IND:
+            case RECUPERACION_IND:
                 if (!(current instanceof recuperacion_ind_fragment)){
                     recuperacion_ind_fragment recuperacion = new recuperacion_ind_fragment();
                     recuperacion.setArguments(extras);
-                    transaction.replace(R.id.flMain, recuperacion, NameFragments.RECUPERACION_IND);
-                    tokenFragment = NameFragments.RECUPERACION_IND;
+                    transaction.replace(R.id.flMain, recuperacion, RECUPERACION_IND);
+                    tokenFragment = RECUPERACION_IND;
                 } else
                     return;
 
                 break;
-            case NameFragments.REPORTE_PAGOS_IND:
+            case REPORTE_PAGOS_IND:
                 if (!(current instanceof ri_pagos_fragment)){
                     ri_pagos_fragment reporte = new ri_pagos_fragment();
                     reporte.setArguments(extras);
-                    transaction.replace(R.id.flMain, reporte, NameFragments.REPORTE_PAGOS_IND);
-                    tokenFragment = NameFragments.REPORTE_PAGOS_IND;
+                    transaction.replace(R.id.flMain, reporte, REPORTE_PAGOS_IND);
+                    tokenFragment = REPORTE_PAGOS_IND;
                 } else
                     return;
                 break;

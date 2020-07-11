@@ -1,8 +1,6 @@
 package com.sidert.sidertmovil.activities;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AlertDialog;
@@ -10,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,31 +19,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
-import com.sidert.sidertmovil.models.AsesorID;
-import com.sidert.sidertmovil.models.MAsesor;
 import com.sidert.sidertmovil.models.MSpiner;
 import com.sidert.sidertmovil.models.MSucursales;
 import com.sidert.sidertmovil.models.MTrackerAsesor;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.CustomInfoWindowAdapter;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
@@ -54,13 +44,11 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,8 +56,6 @@ import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
-import static com.sidert.sidertmovil.utils.Constants.cash;
-import static com.sidert.sidertmovil.utils.Constants.success;
 
 public class TrackerAsesor extends AppCompatActivity {
 

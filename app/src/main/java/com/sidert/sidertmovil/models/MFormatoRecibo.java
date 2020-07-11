@@ -11,14 +11,12 @@ public class MFormatoRecibo implements Serializable {
     private String folio;
     private String monto;
     private String clave = "";
-    private String nombre;
-    private String apPaterno;
-    private String apMaterno;
     private String fechaImpreso;
     private String fechaEnvio;
     private boolean reeimpresion;
     private int resImpresion;
     private String nombreCliente;
+    private String curp = "";
 
     public String getIdPrestamo() {
         return idPrestamo;
@@ -76,30 +74,6 @@ public class MFormatoRecibo implements Serializable {
         this.clave = clave;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApPaterno() {
-        return apPaterno;
-    }
-
-    public void setApPaterno(String apPaterno) {
-        this.apPaterno = apPaterno;
-    }
-
-    public String getApMaterno() {
-        return apMaterno;
-    }
-
-    public void setApMaterno(String apMaterno) {
-        this.apMaterno = apMaterno;
-    }
-
     public String getFechaImpreso() {
         return fechaImpreso;
     }
@@ -133,6 +107,18 @@ public class MFormatoRecibo implements Serializable {
     }
 
     public String getNombreCliente() {
-        return nombre+" "+apPaterno+" "+apMaterno;
+        return nombreCliente;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 }

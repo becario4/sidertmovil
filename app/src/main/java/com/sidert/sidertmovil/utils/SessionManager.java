@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,6 +39,8 @@ public class SessionManager {
     private final String CONTADOR_C       = "contador_c";
     private final String CLIENTE_GRUPO_C  = "cliente_grupo_c";
     private final String ACCESS_TOKEN   = "access_token";
+    //==================== SUCURSALES ===============================================
+    private final String SUCURSALES  = "sucursales";
     //==================== FILTROS CARTERA ==========================================
     private final String TIPO_CARTERA_IND_P = "tipo_cartera_ind_p";
     private final String TIPO_CARTERA_GPO_P = "tipo_cartera_gpo_p";
@@ -71,6 +77,26 @@ public class SessionManager {
 
     public SessionManager(Context ctx) {
         this.ctx = ctx;
+    }
+    // =================== Filtros de Geolocalizacion ==============================================
+    public void setSucursales (String sucursales){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(SUCURSALES, sucursales);
+        editor.commit();
+    }
+
+    public JSONArray getSucursales (){
+        JSONArray sucursales = null;
+        try {
+            preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+            sucursales = new JSONArray(preferences.getString(SUCURSALES, "[]"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            sucursales = new JSONArray();
+        }
+
+        return sucursales;
     }
 
     // =================== Filtros de Geolocalizacion ==============================================

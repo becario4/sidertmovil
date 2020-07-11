@@ -2,26 +2,19 @@ package com.sidert.sidertmovil.fragments.dialogs;
 
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.ModeloGrupal;
-import com.sidert.sidertmovil.utils.Constants;
 
 
 public class dialog_integrante_gpo extends DialogFragment {
@@ -38,7 +31,6 @@ public class dialog_integrante_gpo extends DialogFragment {
 
     private double pagoSemanal, pagoRealizado, pagoSolidario = 0, pagoAdelanto = 0;
 
-    private ModeloGrupal.IntegrantesDelGrupo integrante;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,11 +46,6 @@ public class dialog_integrante_gpo extends DialogFragment {
         //getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         setCancelable(false);
-        integrante = (ModeloGrupal.IntegrantesDelGrupo) getArguments().getSerializable(Constants.CLIENTE);
-
-        etNombre.setText(integrante.getNombre());
-        etPagoSemanal.setText(String.valueOf(integrante.getPagoSemanalInt()));
-        pagoSemanal = integrante.getPagoSemanalInt();
 
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
         return view;

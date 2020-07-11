@@ -3,14 +3,12 @@ package com.sidert.sidertmovil.fragments.dialogs;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,10 +21,8 @@ import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
-import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;

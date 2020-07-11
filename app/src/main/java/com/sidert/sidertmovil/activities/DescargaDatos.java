@@ -6,21 +6,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.BatteryManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.LoginFilter;
 import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.MAval;
 import com.sidert.sidertmovil.models.MCartera;
@@ -29,34 +24,25 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
-import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.utils.WebServicesRoutes;
+import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FECHA;
@@ -132,7 +118,17 @@ public class DescargaDatos extends AppCompatActivity {
         tvTotal = findViewById(R.id.tvTotal);
         tvRegistradas = findViewById(R.id.tvRegistradas);
 
+        GetCategoriaTickets();
         GetUltimasImpresiones();
+    }
+
+    private void GetCategoriaTickets(){
+         Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
+         //sc.GetEstados(ctx);
+         sc.GetCategoriasTickets(ctx);
+         //sc.GetPlazosPrestamo(ctx);
+         //Servicios_Sincronizado ss = new Servicios_Sincronizado();
+         //ss.GetUltimosRecibos(ctx);
     }
 
     private void GetUltimasImpresiones (){
@@ -396,13 +392,16 @@ public class DescargaDatos extends AppCompatActivity {
                                             values.put(12, Miscellaneous.ObtenerFecha(TIMESTAMP));              //FECHA ACTUALIZACION
                                             values.put(13, cartera.get(i).getColonia());                        //COLONIA
 
-                                            //values.put(14, "0");           //GEO CLIENTE
-                                            //values.put(15, "0");           //GEO AVAL
-                                            //values.put(16, "0");           //GEO NEGOCIO
-
                                             values.put(14, (cartera.get(i).getGeoCliente()?"1":"0"));           //GEO CLIENTE
                                             values.put(15, (cartera.get(i).getGeoAval()?"1":"0"));              //GEO AVAL
                                             values.put(16, (cartera.get(i).getGeoNegocio()?"1":"0"));           //GEO NEGOCIO
+                                            values.put(17, "0");                                                //CC
+                                            values.put(18, "0");                                                //AGF
+                                            values.put(19, "");                                                 //CURP
+
+                                            /*values.put(17, (cartera.get(i).getCcInd()?"1":"0"));                //CC
+                                            values.put(18, (cartera.get(i).getAgfInd()?"1":"0"));               //AGF
+                                            values.put(19, cartera.get(i).getCurp());                           //CURP*/
 
                                             if (ENVIROMENT)
                                                 dBhelper.saveCarteraInd(db, TBL_CARTERA_IND, values);
@@ -427,6 +426,12 @@ public class DescargaDatos extends AppCompatActivity {
                                             cv.put("geo_cliente", (cartera.get(i).getGeoCliente()?1:0));
                                             cv.put("geo_aval", (cartera.get(i).getGeoAval()?1:0));
                                             cv.put("geo_negocio", (cartera.get(i).getGeoNegocio()?1:0));
+                                            cv.put("cc", 0);
+                                            cv.put("agf", 0);
+                                            cv.put("curp", "");
+                                            /*cv.put("cc", (cartera.get(i).getCcInd()?1:0));
+                                            cv.put("agf", (cartera.get(i).getAgfInd()?1:0));
+                                            cv.put("curp", cartera.get(i).getCurp());*/
 
                                             if (ENVIROMENT)
                                                 db.update(TBL_CARTERA_IND, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
@@ -459,16 +464,15 @@ public class DescargaDatos extends AppCompatActivity {
                                             values.put(12, Miscellaneous.ObtenerFecha(TIMESTAMP));              //FECHA CREACION
                                             values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));              //FECHA ACTUALIZACION
                                             values.put(14, cartera.get(i).getColonia());                        //COLONIA
-
-                                            //values.put(15, "");                 //GEOLOCALIZADAS
-
                                             values.put(15, cartera.get(i).getGeolocalizadas());                 //GEOLOCALIZADAS
+                                            values.put(16, "{}");                                               //CC
+                                            values.put(17, "{}");                                               //AGF
+                                            /*values.put(16, cartera.get(i).getCcGpo());                          //CC
+                                            values.put(17, cartera.get(i).getAgfGpo());                         //AGF*/
 
                                             Log.e("geolocalizadas", "xx"+cartera.get(i).getGeolocalizadas());
-                                            if (ENVIROMENT)
-                                                dBhelper.saveCarteraGpo(db, TBL_CARTERA_GPO, values);
-                                            else
-                                                dBhelper.saveCarteraGpo(db, TBL_CARTERA_GPO_T, values);
+
+                                            dBhelper.saveCarteraGpo(db, TBL_CARTERA_GPO_T, values);
                                         }
                                         else{ //Actualiza la cartera de gpo
                                             row.close();
@@ -960,7 +964,8 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_miembro.put(12, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZACION
                                         values_miembro.put(13, mIntegrante.getClave());                              //CLAVE
                                         values_miembro.put(14, String.valueOf(mIntegrante.getPrestamoId()));         //ID PRESTAMO
-
+                                        values_miembro.put(15, "");                                                  //CURP
+                                        //values_miembro.put(15, mIntegrante.getCurp());                               //CURP
                                         dBhelper.saveMiembros(db, values_miembro);
 
                                     }
@@ -1097,6 +1102,8 @@ public class DescargaDatos extends AppCompatActivity {
                                         cv_miembro.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));             //FECHA ACTUALIZACION
                                         cv_miembro.put("clave", mIntegrante.getClave());                                        //CLAVE
                                         cv_miembro.put("id_prestamo_integrante", String.valueOf(mIntegrante.getPrestamoId()));  //PRESTAMO ID
+                                        cv_miembro.put("curp", "");                                                             //CURP
+                                        //cv_miembro.put("curp", mIntegrante.getCurp());                                          //CURP
 
                                         db.update((ENVIROMENT)?TBL_MIEMBROS_GPO:TBL_MIEMBROS_GPO_T, cv_miembro,
                                                 "id_prestamo = ? AND id_integrante = ?",

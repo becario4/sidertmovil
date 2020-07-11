@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,14 +33,19 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = LayoutInflater.from(ctx).inflate(R.layout.item_nombre, parent, false);
+        View view = LayoutInflater.from(ctx).inflate(R.layout.item_recibo, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MTicketCC item = data.get(position);
-        holder.tvNombre.setText(item.getNombre_cliente());
+        holder.tvNombre.setText((Html.fromHtml("<b>"+item.getNombreCliente()+"</b> ")));
+        holder.tvRecibo.setText(Html.fromHtml("<b>Recibo:</b> "+item.getTipoRecibo()));
+        holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+item.getTipoImpresion()));
+        holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.getFolio()));
+        holder.tvFechaImpreso.setText(Html.fromHtml("<b>Fecha Impreso:</b> "+item.getFechaImpresion()));
+        holder.tvFechaEnvio.setText(Html.fromHtml("<b>Fecha Envio:</b> "+item.getFechaEnvio()));
 
         holder.bind(item);
     }
@@ -51,9 +57,19 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre;
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvNombre);
+        private TextView tvRecibo;
+        private TextView tvImpresion;
+        private TextView tvFolio;
+        private TextView tvFechaImpreso;
+        private TextView tvFechaEnvio;
+        public ViewHolder(@NonNull View v) {
+            super(v);
+            tvNombre        = v.findViewById(R.id.tvNombre);
+            tvRecibo        = v.findViewById(R.id.tvRecibo);
+            tvImpresion     = v.findViewById(R.id.tvImpresion);
+            tvFolio         = v.findViewById(R.id.tvFolio);
+            tvFechaImpreso  = v.findViewById(R.id.tvFechaImpreso);
+            tvFechaEnvio    = v.findViewById(R.id.tvFechaEnvio);
         }
 
         public void bind (final MTicketCC item){

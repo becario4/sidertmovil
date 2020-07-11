@@ -7,12 +7,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.RecuperacionGrupal;
@@ -21,8 +19,6 @@ import com.sidert.sidertmovil.adapters.adapter_reporte_omega_gpo;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.MPago;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 

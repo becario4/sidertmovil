@@ -39,15 +39,8 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.models.ModelGeolocalizacion;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

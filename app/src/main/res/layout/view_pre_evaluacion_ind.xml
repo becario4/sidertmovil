@@ -238,7 +238,6 @@
                     android:textSize="@dimen/textsize"
                     android:paddingLeft="10dp"
                     android:focusable="false"
-                    android:drawableRight="@drawable/ic_date"
                     android:inputType="textCapWords"
                     android:hint="Fecha de nacimineto"
                     android:paddingRight="10dp"

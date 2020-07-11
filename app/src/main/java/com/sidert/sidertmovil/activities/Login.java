@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
-import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
@@ -68,6 +67,7 @@ import static com.sidert.sidertmovil.utils.Constants.MODULOS;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_EMPLEADO;
 import static com.sidert.sidertmovil.utils.Constants.PATERNO;
 import static com.sidert.sidertmovil.utils.Constants.SERIE_ID;
+import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
 
 public class Login extends AppCompatActivity {
 
@@ -157,15 +157,8 @@ public class Login extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(!validator.validate(etUser, new String[] {validator.REQUIRED}) &&
-                    !validator.validate(etPassword, new String[] {validator.REQUIRED})) {
-                if (etUser.getText().toString().trim().equals("programador") && etPassword.getText().toString().trim().equals("Qvv12#4")){
-                    doLoginSoporte();
-                }
-                else if(etUser.getText().toString().trim().equals("asesor123") && etPassword.getText().toString().trim().equals("Qvv12#4")){
-                    doLoginAsesorT();
-                }
-                else
-                    doLogin();
+               !validator.validate(etPassword, new String[] {validator.REQUIRED})) {
+                doLogin();
             }
         }
     };
@@ -185,25 +178,6 @@ public class Login extends AppCompatActivity {
             startActivity(covid);
         }
     };
-
-    private void doLoginSoporte(){
-        //session.setUser("000","Alejandro Isaias", "Lopez", "Jimenez", "Programador","PROGRAMADOR", true, "","");
-        Intent home = new Intent(context, Home.class);
-        startActivity(home);
-        finish();
-    }
-
-    private void doLoginAsesorT(){
-        //session.setUser("000","Alejandro Isaias", "Lopez", "Jimenez", "Asesor","ASESOR", true, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXRlcm5vIjoiIiwicGF0ZXJubyI6IkxPUEVaIiwidXNlcl9uYW1lIjoiUFJPR1JBTUFET1JBTkQiLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXSwic2VyaWVpZCI6IjU4NCIsImlkIjoxMTksImV4cCI6MTU4MTc4MDQ4Nywibm9tYnJlIjoiQUxFSkFORFJPIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9TVVBFUiJdLCJqdGkiOiIyN2VkNzE2MS01ZDI1LTQ2ZmQtYWNiNi1hM2RjNWQzNTVjMWIiLCJlbWFpbCI6InByb2dyYW1hZG9yMkBydWZpLm14IiwiY2xpZW50X2lkIjoiYW5kcm9pZGFwcCJ9.dKgxCXq-t7K1FuwcSxtkG7U4LUCWgwxXdZe67T5vPYqonQYviVZ2bFA-NpV1MvuSgAXHZhxAXc4fGwkhz-IyhdY49kvzzilfzFHuRHbXLiNowTIxdUmFFYMxNPMN5XMIpauQt4eC--6eEmdkDYL1cxB35RA9Q_p6kSRkc0U8_UWVh1_K-9UOYwliJLbIlpSUMkps82wmUydp8rATd_OanwHbUx3uiOHBzBhXVOi2b8It9mIH_gBSAKeiEySIqSAMFoaimWacYw8vVPUrtNH5Z4CspLCYDc63qDEQYTiR1egtv0Ofxu-irpCEIGfsTOTPFGXrb-G_M7YAXdvkmCmlHQ","modulos");
-
-        if(isExternalStorageWritable()){
-            String nameDir = "Files";
-            crearDirectorioPrivado(ctx, nameDir);
-        }
-        Intent home = new Intent(context, Home.class);
-        startActivity(home);
-        finish();
-    }
 
     private void doLogin (){
         if (NetworkStatus.haveNetworkConnection(ctx)){
@@ -278,6 +252,8 @@ public class Login extends AppCompatActivity {
                                         Miscellaneous.validString(res.getAccessToken()),
                                         Miscellaneous.validString(json_info.getString(MODULOS)),
                                         Miscellaneous.validString(json_info.getString("id")));
+
+                                //session.setSucursales(json_info.getString(SUCURSALES));
 
                                 Calendar c = Calendar.getInstance();
                                 AlarmManager manager = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);

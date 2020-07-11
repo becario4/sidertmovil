@@ -1,24 +1,15 @@
 package com.sidert.sidertmovil.activities;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.telephony.mbms.DownloadRequest;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,17 +30,13 @@ import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -59,18 +46,12 @@ import retrofit2.Response;
 public class Configuracion extends AppCompatActivity {
 
     private Context ctx;
-    private Toolbar tbMain;
     private CardView cvSincronizarFichas;
-    private CardView cvFichasGestionadas;
-    private CardView cvCatalogos;
-    private CardView cvDownloadApk;
 
     private SessionManager session;
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
-
-    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +59,11 @@ public class Configuracion extends AppCompatActivity {
         setContentView(R.layout.activity_configuracion);
 
         ctx = this;
-        tbMain = findViewById(R.id.tbMain);
+        Toolbar tbMain = findViewById(R.id.tbMain);
         cvSincronizarFichas = findViewById(R.id.cvSincronizarFichas);
-        cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
-        cvCatalogos         = findViewById(R.id.cvCatalogos);
-        cvDownloadApk       = findViewById(R.id.cvDownloadApk);
-
-        //cvDownloadApk.setVisibility(View.GONE);
+        CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
+        CardView cvCatalogos = findViewById(R.id.cvCatalogos);
+        CardView cvDownloadApk = findViewById(R.id.cvDownloadApk);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -104,37 +83,55 @@ public class Configuracion extends AppCompatActivity {
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.e("Count", "total"+(count++));
-            cvSincronizarFichas.setEnabled(false);
-            Handler handler_home=new Handler();
-            handler_home.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (session.getUser().get(6).equals("true")) {
-                        HashMap<Integer, String> params_sincro = new HashMap<>();
-                        params_sincro.put(0, session.getUser().get(0));
-                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarFichas.setEnabled(false);
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (session.getUser().get(6).equals("true")) {
+                            HashMap<Integer, String> params_sincro = new HashMap<>();
+                            params_sincro.put(0, session.getUser().get(0));
+                            params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
-                        if (Constants.ENVIROMENT)
-                            dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
-                        else
-                            dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+                            if (Constants.ENVIROMENT)
+                                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
+                            else
+                                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                        ss.SaveCierreDia(ctx, true);
-                        ss.SaveGeolocalizacion(ctx, true);
-                        ss.SaveRespuestaGestion(ctx, true);
-                        ss.SendImpresionesVi(ctx, true);
-                        ss.SendReimpresionesVi(ctx, true);
-                        ss.SendTracker(ctx, true);
-                        ss.CancelGestiones(ctx, true);
+                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                            ss.SaveCierreDia(ctx, true);
+                            ss.SaveGeolocalizacion(ctx, true);
+                            ss.SaveRespuestaGestion(ctx, true);
+                            ss.SendImpresionesVi(ctx, true);
+                            ss.SendReimpresionesVi(ctx, true);
+                            ss.SendTracker(ctx, true);
+                            //ss.CancelGestiones(ctx, true);
+                            //ss.SendRecibos(ctx, true);
+                            ss.GetTickets(ctx, true);
+                            //ss.GetUltimosRecibos(ctx);
+                            //ss.SendCancelGestiones(ctx, true);
 
+                        }
+                        cvSincronizarFichas.setEnabled(true);
                     }
-                    cvSincronizarFichas.setEnabled(true);
-                }
-            },3000);
+                }, 3000);
 
+            }
+            else{
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
         }
+
     };
 
     private View.OnClickListener cvFichasGestionadas_OnClick = new View.OnClickListener() {
@@ -151,7 +148,7 @@ public class Configuracion extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                         });
-                success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                Objects.requireNonNull(success.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 success.show();
             }
@@ -165,11 +162,13 @@ public class Configuracion extends AppCompatActivity {
             if (NetworkStatus.haveNetworkConnection(ctx)){
                 Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
                 catalogos.GetEstados(ctx);
-                catalogos.GetMunicipios(ctx);
+                /*catalogos.GetMunicipios(ctx);
                 catalogos.GetOcupaciones(ctx);
                 catalogos.GetSectores(ctx);
                 catalogos.GetTipoIdentificacion(ctx);
-                catalogos.GetColonias(ctx);
+                catalogos.GetColonias(ctx);*/
+                catalogos.GetCategoriasTickets(ctx);
+                catalogos.GetPlazosPrestamo(ctx);
             }
             else{
                 final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
@@ -179,7 +178,7 @@ public class Configuracion extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                         });
-                not_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                Objects.requireNonNull(not_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 not_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 not_network.show();
             }
@@ -245,7 +244,7 @@ public class Configuracion extends AppCompatActivity {
                             dialog.dismiss();
                         }
                     });
-            not_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            Objects.requireNonNull(not_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
             not_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             not_network.show();
         }
@@ -298,11 +297,9 @@ public class Configuracion extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
+        if (item.getItemId() == android.R.id.home)
+            finish();
+
         return super.onOptionsItemSelected(item);
     }
 }

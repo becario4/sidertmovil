@@ -14,38 +14,38 @@ import android.widget.Toast;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.models.MAmortizacion;
 import com.sidert.sidertmovil.models.MAval;
-import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MCierreDia;
 import com.sidert.sidertmovil.models.MGestionCancelada;
-import com.sidert.sidertmovil.models.MImpresion;
-import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MResCierreDia;
+import com.sidert.sidertmovil.models.MResRecibo;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
+import com.sidert.sidertmovil.models.MResSoporte;
+import com.sidert.sidertmovil.models.MResTicket;
+import com.sidert.sidertmovil.models.MResUltimoRecibo;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MRespuestaSolicitud;
 import com.sidert.sidertmovil.models.MSendImpresion;
+import com.sidert.sidertmovil.models.MSendRecibo;
+import com.sidert.sidertmovil.models.MSendSoporte;
+import com.sidert.sidertmovil.models.MSolicitudCancelacion;
 import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -57,7 +57,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -65,16 +64,16 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Multipart;
 
 import static com.sidert.sidertmovil.utils.Constants.CODEBARS;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_RECIBOS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOPORTE;
 import static com.sidert.sidertmovil.utils.Constants.DIRECCION;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FACHADA;
-import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DISPOSITIVO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_ENVIO;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN_GEO;
@@ -108,6 +107,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
@@ -116,17 +116,13 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOPORTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
-import static com.sidert.sidertmovil.utils.Constants.TEL_CELULAR_SECRETARIA;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
-import static com.sidert.sidertmovil.utils.Constants.firma;
-import static com.sidert.sidertmovil.utils.Constants.print_off;
 
 public class Servicios_Sincronizado {
-
-    Context ctx;
 
     public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones){
         Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas "+incluir_gestiones);
@@ -235,8 +231,14 @@ public class Servicios_Sincronizado {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
-        if (flag)
-            loading.show();
+        if (flag) {
+            try {
+                loading.show();
+            }
+            catch (Exception e){
+                loading.dismiss();
+            }
+        }
 
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -377,10 +379,6 @@ public class Servicios_Sincronizado {
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row;
-
-        /*String x =  "SELECT * from " + TBL_RESPUESTAS_IND_V_T ;
-        row = db.rawQuery(x, null);
-        Log.e("countIndvidual", row.getCount()+" total");*/
 
         String query;
 
@@ -595,7 +593,7 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MRespuestaGestion> call, Throwable t) {
-                    Log.e("FailSaveGestion", t.getMessage());
+                    //Log.e("FailSaveGestion", t.getMessage());
                     if (DGshow)
                         loading.dismiss();
                 }
@@ -1557,6 +1555,127 @@ public class Servicios_Sincronizado {
             loading.dismiss();
     }
 
+    public void SendRecibos(Context ctx, boolean showDG){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        //if (showDG)
+            //loading.show();
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String sql = "SELECT * FROM " + TBL_RECIBOS + " WHERE estatus = ?";
+        Cursor row = db.rawQuery(sql, new String[]{"0"});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                MSendRecibo recibo = new MSendRecibo();
+                recibo.setPrestamoId(row.getLong(1));
+                recibo.setAsesorId(row.getString(2));
+                recibo.setTipo_recibo(row.getString(3));
+                recibo.setTipoImpresion(row.getString(4));
+                recibo.setFolio(row.getLong(5));
+                recibo.setMonto(row.getString(6));
+                recibo.setClave(row.getString(7));
+                recibo.setNombre(row.getString(8));
+                recibo.setFechaImpreso(row.getString(11));
+                recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                recibo.setCurp(row.getString(14));
+                recibo.setUsuarioId(Long.parseLong(session.getUser().get(9)));
+
+                new GuardarRecibo()
+                        .execute(ctx,
+                                recibo,
+                                row.getString(0));
+                row.moveToNext();
+            }
+        }
+        row.close();
+
+        if (showDG)
+            loading.dismiss();
+
+    }
+
+    public void SendSoporte(Context ctx, boolean showDG){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        //if (showDG)
+        //loading.show();
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_SOPORTE + " WHERE estatus_envio = ?";
+        Cursor row = db.rawQuery(sql, new String[]{"0"});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                MSendSoporte soporte = new MSendSoporte();
+                soporte.setUsuarioId(Long.parseLong(session.getUser().get(9)));
+                soporte.setCategoria(row.getLong(1));
+                if (row.getInt(2) == 1) {
+                    soporte.setClienteId(row.getLong(5));
+                    soporte.setNoSolicitud(row.getLong(6));
+                }
+                else if (row.getInt(2) == 2) {
+                    soporte.setGrupoId(row.getLong(4));
+                    soporte.setNoSolicitud(row.getLong(6));
+                }
+
+                if (row.getInt(7) > 0)
+                    soporte.setFolioImpresion(row.getString(7));
+
+                soporte.setComentario(row.getString(8));
+                soporte.setFechaSolicitud(row.getString(12));
+                soporte.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                new GuardarSoporte()
+                        .execute(ctx,
+                                soporte,
+                                row.getString(0));
+                row.moveToNext();
+            }
+        }
+        row.close();
+
+        if (showDG)
+            loading.dismiss();
+
+    }
+
+    public void SendCancelGestiones(Context ctx, boolean showDG){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        if (showDG) {
+            try {
+                loading.show();
+            }
+            catch (Exception e){}
+        }
+
+        Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE estatus = ''", "", null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            for (int i = 0; i < row.getCount(); i++){
+                new GuardarCancelGestiones().execute(ctx, row.getString(3), row.getString(4), row.getString(1), row.getString(5), row.getString(0));
+                row.moveToNext();
+            }
+        }
+        row.close();
+
+        if (showDG)
+            loading.dismiss();
+
+
+    }
+
     //Envia las reimpresiones realizadas
     public void SendReimpresionesVi (Context ctx, boolean showDG){
 
@@ -2135,24 +2254,159 @@ public class Servicios_Sincronizado {
         row_amortiz.close();
     }
 
+    //Obtiene los tickets creados
+    public void GetTickets(final Context ctx, final boolean showDG){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        if (showDG)
+            loading.show();
+
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        SessionManager session = new SessionManager(ctx);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
+
+        Call<List<MResTicket>> call = api.getTickets(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
+        call.enqueue(new Callback<List<MResTicket>>() {
+            @Override
+            public void onResponse(Call<List<MResTicket>> call, Response<List<MResTicket>> response) {
+                Log.e("CodeGetTickets"," :"+response.code());
+                switch (response.code()) {
+                    case 200:
+                        List<MResTicket> data = response.body();
+                        if (data.size() > 0){
+                            for (MResTicket item : data){
+                                Cursor row = dBhelper.getRecords(TBL_SOPORTE, " WHERE folio_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
+                                Log.e("RowCheca", String.valueOf(row.getCount()));
+                                if (row.getCount() == 0){
+                                    //Crea ticket
+                                    HashMap<Integer, String> params = new HashMap<>();
+                                    params.put(0, String.valueOf(item.getCategoria()));
+                                    if (item.getClienteId() == 0 && item.getGrupoId() == 0) {
+                                        params.put(1, "0");
+                                        params.put(4, "0");
+                                        params.put(3, "0");
+                                        params.put(5, "0");
+                                    }
+                                    else if (item.getClienteId() > 0) {
+                                        params.put(1, "1");
+                                        params.put(4, String.valueOf(item.getClienteId()));
+                                        params.put(3, "0");
+                                        params.put(5, String.valueOf(item.getNoSolicitud()));
+                                    }
+                                    else {
+                                        params.put(1, "2");
+                                        params.put(3, String.valueOf(item.getGrupoId()));
+                                        params.put(4, "0");
+                                        params.put(5, String.valueOf(item.getNoSolicitud()));
+                                    }
+                                    params.put(2, "");
+
+                                    if (item.getCategoria() == 1)
+                                        params.put(6, String.valueOf(item.getCategoria()));
+                                    else
+                                        params.put(6, "0");
+
+                                    params.put(7, item.getComentario());
+                                    params.put(8, String.valueOf(item.getId()));
+                                    params.put(9, "0");
+                                    params.put(10, item.getComentarioTecnico());
+                                    params.put(11, item.getFechaSolicitud());
+                                    params.put(12, item.getFechaEnvio());
+                                    params.put(13, item.getEstatus());
+                                    params.put(14, "1");
+
+                                    Log.e("Params", params.toString());
+                                    dBhelper.saveSoporte(db, params);
+                                }
+                                else{
+                                    //Actualiza ticket
+                                    row.moveToFirst();
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("estatus_ticket", item.getEstatus());
+                                    cv.put("comentario_admin", item.getComentarioTecnico());
+
+                                    db.update(TBL_SOPORTE, cv, "_id = ?", new String[]{row.getString(0)});
+                                }
+                                row.close();
+                            }
+                        }
+                        break;
+                }
+
+                if (showDG)
+                    loading.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<List<MResTicket>> call, Throwable t) {
+                if (showDG)
+                    loading.dismiss();
+            }
+        });
+    }
+
+    //Obtiene los recibos creados
+    public void GetUltimosRecibos(final Context ctx){
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        final SessionManager session = new SessionManager(ctx);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_RECIBOS, ctx).create(ManagerInterface.class);
+
+        Call<List<MResUltimoRecibo>> call = api.getUltimosRecibos(session.getUser().get(0),"Bearer "+ session.getUser().get(7));
+        call.enqueue(new Callback<List<MResUltimoRecibo>>() {
+            @Override
+            public void onResponse(Call<List<MResUltimoRecibo>> call, Response<List<MResUltimoRecibo>> response) {
+                Log.e("RecibosGet", "asd: "+response.code());
+                switch (response.code()) {
+                    case 200:
+                       List<MResUltimoRecibo> data = response.body();
+                       for (MResUltimoRecibo item : data){
+                           String sql = "SELECT * FROM " + TBL_RECIBOS + " WHERE curp = ? AND tipo_recibo = ? AND tipo_impresion = ? AND folio = ?";
+                           Cursor row = db.rawQuery(sql, new String[]{item.getCurp(), item.getTipoRecibo(), item.getTipoImpresion(), String.valueOf(item.getFolio())});
+                           if (row.getCount() > 0){
+                               row.moveToFirst();
+                               ContentValues cv = new ContentValues();
+                               cv.put("fecha_envio", item.getFechaEnvio());
+                               db.update(TBL_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
+
+                           }
+                           else{
+                               HashMap<Integer, String> params = new HashMap<>();
+                               params.put(0, String.valueOf(item.getPrestamoId()));
+                               params.put(1, session.getUser().get(0));
+                               params.put(2, item.getTipoRecibo());
+                               params.put(3, item.getTipoImpresion());
+                               params.put(4, String.valueOf(item.getFolio()));
+                               params.put(5, item.getMonto());
+                               params.put(6, item.getClave());
+                               params.put(7, item.getNombre());
+                               params.put(8, "");
+                               params.put(9, "");
+                               params.put(10, item.getFechaImpreso());
+                               params.put(11, item.getFechaEnvio());
+                               params.put(12, "1");
+                               params.put(13, item.getCurp());
+                               dBhelper.saveRecibos(db, params);
+                           }
+                           row.close();
+                       }
+                       break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MResUltimoRecibo>> call, Throwable t) {
+
+            }
+        });
+    }
+
     public class RegistrarCierreDia extends AsyncTask<Object, Void, String>{
 
         @Override
         protected String doInBackground(Object... params) {
             Context ctx = (Context) params[0];
             final MCierreDia item = (MCierreDia) params[1];
-
-            Log.e("Cursor", item.getNombre());
-            Log.e("Cursor", item.getMonto());
-            Log.e("Cursor", "MedioPago: "+item.getMedioPago());
-            Log.e("Cursor", item.getClaveCliente());
-            Log.e("Cursor", item.getEvidencia());
-            Log.e("Cursor", item.getNumPrestamo());
-            Log.e("Cursor", item.getSerialId());
-            Log.e("Cursor", item.getFechaInicio());
-            Log.e("Cursor", item.getFechaFin());
-
-
 
             DBhelper dBhelper = new DBhelper(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -2310,6 +2564,182 @@ public class Servicios_Sincronizado {
                 }
             });
 
+            return "";
+        }
+    }
+
+    public class GuardarRecibo extends AsyncTask<Object, Void, String>{
+
+        @Override
+        protected String doInBackground(final Object... params) {
+            Context ctx = (Context) params[0];
+            final MSendRecibo recibo = (MSendRecibo) params[1];
+
+            Log.e("Recibo", Miscellaneous.ConvertToJson(recibo));
+            final String id_recibo = (String) params[2];
+
+            DBhelper dBhelper = new DBhelper(ctx);
+            final SQLiteDatabase db = dBhelper.getWritableDatabase();
+            SessionManager session = new SessionManager(ctx);
+
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_RECIBOS, ctx).create(ManagerInterface.class);
+
+
+            Call<MResRecibo> call = api.guardarRecibo(recibo,
+                    "Bearer "+ session.getUser().get(7));
+
+            call.enqueue(new Callback<MResRecibo>() {
+                @Override
+                public void onResponse(Call<MResRecibo> call, Response<MResRecibo> response) {
+                    Log.e("Recibo", "Code: "+response.code());
+                    switch (response.code()){
+                        case 200:
+                            ContentValues cv = new ContentValues();
+                            cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            cv.put("estatus", 1);
+                            db.update(TBL_RECIBOS, cv, "_id = ?", new String[]{id_recibo});
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MResRecibo> call, Throwable t) {
+
+                }
+            });
+
+            return "";
+        }
+    }
+
+    public class GuardarSoporte extends AsyncTask<Object, Void, String>{
+
+        @Override
+        protected String doInBackground(final Object... params) {
+            Context ctx = (Context) params[0];
+            final MSendSoporte soporte = (MSendSoporte) params[1];
+
+            Log.e("Soporte", Miscellaneous.ConvertToJson(soporte));
+            final String id_soporte = (String) params[2];
+
+            DBhelper dBhelper = new DBhelper(ctx);
+            final SQLiteDatabase db = dBhelper.getWritableDatabase();
+            SessionManager session = new SessionManager(ctx);
+
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
+
+
+            Call<MResSoporte> call = api.guardarTicket(soporte,
+                    "Bearer "+ session.getUser().get(7));
+
+            call.enqueue(new Callback<MResSoporte>() {
+                @Override
+                public void onResponse(Call<MResSoporte> call, Response<MResSoporte> response) {
+                    Log.e("Soporte", "Code: "+response.code());
+                    switch (response.code()){
+                        case 200:
+                            MResSoporte res = response.body();
+                            ContentValues cv = new ContentValues();
+                            cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            cv.put("folio_solicitud", res.getFolio());
+                            cv.put("estatus_ticket", "ABIERTO");
+                            cv.put("estatus_envio", 1);
+                            int i = db.update(TBL_SOPORTE, cv, "_id = ?", new String[]{id_soporte});
+                            Log.e("Actualizado", "Vlues: "+i);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MResSoporte> call, Throwable t) {
+
+                }
+            });
+
+            return "";
+        }
+    }
+
+    public class GuardarCancelGestiones extends AsyncTask<Object, Void, String>{
+
+        @Override
+        protected String doInBackground(Object... params) {
+            Context context = (Context) params[0];
+            String tipoGestion = (String) params[1];
+            String tipoPrestamo = (String) params[2];
+            String idRespuesta = (String) params[3];
+            String comentario = (String) params[4];
+            final String _id = (String) params[5];
+
+            DBhelper dBhelper = new DBhelper(context);
+            final SQLiteDatabase db = dBhelper.getWritableDatabase();
+            SessionManager session = new SessionManager(context);
+
+            String sql = "";
+            if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE"))
+                sql = "SELECT i.fecha_inicio, i.fecha_fin, i.id_prestamo, p.num_solicitud, 'VIGENTE' AS tipo, 1 AS tipo_gestion FROM " + TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = i.id_prestamo WHERE i._id = ?";
+            else if(tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE"))
+                sql = "SELECT g.fecha_inicio, g.fecha_fin, g.id_prestamo, p.num_solicitud, 'VIGENTE' AS tipo, 2 AS tipo_gestion FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = g.id_prestamo WHERE g._id = ?";
+            else if(tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA"))
+                sql = "SELECT i.fecha_inicio, i.fecha_fin, i.id_prestamo, p.num_solicitud, 'VENCIDA' AS tipo, 1 AS tipo_gestion FROM " + TBL_RESPUESTAS_IND_V_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = i.id_prestamo WHERE i._id = ?";
+            else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA"))
+                sql = "SELECT g.fecha_inicio, g.fecha_fin, g.id_prestamo, p.num_solicitud, 'VENCIDA' AS tipo, 2 AS tipo_gestion FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = g.id_prestamo WHERE g._id = ?";
+            Cursor row = db.rawQuery(sql, new String[]{idRespuesta});
+
+            if (row.getCount() > 0){
+                row.moveToFirst();
+                try {
+
+                    JSONObject item = new JSONObject();
+                    item.put("fecha_inicio_gestion", row.getString(0));
+                    item.put("fecha_fin_gestion", row.getString(1));
+                    item.put("tipo_gestion", row.getInt(5));
+
+                    RequestBody idPrestamoBody = RequestBody.create(MultipartBody.FORM, row.getString(2));
+                    RequestBody numSolicitudBody = RequestBody.create(MultipartBody.FORM, row.getString(3));
+                    RequestBody respuestaBody = RequestBody.create(MultipartBody.FORM, item.toString());
+                    RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, row.getString(4));
+                    RequestBody comentarioBody = RequestBody.create(MultipartBody.FORM, comentario.trim().toUpperCase());
+                    RequestBody fechaSoliBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                    ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, context).create(ManagerInterface.class);
+
+                    Call<MSolicitudCancelacion> call = api.solicitudCancelar("Bearer "+ session.getUser().get(7),
+                            idPrestamoBody,
+                            numSolicitudBody,
+                            respuestaBody,
+                            tipoBody,
+                            comentarioBody,
+                            fechaSoliBody);
+
+                    call.enqueue(new Callback<MSolicitudCancelacion>() {
+                        @Override
+                        public void onResponse(Call<MSolicitudCancelacion> call, Response<MSolicitudCancelacion> response) {
+                            MSolicitudCancelacion resp = response.body();
+                            switch (response.code()){
+                                case 200:
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("id_solicitud", resp.getIdCancelacion());
+                                    cv.put("estatus", "PENDIENTE");
+                                    db.update(TBL_CANCELACIONES, cv, "_id = ?", new String[]{String.valueOf(_id)});
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MSolicitudCancelacion> call, Throwable t) {
+
+                        }
+                    });
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            row.close();
             return "";
         }
     }

@@ -2,10 +2,8 @@ package com.sidert.sidertmovil.fragments.dialogs;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -23,22 +21,16 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.sidert.sidertmovil.MainActivity;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
-import com.sidert.sidertmovil.utils.WebServicesRoutes;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;

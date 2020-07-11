@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -40,7 +41,6 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,9 +56,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_cargo_integrante;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_originacion_gpo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.utils.Constants;
@@ -78,22 +76,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
-import moe.feng.common.stepperview.VerticalStepperItemView;
 
 import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
@@ -108,18 +103,16 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONT
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.camara;
-import static com.sidert.sidertmovil.utils.Constants.cash;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
 public class AgregarIntegrante extends AppCompatActivity implements dialog_registro_integrante.OnCompleteListener {
 
     private Context ctx;
-    private Toolbar TBmain;
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private Calendar myCalendar;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private Validator validator = new Validator();
     private ValidatorTextView validatorTV = new ValidatorTextView();
 
@@ -129,7 +122,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private String[] _tipo_identificacion;
     private String[] _civil;
     private String[] _tipo_casa;
-    private String[] _casa_familiar;
     private String[] _medio_contacto;
     private String[] _parentesco;
 
@@ -331,12 +323,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         _estudios = getResources().getStringArray(R.array.nivel_estudio);
         _civil = getResources().getStringArray(R.array.estado_civil);
         _tipo_casa = getResources().getStringArray(R.array.tipo_casa_cli);
-        _casa_familiar = getResources().getStringArray(R.array.casa_familiar);
+        String[] _casa_familiar = getResources().getStringArray(R.array.casa_familiar);
         _medio_contacto = getResources().getStringArray(R.array.entero_nosotros);
         _parentesco = getResources().getStringArray(R.array.casa_familiar_aval);
         _tipo_identificacion = getResources().getStringArray(R.array.tipo_identificacion);
 
-        TBmain = findViewById(R.id.TBmain);
+        Toolbar TBmain = findViewById(R.id.TBmain);
         setSupportActionBar(TBmain);
         //=================================  DATOS PERSONALES  =====================================
         tvCargo             = findViewById(R.id.tvCargo);
@@ -705,6 +697,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0){
@@ -973,15 +966,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         else
                             db.update(DOMICILIO_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                     }else {
-                        tvColoniaCli.setText("No se encontró información");
-                        tvMunicipioCli.setText("No se encontró información");
-                        tvEstadoCli.setText("No se encontró información");
+                        tvColoniaCli.setText(R.string.not_found);
+                        tvMunicipioCli.setText(R.string.not_found);
+                        tvEstadoCli.setText(R.string.not_found);
                     }
                     row.close();
                 }else {
-                    tvColoniaCli.setText("No se encontró información");
-                    tvMunicipioCli.setText("No se encontró información");
-                    tvEstadoCli.setText("No se encontró información");
+                    tvColoniaCli.setText(R.string.not_found);
+                    tvMunicipioCli.setText(R.string.not_found);
+                    tvEstadoCli.setText(R.string.not_found);
                 }
             }
         });
@@ -1039,7 +1032,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             db.update(NEGOCIO_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                     }
                     else
-                        etNombreNeg.setError("Este campo es requerido");
+                        etNombreNeg.setError(getResources().getString(R.string.campo_requerido));
                 }
             }
         });
@@ -1057,7 +1050,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             db.update(NEGOCIO_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                     }
                     else
-                        etCalleNeg.setError("Este campo es requerido");
+                        etCalleNeg.setError(getResources().getString(R.string.campo_requerido));
                 }
             }
         });
@@ -1151,13 +1144,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         else
                             db.update(NEGOCIO_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                     }else {
-                        tvColoniaNeg.setText("No se encontró información");
-                        tvMunicipioNeg.setText("No se encontró información");
+                        tvColoniaNeg.setText(R.string.not_found);
+                        tvMunicipioNeg.setText(R.string.not_found);
                     }
                     row.close();
                 }else {
-                    tvColoniaNeg.setText("No se encontró información");
-                    tvMunicipioNeg.setText("No se encontró información");
+                    tvColoniaNeg.setText(R.string.not_found);
+                    tvMunicipioNeg.setText(R.string.not_found);
                 }
             }
         });
@@ -1285,7 +1278,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             db.update(NEGOCIO_INTEGRANTE_T, cv, "id_integrante = ?", new String[]{id_integrante});
                     }
                     else
-                        etReferenciNeg.setError("Este campo es requerido");
+                        etReferenciNeg.setError(getResources().getString(R.string.campo_requerido));
                 }
             }
         });
@@ -1413,9 +1406,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             }
         });
         etCredSolicitado.addTextChangedListener(new TextWatcher() {
-            private final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
-            private Pattern pattern;
-            private Matcher matcher;
+            final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
+            Pattern pattern;
+            Matcher matcher;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -2276,39 +2269,37 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             Calendar cal = Calendar.getInstance();
             cal.setTime(strDate);
             ContentValues cv;
-            switch (campo){
-                case "fechaNacCli":
-                    tvFechaNacCli.setError(null);
-                    tvFechaNacCli.setText(date);
-                    tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
-                    HashMap<Integer, String> params = new HashMap<>();
+            if (campo.equals("fechaNacCli")) {
+                tvFechaNacCli.setError(null);
+                tvFechaNacCli.setText(date);
+                tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                HashMap<Integer, String> params = new HashMap<>();
 
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                params.put(0, etNombreCli.getText().toString());
+                params.put(1, etApPaternoCli.getText().toString());
+                params.put(2, etApMaternoCli.getText().toString());
+                params.put(3, tvFechaNacCli.getText().toString());
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
-                    else
-                        params.put(5,"");
+                if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
+                    params.put(5, tvEstadoNacCli.getText().toString().trim());
+                else
+                    params.put(5, "");
 
-                    cv = new ContentValues();
-                    cv.put("fecha_nacimiento",tvFechaNacCli.getText().toString().trim());
-                    cv.put("edad",tvEdadCli.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
-                    else
-                        db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
-                    tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                    break;
+                cv = new ContentValues();
+                cv.put("fecha_nacimiento", tvFechaNacCli.getText().toString().trim());
+                cv.put("edad", tvEdadCli.getText().toString().trim());
+                if (ENVIROMENT)
+                    db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
+                else
+                    db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
+                tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
             }
 
 
@@ -2360,8 +2351,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ContentValues cv = new ContentValues();
                 if (!latitud.isEmpty() && !longitud.isEmpty()){
                     mapCli.setVisibility(View.VISIBLE);
-                    cv.put("latitud",String.valueOf(latitud));
-                    cv.put("longitud",String.valueOf(longitud));
+                    cv.put("latitud", latitud);
+                    cv.put("longitud", longitud);
                     Ubicacion(Double.parseDouble(latitud), Double.parseDouble(longitud));
                 }
                 else{
@@ -2380,7 +2371,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             }
         });
-        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
         String provider;
@@ -2419,8 +2411,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ContentValues cv = new ContentValues();
                 if (!latitud.isEmpty() && !longitud.isEmpty()){
                     mapNeg.setVisibility(View.VISIBLE);
-                    cv.put("latitud",String.valueOf(latitud));
-                    cv.put("longitud",String.valueOf(longitud));
+                    cv.put("latitud", latitud);
+                    cv.put("longitud", longitud);
                     UbicacionNeg(Double.parseDouble(latitud), Double.parseDouble(longitud));
                 }
                 else{
@@ -2439,7 +2431,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             }
         });
-        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
         String provider;
@@ -2559,16 +2552,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         Cursor row = dBhelper.getIntegranteOri(id_credito, id_integrante);
         row.moveToFirst();
 
-        Log.e("personales", row.getString(20));
-        Log.e("telefonos", row.getString(26));
-        Log.e("domicilio", row.getString(44));
-        Log.e("negocio", row.getString(67));
-        Log.e("conyuge", row.getString(76));
-        Log.e("otros", row.getString(85));
-        Log.e("documentos", row.getString(92));
-
-
-
         if (row.getInt(20) == 1 &&
         row.getInt(26) == 1 &&
         row.getInt(44) == 1 &&
@@ -2586,16 +2569,16 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
         switch (row.getInt(2)){
             case 1:
-                tvCargo.setText("PRESIDENTE");
+                tvCargo.setText(getResources().getString(R.string.presidente).toUpperCase());
                 break;
             case 2:
-                tvCargo.setText("TESORERO");
+                tvCargo.setText(getResources().getString(R.string.tesorera).toUpperCase());
                 break;
             case 3:
-                tvCargo.setText("SECRETARIO");
+                tvCargo.setText(getResources().getString(R.string.secretaria).toUpperCase());
                 break;
             case 4:
-                tvCargo.setText("INTEGRANTE");
+                tvCargo.setText(getResources().getString(R.string.integrante).toUpperCase());
                 break;
         }
 
@@ -2662,9 +2645,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 tvMunicipioCli.setText(rowColonia.getString(4));
                 tvEstadoCli.setText(rowColonia.getString(1));
             } else {
-                tvColoniaCli.setText("No se encontró información");
-                tvMunicipioCli.setText("No se encontró información");
-                tvEstadoCli.setText("No se encontró información");
+                tvColoniaCli.setText(R.string.not_found);
+                tvMunicipioCli.setText(R.string.not_found);
+                tvEstadoCli.setText(R.string.not_found);
             }
             rowColonia.close();
         }
@@ -2710,8 +2693,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 tvMunicipioNeg.setText(rowColonia.getString(4));
 
             } else {
-                tvColoniaNeg.setText("No se encontró información");
-                tvMunicipioNeg.setText("No se encontró información");
+                tvColoniaNeg.setText(R.string.not_found);
+                tvMunicipioNeg.setText(R.string.not_found);
             }
             rowColonia.close();
         }
@@ -2815,64 +2798,64 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!is_edit){
             invalidateOptionsMenu();
 
-            tvFechaNacCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             for(int i = 0; i < rgGeneroCli.getChildCount(); i++){
                 ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(false);
             }
-            tvEstadoNacCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCurpIdCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
-            tvTipoIdentificacion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNumIdentifCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvEstudiosCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvEstadoCivilCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCurpIdCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvTipoIdentificacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNumIdentifCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstudiosCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoCivilCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             for(int i = 0; i < rgBienes.getChildCount(); i++){
                 ((RadioButton) rgBienes.getChildAt(i)).setEnabled(false);
             }
 
-            etTelCasaCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCelularCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etTelMensCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etTelCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCelularCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelMensCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
-            etCalleCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNoExtCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNoIntCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etManzanaCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etLoteCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCpCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvTipoCasaCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvCasaFamiliar.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etTiempoSitio.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etReferenciaCli.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etCalleCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvTipoCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvCasaFamiliar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTiempoSitio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferenciaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
-            etNombreNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCalleNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNoExtNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNoIntNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etManzanaNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etLoteNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCpNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvActEconomicaNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etAntiguedadNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etIngMenNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etOtrosIngNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etGastosSemNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etReferenciNeg.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvActEconomicaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etAntiguedadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etIngMenNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOtrosIngNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosSemNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
-            etNombreCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etApPaternoCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etApMaternoCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            tvOcupacionCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etCelularCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etIngresosCony.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApPaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApMaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvOcupacionCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etIngresosCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
-            tvMedioContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etEmail.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            tvMedioContacto.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etEmail.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             for(int i = 0; i < rgEstatus.getChildCount(); i++){
                 ((RadioButton) rgEstatus.getChildAt(i)).setEnabled(false);
             }
-            etCredSolicitado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etCredSolicitado.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             cbCasaReuniones.setEnabled(false);
         }
 
@@ -3304,8 +3287,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     datos_conyuge = true;
                 boolean datos_otros = saveDatosOtros();
                 boolean datos_documentos = saveDocumentos();
-
-                Log.e("is_save", String.valueOf(datos_personales)+" "+String.valueOf(datos_telefonicos)+" "+String.valueOf(datos_domiclio)+" "+String.valueOf(datos_negocio)+" "+String.valueOf(datos_conyuge)+" "+String.valueOf(datos_otros)+" "+String.valueOf(datos_documentos));
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
                 datos_conyuge && datos_otros && datos_documentos){
                     ContentValues cv = new ContentValues();
@@ -3346,7 +3327,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ContentValues cv = null;
+        ContentValues cv;
         switch (requestCode) {
             case Constants.REQUEST_CODE_ESTADO_NAC:
                 if (resultCode == Constants.REQUEST_CODE_ESTADO_NAC) {
@@ -3613,7 +3594,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             dialog.dismiss();
                         }
                     });
-            solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            Objects.requireNonNull(solicitud.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
             solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             solicitud.setCancelable(true);
             solicitud.show();

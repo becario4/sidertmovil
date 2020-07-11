@@ -1,18 +1,16 @@
 package com.sidert.sidertmovil.activities;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 
-public class AcercaDe extends AppCompatActivity {
+import java.util.Objects;
 
-    private Toolbar tbMain;
+public class AcercaDe extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,11 +18,11 @@ public class AcercaDe extends AppCompatActivity {
         setContentView(R.layout.activity_acerca_de);
 
         TextView tvAboutSIDERT   = findViewById(R.id.tvAboutSIDERT);
-        tbMain              = findViewById(R.id.tbMain);
+        Toolbar tbMain = findViewById(R.id.tbMain);
 
 
         setSupportActionBar(tbMain);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         if (getIntent() != null && getIntent().getBooleanExtra("FLAG",false)) {
             setTitle("Aviso de privacidad");
@@ -38,10 +36,8 @@ public class AcercaDe extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

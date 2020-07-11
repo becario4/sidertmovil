@@ -20,8 +20,13 @@ public class MyCurrentListener implements LocationListener {
     public void onLocationChanged(Location location) {
         location.getLatitude();
         location.getLongitude();
-        Log.v("LatLon", location.getLatitude()+" "+location.getLongitude());
-        event.onComplete(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()));
+        try {
+            event.onComplete(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()));
+        }
+        catch (Exception e){
+            event.onComplete("0", "0");
+        }
+
     }
 
     @Override

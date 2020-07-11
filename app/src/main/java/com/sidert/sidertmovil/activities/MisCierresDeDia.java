@@ -36,9 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 

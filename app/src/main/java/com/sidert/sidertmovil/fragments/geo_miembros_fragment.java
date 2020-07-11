@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 
 import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NUM_SOLICITUD;
-import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_MIEMBRO_GEO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;

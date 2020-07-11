@@ -11,10 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.MFichaContestada;
-import com.sidert.sidertmovil.models.ModelFichaContestada;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
 
 import java.util.List;
 

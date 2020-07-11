@@ -11,6 +11,7 @@ public class NameFragments {
     public final static String HELP                  = "help_fragment";
     public final static String ABOUT                 = "about_fragment";
     public final static String SOLICITUD_CREDITO     = "solicitud_credito_fragment";
+    public final static String MESA_AYUDA            = "mesa_ayuda_fragment";
 
     public final static String COMPLAINT_TEMP         = "fragment_complaint_temp";
 
@@ -27,7 +28,6 @@ public class NameFragments {
     public final static String REPORTE_PAGOS_IND    = "ri_pagos_fragment";
     public final static String FINANCIALINFO        = "financial_info_fragment";
     public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
-    public final static String ERASE_TABLES         = "erase_table_fragment";
     public final static String SYNCHRONIZE_DB       = "synchronize_db_fragment";
 
     //TODO: Dialogos
@@ -50,6 +50,7 @@ public class NameFragments {
     public final static String DIALOGCARGOINTEGRANTE            = "dialog_cargo_integrante";
     public final static String DIALOGCODIGOOXXO                 = "dialog_generar_codigo_oxxo";
     public final static String DIALOGCANCELGESTION              = "dialog_cancel_gestion";
+    public final static String DIALOGIMPRIMIRRECIBOS            = "dialog_imprimir_recibos";
 
     //TODO: Geolocalizacion
     public final static String GEO_CLIENTE           = "geo_cliente_fragment";

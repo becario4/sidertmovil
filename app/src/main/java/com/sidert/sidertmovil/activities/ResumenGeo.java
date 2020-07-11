@@ -5,16 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.SessionManager;
-
-import org.w3c.dom.Text;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;

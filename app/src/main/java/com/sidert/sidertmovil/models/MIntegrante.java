@@ -46,6 +46,10 @@ public class MIntegrante implements Serializable {
     @Expose
     private String clave;
 
+    @SerializedName("curp")
+    @Expose
+    private String curp;
+
     public Integer getId() {
         return id;
     }
@@ -140,5 +144,13 @@ public class MIntegrante implements Serializable {
 
     public void setClave(String clave) {
         this.clave = clave;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 }

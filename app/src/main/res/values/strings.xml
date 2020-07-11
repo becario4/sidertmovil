@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.6</string>
+    <string name="app_version">2.4.7</string>
+    <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
@@ -20,6 +21,7 @@
     <string name="presidente">Presidente</string>
     <string name="tesorera">Tesorera</string>
     <string name="secretaria">Secretaria</string>
+    <string name="integrante">Integrante</string>
 
     <string name="filtros">Filtros</string>
 
@@ -278,6 +280,11 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
 
     <!-- TODO: Arrays -->
+    <string-array name="sexo">
+        <item>MUJER</item>
+        <item>HOMBRE</item>
+    </string-array>
+
     <string-array name="contacto_cliente">
         <item>SI</item>
         <item>NO</item>
@@ -387,6 +394,19 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>CÉDULA PROFESIONAL</item>         <!--2-->
     </string-array>
 
+    <string-array name="destino_credito">
+        <item>RE-INVERSIÓN</item>            <!--0-->
+        <item>OTRO</item>                    <!--1-->
+    </string-array>
+
+    <string-array name="medios_pago">
+        <item>DEPÓSITOS BANCARIOS</item>     <!--0-->
+        <item>TRANSFERENCIAS</item>          <!--1-->
+        <item>CHEQUE</item>                  <!--2-->
+        <item>EFECTIVO</item>                <!--3-->
+        <item>OTROS</item>                   <!--4-->
+    </string-array>
+
     <string-array name="cargo">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>PRESIDENTE</item>            <!--1-->
@@ -413,9 +433,21 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>OTRO</item>                  <!--3-->
     </string-array>
 
+    <string-array name="clasificacion_riesgo">
+        <item>ALTO</item>           <!--0-->
+        <item>MEDIO</item>          <!--1-->
+        <item>BAJO</item>           <!--2-->
+    </string-array>
+
     <string-array name="tipo_casa_aval">
         <item>CASA PROPIA</item>           <!--1-->
         <item>CASA FAMILIAR</item>         <!--2-->
+    </string-array>
+
+    <string-array name="estatus_ticket">
+        <item>ESPERA</item>           <!--1-->
+        <item>ABIERTO</item>          <!--2-->
+        <item>CERRADO</item>          <!--3-->
     </string-array>
 
     <string-array name="tipo_casa">
@@ -598,6 +630,27 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="calle">Calle</string>
+    <string name="ocupacion">Ocupación</string>
+    <string name="nombres">Nombre(s)</string>
+    <string name="apellido_paterno">Apellido Paterno</string>
+    <string name="apellido_materno">Apellido Materno</string>
+    <string name="no_ext">No. Ext</string>
+    <string name="manzana">Manz.</string>
+    <string name="no_int">No. Int.</string>
+    <string name="lote">Lote</string>
+    <string name="codigo_postal">Código Postal</string>
+    <string name="colonia">Colonia</string>
+    <string name="municipio">Municipio</string>
+    <string name="estado">Estado</string>
+    <string name="ingresos">Ingresos</string>
+    <string name="ingreso_mensual">Ingreso Mensual</string>
+    <string name="gastos">Gastos</string>
+    <string name="gasto_mensual">Gasto Mensual</string>
+    <string name="telefonos">Teléfonos</string>
+    <string name="telefono_casa">Teléfono Casa</string>
+    <string name="telefono_celular">Teléfono Celular</string>
+    <string name="clasificacion_riesgo">Clasificación de Riesgo</string>
 
 
 </resources>

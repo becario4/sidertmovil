@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
+import com.sidert.sidertmovil.activities.GenerarCurp;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
@@ -186,7 +186,8 @@ public class dialog_date_picker extends DialogFragment {
                                 }).show();
                     }
 
-                } else {
+                }
+                else {
                     if (date2.before(date1) || date2.equals(date1)) {
                         if (identifer == 2){
                             if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 71){
@@ -282,6 +283,17 @@ public class dialog_date_picker extends DialogFragment {
                         else if(identifer == 12){
                             ReporteInicioSesion inicioSesion = (ReporteInicioSesion) getActivity();
                             inicioSesion.setDate(sdf.format(myCalendar.getTime()));
+                            dismiss();
+                        }
+                        else if(identifer == 13){
+                            GenerarCurp generarCurp = (GenerarCurp) getActivity();
+                            generarCurp.setDate(sdf.format(myCalendar.getTime()));
+                            dismiss();
+                        }
+                        else if(identifer == 14){
+                            Intent i = new Intent();
+                            i.putExtra(DATE,sdf.format(myCalendar.getTime()));
+                            getTargetFragment().onActivityResult(123,321,i);
                             dismiss();
                         }
                         else {

@@ -4,7 +4,6 @@ package com.sidert.sidertmovil.fragments;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,9 +22,7 @@ import com.sidert.sidertmovil.adapters.ImpressionsAdapter;
 import com.sidert.sidertmovil.adapters.adapter_reimpresiones;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ImpressionsFields;
-import com.sidert.sidertmovil.models.MReimpresion;
 import com.sidert.sidertmovil.models.Reimpresion;
-import com.sidert.sidertmovil.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -34,7 +31,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
@@ -42,8 +38,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
 
@@ -235,16 +229,7 @@ public class impression_history_fragment extends Fragment {
         rvHistory.setAdapter(null);
         Cursor row;
 
-        String sql;
-        if(ENVIROMENT)
-            sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi1 LEFT JOIN " +
-                    TBL_PRESTAMOS_IND + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
-                    TBL_CARTERA_IND + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%'" +
-                    " UNION SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi2 LEFT JOIN " +
-                    TBL_PRESTAMOS_GPO + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%') AS impresiones ORDER BY folio DESC";
-        else
-            sql = "SELECT * FROM (SELECT rim1.*,ci.nombre, CASE (SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE + " AS rim WHERE rim.folio = rim1.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim1 LEFT JOIN " +
+        String sql = "SELECT * FROM (SELECT rim1.*,ci.nombre, CASE (SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim1.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim1 LEFT JOIN " +
                     TBL_PRESTAMOS_IND_T + " AS pi ON rim1.num_prestamo = pi.num_prestamo LEFT JOIN "+
                     TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE rim1.num_prestamo LIKE '%-L%' AND rim1.tipo_reimpresion = (SELECT i3.tipo_reimpresion FROM " + TBL_REIMPRESION_VIGENTE_T + " AS i3 WHERE i3.folio = rim1.folio ORDER BY i3.tipo_reimpresion DESC LIMIT 1)" +
                     " UNION SELECT rim2.*, cg.nombre, CASE(SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim2.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim2 LEFT JOIN " +

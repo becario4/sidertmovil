@@ -18,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -51,7 +50,6 @@ import static com.sidert.sidertmovil.utils.Constants.warning;
 public class CierreDeDia extends AppCompatActivity {
 
     private Context ctx;
-    private Toolbar tbMain;
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -81,7 +79,7 @@ public class CierreDeDia extends AppCompatActivity {
 
         session = new SessionManager(ctx);
 
-        tbMain = findViewById(R.id.tbMain);
+        Toolbar tbMain = findViewById(R.id.tbMain);
 
         TextView tvNumPrestamo = findViewById(R.id.tvNumPrestamo);
         TextView tvNombre       = findViewById(R.id.tvNombre);
@@ -106,7 +104,7 @@ public class CierreDeDia extends AppCompatActivity {
         tvPagoRealizado.setText("$ "+item.getPago());
         tvBanco.setText("BANAMEX722");
 
-        isEdit = (item.getEstatus() > 0)?false:true;
+        isEdit = item.getEstatus() <= 0;
 
         if (!isEdit) {
             invalidateOptionsMenu();

@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NUM_SOLICITUD;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;

@@ -7,23 +7,25 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_integrantes;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_imprimir_recibos;
 import com.sidert.sidertmovil.models.MIntegrante;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.NameFragments.DIALOGIMPRIMIRRECIBOS;
 
 public class Integrantes extends AppCompatActivity {
 
@@ -83,7 +85,7 @@ public class Integrantes extends AppCompatActivity {
                 item.setTipo(row.getString(9));
                 item.setMontoPrestamo(row.getString(10));
                 item.setMontoRequerido(row.getString(11));
-                item.setPrestamoId(row.getInt(15));
+                item.setPrestamoId(row.getInt(1));
                 data.add(item);
                 row.moveToNext();
             }
@@ -91,7 +93,12 @@ public class Integrantes extends AppCompatActivity {
             adapter = new adapter_integrantes(ctx, data, new adapter_integrantes.Event() {
                 @Override
                 public void IntegranteOnClick(MIntegrante item) {
-
+                    /*dialog_imprimir_recibos dialogRoot = new dialog_imprimir_recibos();
+                    Bundle b = new Bundle();
+                    b.putString(ID_INTEGRANTE, String.valueOf(item.getId()));
+                    b.putString(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
+                    dialogRoot.setArguments(b);
+                    dialogRoot.show(getSupportFragmentManager(), DIALOGIMPRIMIRRECIBOS);*/
                 }
             });
             rvIntegrantes.setAdapter(adapter);

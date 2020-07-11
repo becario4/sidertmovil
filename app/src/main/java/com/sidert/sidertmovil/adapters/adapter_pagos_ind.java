@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MPago;
-import com.sidert.sidertmovil.models.ModeloIndividual;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.List;

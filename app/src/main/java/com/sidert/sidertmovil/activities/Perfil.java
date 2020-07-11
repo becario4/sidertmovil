@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +17,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.SessionManager;
-
-import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

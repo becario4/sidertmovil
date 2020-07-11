@@ -37,8 +37,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_GPO;
-import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO;
-import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO_INT;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_GPO;
 import static com.sidert.sidertmovil.utils.NameFragments.VENCIDA_GPO;
 

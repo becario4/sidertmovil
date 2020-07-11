@@ -3,7 +3,6 @@ package com.sidert.sidertmovil.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.List;
 
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class adapter_inicio_sesion extends RecyclerView.Adapter<adapter_inicio_sesion.ViewHolder> {

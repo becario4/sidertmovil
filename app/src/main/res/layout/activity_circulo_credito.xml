@@ -43,4 +43,5 @@
         android:layout_margin="16dp"
         app:backgroundTint="@color/yellow"
         android:src="@drawable/ic_add_black"/>
+    <include layout="@layout/view_recibos" />
 </android.support.design.widget.CoordinatorLayout>

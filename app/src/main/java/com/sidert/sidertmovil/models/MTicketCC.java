@@ -4,46 +4,58 @@ import java.io.Serializable;
 
 public class MTicketCC implements Serializable {
 
-    private String _id;
-    private String asesor_id;
-    private String nombre_cliente;
-    private String tipo_impresion;
+    private String id;
+    private String prestamoId;
+    private String asesorId;
+    private String tipoRecibo;
+    private String tipoImpresion;
     private int folio;
-    private String fecha_impresion;
-    private String fecha_envio;
-    private int tipo_recibo;
+    private String monto;
+    private String clave;
+    private String nombreCliente;
+    private String fechaImpresion;
+    private String fechaEnvio;
     private int estatus;
+    private String curp;
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getAsesor_id() {
-        return asesor_id;
+    public String getPrestamoId() {
+        return prestamoId;
     }
 
-    public void setAsesor_id(String asesor_id) {
-        this.asesor_id = asesor_id;
+    public void setPrestamoId(String prestamoId) {
+        this.prestamoId = prestamoId;
     }
 
-    public String getNombre_cliente() {
-        return nombre_cliente;
+    public String getAsesorId() {
+        return asesorId;
     }
 
-    public void setNombre_cliente(String nombre_cliente) {
-        this.nombre_cliente = nombre_cliente;
+    public void setAsesorId(String asesorId) {
+        this.asesorId = asesorId;
     }
 
-    public String getTipo_impresion() {
-        return tipo_impresion;
+    public String getTipoRecibo() {
+        return tipoRecibo;
     }
 
-    public void setTipo_impresion(String tipo_impresion) {
-        this.tipo_impresion = tipo_impresion;
+    public void setTipoRecibo(String tipoRecibo) {
+        this.tipoRecibo = tipoRecibo;
+    }
+
+    public String getTipoImpresion() {
+        return tipoImpresion;
+    }
+
+    public void setTipoImpresion(String tipoImpresion) {
+        this.tipoImpresion = tipoImpresion;
     }
 
     public int getFolio() {
@@ -54,35 +66,59 @@ public class MTicketCC implements Serializable {
         this.folio = folio;
     }
 
-    public String getFecha_impresion() {
-        return fecha_impresion;
+    public String getMonto() {
+        return monto;
     }
 
-    public void setFecha_impresion(String fecha_impresion) {
-        this.fecha_impresion = fecha_impresion;
+    public void setMonto(String monto) {
+        this.monto = monto;
     }
 
-    public String getFecha_envio() {
-        return fecha_envio;
+    public String getClave() {
+        return clave;
     }
 
-    public void setFecha_envio(String fecha_envio) {
-        this.fecha_envio = fecha_envio;
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getNombreCliente() {
+        return nombreCliente;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
+    public String getFechaImpresion() {
+        return fechaImpresion;
+    }
+
+    public void setFechaImpresion(String fechaImpresion) {
+        this.fechaImpresion = fechaImpresion;
+    }
+
+    public String getFechaEnvio() {
+        return fechaEnvio;
+    }
+
+    public void setFechaEnvio(String fechaEnvio) {
+        this.fechaEnvio = fechaEnvio;
     }
 
     public int getEstatus() {
         return estatus;
     }
 
-    public int getTipo_recibo() {
-        return tipo_recibo;
-    }
-
-    public void setTipo_recibo(int tipo_recibo) {
-        this.tipo_recibo = tipo_recibo;
-    }
-
     public void setEstatus(int estatus) {
         this.estatus = estatus;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 }

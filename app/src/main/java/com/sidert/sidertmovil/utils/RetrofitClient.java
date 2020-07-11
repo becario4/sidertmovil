@@ -17,7 +17,9 @@ import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_FICHAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_LOGIN;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOPORTE;
 
 public class RetrofitClient {
 
@@ -64,6 +66,14 @@ public class RetrofitClient {
                 break;
             case CONTROLLER_CODIGOS:
                 base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_CODIGOS;
+                //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CODIGOS;
+                break;
+            case CONTROLLER_RECIBOS:
+                base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_RECIBOS;
+                //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CODIGOS;
+                break;
+            case CONTROLLER_SOPORTE:
+                base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_SOPORTE;
                 //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_CODIGOS;
                 break;
             case CONTROLLER_DENUNCIAS:

@@ -5,10 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -16,13 +13,9 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
-import com.sidert.sidertmovil.fragments.view_pager.answers_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.fichas_pendientes_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.geo_completadas_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.geo_pendientes_fragment;
-import com.sidert.sidertmovil.fragments.view_pager.route_fragment;
 import com.sidert.sidertmovil.utils.CustomViewPager;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 
 
 public class geolocalizacion_fragment extends Fragment {

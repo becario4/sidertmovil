@@ -13,7 +13,6 @@ import com.sewoo.jpos.printer.LKPrint;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MImpresion;
-import com.sidert.sidertmovil.models.OrderModel;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

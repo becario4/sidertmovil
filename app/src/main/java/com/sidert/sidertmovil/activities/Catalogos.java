@@ -4,7 +4,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,13 +25,12 @@ import java.util.ArrayList;
 
 public class Catalogos extends AppCompatActivity {
 
-    private Toolbar tbMain;
     public Context ctx;
     private RecyclerView mRecycler;
     private adapter_catalogos adapter;
     private String tipo_catalogo;
     private DBhelper dBhelper;
-    private SQLiteDatabase db;
+
     private SearchView searchView;
     private int request_code;
     private String extra = "";
@@ -42,7 +40,7 @@ public class Catalogos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalogos);
         ctx = this;
-        tbMain            = findViewById(R.id.tbMain);
+        Toolbar tbMain = findViewById(R.id.tbMain);
         mRecycler           = findViewById(R.id.mRecycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(ctx));
         setSupportActionBar(tbMain);
@@ -50,8 +48,6 @@ public class Catalogos extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         dBhelper = new DBhelper(ctx);
-        db = dBhelper.getWritableDatabase();
-
 
         Bundle data = getIntent().getExtras();
         if (data != null){
@@ -140,25 +136,14 @@ public class Catalogos extends AppCompatActivity {
                 Intent data = new Intent();
                 switch (item.getCatalogo()){
                     case Constants.ESTADOS:
-                        data.putExtra(Constants.ITEM, item);
-                        setResult(request_code, data);
-                        finish();
-                        break;
                     case Constants.OCUPACIONES:
-                        data.putExtra(Constants.ITEM, item);
-                        setResult(request_code, data);
-                        finish();
-                        break;
                     case Constants.COLONIAS:
-                        data.putExtra(Constants.ITEM, item);
-                        setResult(request_code, data);
-                        finish();
-                        break;
                     case Constants.SECTORES:
                         data.putExtra(Constants.ITEM, item);
                         setResult(request_code, data);
                         finish();
                         break;
+
                 }
             }
         });
@@ -211,11 +196,9 @@ public class Catalogos extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
+        if (item.getItemId() == android.R.id.home)
+            finish();
+
         return super.onOptionsItemSelected(item);
     }
 }

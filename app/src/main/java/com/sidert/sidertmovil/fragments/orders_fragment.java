@@ -2,39 +2,22 @@ package com.sidert.sidertmovil.fragments;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.OnClickListener;
-import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.ResumenGeo;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.fragments.view_pager.answers_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.fichas_pendientes_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.route_fragment;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-
-import java.util.HashMap;
-
 
 public class orders_fragment extends Fragment {
 

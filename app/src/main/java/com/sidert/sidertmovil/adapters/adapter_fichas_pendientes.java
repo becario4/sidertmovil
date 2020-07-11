@@ -1,12 +1,9 @@
 package com.sidert.sidertmovil.adapters;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,19 +17,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MCarteraGnral;
-import com.sidert.sidertmovil.models.ModeloFichaGeneral;
-import com.sidert.sidertmovil.models.ModeloIndividual;
-import com.sidert.sidertmovil.utils.Constants;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
 
 public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fichas_pendientes.ViewHolder> {
 

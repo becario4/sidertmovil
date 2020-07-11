@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,14 +38,9 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_cancel_gestion;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -63,7 +57,6 @@ import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
 import static com.sidert.sidertmovil.utils.Constants.GERENTE;
-import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.ID_RESPUESTA;
 import static com.sidert.sidertmovil.utils.Constants.LATITUD;
 import static com.sidert.sidertmovil.utils.Constants.LONGITUD;
@@ -562,8 +555,8 @@ public class VistaGestion extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_cancel_gestiones, menu);
-        if (!is_solicitud)
-            menu.getItem(0).setVisible(is_solicitud);
+        //if (!is_solicitud)
+            menu.getItem(0).setVisible(false);
 
         return true;
     }

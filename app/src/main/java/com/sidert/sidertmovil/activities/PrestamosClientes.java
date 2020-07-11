@@ -21,21 +21,15 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_prestamos;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MPrestamo;
-import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.ArrayList;
 
-import retrofit2.Call;
-
 import static com.sidert.sidertmovil.utils.Constants.CLAVE;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CODIGOS;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;

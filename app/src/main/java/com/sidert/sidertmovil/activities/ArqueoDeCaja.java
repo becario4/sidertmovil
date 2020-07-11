@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,15 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomWatcherTotal;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.Validator;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -36,14 +32,9 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 
 public class ArqueoDeCaja extends AppCompatActivity {
 
-    private Toolbar tbMain;
-
-    private Context ctx;
-
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
-    private EditText etNombreGrupo;
     private EditText etPagoRealizado;
     private EditText etBmil;
     private EditText etBquinientos;
@@ -51,7 +42,6 @@ public class ArqueoDeCaja extends AppCompatActivity {
     private EditText etBcien;
     private EditText etBcincuenta;
     private EditText etBveinte;
-    private EditText etTotalBilletes;
     private EditText etPdiez;
     private EditText etPcinco;
     private EditText etPdos;
@@ -59,11 +49,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
     private EditText etCcincuenta;
     private EditText etCveinte;
     private EditText etCdiez;
-    private EditText etTotalMonedas;
     private EditText etTotal;
-    private EditText etCambio;
-
-    private Validator validator;
 
     private String id_gestion;
 
@@ -71,13 +57,13 @@ public class ArqueoDeCaja extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arqueo_de_caja);
-        ctx     = getApplicationContext();
+        Context ctx = getApplicationContext();
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
-        tbMain              = findViewById(R.id.tbMain);
+        Toolbar tbMain = findViewById(R.id.tbMain);
 
-        etNombreGrupo       = findViewById(R.id.etNombreGrupo);
+        EditText etNombreGrupo = findViewById(R.id.etNombreGrupo);
         etPagoRealizado     = findViewById(R.id.etPagoRealizado);
         etBmil              = findViewById(R.id.etBmil);
         etBquinientos       = findViewById(R.id.etBquinientos);
@@ -85,7 +71,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
         etBcien             = findViewById(R.id.etBcien);
         etBcincuenta        = findViewById(R.id.etBcincuenta);
         etBveinte           = findViewById(R.id.etBveinte);
-        etTotalBilletes     = findViewById(R.id.etTotalBilletes);
+        EditText etTotalBilletes = findViewById(R.id.etTotalBilletes);
         etPdiez             = findViewById(R.id.etPdiez);
         etPcinco            = findViewById(R.id.etPcinco);
         etPdos              = findViewById(R.id.etPdos);
@@ -93,12 +79,12 @@ public class ArqueoDeCaja extends AppCompatActivity {
         etCcincuenta        = findViewById(R.id.etCcincuenta);
         etCveinte           = findViewById(R.id.etCveinte);
         etCdiez             = findViewById(R.id.etCdiez);
-        etTotalMonedas      = findViewById(R.id.etTotalMonedas);
+        EditText etTotalMonedas = findViewById(R.id.etTotalMonedas);
         etTotal             = findViewById(R.id.etTotal);
-        etCambio            = findViewById(R.id.etCambio);
+        EditText etCambio = findViewById(R.id.etCambio);
 
         setSupportActionBar(tbMain);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getResources().getString(R.string.arqueo_caja));
 
@@ -166,8 +152,6 @@ public class ArqueoDeCaja extends AppCompatActivity {
             etCdiez.setText(row.getString(14));
         }
         row.close();
-
-        validator = new Validator();
 
     }
 

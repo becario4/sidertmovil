@@ -3,25 +3,21 @@ package com.sidert.sidertmovil.fragments.view_pager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.RecuperacionGrupal;
 import com.sidert.sidertmovil.activities.VencidaGrupal;
 import com.sidert.sidertmovil.activities.VencidaIntegrante;
 import com.sidert.sidertmovil.adapters.adapter_integrantes;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MIntegrante;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.ArrayList;
 

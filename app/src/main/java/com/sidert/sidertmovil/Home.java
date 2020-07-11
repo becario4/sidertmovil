@@ -27,11 +27,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.fabric.sdk.android.Fabric;
 import com.crashlytics.android.Crashlytics;
-import com.sidert.sidertmovil.activities.AcercaDe;
 import com.sidert.sidertmovil.activities.CirculoCredito;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
@@ -40,12 +38,10 @@ import com.sidert.sidertmovil.activities.SolicitudCredito;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
-import com.sidert.sidertmovil.fragments.erase_table_fragment;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
+import com.sidert.sidertmovil.fragments.mesa_ayuda_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
-import com.sidert.sidertmovil.fragments.solicitud_credito_fragment;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
@@ -59,12 +55,12 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-//import io.fabric.sdk.android.Fabric;
-
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
+import static com.sidert.sidertmovil.utils.NameFragments.GEOLOCALIZACION;
+import static com.sidert.sidertmovil.utils.NameFragments.MESA_AYUDA;
 import static com.sidert.sidertmovil.utils.NameFragments.ORDERS;
 
 
@@ -209,36 +205,13 @@ public class Home extends AppCompatActivity{
                 case R.id.nvCartera:
                     setFragment(ORDERS, null);
                     break;
-                case R.id.NVsolicitudCredito:
-                    //setFragment(NameFragments.SOLICITUD_CREDITO, null);
+                case R.id.nvOriginacion:
                     Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
                     startActivity(i_solicitud);
-                    break;
-                /*case R.id.NVoriginacion:
-                    Intent i_originacion = new Intent(getApplicationContext(), OriginacionI.class);
-                    startActivity(i_originacion);
-                    break;*/
-                case R.id.NVsettings:
-                    Intent i_configuracion = new Intent(getApplicationContext(), Configuracion.class);
-                    startActivity(i_configuracion);
                     break;
                 case R.id.nvConfiguraciones:
                     Intent i_config = new Intent(getApplicationContext(), Configuracion.class);
                     startActivity(i_config);
-                    break;
-                case R.id.NVcomplaint:
-                    dialog_mailbox complaint = new dialog_mailbox();
-                    complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);
-                    break;
-                /*case R.id.NVhelp:
-                    //setFragment(fragments.ORDERS, null);
-                    break;*/
-                case R.id.NVabout:
-                    Intent i_about = new Intent(getApplicationContext(), AcercaDe.class);
-                    startActivity(i_about);
-                    break;
-                case R.id.NVlogPrint:
-                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.nvImpresiones:
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
@@ -246,24 +219,20 @@ public class Home extends AppCompatActivity{
                 case R.id.nvCC:
                     Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
                     startActivity(i_cc);
-                    //setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     break;
                 case R.id.nvRuta:
                     Intent i_ruta = new Intent(getApplicationContext(), TrackerAsesor.class);
                     startActivity(i_ruta);
                     break;
-                case R.id.NVeraseTable:
-                    setFragment(NameFragments.ERASE_TABLES, null);
-                    break;
-                case R.id.NVgeolocalizacion:
-                    setFragment(NameFragments.GEOLOCALIZACION, null);
-                    break;
                 case R.id.nvGeolocalizar:
-                    setFragment(NameFragments.GEOLOCALIZACION, null);
+                    setFragment(GEOLOCALIZACION, null);
                     break;
                 case R.id.nvLogin:
                     Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
                     startActivity(i_log_login);
+                    break;
+                case R.id.nvMesaAyuda:
+                    setFragment(MESA_AYUDA, null);
                     break;
                 default:
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
@@ -302,41 +271,22 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
-            case NameFragments.ERASE_TABLES:
-                if (!(current instanceof erase_table_fragment)){
-                    erase_table_fragment erase_table = new erase_table_fragment();
-                    erase_table.setArguments(extras);
-                    transaction.replace(R.id.FLmain, erase_table, NameFragments.ERASE_TABLES);
-                    tokenFragment = NameFragments.ERASE_TABLES;
+            case MESA_AYUDA:
+                if (!(current instanceof mesa_ayuda_fragment)){
+                    mesa_ayuda_fragment mesa_ayuda = new mesa_ayuda_fragment();
+                    mesa_ayuda.setArguments(extras);
+                    transaction.replace(R.id.FLmain, mesa_ayuda, MESA_AYUDA);
+                    tokenFragment = MESA_AYUDA;
                 } else
                     return;
                 break;
-            case NameFragments.TABLAS:
-                if (!(current instanceof erase_table_fragment)){
-                    erase_table_fragment erase_table = new erase_table_fragment();
-                    erase_table.setArguments(extras);
-                    transaction.replace(R.id.FLmain, erase_table, NameFragments.TABLAS);
-                    tokenFragment = NameFragments.TABLAS;
-                } else
-                    return;
-                break;
-            case NameFragments.GEOLOCALIZACION:
+            case GEOLOCALIZACION:
                 mTabLayout.setVisibility(View.VISIBLE);
                 if (!(current instanceof geolocalizacion_fragment)){
                     geolocalizacion_fragment geolocalizacion = new geolocalizacion_fragment();
                     geolocalizacion.setArguments(extras);
-                    transaction.replace(R.id.FLmain, geolocalizacion, NameFragments.GEOLOCALIZACION);
-                    tokenFragment = NameFragments.GEOLOCALIZACION;
-                } else
-                    return;
-                break;
-            case NameFragments.SOLICITUD_CREDITO:
-                mTabLayout.setVisibility(View.VISIBLE);
-                if (!(current instanceof solicitud_credito_fragment)){
-                    solicitud_credito_fragment solicitud_credito = new solicitud_credito_fragment();
-                    solicitud_credito.setArguments(extras);
-                    transaction.replace(R.id.FLmain, solicitud_credito, NameFragments.SOLICITUD_CREDITO);
-                    tokenFragment = NameFragments.SOLICITUD_CREDITO;
+                    transaction.replace(R.id.FLmain, geolocalizacion, GEOLOCALIZACION);
+                    tokenFragment = GEOLOCALIZACION;
                 } else
                     return;
                 break;

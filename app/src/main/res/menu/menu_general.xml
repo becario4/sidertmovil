@@ -48,7 +48,15 @@
         android:title="Sesiones "
         android:visible="false"
         android:icon="@drawable/ic_users" />
+
     <!-- 8 -->
+    <item
+        android:id="@+id/nvMesaAyuda"
+        android:title="Mesa de Ayuda"
+        android:visible="true"
+        android:icon="@drawable/ic_mesa_ayuda" />
+
+    <!-- 9 -->
     <item
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <!--  Fecha de solicitud  -->
+    <LinearLayout
+        android:layout_marginTop="3dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/blue_sidert"
+            android:text="Fecha de solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvFecha"
+            android:gravity="center_vertical"
+            android:hint="Fecha de solicitud"
+            android:textSize="18dp"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!--  Estatus Tickets  -->
+    <LinearLayout
+        android:id="@+id/llEstatus"
+        android:layout_marginTop="3dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/blue_sidert"
+            android:text="Estatus de solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvEstatus"
+            android:hint="Estatus"
+            android:gravity="center_vertical"
+            android:drawableEnd="@drawable/ic_drop_down"
+            android:textSize="18dp"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!--  Categorias  -->
+    <LinearLayout
+        android:layout_marginTop="3dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/blue_sidert"
+            android:text="Categorias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvCategoria"
+            android:hint="Categoria"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:drawableEnd="@drawable/ic_drop_down"
+            android:textSize="18dp"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!--  Enviadas / Pendientes  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/blue_sidert"
+            android:text="Tipo de solicitud"
+            android:layout_weight="1"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_marginLeft="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Enviadas"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:id="@+id/cbEnviadas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <View
+            android:layout_marginLeft="20dp"
+            android:background="@color/blue_sidert"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <LinearLayout
+            android:layout_marginLeft="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Pendientes"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:id="@+id/cbPendientes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/aetAsesor"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnFiltrar"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn_rounded_blue"
+            android:text="Filtrar"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+        <Button
+            android:id="@+id/btnBorrar"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn_rounded_yellow"
+            android:text="Borrar Filtros"
+            android:textColor="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+    </LinearLayout>
+
+</LinearLayout>

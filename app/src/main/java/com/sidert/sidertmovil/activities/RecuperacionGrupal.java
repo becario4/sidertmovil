@@ -1,37 +1,20 @@
 package com.sidert.sidertmovil.activities;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.view_pager.recuperacion_gpo_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.rg_pagos_fragment;
@@ -60,12 +43,6 @@ import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_GPO;
 
 public class RecuperacionGrupal extends AppCompatActivity {
 
-    private Context ctx;
-
-    private Toolbar TBmain;
-
-    private DBhelper dBhelper;
-
     public String id_prestamo = "";
     public String id_respuesta = "";
     public String monto_amortiz = "";
@@ -82,27 +59,21 @@ public class RecuperacionGrupal extends AppCompatActivity {
     public String latitud = "";
     public String longitud = "";
 
-    private BottomNavigationView nvMenu;
-
-    private Menu menu;
-
-    private SessionManager session;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_grupal);
-        ctx             = this;
+        Context ctx = this;
 
-        session = new SessionManager(ctx);
+        SessionManager session = new SessionManager(ctx);
 
-        dBhelper        = new DBhelper(ctx);
-        TBmain          = findViewById(R.id.TBmain);
-        nvMenu          = findViewById(R.id.nvMenu);
+        DBhelper dBhelper = new DBhelper(ctx);
+        Toolbar TBmain = findViewById(R.id.TBmain);
+        BottomNavigationView nvMenu = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
 
-        menu = nvMenu.getMenu();
+        Menu menu = nvMenu.getMenu();
         setSupportActionBar(TBmain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -191,11 +162,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
+        if (item.getItemId() == android.R.id.home)
+            finish();
+
         return super.onOptionsItemSelected(item);
     }
 

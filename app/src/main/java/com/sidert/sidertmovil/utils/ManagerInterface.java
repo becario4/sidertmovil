@@ -1,24 +1,29 @@
 package com.sidert.sidertmovil.utils;
 
-import android.provider.ContactsContract;
-
-import com.sidert.sidertmovil.models.AsesorID;
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MGestionCancelada;
 import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MLogLogin;
+import com.sidert.sidertmovil.models.MPlazos;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
+import com.sidert.sidertmovil.models.MResRecibo;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
+import com.sidert.sidertmovil.models.MResSoporte;
+import com.sidert.sidertmovil.models.MResTicket;
+import com.sidert.sidertmovil.models.MResUltimoRecibo;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MSendImpresion;
+import com.sidert.sidertmovil.models.MSendRecibo;
+import com.sidert.sidertmovil.models.MSendSoporte;
 import com.sidert.sidertmovil.models.MSolicitudCancelacion;
 import com.sidert.sidertmovil.models.MSucursal;
 import com.sidert.sidertmovil.models.MSucursales;
+import com.sidert.sidertmovil.models.MTickets;
 import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.MTrackerAsesor;
 import com.sidert.sidertmovil.models.MailBoxPLD;
@@ -31,11 +36,6 @@ import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 import com.sidert.sidertmovil.models.ModeloSectores;
-import com.sidert.sidertmovil.models.SynchronizeBD;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.util.List;
 
@@ -50,7 +50,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
@@ -64,9 +63,6 @@ public interface ManagerInterface {
     })
     @POST(WebServicesRoutes.WS_MAILBOX)
     Call<MailBoxResponse> setMailBox(@Body MailBoxPLD obj);
-
-    @POST(WebServicesRoutes.WS_SYNCHRONIZEBD)
-    Call<List<SynchronizeBD>> getImpressions(@Body AsesorID obj);
 
     @GET(WebServicesRoutes.WS_GET_DOWNLOAD_APK)
     Call<ResponseBody> downloadApk();
@@ -94,6 +90,22 @@ public interface ManagerInterface {
     @GET(WebServicesRoutes.WS_GET_CARTERA)
     Call<List<MCartera>> getCartera(@Query("usuario_id") String usuario_id,
                               @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_TICKETS)
+    Call<List<MResTicket>> getTickets(@Query("usuario_id") String usuario_id,
+                                      @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_ULTIMOS_RECIBOS)
+    Call<List<MResUltimoRecibo>> getUltimosRecibos(@Query("asesor_id") String asesorId,
+                                                   @Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -134,6 +146,22 @@ public interface ManagerInterface {
     })
     @POST(WebServicesRoutes.WS_POST_IMPRESIONES)
     Call<List<String>> guardarImpresiones(@Body List<MSendImpresion> impresion,
+                                    @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_RECIBO)
+    Call<MResRecibo> guardarRecibo(@Body MSendRecibo recibo,
+                                   @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_SOPORTE)
+    Call<MResSoporte> guardarTicket(@Body MSendSoporte soporte,
                                     @Header("Authorization") String barer_token);
 
     @Headers({
@@ -217,7 +245,7 @@ public interface ManagerInterface {
                                        @Query("nombreAsesor") String nombreAsesor,
                                        @Query("fechaVencimiento") String fechaVencimiento);
 
-    /*Serivicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
+    /*Servicio deprecado era para mandar las imagenes de las geolocalizaciones que estaban registradas*/
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
     Call<ModeloResSaveGeo> guardarGeoUpdate(@Header("Authorization") String token,
@@ -315,5 +343,20 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_IDENTIFICACIONES)
     Call<List<ModeloIdentificacion>> getIdentificaciones(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_CATEGORIA_TICKETS)
+    Call<List<MTickets>> getCategoriasTickets(@Header("Authorization") String barer_token,
+                                              @Query("plataforma") String plataforma);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PLAZOS_PRESTAMOS)
+    Call<List<MPlazos>> getPlazosPrestamo(@Header("Authorization") String barer_token);
 
 }

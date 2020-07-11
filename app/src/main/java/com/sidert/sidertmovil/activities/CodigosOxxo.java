@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -24,14 +23,11 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_codigos_oxxo;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_generar_codigo_oxxo;
-import com.sidert.sidertmovil.models.MCierreDia;
 import com.sidert.sidertmovil.models.MCodigoOxxo;
-import com.sidert.sidertmovil.models.MPrestamo;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
@@ -54,7 +50,6 @@ import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUMERO_DE_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
-import static com.sidert.sidertmovil.utils.Constants.bank;
 import static com.sidert.sidertmovil.utils.NameFragments.DIALOGCODIGOOXXO;
 
 public class CodigosOxxo extends AppCompatActivity {
@@ -186,7 +181,9 @@ public class CodigosOxxo extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<MResCodigoOxxo> call, Throwable t) {
-                    Log.e("Error", "fail Codigo"+t.getMessage());
+                    //Log.e("Error", "fail Codigo"+t.getMessage());
+                    Toast.makeText(ctx, "Ha ocurrido un error al generar el PDF de referencias bancarias", Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
                 }
             });
 
@@ -207,11 +204,8 @@ public class CodigosOxxo extends AppCompatActivity {
 
     private void GetCodigos(){
         String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf, fecha_vencimiento FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? ORDER BY created_at DESC";
-        //String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf FROM " + TBL_CODIGOS_OXXO + " WHERE fecha_amortiz >= ?";
         Cursor row = db.rawQuery(sql, new String[]{numPrestamo});
-        //Cursor row = db.rawQuery(sql, new String[]{Miscellaneous.ObtenerFecha("fecha_atraso")});
 
-        Log.e("CodigosGenrrados", ""+row.getCount());
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<MCodigoOxxo> data = new ArrayList<>();
@@ -233,11 +227,11 @@ public class CodigosOxxo extends AppCompatActivity {
 
                     Log.e("url_pdf", url);
 
-                    String mensaje = "Estimado cliente de SIDERT: \n" +
+                    String mensaje = "Estimado cliente SIDERT: \n" +
                             "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
                             "Click Aquí para descargarlo: " + url + " \uD83D\uDC48\n" +
-                            "Atención‼️ No aceptes imágenes y/o archivos adjuntos \n" +
-                            "Cualquier duda y/o aclaración comunícate al 01 800 122 6666 \uD83D\uDCDE\n" +
+                            "Atención‼️ No aceptes imágenes de tarjetas de débito u otras cuentas que no sean las que descargas desde el link \n" +
+                            "Cualquier duda y/o aclaración comunícate al 800 122 6666 \uD83D\uDCDE\n" +
                             "El enlace tiene una vigencia de 48 hrs";
                     Intent waIntent = new Intent(Intent.ACTION_SEND);
                     waIntent.setType("text/plain");
@@ -255,6 +249,7 @@ public class CodigosOxxo extends AppCompatActivity {
 
             rvCodigos.setAdapter(adapter);
         }
+        row.close();
     }
 
     @Override

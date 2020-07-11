@@ -8,11 +8,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MPrestamo;
@@ -138,7 +135,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                                 for(int j = 0; j < permisos.length(); j++){
                                                     JSONObject item_permiso = permisos.getJSONObject(j);
                                                     if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
-                                                        popup.getMenu().getItem(2).setVisible(false);
+                                                        popup.getMenu().getItem(2).setVisible(true);
                                                         break;
                                                     }
                                                 }
@@ -149,7 +146,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                     }
 
                                 }else
-                                    popup.getMenu().getItem(2).setVisible(false);
+                                    popup.getMenu().getItem(2).setVisible(true);
                             }
 
                             popup.setGravity(Gravity.RIGHT);

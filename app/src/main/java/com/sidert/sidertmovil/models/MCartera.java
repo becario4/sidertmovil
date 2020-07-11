@@ -8,54 +8,90 @@ public class MCartera {
     @SerializedName("id")
     @Expose
     private Integer id;
+
     @SerializedName("clave")
     @Expose
     private String clave;
+
     @SerializedName("nombre")
     @Expose
     private String nombre;
+
     @SerializedName("direccion")
     @Expose
     private String direccion;
+
     @SerializedName("asesor_nombre")
     @Expose
     private String asesorNombre;
+
     @SerializedName("serie_id")
     @Expose
     private String serieId;
+
     @SerializedName("usuario_id")
     @Expose
     private Integer usuarioId;
+
     @SerializedName("dia")
     @Expose
     private String dia;
+
     @SerializedName("num_solicitud")
     @Expose
     private String numSolicitud;
+
     @SerializedName("cartera_tipo")
     @Expose
     private String carteraTipo;
+
     @SerializedName("tesorero")
     @Expose
     private String tesorero;
+
     @SerializedName("colonia")
     @Expose
     private String colonia;
+
     @SerializedName("ruta")
     @Expose
     private Boolean ruta;
+
     @SerializedName("geo_cliente")
     @Expose
     private Boolean geoCliente;
+
     @SerializedName("geo_aval")
     @Expose
     private Boolean geoAval;
+
     @SerializedName("geo_negocio")
     @Expose
     private Boolean geoNegocio;
+
     @SerializedName("geolocalizadas")
     @Expose
     private String geolocalizadas;
+
+    @SerializedName("cc_ind")
+    @Expose
+    private boolean ccInd;
+
+    @SerializedName("agf_inf")
+    @Expose
+    private boolean agfInd;
+
+    @SerializedName("cc_gpo")
+    @Expose
+    private String ccGpo;
+
+    @SerializedName("agf_gpo")
+    @Expose
+    private String agfGpo;
+
+    @SerializedName("curp")
+    @Expose
+    private String curp;
 
     public Integer getId() {
         return id;
@@ -191,5 +227,45 @@ public class MCartera {
 
     public void setGeolocalizadas(String geolocalizadas) {
         this.geolocalizadas = geolocalizadas;
+    }
+
+    public boolean getCcInd() {
+        return ccInd;
+    }
+
+    public void setCcInd(boolean ccInd) {
+        this.ccInd = ccInd;
+    }
+
+    public boolean getAgfInd() {
+        return agfInd;
+    }
+
+    public void setAgfInd(boolean agfInd) {
+        this.agfInd = agfInd;
+    }
+
+    public String getCcGpo() {
+        return ccGpo;
+    }
+
+    public void setCcGpo(String ccGpo) {
+        this.ccGpo = ccGpo;
+    }
+
+    public String getAgfGpo() {
+        return agfGpo;
+    }
+
+    public void setAgfGpo(String agfGpo) {
+        this.agfGpo = agfGpo;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 }

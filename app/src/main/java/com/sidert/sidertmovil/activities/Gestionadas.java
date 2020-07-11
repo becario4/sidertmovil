@@ -1,54 +1,29 @@
 package com.sidert.sidertmovil.activities;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Window;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_gestionadas_ind;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MGestionada;
-import com.sidert.sidertmovil.models.MRespuestaGestion;
-import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.NetworkStatus;
-import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.CANCELACION;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
 import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
@@ -72,14 +47,7 @@ import static com.sidert.sidertmovil.utils.Constants.PAGO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.PARAMS;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NAME;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;

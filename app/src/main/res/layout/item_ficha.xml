@@ -54,8 +54,9 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/tvNombreTesorera"
-
                     android:textSize="14sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -39,15 +38,9 @@ import com.sidert.sidertmovil.activities.GeolocalizacionInd;
 import com.sidert.sidertmovil.activities.ResumenGeo;
 import com.sidert.sidertmovil.adapters.adapter_geo_pendientes;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.database.SidertTables;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.models.ModelGeolocalizacion;
-import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.ManagerInterface;
-import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONArray;
@@ -57,18 +50,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION;
-import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class geo_pendientes_fragment extends Fragment {
 
@@ -245,15 +231,16 @@ public class geo_pendientes_fragment extends Fragment {
             dataAsesor = RemoverRepetidos(asesor);
             dataColonia = RemoverRepetidos(colonia);
 
-            adapterNombre = new ArrayAdapter<String>(ctx,
+            adapterNombre = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
 
-            adapterColonia = new ArrayAdapter<String>(ctx,
+            adapterColonia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
 
-            adapterAsesor = new ArrayAdapter<String>(ctx,
+            adapterAsesor = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
         }
+        row.close();
 
         if(_m_geolocalizacion.size() > 0) {
             adapter.UpdateData(_m_geolocalizacion);
@@ -267,6 +254,7 @@ public class geo_pendientes_fragment extends Fragment {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void Filtros (){
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros))
@@ -370,6 +358,7 @@ public class geo_pendientes_fragment extends Fragment {
         aetAsesor.setAdapter(adapterAsesor);
 
         aetNombre.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 aetNombre.showDropDown();

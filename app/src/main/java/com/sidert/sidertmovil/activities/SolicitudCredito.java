@@ -1,7 +1,5 @@
 package com.sidert.sidertmovil.activities;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,77 +12,56 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.MultiAutoCompleteTextView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TimePicker;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_originacion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
-import moe.feng.common.stepperview.VerticalStepperItemView;
-
 import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
+/*import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;*/
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
+/*import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;*/
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND;
+/*import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
 import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;*/
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
+//import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES;
-import static com.sidert.sidertmovil.utils.Constants.INTEGRANTES_GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
@@ -101,23 +78,18 @@ public class SolicitudCredito extends AppCompatActivity {
 
     private FloatingActionButton fbAgregar;
 
-    private boolean FAB_Status = false;
-
     private adapter_originacion adapter;
     private RecyclerView rvOriginacion;
 
-    FloatingActionButton fabGrupal;
-    FloatingActionButton fabIndividual;
+    private LinearLayout llGpo;
+    private LinearLayout llInd;
+
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
     private Paint p = new Paint();
 
-    //Animations
-    Animation show_fab_ind;
-    Animation hide_fab_ind;
-    Animation show_fab_gpo;
-    Animation hide_fab_gpo;
+    private boolean fabExpanded = false;
 
 
     @Override
@@ -138,32 +110,22 @@ public class SolicitudCredito extends AppCompatActivity {
         initComponents();
 
         fbAgregar = findViewById(R.id.fbAgregar);
-        fabGrupal = findViewById(R.id.fabGrupal);
-        fabIndividual = findViewById(R.id.fabIndividual);
-
-        //Animations
-        show_fab_ind = AnimationUtils.loadAnimation(ctx, R.anim.fab1_show);
-        hide_fab_ind = AnimationUtils.loadAnimation(ctx, R.anim.fab1_hide);
-        show_fab_gpo = AnimationUtils.loadAnimation(ctx, R.anim.fab3_show);
-        hide_fab_gpo = AnimationUtils.loadAnimation(ctx, R.anim.fab3_hide);
+        llGpo = findViewById(R.id.llGpo);
+        llInd = findViewById(R.id.llInd);
 
         fbAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (FAB_Status == false) {
-                    //Display FAB menu
-                    expandFAB();
-                    FAB_Status = true;
+                if (fabExpanded){
+                    closeSubMenusFab();
                 } else {
-                    //Close FAB menu
-                    hideFAB();
-                    FAB_Status = false;
+                    openSubMenusFab();
                 }
             }
         });
 
-        fabGrupal.setOnClickListener(new View.OnClickListener() {
+        llGpo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i_solicitud_gpo = new Intent(ctx, SolicitudCreditoGpo.class);
@@ -172,7 +134,7 @@ public class SolicitudCredito extends AppCompatActivity {
             }
         });
 
-        fabIndividual.setOnClickListener(new View.OnClickListener() {
+        llInd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
@@ -182,43 +144,21 @@ public class SolicitudCredito extends AppCompatActivity {
         });
     }
 
-    private void expandFAB() {
-
-        //Floating Action Button 1
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) fabIndividual.getLayoutParams();
-        layoutParams.rightMargin += (int) (fabIndividual.getWidth() * 1.7);
-        layoutParams.bottomMargin += (int) (fabIndividual.getHeight() * 0.25);
-        fabIndividual.setLayoutParams(layoutParams);
-        fabIndividual.startAnimation(show_fab_ind);
-        fabIndividual.setClickable(true);
-
-        //Floating Action Button 3
-        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fabGrupal.getLayoutParams();
-        layoutParams3.rightMargin += (int) (fabGrupal.getWidth() * 0.25);
-        layoutParams3.bottomMargin += (int) (fabGrupal.getHeight() * 1.7);
-        fabGrupal.setLayoutParams(layoutParams3);
-        fabGrupal.startAnimation(show_fab_gpo);
-        fabGrupal.setClickable(true);
+    private void closeSubMenusFab(){
+        llGpo.setVisibility(View.INVISIBLE);
+        llInd.setVisibility(View.INVISIBLE);
+        fbAgregar.setImageResource(R.drawable.ic_add_black);
+        fabExpanded = false;
     }
 
-    private void hideFAB() {
+    //Opens FAB submenus
+    private void openSubMenusFab(){
+        llGpo.setVisibility(View.VISIBLE);
+        llInd.setVisibility(View.VISIBLE);
 
-        //Floating Action Button 1
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) fabIndividual.getLayoutParams();
-        layoutParams.rightMargin -= (int) (fabIndividual.getWidth() * 1.7);
-        layoutParams.bottomMargin -= (int) (fabIndividual.getHeight() * 0.25);
-        fabIndividual.setLayoutParams(layoutParams);
-        fabIndividual.startAnimation(hide_fab_ind);
-        fabIndividual.setClickable(false);
-
-
-        //Floating Action Button 3
-        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fabGrupal.getLayoutParams();
-        layoutParams3.rightMargin -= (int) (fabGrupal.getWidth() * 0.25);
-        layoutParams3.bottomMargin -= (int) (fabGrupal.getHeight() * 1.7);
-        fabGrupal.setLayoutParams(layoutParams3);
-        fabGrupal.startAnimation(hide_fab_gpo);
-        fabGrupal.setClickable(false);
+        //Change settings icon to 'X' icon
+        fbAgregar.setImageResource(R.drawable.ic_close_black);
+        fabExpanded = true;
     }
 
     private void initComponents(){
@@ -327,24 +267,24 @@ public class SolicitudCredito extends AppCompatActivity {
                                         if (tipo_solicitud == 1) {
                                             if (ENVIROMENT) {
                                                 db.delete(SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CREDITO_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                                /*db.delete(DATOS_CREDITO_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_CLIENTE_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_CONYUGE_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_ECONOMICOS_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_NEGOCIO_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_AVAL_IND, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_REFERENCIA_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DOCUMENTOS, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DOCUMENTOS, "id_solicitud = ?", new String[]{id_solcitud});*/
                                             } else {
                                                 db.delete(SOLICITUDES_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                /*db.delete(DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_CLIENTE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_CONYUGE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_ECONOMICOS_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_NEGOCIO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_AVAL_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
                                                 db.delete(DATOS_REFERENCIA_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DOCUMENTOS_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                                db.delete(DOCUMENTOS_T, "id_solicitud = ?", new String[]{id_solcitud});*/
                                             }
                                         }
                                         else {

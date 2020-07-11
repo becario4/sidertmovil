@@ -500,6 +500,55 @@
                     android:textColor="@android:color/white" />
             </LinearLayout>
 
+            <!--  Imprimir Recibos  -->
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/gray_light">
+
+                <TextView
+                    android:textSize="@dimen/textsize"
+                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Imprimir Recibos"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/blue_sidert" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnCC"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/btn_rounded_yellow"
+                android:paddingTop="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingBottom="2dp"
+                android:text="Círculo de Crédito"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/btnAGF"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_rounded_yellow"
+                android:paddingTop="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingBottom="2dp"
+                android:text="Apoyo a Gastos Funerarios"
+                android:textColor="@android:color/black" />
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

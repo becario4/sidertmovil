@@ -1,6 +1,5 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
-import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -14,17 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
-
-import androidx.work.WorkManager;
-
-import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 public class dialog_logout extends DialogFragment {
 

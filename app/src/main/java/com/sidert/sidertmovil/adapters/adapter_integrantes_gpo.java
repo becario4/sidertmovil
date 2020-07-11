@@ -5,23 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 
-import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MIntegrantePago;
-import com.sidert.sidertmovil.models.ModeloGrupal;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.List;

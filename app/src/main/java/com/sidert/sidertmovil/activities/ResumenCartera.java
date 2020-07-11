@@ -15,7 +15,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.firma;
 
 public class ResumenCartera extends AppCompatActivity {
 

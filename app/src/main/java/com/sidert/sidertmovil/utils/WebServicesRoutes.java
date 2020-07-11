@@ -22,7 +22,9 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_SOLICITUDES   = "/api/solicitudes/creditos/"; //Controlador para solicitudes
     public final static String CONTROLLER_MOVIL         = "/api/movil/"; //Controlador para movil
     public final static String IMAGES_GEOLOCALIZACION   = "uploads/img/";
-    public final static String PDF_CODIGOS_OXXO         = "/uploads/codigos_oxxo/";
+    public final static String PDF_CODIGOS_OXXO         = "uploads/codigos_oxxo/";
+    public final static String CONTROLLER_RECIBOS       = "/api/movil/recibos/"; //Controlador para recibos
+    public final static String CONTROLLER_SOPORTE       = "/api/movil/soporte/"; //Controlador para soporte
 
 
     //public final static String BASE_URL = DOMAIN + PORT;
@@ -30,6 +32,7 @@ public class WebServicesRoutes {
     //Servicios
     public final static String WS_LOGIN                     = "token"; //Servicio para inicio de sesion
     public final static String WS_GET_CARTERA               = "carteras"; //Servicio para obtener la cartera
+    public final static String WS_GET_TICKETS               = "getTickets"; //Servicio para obtener la cartera
     public final static String WS_GET_ULTIMAS_IMPRESIONES   = "ultimosRegistro"; //Servicio para obtener los ultimos registros de impresiones
     public final static String WS_POST_IMPRESIONES          = "impresion"; //Servicio para registrar las impresiones
     public final static String WS_POST_TRACKER              = "tracker"; //Servicio para registrar la ubicacion del dispositivo cada 10 minutos
@@ -50,6 +53,9 @@ public class WebServicesRoutes {
     public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
     public final static String WS_POST_SOLICITUD_CANCELAR   = "solicitudCancelarGestion"; //Servicio para cancelar solicitud de una gestion
     public final static String WS_GET_GESTIONES_CANCELADAS  = "getGestionesCanceladas"; //Servicio para obtener las gestiones canceladas por el administrador
+    public final static String WS_POST_RECIBO               = "guardarRecibo"; //Servicio para registrar los recibos CC yAGF
+    public final static String WS_POST_SOPORTE              = "guardarTicket"; //Servicio para registrar los levantamientos de soporte
+    public final static String WS_GET_ULTIMOS_RECIBOS       = "getUltimoRecibo"; //Servicio para obtener los ultimos folio de recibos entre CC y AGF
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México
@@ -58,6 +64,8 @@ public class WebServicesRoutes {
     public final static String WS_GET_OCUPACIONES           = "GetOcupaciones"; //Obtiene el catálogo de las ocupaciones
     public final static String WS_GET_SECTORES              = "GetSectores"; //Obtiene el catálogo de sectores (actividades económicas)
     public final static String WS_GET_IDENTIFICACIONES      = "GetIdentificacionTipos"; //Obtiene el catálogo de tipos de identificacion (INE/IFE, Pasaporte...)
+    public final static String WS_GET_CATEGORIA_TICKETS     = "GetCategoriaTickets"; //Obtiene el catálogo de las categorias de levantamiento de tickets
+    public final static String WS_GET_PLAZOS_PRESTAMOS      = "GetPlazos"; //Obtiene el catálogo de los plazos de los prestamos
 
 
 }

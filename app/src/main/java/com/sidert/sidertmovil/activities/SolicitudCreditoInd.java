@@ -82,28 +82,25 @@ import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
 
-import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
+import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
+import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
+import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
+import static com.sidert.sidertmovil.utils.Constants.EXTRA;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_COLONIA_CLIE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_COLONIA_CONY;
 import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND;
+import static com.sidert.sidertmovil.utils.Constants.TITULO;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
 public class SolicitudCreditoInd extends AppCompatActivity implements dialog_registro_cli.OnCompleteListener{
@@ -126,6 +123,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private String[] _tipo_casa_aval;
     private String[] _parentesco;
     private String[] _tipo_identificacion;
+    private String[] _destino_credito;
+    private String[] _medios_pago;
+    private String[] _riesgo;
     private ArrayList<Integer> selectedItemsDias;
 
     private DBhelper dBhelper;
@@ -163,6 +163,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etMontoPrestamo;
     private TextView tvCantidadLetra;
     private TextView tvDestino;
+    private TextView tvRiesgo;
     //=========================================
     //======== DATOS PERSONALES ===============
     private EditText etNombreCli;
@@ -227,6 +228,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etApPaternoCony;
     private EditText etApMaternoCony;
     private TextView tvOcupacionCony;
+    private EditText etCalleCony;
+    private EditText etNoExtCony;
+    private EditText etManzanaCony;
+    private EditText etNoIntCony;
+    private EditText etLoteCony;
+    private EditText etCpCony;
+    private TextView tvColoniaCony;
+    private TextView tvMunicipioCony;
+    private TextView tvEstadoCony;
+    private EditText etIngMenCony;
+    private EditText etGastoMenCony;
+    private EditText etCasaCony;
     private EditText etCelularCony;
     //========================================
     //========= DATOS ECONOMICOS =============
@@ -251,6 +264,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private TextView tvColoniaNeg;
     private TextView tvMunicipioNeg;
     private TextView tvActEconomicaNeg;
+    private TextView tvDestinoNeg;
+    private EditText etOtroDestinoNeg;
     private EditText etAntiguedadNeg;
     private EditText etIngMenNeg;
     private EditText etOtrosIngNeg;
@@ -261,6 +276,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etGastosRentaNeg;
     private EditText etGastosOtrosNeg;
     private TextView tvCapacidadPagoNeg;
+    private TextView tvMediosPagoNeg;
+    private EditText etOtroMedioPagoNeg;
+    private EditText etMontoMaxNeg;
+    private EditText etNumOperacionNeg;
+    private EditText etNumOperacionEfectNeg;
     private TextView tvDiasVentaNeg;
     private TextView tvFachadaNeg;
     private ImageButton ibFotoFachNeg;
@@ -284,6 +304,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etNumIdentifAval;
     private TextView tvOcupacionAval;
     private TextView tvActividadEcoAval;
+    private TextView tvDestinoAval;
+    private EditText etOtroDestinoAval;
     private TextView tvMapaAval;
     private ImageButton ibMapAval;
     private ProgressBar pbLoadAval;
@@ -311,6 +333,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etGastosTelAval;
     private EditText etGastosRentaAval;
     private EditText etGastosOtrosAval;
+    private TextView tvMediosPagoAval;
+    private EditText etOtroMedioPagoAval;
+    private EditText etMontoMaxAval;
     private TextView tvHoraLocAval;
     private EditText etAntiguedadAval;
     private EditText etTelCasaAval;
@@ -440,18 +465,21 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         TBmain = findViewById(R.id.TBmain);
 
-        _plazo = getResources().getStringArray(R.array.intervalo);
-        _frecuencia = getResources().getStringArray(R.array.lapso);
-        _destino = getResources().getStringArray(R.array.destino_prestamo);
-        _estudios = getResources().getStringArray(R.array.nivel_estudio);
-        _civil = getResources().getStringArray(R.array.estado_civil);
-        _tipo_casa = getResources().getStringArray(R.array.tipo_casa_cli);
-        _casa_familiar = getResources().getStringArray(R.array.casa_familiar);
-        _dependientes = getResources().getStringArray(R.array.dependientes_eco);
-        _medio_contacto = getResources().getStringArray(R.array.entero_nosotros);
-        _tipo_casa_aval = getResources().getStringArray(R.array.tipo_casa_aval);
-        _parentesco = getResources().getStringArray(R.array.casa_familiar_aval);
-        _tipo_identificacion = getResources().getStringArray(R.array.tipo_identificacion);
+        _plazo                  = getResources().getStringArray(R.array.intervalo);
+        _frecuencia             = getResources().getStringArray(R.array.lapso);
+        _destino                = getResources().getStringArray(R.array.destino_prestamo);
+        _estudios               = getResources().getStringArray(R.array.nivel_estudio);
+        _civil                  = getResources().getStringArray(R.array.estado_civil);
+        _tipo_casa              = getResources().getStringArray(R.array.tipo_casa_cli);
+        _casa_familiar          = getResources().getStringArray(R.array.casa_familiar);
+        _dependientes           = getResources().getStringArray(R.array.dependientes_eco);
+        _medio_contacto         = getResources().getStringArray(R.array.entero_nosotros);
+        _tipo_casa_aval         = getResources().getStringArray(R.array.tipo_casa_aval);
+        _parentesco             = getResources().getStringArray(R.array.casa_familiar_aval);
+        _tipo_identificacion    = getResources().getStringArray(R.array.tipo_identificacion);
+        _destino_credito        = getResources().getStringArray(R.array.destino_credito);
+        _medios_pago            = getResources().getStringArray(R.array.medios_pago);
+        _riesgo                 = getResources().getStringArray(R.array.clasificacion_riesgo);
 
         setSupportActionBar(TBmain);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -466,6 +494,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etMontoPrestamo     = findViewById(R.id.etMontoPrestamo);
         tvCantidadLetra     = findViewById(R.id.tvCantidadLetra);
         tvDestino           = findViewById(R.id.tvDestino);
+        tvRiesgo            = findViewById(R.id.tvRiesgo);
         //==========================================================================================
         //=================================  DATOS PERSONALES  =====================================
         etNombreCli          = findViewById(R.id.etNombreCli);
@@ -527,6 +556,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etApPaternoCony     = findViewById(R.id.etApPaternoCony);
         etApMaternoCony     = findViewById(R.id.etApMaternoCony);
         tvOcupacionCony     = findViewById(R.id.tvOcupacionCony);
+        etCalleCony         = findViewById(R.id.etCalleCony);
+        etNoExtCony         = findViewById(R.id.etNoExtCony);
+        etManzanaCony       = findViewById(R.id.etManzanaCony);
+        etNoIntCony         = findViewById(R.id.etNoIntCony);
+        etLoteCony          = findViewById(R.id.etLoteCony);
+        etCpCony            = findViewById(R.id.etCpCony);
+        tvColoniaCony       = findViewById(R.id.tvColoniaCony);
+        tvMunicipioCony     = findViewById(R.id.tvMunicipioCony);
+        tvEstadoCony        = findViewById(R.id.tvEstadoCony);
+        etIngMenCony        = findViewById(R.id.etIngMenCony);
+        etGastoMenCony      = findViewById(R.id.etGastoMenCony);
+        etCasaCony          = findViewById(R.id.etCasaCony);
         etCelularCony       = findViewById(R.id.etCelularCony);
         //==========================================================================================
         //=================================  DATOS ECONOMICOS  =====================================
@@ -536,35 +577,42 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etIngresoEco        = findViewById(R.id.etIngresoEco);
         //==========================================================================================
         //===================================  DATOS NEGOCIO  ======================================
-        etNombreNeg         = findViewById(R.id.etNombreNeg);
-        tvMapaNeg           = findViewById(R.id.tvMapaNeg);
-        ibMapNeg            = findViewById(R.id.ibMapNeg);
-        pbLoadNeg           = findViewById(R.id.pbLoadNeg);
-        mapNeg              = findViewById(R.id.mapNeg);
-        etCalleNeg          = findViewById(R.id.etCalleNeg);
-        etNoExtNeg          = findViewById(R.id.etNoExtNeg);
-        etNoIntNeg          = findViewById(R.id.etNoIntNeg);
-        etManzanaNeg        = findViewById(R.id.etManzanaNeg);
-        etLoteNeg           = findViewById(R.id.etLoteNeg);
-        etCpNeg             = findViewById(R.id.etCpNeg);
-        tvColoniaNeg        = findViewById(R.id.tvColoniaNeg);
-        tvMunicipioNeg      = findViewById(R.id.tvMunicipioNeg);
-        tvActEconomicaNeg   = findViewById(R.id.tvActEconomicaNeg);
-        etAntiguedadNeg     = findViewById(R.id.etAntiguedadNeg);
-        etIngMenNeg         = findViewById(R.id.etIngMenNeg);
-        etOtrosIngNeg       = findViewById(R.id.etOtrosIngNeg);
-        etGastosSemNeg      = findViewById(R.id.etGastosSemNeg);
-        etGastosAguaNeg     = findViewById(R.id.etGastosAguaNeg);
-        etGastosLuzNeg      = findViewById(R.id.etGastosLuzNeg);
-        etGastosTelNeg      = findViewById(R.id.etGastosTelNeg);
-        etGastosRentaNeg    = findViewById(R.id.etGastosRentaNeg);
-        etGastosOtrosNeg    = findViewById(R.id.etGastosOtrosNeg);
-        tvCapacidadPagoNeg  = findViewById(R.id.tvCapacidadPagoNeg);
-        tvDiasVentaNeg      = findViewById(R.id.tvDiasVentaNeg);
-        tvFachadaNeg        = findViewById(R.id.tvFachadaNeg);
-        ibFotoFachNeg       = findViewById(R.id.ibFotoFachNeg);
-        ivFotoFachNeg       = findViewById(R.id.ivFotoFachNeg);
-        etReferenciNeg      = findViewById(R.id.etReferenciaNeg);
+        etNombreNeg             = findViewById(R.id.etNombreNeg);
+        tvMapaNeg               = findViewById(R.id.tvMapaNeg);
+        ibMapNeg                = findViewById(R.id.ibMapNeg);
+        pbLoadNeg               = findViewById(R.id.pbLoadNeg);
+        mapNeg                  = findViewById(R.id.mapNeg);
+        etCalleNeg              = findViewById(R.id.etCalleNeg);
+        etNoExtNeg              = findViewById(R.id.etNoExtNeg);
+        etNoIntNeg              = findViewById(R.id.etNoIntNeg);
+        etManzanaNeg            = findViewById(R.id.etManzanaNeg);
+        etLoteNeg               = findViewById(R.id.etLoteNeg);
+        etCpNeg                 = findViewById(R.id.etCpNeg);
+        tvColoniaNeg            = findViewById(R.id.tvColoniaNeg);
+        tvMunicipioNeg          = findViewById(R.id.tvMunicipioNeg);
+        tvActEconomicaNeg       = findViewById(R.id.tvActEconomicaNeg);
+        tvDestinoNeg            = findViewById(R.id.tvDestinoNeg);
+        etOtroDestinoNeg        = findViewById(R.id.etOtroDestinoNeg);
+        etAntiguedadNeg         = findViewById(R.id.etAntiguedadNeg);
+        etIngMenNeg             = findViewById(R.id.etIngMenNeg);
+        etOtrosIngNeg           = findViewById(R.id.etOtrosIngNeg);
+        etGastosSemNeg          = findViewById(R.id.etGastosSemNeg);
+        etGastosAguaNeg         = findViewById(R.id.etGastosAguaNeg);
+        etGastosLuzNeg          = findViewById(R.id.etGastosLuzNeg);
+        etGastosTelNeg          = findViewById(R.id.etGastosTelNeg);
+        etGastosRentaNeg        = findViewById(R.id.etGastosRentaNeg);
+        etGastosOtrosNeg        = findViewById(R.id.etGastosOtrosNeg);
+        tvCapacidadPagoNeg      = findViewById(R.id.tvCapacidadPagoNeg);
+        tvMediosPagoNeg         = findViewById(R.id.tvMediosPagoNeg);
+        etOtroMedioPagoNeg      = findViewById(R.id.etOtroMedioPagoNeg);
+        etMontoMaxNeg           = findViewById(R.id.etMontoMaxNeg);
+        etNumOperacionNeg       = findViewById(R.id.etNumOperacionNeg);
+        etNumOperacionEfectNeg  = findViewById(R.id.etNumOperacionEfectNeg);
+        tvDiasVentaNeg          = findViewById(R.id.tvDiasVentaNeg);
+        tvFachadaNeg            = findViewById(R.id.tvFachadaNeg);
+        ibFotoFachNeg           = findViewById(R.id.ibFotoFachNeg);
+        ivFotoFachNeg           = findViewById(R.id.ivFotoFachNeg);
+        etReferenciNeg          = findViewById(R.id.etReferenciaNeg);
         //==========================================================================================
         //=====================================  DATOS AVAL  =======================================
         etNombreAval        = findViewById(R.id.etNombreAval);
@@ -582,6 +630,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etNumIdentifAval    = findViewById(R.id.etNumIdentifAval);
         tvOcupacionAval     = findViewById(R.id.tvOcupacionAval);
         tvActividadEcoAval  = findViewById(R.id.tvActividadEcoAval);
+        tvDestinoAval       = findViewById(R.id.tvDestinoAval);
+        etOtroDestinoAval   = findViewById(R.id.etOtroDestinoAval);
         tvMapaAval          = findViewById(R.id.tvMapaAval);
         ibMapAval           = findViewById(R.id.ibMapAval);
         pbLoadAval          = findViewById(R.id.pbLoadAval);
@@ -608,6 +658,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etGastosTelAval     = findViewById(R.id.etGastosTelAval);
         etGastosRentaAval   = findViewById(R.id.etGastosRentaAval);
         etGastosOtrosAval   = findViewById(R.id.etGastosOtrosAval);
+        tvMediosPagoAval    = findViewById(R.id.tvMediosPagoAval);
+        etOtroMedioPagoAval = findViewById(R.id.etOtroMedioPagoAval);
+        etMontoMaxAval      = findViewById(R.id.etMontoMaxAval);
         tvHoraLocAval       = findViewById(R.id.tvHoraLocAval);
         etAntiguedadAval    = findViewById(R.id.etAntiguedadAval);
         etTelCasaAval       = findViewById(R.id.etTelCasaAval);
@@ -784,12 +837,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvCantidadLetra.setText("");
                         etMontoPrestamo.setError("La cantidad no corresponde a un monto de crédito válido");
                     }else{
-                        ContentValues cv = new ContentValues();
+                        Update("monto_prestamo", TBL_CREDITO_IND, s.toString().trim());
+                        /*ContentValues cv = new ContentValues();
                         cv.put("monto_prestamo",s.toString().trim());
                         if (ENVIROMENT)
                             db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                         tvCantidadLetra.setText((Miscellaneous.cantidadLetra(s.toString()).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
                         if (Integer.parseInt(s.toString()) > 30000){
                             llPropiedades.setVisibility(View.VISIBLE);
@@ -811,15 +865,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etMontoPrestamo.getText().toString().trim().isEmpty() && !tvCantidadLetra.getText().toString().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("monto_prestamo",etMontoPrestamo.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
         });
         tvDestino.setOnClickListener(tvDestino_OnClick);
+        tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
         //==============================  PERSONALES LISTENER ======================================
         etNombreCli.addTextChangedListener(new TextWatcher() {
             @Override
@@ -1004,13 +1057,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else{
                         tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0,10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
 
-                        ContentValues cv = new ContentValues();
+                        Update("rfc", TBL_CLIENTE_IND, tvRfcCli.getText().toString().trim().toUpperCase());
+                        Update("curp", TBL_CLIENTE_IND, s.toString().trim().toUpperCase());
+                        /*ContentValues cv = new ContentValues();
                         cv.put("rfc",tvRfcCli.getText().toString().trim().toUpperCase());
                         cv.put("curp",s.toString().trim().toUpperCase());
                         if (ENVIROMENT)
                             db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
                 }
                 else
@@ -1024,12 +1079,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etCurpIdCli.getText().toString().trim().isEmpty()) {
                         if (etCurpIdCli.getText().toString().trim().length() == 2) {
                             if (Miscellaneous.CurpValidador(tvCurpCli.getText() + etCurpIdCli.getText().toString().trim().toUpperCase())) {
-                                ContentValues cv = new ContentValues();
+                                Update("curp_digito_veri", TBL_CLIENTE_IND, etCurpIdCli.getText().toString().trim());
+                                /*ContentValues cv = new ContentValues();
                                 cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
                                 if (ENVIROMENT)
                                     db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                                 else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                             }
                             else
                                 etCurpIdCli.setError("Curp no válida");
@@ -1049,12 +1105,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus){
                     if (!etNumIdentifCli.getText().toString().trim().isEmpty()){
-                        ContentValues cv = new ContentValues();
+                        Update("no_identificacion", TBL_CLIENTE_IND, etNumIdentifCli.getText().toString().trim().toUpperCase());
+                        /*ContentValues cv = new ContentValues();
                         cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
                         if (ENVIROMENT)
                             db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
                     else
                         etNumIdentifCli.setError("Este campo es requerido");
@@ -1074,9 +1131,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         ContentValues cv = new ContentValues();
                         cv.put("otro_tipo_vivienda", etOTroTipoCli.getText().toString().trim().toUpperCase());
                         if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1091,10 +1148,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Log.e("calle", "guarda");
                         ContentValues cv = new ContentValues();
                         cv.put("calle", etCalleCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1106,10 +1161,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!validator.validate(etNoExtCli, new String[]{validator.REQUIRED})){
                         ContentValues cv = new ContentValues();
                         cv.put("no_exterior", etNoExtCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1121,10 +1174,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!validator.validate(etNoIntCli, new String[]{validator.REQUIRED})){
                         ContentValues cv = new ContentValues();
                         cv.put("no_interior", etNoIntCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1135,10 +1186,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("manzana", etManzanaCli.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -1149,10 +1198,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("lote", etLoteCli.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -1186,10 +1233,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }else {
                         tvColoniaCli.setText("No se encontró información");
                         tvMunicipioCli.setText("No se encontró información");
@@ -1222,10 +1267,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etTelCasaCli.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_casa", etTelCasaCli.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etTelCasaCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -1252,10 +1295,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCelularCli.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_celular", etCelularCli.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etCelularCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -1282,10 +1323,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etTelMensCli.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_mensajes", etTelMensCli.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -1312,10 +1351,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etTelTrabajoCli.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_trabajo", etTelTrabajoCli.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etTelTrabajoCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -1331,10 +1368,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER,validator.YEARS})){
                         ContentValues cv = new ContentValues();
                         cv.put("tiempo_vivir_sitio", etTiempoSitio.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1347,10 +1382,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if(!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("email", etEmail.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1361,10 +1394,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etReferenciCli.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("ref_domiciliaria", etReferenciCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etReferenciCli.setError("Este campo es requerido");
@@ -1383,10 +1414,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT})){
                             ContentValues cv = new ContentValues();
                             cv.put("nombre", etNombreCony.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                     }
                 }
@@ -1401,10 +1430,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!validator.validate(etApPaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT})){
                             ContentValues cv = new ContentValues();
                             cv.put("paterno", etApPaternoCony.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                     }
                 }
@@ -1419,16 +1446,228 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT})){
                             ContentValues cv = new ContentValues();
                             cv.put("materno", etApMaternoCony.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                     }
                 }
             }
         });
         tvOcupacionCony.setOnClickListener(tvOcupacionConyuge_OnClick);
+        etCalleCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("calle", TBL_CONYUGE_IND, etCalleCli.getText().toString().trim().toUpperCase());
+                else
+                    Update("calle", TBL_CONYUGE_IND, "");
+            }
+        });
+        etNoExtCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("no_exterior", TBL_CONYUGE_IND, etNoExtCony.getText().toString().trim().toUpperCase());
+                else
+                    Update("no_exterior", TBL_CONYUGE_IND, "");
+            }
+        });
+        etNoIntCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("no_interior", TBL_CONYUGE_IND, etNoIntCony.getText().toString().trim().toUpperCase());
+                else
+                    Update("no_interior", TBL_CONYUGE_IND, "");
+            }
+        });
+        etManzanaCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("manzana", TBL_CONYUGE_IND, etNoIntCony.getText().toString().trim().toUpperCase());
+                else
+                    Update("manzana", TBL_CONYUGE_IND, "");
+            }
+        });
+        etLoteCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("lote", TBL_CONYUGE_IND, etLoteCony.getText().toString().trim().toUpperCase());
+                else
+                    Update("lote", TBL_CONYUGE_IND, "");
+            }
+        });
+        etCpCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 5){
+                    Cursor row = dBhelper.getDireccionByCP(s.toString());
+                    if (row.getCount() > 0){
+                        //ContentValues cv = new ContentValues();
+                        //cv.put("cp", s.toString().trim());
+                        Update("cp", TBL_CONYUGE_IND, s.toString());
+                        row.moveToFirst();
+                        if (row.getCount() == 1){
+                            Update("colonia", TBL_CONYUGE_IND, row.getString(7));
+                            //cv.put("colonia", row.getString(7));
+                            tvColoniaCony.setText(row.getString(7));
+                            tvMunicipioCony.setText(row.getString(4));
+                            tvEstadoCony.setText(row.getString(1));
+                        }else {
+                            Update("colonia", TBL_CONYUGE_IND, "");
+                            tvColoniaCony.setText("");
+                            tvMunicipioCony.setText(row.getString(4));
+                            tvEstadoCony.setText(row.getString(1));
+                        }
+
+                        //db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                    }else {
+                        tvColoniaCli.setText("No se encontró información");
+                        tvMunicipioCli.setText("No se encontró información");
+                        tvEstadoCli.setText("No se encontró información");
+                    }
+                    row.close();
+                }else {
+                    tvColoniaCli.setText("No se encontró información");
+                    tvMunicipioCli.setText("No se encontró información");
+                    tvEstadoCli.setText("No se encontró información");
+                }
+            }
+        });
+        tvColoniaCony.setOnClickListener(tvColoniaCony_OnClick);
+        etIngMenCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("ing_mensual", TBL_CONYUGE_IND, s.toString());
+                else
+                    Update("ing_mensual", TBL_CONYUGE_IND, "");
+            }
+        });
+        etGastoMenCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("gasto_mensual", TBL_CONYUGE_IND, s.toString());
+                else
+                    Update("gasto_mensual", TBL_CONYUGE_IND, "");
+            }
+        });
+        etCasaCony.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0){
+                    if (s.length() == 10) {
+                        Update("tel_casa", TBL_CONYUGE_IND, s.toString());
+                        etCasaCony.setError(null);
+                        /*ContentValues cv = new ContentValues();
+                        cv.put("tel_celular", etCelularCony.getText().toString().trim());
+
+                        db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
+                    }
+                    else {
+                        Update("tel_casa", TBL_CONYUGE_IND, "");
+                        etCasaCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
+                    }
+                }
+                else {
+                    Update("tel_casa", TBL_CONYUGE_IND, "");
+                    etCasaCony.setError(null);
+                }
+            }
+        });
         etCelularCony.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1445,19 +1684,21 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etCelularCony.setError(null);
-                        ContentValues cv = new ContentValues();
+                        Update("tel_celular", TBL_CONYUGE_IND, s.toString());
+                        /*ContentValues cv = new ContentValues();
                         cv.put("tel_celular", etCelularCony.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
 
-                    else
+                    else {
+                        Update("tel_celular", TBL_CONYUGE_IND, "");
                         etCelularCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
+                    }
                 }
-                else
+                else {
+                    Update("tel_celular", TBL_CONYUGE_IND, "");
                     etCelularCony.setError(null);
+                }
             }
         });
         //===============================  ECONOMICOS LISTENER  ====================================
@@ -1470,10 +1711,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!etPropiedadesEco.getText().toString().trim().isEmpty()){
                             ContentValues cv = new ContentValues();
                             cv.put("propiedades", etPropiedadesEco.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_ECONOMICOS_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etPropiedadesEco.setError("Este campo es requerido");
@@ -1491,10 +1730,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Integer.parseInt(etValorAproxEco.getText().toString().trim()) > 0){
                             ContentValues cv = new ContentValues();
                             cv.put("valor_aproximado", etValorAproxEco.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_ECONOMICOS_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etValorAproxEco.setError("Este campo es requerido");
@@ -1511,10 +1748,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!etUbicacionEco.getText().toString().trim().isEmpty()){
                             ContentValues cv = new ContentValues();
                             cv.put("ubicacion", etUbicacionEco.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_ECONOMICOS_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etUbicacionEco.setError("Este campo es requerido");
@@ -1532,10 +1767,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 Integer.parseInt(etIngresoEco.getText().toString().trim()) > 0){
                             ContentValues cv = new ContentValues();
                             cv.put("ingreso", etIngresoEco.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_ECONOMICOS_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etIngresoEco.setError("Este campo es requerido");
@@ -1551,10 +1784,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNombreNeg.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("nombre", etNombreNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNombreNeg.setError("Este campo es requerido");
@@ -1569,10 +1800,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etCalleNeg.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("calle", etCalleNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etCalleNeg.setError("Este campo es requerido");
@@ -1586,10 +1815,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!validator.validate(etNoExtNeg, new String[]{validator.REQUIRED})){
                         ContentValues cv = new ContentValues();
                         cv.put("no_exterior", etNoExtNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
             }
@@ -1600,10 +1827,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("no_interior", etNoIntNeg.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1613,10 +1838,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("manzana", etManzanaNeg.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -1627,10 +1850,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("lote", etLoteNeg.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -1662,10 +1883,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvColoniaNeg.setText("");
                             tvMunicipioNeg.setText(row.getString(4));
                         }
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }else {
                         tvColoniaNeg.setText("No se encontró información");
                         tvMunicipioNeg.setText("No se encontró información");
@@ -1679,6 +1898,27 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         });
         tvColoniaNeg.setOnClickListener(etColoniaAct_OnClick);
         tvActEconomicaNeg.setOnClickListener(etActividadEco_OnClick);
+        tvDestinoNeg.setOnClickListener(tvDestinoNeg_OnClick);
+        etOtroDestinoNeg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("otro_destino_credito", TBL_NEGOCIO_IND, s.toString().trim().toUpperCase());
+                else
+                    Update("otro_destino_credito", TBL_NEGOCIO_IND, "");
+            }
+        });
+
         etAntiguedadNeg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -1687,10 +1927,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (Integer.parseInt(etAntiguedadNeg.getText().toString().trim()) > 0){
                             ContentValues cv = new ContentValues();
                             cv.put("antiguedad", etAntiguedadNeg.getText().toString().trim());
-                            if (ENVIROMENT)
-                                db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etAntiguedadNeg.setError("No se permiten cantidades iguales a cero");
@@ -1722,10 +1960,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("ing_mensual", etIngMenNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1751,10 +1987,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("ing_otros", etOtrosIngNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1780,10 +2014,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_semanal", etGastosSemNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1809,10 +2041,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_agua", etGastosAguaNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1838,10 +2068,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_luz", etGastosLuzNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1867,10 +2095,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_telefono", etGastosTelNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1896,10 +2122,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_renta", etGastosRentaNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -1925,14 +2149,109 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("gasto_otros", etGastosOtrosNeg.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
+        tvMediosPagoNeg.setOnClickListener(tvMediosPagoNeg_OnClick);
+        etOtroMedioPagoNeg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("otro_medio_pago", TBL_NEGOCIO_IND, s.toString().trim().toUpperCase());
+                else
+                    Update("otro_medio_pago", TBL_NEGOCIO_IND, "");
+            }
+        });
+        etMontoMaxNeg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    try {
+                        if (Double.parseDouble(s.toString()) > 0)
+                            Update("monto_maximo", TBL_NEGOCIO_IND, s.toString().trim().toUpperCase());
+
+                    }catch (NumberFormatException e){
+                        Update("monto_maximo", TBL_NEGOCIO_IND, "");
+                    }
+
+                else
+                    Update("monto_maximo", TBL_NEGOCIO_IND, "");
+            }
+        });
+        etNumOperacionNeg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    try {
+                        if (Integer.parseInt(s.toString()) > 0)
+                            Update("num_operaciones", TBL_NEGOCIO_IND, s.toString().trim().toUpperCase());
+
+                    }catch (NumberFormatException e){
+                        Update("num_operaciones", TBL_NEGOCIO_IND, "");
+                    }
+
+                else
+                    Update("num_operaciones", TBL_NEGOCIO_IND, "");
+            }
+        });
+        etNumOperacionEfectNeg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    try {
+                        if (Integer.parseInt(s.toString()) > 0)
+                            Update("num_operaciones_efectivo", TBL_NEGOCIO_IND, s.toString().trim().toUpperCase());
+
+                    }catch (NumberFormatException e){
+                        Update("num_operaciones_efectivo", TBL_NEGOCIO_IND, "");
+                    }
+
+                else
+                    Update("num_operaciones_efectivo", TBL_NEGOCIO_IND, "");
+            }
+        });
         tvDiasVentaNeg.setOnClickListener(etDiasVenta_OnClick);
         ibFotoFachNeg.setOnClickListener(ibFotoFachNeg_OnClick);
         etReferenciNeg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1942,10 +2261,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etReferenciNeg.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etReferenciNeg.setError("Este campo es requerido");
@@ -2014,10 +2331,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNombreAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("nombre", etNombreAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNombreAval.setError("Este campo es requerido");
@@ -2085,10 +2400,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etApPaternoAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("paterno", etApPaternoAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etApPaternoAval.setError("Este campo es requerido");
@@ -2155,10 +2468,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if(!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("materno", etApMaternoAval.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -2186,10 +2497,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         ContentValues cv = new ContentValues();
                         cv.put("rfc",tvRfcAval.getText().toString().trim().toUpperCase());
                         cv.put("curp",s.toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
 
                 }
@@ -2206,10 +2515,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             if (Miscellaneous.CurpValidador(tvCurpAval.getText() + etCurpIdAval.getText().toString().trim().toUpperCase())) {
                                 ContentValues cv = new ContentValues();
                                 cv.put("curp_digito_veri", etCurpIdAval.getText().toString().trim());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                             else
                                 etCurpIdAval.setError("Curp no válida");
@@ -2230,10 +2537,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNumIdentifAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("no_identificacion", etNumIdentifAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNumIdentifAval.setError("Este campo es requerido");
@@ -2241,6 +2546,28 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         });
         tvOcupacionAval.setOnClickListener(tvOcupacionAval_OnClick);
+
+        tvDestinoAval.setOnClickListener(tvDestinoAval_OnClick);
+        etOtroDestinoAval.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("otro_destino_credito", TBL_AVAL_IND, s.toString().trim().toUpperCase());
+                else
+                    Update("otro_destino_credito", TBL_AVAL_IND, "");
+            }
+        });
+
         ibMapAval.setOnClickListener(ibMapAval_OnClick);
         etCalleAval.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -2249,10 +2576,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etCalleAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("calle", etCalleAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etCalleAval.setError("Este campo es requerido");
@@ -2266,10 +2591,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNoExtAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("no_exterior", etNoExtAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNoExtAval.setError("Este campo es requerido");
@@ -2283,10 +2605,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNoIntAval.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("no_interior", etNoIntAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNoIntAval.setError("Este campos es requerido");
@@ -2299,10 +2619,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("manzana", etManzanaAval.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -2313,10 +2631,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("lote", etLoteAval.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -2350,10 +2666,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
                         }
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }else {
                         tvColoniaAval.setText("No se encontró información");
                         tvMunicipioAval.setText("No se encontró información");
@@ -2378,10 +2692,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (!etNombreTitularAval.getText().toString().trim().isEmpty()) {
                             ContentValues cv = new ContentValues();
                             cv.put("nombre_titular", etNombreTitularAval.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etNombreTitularAval.setError("Este campo es requerido");
@@ -2396,10 +2708,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etIngMenAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("ing_mensual", etIngMenAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etIngMenAval.setError("Este campo es requerido");
@@ -2413,10 +2723,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etIngOtrosAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("ing_otros", etIngOtrosAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etIngOtrosAval.setError("Este campo es requerido");
@@ -2430,10 +2738,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosSemAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_semanal", etGastosSemAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosSemAval.setError("Este campo es requerido");
@@ -2447,10 +2753,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosAguaAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_agua", etGastosAguaAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosAguaAval.setError("Este campo es requerido");
@@ -2464,10 +2768,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosLuzAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_luz", etGastosLuzAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosLuzAval.setError("Este campo es requerido");
@@ -2481,10 +2783,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosTelAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_telefono", etGastosTelAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosTelAval.setError("Este campo es requerido");
@@ -2498,10 +2798,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosRentaAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_renta", etGastosRentaAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosRentaAval.setError("Este campo es requerido");
@@ -2515,16 +2813,65 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etGastosOtrosAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("gasto_otros", etGastosOtrosAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etGastosOtrosAval.setError("Este campo es requerido");
                 }
             }
         });
+
+
+        tvMediosPagoAval.setOnClickListener(tvMediosPagoAval_OnClick);
+        etOtroMedioPagoAval.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    Update("otro_medio_pago", TBL_AVAL_IND, s.toString().trim().toUpperCase());
+                else
+                    Update("otro_medio_pago", TBL_AVAL_IND, "");
+            }
+        });
+        etMontoMaxAval.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    try {
+                        if (Double.parseDouble(s.toString()) > 0)
+                            Update("monto_maximo", TBL_AVAL_IND, s.toString().trim().toUpperCase());
+
+                    }catch (NumberFormatException e){
+                        Update("monto_maximo", TBL_AVAL_IND, "");
+                    }
+
+                else
+                    Update("monto_maximo", TBL_AVAL_IND, "");
+            }
+        });
+
+
+
         tvHoraLocAval.setOnClickListener(tvHoraLocAval_OnClick);
         etAntiguedadAval.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -2534,10 +2881,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         if (Integer.parseInt(etAntiguedadAval.getText().toString().trim()) > 0) {
                             ContentValues cv = new ContentValues();
                             cv.put("antiguedad", etAntiguedadAval.getText().toString().trim());
-                            if (ENVIROMENT)
-                                db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else
                             etAntiguedadAval.setError("No se permiten cantidades iguales a cero");
@@ -2565,10 +2910,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etTelCasaAval.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_casa", etTelCasaAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
 
                     else
@@ -2596,10 +2939,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCelularAval.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_celular", etCelularAval.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etCelularAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -2616,10 +2957,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etReferenciaAval.getText().toString().trim().isEmpty()) {
                         ContentValues cv = new ContentValues();
                         cv.put("ref_domiciliaria", etReferenciaAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etReferenciaAval.setError("Este campo es requerido");
@@ -2635,10 +2974,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etNombreRef.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("nombre", etNombreRef.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etNombreRef.setError("Este campo es requerido");
@@ -2652,10 +2989,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etApPaternoRef.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("paterno", etApPaternoRef.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etApPaternoRef.setError("Este campo es requerido");
@@ -2668,10 +3003,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!hasFocus){
                     ContentValues cv = new ContentValues();
                     cv.put("materno", etApMaternoRef.getText().toString().trim().toUpperCase());
-                    if (ENVIROMENT)
-                        db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -2682,10 +3015,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (!etCalleRef.getText().toString().trim().isEmpty()){
                         ContentValues cv = new ContentValues();
                         cv.put("calle", etCalleRef.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etCalleRef.setError("Este campo es requerido");
@@ -2720,10 +3051,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioRef.setText(row.getString(4));
                             cv.put("municipio", row.getString(4));
                         }
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }else {
                         tvColoniaRef.setText("No se encontró información");
                         tvMunicipioRef.setText("No se encontró información");
@@ -2754,10 +3083,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etTelCelRef.setError(null);
                         ContentValues cv = new ContentValues();
                         cv.put("tel_celular", etTelCelRef.getText().toString().trim());
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                     else
                         etTelCelRef.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -2777,7 +3104,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (is_edit) {
                     tvGeneroCli.setError(null);
-                    ContentValues cv = new ContentValues();;
+                    //ContentValues cv = new ContentValues();;
                     HashMap<Integer, String> params = new HashMap<>();
                     if (checkedId == R.id.rbHombre) {
 
@@ -2792,7 +3119,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(5, "");
                         tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        cv.put("genero", "0");
+                        //cv.put("genero", "0");
+                        Update("genero", TBL_CLIENTE_IND, "0");
                     } else if (checkedId == R.id.rbMujer) {
                         params.put(0, etNombreCli.getText().toString());
                         params.put(1, etApPaternoCli.getText().toString());
@@ -2805,7 +3133,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(5, "");
                         tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        cv.put("genero", "1");
+                        //cv.put("genero", "1");
+                        Update("genero", TBL_CLIENTE_IND, "1");
                     }
                     else {
                         params.put(0, etNombreCli.getText().toString());
@@ -2819,13 +3148,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(5, "");
                         tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        cv.put("genero", "2");
+                        //cv.put("genero", "2");
+                        Update("genero", TBL_CLIENTE_IND, "2");
                     }
 
-                    if (ENVIROMENT)
+                    /*if (ENVIROMENT)
                         db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                 }
             }
         });
@@ -2844,10 +3174,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             break;
                     }
 
-                    if (ENVIROMENT)
-                        db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                 }
             }
@@ -2906,10 +3233,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvCurpAval.setText(Miscellaneous.GenerarCurp(params));
                     }
 
-                    if (ENVIROMENT)
-                        db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 }
             }
         });
@@ -2935,12 +3260,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvPlazo.setError(null);
                                 tvPlazo.setText(_plazo[position]);
-                                ContentValues cv = new ContentValues();
+
+                                Update("plazo", TBL_CREDITO_IND, tvPlazo.getText().toString().trim().toUpperCase());
+
+                                /*ContentValues cv = new ContentValues();
                                 cv.put("plazo", tvPlazo.getText().toString().trim().toUpperCase());
                                 if (ENVIROMENT)
                                     db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                                 else
-                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                             }
                         });
                 builder.create();
@@ -2959,12 +3287,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFrecuencia.setError(null);
                                 tvFrecuencia.setText(_frecuencia[position]);
-                                ContentValues cv = new ContentValues();
+                                Update("periodicidad", TBL_CREDITO_IND, tvFrecuencia.getText().toString().trim().toUpperCase());
+                                /*ContentValues cv = new ContentValues();
                                 cv.put("periodicidad", tvFrecuencia.getText().toString().trim().toUpperCase());
                                 if (ENVIROMENT)
                                     db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                                 else
-                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                             }
                         });
                 builder.create();
@@ -3002,12 +3331,38 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDestino.setError(null);
                                 tvDestino.setText(_destino[position]);
-                                ContentValues cv = new ContentValues();
+                                Update("destino", TBL_CREDITO_IND, tvDestino.getText().toString().trim().toUpperCase());
+                                /*ContentValues cv = new ContentValues();
                                 cv.put("destino", tvDestino.getText().toString().trim().toUpperCase());
                                 if (ENVIROMENT)
                                     db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                                 else
-                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        }
+    };
+
+    private View.OnClickListener tvRiesgo_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.clasificacion_riesgo, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvRiesgo.setError(null);
+                                tvRiesgo.setText(_riesgo[position]);
+                                Update("clasificacion_riego", TBL_CREDITO_IND, tvRiesgo.getText().toString().trim().toUpperCase());
+                                /*ContentValues cv = new ContentValues();
+                                cv.put("destino", tvDestino.getText().toString().trim().toUpperCase());
+                                if (ENVIROMENT)
+                                    db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                else
+                                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                             }
                         });
                 builder.create();
@@ -3067,9 +3422,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_estados = new Intent(context, Catalogos.class);
-                i_estados.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
-                i_estados.putExtra(Constants.CATALOGO, Constants.ESTADOS);
-                i_estados.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_ESTADO_NAC);
+                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(CATALOGO, ESTADOS);
+                i_estados.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_ESTADO_NAC);
                 startActivityForResult(i_estados, Constants.REQUEST_CODE_ESTADO_NAC);
             }
         }
@@ -3080,11 +3435,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
-                i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpCli.getText().toString().trim());
-                i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_CLIE);
-                startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_CLIE);
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(CATALOGO, COLONIAS);
+                i_colonia.putExtra(EXTRA, etCpCli.getText().toString().trim());
+                i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CLIE);
+                startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CLIE);
             }
         }
     };
@@ -3102,10 +3457,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvEstudiosCli.requestFocus();
                                 ContentValues cv = new ContentValues();
                                 cv.put("nivel_estudio", tvEstudiosCli.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3136,10 +3489,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 ContentValues cv = new ContentValues();
                                 cv.put("estado_civil", tvEstadoCivilCli.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3174,10 +3525,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 ContentValues cv = new ContentValues();
                                 cv.put("tipo_vivienda", tvTipoCasaCli.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3198,10 +3547,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvCasaFamiliar.setText(_casa_familiar[position]);
                                 ContentValues cv = new ContentValues();
                                 cv.put("parentesco", tvCasaFamiliar.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3222,10 +3569,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvDependientes.setText(_dependientes[position]);
                                 ContentValues cv = new ContentValues();
                                 cv.put("dependientes", tvDependientes.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3245,10 +3590,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvEnteroNosotros.setText(_medio_contacto[position]);
                             ContentValues cv = new ContentValues();
                             cv.put("medio_contacto", tvEnteroNosotros.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                     });
             builder.create();
@@ -3261,10 +3604,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
-                i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpAval.getText().toString().trim());
-                i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_AVAL);
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(CATALOGO, COLONIAS);
+                i_colonia.putExtra(EXTRA, etCpAval.getText().toString().trim());
+                i_colonia.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_AVAL);
                 startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_AVAL);
             }
         }
@@ -3296,10 +3639,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 ContentValues cv = new ContentValues();
                                 cv.put("tipo_vivienda", tvTipoCasaAval.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3320,10 +3661,36 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvParentescoAval.setText(_parentesco[position]);
                                 ContentValues cv = new ContentValues();
                                 cv.put("parentesco", tvParentescoAval.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        }
+    };
+
+    private View.OnClickListener tvMediosPagoAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.medios_pago, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvMediosPagoAval.setError(null);
+                                tvMediosPagoAval.setText(_medios_pago[position]);
+                                Update("medios_pago", TBL_AVAL_IND, _medios_pago[position]);
+
+                                if (position < 4){
+                                    etOtroMedioPagoAval.setVisibility(View.GONE);
+                                    etOtroMedioPagoAval.setText("");
+                                    Update("otro_medio_pago", TBL_AVAL_IND, "");
+                                }
+                                else{
+                                    etOtroMedioPagoAval.setVisibility(View.VISIBLE);
+                                }
                             }
                         });
                 builder.create();
@@ -3355,10 +3722,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.COLONIAS));
-                i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpNeg.getText().toString().trim());
-                i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_NEG);
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIAS));
+                i_colonia.putExtra(CATALOGO, COLONIAS);
+                i_colonia.putExtra(EXTRA, etCpNeg.getText().toString().trim());
+                i_colonia.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_NEG);
                 startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_NEG);
             }
         }
@@ -3389,9 +3756,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
-                i_ocupaciones.putExtra(Constants.CATALOGO, Constants.OCUPACIONES);
-                i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CLIE);
+                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
+                i_ocupaciones.putExtra(CATALOGO, Constants.OCUPACIONES);
+                i_ocupaciones.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CLIE);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_OCUPACION_CLIE);
             }
         }
@@ -3409,10 +3776,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvTipoIdentificacion.setText(_tipo_identificacion[position]);
                                 ContentValues cv = new ContentValues();
                                 cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3433,10 +3798,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvTipoIdentificacionAval.setText(_tipo_identificacion[position]);
                                 ContentValues cv = new ContentValues();
                                 cv.put("tipo_identificacion", tvTipoIdentificacionAval.getText().toString().trim().toUpperCase());
-                                if (ENVIROMENT)
-                                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                else
-                                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                    db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                             }
                         });
                 builder.create();
@@ -3450,10 +3813,24 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
-                i_ocupaciones.putExtra(Constants.CATALOGO, Constants.OCUPACIONES);
-                i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CONY);
+                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
+                i_ocupaciones.putExtra(CATALOGO, Constants.OCUPACIONES);
+                i_ocupaciones.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CONY);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_OCUPACION_CONY);
+            }
+        }
+    };
+
+    private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (is_edit) {
+                Intent i_colonia = new Intent(context, Catalogos.class);
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(CATALOGO, COLONIAS);
+                i_colonia.putExtra(EXTRA, etCpCony.getText().toString().trim());
+                i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CONY);
+                startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CONY);
             }
         }
     };
@@ -3463,10 +3840,66 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.SECTORES));
-                i_ocupaciones.putExtra(Constants.CATALOGO, Constants.SECTORES);
-                i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_ACTIVIDAD_NEG);
+                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(Constants.SECTORES));
+                i_ocupaciones.putExtra(CATALOGO, Constants.SECTORES);
+                i_ocupaciones.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_ACTIVIDAD_NEG);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_ACTIVIDAD_NEG);
+            }
+        }
+    };
+
+    private View.OnClickListener tvDestinoNeg_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.destino_credito, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvDestinoNeg.setError(null);
+                                tvDestinoNeg.setText(_destino_credito[position]);
+                                Update("destino_credito", TBL_NEGOCIO_IND, _destino_credito[position]);
+
+                                if (position == 0){
+                                    etOtroDestinoNeg.setVisibility(View.GONE);
+                                    etOtroDestinoNeg.setText("");
+                                    Update("otro_destino_credito", TBL_NEGOCIO_IND, "");
+                                }
+                                else{
+                                    etOtroDestinoNeg.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        }
+    };
+
+    private View.OnClickListener tvMediosPagoNeg_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.medios_pago, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvMediosPagoNeg.setError(null);
+                                tvMediosPagoNeg.setText(_medios_pago[position]);
+                                Update("medios_pago", TBL_NEGOCIO_IND, _medios_pago[position]);
+
+                                if (position < 4){
+                                    etOtroMedioPagoNeg.setVisibility(View.GONE);
+                                    etOtroMedioPagoNeg.setText("");
+                                    Update("otro_medio_pago", TBL_NEGOCIO_IND, "");
+                                }
+                                else{
+                                    etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
+                builder.create();
+                builder.show();
             }
         }
     };
@@ -3477,10 +3910,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.COLONIAS));
-                i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpRef.getText().toString().trim());
-                i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_REF);
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIAS));
+                i_colonia.putExtra(CATALOGO, COLONIAS);
+                i_colonia.putExtra(EXTRA, etCpRef.getText().toString().trim());
+                i_colonia.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_REF);
                 startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_REF);
             }
         }
@@ -3511,9 +3944,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_estados = new Intent(context, Catalogos.class);
-                i_estados.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
-                i_estados.putExtra(Constants.CATALOGO, Constants.ESTADOS);
-                i_estados.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_ESTADO_NAC_AVAL);
+                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(CATALOGO, ESTADOS);
+                i_estados.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_ESTADO_NAC_AVAL);
                 startActivityForResult(i_estados, Constants.REQUEST_CODE_ESTADO_NAC_AVAL);
             }
         }
@@ -3524,10 +3957,38 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
-                i_ocupaciones.putExtra(Constants.CATALOGO, Constants.OCUPACIONES);
-                i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_AVAL);
+                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
+                i_ocupaciones.putExtra(CATALOGO, Constants.OCUPACIONES);
+                i_ocupaciones.putExtra(REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_AVAL);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_OCUPACION_AVAL);
+            }
+        }
+    };
+
+    private View.OnClickListener tvDestinoAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.destino_credito, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvDestinoAval.setError(null);
+                                tvDestinoAval.setText(_destino_credito[position]);
+                                Update("destino_credito", TBL_AVAL_IND, _destino_credito[position]);
+
+                                if (position == 0){
+                                    etOtroDestinoAval.setVisibility(View.GONE);
+                                    etOtroDestinoAval.setText("");
+                                    Update("otro_destino_credito", TBL_AVAL_IND, "");
+                                }
+                                else{
+                                    etOtroDestinoAval.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
+                builder.create();
+                builder.show();
             }
         }
     };
@@ -4043,13 +4504,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(5,"");
                         tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        cv = new ContentValues();
+                        Update("estado_nacimiento", TBL_CLIENTE_IND, tvEstadoNacCli.getText().toString().trim().toUpperCase());
+                        /*cv = new ContentValues();
                         cv.put("estado_nacimiento",tvEstadoNacCli.getText().toString().trim().toUpperCase());
 
                         if (ENVIROMENT)
                             db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
                 }
                 break;
@@ -4064,13 +4526,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvActividadEcoCli.setText(row.getString(2));
                         }
                         row.close();
-                        cv = new ContentValues();
+                        Update("ocupacion", TBL_CLIENTE_IND, tvOcupacionCli.getText().toString().trim().toUpperCase());
+                        Update("actividad_economica", TBL_CLIENTE_IND, tvActividadEcoCli.getText().toString().trim().toUpperCase());
+                        /*cv = new ContentValues();
                         cv.put("ocupacion",tvOcupacionCli.getText().toString().trim().toUpperCase());
                         cv.put("actividad_economica", tvActividadEcoCli.getText().toString().trim().toUpperCase());
                         if (ENVIROMENT)
                             db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
                 }
                 break;
@@ -4081,10 +4545,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvOcupacionCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4095,10 +4557,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("actividad_economica", tvActEconomicaNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4129,10 +4589,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                         cv = new ContentValues();
                         cv.put("estado_nacimiento", tvEstadoNacAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4149,26 +4607,36 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             cv = new ContentValues();
                             cv.put("ocupacion", tvOcupacionAval.getText().toString().trim().toUpperCase());
                             cv.put("actividad_economica", tvActividadEcoAval.getText().toString().trim().toUpperCase());
-                            if (ENVIROMENT)
-                                db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         row.close();
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_COLONIA_CLIE:
-                if (resultCode == Constants.REQUEST_CODE_COLONIA_CLIE){
+            case REQUEST_CODE_COLONIA_CLIE:
+                if (resultCode == REQUEST_CODE_COLONIA_CLIE){
                     if (data != null){
                         tvColoniaCli.setError(null);
                         tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("colonia",tvColoniaCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                    }
+                }
+                break;
+            case REQUEST_CODE_COLONIA_CONY:
+                if (resultCode == REQUEST_CODE_COLONIA_CONY){
+                    if (data != null){
+                        tvColoniaCony.setError(null);
+                        tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
+                        Update("colonia", TBL_CONYUGE_IND, tvColoniaCony.getText().toString().trim().toUpperCase());
+
+                        /*cv = new ContentValues();
+                        cv.put("colonia",tvColoniaCli.getText().toString().trim().toUpperCase());
+
+                        db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
                 }
                 break;
@@ -4178,10 +4646,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("colonia",tvColoniaAval.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4192,10 +4658,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("colonia",tvColoniaNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4206,10 +4670,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaRef.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
                         cv = new ContentValues();
                         cv.put("colonia",tvColoniaRef.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 }
                 break;
@@ -4224,10 +4686,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("foto_fachada", Miscellaneous.save(byteFotoFachCli, 1));
-                            if (ENVIROMENT)
-                                db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4245,10 +4705,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("foto_fachada", Miscellaneous.save(byteFotoFachNeg, 1));
-                            if (ENVIROMENT)
-                                db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4266,10 +4724,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("foto_fachada", Miscellaneous.save(byteFotoFachAval, 1));
-                            if (ENVIROMENT)
-                                db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4289,10 +4745,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("firma", Miscellaneous.save(byteFirmaAval, 3));
-                            if (ENVIROMENT)
-                                db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4312,10 +4766,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("firma", Miscellaneous.save(byteFirmaCli, 3));
-                            if (ENVIROMENT)
-                                db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4335,10 +4787,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("firma_asesor", Miscellaneous.save(byteFirmaAsesor, 3));
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4359,10 +4809,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("ine_frontal", Miscellaneous.save(byteIneFrontal, 4));
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4383,10 +4831,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("ine_reverso", Miscellaneous.save(byteIneReverso, 4));
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4404,10 +4850,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("curp", Miscellaneous.save(byteCurp, 4));
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4425,10 +4869,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         cv = new ContentValues();
                         try {
                             cv.put("comprobante", Miscellaneous.save(byteComprobante, 4));
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4472,13 +4914,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     }
                     tvDiaDesembolso.setText(diaDesembolso);
 
-                    cv = new ContentValues();
+                    Update("fecha_desembolso", TBL_CREDITO_IND, tvFechaDesembolso.getText().toString().trim());
+                    Update("dia_desembolso", TBL_CREDITO_IND, tvDiaDesembolso.getText().toString().trim());
+                    /*cv = new ContentValues();
                     cv.put("fecha_desembolso",tvFechaDesembolso.getText().toString().trim());
                     cv.put("dia_desembolso",tvDiaDesembolso.getText().toString().trim());
                     if (ENVIROMENT)
                         db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     else
-                        db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     break;
                 case "fechaNacCli":
                     tvFechaNacCli.setError(null);
@@ -4502,13 +4946,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         params.put(5, tvEstadoNacCli.getText().toString().trim());
                     else
                         params.put(5,"");
-                    cv = new ContentValues();
+                    Update("fecha_nacimiento", TBL_CLIENTE_IND, tvFechaNacCli.getText().toString().trim());
+                    Update("edad", TBL_CLIENTE_IND, tvEdadCli.getText().toString().trim());
+                    /*cv = new ContentValues();
                     cv.put("fecha_nacimiento",tvFechaNacCli.getText().toString().trim());
                     cv.put("edad",tvEdadCli.getText().toString().trim());
                     if (ENVIROMENT)
                         db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     else
-                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
                     break;
                 case "fechaNacAval":
@@ -4537,10 +4983,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     cv = new ContentValues();
                     cv.put("fecha_nacimiento",tvFechaNacAval.getText().toString().trim());
                     cv.put("edad",tvEdadAval.getText().toString().trim());
-                    if (ENVIROMENT)
-                        db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                    else
-                        db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     tvCurpAval.setText(Miscellaneous.GenerarCurp(paramsAval));
                     break;
             }
@@ -4555,22 +4999,21 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             case "HoraVisita":
                 tvHoraVisita.setError(null);
                 tvHoraVisita.setText(timer);
-                cv = new ContentValues();
+                Update("hora_visita", TBL_CREDITO_IND, tvHoraVisita.getText().toString().trim());
+                /*cv = new ContentValues();
                 cv.put("hora_visita",tvHoraVisita.getText().toString().trim());
                 if (ENVIROMENT)
                     db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 else
-                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                    db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                 break;
             case "HoraVisitaAval":
                 tvHoraLocAval.setError(null);
                 tvHoraLocAval.setText(timer);
                 cv = new ContentValues();
                 cv.put("horario_localizacion",timer);
-                if (ENVIROMENT)
-                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                else
-                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 break;
         }
     }
@@ -4592,10 +5035,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvCapacidadPagoNeg.setText(String.valueOf(ingreso - gastos));
         ContentValues cv = new ContentValues();
         cv.put("capacidad_pago", tvCapacidadPagoNeg.getText().toString().trim());
-        if (ENVIROMENT)
-            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-        else
-            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
     }
 
     private void showDiasSemana(){
@@ -4627,10 +5068,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvDiasVentaNeg.setText(dias);
                         ContentValues cv = new ContentValues();
                         cv.put("dias_venta", tvDiasVentaNeg.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        else
-                            db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                            db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -4660,10 +5099,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("monto_prestamo",etMontoPrestamo.getText().toString().trim());
             cv.put("destino",tvDestino.getText().toString().trim().toUpperCase());
             cv.put("estatus_completado",0);
-            if (ENVIROMENT)
-                db.update(DATOS_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            else
-                db.update(DATOS_CREDITO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_credito = true;
         }
         else
@@ -4810,10 +5247,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                             cv.put("email", etEmail.getText().toString().trim());
                                                             cv.put("ref_domiciliaria", etReferenciCli.getText().toString().trim().toUpperCase());
                                                             cv.put("estatus_completado", 1);
-                                                            if (ENVIROMENT)
-                                                                db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                                            else
-                                                                db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                                                db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                             save_cliente = true;
                                                         }
@@ -4884,10 +5319,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
             cv.put("tel_celular", etCelularCony.getText().toString().trim());
             cv.put("estatus_completado", 1);
-            if (ENVIROMENT)
-                db.update(DATOS_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            else
-                db.update(DATOS_CONYUGE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             save_conyuge = true;
         }
@@ -4909,10 +5342,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("ubicacion", etUbicacionEco.getText().toString().trim().toUpperCase());
             cv.put("ingreso", etIngresoEco.getText().toString().trim());
             cv.put("estatus_completado",1);
-            if (ENVIROMENT)
-                db.update(DATOS_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            else
-                db.update(DATOS_ECONOMICOS_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             save_economicos = true;
         }
@@ -4975,10 +5406,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             cv.put("dias_venta", tvDiasVentaNeg.getText().toString().trim());
                             cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
                             cv.put("estatus_completado", 1);
-                            if (ENVIROMENT)
-                                db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                             save_negocio = true;
                         }
@@ -5112,10 +5541,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                         cv.put("tel_celular", etCelularAval.getText().toString().trim());
                                                         cv.put("ref_domiciliaria", etReferenciaAval.getText().toString().trim().toUpperCase());
                                                         cv.put("estatus_completado", 1);
-                                                        if (ENVIROMENT)
-                                                            db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                                                        else
-                                                            db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                                            db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                         save_aval = true;
                                                     }
@@ -5186,10 +5613,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("municipio", tvMunicipioRef.getText().toString().trim().toUpperCase());
             cv.put("tel_celular", etTelCelRef.getText().toString().trim().toUpperCase());
             cv.put("estatus_completado", 1);
-            if (ENVIROMENT)
-                db.update(DATOS_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            else
-                db.update(DATOS_REFERENCIA_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             save_referencia = true;
         } else
@@ -5208,10 +5633,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             ContentValues cv = new ContentValues();
                             cv.put("estatus_completado", 1);
 
-                            if (ENVIROMENT)
-                                db.update(DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(DOCUMENTOS_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                         }
                         else{
                             ivError8.setVisibility(View.VISIBLE);
@@ -5266,10 +5688,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     pbLoadCli.setVisibility(View.GONE);
                     Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                 }
-                if (ENVIROMENT)
-                    db.update(DATOS_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                else
-                    db.update(DATOS_CLIENTE_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                    db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 myHandler.removeCallbacksAndMessages(null);
 
                 CancelUbicacion();
@@ -5324,10 +5744,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     pbLoadNeg.setVisibility(View.GONE);
                     Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                 }
-                if (ENVIROMENT)
-                    db.update(DATOS_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                else
-                    db.update(DATOS_NEGOCIO_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                    db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 myHandler.removeCallbacksAndMessages(null);
 
                 CancelUbicacion();
@@ -5382,10 +5800,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     pbLoadAval.setVisibility(View.GONE);
                     Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                 }
-                if (ENVIROMENT)
-                    db.update(DATOS_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                else
-                    db.update(DATOS_AVAL_IND_T, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                    db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
                 myHandler.removeCallbacksAndMessages(null);
 
                 CancelUbicacion();
@@ -6116,5 +6532,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             tvColoniaRef.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             etTelCelRef.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
         }
+    }
+
+    private void Update(String key, String tabla, String value) {
+        Log.e("update", key+": "+value);
+        ContentValues cv = new ContentValues();
+        cv.put(key, value);
+        db.update(tabla, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
     }
 }

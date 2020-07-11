@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -52,6 +52,7 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
@@ -75,7 +76,6 @@ public class fichas_pendientes_fragment extends Fragment{
     private RecyclerView rvFichas;
     private adapter_fichas_pendientes adapter;
 
-    private MCarteraGnral mCarteraGeneral;
     private List<MCarteraGnral> _m_carteraGral;
     private SQLiteDatabase db;
     private DBhelper dBhelper;
@@ -93,9 +93,6 @@ public class fichas_pendientes_fragment extends Fragment{
     private CheckBox cbGpo;
     private int cont_filtros = 0;
 
-    private String[] dataNombre;
-    private String[] dataDia;
-    private String[] dataColonia;
     private String[] dataAsesor;
     private ArrayAdapter<String> adapterNombre;
     private ArrayAdapter<String> adapterDia;
@@ -181,7 +178,7 @@ public class fichas_pendientes_fragment extends Fragment{
 
     }
 
-    private boolean GetCartera(String where){
+    private void GetCartera(String where){
         Cursor row;
         _m_carteraGral = new ArrayList<>();
 
@@ -190,14 +187,13 @@ public class fichas_pendientes_fragment extends Fragment{
         row = db.rawQuery(query, null);
 
         parent.SetUpBagde(0, row.getCount());
-        asesor = new ArrayList<>();
-        asesor.add("");
 
+        String[] dataNombre;
+        String[] dataDia;
+        String[] dataColonia;
         if (row.getCount() > 0){
             row.moveToFirst();
-            dataNombre = new String[row.getCount()];
-            dataDia = new String[row.getCount()];
-            dataAsesor = new String[row.getCount()];
+            //dataAsesor = new String[row.getCount()];
             List<String> nombre = new ArrayList<>();
             List<String> dia = new ArrayList<>();
             List<String> colonia = new ArrayList<>();
@@ -206,8 +202,8 @@ public class fichas_pendientes_fragment extends Fragment{
                 nombre.add(row.getString(1));
                 dia.add(row.getString(5));
                 colonia.add(row.getString(9));
-                asesor.add(row.getString(7));
-                mCarteraGeneral = new MCarteraGnral();
+                //asesor.add(row.getString(7));
+                MCarteraGnral mCarteraGeneral = new MCarteraGnral();
                 mCarteraGeneral.setId_cliente(row.getString(0));
                 mCarteraGeneral.setTipo(row.getString(8));
                 mCarteraGeneral.setNombre(row.getString(1));
@@ -224,40 +220,40 @@ public class fichas_pendientes_fragment extends Fragment{
 
             dataNombre = Miscellaneous.RemoverRepetidos(nombre);
             dataColonia = Miscellaneous.RemoverRepetidos(colonia);
-            dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
+            //dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
             dataDia = Miscellaneous.RemoverRepetidos(dia);
 
-            adapterNombre = new ArrayAdapter<String>(ctx,
+            adapterNombre = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
 
-            adapterDia = new ArrayAdapter<String>(ctx,
+            adapterDia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataDia);
 
-            adapterColonia = new ArrayAdapter<String>(ctx,
+            adapterColonia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
 
-            adapterAsesor = new ArrayAdapter<String>(ctx,
-                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+            /*adapterAsesor = new ArrayAdapter<>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);*/
         }
         else{
-            dataAsesor = new String[1];
+            /*dataAsesor = new String[1];
             dataAsesor[0] = "";
-            adapterAsesor = new ArrayAdapter<String>(ctx,
-                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+            adapterAsesor = new ArrayAdapter<>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);*/
 
             dataNombre = new String[1];
             dataNombre[0] = "";
-            adapterNombre = new ArrayAdapter<String>(ctx,
+            adapterNombre = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);
 
             dataDia = new String[1];
             dataDia[0] = "";
-            adapterDia = new ArrayAdapter<String>(ctx,
+            adapterDia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataDia);
 
             dataColonia = new String[1];
             dataColonia[0] = "";
-            adapterColonia = new ArrayAdapter<String>(ctx,
+            adapterColonia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
         }
         row.close();
@@ -271,8 +267,6 @@ public class fichas_pendientes_fragment extends Fragment{
             rvFichas.setVisibility(View.GONE);
             tvNoInfo.setVisibility(View.VISIBLE);
         }
-
-        return true;
     }
 
     @Override
@@ -285,7 +279,7 @@ public class fichas_pendientes_fragment extends Fragment{
             menu.getItem(0).setVisible(true);
 
         final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
-        View actionView = MenuItemCompat.getActionView(menuItem);
+        View actionView = menuItem.getActionView();
         tvContFiltros = actionView.findViewById(R.id.filtro_bagde);
         actionView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,7 +289,7 @@ public class fichas_pendientes_fragment extends Fragment{
         });
 
         final MenuItem menuItemCierre = menu.findItem(R.id.nvCierreDia);
-        View actionViewCierre = MenuItemCompat.getActionView(menuItemCierre);
+        View actionViewCierre = menuItemCierre.getActionView();
         tvContCierre = actionViewCierre.findViewById(R.id.filtro_bagde);
         actionViewCierre.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,7 +324,7 @@ public class fichas_pendientes_fragment extends Fragment{
                                     dialog.dismiss();
                                 }
                             });
-                    error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    Objects.requireNonNull(error_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                     error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     error_network.show();
                 }
@@ -344,6 +338,7 @@ public class fichas_pendientes_fragment extends Fragment{
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void Filtros (){
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_cartera))
@@ -461,21 +456,13 @@ public class fichas_pendientes_fragment extends Fragment{
         cbInd       = filtros_dg.getHolderView().findViewById(R.id.cbInd);
         cbGpo       = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
 
-        Log.e("Adater", dataNombre.length + " xxx");
-        Log.e("Adater", dataDia.length + " xxx");
-        Log.e("Adater", dataColonia.length + " xxx");
-        Log.e("Adater", dataAsesor.length + " xxx");
-        try {
-            aetNombre.setAdapter(adapterNombre);
-            aetDia.setAdapter(adapterDia);
-            aetColonia.setAdapter(adapterColonia);
-            spAsesor.setAdapter(adapterAsesor);
-        }catch (Exception e){
-
-        }
-
+        aetNombre.setAdapter(adapterNombre);
+        aetDia.setAdapter(adapterDia);
+        aetColonia.setAdapter(adapterColonia);
+        spAsesor.setAdapter(adapterAsesor);
 
         aetDia.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 aetDia.showDropDown();
@@ -484,6 +471,7 @@ public class fichas_pendientes_fragment extends Fragment{
         });
 
         aetNombre.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 aetNombre.showDropDown();
@@ -492,6 +480,7 @@ public class fichas_pendientes_fragment extends Fragment{
         });
 
         aetColonia.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 aetColonia.showDropDown();
@@ -499,30 +488,20 @@ public class fichas_pendientes_fragment extends Fragment{
             }
         });
 
-        Log.e("filtros", session.getFiltrosCartera().get(0)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(1)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(2)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(3)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(4)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(5)+" 0");
-        Log.e("filtros", session.getFiltrosCartera().get(6)+" 0");
 
-        try {
-            if (!session.getFiltrosCartera().get(2).isEmpty())
-                aetNombre.setText(session.getFiltrosCartera().get(2));
-            if (!session.getFiltrosCartera().get(3).isEmpty())
-                aetDia.setText(session.getFiltrosCartera().get(3));
-            if (!session.getFiltrosCartera().get(4).isEmpty())
-                aetColonia.setText(session.getFiltrosCartera().get(4));
-            if (!session.getFiltrosCartera().get(5).isEmpty())
-                spAsesor.setSelection(Integer.parseInt(session.getFiltrosCartera().get(5)));
-            if (session.getFiltrosCartera().get(0).equals("1"))
-                cbInd.setChecked(true);
-            if (session.getFiltrosCartera().get(1).equals("1"))
-                cbGpo.setChecked(true);
-        }catch (Exception e){
+        if (!session.getFiltrosCartera().get(2).isEmpty())
+            aetNombre.setText(session.getFiltrosCartera().get(2));
+        if (!session.getFiltrosCartera().get(3).isEmpty())
+            aetDia.setText(session.getFiltrosCartera().get(3));
+        if (!session.getFiltrosCartera().get(4).isEmpty())
+            aetColonia.setText(session.getFiltrosCartera().get(4));
+        if (!session.getFiltrosCartera().get(5).isEmpty())
+            spAsesor.setSelection(Integer.parseInt(session.getFiltrosCartera().get(5)));
+        if (session.getFiltrosCartera().get(0).equals("1"))
+            cbInd.setChecked(true);
+        if (session.getFiltrosCartera().get(1).equals("1"))
+            cbGpo.setChecked(true);
 
-        }
 
         filtros_dg.show();
     }
@@ -548,8 +527,8 @@ public class fichas_pendientes_fragment extends Fragment{
     }
 
     private void GetAsesores (){
-        String sql = "SELECT * FROM (SELECT DISTINCT(ci.asesor_nombre) FROM "+TBL_CARTERA_IND_T + " AS ci UNION SELECT DISTINCT(cg.asesor_nombre) FROM " + TBL_CARTERA_GPO_T + " AS cg) AS asesores ORDER BY asesor_nombre ASC";
-        Cursor row = db.rawQuery(sql, null);
+        String sql = "SELECT * FROM (SELECT ci.asesor_nombre FROM "+TBL_CARTERA_IND_T + " AS ci WHERE ci.estatus = ? UNION SELECT cg.asesor_nombre FROM " + TBL_CARTERA_GPO_T + " AS cg WHERE cg.estatus = ?) AS asesores ORDER BY asesor_nombre ASC";
+        Cursor row = db.rawQuery(sql, new String[]{"1","1"});
         asesor = new ArrayList<>();
         asesor.add("");
         if (row.getCount() > 0){
@@ -561,9 +540,17 @@ public class fichas_pendientes_fragment extends Fragment{
             }
             dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
 
-            adapterAsesor = new ArrayAdapter<String>(ctx,
+            adapterAsesor = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
         }
+        else {
+            dataAsesor = new String[1];
+            dataAsesor[0] = "";
+            adapterAsesor = new ArrayAdapter<>(ctx,
+                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
+        }
+        row.close();
+        Log.e("SizeASesores", asesor.size()+" aws");
     }
 
 
@@ -583,6 +570,7 @@ public class fichas_pendientes_fragment extends Fragment{
             where += " AND colonia LIKE '%" + session.getFiltrosCartera().get(4) + "%'";
         }
 
+        Log.e("SizeAsesires"," tamaño:" + asesor.size());
         if (!session.getFiltrosCartera().get(5).isEmpty() && Integer.parseInt(session.getFiltrosCartera().get(5)) > 0 && asesor.size() > 0) {
             where += " AND asesor_nombre LIKE '%" + asesor.get(Integer.parseInt(session.getFiltrosCartera().get(5))) + "%'";
         }

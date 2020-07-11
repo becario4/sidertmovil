@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -37,10 +36,7 @@ import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.PrintRecibos;
-import com.sidert.sidertmovil.utils.PrintTicket;
 import com.sidert.sidertmovil.utils.SessionManager;
-
-import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -49,7 +45,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
-import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
 
 public class FormatoRecibos extends AppCompatActivity {
@@ -136,6 +131,8 @@ public class FormatoRecibos extends AppCompatActivity {
         String tipo_recibo = "";
 
             mRecibo = (MFormatoRecibo) getIntent().getSerializableExtra(TICKET_CC);
+
+            Log.e("Resimpre2", String.valueOf(mRecibo.getResImpresion()));
             tipo_recibo = mRecibo.getTipoRecibo();
             if (mRecibo.isTipoImpresion()){ // si es original
                 tvTipoImpresion.setText("Original");
@@ -143,6 +140,8 @@ public class FormatoRecibos extends AppCompatActivity {
                 tvNombreFirma.setText(session.getUser().get(1));
             }
             else{ // si es copia
+                btnOriginal.setVisibility(View.GONE);
+                btnCopia.setVisibility(View.VISIBLE);
                 tvTipoImpresion.setText("Copia");
                 tvTipoFirma.setText("Firma Cliente");
                 tvNombreFirma.setText(mRecibo.getNombreCliente());
@@ -163,7 +162,11 @@ public class FormatoRecibos extends AppCompatActivity {
             case "AGF": //Formato de gastos funerarios
                 tvTipoRecibo.setText("APOYO PARA GASTOS FUNERARIOS");
                 tvPago.setText(Miscellaneous.moneyFormat(mRecibo.getMonto()));
-                tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + "00/100 M.N.");
+                Log.e("Contains", String.valueOf(mRecibo.getMonto().contains(".5"))+ "  "+mRecibo.getMonto());
+                if (mRecibo.getMonto().contains(".5"))
+                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + " pesos 50/100 M.N.");
+                else
+                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + " pesos 00/100 M.N.");
                 break;
         }
 
@@ -365,6 +368,8 @@ public class FormatoRecibos extends AppCompatActivity {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
+                Log.e("IsReimpresion", String.valueOf(mRecibo.isReeimpresion()));
+                Log.e("ResImpresion", String.valueOf(mRecibo.getResImpresion()));
                 if (!mRecibo.isReeimpresion()) {
                     switch (mRecibo.getResImpresion()) {
                         case 0:

@@ -1,27 +1,20 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Base64;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
-//import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

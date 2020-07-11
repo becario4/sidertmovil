@@ -23,6 +23,8 @@ import java.util.Locale;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.RECIBOS_CIRCULO_CREDITO;
 import static com.sidert.sidertmovil.utils.Constants.RECIBOS_CIRCULO_CREDITO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class PrintRecibos {
 
@@ -60,7 +62,7 @@ public class PrintRecibos {
                     posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "CIRCULO DE CREDITO");
                     break;
                 case "AGF": //Apoyo a gastos funerario
-                    posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "APOYO PARA GASTOS FUNERARIO");
+                    posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "APOYO PARA GASTOS FUNERARIOS");
                     break;
             }
 
@@ -105,6 +107,12 @@ public class PrintRecibos {
                 case "CC": //Circulo de credito
                     posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "  Diecisiete pesos 50/100 M.N.  ");
                     break;
+                case "AGF": //Apoyo a Gastos Funerarios
+                    if (ticket.getMonto().contains(".5"))
+                        posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + Miscellaneous.cantidadLetra(ticket.getMonto())+"pesos 50/100 M.N.  ");
+                    else
+                        posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + Miscellaneous.cantidadLetra(ticket.getMonto())+"pesos 00/100 M.N.  ");
+                    break;
             }
             dobleEspacio();
         } catch (UnsupportedEncodingException e) {
@@ -141,66 +149,89 @@ public class PrintRecibos {
                 e.printStackTrace();
             }
         }
+        String sql = "SELECT * FROM " + TBL_RECIBOS + " WHERE prestamo_id = ? AND tipo_recibo = ? AND curp = ?";
+        row = db.rawQuery(sql, new String[]{ticket.getIdPrestamo(), ticket.getTipoRecibo(), ticket.getCurp()});
+
+         if (row.getCount() == 1){
+            row.moveToFirst();
+            count_folio = row.getInt( 5);
+            params = new HashMap();
+            params.put(0, ticket.getIdPrestamo());
+            params.put(1, session.getUser().get(0));
+            params.put(2, ticket.getTipoRecibo());
+            params.put(3, "C");
+            params.put(4, row.getString(5));
+            params.put(5, ticket.getMonto());
+            params.put(6, ticket.getClave());
+            params.put(7, ticket.getNombreCliente());
+            params.put(8, "");
+            params.put(9, "");
+            params.put(10, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            params.put(11, "");
+            params.put(12, "0");
+            params.put(13, ticket.getCurp());
+            dBhelper.saveRecibos(db, params);
+        }
+        else if (row.getCount() >= 2){
+            row.moveToFirst();
+            count_folio = row.getInt( 5);
+            params = new HashMap();
+            params.put(0, ticket.getIdPrestamo());
+            params.put(1, session.getUser().get(0));
+            params.put(2, ticket.getTipoRecibo());
+            if (ticket.isReeimpresion() && ticket.isTipoImpresion())
+                params.put(3, "RO");
+            else
+                params.put(3, "RC");
+            params.put(4, row.getString(5));
+            params.put(5, ticket.getMonto());
+            params.put(6, ticket.getClave());
+            params.put(7, ticket.getNombreCliente());
+            params.put(8, "");
+            params.put(9, "");
+            params.put(10, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            params.put(11, "");
+            params.put(12, "0");
+            params.put(13, ticket.getCurp());
+            dBhelper.saveRecibos(db, params);
+        }
+        else{
+            String sqlFolio = "SELECT MAX(folio) AS folio FROM " + TBL_RECIBOS;
+            Cursor row_folio = db.rawQuery(sqlFolio, null);
+            if (row_folio.getCount() > 0){
+                row_folio.moveToFirst();
+                count_folio = (row_folio.getInt(0) + 1);
+            }
+            else{
+                count_folio = 1;
+            }
+            row_folio.close();
+
+            params = new HashMap();
+            params.put(0, ticket.getIdPrestamo());
+            params.put(1, session.getUser().get(0));
+            params.put(2, ticket.getTipoRecibo());
+            params.put(3, "O");
+            params.put(4, String.valueOf(count_folio));
+            params.put(5, ticket.getMonto());
+            params.put(6, ticket.getClave());
+            params.put(7, ticket.getNombreCliente());
+            params.put(8, "");
+            params.put(9, "");
+            params.put(10, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            params.put(11, "");
+            params.put(12, "0");
+            params.put(13, ticket.getCurp());
+            dBhelper.saveRecibos(db, params);
+        }
+        row.close();
 
         switch (ticket.getTipoRecibo()){
-            case "CC": //Circulo de credito
-                if (ticket.isReeimpresion()){
-                    linea = line("Folio:", "CC-" + session.getUser().get(0) + "-" + ticket.getFolio());
-                }
-                else {
-                    if (ENVIROMENT)
-                        row = dBhelper.getRecords(RECIBOS_CIRCULO_CREDITO, "", " ORDER BY folio DESC", null);
-                    else
-                        row = dBhelper.getRecords(RECIBOS_CIRCULO_CREDITO_T, "", " ORDER BY folio DESC", null);
-
-                    if (row.getCount() > 0) {
-                        row.moveToFirst();
-                        if (row.getString(2).equals("O") && row.getString(3).equals(ticket.getNombreCliente())) {
-                            count_folio = row.getInt(4);
-                            params = new HashMap();
-                            params.put(0, session.getUser().get(0));
-                            params.put(1, "C");
-                            params.put(2, ticket.getNombreCliente());
-                            params.put(3, String.valueOf(count_folio));
-                            params.put(4, Miscellaneous.ObtenerFecha("timestamp"));
-                            params.put(5, "");
-                            params.put(6, "1");
-                            if (ENVIROMENT)
-                                dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO, params);
-                            else
-                                dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO_T, params);
-                        } else {
-                            count_folio = row.getInt(4) + 1;
-                            params = new HashMap();
-                            params.put(0, session.getUser().get(0));
-                            params.put(1, "O");
-                            params.put(2, ticket.getNombreCliente());
-                            params.put(3, String.valueOf(count_folio));
-                            params.put(4, Miscellaneous.ObtenerFecha("timestamp"));
-                            params.put(5, "");
-                            params.put(6, "1");
-                            if (ENVIROMENT)
-                                dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO, params);
-                            else
-                                dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO_T, params);
-                        }
-                    } else {
-                        count_folio = 1;
-                        params = new HashMap();
-                        params.put(0, session.getUser().get(0));
-                        params.put(1, "O");
-                        params.put(2, ticket.getNombreCliente());
-                        params.put(3, String.valueOf(count_folio));
-                        params.put(4, Miscellaneous.ObtenerFecha("timestamp"));
-                        params.put(5, "");
-                        params.put(6, "1");
-                        if (ENVIROMENT)
-                            dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO, params);
-                        else
-                            dBhelper.saveTicketCC(db, Constants.RECIBOS_CIRCULO_CREDITO_T, params);
-                    }
-                    linea = line("Folio:", "CC-" + session.getUser().get(0) + "-" + count_folio);
-                }
+            case "CC":
+                linea = line("Folio:", "CC-" + session.getUser().get(0) + "-" + count_folio);
+                break;
+            case "AGF":
+                linea = line("Folio:", "AGF-" + session.getUser().get(0) + "-" + count_folio);
                 break;
         }
 
@@ -220,6 +251,9 @@ public class PrintRecibos {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+        ss.SendRecibos(ctx, false);
 
     }
 
