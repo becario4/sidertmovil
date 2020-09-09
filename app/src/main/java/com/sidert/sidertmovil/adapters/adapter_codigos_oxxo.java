@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MCodigoOxxo;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -22,7 +23,7 @@ public class adapter_codigos_oxxo extends RecyclerView.Adapter<adapter_codigos_o
     private Event evento;
 
     public interface Event {
-        void CompartirClick(String link);
+        void CompartirClick(Boolean enabled, String link);
     }
 
     public adapter_codigos_oxxo(Context ctx, List<MCodigoOxxo> data, Event evento) {
@@ -49,9 +50,15 @@ public class adapter_codigos_oxxo extends RecyclerView.Adapter<adapter_codigos_o
         holder.ivCompartir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                evento.CompartirClick(item.getNombrePdf());
+                evento.CompartirClick(item.getEnabled(), item.getNombrePdf());
             }
         });
+
+        if (item.getEnabled())
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_ws_enabled)).into(holder.ivCompartir);
+        else
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_ws_disabled)).into(holder.ivCompartir);
+
     }
 
     @Override

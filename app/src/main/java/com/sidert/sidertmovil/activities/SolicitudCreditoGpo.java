@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.activities;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_originacion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_originacion_gpo;
+import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
@@ -58,11 +60,21 @@ import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.question;
+import static com.sidert.sidertmovil.utils.Constants.warning;
 
 public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_originacion_gpo.OnCompleteListener {
 
@@ -128,10 +140,10 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             is_new = false;
             id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
 
-            Cursor row = dBhelper.getRecords(DATOS_CREDITO_GPO_T, " WHERE id_solicitud = " + id_solicitud, "", null);
+            Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
             row.moveToFirst();
             id_credito = Long.parseLong(row.getString(0));
-            initComponents(row.getString(0));
+            initComponents(row.getString(1));
         }
     }
 
@@ -145,12 +157,13 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
     private View.OnClickListener fabAgregar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Cursor row = dBhelper.customSelect(DATOS_INTEGRANTES_GPO_T, "COUNT (cargo)", " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
+            Cursor row = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "COUNT (cargo)", " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
             row.moveToFirst();
             if (row.getInt(0) < 40) {
                 Intent i_agregar_integrante = new Intent(ctx, AgregarIntegrante.class);
                 Log.e("id_credito", "credito"+id_credito);
                 i_agregar_integrante.putExtra("id_credito", String.valueOf(id_credito));
+                i_agregar_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
                 startActivityForResult(i_agregar_integrante, REQUEST_CODE_ADD_INTEGRANTE);
             }
             else
@@ -163,7 +176,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         originacion_gpo.setCancelable(false);
         Bundle b = new Bundle();
         Log.e("is_edit", String.valueOf(is_edit));
-        if (!is_edit) {
+        if (!is_new) {
             b.putBoolean("is_edit", false);
             b.putString("nombre", nombre_gpo);
             b.putString("plazo", plazo);
@@ -180,32 +193,41 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
     }
 
     private void initComponents(String idSolicitud){
-        Cursor row = dBhelper.getOriginacionCreditoGpo(idSolicitud);
-        Log.e("count", "xxxxx"+row.getCount());
+        String sql = "SELECT c.*, s.estatus FROM " + TBL_CREDITO_GPO + " AS c INNER JOIN " + TBL_SOLICITUDES + " AS s ON c.id_solicitud = s.id_solicitud WHERE c.id_solicitud = ?";
+        Cursor row = db.rawQuery(sql, new String[]{idSolicitud});
+        //Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO, " WHERE id_solicitud = ?", "",new String[]{idSolicitud});
         row .moveToFirst();
-        id_credito = row.getInt(12);
-        nombre_gpo = row.getString(13);
-        plazo = row.getString(14);
-        periodicidad = row.getString(15);
-        fecha_desembolso = row.getString(16);
-        dia_desembolso = row.getString(17);
-        hora_visita = row.getString(18);
-        is_edit = false;
+        id_credito = row.getInt(0);
+        nombre_gpo = row.getString(2);
+        plazo = row.getString(3);
+        periodicidad = row.getString(4);
+        fecha_desembolso = row.getString(5);
+        dia_desembolso = row.getString(6);
+        hora_visita = row.getString(7);
+
+        is_edit = row.getInt(9) == 0;
+        if (!is_edit) {
+            invalidateOptionsMenu();
+            fabAgregar.hide();
+        }
 
         row.close();
 
-        Cursor row_integrantes = dBhelper.getRecords(DATOS_INTEGRANTES_GPO_T, " WHERE id_credito = ?", " ORDER BY nombre ASC", new String[]{String.valueOf(id_credito)});
+        Cursor row_integrantes = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ?", " ORDER BY nombre ASC", new String[]{String.valueOf(id_credito)});
         if (row_integrantes.getCount() > 0){
             row_integrantes.moveToFirst();
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row_integrantes.getCount(); i++){
                 HashMap<Integer, String> item = new HashMap();
+                Log.e("id"+i, row_integrantes.getString(21));
                 item.put(0,row_integrantes.getString(0));
                 String nombre = row_integrantes.getString(3) + " " +row_integrantes.getString(4) + " " + row_integrantes.getString(5);
                 item.put(1, nombre.trim().toUpperCase());
-                item.put(2, row_integrantes.getString(1));
-                item.put(3, "2");
-                item.put(4, row_integrantes.getString(20));
+                item.put(2, "2");
+                item.put(3, row_integrantes.getString(21));
+                item.put(4, "");
+                item.put(5, "");
+                item.put(6, row_integrantes.getString(1));
                 data.add(item);
                 row_integrantes.moveToNext();
             }
@@ -216,7 +238,9 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                     Intent i_integrante = new Intent(ctx, AgregarIntegrante.class);
                     i_integrante.putExtra("is_new", false);
                     i_integrante.putExtra("id_integrante", item.get(0));
-                    i_integrante.putExtra("id_credito", item.get(2));
+                    i_integrante.putExtra("id_credito", item.get(6));
+                    i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
+                    i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i_integrante);
                 }
             });
@@ -226,6 +250,9 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
         }
         row_integrantes.close();
+
+        if (!is_edit)
+            invalidateOptionsMenu();
     }
 
     private void initSwipe() {
@@ -284,24 +311,17 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                                 R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
                                     @Override
                                     public void OnClickListener(AlertDialog dialog) {
-                                        if (ENVIROMENT) {
-                                            db.delete(DATOS_INTEGRANTES_GPO_T, "id = ?", new String[]{id_integrante});
-                                            db.delete(TELEFONOS_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(DOMICILIO_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(NEGOCIO_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(CONYUGE_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(OTROS_DATOS_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(DOCUMENTOS_INTEGRANTE_T, "id_integrante = ?", new String[]{id_integrante});
-                                        }
-                                        else{
-                                            db.delete(DATOS_INTEGRANTES_GPO, "id = ?", new String[]{id_integrante});
-                                            db.delete(TELEFONOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(DOMICILIO_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(NEGOCIO_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(CONYUGE_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(OTROS_DATOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                            db.delete(DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
-                                        }
+
+                                        db.delete(TBL_INTEGRANTES_GPO, "id = ?", new String[]{id_integrante});
+                                        db.delete(TBL_TELEFONOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DOMICILIO_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_NEGOCIO_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_CONYUGE_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_OTROS_DATOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_CROQUIS_GPO, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_POLITICAS_PLD_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+
                                         adapter.removeItem(position);
                                         dialog.dismiss();
 
@@ -335,6 +355,11 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_enviar_datos, menu);
+        if (!is_edit)
+        {
+            for (int i = 0; i < menu.size(); i++)
+                menu.getItem(i).setVisible(is_edit);
+        }
         return true;
     }
 
@@ -344,66 +369,82 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             case android.R.id.home:
                 break;
             case R.id.enviar:
-                Intent i_camera = new Intent(SolicitudCreditoGpo.this, CameraActivity.class);
-                startActivity(i_camera);
                 Cursor row_credito = null;
-                if (ENVIROMENT)
-                    row_credito = dBhelper.getRecords(DATOS_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
-                else
-                    row_credito = dBhelper.getRecords(DATOS_INTEGRANTES_GPO_T, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
+
+                row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
 
                 if (row_credito.getCount() > 7){
                     Cursor row_cargo;
-                    if (ENVIROMENT)
-                        row_cargo = dBhelper.customSelect(DATOS_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
-                    else
-                        row_cargo = dBhelper.customSelect(DATOS_INTEGRANTES_GPO_T, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
+
+                    row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
 
                     if (row_cargo.getCount() == 3){
                         Cursor row_reunion;
-                        if (ENVIROMENT)
-                            row_reunion = dBhelper.customSelect(OTROS_DATOS_INTEGRANTE + " AS o", "casa_reunion", " INNER JOIN " + DATOS_CREDITO_GPO + " AS c ON c.id = i.id_credito INNER JOIN "+DATOS_INTEGRANTES_GPO + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
-                        else
-                            row_reunion = dBhelper.customSelect(OTROS_DATOS_INTEGRANTE_T + " AS o", "casa_reunion", " INNER JOIN " + DATOS_CREDITO_GPO_T + " AS c ON c.id = i.id_credito INNER JOIN "+DATOS_INTEGRANTES_GPO_T + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
 
-                        Cursor row_total = dBhelper.customSelect(DATOS_INTEGRANTES_GPO_T , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
+                        row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
+
+                        Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
                         row_total.moveToFirst();
-                        if (row_total.getInt(1) > 0){
-                            ContentValues cv = new ContentValues();
-                            cv.put("estatus_completado", 1);
-                            if (ENVIROMENT)
-                                db.update(DATOS_CREDITO_GPO, cv, "id = ?", new String[]{String.valueOf(id_credito)});
-                            else
-                                db.update(DATOS_CREDITO_GPO_T, cv, "id = ?", new String[]{String.valueOf(id_credito)});
 
-                            ContentValues cv_solicitud = new ContentValues();
-                            cv_solicitud.put("estatus", 0);
-                            cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+                        if (row_total.getInt(1) == 0){
+                            final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.enviar_informacion, R.string.enviar, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            ContentValues cv = new ContentValues();
+                                            cv.put("estatus_completado", 1);
 
-                            Servicios_Sincronizado s = new Servicios_Sincronizado();
-                            s.SendOriginacionInd(ctx,false);
+                                            db.update(TBL_CREDITO_GPO, cv, "id = ?", new String[]{String.valueOf(id_credito)});
 
-                            if (ENVIROMENT)
-                                db.update(SOLICITUDES, cv_solicitud, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                            else
-                                db.update(SOLICITUDES_T, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+                                            ContentValues cv_solicitud = new ContentValues();
+                                            cv_solicitud.put("estatus", 1);
+                                            cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+
+                                            db.update(TBL_SOLICITUDES, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+
+                                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                                            ss.SendOriginacionGpo(ctx,false);
+
+                                            dialog.dismiss();
+                                            finish();
+
+                                        }
+                                    }, R.string.cancel, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            fachada_dlg.show();
                         }
-                        else{
-                            Toast.makeText(ctx, "Existen integrantes pedientes por enviar", Toast.LENGTH_SHORT).show();
-                        }
-
+                        else
+                            Mensaje("Existen integrantes pedientes por guardar");
                     }
-                    else{
-                        Toast.makeText(ctx, "Falta elegir al comité del grupo", Toast.LENGTH_SHORT).show();
-                    }
+                    else
+                        Mensaje("Falta elegir al comité del grupo");
                 }
-                else {
-                    Toast.makeText(ctx, "No cuenta con la cantidad de integrantes para formar un grupo", Toast.LENGTH_SHORT).show();
-                }
+                else
+                    Mensaje("No cuenta con la cantidad de integrantes para formar un grupo");
 
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void Mensaje(String mess){
+        final AlertDialog solicitud;
+        solicitud = Popups.showDialogMessage(ctx, warning,
+                mess, R.string.accept, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        dialog.dismiss();
+                    }
+                });
+        solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        solicitud.show();
     }
 
     @Override

@@ -45,12 +45,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,8 +65,16 @@ import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DESTINOS_CREDITO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ESTADOS_CIVILES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_IDENTIFICACIONES_TIPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MEDIOS_CONTACTO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MEDIOS_PAGO_ORI;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NIVELES_ESTUDIOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PARENTESCOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_VIVIENDA_TIPOS;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class Miscellaneous {
@@ -85,66 +95,6 @@ public class Miscellaneous {
         } else {
             return String.valueOf(str);
         }
-    }
-
-    public static String StringFormatCurrency(String s){
-        String str = "0.00";
-
-        return str;
-    }
-
-    /* Obtener que tipo de orden */
-    public static String getTypeOrderValue(String str) {
-        String type;
-        if (str.contains("ri") || str.contains("rg"))
-        {
-            type = Constants.RECOVERY;
-        }
-        else if (str.contains("cvi") || str.contains("cvg"))
-        {
-            type = Constants.WALLET_EXPIRED;
-        }
-        else if (str.contains("ci") || str.contains("cg"))
-        {
-            type = Constants.COLLECTION;
-        }
-        else{
-            type = Constants.ERROR;
-        }
-        return type;
-    }
-
-    /* Retorna si es una ficha 2 = grupal o 1 = individual */
-    public static int getIndorGpo(String str) {
-        Log.v("Formulario", str);
-        int res;
-
-        if (str.contains("ri") || str.contains("ci") || str.contains("cvi"))
-            res =  1;
-        else if (str.contains("rg") || str.contains("cg") || str.contains("cvg"))
-            res = 2;
-        else
-            res = 0;
-
-        return res;
-
-    }
-
-    /* Obtener que tipo de orden */
-    public static String getTableLog(String str) {
-        String table;
-        if (str.contains("ri") || str.contains("rg") || str.contains("ci") || str.contains("cg"))
-        {
-            table = Constants.LOG_ASESSOR;
-        }
-        else if (str.contains("cvi") || str.contains("cvg"))
-        {
-            table = Constants.LOG_MANAGER;
-        }
-        else{
-            table = Constants.ERROR;
-        }
-        return table;
     }
 
     /*Generar formato de moneda*/
@@ -848,6 +798,28 @@ public class Miscellaneous {
         return catalogo;
     }
 
+    public static String Rango(int dias){
+        String rango = "";
+        if (dias == 0)
+            rango = "0 Días";
+        else if(dias >= 1 && dias <= 7)
+            rango = "1 - 7 Días";
+        else if (dias >= 8 && dias <= 15)
+            rango = "8 - 15 Días";
+        else if (dias >= 16 && dias <= 30)
+            rango = "16 - 30 Días";
+        else if (dias >= 31 && dias <= 60)
+            rango = "31 - 60 Días";
+        else if (dias >= 61 && dias <= 90)
+            rango = "61 - 90 Días";
+        else if (dias >= 91 && dias <= 120)
+            rango = "91 - 120 Días";
+        else
+            rango = "Más de 120 Días";
+
+        return rango;
+    }
+
     /* Para saber si es vocal */
     public static boolean esVocal(Character texto){
         if (texto == 'a' || texto == 'e'|| texto == 'i' || texto == 'o' || texto == 'u'
@@ -861,23 +833,45 @@ public class Miscellaneous {
         }
     }
 
+    public static Boolean IsCurrentWeek(String fechaVenci){
+
+        boolean res = false;
+
+        try {
+
+            Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVenci);
+            Date date2 = new SimpleDateFormat("yyyy-MM-dd").parse(ObtenerFecha(FECHA.toLowerCase()));
+
+            int dias_atraso = (int) ((date2.getTime()-date1.getTime())/86400000);
+
+            res = dias_atraso <= 0;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
     /* Generador de CURP */
     public static String GenerarCurp (HashMap<Integer, String> params){
 
-        String nombreTexto = params.get(0).toUpperCase();
+        String nombreTexto = RemoveTildes(params.get(0).toUpperCase());
 
         nombreTexto = nombreTexto.replaceAll("\\bMARIA\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bMARÍA\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bMA\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bMA\\.\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b","");
+        nombreTexto = nombreTexto.replaceAll("\\bJOSÉ\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bJ\\.\\s\\b","");
 
-        String primerApellidoTexto = params.get(1).toUpperCase();
+        String primerApellidoTexto = RemoveTildes(params.get(1).toUpperCase());
         primerApellidoTexto = primerApellidoTexto.replaceAll("/","X");
         primerApellidoTexto = primerApellidoTexto.replaceAll("-","X");
 
-        String segundoApellidoTexto = params.get(2).toUpperCase();
+        String segundoApellidoTexto = RemoveTildes(params.get(2).toUpperCase());
 
         String fechaNacimientoTexto = params.get(3).toUpperCase();
 
@@ -1025,22 +1019,22 @@ public class Miscellaneous {
                 case "CAMPECHE": codigoEstado="CC" ; break;
                 case "CHIAPAS": codigoEstado="CS" ; break;
                 case "CHIHUAHUA": codigoEstado="CH" ; break;
-                case "COAHUILA": codigoEstado="CL" ; break;
+                case "CIUDAD DE MEXICO": codigoEstado="DF" ; break;
+                case "COAHUILA DE ZARAGOZA": codigoEstado="CL" ; break;
                 case "COLIMA": codigoEstado="CM" ; break;
-                case "CIUDAD DE MÉXICO": codigoEstado="DF" ; break;
                 case "DURANGO": codigoEstado="DG" ; break;
                 case "GUANAJUATO": codigoEstado="GT" ; break;
                 case "GUERRERO": codigoEstado="GR" ; break;
                 case "HIDALGO": codigoEstado="HG" ; break;
                 case "JALISCO": codigoEstado="JC" ; break;
-                case "ESTADO DE MÉXICO": codigoEstado="MC" ; break;
-                case "MICHOACÁN": codigoEstado="MN" ; break;
+                case "MEXICO": codigoEstado="MC" ; break;
+                case "MICHOACAN DE OCAMPO": codigoEstado="MN" ; break;
                 case "MORELOS": codigoEstado="MS" ; break;
                 case "NAYARIT": codigoEstado="NT" ; break;
-                case "NUEVO LEÓN": codigoEstado="NL" ; break;
+                case "NUEVO LEON": codigoEstado="NL" ; break;
                 case "OAXACA": codigoEstado="OC" ; break;
                 case "PUEBLA": codigoEstado="PL" ; break;
-                case "QUERÉTARO": codigoEstado="QO" ; break;
+                case "QUERETARO": codigoEstado="QO" ; break;
                 case "QUINTANA ROO": codigoEstado="QR" ; break;
                 case "SAN LUIS POTOSI": codigoEstado="SP" ; break;
                 case "SINALOA": codigoEstado="SL" ; break;
@@ -1049,7 +1043,7 @@ public class Miscellaneous {
                 case "TAMAULIPAS": codigoEstado="TS" ; break;
                 case "TLAXCALA": codigoEstado="TL" ; break;
                 case "VERACRUZ": codigoEstado="VZ" ; break;
-                case "YUCATÁN ": codigoEstado="YN" ; break;
+                case "YUCATAN": codigoEstado="YN" ; break;
                 case "ZACATECAS": codigoEstado="ZS" ; break;
             }
 
@@ -1130,6 +1124,12 @@ public class Miscellaneous {
         return resultado;
     }
 
+    public static String RemoveTildes(String str){
+        String cadenaNormalize = Normalizer.normalize(str, Normalizer.Form.NFD);
+        String cadenaSinAcentos = cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
+        return cadenaSinAcentos;
+    }
+
     public static Integer GetPlazo (String plazo){
         int no_plazo = 0;
         switch (plazo){
@@ -1141,6 +1141,9 @@ public class Miscellaneous {
                 break;
             case "6 MESES":
                 no_plazo = 6;
+                break;
+            case "9 MESES":
+                no_plazo = 9;
                 break;
         }
         return no_plazo;
@@ -1158,8 +1161,27 @@ public class Miscellaneous {
             case "QUINCENAL":
                 periodicidad = 15;
                 break;
+            case "MENSUAL":
+                periodicidad = 30;
+                break;
         }
         return periodicidad;
+    }
+
+    public static Integer GetRiesgo (String riesgo){
+        int riesgo_id = 0;
+        switch (riesgo){
+            case "ALTO":
+                riesgo_id = 1;
+                break;
+            case "MEDIO":
+                riesgo_id = 2;
+                break;
+            case "BAJO":
+                riesgo_id = 3;
+                break;
+        }
+        return riesgo_id;
     }
 
     public static boolean CurpValidador(String curp){
@@ -1173,6 +1195,10 @@ public class Miscellaneous {
         lngDigito = 10 - lngSuma % 10;
         if (lngDigito == 10) lngDigito = 0;
 
+        Log.e("CurpValidator", String.valueOf(lngDigito));
+        Log.e("CurpValidator", String.valueOf(Integer.parseInt(curp.substring(17,18))));
+        Log.e("CurpValidator", String.valueOf(lngDigito == Integer.parseInt(curp.substring(17,18))));
+
         if (lngDigito == Integer.parseInt(curp.substring(17,18)))
             return true;
         else
@@ -1180,7 +1206,7 @@ public class Miscellaneous {
     }
     
     public static String GenerarRFC (String rfc, String nombre, String ap_paterno, String ap_materno){
-        String nombre_completo = ap_paterno.trim() + " " + ap_materno.trim() + " " + nombre.trim();
+        String nombre_completo = RemoveTildes(ap_paterno.trim()) + " " + RemoveTildes(ap_materno.trim()) + " " + RemoveTildes(nombre.trim());
         Log.e("nombre", nombre_completo);
         String numero = "0";
         String letra;
@@ -1304,18 +1330,11 @@ public class Miscellaneous {
             }
             catch (Exception e){}
         }
-        Log.e("Suma: ", "Suma: "+numeroSuma);
-        //alert(numeroSuma);
+
         double numero3 = numeroSuma % 1000;
-        //alert(numero3);
-        Log.e("numero3", String.valueOf(numero3));
         double numero4 = numero3 / 34;
-        Log.e("numero4", String.valueOf(numero4));
         String numero5 = String.valueOf(numero4).replace(".",",").split(",")[0];
-        Log.e("Numero 5", numero5);
-        //alert(numero5);
         double numero6 = numero3 % 34;
-        Log.e("Numero 6", numero6+"");
         String homonimio = "";
         switch (numero5) {
             case "0":
@@ -1528,7 +1547,7 @@ public class Miscellaneous {
                 break;
 
         }
-        //console.log("homonimio: " + homonimio);
+
         return rfc+homonimio+RFCDigitoVerificador(rfc+homonimio);
     }
 
@@ -1538,7 +1557,7 @@ public class Miscellaneous {
         int y = 0;
         for (int i = 0; i < rfc.length(); i++) {
             String letra = rfc.substring(i, i+1);
-            Log.e("Letra: ", letra);
+
             switch (letra) {
                 case "0":
                     rfcsuma.add("00");
@@ -2119,6 +2138,66 @@ public class Miscellaneous {
         return id;
     }
 
+    public static String GetMedioPago(int id){
+        String medioPago = "";
+        switch (id){
+            case 0:
+                medioPago = "BANAMEX";
+                break;
+            case 1:
+                medioPago = "BANORTE";
+                break;
+            case 2:
+                medioPago = "BANCOMER";
+                break;
+            case 3:
+                medioPago = "TELECOM";
+                break;
+            case 4:
+                medioPago = "BANSEFI";
+                break;
+            case 5:
+                medioPago = "OXXO";
+                break;
+            case 6:
+                medioPago = "EFECTIVO";
+                break;
+            case 7:
+                medioPago = "SIDERT";
+                break;
+            case 8:
+                medioPago = "BANAMEX722";
+                break;
+        }
+        return medioPago;
+    }
+
+    public static String GetConfirmacion(int id){
+        String confirmacion = "";
+        switch (id){
+            case 0:
+                confirmacion = "SI";
+                break;
+            case 1:
+                confirmacion = "NO";
+                break;
+        }
+        return confirmacion;
+    }
+
+    public static String GetImprimirRecibo(int id){
+        String imprimir = "";
+        switch (id){
+            case 0:
+                imprimir = "SI";
+                break;
+            case 1:
+                imprimir = "NO CUENTA CON BATERIA";
+                break;
+        }
+        return imprimir;
+    }
+
     public static int GetIdMedioPago (String str){
         int id = -1;
         switch (str){
@@ -2199,6 +2278,22 @@ public class Miscellaneous {
                 break;
         }
         return id;
+    }
+
+    public static String GetTipoImagen (int id){
+        String tipo = "";
+        switch (id){
+            case 0:
+                tipo = "FACHADA";
+                break;
+            case 1:
+                tipo = "FOTOGRAFIA";
+                break;
+            case 2:
+                tipo = "GALERIA";
+                break;
+        }
+        return tipo;
     }
 
     public static int GetDiasAtraso (String fecha_establecida){
@@ -2318,5 +2413,170 @@ public class Miscellaneous {
         cal.add(Calendar.DAY_OF_MONTH, dias_add);
 
         return sdf.format(cal.getTime());
+    }
+
+    public static String[] GetNivelesEstudio(Context ctx){
+        String[] estudios = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_NIVELES_ESTUDIOS;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            estudios = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                estudios[i] = row.getString(2);
+                row.moveToNext();
+            }
+
+        }
+        row.close();
+        return estudios;
+    }
+
+    public static String[] GetEstadoCiviles(Context ctx){
+        String[] civiles = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_ESTADOS_CIVILES;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            civiles = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                civiles[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return civiles;
+    }
+
+    public static String[] GetMediosPagoOri(Context ctx){
+        String[] medios_pago = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            medios_pago = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                medios_pago[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return medios_pago;
+    }
+
+    public static String[] GetParentesco(Context ctx, String condicion){
+        String[] parentesco = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String where = "";
+        if (condicion.equals("PARENTESCO"))
+            where = " WHERE nombre <> 'ARRENDATARIO'";
+
+        String sql = "SELECT * FROM " + TBL_PARENTESCOS + where;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            parentesco = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                parentesco[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return parentesco;
+    }
+
+    public static String[] GetIdentificacion(Context ctx){
+        String[] identificaciones = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_IDENTIFICACIONES_TIPO;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            identificaciones = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                identificaciones[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return identificaciones;
+    }
+
+    public static String[] GetViviendaTipos(Context ctx){
+        String[] viviendaTipos = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_VIVIENDA_TIPOS;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            viviendaTipos = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                viviendaTipos[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return viviendaTipos;
+    }
+
+    public static String[] GetMediosContacto(Context ctx){
+        String[] mediosContacto = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_MEDIOS_CONTACTO;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            mediosContacto = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                mediosContacto[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return mediosContacto;
+    }
+
+    public static String[] GetDestinosCredito(Context ctx){
+        String[] destinosCredito = {};
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT * FROM " + TBL_DESTINOS_CREDITO;
+        Cursor row = db.rawQuery(sql, null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            destinosCredito = new String[row.getCount()];
+            for (int i = 0; i < row.getCount(); i++){
+                destinosCredito[i] = row.getString(2);
+                row.moveToNext();
+            }
+        }
+        row.close();
+        return destinosCredito;
     }
 }

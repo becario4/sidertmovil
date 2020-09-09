@@ -237,6 +237,51 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Ciudad  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ciudad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCiudadCli"
+            android:inputType="textCapCharacters"
+            android:textColor="@drawable/edit_text_selector"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Localidad  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Localidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvLocalidadCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!-- Municipio -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -407,6 +452,35 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
 
+    </LinearLayout>
+
+    <!--  Dependientes economicos  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Dependientes Económicos"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvDependientes"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Fotografía de fachada  -->

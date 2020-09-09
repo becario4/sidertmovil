@@ -15,11 +15,13 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
@@ -70,6 +72,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -94,6 +97,7 @@ import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHAS_POST;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_PROMESA_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA_IMAGE;
@@ -112,6 +116,7 @@ import static com.sidert.sidertmovil.utils.Constants.MONTH_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_PROMESA;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
@@ -132,9 +137,11 @@ import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
+import static com.sidert.sidertmovil.utils.Constants.UBICACION;
 import static com.sidert.sidertmovil.utils.Constants.YEAR_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.camara;
 import static com.sidert.sidertmovil.utils.Constants.firma;
@@ -240,6 +247,8 @@ public class vencida_ind_fragment extends Fragment {
     private boolean hasFractionalPart;
 
     private int _mediosPago = 0;
+
+    private String fechaIni = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -594,6 +603,7 @@ public class vencida_ind_fragment extends Fragment {
                     row.moveToLast();
                     if (row.getCount() == 0){
                         String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                        fechaIni = fechaInicio;
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0,parent.id_prestamo);
                         if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -872,6 +882,19 @@ public class vencida_ind_fragment extends Fragment {
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+            } else {
+                int compress = 10;
+                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                    compress = 40;
+                CropImage.activity()
+                        .setAutoZoomEnabled(true)
+                        .setMinCropWindowSize(3000,4000)
+                        .setOutputCompressQuality(compress)
+                        .start(ctx,vencida_ind_fragment.this);
+            }
             /*if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                     || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
@@ -880,9 +903,9 @@ public class vencida_ind_fragment extends Fragment {
                         .setOutputCompressQuality(50)
                         .start(ctx,recuperacion_ind_fragment.this);
             }*/
-            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
             gallery.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
         }
     };
 
@@ -922,6 +945,7 @@ public class vencida_ind_fragment extends Fragment {
                             row.moveToLast();
                             if (row.getCount() == 0) {
                                 String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                                fechaIni = fechaInicio;
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, parent.id_prestamo);
                                 params.put(1, "");
@@ -1332,9 +1356,17 @@ public class vencida_ind_fragment extends Fragment {
                         }, R.string.galeria, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
-                                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                int compress = 10;
+                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                    compress = 40;
+                                CropImage.activity()
+                                        .setAutoZoomEnabled(true)
+                                        .setMinCropWindowSize(3000,4000)
+                                        .setOutputCompressQuality(compress)
+                                        .start(ctx,vencida_ind_fragment.this);
+                                /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                                 gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
                                 dialog.dismiss();
                             }
                         }, R.string.cancel, new Popups.DialogMessage() {
@@ -1807,6 +1839,7 @@ public class vencida_ind_fragment extends Fragment {
             if (row.getCount() > 0){
                 row.moveToFirst();
 
+                fechaIni = row.getString(23);
                 res_impresion = row.getInt(27);
 
                 if (!row.getString(2).isEmpty() && !row.getString(3).isEmpty()){
@@ -2171,6 +2204,59 @@ public class vencida_ind_fragment extends Fragment {
 
                 }
                 break;
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    if (data != null) {
+                        try {
+                            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                            imageUri = result.getUri();
+
+                            byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+
+                            ibFoto.setVisibility(View.GONE);
+                            ibGaleria.setVisibility(View.GONE);
+                            tvFotoGaleria.setError(null);
+                            ivEvidencia.setVisibility(View.VISIBLE);
+
+                            View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                            Bitmap newBitMap = null;
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                            Bitmap.Config config = bitmap.getConfig();
+
+                            newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                            Canvas canvas = new Canvas(newBitMap);
+                            canvas.drawBitmap(bitmap, 0, 0, null);
+
+                            vCanvas.draw(canvas);
+
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                            byteEvidencia = baos.toByteArray();
+
+                            Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                            try {
+                                Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                                Update("tipo_imagen", "GALERIA");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }catch (Exception e){
+                            AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                    R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            success.show();
+                        }
+                    }
+                    break;
             case REQUEST_CODE_CAMARA_TICKET:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
@@ -2222,22 +2308,34 @@ public class vencida_ind_fragment extends Fragment {
             case REQUEST_CODE_PREVIEW:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
+
+                        if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
+                            String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
+                            Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
+                            if (rowTraker.getCount() > 0) {
+                                rowTraker.moveToFirst();
+                                ContentValues cv = new ContentValues();
+                                cv.put("latitud", rowTraker.getString(0));
+                                cv.put("longitud", rowTraker.getString(1));
+                                db.update(TBL_RESPUESTAS_IND_V_T, cv, "_id = ?", new String[]{parent.id_respuesta});
+                            }
+                        }
+
                         ContentValues cv = new ContentValues();
                         if (data.hasExtra(ESTATUS)) {
-                            cv.put("estatus", data.getStringExtra(ESTATUS));
+                            cv.put("estatus_pago", data.getStringExtra(ESTATUS));
                             cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
                             cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
                         }
                         cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
-                        cv.put("fecha_fin", Miscellaneous.ObtenerFecha("timestamp"));
+                        cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
                         cv.put("estatus", "1");
 
                         Log.e("idPresta", parent.id_prestamo);
                         db.update(TBL_RESPUESTAS_IND_V_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
 
-                        Cursor row;
                         String sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_V_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
-                        row = db.rawQuery(sql, new String[]{parent.id_prestamo, "SI", "PAGO", "1", "2"});
+                        Cursor row = db.rawQuery(sql, new String[]{parent.id_prestamo, "SI", "PAGO", "1", "2"});
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -2303,6 +2401,13 @@ public class vencida_ind_fragment extends Fragment {
                         }
                         row.close();
 
+                        HashMap<Integer, String> values = new HashMap();
+                        values.put(0, parent.id_respuesta);
+                        values.put(1, data.getStringExtra(NOMBRE));
+                        values.put(2, parent.nombre);
+                        values.put(3, "1");
+                        dBhelper.saveResumenGestion(db, values);
+
                         Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
                         parent.finish();
                     }
@@ -2317,6 +2422,7 @@ public class vencida_ind_fragment extends Fragment {
         Miscellaneous m = new Miscellaneous();
         Bundle b = new Bundle();
 
+        b.putString(NOMBRE, parent.nombre);
         if (latLngGestion != null || (!parent.latitud.trim().isEmpty() && !parent.longitud.trim().isEmpty())){
             if (latLngGestion != null) {
                 b.putDouble(LATITUD, latLngGestion.latitude);

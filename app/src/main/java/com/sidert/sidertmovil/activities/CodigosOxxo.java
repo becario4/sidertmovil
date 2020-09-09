@@ -169,6 +169,25 @@ public class CodigosOxxo extends AppCompatActivity {
 
                             break;
                         case 201:
+                            MResCodigoOxxo referencia = response.body();
+                            MCodigoOxxo item = referencia.getData();
+                            String sql = "SELECT * FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? AND fecha_amortiz = ? AND nombre_pdf = ?";
+                            Cursor row = db.rawQuery(sql, new String[]{item.getNumPrestamo(), item.getFechaAmortizacion(), item.getNombrePdf()});
+                            if (row.getCount() == 0) {
+                                params = new HashMap<>();
+                                params.put(0, String.valueOf(referencia.getData().getId()));
+                                params.put(1, session.getUser().get(0));
+                                params.put(2, referencia.getData().getNumPrestamo());
+                                params.put(3, referencia.getData().getFechaAmortizacion());
+                                params.put(4, String.valueOf(referencia.getData().getMontoAmortizacion()));
+                                params.put(5, referencia.getData().getNombrePdf());
+                                params.put(6, referencia.getData().getCreatedAt());
+                                params.put(7, referencia.getData().getFechaVencimiento());
+
+                                dBhelper.saveCodigosOxxo(db, params);
+
+                                GetCodigos();
+                            }
                             Toast.makeText(ctx, "Ya existe un código generado", Toast.LENGTH_SHORT).show();
                             break;
                         default:
@@ -181,7 +200,6 @@ public class CodigosOxxo extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<MResCodigoOxxo> call, Throwable t) {
-                    //Log.e("Error", "fail Codigo"+t.getMessage());
                     Toast.makeText(ctx, "Ha ocurrido un error al generar el PDF de referencias bancarias", Toast.LENGTH_SHORT).show();
                     loading.dismiss();
                 }
@@ -215,35 +233,51 @@ public class CodigosOxxo extends AppCompatActivity {
                 item.setMontoAmortizacion(row.getDouble(1));
                 item.setNombrePdf(row.getString(2));
                 item.setFechaVencimiento(row.getString(3));
+                Log.e("Fecha", row.getString(3));
+                item.setEnabled(Miscellaneous.IsCurrentWeek(row.getString(3).substring(0,10)));
                 data.add(item);
                 row.moveToNext();
             }
 
             adapter = new adapter_codigos_oxxo(ctx, data, new adapter_codigos_oxxo.Event() {
                 @Override
-                public void CompartirClick(String nombrePDF) {
-                    String url = session.getDominio().get(0)+session.getDominio().get(1)+ WebServicesRoutes.CONTROLLER_FICHAS +
-                            WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
+                public void CompartirClick(Boolean enabled, String nombrePDF) {
+                    if (enabled) {
+                        String url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS +
+                                WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
 
-                    Log.e("url_pdf", url);
+                        Log.e("url_pdf", url);
 
-                    String mensaje = "Estimado cliente SIDERT: \n" +
-                            "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
-                            "Click Aquí para descargarlo: " + url + " \uD83D\uDC48\n" +
-                            "Atención‼️ No aceptes imágenes de tarjetas de débito u otras cuentas que no sean las que descargas desde el link \n" +
-                            "Cualquier duda y/o aclaración comunícate al 800 122 6666 \uD83D\uDCDE\n" +
-                            "El enlace tiene una vigencia de 48 hrs";
-                    Intent waIntent = new Intent(Intent.ACTION_SEND);
-                    waIntent.setType("text/plain");
-                    waIntent.setPackage("com.whatsapp");
-                    if (waIntent != null) {
-                        waIntent.putExtra(
-                                Intent.EXTRA_TEXT,
-                                mensaje);
-                        startActivity(Intent.createChooser(waIntent, "Share with"));
-                    } else
-                        Toast.makeText(ctx, "WhatsApp not Installed", Toast.LENGTH_SHORT)
-                                .show();
+                        String mensaje = "Estimado cliente SIDERT: \n" +
+                                "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
+                                "Click Aquí para descargarlo: " + url + " \uD83D\uDC48\n" +
+                                "Atención‼️ No aceptes imágenes de tarjetas de débito u otras cuentas que no sean las que descargas desde el link \n" +
+                                "Cualquier duda y/o aclaración comunícate al 800 122 6666 \uD83D\uDCDE\n" +
+                                "El enlace tiene una vigencia de 48 hrs";
+                        Intent waIntent = new Intent(Intent.ACTION_SEND);
+                        waIntent.setType("text/plain");
+                        waIntent.setPackage("com.whatsapp");
+                        if (waIntent != null) {
+                            waIntent.putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    mensaje);
+                            startActivity(Intent.createChooser(waIntent, "Share with"));
+                        } else
+                            Toast.makeText(ctx, "WhatsApp not Installed", Toast.LENGTH_SHORT)
+                                    .show();
+                    }
+                    else{
+                        final AlertDialog dlg = Popups.showDialogMessage(ctx, Constants.warning,
+                                R.string.referencia_no_disponible, R.string.accept, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        dlg.show();
+                    }
                 }
             });
 

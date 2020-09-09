@@ -69,6 +69,7 @@ public class SessionManager {
     private final String ESTATUS_CONTE_CIERRE   = "estatus_conte_cierre";
     private final String ESTATUS_PENDI_CIERRE   = "estatus_pendi_cierre";
     private final String CONTADOR_CIERRE        = "contador_cierre";
+    private final String MAC_ADDRESS            = "mac_address";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -164,6 +165,21 @@ public class SessionManager {
         baseUrl.add(preferences.getString(PUERTO,"83"));
 
         return baseUrl;
+    }
+
+    //==================== Mac Address ========================================================
+    public void setAddress (String macAddress){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(MAC_ADDRESS, macAddress);
+        editor.commit();
+    }
+
+    public String getMacAddress (){
+        String macAddress;
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        macAddress = preferences.getString(MAC_ADDRESS, "");
+        return macAddress;
     }
 
     //==================== Filtros de Cierre de Dia ================================================

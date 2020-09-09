@@ -171,11 +171,7 @@ public class PrintSeewoo extends AppCompatActivity {
         else{
             llReimpreion.setVisibility(View.VISIBLE);
             mReimpresion = new MReimpresion();
-            Cursor row;
-            if (ENVIROMENT)
-                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
-            else
-                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
+            Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
 
             Log.e("CountRecibos", "XXX: "+row.getCount());
             if (row.getCount() > 0){
@@ -201,9 +197,6 @@ public class PrintSeewoo extends AppCompatActivity {
 
             Toast.makeText(ctx, ctx.getResources().getString(R.string.print_original_copy), Toast.LENGTH_SHORT).show();
         }
-
-        Log.e("NumPRestamo",item.getNumeroPrestamo());
-        Log.e("NumGrupo",item.getNumeroCliente());
 
         tvNumLoan.setText(item.getNumeroPrestamo());
         tvNumClient.setText(item.getNumeroCliente());
@@ -491,11 +484,7 @@ public class PrintSeewoo extends AppCompatActivity {
                     bluetoothPort.disconnect();
                     item.setResultPrint(2);
 
-                    Cursor row;
-                    if (ENVIROMENT)
-                        row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
-                    else
-                        row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
+                    Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
                     row.moveToFirst();
                     mReimpresion = new MReimpresion();
                     mReimpresion.setIdPrestamo(item.getIdPrestamo());
@@ -752,13 +741,8 @@ public class PrintSeewoo extends AppCompatActivity {
         saveSettingFile();
         Intent intent = new Intent();
         if(success){
-            Cursor row;
-            if (ENVIROMENT)
-                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getNumeroPrestamo()+"-"+this.item.getIdGestion()});
-            else
-                row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getNumeroPrestamo()+"-"+this.item.getIdGestion()});
+            Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{this.item.getNumeroPrestamo()+"-"+this.item.getIdGestion()});
             row.moveToFirst();
-            Log.e("Folio", row.getCount()+"xxxxxxxxxx");
 
             intent.putExtra(Constants.MESSAGE, resultMess);
             intent.putExtra(Constants.RES_PRINT, resultPrint);

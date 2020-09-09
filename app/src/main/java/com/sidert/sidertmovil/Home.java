@@ -126,11 +126,7 @@ public class Home extends AppCompatActivity{
                         DBhelper dBhelper = new DBhelper(ctx);
                         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-                        Cursor row;
-                        if (Constants.ENVIROMENT)
-                            row = dBhelper.getRecords(SINCRONIZADO, ""," ORDER BY _id DESC", null);
-                        else
-                            row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
+                        Cursor row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -142,10 +138,7 @@ public class Home extends AppCompatActivity{
 
                         }
 
-                        if (Constants.ENVIROMENT)
-                            row = dBhelper.getRecords(TBL_TRACKER_ASESOR, ""," ORDER BY _id DESC", null);
-                        else
-                            row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
+                        row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
                             row.moveToFirst();

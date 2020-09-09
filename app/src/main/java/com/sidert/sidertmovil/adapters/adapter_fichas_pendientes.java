@@ -78,6 +78,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
         holder.tvDiaSemana.setText(item.getDiaSemana());
         holder.tvNombre.setText(item.getNombre().toUpperCase());
         holder.tvDireccion.setText(item.getDireccion().toUpperCase());
+        holder.tvDiasMora.setText(item.getDiasMora());
 
         holder.cbRuta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -106,6 +107,7 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
         private TextView tvNombreTesorera;
         private TextView tvDiaSemana;
         private TextView tvDireccion;
+        private TextView tvDiasMora;
         private TextView tvTipoPrestamo;
 
         private ImageView ivTipoFicha;
@@ -118,8 +120,10 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
             tvDiaSemana = v.findViewById(R.id.tvDiaSemana);
             tvTipoPrestamo = v.findViewById(R.id.tvTipoPrestamo);
             cbRuta      = v.findViewById(R.id.cbRuta);
+            tvDiasMora  = v.findViewById(R.id.tvDiasMora);
             ivTipoFicha = v.findViewById(R.id.ivTipoFicha);
             tvNombreTesorera = v.findViewById(R.id.tvNombreTesorera);
+
             //tvStatus    = itemView.findViewById(R.id.tvStatus);
         }
 

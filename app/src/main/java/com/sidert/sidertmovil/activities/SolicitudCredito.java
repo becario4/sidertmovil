@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
+import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -66,8 +69,29 @@ import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+//import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
+//import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 
@@ -162,21 +186,20 @@ public class SolicitudCredito extends AppCompatActivity {
     }
 
     private void initComponents(){
-        Cursor row = null;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(SOLICITUDES_T, "", "", null);
-        else
-            row = dBhelper.getRecords(SOLICITUDES_T, "", "", null);
+        Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, "", "", null);
 
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row.getCount(); i++){
                 HashMap<Integer, String> item = new HashMap();
-                item.put(0,row.getString(0));
-                String nombre = row.getString(5);
-                item.put(1, nombre.trim().toUpperCase());
-                item.put(2, row.getString(2));
+                Log.e("id_solicitud", row.getString(0) + " nombre: "+row.getString(5));
+                item.put(0,row.getString(0));           //ID solicitud
+                item.put(1, row.getString(5).trim().toUpperCase()); //Nombre
+                item.put(2, row.getString(3));          //Tipo solicitud
+                item.put(3, row.getString(11));         //Estatus
+                item.put(4, row.getString(7));          //Fecha Termino
+                item.put(5, row.getString(10));         //Fecha Envio
                 data.add(item);
                 row.moveToNext();
             }
@@ -185,18 +208,28 @@ public class SolicitudCredito extends AppCompatActivity {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
                     Intent i_solicitud;
+                    ProgressDialog dialog = ProgressDialog.show(SolicitudCredito.this, "",
+                            "Cargando la información por favor espere...", true);
+                    dialog.setCancelable(false);
+                    dialog.show();
                     switch (Integer.parseInt(item.get(2))){
                         case 1:
+                            Log.e("Clic", "individual");
                             i_solicitud = new Intent(ctx, SolicitudCreditoInd.class);
                             i_solicitud.putExtra("is_new", false);
                             i_solicitud.putExtra("id_solicitud", item.get(0));
+                            i_solicitud.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(i_solicitud);
+                            dialog.dismiss();
                             break;
                         case 2:
                             i_solicitud = new Intent(ctx, SolicitudCreditoGpo.class);
                             i_solicitud.putExtra("is_new", false);
                             i_solicitud.putExtra("id_solicitud", item.get(0));
+                            i_solicitud.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            Log.e("ID_SOLICITUD", item.get(0));
                             startActivity(i_solicitud);
+                            dialog.dismiss();
                             break;
                     }
 
@@ -265,71 +298,41 @@ public class SolicitudCredito extends AppCompatActivity {
                                     @Override
                                     public void OnClickListener(AlertDialog dialog) {
                                         if (tipo_solicitud == 1) {
-                                            if (ENVIROMENT) {
-                                                db.delete(SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
-                                                /*db.delete(DATOS_CREDITO_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CLIENTE_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CONYUGE_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_ECONOMICOS_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_NEGOCIO_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_AVAL_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_REFERENCIA_IND, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DOCUMENTOS, "id_solicitud = ?", new String[]{id_solcitud});*/
-                                            } else {
-                                                db.delete(SOLICITUDES_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                /*db.delete(DATOS_CREDITO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CLIENTE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_CONYUGE_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_ECONOMICOS_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_NEGOCIO_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_AVAL_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DATOS_REFERENCIA_IND_T, "id_solicitud = ?", new String[]{id_solcitud});
-                                                db.delete(DOCUMENTOS_T, "id_solicitud = ?", new String[]{id_solcitud});*/
-                                            }
+                                            db.delete(TBL_SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_CREDITO_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_CLIENTE_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_CONYUGE_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_ECONOMICOS_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_NEGOCIO_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_AVAL_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_REFERENCIA_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_CROQUIS_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_POLITICAS_PLD_IND, "id_solicitud = ?", new String[]{id_solcitud});
+                                            db.delete(TBL_DOCUMENTOS, "id_solicitud = ?", new String[]{id_solcitud});
+
                                         }
                                         else {
-                                            if (ENVIROMENT) {
-                                                Cursor row_credito = dBhelper.getRecords(DATOS_CREDITO_GPO, " WHERE id_solicitud = ?", "", new String[]{id_solcitud});
-                                                row_credito.moveToFirst();
-                                                Cursor row_integrantes = dBhelper.getRecords(DATOS_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{row_credito.getString(0)});
-                                                row_integrantes.moveToFirst();
-                                                for (int i = 0; i < row_integrantes.getCount(); i++){
-                                                    db.delete(TELEFONOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(DOMICILIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(NEGOCIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(CONYUGE_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(OTROS_DATOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    row_integrantes.moveToNext();
-                                                }
-                                                row_integrantes.close();
-
-                                                db.delete(DATOS_INTEGRANTES_GPO, "id_credito = ?", new String[]{row_credito.getString(0)});
-                                                db.delete(DATOS_CREDITO_GPO, "id = ?", new String[]{row_credito.getString(0)});
-                                                row_credito.close();
-                                                db.delete(SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
-
-                                            } else {
-                                                Cursor row_credito = dBhelper.getRecords(DATOS_CREDITO_GPO_T, " WHERE id_solicitud = ?", "", new String[]{id_solcitud});
-                                                row_credito.moveToFirst();
-                                                Cursor row_integrantes = dBhelper.getRecords(DATOS_INTEGRANTES_GPO_T, " WHERE id_credito = ?", "", new String[]{row_credito.getString(0)});
-                                                row_integrantes.moveToFirst();
-                                                for (int i = 0; i < row_integrantes.getCount(); i++){
-                                                    db.delete(TELEFONOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(DOMICILIO_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(NEGOCIO_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(CONYUGE_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(OTROS_DATOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    db.delete(DOCUMENTOS_INTEGRANTE_T, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
-                                                    row_integrantes.moveToNext();
-                                                }
-                                                row_integrantes.close();
-
-                                                db.delete(DATOS_INTEGRANTES_GPO_T, "id_credito = ?", new String[]{row_credito.getString(0)});
-                                                db.delete(DATOS_CREDITO_GPO_T, "id = ?", new String[]{row_credito.getString(0)});
-                                                row_credito.close();
-                                                db.delete(SOLICITUDES_T, "id_solicitud = ?", new String[]{id_solcitud});
+                                            Cursor row_credito = dBhelper.getRecords(TBL_CREDITO_GPO, " WHERE id_solicitud = ?", "", new String[]{id_solcitud});
+                                            row_credito.moveToFirst();
+                                            Cursor row_integrantes = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{row_credito.getString(0)});
+                                            row_integrantes.moveToFirst();
+                                            for (int i = 0; i < row_integrantes.getCount(); i++){
+                                                db.delete(TBL_TELEFONOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_DOMICILIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_NEGOCIO_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_CONYUGE_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_OTROS_DATOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_CROQUIS_GPO, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_POLITICAS_PLD_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                db.delete(TBL_DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{row_integrantes.getString(0)});
+                                                row_integrantes.moveToNext();
                                             }
+                                            row_integrantes.close();
+
+                                            db.delete(TBL_INTEGRANTES_GPO, "id_credito = ?", new String[]{row_credito.getString(0)});
+                                            db.delete(TBL_CREDITO_GPO, "id = ?", new String[]{row_credito.getString(0)});
+                                            row_credito.close();
+                                            db.delete(TBL_SOLICITUDES, "id_solicitud = ?", new String[]{id_solcitud});
                                         }
                                         adapter.removeItem(position);
                                         dialog.dismiss();

@@ -40,7 +40,7 @@
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item

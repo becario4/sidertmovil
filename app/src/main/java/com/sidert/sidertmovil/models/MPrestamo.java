@@ -13,6 +13,7 @@ public class MPrestamo implements Serializable {
     private String montoAmortiz;
     private String estatus;
     private int tipo;
+    private String saldoOmega;
     private String saldoCorte;
     private String tipoPrestamo;
     private String numAmortiz;
@@ -89,6 +90,14 @@ public class MPrestamo implements Serializable {
         this.tipo = tipo;
     }
 
+    public String getSaldoOmega() {
+        return saldoOmega;
+    }
+
+    public void setSaldoOmega(String saldoOmega) {
+        this.saldoOmega = saldoOmega;
+    }
+
     public String getSaldoCorte() {
         return saldoCorte;
     }
@@ -112,4 +121,5 @@ public class MPrestamo implements Serializable {
     public void setNumAmortiz(String numAmortiz) {
         this.numAmortiz = numAmortiz;
     }
+
 }

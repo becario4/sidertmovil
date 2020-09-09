@@ -220,7 +220,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnRegresar7"
+            android:id="@+id/btnRegresar9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"

@@ -16,11 +16,13 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
@@ -75,6 +77,7 @@ import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -104,6 +107,7 @@ import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FECHAS_POST;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA_IMAGE;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
@@ -122,6 +126,7 @@ import static com.sidert.sidertmovil.utils.Constants.MONTH_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
@@ -153,10 +158,12 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_CARTERA;
+import static com.sidert.sidertmovil.utils.Constants.UBICACION;
 import static com.sidert.sidertmovil.utils.Constants.YEAR_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.camara;
 import static com.sidert.sidertmovil.utils.Constants.firma;
@@ -274,6 +281,7 @@ public class recuperacion_gpo_fragment extends Fragment {
 
     private int _mediosPago = 0;
 
+    private String fechaIni = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -520,35 +528,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     hasFractionalPart = false;
                 }
             }
-            /*@Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    if (!etPagoRealizado.getText().toString().trim().isEmpty()) {
-                        if (Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")) > 0) {
-                            Update("pago_realizado", etPagoRealizado.getText().toString().trim().replace(",",""));
-                            if (Double.parseDouble(etPagoRealizado.getText().toString().trim()) >= 10000 && Miscellaneous.MedioPago(tvMedioPago) == 6)
-                                llArqueoCaja.setVisibility(View.VISIBLE);
-                            else
-                                llArqueoCaja.setVisibility(View.GONE);
-
-
-                        }
-                    }
-                }
-                else{
-                    Update("pago_realizado", "");
-                }
-            }*/
         });
 
         etFolioRecibo.addTextChangedListener(new TextWatcher() {
@@ -608,11 +588,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     }
                     myHandler.removeCallbacksAndMessages(null);
 
-                    Cursor row;
-                    if (ENVIROMENT)
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
-                    else
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                    Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
                         HashMap<Integer, String> params = new HashMap<>();
@@ -645,7 +621,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                         params.put(18, "");
                         params.put(19, "");
                         params.put(20, "");
-                        params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                        params.put(21, fechaIni);
                         params.put(22, "");
                         params.put(23, "");
                         params.put(24, "0");
@@ -691,7 +668,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                             params.put(18, "");
                             params.put(19, "");
                             params.put(20, "");
-                            params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                            params.put(21, fechaIni);
                             params.put(22, "");
                             params.put(23, "");
                             params.put(24, "0");
@@ -737,11 +715,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     parent.latitud = "0";
                     parent.longitud = "0";
 
-                    Cursor row;
-                    if (ENVIROMENT)
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
-                    else
-                        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                    Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
                         HashMap<Integer, String> params = new HashMap<>();
@@ -766,7 +740,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                         params.put(18, "");
                         params.put(19, "");
                         params.put(20, "");
-                        params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                        fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                        params.put(21, fechaIni);
                         params.put(22, "");
                         params.put(23, "");
                         params.put(24, "0");
@@ -804,7 +779,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                             params.put(18, "");
                             params.put(19, "");
                             params.put(20, "");
-                            params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                            params.put(21, fechaIni);
                             params.put(22, "");
                             params.put(23, "");
                             params.put(24, "0");
@@ -837,18 +813,12 @@ public class recuperacion_gpo_fragment extends Fragment {
     private View.OnClickListener ibIntegrantes_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Cursor row;
-            if (ENVIROMENT)
-                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
-            else
-                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+            Cursor row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
 
             if (row.getCount() == 0){
                 row.close();
-                if (ENVIROMENT)
-                    row = dBhelper.getRecords(TBL_MIEMBROS_GPO, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
-                else
-                    row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
+
+                row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
 
                 if (row.getCount() > 0){
                     row.moveToFirst();
@@ -877,10 +847,7 @@ public class recuperacion_gpo_fragment extends Fragment {
             i_integrantes.putExtra(ID_GESTION, parent.id_respuesta);
             i_integrantes.putExtra(TIPO_CARTERA, parent.tipo_cartera);
 
-            if (ENVIROMENT)
-                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
-            else
-                row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
+            row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{parent.id_respuesta});
 
             ArrayList<MIntegrantePago> integrantesPagos = new ArrayList<>();
             if (row.getCount() > 0){
@@ -927,14 +894,10 @@ public class recuperacion_gpo_fragment extends Fragment {
                 Intent i = new Intent(ctx, PrintSeewoo.class);
                 MImpresion mImpresion = new MImpresion();
                 if (parent.tipo_cartera.contains("VENCIDA")){
-                    Cursor row;
-                    String sql;
-                    if (ENVIROMENT)
-                        sql = "SELECT p.*, m.* FROM " + TBL_MIEMBROS_PAGOS + " AS p INNER JOIN " + TBL_MIEMBROS_GPO + " AS m ON p.id_integrante = m.id_integrante WHERE p.id_gestion = ? AND p.pago_realizado > 0";
-                    else
-                        sql = "SELECT p.*, m.* FROM " + TBL_MIEMBROS_PAGOS_T + " AS p INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON p.id_integrante = m.id_integrante WHERE p.id_gestion = ? AND p.pago_realizado > 0";
 
-                    row = db.rawQuery(sql, new String[]{parent.id_respuesta});
+                    String sql = "SELECT p.*, m.* FROM " + TBL_MIEMBROS_PAGOS_T + " AS p INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON p.id_integrante = m.id_integrante WHERE p.id_gestion = ? AND p.pago_realizado > 0";
+
+                    Cursor row = db.rawQuery(sql, new String[]{parent.id_respuesta});
                     if (row.getCount() > 0){
                         row.moveToFirst();
                         mImpresion.setMontoPrestamo(row.getString(20));
@@ -1003,17 +966,23 @@ public class recuperacion_gpo_fragment extends Fragment {
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            /*if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                     || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
             } else {
+                int compress = 10;
+                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                    compress = 40;
                 CropImage.activity()
-                        .setOutputCompressQuality(50)
+                        .setAutoZoomEnabled(true)
+                        .setMinCropWindowSize(3000,4000)
+                        .setOutputCompressQuality(compress)
                         .start(ctx,recuperacion_gpo_fragment.this);
-            }*/
-            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            }
+
+            /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
             gallery.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
         }
     };
 
@@ -1058,13 +1027,9 @@ public class recuperacion_gpo_fragment extends Fragment {
                             ivFirma.setVisibility(View.GONE);
                             SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
 
-                            Cursor row;
-                            if (ENVIROMENT)
-                                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
-                            else
-                                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
+                            Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
                             row.moveToLast();
-                            Log.e("RespuestaGpo", row.getCount()+" count");
+
                             if (row.getCount() == 0) {
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, parent.id_prestamo);
@@ -1088,7 +1053,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                                 params.put(18, "");
                                 params.put(19, "");
                                 params.put(20, "");
-                                params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                                params.put(21, fechaIni);
                                 params.put(22, "");
                                 params.put(23, "");
                                 params.put(24, "0");
@@ -1127,7 +1093,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "");
-                                    params.put(21, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                                    params.put(21, fechaIni);
                                     params.put(22, "");
                                     params.put(23, "");
                                     params.put(24, "0");
@@ -1141,9 +1108,8 @@ public class recuperacion_gpo_fragment extends Fragment {
 
                                     parent.id_respuesta = String.valueOf(id);
                                 } else {
-                                    Log.e("ACtualizaContacto", "xxxxxxxxxxxxxxxxxxxxxx");
-                                    Update("contacto", _contacto[position]);
 
+                                    Update("contacto", _contacto[position]);
                                     Update("gerente", "");
                                     Update("firma", "");
                                     Update("evidencia", "");
@@ -1168,12 +1134,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                             tvActualizarTelefono.setError(null);
                             tvActualizarTelefono.setText(_confirmacion[position]);
                             Update("actualizar_telefono", _confirmacion[position]);
-                            /*try {
-                                jsonResponse.put(ACTUALIZAR_TELEFONO, pos);
-                                UpdateTemporal(jsonResponse);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
+
                             SelectActualizarTelefono(position);
                         }
                     });
@@ -1329,12 +1290,6 @@ public class recuperacion_gpo_fragment extends Fragment {
                             tvMotivoAclaracion.setError(null);
                             tvMotivoAclaracion.setText(_motivo_aclaracion[position]);
                             Update("motivo_aclaracion", _motivo_aclaracion[position]);
-                            /*try {
-                                jsonResponse.put(MOTIVO_ACLARACION, _motivo_aclaracion[position].toUpperCase());
-                                UpdateTemporal(jsonResponse);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }*/
                         }
                     });
             builder.create();
@@ -1446,9 +1401,17 @@ public class recuperacion_gpo_fragment extends Fragment {
                         }, R.string.galeria, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
-                                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                int compress = 10;
+                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                    compress = 40;
+                                CropImage.activity()
+                                        .setAutoZoomEnabled(true)
+                                        .setMinCropWindowSize(3000,4000)
+                                        .setOutputCompressQuality(compress)
+                                        .start(ctx,recuperacion_gpo_fragment.this);
+                                /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                                 gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
                                 dialog.dismiss();
                             }
                         }, R.string.cancel, new Popups.DialogMessage() {
@@ -1894,16 +1857,12 @@ public class recuperacion_gpo_fragment extends Fragment {
         tvMontoPagoRequerido.setText(String.valueOf(nFormat.format(parent.monto_requerido)));
 
         if (!parent.id_respuesta.isEmpty()){
-            Cursor row;
-            if (ENVIROMENT)
-                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});
-            else
-                row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});
+            Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});
 
             if (row.getCount() > 0) {
                 row.moveToFirst();
 
-                Log.e("res_impresion", row.getString(26));
+                fechaIni = row.getString(22);
                 res_impresion = Integer.parseInt(row.getString(26));
 
                 if (!row.getString(2).isEmpty() && !row.getString(3).isEmpty()){
@@ -2173,10 +2132,8 @@ public class recuperacion_gpo_fragment extends Fragment {
         Log.e("update", key+": "+value);
         ContentValues cv = new ContentValues();
         cv.put(key, value);
-        if (ENVIROMENT)
-            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
-        else
-            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
+
+        db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
     }
 
     @Override
@@ -2311,6 +2268,59 @@ public class recuperacion_gpo_fragment extends Fragment {
                     }
                 }
                 break;
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                if (data != null) {
+                    try {
+                        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                        imageUri = result.getUri();
+                        byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+
+                        ibFoto.setVisibility(View.GONE);
+                        ibGaleria.setVisibility(View.GONE);
+                        tvFotoGaleria.setError(null);
+
+                        ivEvidencia.setVisibility(View.VISIBLE);
+
+                        View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                        Bitmap newBitMap = null;
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                        Bitmap.Config config = bitmap.getConfig();
+
+                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                        Canvas canvas = new Canvas(newBitMap);
+                        canvas.drawBitmap(bitmap, 0, 0, null);
+
+                        vCanvas.draw(canvas);
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                        byteEvidencia = baos.toByteArray();
+
+                        Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                        try {
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                            Update("tipo_imagen", "GALERIA");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        success.show();
+                    }
+                }
+                break;
             case REQUEST_CODE_CAMARA_TICKET:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
@@ -2361,13 +2371,26 @@ public class recuperacion_gpo_fragment extends Fragment {
             case REQUEST_CODE_PREVIEW:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
+
+                        if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
+                            String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
+                            Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
+                            if (rowTraker.getCount() > 0) {
+                                rowTraker.moveToFirst();
+                                ContentValues cv = new ContentValues();
+                                cv.put("latitud", rowTraker.getString(0));
+                                cv.put("longitud", rowTraker.getString(1));
+                                db.update(TBL_RESPUESTAS_GPO_T, cv, "_id = ?", new String[]{parent.id_respuesta});
+                            }
+                        }
+
                         ContentValues cv = new ContentValues();if (data.hasExtra(ESTATUS)) {
-                            cv.put("estatus", data.getStringExtra(ESTATUS));
+                            cv.put("estatus_pago", data.getStringExtra(ESTATUS));
                             cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
                             cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
                         }
                         cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
-                        cv.put("fecha_fin", Miscellaneous.ObtenerFecha("timestamp"));
+                        cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
                         cv.put("estatus", "1");
                         if (ENVIROMENT)
                             db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
@@ -2486,6 +2509,13 @@ public class recuperacion_gpo_fragment extends Fragment {
                         }
                         row.close();
 
+                        HashMap<Integer, String> values = new HashMap();
+                        values.put(0, parent.id_respuesta);
+                        values.put(1, data.getStringExtra(NOMBRE));
+                        values.put(2, parent.nombre);
+                        values.put(3, "2");
+                        dBhelper.saveResumenGestion(db, values);
+
                         Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
                         parent.finish();
                     }
@@ -2518,6 +2548,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         Miscellaneous m = new Miscellaneous();
         Log.e("Latitud", parent.latitud);
         Log.e("Longitud", parent.longitud);
+        b.putString(NOMBRE, parent.nombre);
         if (latLngGestion != null || (!parent.latitud.trim().isEmpty() && !parent.longitud.trim().isEmpty())) {
             if (latLngGestion != null) {
                 b.putDouble(Constants.LATITUD, latLngGestion.latitude);

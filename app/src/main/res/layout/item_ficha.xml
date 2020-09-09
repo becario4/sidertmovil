@@ -77,13 +77,30 @@
                 android:textColor="@color/shadowdrawer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tvTipoPrestamo"
-                android:textStyle="bold"
-                android:paddingRight="10dp"
-                android:gravity="right"
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvDiasMora"
+                    android:textStyle="bold"
+                    android:paddingRight="10dp"
+                    android:gravity="left"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/tvTipoPrestamo"
+                    android:textStyle="bold"
+                    android:paddingRight="10dp"
+                    android:gravity="right"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
         </LinearLayout>
         <ImageView
             android:layout_weight="0"

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.7</string>
+    <string name="app_version">2.4.10</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -34,6 +34,7 @@
 
     <!-- TODO: Títulos de TABS ordenes -->
     <string name="pendings">Pendientes</string>
+    <string name="cartera">Cartera</string>
     <string name="route">Ruta</string>
     <string name="answers">Contestadas</string>
 
@@ -195,6 +196,7 @@
     <string name="fecha_envio">Fecha de Envío</string>
     <string name="ver_maps">Ver en Maps</string>
     <string name="ver_imagen">Ver Imagen</string>
+    <string name="enviar">Enviar</string>
     <string name="pago_completo_adelanto">Pago Completo + Adelanto</string>
     <string name="campo_requerido">Este campo es requerido</string>
     <string name="arqueo_caja">Arqueo de Caja</string>
@@ -232,13 +234,15 @@
     <string name="not_wifi">Es necesario que esté conectado a una red WIFI para la descargar la información.</string>
     <string name="servicio_no_disponible">El servicio no se encuentra disponible, favor de contactar al equipo de TI.</string>
     <string name="credenciales_incorrectas">El usuario y/o contraseña son incorrectas, favor de verificar.</string>
+    <string name="error_mac_address">El Inicio de sesión del usuario no está permitido en este dispositivo</string>
     <string name="error_connect_print">Error de conexión, verifica si la impresora está encendida o intenta de nuevo.</string>
+    <string name="referencia_no_disponible">Esta referencia ya se encuentra vencida, recuerda que se tienen que generar por semana.</string>
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
     <string name="error_image">Favor de adjuntar una IMAGEN del recibo de pago.</string>
     <string name="loading_info">Cargando información, por favor espere . . .</string>
-    <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA D DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
+    <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA DE DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
     <string name="print_original">Solo se ha impreso el recibo original</string>
     <string name="mensaje_telefono">Debe contener 10 caracteres numéricos.</string>
@@ -249,6 +253,7 @@
     <string name="error_contact_TI">Ha ocurrido un error, favor de contactar al departamento de TI.</string>
     <string name="capturar_nueva_firma">¿Desea capturar de nuevo la firma?</string>
     <string name="ver_fotografia">¿Desea ver la imagen?</string>
+    <string name="enviar_informacion">¿Está seguro que desea enviar la información?</string>
     <string name="capturar_foto_galeria">¿Desea capturar una nueva Fotografía o adjuntar de Galería?</string>
     <string name="capturar_foto">¿Desea capturar una nueva Fotografía?</string>
     <string name="guardar_geo">¿Desea guardar la información capturada?, una vez guardado no podrá hacer modificaciones en este formulario.</string>
@@ -369,43 +374,17 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>EFECTIVO</item>
     </string-array>
 
-    <string-array name="nivel_estudio">
-        <item>NINGUNO</item>               <!--1-->
-        <item>PRIMARIA</item>              <!--2-->
-        <item>SECUNDARIA</item>            <!--3-->
-        <item>TECNICO</item>               <!--4-->
-        <item>PREPARATORIA</item>          <!--5-->
-        <item>LICENCIATURA</item>          <!--6-->
-        <item>MAESTRIA</item>              <!--7-->
-        <item>DOCTORADO</item>             <!--8-->
-    </string-array>
+    <string-array name="nivel_estudio"></string-array>
 
     <string-array name="estado_civil">
-        <item>SOLTERA(O)</item>            <!--0-->
-        <item>CASADA(O)</item>             <!--1-->
-        <item>DIVORCIADA(O)</item>         <!--2-->
-        <item>VIUDA(O)</item>              <!--3-->
-        <item>UNION LIBRE</item>           <!--4-->
+
     </string-array>
 
-    <string-array name="tipo_identificacion">
-        <item>INE/IFE</item>                    <!--0-->
-        <item>PASAPORTE</item>                  <!--1-->
-        <item>CÉDULA PROFESIONAL</item>         <!--2-->
-    </string-array>
+    <string-array name="tipo_identificacion"></string-array>
 
-    <string-array name="destino_credito">
-        <item>RE-INVERSIÓN</item>            <!--0-->
-        <item>OTRO</item>                    <!--1-->
-    </string-array>
+    <string-array name="destino_credito"></string-array>
 
-    <string-array name="medios_pago">
-        <item>DEPÓSITOS BANCARIOS</item>     <!--0-->
-        <item>TRANSFERENCIAS</item>          <!--1-->
-        <item>CHEQUE</item>                  <!--2-->
-        <item>EFECTIVO</item>                <!--3-->
-        <item>OTROS</item>                   <!--4-->
-    </string-array>
+    <string-array name="medios_pago"></string-array>
 
     <string-array name="cargo">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
@@ -415,23 +394,9 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>INTEGRANTE</item>            <!--4-->
     </string-array>
 
-    <string-array name="entero_nosotros">
-        <item>RECOMENDACION</item>         <!--1-->
-        <item>PERIODICO</item>             <!--2-->
-        <item>RADIO</item>                 <!--3-->
-        <item>TELEVISION</item>            <!--4-->
-        <item>VOLANTE</item>               <!--5-->
-        <item>ANUNCIO</item>               <!--6-->
-        <item>PLATICA DE GRUPO</item>      <!--7-->
-        <item>PERIFONEO</item>             <!--8-->
-    </string-array>
+    <string-array name="entero_nosotros"></string-array>
 
-    <string-array name="tipo_casa_cli">
-        <item>CASA PROPIA</item>           <!--0-->
-        <item>CASA RENTADA</item>          <!--1-->
-        <item>CASA FAMILIAR</item>         <!--2-->
-        <item>OTRO</item>                  <!--3-->
-    </string-array>
+    <string-array name="tipo_casa_cli"></string-array>
 
     <string-array name="clasificacion_riesgo">
         <item>ALTO</item>           <!--0-->
@@ -439,10 +404,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>BAJO</item>           <!--2-->
     </string-array>
 
-    <string-array name="tipo_casa_aval">
-        <item>CASA PROPIA</item>           <!--1-->
-        <item>CASA FAMILIAR</item>         <!--2-->
-    </string-array>
+    <string-array name="tipo_casa_aval"></string-array>
 
     <string-array name="estatus_ticket">
         <item>ESPERA</item>           <!--1-->
@@ -450,13 +412,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>CERRADO</item>          <!--3-->
     </string-array>
 
-    <string-array name="tipo_casa">
-        <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
-        <item>CASA PROPIA</item>           <!--1-->
-        <item>CASA RENTADA</item>          <!--2-->
-        <item>CASA FAMILIAR</item>         <!--3-->
-        <item>OTRO</item>                  <!--4-->
-    </string-array>
+    <string-array name="tipo_casa"></string-array>
 
     <string-array name="destino_prestamo">
         <item>AGROPECUARIO</item>          <!--1-->
@@ -465,7 +421,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="activos">
-        <item>TELEVISION</item>            <!--0-->
+        <item>T.V.</item>                  <!--0-->
         <item>MICROONDAS</item>            <!--1-->
         <item>REFRIGERADOR</item>          <!--2-->
         <item>SALA</item>                  <!--3-->
@@ -483,80 +439,27 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     </string-array>
 
     <string-array name="parentesco">
-        <item>SELECCIONE UNA OPCION</item> <!--0-->
-        <item>PRIMA(O)</item>              <!--1-->
-        <item>TIA(O)</item>                <!--2-->
-        <item>ABUELA(O)</item>             <!--3-->
-        <item>SOBRINA(O)</item>            <!--4-->
-        <item>AMISTAD</item>               <!--5-->
-        <item>VECINA(O)</item>             <!--6-->
-        <item>CUÑADA(O)</item>             <!--7-->
-        <item>NUERA</item>                 <!--8-->
-        <item>YERNO</item>                 <!--9-->
-        <item>SUEGRA(O)</item>             <!--10-->
+
     </string-array>
 
-    <string-array name="parentesco_titular">
-        <item>SELECCIONE UNA OPCION</item> <!--0-->
-        <item>ARRENDATARIO</item>          <!--1-->
-        <item>TITULAR</item>               <!--1-->
-        <item>PRIMA(O)</item>              <!--3-->
-        <item>TIA(O)</item>                <!--4-->
-        <item>ABUELA(O)</item>             <!--5-->
-        <item>SOBRINA(O)</item>            <!--6-->
-        <item>AMISTAD</item>               <!--7-->
-        <item>VECINA(O)</item>             <!--8-->
-        <item>CUÑADA(O)</item>             <!--9-->
-        <item>NUERA</item>                 <!--10-->
-        <item>YERNO</item>                 <!--11-->
-        <item>SUEGRA(O)</item>             <!--12-->
-    </string-array>
+    <string-array name="parentesco_titular"></string-array>
 
-    <string-array name="casa_familiar">
-        <item>PADRE</item>                 <!--1-->
-        <item>MADRE</item>                 <!--2-->
-        <item>HIJA(O)</item>               <!--3-->
-        <item>HERMANA(O)</item>            <!--4-->
-        <item>PRIMA(O)</item>              <!--5-->
-        <item>TIA(O)</item>                <!--6-->
-        <item>ABUELA(O)</item>             <!--7-->
-        <item>SOBRINA(O)</item>            <!--8-->
-        <item>AMISTAD</item>               <!--9-->
-        <item>VECINA(O)</item>             <!--10-->
-        <item>CUÑADA(O)</item>             <!--11-->
-        <item>NUERA</item>                 <!--12-->
-        <item>YERNO</item>                 <!--13-->
-        <item>SUEGRA(O)</item>             <!--14-->
-        <item>OTRO</item>                  <!--15-->
-    </string-array>
+    <string-array name="casa_familiar"></string-array>
 
-    <string-array name="casa_familiar_aval">
-        <item>PADRE</item>                 <!--1-->
-        <item>MADRE</item>                 <!--2-->
-        <item>HIJA(O)</item>               <!--3-->
-        <item>HERMANA(O)</item>            <!--4-->
-        <item>PRIMA(O)</item>              <!--5-->
-        <item>TIA(O)</item>                <!--6-->
-        <item>ABUELA(O)</item>             <!--7-->
-        <item>SOBRINA(O)</item>            <!--8-->
-        <item>AMISTAD</item>               <!--9-->
-        <item>VECINA(O)</item>             <!--10-->
-        <item>CUÑADA(O)</item>             <!--11-->
-        <item>NUERA</item>                 <!--12-->
-        <item>YERNO</item>                 <!--13-->
-        <item>SUEGRA(O)</item>             <!--14-->
-    </string-array>
+    <string-array name="casa_familiar_aval"></string-array>
 
     <string-array name="intervalo">
         <item>4 MESES</item>               <!--1-->
         <item>5 MESES</item>               <!--2-->
         <item>6 MESES</item>               <!--3-->
+        <item>9 MESES</item>               <!--3-->
     </string-array>
 
     <string-array name="lapso">
         <item>SEMANAL</item>               <!--1-->
         <item>CATORCENAL</item>            <!--2-->
         <item>QUINCENAL</item>             <!--3-->
+        <item>MENSUAL</item>               <!--4-->
     </string-array>
 
     <string-array name="dependientes_eco">

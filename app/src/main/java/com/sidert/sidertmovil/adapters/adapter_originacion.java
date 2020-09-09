@@ -43,11 +43,25 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
         HashMap<Integer, String> item = data.get(position);
         holder.tvNombre.setText(item.get(1));
         if (item.containsKey(3)){
-            if (item.get(4).equals("0"))
+            if (item.get(3).equals("0"))
                 holder.ivInfo.setVisibility(View.VISIBLE);
             else
                 holder.ivInfo.setVisibility(View.GONE);
         }
+
+        if (!item.get(4).trim().isEmpty()){
+            holder.tvFechaTermino.setText("Terminó: "+item.get(4));
+            holder.tvFechaTermino.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.tvFechaTermino.setVisibility(View.GONE);
+        }
+        if (!item.get(5).trim().isEmpty()){
+            holder.tvFechaEnvio.setText("Envío: "+item.get(5));
+            holder.tvFechaEnvio.setVisibility(View.VISIBLE);
+        }
+        else
+            holder.tvFechaEnvio.setVisibility(View.GONE);
 
         holder.ivInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,11 +79,15 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre;
+        private TextView tvFechaTermino;
+        private TextView tvFechaEnvio;
         private ImageView ivInfo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvNombre);
+            tvFechaTermino = itemView.findViewById(R.id.tvFechaTermino);
+            tvFechaEnvio = itemView.findViewById(R.id.tvFechaEnvio);
             ivInfo = itemView.findViewById(R.id.ivInfo);
         }
 

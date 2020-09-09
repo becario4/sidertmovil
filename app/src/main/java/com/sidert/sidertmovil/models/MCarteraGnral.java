@@ -12,6 +12,7 @@ public class MCarteraGnral {
     private boolean is_obligatorio = false;
     private String tipoPrestamo = "";
     private int parcial = 0;
+    private String diasMora = "";
 
     public String getId_cliente() {
         return id_cliente;
@@ -91,5 +92,13 @@ public class MCarteraGnral {
 
     public void setParcial(int parcial) {
         this.parcial = parcial;
+    }
+
+    public String getDiasMora() {
+        return diasMora;
+    }
+
+    public void setDiasMora(String diasMora) {
+        this.diasMora = diasMora;
     }
 }

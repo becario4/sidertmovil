@@ -277,6 +277,34 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Parentesco -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Parentesco"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvParentescoAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!--  Tipo de identificacion  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -379,49 +407,6 @@
             android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!-- Destino del crédito -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Destino del crédito"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvDestinoAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-
-        <EditText
-            android:id="@+id/etOtroDestinoAval"
-            android:visibility="gone"
-            android:hint="Otro Destino del Crédito"
-            android:textColor="@drawable/edit_text_selector"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="10dp"
-            android:maxLength="45"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-
     </LinearLayout>
 
     <!-- Ubicacion del Aval -->
@@ -640,11 +625,67 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Colonia o Localidad"
+            android:text="Colonia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/tvColoniaAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Ciudad -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ciudad"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCiudadAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Localidad -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Localidad"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvLocalidadAval"
             android:textSize="17sp"
             android:textColor="@color/black"
             android:gravity="center_vertical"
@@ -727,14 +768,6 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <!--<Spinner
-            android:id="@+id/spTipoCasaAval"
-            android:entries="@array/tipo_casa_aval"
-            android:spinnerMode="dialog"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height"/>-->
         <TextView
             android:id="@+id/tvTipoCasaAval"
             android:textSize="17sp"
@@ -804,6 +837,100 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Caracteristicas  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Características del Domicilio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCaracteristicasAval"
+            android:inputType="textCapCharacters"
+            android:textColor="@drawable/edit_text_selector"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:id="@+id/tvNombreNegAval"
+            android:text="Cuenta con negocio propio:"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/rgNegocioAval"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbSiNeg"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Si"
+                android:textColor="@drawable/radio_flat_text_selector_left" />
+            <RadioButton
+                android:id="@+id/rbNoNeg"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="No"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!--  Nombre del negocio  -->
+    <LinearLayout
+        android:id="@+id/llNombreNegocio"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nombre del Negocio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombreNegocioAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="80"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!--  Ingresos  -->
     <LinearLayout
         android:visibility="visible"
@@ -843,7 +970,7 @@
             android:id="@+id/etIngMenAval"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="7"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -867,7 +994,7 @@
             android:id="@+id/etOtrosIngAval"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="7"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -911,7 +1038,7 @@
             android:layout_height="match_parent">
             <TextView
                 android:textColor="@android:color/black"
-                android:text="Seman."
+                android:text="Mensu."
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
@@ -920,7 +1047,7 @@
                 android:textColor="@drawable/edit_text_selector"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -951,7 +1078,7 @@
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
                 android:paddingLeft="0dp"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -982,7 +1109,7 @@
                 android:textColor="@drawable/edit_text_selector"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -1013,7 +1140,7 @@
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
                 android:paddingLeft="0dp"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
@@ -1044,7 +1171,7 @@
                 android:textColor="@drawable/edit_text_selector"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
@@ -1074,13 +1201,72 @@
                 android:textColor="@drawable/edit_text_selector"
                 android:drawableStart="@drawable/ic_money"
                 android:inputType="number"
-                android:maxLength="6"
+                android:maxLength="7"
                 android:background="@drawable/et_rounded_edges"
                 android:layout_weight="2"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/et_height" />
         </LinearLayout>
 
+    </LinearLayout>
+
+    <!-- Monto Máximo -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Máximo"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvMontoMaxAval"
+            android:drawableStart="@drawable/ic_money"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!--  Capacidad de Pago  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Capacidad de Pago"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCapacidadPagoAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="number"
+            android:maxLength="6"
+            android:drawableStart="@drawable/ic_money"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Tipo de Moneda  -->
@@ -1110,6 +1296,12 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
+
+    <View
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue_sidert" />
 
     <!-- Medios de pago -->
     <LinearLayout
@@ -1143,6 +1335,7 @@
         <EditText
             android:id="@+id/etOtroMedioPagoAval"
             android:visibility="gone"
+            android:layout_marginTop="10dp"
             android:hint="Otro Medio de Pago"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
@@ -1154,7 +1347,7 @@
 
     </LinearLayout>
 
-    <!-- Monto Máximo -->
+    <!-- Activos Observables -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -1162,7 +1355,8 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Monto Máximo"
+            android:text="Activos Observables"
+            android:layout_weight="1"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"
@@ -1170,24 +1364,19 @@
             style="@android:style/Widget.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etMontoMaxAval"
-            android:textColor="@drawable/edit_text_selector"
-            android:inputType="number"
-            android:maxLength="6"
-            android:drawableStart="@drawable/ic_money"
+        <TextView
+            android:id="@+id/tvActivosObservables"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
             android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
 
     </LinearLayout>
-
-    <View
-        android:layout_marginTop="3dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/blue_sidert" />
 
     <!--  Horario de localizacion  -->
     <LinearLayout
@@ -1276,6 +1465,75 @@
             android:inputType="number"
             android:maxLength="10"
             android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Telefono mensajes  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Teléfono de Mensajes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etTelMensAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="number"
+            android:paddingLeft="10dp"
+            android:maxLength="10"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Telefono trabajo  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Teléfono de Trabajo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etTelTrabajoAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="number"
+            android:paddingLeft="10dp"
+            android:maxLength="10"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  E-Mail  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Correo Electrónico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etEmailAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="10dp"
+            android:maxLength="60"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />

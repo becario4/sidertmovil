@@ -34,11 +34,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class dialog_originacion_gpo extends DialogFragment {
 
@@ -298,18 +294,21 @@ public class dialog_originacion_gpo extends DialogFragment {
         long id_solicitud;
         // Crea la solicitud de credito grupal
         HashMap<Integer, String> params = new HashMap<>();
-        params.put(0, session.getUser().get(0));
-        params.put(1, "2");
-        params.put(2, "1");
-        params.put(3, "0");
-        params.put(4, etNombre.getText().toString().trim().toUpperCase());
-        params.put(5, Miscellaneous.ObtenerFecha("timestamp"));
-        params.put(6, "");
-        params.put(7, "");
-        params.put(8, Miscellaneous.ObtenerFecha("timestamp"));
-        params.put(9, "");
+        params.put(0, getString(R.string.vol_solicitud));                               //VOL SOLICITUD
+        params.put(1,session.getUser().get(9));                 //USUARIO ID
+        params.put(2,"2");                                      //TIPO SOLICITUD
+        params.put(3,"0");                                      //ID ORIGINACION
+        params.put(4, etNombre.getText().toString().trim().toUpperCase());                                  //NOMBRE
+        params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
+        params.put(6,"");                                       //FECHA TERMINO
+        params.put(7,"");                                       //FECHA ENVIO
+        params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
+        params.put(9, "");                                      //FECHA GUARDADO
+        params.put(10, "0");                                    //ESTATUS
 
-            id_solicitud = dBhelper.saveSolicitudes(db, params);
+        id_solicitud = dBhelper.saveSolicitudes(db, params);
+
+
 
         //Inserta registro de datos del credito
         long id_credito;
@@ -322,10 +321,8 @@ public class dialog_originacion_gpo extends DialogFragment {
         params.put(5, tvDiaDesembolso.getText().toString().trim());
         params.put(6, tvHoraVisita.getText().toString().trim());
         params.put(7,"0");
-        if (ENVIROMENT)
-            id_credito = dBhelper.saveDatosCreditoGpo(db, DATOS_CREDITO_GPO, params);
-        else
-            id_credito = dBhelper.saveDatosCreditoGpo(db, DATOS_CREDITO_GPO_T, params);
+
+        id_credito = dBhelper.saveDatosCreditoGpo(db, params);
 
         mListener.onComplete(id_solicitud,
                 id_credito,etNombre.getText().toString().trim().toUpperCase(),

@@ -1,23 +1,39 @@
 package com.sidert.sidertmovil.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.ResumenImpresiones;
 import com.sidert.sidertmovil.adapters.ImpressionsAdapter;
 import com.sidert.sidertmovil.adapters.adapter_reimpresiones;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -25,6 +41,7 @@ import com.sidert.sidertmovil.models.ImpressionsFields;
 import com.sidert.sidertmovil.models.Reimpresion;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
@@ -40,6 +57,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
+import static com.sidert.sidertmovil.utils.Constants.TIPO;
 
 
 public class impression_history_fragment extends Fragment {
@@ -59,6 +77,16 @@ public class impression_history_fragment extends Fragment {
     private DBhelper dbHelper;
     private SQLiteDatabase db;
 
+    private boolean isVisible = false;
+
+    private AutoCompleteTextView aetFolio;
+    private CheckBox cbInd;
+    private CheckBox cbGpo;
+    private CheckBox cbEnv;
+    private CheckBox cbPen;
+
+    private int tipoImpresion = 0;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_impression_history, container, false);
@@ -77,7 +105,7 @@ public class impression_history_fragment extends Fragment {
 
         rvHistory.setLayoutManager(new LinearLayoutManager(ctx));
         rvHistory.setHasFixedSize(false);
-        setHasOptionsMenu(true);
+        boostrap.invalidateOptionsMenu();
         return view;
     }
 
@@ -88,56 +116,64 @@ public class impression_history_fragment extends Fragment {
         rbVigente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FillAdapterVigente();
+                tipoImpresion = 1;
+                isVisible = true;
+                setHasOptionsMenu(true);
+                FillAdapterVigente("");
             }
         });
 
         rbVencida.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tipoImpresion = 2;
+                isVisible = true;
+                setHasOptionsMenu(true);
                 rvHistory.setAdapter(null);
-                FillAdapterVencida();
+                FillAdapterVencida("");
             }
         });
 
         rbReimpresion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FillAdapterReimpresion();
+                tipoImpresion = 3;
+                isVisible = true;
+                setHasOptionsMenu(true);
+                FillAdapterReimpresion("");
             }
         });
 
     }
 
-    private void FillAdapterVigente (){
+    private void FillAdapterVigente (String where){
         rvHistory.setAdapter(null);
         Cursor row;
-
-        String sql;
-        if(ENVIROMENT)
-            sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi1 LEFT JOIN " +
-                    TBL_PRESTAMOS_IND + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
-                    TBL_CARTERA_IND + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%'" +
-                    " UNION SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi2 LEFT JOIN " +
-                    TBL_PRESTAMOS_GPO + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%') AS impresiones ORDER BY folio DESC";
-        else
+        String sql = "";
+        if (cbInd != null && cbGpo != null && cbInd.isChecked() && !cbGpo.isChecked()){
+            sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE (SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VIGENTE_T + " AS i2 WHERE i2.folio = ivi1.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS ivi1 LEFT JOIN " +
+                    TBL_PRESTAMOS_IND_T + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
+                    TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%' AND ivi1.tipo_impresion = (SELECT i3.tipo_impresion FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS i3 WHERE i3.folio = ivi1.folio ORDER BY i3.tipo_impresion DESC LIMIT 1)" +
+                    ") AS impresiones "+where+" ORDER BY folio DESC";
+        }
+        else if(cbInd != null && cbGpo != null && !cbInd.isChecked() && cbGpo.isChecked()){
+            sql = "SELECT * FROM (SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE(SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VIGENTE_T + " AS i2 WHERE i2.folio = ivi2.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS ivi2 LEFT JOIN " +
+                    TBL_PRESTAMOS_GPO_T + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VIGENTE_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
+        }
+        else{
             sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE (SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VIGENTE_T + " AS i2 WHERE i2.folio = ivi1.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS ivi1 LEFT JOIN " +
                     TBL_PRESTAMOS_IND_T + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
                     TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%' AND ivi1.tipo_impresion = (SELECT i3.tipo_impresion FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS i3 WHERE i3.folio = ivi1.folio ORDER BY i3.tipo_impresion DESC LIMIT 1)" +
                     " UNION SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE(SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VIGENTE_T + " AS i2 WHERE i2.folio = ivi2.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VIGENTE_T + " AS ivi2 LEFT JOIN " +
                     TBL_PRESTAMOS_GPO_T + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VIGENTE_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones ORDER BY folio DESC";
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VIGENTE_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
+        }
 
-        //sql = "SELECT *,'QVV' AS nombre, 'OC' AS folios from "+ TBL_IMPRESIONES_VIGENTE_T + " ORDER BY folio DESC";
-        Log.e("SQLImpresiones", sql);
         row = db.rawQuery(sql, null);
-
-       // row = dbHelper.getRecords(table,""," ORDER BY folio DESC",null);
 
         if (row.getCount() > 0){
 
-            Log.e("xx", "xx"+row.getCount());
             ArrayList<ImpressionsFields> obj = new ArrayList<>();
             row.moveToFirst();
             for (int i = 0; i < row.getCount(); i++){
@@ -167,35 +203,33 @@ public class impression_history_fragment extends Fragment {
         }
     }
 
-    private void FillAdapterVencida (){
+    private void FillAdapterVencida (String where){
         rvHistory.setAdapter(null);
         Cursor row;
+        String sql = "";
 
-        String sql;
-        if(ENVIROMENT)
-            sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi1 LEFT JOIN " +
-                    TBL_PRESTAMOS_IND + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
-                    TBL_CARTERA_IND + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%'" +
-                    " UNION SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x FROM " + TBL_IMPRESIONES_VIGENTE + " AS ivi2 LEFT JOIN " +
-                    TBL_PRESTAMOS_GPO + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%') AS impresiones ORDER BY folio DESC";
+        if (cbInd != null && cbGpo != null && cbInd.isChecked() && !cbGpo.isChecked())
+            sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE (SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VENCIDA_T + " AS i2 WHERE i2.folio = ivi1.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS ivi1 LEFT JOIN " +
+                    TBL_PRESTAMOS_IND_T + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
+                    TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%' AND ivi1.tipo_impresion = (SELECT i3.tipo_impresion FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS i3 WHERE i3.folio = ivi1.folio ORDER BY i3.tipo_impresion DESC LIMIT 1)" +
+                    ") AS impresiones "+where+" ORDER BY folio DESC";
+        else if (cbInd != null && cbGpo != null && !cbInd.isChecked() && cbGpo.isChecked())
+            sql = "SELECT * FROM (SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE(SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VENCIDA_T + " AS i2 WHERE i2.folio = ivi2.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS ivi2 LEFT JOIN " +
+                    TBL_PRESTAMOS_GPO_T + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VENCIDA_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
         else
             sql = "SELECT * FROM (SELECT ivi1.*,COALESCE(ci.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE (SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VENCIDA_T + " AS i2 WHERE i2.folio = ivi1.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS ivi1 LEFT JOIN " +
                     TBL_PRESTAMOS_IND_T + " AS pi ON ivi1.num_prestamo = pi.num_prestamo LEFT JOIN "+
                     TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE ivi1.num_prestamo LIKE '%-L%' AND ivi1.tipo_impresion = (SELECT i3.tipo_impresion FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS i3 WHERE i3.folio = ivi1.folio ORDER BY i3.tipo_impresion DESC LIMIT 1)" +
                     " UNION SELECT ivi2.*, COALESCE(cg.nombre,'GUARDADO Y SINCRONIZADO') AS x, CASE(SELECT COUNT(*) FROM "+ TBL_IMPRESIONES_VENCIDA_T + " AS i2 WHERE i2.folio = ivi2.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS folios FROM " + TBL_IMPRESIONES_VENCIDA_T + " AS ivi2 LEFT JOIN " +
                     TBL_PRESTAMOS_GPO_T + " AS pg ON ivi2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VENCIDA_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones ORDER BY folio DESC";
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE ivi2.num_prestamo NOT LIKE '%-L%' AND ivi2.tipo_impresion = (SELECT i2.tipo_impresion FROM "+TBL_IMPRESIONES_VENCIDA_T+" AS i2 WHERE i2.folio = ivi2.folio ORDER BY i2.tipo_impresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
 
-        //sql = "SELECT *,'QVV' AS nombre, 'OC' AS folios from "+ TBL_IMPRESIONES_VIGENTE_T + " ORDER BY folio DESC";
-        Log.e("SQLImpresiones", sql);
+        Log.e("SQLVENCIDA", sql);
         row = db.rawQuery(sql, null);
-
-        // row = dbHelper.getRecords(table,""," ORDER BY folio DESC",null);
 
         if (row.getCount() > 0){
 
-            Log.e("xx", "xx"+row.getCount());
             ArrayList<ImpressionsFields> obj = new ArrayList<>();
             row.moveToFirst();
             for (int i = 0; i < row.getCount(); i++){
@@ -225,28 +259,34 @@ public class impression_history_fragment extends Fragment {
         }
     }
 
-    private void FillAdapterReimpresion () {
+    private void FillAdapterReimpresion (String where) {
         rvHistory.setAdapter(null);
         Cursor row;
-
-        String sql = "SELECT * FROM (SELECT rim1.*,ci.nombre, CASE (SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim1.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim1 LEFT JOIN " +
+        String sql = "";
+        if (cbInd != null && cbGpo != null && cbInd.isChecked() && !cbGpo.isChecked())
+            sql = "SELECT * FROM (SELECT rim1.*,ci.nombre, CASE (SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim1.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim1 LEFT JOIN " +
+                    TBL_PRESTAMOS_IND_T + " AS pi ON rim1.num_prestamo = pi.num_prestamo LEFT JOIN "+
+                    TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE rim1.num_prestamo LIKE '%-L%' AND rim1.tipo_reimpresion = (SELECT i3.tipo_reimpresion FROM " + TBL_REIMPRESION_VIGENTE_T + " AS i3 WHERE i3.folio = rim1.folio ORDER BY i3.tipo_reimpresion DESC LIMIT 1)" +
+                    ") AS impresiones "+where+" ORDER BY folio DESC";
+        else if(cbInd != null && cbGpo != null && !cbInd.isChecked() && cbGpo.isChecked())
+            sql = "SELECT * FROM (SELECT rim2.*, cg.nombre, CASE(SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim2.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim2 LEFT JOIN " +
+                    TBL_PRESTAMOS_GPO_T + " AS pg ON rim2.num_prestamo = pg.num_prestamo LEFT JOIN " +
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rim2.num_prestamo NOT LIKE '%-L%' AND rim2.tipo_reimpresion = (SELECT i2.tipo_reimpresion FROM "+TBL_REIMPRESION_VIGENTE_T+" AS i2 WHERE i2.folio = rim2.folio ORDER BY i2.tipo_reimpresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
+        else
+            sql = "SELECT * FROM (SELECT rim1.*,ci.nombre, CASE (SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim1.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim1 LEFT JOIN " +
                     TBL_PRESTAMOS_IND_T + " AS pi ON rim1.num_prestamo = pi.num_prestamo LEFT JOIN "+
                     TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE rim1.num_prestamo LIKE '%-L%' AND rim1.tipo_reimpresion = (SELECT i3.tipo_reimpresion FROM " + TBL_REIMPRESION_VIGENTE_T + " AS i3 WHERE i3.folio = rim1.folio ORDER BY i3.tipo_reimpresion DESC LIMIT 1)" +
                     " UNION SELECT rim2.*, cg.nombre, CASE(SELECT COUNT(*) FROM "+ TBL_REIMPRESION_VIGENTE_T + " AS rim WHERE rim.folio = rim2.folio) WHEN 1 THEN 'RO' ELSE 'RO|RC' END AS folios FROM " + TBL_REIMPRESION_VIGENTE_T + " AS rim2 LEFT JOIN " +
                     TBL_PRESTAMOS_GPO_T + " AS pg ON rim2.num_prestamo = pg.num_prestamo LEFT JOIN " +
-                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rim2.num_prestamo NOT LIKE '%-L%' AND rim2.tipo_reimpresion = (SELECT i2.tipo_reimpresion FROM "+TBL_REIMPRESION_VIGENTE_T+" AS i2 WHERE i2.folio = rim2.folio ORDER BY i2.tipo_reimpresion DESC LIMIT 1)) AS impresiones ORDER BY folio DESC";
+                    TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE rim2.num_prestamo NOT LIKE '%-L%' AND rim2.tipo_reimpresion = (SELECT i2.tipo_reimpresion FROM "+TBL_REIMPRESION_VIGENTE_T+" AS i2 WHERE i2.folio = rim2.folio ORDER BY i2.tipo_reimpresion DESC LIMIT 1)) AS impresiones "+where+" ORDER BY folio DESC";
 
-        //sql = "SELECT *,'nombre' as nombre, 'x' as folios from "+ TBL_REIMPRESION_VIGENTE_T;
-        Log.e("SQLImpresiones", sql);
         row = db.rawQuery(sql, null);
 
         if (row.getCount() > 0){
 
-            Log.e("xx", "xx"+row.getCount());
             ArrayList<Reimpresion> obj = new ArrayList<>();
             row.moveToFirst();
             for (int i = 0; i < row.getCount(); i++){
-                Log.e("aaaa","aaa"+1);
                 Reimpresion item = new Reimpresion();
                 item.setNombre(row.getString(12));
                 item.setNumPrestamo(row.getString(11));
@@ -273,4 +313,136 @@ public class impression_history_fragment extends Fragment {
             Toast.makeText(ctx,"Sin contenido", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void Filtros (){
+        DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
+                .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_impresiones))
+                .setGravity(Gravity.TOP)
+                .setPadding(20,10,20,10)
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(DialogPlus dialog, View view) {
+                        String where = "";
+
+                        HashMap<String, String> filtros = new HashMap<>();
+                        InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        switch (view.getId()) {
+                            case R.id.btnFiltrar:
+                                if (!aetFolio.getText().toString().trim().isEmpty()){
+                                    where = " AND folio = '"+aetFolio.getText().toString().trim()+"'";
+                                }
+
+                                if (cbEnv.isChecked() && cbPen.isChecked()){
+                                    where += " AND estatus IN ('1','0')";
+                                }
+                                else if (cbEnv.isChecked()){
+                                    where += " AND estatus = '1'";
+                                }
+                                else if (cbPen.isChecked()){
+                                    where += " AND estatus = '0'";
+                                }
+
+
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                                switch (tipoImpresion){
+                                    case 1:
+                                        if (where.length() > 4)
+                                            FillAdapterVigente("WHERE" + where.substring(4));
+                                        else
+                                            FillAdapterVigente("");
+                                        break;
+                                    case 2:
+                                        if (where.length() > 4)
+                                            FillAdapterVencida("WHERE" + where.substring(4));
+                                        else
+                                            FillAdapterVencida("");
+                                        break;
+                                    case 3:
+                                        if (where.length() > 4)
+                                            FillAdapterReimpresion("WHERE" + where.substring(4));
+                                        else
+                                            FillAdapterReimpresion("");
+                                        break;
+                                }
+
+                                dialog.dismiss();
+
+                                break;
+                            case R.id.btnBorrarFiltros:
+                                cbInd.setChecked(false);
+                                cbGpo.setChecked(false);
+                                cbEnv.setChecked(false);
+                                cbPen.setChecked(false);
+                                aetFolio.setText("");
+
+
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                switch (tipoImpresion){
+                                    case 1:
+                                        FillAdapterVigente("");
+                                        break;
+                                    case 2:
+                                        FillAdapterVencida("");
+                                        break;
+                                    case 3:
+                                        FillAdapterReimpresion("");
+                                        break;
+                                }
+
+                                //dialog.dismiss();
+
+                                break;
+                        }
+
+                    }
+                })
+                .setExpanded(true, 900)
+                .create();
+        aetFolio    = filtros_dg.getHolderView().findViewById(R.id.aetFolio);
+        cbInd       = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+        cbGpo       = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+        cbEnv       = filtros_dg.getHolderView().findViewById(R.id.cbEnv);
+        cbPen       = filtros_dg.getHolderView().findViewById(R.id.cbPen);
+
+        filtros_dg.show();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        onResume();
+        inflater.inflate(R.menu.menu_filtro, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        TextView tvContFiltros = actionView.findViewById(R.id.filtro_bagde);
+        tvContFiltros.setVisibility(View.GONE);
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
+
+        for (int i = 0; i < menu.size(); i++)
+            menu.getItem(i).setVisible(isVisible);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nvFiltro:
+                Filtros();
+                return true;
+            case R.id.nvInfo:
+                Intent i_resumen_imp = new Intent(ctx, ResumenImpresiones.class);
+                i_resumen_imp.putExtra(TIPO, tipoImpresion);
+                startActivity(i_resumen_imp);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

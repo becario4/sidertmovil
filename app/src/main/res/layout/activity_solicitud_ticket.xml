@@ -189,11 +189,12 @@
                         android:hint="Describe con detalle tu solicitud"
                         android:padding="8dp"
                         android:textSize="17sp"
+                        android:gravity="top"
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="100dp"
                         android:ems="10"
-                        android:inputType="textMultiLine|textCapCharacters"
+                        android:inputType="textMultiLine"
                         android:maxLength="255"/>
                 </LinearLayout>
 

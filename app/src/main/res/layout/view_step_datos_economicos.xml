@@ -84,20 +84,21 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Ingreso"
+            android:text="Ingresos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/etIngresoEco"
-            android:textColor="@drawable/edit_text_selector"
-            android:inputType="number"
+        <TextView
+            android:id="@+id/tvIngresoEco"
             android:drawableStart="@drawable/ic_money"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:maxLength="6"
-            android:background="@drawable/et_rounded_edges"
+            android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+
     </LinearLayout>
 
     <RelativeLayout

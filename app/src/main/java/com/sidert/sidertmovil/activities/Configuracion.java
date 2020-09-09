@@ -18,7 +18,9 @@ import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.downloadapk.MyReceiverApk;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_pass_update_apk;
+import com.sidert.sidertmovil.models.MResponseDefault;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -29,6 +31,7 @@ import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
+import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,11 +56,14 @@ public class Configuracion extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
+    private MyReceiverApk myReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracion);
 
+        Init();
         ctx = this;
         Toolbar tbMain = findViewById(R.id.tbMain);
         cvSincronizarFichas = findViewById(R.id.cvSincronizarFichas);
@@ -94,10 +100,7 @@ public class Configuracion extends AppCompatActivity {
                             params_sincro.put(0, session.getUser().get(0));
                             params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
-                            if (Constants.ENVIROMENT)
-                                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
-                            else
-                                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+                            dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                             ss.SaveCierreDia(ctx, true);
@@ -106,11 +109,15 @@ public class Configuracion extends AppCompatActivity {
                             ss.SendImpresionesVi(ctx, true);
                             ss.SendReimpresionesVi(ctx, true);
                             ss.SendTracker(ctx, true);
+                            ss.GetTickets(ctx, true);
+
+                            ss.SendOriginacionInd (ctx, false);
+                            ss.SendOriginacionGpo(ctx, false);
                             //ss.CancelGestiones(ctx, true);
                             //ss.SendRecibos(ctx, true);
-                            ss.GetTickets(ctx, true);
                             //ss.GetUltimosRecibos(ctx);
                             //ss.SendCancelGestiones(ctx, true);
+
 
                         }
                         cvSincronizarFichas.setEnabled(true);
@@ -194,43 +201,48 @@ public class Configuracion extends AppCompatActivity {
     };
 
 
-    public void DownloadApk(){
+    public void DownloadApk(String password){
+
         if (NetworkStatus.haveNetworkConnection(ctx)){
 
             final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
-            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_FICHAS, ctx).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_APK, ctx).create(ManagerInterface.class);
 
-            Call<ResponseBody> call = api.downloadApk();
+            Call<MResponseDefault> call = api.downloadApk(password,
+                    "Bearer "+ session.getUser().get(7));
 
-            call.enqueue(new Callback<ResponseBody>() {
+            call.enqueue(new Callback<MResponseDefault>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    Log.e("code", "code"+response.code());
-                    if (response.code() == 200){
-                        if(WrietApkDownload(response.body())){
-                            Toast.makeText(ctx, "El archivo se ha descargado correctamente", Toast.LENGTH_SHORT).show();
-                            loading.dismiss();
-                        }
-                        else if (response.code() == 404){
-                            loading.dismiss();
-                            Toast.makeText(ctx, "Servicio no encontrado", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            loading.dismiss();
-                            Toast.makeText(ctx, "Ha ocurrido un error durante la descarga", Toast.LENGTH_SHORT).show();
-                        }
-
+                public void onResponse(Call<MResponseDefault> call, Response<MResponseDefault> response) {
+                    Log.e("ResponseApk", ""+response.code());
+                    MResponseDefault res = response.body();
+                    switch (response.code()){
+                        case 200:
+                            Toast.makeText(ctx, "Comienza la descarga", Toast.LENGTH_SHORT).show();
+                            myReceiver.DownloadApk(session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS + WebServicesRoutes.WS_GET_DOWNLOAD_APK);
+                            break;
+                        case 404:
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                            builder.setMessage("No está autorizado para descargar la nueva versión");
+                            builder.setPositiveButton("Aceptar", null);
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                            break;
+                        default:
+                            AlertDialog.Builder builderD = new AlertDialog.Builder(ctx);
+                            builderD.setMessage("Error al enviar los datos para la descarga");
+                            builderD.setPositiveButton("Aceptar", null);
+                            AlertDialog dialogD = builderD.create();
+                            dialogD.show();
+                            break;
                     }
-                    else{
-                        loading.dismiss();
-                        Toast.makeText(ctx, "Ha ocurrido un error durante la descarga", Toast.LENGTH_SHORT).show();
-                    }
+                    loading.dismiss();
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<MResponseDefault> call, Throwable t) {
                     loading.dismiss();
                     Toast.makeText(ctx, "Ha ocurrido un error durante la descarga fail", Toast.LENGTH_SHORT).show();
                 }
@@ -250,48 +262,9 @@ public class Configuracion extends AppCompatActivity {
         }
     }
 
-    private boolean WrietApkDownload (ResponseBody body) {
-        try {
-            File fileApk = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "sidert_movil.apk");
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                byte[] fileReader = new byte[30000];
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(fileApk);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-                    outputStream.write(fileReader, 0, read);
-
-                }
-
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        }catch (IOException e) {
-            return false;
-        }
-
-        return false;
+    private void Init(){
+        myReceiver = new MyReceiverApk(Configuracion.this);
+        myReceiver.Register(myReceiver);
     }
 
 
@@ -301,5 +274,17 @@ public class Configuracion extends AppCompatActivity {
             finish();
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        myReceiver.DeleteRegister(myReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        myReceiver.Register(myReceiver);
     }
 }

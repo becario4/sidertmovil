@@ -2,6 +2,8 @@ package com.sidert.sidertmovil.utils;
 
 import android.os.Environment;
 
+import retrofit2.http.PUT;
+
 public class Constants {
 
     public final static boolean ENVIROMENT          = false;
@@ -17,6 +19,7 @@ public class Constants {
     public final static String CONTROLLER_CODIGOS     = "codigos";
     public final static String CONTROLLER_RECIBOS     = "recibos";
     public final static String CONTROLLER_SOPORTE     = "soporte";
+    public final static String CONTROLLER_APK         = "apk";
 
 
     // ACTION BAR CONSTANTS
@@ -107,6 +110,16 @@ public class Constants {
     public final static String AUTHORITIES            = "authorities";
     public final static String MODULOS                = "modulos";
     public final static String SUCURSALES             = "sucursales";
+    public final static String MAC_ADDRESSES          = "mac_addresses";
+    public final static String MAC_ADDRESS            = "macAddress";
+
+    //====================== ACTION PUSH NOTIFICATIONS  =========================================
+    public final static String BORRAR_CACHE           = "BORRAR CACHE";
+    public final static String ACTUALIZAR_CARTERA     = "ACTUALIZAR CARTERA";
+    public final static String REMOVER_CARTERA        = "REMOVER CARTERA";
+    public final static String UBICACION_ACTUAL       = "UBICACION ACTUAL";
+    public final static String FECHA_HORA             = "FECHA Y HORA";
+    public final static String ACCION                 = "Accion";
 
 
     //======================  TAGS DE FICHAS  ===================================================
@@ -128,6 +141,7 @@ public class Constants {
     public final static String TEL_DOMICILIO                = "TelDomicilio";
     public final static String DIRECCION                    = "Direccion";
     public final static String CALLE                        = "Calle";
+    public final static String TIPO_SOLICITUD               = "TipoSolicitud";
     public final static String CIUDAD                       = "Ciudad";
     public final static String CODIGO_POSTAL                = "CodigoPostal";
     public final static String COLONIA                      = "Colonia";
@@ -154,6 +168,7 @@ public class Constants {
     public final static String FECHA_PAGO_ESTABLECIDA       = "FechaPagoEstablecida";
     public final static String HORA_PAGO_ESTABLECIDA        = "HoraPagoEstablecida";
     public final static String SALDO_ACTUAL                 = "SaldoActual";
+    public final static String FECHA_FIN                    = "FechaFin";
     public final static String SUMA_DE_PAGOS                = "SumaDePagos";
     public final static String DIAS_ATRASO                  = "DiasAtraso";
     public final static String FRECUENCIA                   = "Frecuencia";
@@ -245,12 +260,18 @@ public class Constants {
     public final static int REQUEST_CODE_ADD_INTEGRANTE            = 764;
     public final static int REQUEST_CODE_ESTADO_NAC                = 468;
     public final static int REQUEST_CODE_OCUPACION_CLIE            = 346;
+    public final static int REQUEST_CODE_OCUPACION_NEG             = 664;
     public final static int REQUEST_CODE_OCUPACION_CONY            = 673;
     public final static int REQUEST_CODE_ACTIVIDAD_NEG             = 412;
     public final static int REQUEST_CODE_ESTADO_NAC_AVAL           = 348;
     public final static int REQUEST_CODE_OCUPACION_AVAL            = 671;
     public final static int REQUEST_CODE_ESTADO_AVAL               = 846;
     public final static int REQUEST_CODE_COLONIA_CLIE              = 934;
+    public final static int REQUEST_CODE_LOCALIDAD_CLIE            = 848;
+    public final static int REQUEST_CODE_LOCALIDAD_CONY            = 615;
+    public final static int REQUEST_CODE_LOCALIDAD_NEG             = 516;
+    public final static int REQUEST_CODE_LOCALIDAD_AVAL            = 734;
+    public final static int REQUEST_CODE_LOCALIDAD_REF             = 559;
     public final static int REQUEST_CODE_COLONIA_CONY              = 446;
     public final static int REQUEST_CODE_COLONIA_AVAL              = 168;
     public final static int REQUEST_CODE_COLONIA_NEG               = 336;
@@ -269,6 +290,7 @@ public class Constants {
     public final static int REQUEST_CODE_MIEMBRO_GEO               = 668;
     public final static int REQUEST_CODE_CAMERA_CIERRE_DIA         = 416;
     public final static int REQUEST_CODE_SOPORTE                   = 685;
+    public final static int REQUEST_CODE_CALLE                     = 648;
 
     public final static int CANCEL_TRACKER_ID                      = 300;
 
@@ -343,10 +365,12 @@ public class Constants {
     public final static String TBL_REPORTE_SESIONES     = "tbl_reporte_sesiones";
     public final static String TBL_SUCURSALES           = "tbl_sucursales";
     public final static String TBL_CODIGOS_OXXO         = "tbl_codigos_oxxo";
-    public final static String SOLICITUDES              = "solicitudes";
-    public final static String SOLICITUDES_T            = "solicitudes_t";
+    public final static String TBL_RESUMENES_GESTION    = "tbl_resumenes_gestion";
+    //public final static String SOLICITUDES              = "solicitudes";
+    //public final static String SOLICITUDES_T            = "solicitudes_t";
 
     public final static String TBL_SOLICITUDES      = "tbl_solicitudes";
+    public final static String TBL_DIRECCIONES      = "tbl_direccion";
 
     public final static String TBL_CREDITO_IND      = "tbl_credito_ind";
     public final static String TBL_CLIENTE_IND      = "tbl_cliente_ind";
@@ -355,7 +379,19 @@ public class Constants {
     public final static String TBL_NEGOCIO_IND      = "tbl_negocio_ind";
     public final static String TBL_AVAL_IND         = "tbl_aval_ind";
     public final static String TBL_REFERENCIA_IND   = "tbl_referencia_ind";
+    public final static String TBL_CROQUIS_IND      = "tbl_croquis_ind";
+    public final static String TBL_POLITICAS_PLD_IND = "politicas_pld_ind";
     public final static String TBL_DOCUMENTOS       = "tbl_documentos";
+    public final static String TBL_CREDITO_GPO      = "tbl_credito_gpo";
+    public final static String TBL_INTEGRANTES_GPO  = "tbl_integrantes_gpo";
+    public final static String TBL_TELEFONOS_INTEGRANTE     = "tbl_telefonos_integrante";
+    public final static String TBL_DOMICILIO_INTEGRANTE     = "tbl_domicilio_integrante";
+    public final static String TBL_NEGOCIO_INTEGRANTE       = "tbl_negocio_integrante";
+    public final static String TBL_CONYUGE_INTEGRANTE       = "tbl_conyuge_integrante";
+    public final static String TBL_OTROS_DATOS_INTEGRANTE   = "tbl_otros_datos_integrante";
+    public final static String TBL_CROQUIS_GPO              = "tbl_croquis_gpo";
+    public final static String TBL_POLITICAS_PLD_INTEGRANTE = "tbl_politicas_pld_integrante";
+    public final static String TBL_DOCUMENTOS_INTEGRANTE    = "documentos_integrante";
 
     public final static String DATOS_CREDITO_GPO            = "datos_credito_gpo";
     public final static String DATOS_CREDITO_GPO_T          = "datos_credito_gpo_t";
@@ -414,18 +450,27 @@ public class Constants {
     public static final String TBL_CANCELACIONES       = "tbl_cancelaciones";
 
 
-
-
-    public final static String STATUS_FICHAS       = "status_fichas";
-    public final static String ESTADOS             = "estados";
-    public final static String MUNICIPIOS          = "municipios";
-    public final static String COLONIAS            = "cat_colonias";
-    public final static String OCUPACIONES         = "ocupaciones";
-    public final static String SECTORES            = "sectores";
-    public final static String IDENTIFICACIONES    = "identificaciones";
-    public final static String TICKETS             = "tickets";
+    public final static String STATUS_FICHAS                = "status_fichas";
+    public final static String ESTADOS                      = "estados";
+    public final static String MUNICIPIOS                   = "municipios";
+    public final static String LOCALIDADES                  = "localidades";
+    public final static String COLONIAS                     = "cat_colonias";
+    public final static String OCUPACIONES                  = "ocupaciones";
+    public final static String SECTORES                     = "sectores";
+    public final static String IDENTIFICACIONES             = "identificaciones";
+    public final static String TICKETS                      = "tickets";
+    public final static String TBL_IDENTIFICACIONES_TIPO    = "tbl_identificacion_tipo";
+    public final static String TBL_VIVIENDA_TIPOS           = "tbl_vivienda_tipos";
+    public final static String TBL_DESTINOS_CREDITO         = "tbl_destinos_credito";
+    public final static String TBL_ESTADOS_CIVILES          = "tbl_estados_civiles";
+    public final static String TBL_NIVELES_ESTUDIOS         = "tbl_niveles_estudios";
+    public final static String TBL_MEDIOS_PAGO_ORI          = "tbl_medios_pago_ori";
+    public final static String TBL_PARENTESCOS              = "tbl_parentescos";
+    public final static String TBL_MEDIOS_CONTACTO          = "tbl_medios_contacto";
 
     //====================   TAGS  PARA  JSON  DE  RESPUESTA  DE  GESTION  =========================
+    public final static String RESUMEN                  = "Resumen";
+    public final static String UBICACION                = "Ubicacion";
     public final static String LATITUD                  = "Latitud";
     public final static String LONGITUD                 = "Longitud";
     public final static String CONTACTO                 = "Contacto";
@@ -488,18 +533,33 @@ public class Constants {
     public final static String K_FECHA_DESEMBOLSO               = "fecha_desembolso";
     public final static String K_HORA_VISITA                    = "hora_visita";
     public final static String K_MONTO_PRESTAMO                 = "monto_prestamo";
+    public final static String K_MONTO_LETRA                    = "monto_letra";
     public final static String K_DESTINO_PRESTAMO               = "destino_prestamo";
+    public final static String K_CLASIFICACION_RIESGO           = "clasificacion_riesgo";
+    public final static String K_ESTATUS_INTEGRANTE             = "estatus_integrante";
+    public final static String K_FECHA_INICIO                   = "fecha_inicio";
+    public final static String K_FECHA_ENVIO                    = "fecha_envio";
+    public final static String K_FECHA_TERMINO                  = "fecha_termino";
     public final static String K_SOLICITANTE                    = "solicitante";
+    public final static String K_OTROS_DATOS                    = "otros_datos";
+    public final static String K_CASA_REUNION                   = "casa_reunion";
+    public final static String K_CARGO                          = "cargo";
     public final static String K_NOMBRE                         = "nombre";
+    public final static String K_NOMBRE_GRUPO                   = "nombre_grupo";
     public final static String K_PATERNO                        = "paterno";
     public final static String K_MATERNO                        = "materno";
     public final static String K_FECHA_NACIMIENTO               = "fecha_nacimiento";
+    public final static String K_EDAD                           = "edad";
     public final static String K_GENERO                         = "genero";
     public final static String K_ESTADO_NACIMIENTO              = "estado_nacimiento";
     public final static String K_RFC                            = "rfc";
     public final static String K_CURP                           = "curp";
+    public final static String K_PARENTESCO_SOLICITANTE         = "parentesco_solicitante";
     public final static String K_OCUPACION                      = "ocupacion";
+    public final static String K_NACIONALIDAD                   = "nacionalidad";
     public final static String K_ACTIVIDAD_ECONOMICA            = "actividad_economica";
+    public final static String K_DESTINO_CREDITO                = "destino_credito";
+    public final static String K_OTRO_DESTINO_CREDITO           = "otro_destino_credito";
     public final static String K_IDENTIFICACION_TIPO            = "identificacion_tipo";
     public final static String K_NO_IDENTIFICACION              = "no_identificacion";
     public final static String K_NIVEL_ESTUDIO                  = "nivel_estudio";
@@ -507,7 +567,11 @@ public class Constants {
     public final static String K_BIENES                         = "bienes";
     public final static String K_TIPO_VIVIENDA                  = "tipo_vivienda";
     public final static String K_PARENTESCO                     = "parentesco";
+    public final static String K_PARENTESCO_TITULAR             = "parentesco_titular";
     public final static String K_OTRO_TIPO_VIVIENDA             = "otro_tipo_vivienda";
+    public final static String K_CARACTERISTICAS_DOMICILIO      = "caracteristicas_domicilio";
+    public final static String K_TIENE_NEGOCIO                  = "tiene_negocio";
+    public final static String K_NOMBRE_NEGOCIO                 = "nombre_negocio";
     public final static String K_LATITUD                        = "latitud";
     public final static String K_LONGITUD                       = "longitud";
     public final static String K_CALLE                          = "calle";
@@ -517,6 +581,8 @@ public class Constants {
     public final static String K_NO_LOTE                        = "no_lote";
     public final static String K_CODIGO_POSTAL                  = "codigo_postal";
     public final static String K_COLONIA                        = "colonia";
+    public final static String K_CIUDAD                         = "ciudad";
+    public final static String K_LOCALIDAD                      = "localidad";
     public final static String K_MUNICIPIO                      = "municipio";
     public final static String K_ESTADO                         = "estado";
     public final static String K_TEL_CASA                       = "tel_casa";
@@ -526,6 +592,7 @@ public class Constants {
     public final static String K_TIEMPO_VIVIR_SITIO             = "tiempo_vivir_sitio";
     public final static String K_DEPENDIENTES_ECONOMICO         = "dependientes_economico";
     public final static String K_MEDIO_CONTACTO                 = "medio_contacto";
+    public final static String K_ESTADO_CUENTA                  = "estado_cuenta";
     public final static String K_EMAIL                          = "email";
     public final static String K_FOTO_FACHADA                   = "foto_fachada";
     public final static String K_REFERENCIA_DOMICILIARIA        = "referencia_domiciliaria";
@@ -542,6 +609,7 @@ public class Constants {
     public final static String K_SOLICITANTE_NEGOCIO            = "solicitante_negocio";
     public final static String K_ANTIGUEDAD                     = "antiguedad";
     public final static String K_INGRESO_MENSUAL                = "ingreso_mensual";
+    public final static String K_GASTO_MENSUAL                  = "gasto_mensual";
     public final static String K_INGRESOS_OTROS                 = "ingresos_otros";
     public final static String K_GASTO_SEMANAL                  = "gasto_semanal";
     public final static String K_GASTO_AGUA                     = "gasto_agua";
@@ -550,56 +618,40 @@ public class Constants {
     public final static String K_GASTO_RENTA                    = "gasto_renta";
     public final static String K_GASTO_OTROS                    = "gasto_otros";
     public final static String K_CAPACIDAD_PAGO                 = "capacidad_pago";
-    public final static String K_DIAS_VENTA                     = "dias_venta";
-    public final static String K_REFERENCIA_NEGOCIO             = "dias_venta";
+    public final static String K_MEDIOS_PAGOS                   = "medios_pago";
+    public final static String K_OTRO_MEDIOS_PAGOS              = "otro_medio_pago";
+    public final static String K_MONTO_MAXIMO                   = "monto_maximo";
+    public final static String K_NUM_OPERACIONES_MENSUAL                = "num_operaciones_mensuales";
+    public final static String K_NUM_OPERACIONES_MENSUAL_EFECTIVO       = "num_operaciones_mensuales_efectivo";
+    public final static String K_DIAS_VENTA                             = "dias_venta";
+    public final static String K_REFERENCIA_NEGOCIO                     = "referencia_negocio";
 
-    public final static String K_SOLICITANTE_AVAL               = "solicitante_aval";
-    public final static String K_NOMBRE_TITULAR                 = "nombre_titular";
-    public final static String K_HORA_LOCALIZACION              = "hora_localizacion";
+    public final static String K_SOLICITANTE_AVAL                       = "solicitante_aval";
+    public final static String K_NOMBRE_TITULAR                         = "nombre_titular";
+    public final static String K_HORA_LOCALIZACION                      = "hora_localizacion";
+    public final static String K_ACTIVOS_OBSERVABLES                    = "activos_observables";
 
-    public final static String K_SOLICITANTE_REFERENCIA         = "solicitante_referencia";
+    public final static String K_SOLICITANTE_REFERENCIA                 = "solicitante_referencia";
 
+    public final static String K_CALLE_ENFRENTE                         = "calle_enfrente";
+    public final static String K_CALLE_LATERAL_IZQ                      = "lateral_izquierda";
+    public final static String K_CALLE_LATERAL_DER                      = "lateral_derecha";
+    public final static String K_CALLE_ATRAS                            = "calle_atras";
+    public final static String K_REFERENCIAS                            = "referencias";
+    public final static String K_SOLICITANTE_CROQUIS                    = "solicitante_croquis";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public final static String K_PROPIETARIO                             = "propietario";
+    public final static String K_PROVEEDOR_RECURSOS                      = "proveedor_recursos";
+    public final static String K_POLITICAMENTE_EXP                       = "politicamente_expuesto";
+    public final static String K_SOLICITANTE_POLITICAS                   = "solicitante_politicas";
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public final static String K_SOLICITANTE_DOCUMENTOS                = "solicitante_documentos";
+    public final static String K_IDENTIFICACION_FRONTAL                = "identificacion_frontal";
+    public final static String K_IDENTIFICACION_REVERSO                = "identificacion_reverso";
+    public final static String K_COMPROBANTE_DOMICILIO                 = "comprobante_domicilio";
+    public final static String K_CODIGO_BARRAS                         = "codigo_barras";
+    public final static String K_FIRMA_ASESOR                          = "firma_asesor";
 
 
 }

@@ -63,9 +63,11 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
             holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.green));
         }
         else{
-            holder.tvEstatus.setText("S Corte: "+Miscellaneous.moneyFormat(item.getSaldoCorte()));
+            holder.tvEstatus.setText("S Móvil: " + Miscellaneous.moneyFormat(item.getSaldoCorte()));
             holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.shadowdrawer));
         }
+        //holder.tvSaldoOmega.setText("");
+        holder.tvSaldoOmega.setText("S Omega: " + Miscellaneous.moneyFormat(item.getSaldoOmega()));
 
         holder.bind(item);
     }
@@ -82,6 +84,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         private TextView tvMontoPrestamo;
         private TextView tvIdPrestamo;
         private TextView tvEstatus;
+        private TextView tvSaldoOmega;
         public ViewHolder(@NonNull View v) {
             super(v);
             tvNombre = v.findViewById(R.id.tvNombre);
@@ -89,6 +92,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
             tvMontoPrestamo = v.findViewById(R.id.tvMontoPrestamo);
             tvIdPrestamo = v.findViewById(R.id.tvIdPrestamo);
             tvEstatus = v.findViewById(R.id.tvEstatus);
+            tvSaldoOmega    = v.findViewById(R.id.tvSaldoOmega);
         }
 
         public void bind (final MPrestamo item_prestamo){

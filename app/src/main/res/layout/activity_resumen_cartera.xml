@@ -253,6 +253,120 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
+        <!-- Total Parcial -->
+        <android.support.v7.widget.CardView
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:visibility="gone"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_done_black"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tvTotalParcial"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <!-- Total Parcial Individual -->
+        <android.support.v7.widget.CardView
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:visibility="gone"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_done_black"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tvParcialInd"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <!-- Total Parcial Grupal -->
+        <android.support.v7.widget.CardView
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/cardview_default_elevation">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+                <android.support.v7.widget.CardView
+                    android:visibility="gone"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/yellow"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    app:cardCornerRadius="5dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_done_black"
+                        android:layout_marginRight="12dp"/>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tvParcialGpo"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

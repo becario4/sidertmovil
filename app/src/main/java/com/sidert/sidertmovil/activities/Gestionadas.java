@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.CANCELACION;
+import static com.sidert.sidertmovil.utils.Constants.CLIENTE;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
@@ -46,8 +47,11 @@ import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.PARAMS;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.RESUMEN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NAME;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESUMENES_GESTION;
+import static com.sidert.sidertmovil.utils.Constants.TIPO_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
@@ -66,7 +70,8 @@ public class Gestionadas extends AppCompatActivity {
 
     private String id_prestamo = "0";
 
-    private String tbl = "";
+    private String tbl = "tbl_name";
+    private String tbl_cartera = "tbl_cartera";
 
     private String tipo_prestamo = "";
     private int tipo_gestion  = 0;
@@ -94,6 +99,7 @@ public class Gestionadas extends AppCompatActivity {
 
         id_prestamo = getIntent().getStringExtra(ID_PRESTAMO);
         tbl = getIntent().getStringExtra(TBL_NAME);
+        tbl_cartera = getIntent().getStringExtra(TIPO_CARTERA);
         tipo_prestamo = getIntent().getStringExtra(TIPO_PRESTAMO);
         tipo_gestion = getIntent().getIntExtra(TIPO_GESTION, 0);
 
@@ -177,14 +183,6 @@ public class Gestionadas extends AppCompatActivity {
                         break;
                 }
 
-                Log.e("--------------","----------------------------------");
-                Log.e("tipo_gestion", String.valueOf(tipo_gestion));
-                Log.e("tipo_prestamo", tipo_prestamo);
-                Log.e("EstatusCancel", row.getString(31));
-                Log.e("EstatusCancel", row.getColumnName(31));
-                Log.e("estatusGestion", row.getString(25) + "aasfas");
-                Log.e("--------------","----------------------------------");
-
                 if (tipo_gestion == 1 && tipo_prestamo.equals("VIGENTE")) {
                     gestionadas.setEstatisGestion(row.getString(25));
                     Log.e("EstatusCancel", row.getString(31));
@@ -218,7 +216,9 @@ public class Gestionadas extends AppCompatActivity {
                 public void GestionadaClick(MGestionada item) {
                     Cursor row;
                     Log.e("id_ges", item.getIdGestion());
-                    row = dBhelper.getRecords(tbl, " WHERE _id = ?", "", new String[]{item.getIdGestion()});
+                    String sql = "SELECT r.*, COALESCE(rg.nombre_resumen, '') AS nombre_resumen, COALESCE(rg.nombre_cliente, '') AS nombre_cliente FROM " + tbl + " AS r LEFT JOIN "+TBL_RESUMENES_GESTION+" AS rg ON r._id = rg.id_respuesta AND rg.tipo_gestion = '"+tipo_gestion+"' WHERE r._id = ?";
+                    row = db.rawQuery(sql, new String[]{item.getIdGestion()});
+                    //row = dBhelper.getRecords(tbl, " WHERE _id = ?", "", new String[]{item.getIdGestion()});
 
                     if (row.getCount() > 0) {
                         row.moveToFirst();
@@ -267,7 +267,8 @@ public class Gestionadas extends AppCompatActivity {
                                                 b.putString(IMPRESORA, row.getString(16));
                                                 b.putString(FOLIO_TICKET, row.getString(17));
                                             }
-                                        } else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
+                                        }
+                                        else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
                                             b.putString(MEDIO_PAGO, row.getString(13));
                                             b.putString(FECHA_DEPOSITO, row.getString(14));
                                             b.putString(PAGO_REQUERIDO, row.getString(15));
@@ -335,6 +336,15 @@ public class Gestionadas extends AppCompatActivity {
                             b.putString(GERENTE, row.getString(20));
                             if (row.getString(20).equals("SI"))
                                 b.putString(FIRMA, row.getString(21));
+
+                            if (tipo_gestion == 1) {
+                                b.putString(RESUMEN, row.getString(31));
+                                b.putString(CLIENTE, row.getString(32));
+                            }
+                            else{
+                                b.putString(RESUMEN, row.getString(32));
+                                b.putString(CLIENTE, row.getString(33));
+                            }
                         }
                         else if (tipo_gestion == 1 && tipo_prestamo.equals("VENCIDA")){
                             b.putString(EVIDENCIA, row.getString(19));
@@ -342,6 +352,8 @@ public class Gestionadas extends AppCompatActivity {
                             b.putString(GERENTE, row.getString(21));
                             if (row.getString(21).equals("SI"))
                                 b.putString(FIRMA, row.getString(22));
+                            b.putString(RESUMEN, row.getString(33));
+                            b.putString(CLIENTE, row.getString(34));
                         }
                         else if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA")){
                             b.putString(EVIDENCIA, row.getString(20));
@@ -349,6 +361,8 @@ public class Gestionadas extends AppCompatActivity {
                             b.putString(GERENTE, row.getString(22));
                             if (row.getString(22).equals("SI"))
                                 b.putString(FIRMA, row.getString(23));
+                            b.putString(RESUMEN, row.getString(34));
+                            b.putString(CLIENTE, row.getString(35));
                         }
 
                         Log.e("SIDERTMOVIL", b.toString());

@@ -8,7 +8,7 @@
 
     <!--  Fecha de solicitud  -->
     <LinearLayout
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="23dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:orientation="vertical"
@@ -25,7 +25,6 @@
             android:gravity="center_vertical"
             android:hint="Fecha de solicitud"
             android:textSize="18dp"
-            android:layout_marginTop="6dp"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -54,7 +53,6 @@
             android:gravity="center_vertical"
             android:drawableEnd="@drawable/ic_drop_down"
             android:textSize="18dp"
-            android:layout_marginTop="6dp"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -84,7 +82,6 @@
             android:gravity="center_vertical"
             android:drawableEnd="@drawable/ic_drop_down"
             android:textSize="18dp"
-            android:layout_marginTop="6dp"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"

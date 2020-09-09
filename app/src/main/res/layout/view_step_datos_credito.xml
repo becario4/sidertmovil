@@ -134,7 +134,7 @@
         <EditText
             android:id="@+id/etMontoPrestamo"
             android:inputType="number"
-            android:maxLength="5"
+            android:maxLength="6"
             android:textColor="@drawable/edit_text_selector"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"

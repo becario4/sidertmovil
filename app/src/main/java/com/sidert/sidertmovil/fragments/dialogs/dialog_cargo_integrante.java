@@ -103,7 +103,7 @@ public class dialog_cargo_integrante extends DialogFragment {
         @Override
         public void onClick(View v) {
             Intent i_result = new Intent();
-            i_result.putExtra("id_cargo", 2);
+            i_result.putExtra("id_cargo", 3);
             i_result.putExtra("cargo", "TESORERO");
             getTargetFragment().onActivityResult(8652,2658,i_result);
             getDialog().dismiss();
@@ -114,7 +114,7 @@ public class dialog_cargo_integrante extends DialogFragment {
         @Override
         public void onClick(View v) {
             Intent i_result = new Intent();
-            i_result.putExtra("id_cargo", 3);
+            i_result.putExtra("id_cargo", 2);
             i_result.putExtra("cargo", "SECRETARIO");
             getTargetFragment().onActivityResult(8652,2658,i_result);
             getDialog().dismiss();

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -147,9 +148,25 @@ public class dialog_date_picker extends DialogFragment {
                 if (fechas_post){
                     if (date2.after(date1) || date2.equals(date1)) {
                         if (identifer == 1) {
-                            SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
-                            registerActivity.setDate(sdf.format(myCalendar.getTime()), "desembolso");
-                            dismiss();
+                            Calendar c = Calendar.getInstance();
+                            String[] fechaDes = sdf.format(myCalendar.getTime()).split("-");
+                            c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
+                            int nD=c.get(Calendar.DAY_OF_WEEK);
+                            if (nD != 1) {
+                                SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
+                                registerActivity.setDate(sdf.format(myCalendar.getTime()), "desembolso");
+                                dismiss();
+                            }
+                            else{
+                                AlertDialog success = new AlertDialog.Builder(getContext())
+                                        .setMessage("No se puede seleccionar domingo para día de desembolso")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
                         }
                         else if(identifer == 2){
                             Intent i = new Intent();
@@ -169,10 +186,26 @@ public class dialog_date_picker extends DialogFragment {
                             dismiss();
                         }
                         else {
-                            Intent i = new Intent();
-                            i.putExtra(DATE, sdf.format(myCalendar.getTime()));
-                            getTargetFragment().onActivityResult(123, 321, i);
-                            dismiss();
+                            Calendar c = Calendar.getInstance();
+                            String[] fechaDes = sdf.format(myCalendar.getTime()).split("-");
+                            c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
+                            int nD=c.get(Calendar.DAY_OF_WEEK);
+                            if (nD != 1) {
+                                Intent i = new Intent();
+                                i.putExtra(DATE, sdf.format(myCalendar.getTime()));
+                                getTargetFragment().onActivityResult(123, 321, i);
+                                dismiss();
+                            }
+                            else{
+                                AlertDialog success = new AlertDialog.Builder(getContext())
+                                        .setMessage("No se puede seleccionar domingo para día de desembolso")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
                         }
 
                     } else {
@@ -295,6 +328,23 @@ public class dialog_date_picker extends DialogFragment {
                             i.putExtra(DATE,sdf.format(myCalendar.getTime()));
                             getTargetFragment().onActivityResult(123,321,i);
                             dismiss();
+                        }
+                        else if (identifer == 15){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                                SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
+                                registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacRef");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
                         }
                         else {
                             Intent i = new Intent();

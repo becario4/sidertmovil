@@ -4,6 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -35,19 +38,24 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_cancel_gestion;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.CANCELACION;
+import static com.sidert.sidertmovil.utils.Constants.CLIENTE;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
@@ -64,11 +72,22 @@ import static com.sidert.sidertmovil.utils.Constants.MEDIO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.RESUMEN;
 import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
@@ -79,6 +98,8 @@ public class VistaGestion extends AppCompatActivity {
     private Context ctx;
 
     private Toolbar tbMain;
+    private TextView tvTitulo;
+    private TextView tvSubtitutlo;
 
     private MapView mapGestion;
 
@@ -132,6 +153,12 @@ public class VistaGestion extends AppCompatActivity {
 
     private boolean is_solicitud = false;
 
+    private String resumen;
+    private String cliente;
+
+    private DBhelper dBhelper;
+    private SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,7 +166,13 @@ public class VistaGestion extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx = this;
 
+        dBhelper = new DBhelper(ctx);
+        db = dBhelper.getWritableDatabase();
+
         tbMain          = findViewById(R.id.tbMain);
+
+        tvTitulo        = findViewById(R.id.tvTitulo);
+        tvSubtitutlo    = findViewById(R.id.tvSubtitulo);
 
         mapGestion  = findViewById(R.id.mapGestion);
 
@@ -189,11 +222,8 @@ public class VistaGestion extends AppCompatActivity {
         idRespuesta = datos.getString(ID_RESPUESTA);
         tipoGestion = datos.getString(TIPO_GESTION);
         tipoPrestamo = datos.getString(TIPO_PRESTAMO);
-
-        Log.e("--------------","----------------------------------");
-        Log.e("Cancelacion", datos.getString(CANCELACION)+ " asf");
-        Log.e("estatus", datos.getString(ESTATUS) + " asfas");
-        Log.e("--------------","----------------------------------");
+        resumen     = datos.getString(RESUMEN);
+        cliente     = datos.getString(CLIENTE);
 
         if (datos.getString(CANCELACION).isEmpty() && datos.getString(ESTATUS).equals("2"))
             is_solicitud = true;
@@ -228,7 +258,7 @@ public class VistaGestion extends AppCompatActivity {
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
 
-                if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7)){ //Banco y Oxxo
+                if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7 || Miscellaneous.MedioPago(etMedioPago) == 8)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -555,8 +585,8 @@ public class VistaGestion extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_cancel_gestiones, menu);
-        //if (!is_solicitud)
-            menu.getItem(0).setVisible(false);
+        if (!is_solicitud)
+            menu.getItem(0).setVisible(is_solicitud);
 
         return true;
     }
@@ -575,6 +605,96 @@ public class VistaGestion extends AppCompatActivity {
                 b.putString(TIPO_PRESTAMO, tipoPrestamo);
                 dlg_cancel.setArguments(b);
                 dlg_cancel.show(getSupportFragmentManager(), DIALOGCANCELGESTION);
+                break;
+            case R.id.nvShare:
+                if (resumen.isEmpty() && cliente.isEmpty()){
+                    String sql = "";
+                    Cursor row = null;
+
+                    if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")){
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")){
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")){
+                        Log.e("Respuesta","Vencida Grupal Integrante: "+idRespuesta);
+
+                        sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+
+                    row.moveToFirst();
+
+                    tvTitulo.setText(row.getString(1));
+                    tvSubtitutlo.setText("Fin Gestión "+row.getString(0));
+
+                    cliente = row.getString(1);
+
+                    row.close();
+
+                    String mPath = ROOT_PATH+"Resumen";
+                    String name = "";
+                    File img = null;
+
+                    try {
+                        // create bitmap screen capture
+                        View v1 = getWindow().getDecorView().getRootView();
+                        v1.setDrawingCacheEnabled(true);
+                        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                        v1.setDrawingCacheEnabled(false);
+                        File directory = new File(mPath);
+                        if(!directory.exists())
+                        {
+                            Log.v("Carpeta", "No existe Resumen");
+                            directory.mkdir();
+                        }
+
+                        name = UUID.randomUUID().toString() + ".jpg";
+                        img = new File(mPath+"/"+name);
+
+
+                        FileOutputStream outputStream = new FileOutputStream(img);
+                        int quality = 100;
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                        outputStream.flush();
+                        outputStream.close();
+
+                        resumen = name;
+                    } catch (Throwable e) {
+                        // Several error may come out with file handling or DOM
+                        e.printStackTrace();
+                    }
+
+                    HashMap<Integer, String> values = new HashMap();
+                    values.put(0, idRespuesta);
+                    values.put(1, name);
+                    values.put(2, cliente);
+                    values.put(3, tipoGestion);
+                    dBhelper.saveResumenGestion(db, values);
+                }
+
+                File img = new File(ROOT_PATH+"Resumen/"+resumen);
+                Uri imgUri = Uri.parse(img.getPath());
+                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+                whatsappIntent.setType("text/plain");
+                whatsappIntent.setPackage("com.whatsapp");
+                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
+                whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                whatsappIntent.setType("image/jpeg");
+                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                try {
+                    ctx.startActivity(whatsappIntent);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);

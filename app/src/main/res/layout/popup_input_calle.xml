@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
+            android:layout_marginTop="40dp"
+            android:id="@+id/congratulation_card"
+            app:cardBackgroundColor="#FAFAFA"
+            app:cardElevation="0dp"
+            android:layout_gravity="bottom">
+            <LinearLayout
+                android:background="@android:color/white"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvMensaje"
+                    android:text="Ingrese el nombre de la calle "
+                    android:padding="10dp"
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="40dp"
+                    android:textSize="17dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etCalle"
+                    android:hint="Nombre de la Calle"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:textSize="17sp"
+                    android:lines="2"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/et_rounded_edges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:maxLength="80"
+                    android:inputType="textMultiLine|textCapCharacters"/>
+
+                <Button
+                    android:id="@+id/btnAceptar"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:text="@string/accept"
+                    android:textColor="@android:color/white"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_width="300dp"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_close_blue_grey_500_36dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.CardView>
+
+
+        <ImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:padding="18dp"
+            android:src="@drawable/ic_question"
+            android:background="@drawable/circle_green"
+            android:layout_gravity="center_horizontal|top" />
+
+    </FrameLayout>
+</LinearLayout>

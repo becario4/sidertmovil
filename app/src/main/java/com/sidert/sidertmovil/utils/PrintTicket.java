@@ -183,10 +183,8 @@ public class PrintTicket {
 
             if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
                 Cursor row;
-                if (ENVIROMENT)
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, "", " ORDER BY folio ASC", null);
-                else
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY folio ASC", null);
+
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY folio ASC", null);
 
                 if (row.getCount() == 0){
                     HashMap<Integer, String> params = new HashMap<>();
@@ -269,10 +267,8 @@ public class PrintTicket {
             else if (data.getTipoPrestamo().equals("VENCIDA")){
                 //-----------------------------------------------------------------------------------------------------------------
                 Cursor row;
-                if (ENVIROMENT)
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA, "", " ORDER BY folio ASC", null);
-                else
-                    row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, "", " ORDER BY folio ASC", null);
+
+                row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, "", " ORDER BY folio ASC", null);
 
                 if (row.getCount() == 0){
 

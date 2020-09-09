@@ -75,6 +75,29 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Nacionalidad  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nacionalidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNacionalidadCony"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="45"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!--  Ocupacion  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -292,6 +315,62 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!-- Ciudad -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ciudad"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etCiudadCony"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Localidad -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Localidad"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvLocalidadCony"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!-- Municipio -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -387,7 +466,7 @@
             android:id="@+id/etIngMenCony"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="7"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -434,7 +513,7 @@
             android:id="@+id/etGastoMenCony"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="7"
             android:drawableStart="@drawable/ic_money"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"

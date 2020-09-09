@@ -2,6 +2,8 @@ package com.sidert.sidertmovil.utils;
 
 import com.sidert.sidertmovil.models.LoginResponse;
 import com.sidert.sidertmovil.models.MCartera;
+import com.sidert.sidertmovil.models.MCatalogo;
+import com.sidert.sidertmovil.models.MDeviceToken;
 import com.sidert.sidertmovil.models.MGestionCancelada;
 import com.sidert.sidertmovil.models.MImpresionRes;
 import com.sidert.sidertmovil.models.MLogLogin;
@@ -12,9 +14,12 @@ import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.models.MResRecibo;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
+import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.MResSoporte;
 import com.sidert.sidertmovil.models.MResTicket;
 import com.sidert.sidertmovil.models.MResUltimoRecibo;
+import com.sidert.sidertmovil.models.MRespGestionadas;
+import com.sidert.sidertmovil.models.MResponseDefault;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MSendImpresion;
@@ -31,7 +36,6 @@ import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.models.ModeloColonia;
 import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
-import com.sidert.sidertmovil.models.ModeloIdentificacion;
 import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
@@ -64,17 +68,35 @@ public interface ManagerInterface {
     @POST(WebServicesRoutes.WS_MAILBOX)
     Call<MailBoxResponse> setMailBox(@Body MailBoxPLD obj);
 
-    @GET(WebServicesRoutes.WS_GET_DOWNLOAD_APK)
-    Call<ResponseBody> downloadApk();
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_GESTIONES)
+    Call<List<MRespGestionadas>> getGestionadas(@Header("Authorization") String auth);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_POST_DOWNLOAD_APK)
+    Call<MResponseDefault> downloadApk(@Query("password") String password,
+                                       @Header("Authorization") String auth);
 
     @POST(WebServicesRoutes.WS_LOGIN)
     @FormUrlEncoded
     Call<LoginResponse> login(@Field(Constants.USERNAME) String username,
+                              @Field(Constants.MAC_ADDRESS) String mac_address,
                               @Field(Constants.PASSWORD) String password,
-                              @Field(Constants.GRANT_TYPE) String grant_type,
-                              @Field(Constants.BATTERY) Float battery,
                               @Header("Authorization") String auth);
+
+    /*@POST(WebServicesRoutes.WS_LOGIN)
+    @FormUrlEncoded
+    Call<LoginResponse> login(@Field(Constants.USERNAME) String username,
+                              @Field(Constants.GRANT_TYPE) String mac_address,
+                              @Field(Constants.PASSWORD) String password,
+                              @Header("Authorization") String auth);*/
+
 
     @Headers({
             "Accept: application/json",
@@ -138,6 +160,8 @@ public interface ManagerInterface {
     Call<List<MImpresionRes>> getUltimasImpresiones(@Query("asesorid") String asesorid,
                                                     @Query("nivelBateria") String nivelBateria,
                                                     @Query("versionApp") String versionApp,
+                                                    @Query("latitud") String latitud,
+                                                    @Query("longitud") String longitud,
                                                     @Header("Authorization") String barer_token);
 
     @Headers({
@@ -155,6 +179,14 @@ public interface ManagerInterface {
     @POST(WebServicesRoutes.WS_POST_RECIBO)
     Call<MResRecibo> guardarRecibo(@Body MSendRecibo recibo,
                                    @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_DEVICE_TOKEN)
+    Call<MResponseDefault> saveDeviceToken(@Body MDeviceToken deviceToken,
+                                           @Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -275,18 +307,30 @@ public interface ManagerInterface {
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_ORIGINACION_IND)
-    Call<MResSaveOriginacionInd> guardarOriginacionInd(@Header("Authorization") String token,
-                                                       @Part("solicitud") RequestBody solicitud,
-                                                       @Part MultipartBody.Part fachada_cliente,
-                                                       @Part MultipartBody.Part firma_cliente,
-                                                       @Part MultipartBody.Part fachada_negocio,
-                                                       @Part MultipartBody.Part fachada_aval,
-                                                       @Part MultipartBody.Part firma_aval,
-                                                       @Part MultipartBody.Part identificacion_frontal,
-                                                       @Part MultipartBody.Part identificacion_reverso,
-                                                       @Part MultipartBody.Part curp,
-                                                       @Part MultipartBody.Part comprobante_domicilio,
-                                                       @Part MultipartBody.Part firma_asesor);
+    Call<MResSaveSolicitud> guardarOriginacionInd(@Header("Authorization") String token,
+                                                  @Part("solicitud") RequestBody solicitud,
+                                                  @Part MultipartBody.Part fachada_cliente,
+                                                  @Part MultipartBody.Part firma_cliente,
+                                                  @Part MultipartBody.Part fachada_negocio,
+                                                  @Part MultipartBody.Part fachada_aval,
+                                                  @Part MultipartBody.Part firma_aval,
+                                                  @Part MultipartBody.Part identificacion_frontal,
+                                                  @Part MultipartBody.Part identificacion_reverso,
+                                                  @Part MultipartBody.Part curp,
+                                                  @Part MultipartBody.Part comprobante_domicilio,
+                                                  @Part MultipartBody.Part firma_asesor);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_ORIGINACION_GPO)
+    Call<MResSaveSolicitud> guardarOriginacionGpo(@Header("Authorization") String token,
+                                                  @Part("solicitud") RequestBody solicitud,
+                                                  @Part MultipartBody.Part fachada_cliente,
+                                                  @Part MultipartBody.Part firma_cliente,
+                                                  @Part MultipartBody.Part fachada_negocio,
+                                                  @Part MultipartBody.Part identificacion_frontal,
+                                                  @Part MultipartBody.Part identificacion_reverso,
+                                                  @Part MultipartBody.Part curp,
+                                                  @Part MultipartBody.Part comprobante_domicilio);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_CIERRE_DIA)
@@ -342,7 +386,28 @@ public interface ManagerInterface {
             "Content-Type: application/json"
     })
     @GET(WebServicesRoutes.WS_GET_IDENTIFICACIONES)
-    Call<List<ModeloIdentificacion>> getIdentificaciones(@Header("Authorization") String barer_token);
+    Call<List<MCatalogo>> getIdentificaciones(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_VIVIENDA_TIPOS)
+    Call<List<MCatalogo>> getViviendaTipos(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_MEDIOS_CONTACTO)
+    Call<List<MCatalogo>> getMediosContacto(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_DESTINOS_CREDITO)
+    Call<List<MCatalogo>> getDestinosCredito(@Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -358,5 +423,33 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_PLAZOS_PRESTAMOS)
     Call<List<MPlazos>> getPlazosPrestamo(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_ESTADOS_CIVILES)
+    Call<List<MCatalogo>> getEstadosCiviles(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_NIVELES_ESTUDIOS)
+    Call<List<MCatalogo>> getNivelesEstudios(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_MEDIOS_PAGO_ORIG)
+    Call<List<MCatalogo>> getMediosPagoOrig(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PARENTESCOS)
+    Call<List<MCatalogo>> getParentesco(@Header("Authorization") String barer_token);
 
 }

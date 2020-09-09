@@ -40,6 +40,8 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
         holder.tvEstatus.setText(item.getEstatusGestion());
         holder.tvDiaPago.setText(item.getDiaPago());
         holder.tvTimestamp.setText(item.getTimestamp());
+        holder.tvInicio.setText(item.getFechaInicio());
+
 
         if (item.getTipoFicha().equals("INDIVIDUAL"))
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipoFicha);
@@ -73,6 +75,7 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
         private TextView tvTimestamp;
         private ImageView ivTipoFicha;
         private ImageView ivEstatus;
+        private TextView tvInicio;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,6 +85,7 @@ public class adapter_ficha_contestadas extends RecyclerView.Adapter<adapter_fich
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             ivTipoFicha = itemView.findViewById(R.id.ivTipoFicha);
             ivEstatus  = itemView.findViewById(R.id.ivEstatus);
+            tvInicio  = itemView.findViewById(R.id.tvInicio);
         }
     }
 

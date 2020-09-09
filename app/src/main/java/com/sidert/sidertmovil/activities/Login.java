@@ -49,6 +49,7 @@ import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,6 +63,7 @@ import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.AUTHORITIES;
 import static com.sidert.sidertmovil.utils.Constants.CANCEL_TRACKER_ID;
+import static com.sidert.sidertmovil.utils.Constants.MAC_ADDRESSES;
 import static com.sidert.sidertmovil.utils.Constants.MATERNO;
 import static com.sidert.sidertmovil.utils.Constants.MODULOS;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_EMPLEADO;
@@ -146,6 +148,7 @@ public class Login extends AppCompatActivity {
             if (countClick == 9)
                 Toast.makeText(ctx, "Estas a 1 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
             if (countClick >= 9) {
+                etPassword.setVisibility(View.VISIBLE);
                 dialog_contrasena_root dialogRoot = new dialog_contrasena_root();
                 dialogRoot.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
             }
@@ -156,9 +159,22 @@ public class Login extends AppCompatActivity {
     private View.OnClickListener btnLogin_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(!validator.validate(etUser, new String[] {validator.REQUIRED}) &&
-               !validator.validate(etPassword, new String[] {validator.REQUIRED})) {
-                doLogin();
+            if(!validator.validate(etUser, new String[] {validator.REQUIRED})) {
+                if (!etUser.getText().toString().trim().equals("ASESOR") &&
+                !etUser.getText().toString().trim().equals("GESTOR") &&
+                !etUser.getText().toString().trim().equals("PROGRAMADORAND") &&
+                !etUser.getText().toString().trim().equals("PROGRAMADOR02") &&
+                !etUser.getText().toString().trim().equals("PROGRAMADORRUFI") &&
+                !etUser.getText().toString().trim().equals("ANALISTAFUNCIONAL"))
+                    doLogin();
+                else{
+                    if (!validator.validate(etPassword, new String[]{validator.REQUIRED})) {
+                        doLogin();
+                    }
+                    else{
+                        Toast.makeText(ctx, "Ingrese la contraseña", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         }
     };
@@ -195,11 +211,16 @@ public class Login extends AppCompatActivity {
 
             ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, ctx).create(ManagerInterface.class);
 
+
+
             Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
+                                                 session.getMacAddress(),
                                                  etPassword.getText().toString().trim(),
-                                                 "password",
-                                                 battery,
                                                  Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
+            /*Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
+                    "password",
+                    etPassword.getText().toString().trim(),
+                    Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));*/
             call.enqueue(new Callback<LoginResponse>() {
                 @Override
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -218,77 +239,42 @@ public class Login extends AppCompatActivity {
                             try {
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
 
-                                Log.e("JsonInfo", json_info.toString());
-                                HashMap<Integer, String> params = new HashMap<>();
-                                params.put(0, json_info.getString(SERIE_ID));
-                                params.put(1, json_info.getString(NOMBRE_EMPLEADO)+" "+
-                                        json_info.getString(PATERNO)+" "+
-                                        json_info.getString(MATERNO));
-                                params.put(2,Miscellaneous.ObtenerFecha("timestamp"));
-                                params.put(3,"");
-                                params.put(4,"1");
-
-                                if (Constants.ENVIROMENT)
-                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT, params);
-                                else
-                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
-
-                                HashMap<Integer, String> params_sincro = new HashMap<>();
-                                params_sincro.put(0, json_info.getString(SERIE_ID));
-                                params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
-
-                                if (Constants.ENVIROMENT)
-                                    dBhelper.saveSincronizado(db, Constants.SINCRONIZADO, params_sincro);
-                                else
-                                    dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
-
-                                session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
-                                        Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
-                                        Miscellaneous.validString(json_info.getString(PATERNO)),
-                                        Miscellaneous.validString(json_info.getString(MATERNO)),
-                                        Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
-                                        Miscellaneous.validString(json_info.getString(AUTHORITIES)),
-                                        true,
-                                        Miscellaneous.validString(res.getAccessToken()),
-                                        Miscellaneous.validString(json_info.getString(MODULOS)),
-                                        Miscellaneous.validString(json_info.getString("id")));
-
-                                //session.setSucursales(json_info.getString(SUCURSALES));
-
-                                Calendar c = Calendar.getInstance();
-                                AlarmManager manager = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);
-                                Intent myIntent;
-                                PendingIntent pendingIntent;
-                                myIntent = new Intent(ctx, AlarmaTrackerReciver.class);
-                                myIntent.putExtra("logueo","start");
-                                pendingIntent = PendingIntent.getBroadcast(ctx,CANCEL_TRACKER_ID,myIntent,0);
-                                manager.setRepeating(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),1000*60*15,pendingIntent);
-
-                                //MyFireBaseInstanceIDService id = new MyFireBaseInstanceIDService();
-                                /*if (c.get(Calendar.HOUR_OF_DAY) > 6 && c.get(Calendar.HOUR_OF_DAY) < 22) {
-                                    Log.e("Login", "On Start Service Job Login");
-                                    WorkManager mWorkManager = WorkManager.getInstance();
-                                    OneTimeWorkRequest mRequestUnique = new OneTimeWorkRequest.Builder(WorkerLogout.class).setInitialDelay((22 - c.get(Calendar.HOUR_OF_DAY))-1, TimeUnit.HOURS).build();
-                                    mWorkManager.enqueue(mRequestUnique);
+                                /*boolean isLogin = false;
+                                Log.e("MAC_ADDRESSES", String.valueOf(json_info.has(MAC_ADDRESSES)));
+                                if (json_info.has(MAC_ADDRESSES)){
+                                    JSONArray macAddresses = json_info.getJSONArray(MAC_ADDRESSES);
+                                    for(int i = 0 ; i < macAddresses.length(); i++){
+                                        JSONObject item = macAddresses.getJSONObject(i);
+                                        if (session.getMacAddress().equals(item.getString("mac_address"))){
+                                            isLogin = true;
+                                            break;
+                                        }
+                                    }
                                 }*/
 
-                                MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
+                                /*if (true || json_info.getInt("id") == 134 || json_info.getInt("id") == 119 ||
+                                json_info.getInt("id") == 1 || json_info.getInt("id") == 123 ||
+                                json_info.getInt("id") == 135 || json_info.getInt("id") == 157 ||
+                                json_info.getInt("id") == 200 || json_info.getInt("id") == 368) {*/
+                                    Log.e("JsonInfo", json_info.toString());
+                                    HashMap<Integer, String> params = new HashMap<>();
+                                    params.put(0, json_info.getString(SERIE_ID));
+                                    params.put(1, json_info.getString(NOMBRE_EMPLEADO) + " " +
+                                            json_info.getString(PATERNO) + " " +
+                                            json_info.getString(MATERNO));
+                                    params.put(2, Miscellaneous.ObtenerFecha("timestamp"));
+                                    params.put(3, "");
+                                    params.put(4, "1");
+
+                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
+
+                                    HashMap<Integer, String> params_sincro = new HashMap<>();
+                                    params_sincro.put(0, json_info.getString(SERIE_ID));
+                                    params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
 
-                                Intent home = new Intent(context, DescargaDatos.class);
-                                home.putExtra("login", true);
-                                startActivity(home);
-                                finish();
+                                    dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-                                /*Log.v("json", json_info.toString());
-                                if (json_info.getString(AUTHORITIES).contains("ROLE_GERENTESUCURSAL") ||
-                                        json_info.getString(AUTHORITIES).contains("ROLE_GERENTEREGIONAL") ||
-                                        json_info.getString(AUTHORITIES).contains("ROLE_COORDINADOR") ||
-                                        json_info.getString(AUTHORITIES).contains("ROLE_DIRECCION") ||
-                                        json_info.getString(AUTHORITIES).contains("ROLE_ANALISTA")){
-
-                                }
-                                else if(json_info.getString(AUTHORITIES).contains("ROLE_SUPER")){
                                     session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
                                             Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
                                             Miscellaneous.validString(json_info.getString(PATERNO)),
@@ -297,35 +283,58 @@ public class Login extends AppCompatActivity {
                                             Miscellaneous.validString(json_info.getString(AUTHORITIES)),
                                             true,
                                             Miscellaneous.validString(res.getAccessToken()),
-                                            Miscellaneous.validString(json_info.getString(MODULOS)));
+                                            Miscellaneous.validString(json_info.getString(MODULOS)),
+                                            Miscellaneous.validString(json_info.getString("id")));
 
-                                    Intent home = new Intent(context, Home.class);
+                                    //session.setSucursales(json_info.getString(SUCURSALES));
+
+                                    Calendar c = Calendar.getInstance();
+                                    AlarmManager manager = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);
+                                    Intent myIntent;
+                                    PendingIntent pendingIntent;
+                                    myIntent = new Intent(ctx, AlarmaTrackerReciver.class);
+                                    myIntent.putExtra("logueo", "start");
+                                    pendingIntent = PendingIntent.getBroadcast(ctx, CANCEL_TRACKER_ID, myIntent, 0);
+                                    manager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 1000 * 60 * 15, pendingIntent);
+
+                                    new MyFireBaseInstanceIDService(ctx);
+
+                                    Intent home = new Intent(context, DescargaDatos.class);
                                     home.putExtra("login", true);
                                     startActivity(home);
                                     finish();
+                                /*}
+                                else{
+                                    dialog_mess = Popups.showDialogMessage(context, Constants.login,
+                                            R.string.error_mac_address, R.string.accept, new Popups.DialogMessage() {
+                                                @Override
 
-                                }
-                                else if(json_info.getString(AUTHORITIES).contains("ROLE_ASESOR")){
-                                    session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
-                                            Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
-                                            Miscellaneous.validString(json_info.getString(PATERNO)),
-                                            Miscellaneous.validString(json_info.getString(MATERNO)),
-                                            Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
-                                            Miscellaneous.validString(json_info.getString(AUTHORITIES)),
-                                            true,
-                                            Miscellaneous.validString(res.getAccessToken()),
-                                            Miscellaneous.validString(json_info.getString(MODULOS)));
-
-                                }
-                                else {
-                                    Toast.makeText(ctx, "Este usuario no está autorizado", Toast.LENGTH_SHORT).show();
+                                                public void OnClickListener(AlertDialog dialog) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    dialog_mess.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                    dialog_mess.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                    dialog_mess.show();
                                 }*/
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
 
+                            break;
+                        case 404:
+                            dialog_mess = Popups.showDialogMessage(context, Constants.login,
+                                    R.string.error_mac_address, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
 
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            dialog_mess.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            dialog_mess.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            dialog_mess.show();
                             break;
                         case 400:
                             dialog_mess = Popups.showDialogMessage(context, Constants.login,
@@ -358,7 +367,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<LoginResponse> call, Throwable t) {
-                    Log.e("error", "fail"+t.getMessage());
+                    Log.e("error", "fail: "+t.getMessage());
                     loading.dismiss();
                 }
             });

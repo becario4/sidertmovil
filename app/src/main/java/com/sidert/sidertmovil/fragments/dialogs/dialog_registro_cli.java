@@ -28,14 +28,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 
 public class dialog_registro_cli extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno);
+        void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno, long dirClie, long dirCony, long dirNeg, long dirAval, long dirRef);
     }
 
     @Override
@@ -126,9 +125,16 @@ public class dialog_registro_cli extends DialogFragment {
     private void saveCliente(){
         long id = 0;
         long id_cliente = 0;
+        long id_direccion_cli = 0;
+        long id_direccion_cony = 0;
+        long id_direccion_neg = 0;
+        long id_direccion_aval = 0;
+        long id_direccion_ref = 0;
+
+
         String nombre = (etNombre.getText().toString().trim().toUpperCase() + " " + etPaterno.getText().toString().trim().toUpperCase() + " " + etMaterno.getText().toString().trim().toUpperCase()).trim();
         HashMap<Integer, String> params = new HashMap<>();
-        params.put(0, getString(R.string.vol_solicitud));       //VOL SOLICITUD
+        params.put(0, getString(R.string.vol_solicitud));                               //VOL SOLICITUD
         params.put(1,session.getUser().get(9));                 //USUARIO ID
         params.put(2,"1");                                      //TIPO SOLICITUD
         params.put(3,"0");                                      //ID ORIGINACION
@@ -157,6 +163,25 @@ public class dialog_registro_cli extends DialogFragment {
 
         dBhelper.saveDatosCredito(db, params);
 
+        //Inserta registro de direccion del cliente
+        params = new HashMap<>();
+        params.put(0, "CLIENTE");                                              //TIPO DIRECCION
+        params.put(1, "");                                                     //LATITUD
+        params.put(2, "");                                                     //LONGITUD
+        params.put(3, "");                                                     //CALLE
+        params.put(4, "");                                                     //NO EXTERIOR
+        params.put(5, "");                                                     //NO INTERIOR
+        params.put(6, "");                                                     //MANZANA
+        params.put(7, "");                                                     //LOTE
+        params.put(8, "");                                                     //CP
+        params.put(9, "");                                                     //COLONIA
+        params.put(10, "");                                                    //CIUDAD
+        params.put(11, "");                                                    //LOCALIDAD
+        params.put(12, "");                                                    //MUNICIPIO
+        params.put(13, "");                                                    //ESTADO
+
+        id_direccion_cli = dBhelper.saveDirecciones(db, params);
+
         //Inserta registro de datos del cliente
         params = new HashMap<>();
         params.put(0, String.valueOf(id));                                      //ID SOLICITUD
@@ -180,31 +205,43 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(18, "");                                                     //TIPO VIVIENDA
         params.put(19, "");                                                     //PARENTESCO
         params.put(20, "");                                                     //OTRO TIPO VIVIENDA
-        params.put(21, "");                                                     //LATITUD
-        params.put(22, "");                                                     //LONGITUD
-        params.put(23, "");                                                     //CALLE
-        params.put(24, "");                                                     //NO EXTERIOR
-        params.put(25, "");                                                     //NO INTERIOR
-        params.put(26, "");                                                     //MANZANA
-        params.put(27, "");                                                     //LOTE
-        params.put(28, "");                                                     //CP
-        params.put(29, "");                                                     //COLONIA
-        params.put(30, "");                                                     //TEL CASA
-        params.put(31, "");                                                     //TEL CELULAR
-        params.put(32, "");                                                     //TEL MENSAJES
-        params.put(33, "");                                                     //TEL TRABAJO
-        params.put(34, "0");                                                    //TIEMPO VIVIR SITIO
-        params.put(35, "");                                                     //DEPENDIENTES
-        params.put(36, "");                                                     //MEDIO CONTACTO
-        params.put(37, "");                                                     //EMAIL
-        params.put(38, "");                                                     //FOTO FACHADA
-        params.put(39, "");                                                     //REF DOMICILIARIA
-        params.put(40, "");                                                     //FIRMA
-        params.put(41, "0");                                                    //ESTATUS RECHAZO
-        params.put(42, "");                                                     //COMENTARIO RECHAZO
-        params.put(43, "0");                                                    //ESTATUS COMPLETO
+        params.put(21, String.valueOf(id_direccion_cli));                           //DIRECCION ID
+        params.put(22, "");                                                     //TEL CASA
+        params.put(23, "");                                                     //TEL CELULAR
+        params.put(24, "");                                                     //TEL MENSAJES
+        params.put(25, "");                                                     //TEL TRABAJO
+        params.put(26, "0");                                                    //TIEMPO VIVIR SITIO
+        params.put(27, "");                                                     //DEPENDIENTES
+        params.put(28, "");                                                     //MEDIO CONTACTO
+        params.put(29, "");                                                     //ESTADO CUENTA
+        params.put(30, "");                                                     //EMAIL
+        params.put(31, "");                                                     //FOTO FACHADA
+        params.put(32, "");                                                     //REF DOMICILIARIA
+        params.put(33, "");                                                     //FIRMA
+        params.put(34, "0");                                                    //ESTATUS RECHAZO
+        params.put(35, "");                                                     //COMENTARIO RECHAZO
+        params.put(36, "0");                                                    //ESTATUS COMPLETO
 
         id_cliente = dBhelper.saveDatosPersonales(db, params);
+
+        //Inserta registro de direccion del cliente
+        params = new HashMap<>();
+        params.put(0, "CONYUGE");                                              //TIPO DIRECCION
+        params.put(1, "");                                                     //LATITUD
+        params.put(2, "");                                                     //LONGITUD
+        params.put(3, "");                                                     //CALLE
+        params.put(4, "");                                                     //NO EXTERIOR
+        params.put(5, "");                                                     //NO INTERIOR
+        params.put(6, "");                                                     //MANZANA
+        params.put(7, "");                                                     //LOTE
+        params.put(8, "");                                                     //CP
+        params.put(9, "");                                                     //COLONIA
+        params.put(10, "");                                                    //CIUDAD
+        params.put(11, "");                                                    //LOCALIDAD
+        params.put(12, "");                                                    //MUNICIPIO
+        params.put(13, "");                                                    //ESTADO
+
+        id_direccion_cony = dBhelper.saveDirecciones(db, params);
 
         //Inserta registro de datos conyuge
         params = new HashMap<>();
@@ -212,19 +249,14 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(1, "");                                      //NOMBRE
         params.put(2, "");                                      //PATERNO
         params.put(3, "");                                      //MATERNO
-        params.put(4, "");                                      //OCUPACION
-        params.put(5, "");                                      //CALLE
-        params.put(6, "");                                      //NO EXTERIOR
-        params.put(7, "");                                      //NO INTERIOR
-        params.put(8, "");                                      //MANZANA
-        params.put(9, "");                                      //LOTE
-        params.put(10, "");                                     //CP
-        params.put(11, "");                                     //COLONIA
-        params.put(12, "");                                     //ING MENSUAL
-        params.put(13, "");                                     //GASTO MENSUAL
-        params.put(14, "");                                     //TEL CASA
-        params.put(15, "");                                     //TEL CELULAR
-        params.put(16, "0");                                    //ESTATUS COMPLETADO
+        params.put(4, "");                                      //NACIONALIDAD
+        params.put(5, "");                                      //OCUPACION
+        params.put(6, String.valueOf(id_direccion_cony));       //DIRECCION ID
+        params.put(7, "");                                      //ING MENSUAL
+        params.put(8, "");                                      //GASTO MENSUAL
+        params.put(9, "");                                      //TEL CASA
+        params.put(10, "");                                     //TEL CELULAR
+        params.put(11, "0");                                    //ESTATUS COMPLETADO
 
         dBhelper.saveDatosConyuge(db, params);
 
@@ -237,116 +269,186 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(4, "");                                      //INGRESO
         params.put(5, "0");                                     //ESTATUS COMPLETADO
 
-            dBhelper.saveDatosEconomicos(db, params);
+        dBhelper.saveDatosEconomicos(db, params);
+
+        //Inserta registro de direccion del negocio
+        params = new HashMap<>();
+        params.put(0, "NEGOCIO");                                              //TIPO DIRECCION
+        params.put(1, "");                                                     //LATITUD
+        params.put(2, "");                                                     //LONGITUD
+        params.put(3, "");                                                     //CALLE
+        params.put(4, "");                                                     //NO EXTERIOR
+        params.put(5, "");                                                     //NO INTERIOR
+        params.put(6, "");                                                     //MANZANA
+        params.put(7, "");                                                     //LOTE
+        params.put(8, "");                                                     //CP
+        params.put(9, "");                                                     //COLONIA
+        params.put(10, "");                                                    //CIUDAD
+        params.put(11, "");                                                    //LOCALIDAD
+        params.put(12, "");                                                    //MUNICIPIO
+        params.put(13, "");                                                    //ESTADO
+
+        id_direccion_neg = dBhelper.saveDirecciones(db, params);
 
         //Inserta registro de negocio
         params = new HashMap<>();
         params.put(0, String.valueOf(id));                  //ID SOLICITUD
         params.put(1, "");                                  //NOMBRE
-        params.put(2, "");                                  //LATITUD
-        params.put(3, "");                                  //LONGITUD
-        params.put(4, "");                                  //CALLE
-        params.put(5, "");                                  //NO EXTERIOR
-        params.put(6, "");                                  //NO INTERIOR
-        params.put(7, "");                                  //MANZANA
-        params.put(8, "");                                  //LOTE
-        params.put(9, "");                                  //CP
-        params.put(10, "");                                 //COLONIA
-        params.put(11, "");                                 //ACTIVIDAD ECONOMICA
-        params.put(12, "");                                 //DESTINO CREDITO
-        params.put(13, "");                                 //OTRO DESTINO
-        params.put(14,"0");                                 //ANTIGUEDAD
-        params.put(15,"");                                  //ING MENSUAL
-        params.put(16,"");                                  //ING OTROS
-        params.put(17,"");                                  //GASTO SEMANAL
-        params.put(18,"");                                  //GASTO AGUA
-        params.put(19,"");                                  //GASTO LUZ
-        params.put(20,"");                                  //GASTO TELEFONO
-        params.put(21,"");                                  //GASTO RENTA
-        params.put(22,"");                                  //GASTO OTROS
-        params.put(23,"");                                  //CAPACIDAD PAGO
-        params.put(24,"");                                  //MEDIO PAGO
-        params.put(25,"");                                  //OTRO MEDIO PAGO
-        params.put(26,"");                                  //MONTO MAXIMO
-        params.put(27,"0");                                 //NUM OPERACION MENSUALES
-        params.put(28,"0");                                 //NUM OPERACION EFECTIVO
-        params.put(29,"");                                  //DIAS VENTA
-        params.put(30,"");                                  //FOTO FACHADA
-        params.put(31,"");                                  //REF DOMICILIARIA
-        params.put(32,"0");                                 //ESTATUS COMPLETADO
+        params.put(2, String.valueOf(id_direccion_neg));        //DIRECCION ID
+        params.put(3, "");                                  //OCUPACION
+        params.put(4, "");                                  //ACTIVIDAD ECONOMICA
+        params.put(5, "");                                  //DESTINO CREDITO
+        params.put(6, "");                                  //OTRO DESTINO
+        params.put(7,"0");                                  //ANTIGUEDAD
+        params.put(8,"");                                   //ING MENSUAL
+        params.put(9,"");                                   //ING OTROS
+        params.put(10,"");                                   //GASTO SEMANAL
+        params.put(11,"");                                  //GASTO AGUA
+        params.put(12,"");                                  //GASTO LUZ
+        params.put(13,"");                                  //GASTO TELEFONO
+        params.put(14,"");                                  //GASTO RENTA
+        params.put(15,"");                                  //GASTO OTROS
+        params.put(16,"");                                  //CAPACIDAD PAGO
+        params.put(17,"");                                  //MEDIO PAGO
+        params.put(18,"");                                  //OTRO MEDIO PAGO
+        params.put(19,"");                                  //MONTO MAXIMO
+        params.put(20,"0");                                 //NUM OPERACION MENSUALES
+        params.put(21,"0");                                 //NUM OPERACION EFECTIVO
+        params.put(22,"");                                  //DIAS VENTA
+        params.put(23,"");                                  //FOTO FACHADA
+        params.put(24,"");                                  //REF DOMICILIARIA
+        params.put(25,"0");                                 //ESTATUS COMPLETADO
 
         dBhelper.saveDatosNegocio(db, params);
 
+        //Inserta registro de direccion del aval
+        params = new HashMap<>();
+        params.put(0, "AVAL");                                                 //TIPO DIRECCION
+        params.put(1, "");                                                     //LATITUD
+        params.put(2, "");                                                     //LONGITUD
+        params.put(3, "");                                                     //CALLE
+        params.put(4, "");                                                     //NO EXTERIOR
+        params.put(5, "");                                                     //NO INTERIOR
+        params.put(6, "");                                                     //MANZANA
+        params.put(7, "");                                                     //LOTE
+        params.put(8, "");                                                     //CP
+        params.put(9, "");                                                     //COLONIA
+        params.put(10, "");                                                    //CIUDAD
+        params.put(11, "");                                                    //LOCALIDAD
+        params.put(12, "");                                                    //MUNICIPIO
+        params.put(13, "");                                                    //ESTADO
+
+        id_direccion_aval = dBhelper.saveDirecciones(db, params);
+
         //Inserta registro del aval
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));  //ID SOLICITUD
-        params.put(1, "");                  //NOMBRE
-        params.put(2, "");                  //PATERNO
-        params.put(3, "");                  //MATERNO
-        params.put(4, "");                  //FECHA NACIMIENTO
-        params.put(5, "");                  //EDAD
-        params.put(6, "2");                 //GENERO
-        params.put(7, "");                  //ESTADO NACIMIENTO
-        params.put(8, "");                  //RFC
-        params.put(9, "");                  //CURP
-        params.put(10, "");                 //CURP DIGITO
-        params.put(11, "");                 //TIPO IDENTIFICACION
-        params.put(12, "");                 //NUM IDENTIFICACION
-        params.put(13, "");                 //OCUPACION
-        params.put(14, "");                 //ACTIVIDAD ECONOMICA
-        params.put(15, "");                 //DESTINO CREDITO
-        params.put(16, "");                 //OTRO DESTINO
-        params.put(17, "");                 //LATITUD
-        params.put(18, "");                 //LONGITUD
-        params.put(19, "");                 //CALLE
-        params.put(20, "");                 //NO EXTERIOR
-        params.put(21, "");                 //NO INTERIOR
-        params.put(22, "");                 //MANZANA
-        params.put(23, "");                 //LOTE
-        params.put(24, "");                 //CP
-        params.put(25, "");                 //COLONIA
-        params.put(26, "");                 //TIPO VIVIENDA
-        params.put(27, "");                 //NOMBRE TITULAR
-        params.put(28, "");                 //PARENTESCO
-        params.put(29, "0");                //ANTIGUEDAD
-        params.put(30, "");                 //ING MENSUAL
-        params.put(31, "");                 //ING OTROS
-        params.put(32, "");                 //GASTO SEMANAL
-        params.put(33, "");                 //GASTO AGUA
-        params.put(34, "");                 //GASTO LUZ
-        params.put(35, "");                 //GASTO TELEFONO
-        params.put(36, "");                 //GASTO RENTA
-        params.put(37, "");                 //GASTO OTROS
-        params.put(38, "");                 //CAPACIDAD PAGOS
-        params.put(39, "");                 //MEDIO PAGO
-        params.put(40, "");                 //OTRO MEDIO PAGO
-        params.put(41, "");                 //MONTO MAXIMO
-        params.put(42, "");                 //HORARIO LOCALIZACION
-        params.put(43, "");                 //TEL CASA
-        params.put(44, "");                 //TEL CELULAR
-        params.put(45, "");                 //FOTO FACHADA
-        params.put(46, "");                 //REF DOMICILIARIA
-        params.put(47, "");                 //FIRMA
-        params.put(48, "0");                //ESTATUS RECHAZO
-        params.put(49, "");                 //COMENTARIO RECHAZO
-        params.put(50, "0");                //ESTATUS RECHAZO
+        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(1, "");                                  //NOMBRE
+        params.put(2, "");                                  //PATERNO
+        params.put(3, "");                                  //MATERNO
+        params.put(4, "");                                  //FECHA NACIMIENTO
+        params.put(5, "");                                  //EDAD
+        params.put(6, "2");                                 //GENERO
+        params.put(7, "");                                  //ESTADO NACIMIENTO
+        params.put(8, "");                                  //RFC
+        params.put(9, "");                                  //CURP
+        params.put(10, "");                                 //CURP DIGITO
+        params.put(11, "");                                 //PARENTESCO CLIENTE
+        params.put(12, "");                                 //TIPO IDENTIFICACION
+        params.put(13, "");                                 //NUM IDENTIFICACION
+        params.put(14, "");                                 //OCUPACION
+        params.put(15, "");                                 //ACTIVIDAD ECONOMICA
+        params.put(16, "");                                 //DESTINO CREDITO
+        params.put(17, "");                                 //OTRO DESTINO
+        params.put(18, String.valueOf(id_direccion_aval));  //DIRECCION ID
+        params.put(19, "");                                 //TIPO VIVIENDA
+        params.put(20, "");                                 //NOMBRE TITULAR
+        params.put(21, "");                                 //PARENTESCO
+        params.put(22, "");                                 //CARACTERISTICAS DOMICILIO
+        params.put(23, "0");                                //ANTIGUEDAD
+        params.put(24, "0");                                //TIENE NEGOCIO
+        params.put(25, "");                                 //NOMBRE NEGOCIO
+        params.put(26, "");                                 //ING MENSUAL
+        params.put(27, "");                                 //ING OTROS
+        params.put(28, "");                                 //GASTO SEMANAL
+        params.put(29, "");                                 //GASTO AGUA
+        params.put(30, "");                                 //GASTO LUZ
+        params.put(31, "");                                 //GASTO TELEFONO
+        params.put(32, "");                                 //GASTO RENTA
+        params.put(33, "");                                 //GASTO OTROS
+        params.put(34, "");                                 //CAPACIDAD PAGOS
+        params.put(35, "");                                 //MEDIO PAGO
+        params.put(36, "");                                 //OTRO MEDIO PAGO
+        params.put(37, "");                                 //MONTO MAXIMO
+        params.put(38, "");                                 //HORARIO LOCALIZACION
+        params.put(39, "");                                 //ACTIVOS OBSERVABLES
+        params.put(40, "");                                 //TEL CASA
+        params.put(41, "");                                 //TEL CELULAR
+        params.put(42, "");                                 //TEL MENSAJES
+        params.put(43, "");                                 //TEL TRABAJO
+        params.put(44, "");                                 //EMAIL
+        params.put(45, "");                                 //FOTO FACHADA
+        params.put(46, "");                                 //REF DOMICILIARIA
+        params.put(47, "");                                 //FIRMA
+        params.put(48, "0");                                //ESTATUS RECHAZO
+        params.put(49, "");                                 //COMENTARIO RECHAZO
+        params.put(50, "0");                                //ESTATUS RECHAZO
 
         dBhelper.saveDatosAval(db, params);
 
+        //Inserta registro de direccion del referencia
+        params = new HashMap<>();
+        params.put(0, "REFERENCIA");                                           //TIPO DIRECCION
+        params.put(1, "");                                                     //LATITUD
+        params.put(2, "");                                                     //LONGITUD
+        params.put(3, "");                                                     //CALLE
+        params.put(4, "");                                                     //NO EXTERIOR
+        params.put(5, "");                                                     //NO INTERIOR
+        params.put(6, "");                                                     //MANZANA
+        params.put(7, "");                                                     //LOTE
+        params.put(8, "");                                                     //CP
+        params.put(9, "");                                                     //COLONIA
+        params.put(10, "");                                                    //CIUDAD
+        params.put(11, "");                                                    //LOCALIDAD
+        params.put(12, "");                                                    //MUNICIPIO
+        params.put(13, "");                                                    //ESTADO
+
+        id_direccion_ref = dBhelper.saveDirecciones(db, params);
+
         //Inserta registro de referencia
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));      //ID SOLICITUD
-        params.put(1, "");                      //NOMBRE
-        params.put(2, "");                      //PATERNO
-        params.put(3, "");                      //MATERNO
-        params.put(4, "");                      //CALLE
-        params.put(5, "");                      //CP
-        params.put(6, "");                      //COLONIA
-        params.put(7, "");                      //MUNICIPIO
-        params.put(8, "");                      //TEL_CELULAR
-        params.put(9, "0");                     //ESTATUS COMPLETADO
+        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(1, "");                                  //NOMBRE
+        params.put(2, "");                                  //PATERNO
+        params.put(3, "");                                  //MATERNO
+        params.put(4, "");                                  //FECHA NACIMIENTO
+        params.put(5, String.valueOf(id_direccion_ref));    //DIRECCION ID
+        params.put(6, "");                                  //TEL_CELULAR
+        params.put(7, "0");                                 //ESTATUS COMPLETADO
 
         dBhelper.saveReferencia(db, params);
+
+        //Inserta registro de croquis
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(1, "");                                  //CALLE PRINCIPAL
+        params.put(2, "");                                  //LATERAL UNO
+        params.put(3, "");                                  //LATERAL DOS
+        params.put(4, "");                                  //CALLE TRASERA
+        params.put(5, "");                                  //REFERENCIAS
+        params.put(6, "0");                                 //ESTATUS COMPLETADO
+
+        dBhelper.saveCroquisInd(db, params);
+
+        //Inserta registro de politicas
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(1, "0");                                 //PROPIERATIO REAL
+        params.put(2, "0");                                 //PROVEEDOR RECURSOS
+        params.put(3, "0");                                 //PERSONA POLITICA
+        params.put(4, "0");                                 //ESTATUS COMPLETADO
+
+        dBhelper.savePoliticasInd(db, params);
 
         //Inseta registro de documentos
         params = new HashMap<>();
@@ -359,19 +461,25 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(6, "");                      //FIRMA ASESOR
         params.put(7, "0");                     //ESTATUS COMPLETADO
 
-            dBhelper.saveDocumentosClientes(db, params);
+        dBhelper.saveDocumentosClientes(db, params);
 
         mListener.onComplete(id, String.valueOf(id_cliente),
                 etNombre.getText().toString().trim().toUpperCase(),
                 etPaterno.getText().toString().trim().toUpperCase(),
-                etMaterno.getText().toString().trim().toUpperCase());
+                etMaterno.getText().toString().trim().toUpperCase(),
+                id_direccion_cli,
+                id_direccion_cony,
+                id_direccion_neg,
+                id_direccion_aval,
+                id_direccion_ref);
+
         getDialog().dismiss();
     }
 
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, "0", null, null, null);
+            mListener.onComplete(0, "0", null, null, null, 0,0,0,0,0);
             getDialog().dismiss();
         }
     };

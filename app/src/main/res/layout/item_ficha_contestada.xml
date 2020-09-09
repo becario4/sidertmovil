@@ -22,13 +22,11 @@
             android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/ivTipoFicha"
-                android:src="@drawable/ic_group_blue"
                 android:layout_width="25dp"
                 android:layout_height="25dp" />
             <ImageView
                 android:id="@+id/ivEstatus"
                 android:layout_marginTop="5dp"
-                android:src="@drawable/ic_update"
                 android:layout_width="25dp"
                 android:layout_height="25dp" />
         </LinearLayout>
@@ -37,7 +35,7 @@
             android:layout_marginRight="4dp"
             android:background="@color/shadowdrawer"
             android:layout_width="@dimen/dp1"
-            android:layout_height="90dp"/>
+            android:layout_height="120dp"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_weight="1"
@@ -49,7 +47,6 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/tvNombre"
-                    android:text="ALEJANDRO ISAIAS LOPEZ JIMENEZ"
                     android:textSize="15sp"
                     android:textColor="@color/black"
                     android:layout_weight="1"
@@ -59,7 +56,6 @@
                     android:id="@+id/tvEstatusGestion"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text="ACLARACION"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -70,13 +66,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:text="Día de pago:"
                     android:textSize="17sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/tvDiaPago"
+                    android:textSize="17sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="Fecha Ini gestión:"
+                    android:textSize="17sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvInicio"
+                    android:layout_gravity="center"
                     android:textSize="17sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -102,6 +117,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

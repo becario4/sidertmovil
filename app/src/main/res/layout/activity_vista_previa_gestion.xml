@@ -16,18 +16,38 @@
             android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tbMain"
-                app:title="Resumen de Gestión"
                 app:titleTextColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvTitulo"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvSubtitulo"
+                        android:textColor="@android:color/white"
+                        android:textSize="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
                 android:background="@android:color/white"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -62,27 +82,27 @@
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/mapGestion"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp" />
+                    android:layout_height="80dp" />
                 <TextView
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"
                     android:textColor="@color/blue_sidert"
                     android:text="Contacto"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/tvContacto"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/NuevoTelefono"
                     android:layout_marginTop="5dp"
@@ -91,21 +111,21 @@
                     android:textColor="@color/blue_sidert"
                     android:text="Nuevo Teléfono"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/tvNuevoTelefono"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:visibility="gone"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/ResultadoGestion"
                     android:visibility="gone"
@@ -114,7 +134,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/management_result"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -122,13 +142,13 @@
                 <TextView
                     android:id="@+id/tvResultadoGestion"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/MotivoAclaracion"
                     android:visibility="gone"
@@ -137,7 +157,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/motivo_aclaracion"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -145,13 +165,13 @@
                 <TextView
                     android:id="@+id/tvMotivoAclaracion"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/MotivoNoPago"
                     android:visibility="gone"
@@ -160,7 +180,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/reason_no_payment"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -168,13 +188,13 @@
                 <TextView
                     android:id="@+id/tvMotivoNoPago"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/MotivoNoContacto"
                     android:visibility="gone"
@@ -183,7 +203,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/motivo_no_contacto"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -191,13 +211,13 @@
                 <TextView
                     android:id="@+id/tvMotivoNoContacto"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/MedioPago"
                     android:visibility="gone"
@@ -206,7 +226,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/payment_method"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -214,13 +234,13 @@
                 <TextView
                     android:id="@+id/tvMedioPago"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/Fecha"
                     android:visibility="gone"
@@ -229,7 +249,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="Fecha"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -237,13 +257,13 @@
                 <TextView
                     android:id="@+id/tvFecha"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
 
                 <TextView
                     android:id="@+id/MontoPromesa"
@@ -253,7 +273,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="Monto de Promesa"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -261,14 +281,14 @@
                 <TextView
                     android:id="@+id/tvMontoPromesa"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:drawableStart="@drawable/ic_money"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
 
                 <TextView
                     android:id="@+id/Comentario"
@@ -278,7 +298,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/comentario"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -286,7 +306,7 @@
                 <TextView
                     android:id="@+id/tvComentario"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
@@ -303,7 +323,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/amount_payment_made"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -311,14 +331,14 @@
                 <TextView
                     android:id="@+id/tvPagoRealizado"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:drawableStart="@drawable/ic_money"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/NoDetalle"
                     android:visibility="gone"
@@ -327,7 +347,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/resumen_pago"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -335,14 +355,14 @@
                 <TextView
                     android:id="@+id/tvNoDetalle"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:ems="10"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/EstatusPago"
                     android:visibility="gone"
@@ -351,7 +371,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/estatus_pago"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -359,14 +379,14 @@
                 <TextView
                     android:id="@+id/tvEstatusPago"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:drawableStart="@drawable/ic_money"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="14sp" />
                 <TextView
                     android:id="@+id/SaldoCorte"
                     android:visibility="gone"
@@ -375,7 +395,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="Saldo al Corte"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -383,14 +403,14 @@
                 <TextView
                     android:id="@+id/tvSaldoCorte"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:drawableStart="@drawable/ic_money"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/SaldoActual"
                     android:visibility="gone"
@@ -399,7 +419,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="Saldo Actual"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -407,14 +427,14 @@
                 <TextView
                     android:id="@+id/tvSaldoActual"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:drawableStart="@drawable/ic_money"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
 
                 <TextView
                     android:id="@+id/FolioRecibo"
@@ -424,7 +444,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/folio_recibo"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -432,13 +452,13 @@
                 <TextView
                     android:id="@+id/tvFolioRecibo"
                     android:visibility="gone"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/black"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:background="@drawable/bkg_rounded_edges_blocked"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="25dp" />
                 <TextView
                     android:id="@+id/Evidencia"
                     android:visibility="gone"
@@ -447,7 +467,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/facade_photo"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -456,7 +476,7 @@
                     android:id="@+id/ivEvidencia"
                     android:visibility="gone"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+                    android:layout_height="150dp" />
                 <TextView
                     android:id="@+id/Firma"
                     android:visibility="gone"
@@ -465,7 +485,7 @@
                     android:textColor="@color/blue_sidert"
                     android:text="@string/signature_manager"
                     android:focusable="false"
-                    android:textSize="@dimen/labelsize"
+                    android:textSize="14sp"
                     android:focusableInTouchMode="false"
                     android:background="@android:color/white"
                     android:layout_width="wrap_content"
@@ -477,7 +497,7 @@
                     android:layout_height="100dp" />
 
                 <LinearLayout
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -485,7 +505,6 @@
                     <Button
                         android:id="@+id/btnConfirmar"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="10dp"
                         android:drawableRight="@drawable/ic_confirm"
                         android:background="@drawable/btn_rounded_blue"
                         android:text="@string/confirmar"
@@ -500,7 +519,6 @@
                     <Button
                         android:id="@+id/btnCancel"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="10dp"
                         android:drawableRight="@drawable/ic_reject"
                         android:background="@drawable/btn_rounded_red"
                         android:text="@string/cancel"

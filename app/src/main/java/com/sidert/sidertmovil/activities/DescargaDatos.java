@@ -1,12 +1,16 @@
 package com.sidert.sidertmovil.activities;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.BatteryManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +31,8 @@ import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.MyCurrentListener;
+import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
@@ -118,21 +124,33 @@ public class DescargaDatos extends AppCompatActivity {
         tvTotal = findViewById(R.id.tvTotal);
         tvRegistradas = findViewById(R.id.tvRegistradas);
 
-        GetCategoriaTickets();
+        GetInformacion();
         GetUltimasImpresiones();
     }
 
-    private void GetCategoriaTickets(){
+    private void GetInformacion(){
          Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
-         //sc.GetEstados(ctx);
          sc.GetCategoriasTickets(ctx);
-         //sc.GetPlazosPrestamo(ctx);
+         sc.GetEstados(ctx);
+
+         sc.GetSectores(ctx);
+         sc.GetOcupaciones(ctx);
+         sc.GetMediosPagoOri(ctx);
+         sc.GetNivelesEstudios(ctx);
+         sc.GetEstadosCiviles(ctx);
+         sc.GetMediosPagoOri(ctx);
+         sc.GetParentesco(ctx);
+         sc.GetTipoIdentificacion(ctx);
+         sc.GetViviendaTipos(ctx);
+         sc.GetMediosContacto(ctx);
+         sc.GetDestinosCredito(ctx);
+         sc.GetPlazosPrestamo(ctx);
          //Servicios_Sincronizado ss = new Servicios_Sincronizado();
          //ss.GetUltimosRecibos(ctx);
     }
 
     private void GetUltimasImpresiones (){
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+        final ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = ctx.registerReceiver(null, ifilter);
@@ -142,208 +160,229 @@ public class DescargaDatos extends AppCompatActivity {
 
         final float battery = (level / (float)scale)*100;
 
-        Log.e("SerieID",session.getUser().get(0));
-        Call<List<MImpresionRes>> call = api.getUltimasImpresiones(session.getUser().get(0),
-                                                                    String.valueOf(battery),
-                                                                    getString(R.string.app_version),
-                                                                    "Bearer "+ session.getUser().get(7));
-
-        call.enqueue(new Callback<List<MImpresionRes>>() {
+        LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+        MyCurrentListener locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
             @Override
-            public void onResponse(Call<List<MImpresionRes>> call, Response<List<MImpresionRes>> response) {
-                //cbImpresiones.setChecked(true);
-                Log.v("Cantidad","# "+response.code());
-                switch (response.code()){
-                    case 200:
-                        List<MImpresionRes> impresiones = response.body();
-                        Log.v("Cantidad impresiones","# "+impresiones.size());
-                        for (MImpresionRes item : impresiones){
-                            Cursor row;
-                            HashMap<Integer, String> data = Miscellaneous.GetNumPrestamo(item.getExternalId());
-                            Log.e("TipoCarteta", String.valueOf(item.getTipoCartera()));
-                            if (item.getTipoCartera() == -1) {
-                                Log.e("Tipo",data.get(0)+"xxxxMisc");
-                                if (data.get(0).equals("Vigente")){
-                                    if (ENVIROMENT)
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
-                                    else
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+            public void onComplete(String latitud, String longitud) {
 
-                                    Log.e("Existe", "Vigente " + row.getCount());
-                                    if (row.getCount() > 0){
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("sent_at", item.getSendedAt());
-                                        cv.put("estatus", "1");
-                                        if (ENVIROMENT)
-                                            db.update(TBL_IMPRESIONES_VIGENTE, cv,
-                                                "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                        data.get(1), item.getFolio(), item.getTipo()});
-                                        else
-                                            db.update(TBL_IMPRESIONES_VIGENTE_T, cv,
-                                                    "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                            data.get(1), item.getFolio(), item.getTipo()});
-
-                                    }else{
-                                        Log.e("......","................");
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        Log.e("NumPrestamoIdGestion", String.valueOf(item.getNumPrestamoIdGestion()));
-                                        if (item.getNumPrestamoIdGestion().trim().isEmpty())
-                                            params.put(0, data.get(1));  //num_prestamo_id_gestion
-                                        else
-                                            params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
-                                        params.put(1, item.getAsesorid());                              //asesor_id
-                                        params.put(2, item.getFolio());                                 //folio
-                                        params.put(3, item.getTipo());                                  //tipo_impresion
-                                        params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
-                                        params.put(5, item.getClavecliente());                          //clave_cliente
-                                        params.put(6, item.getGeneratedAt());                           //created_at
-                                        params.put(7, item.getSendedAt());                              //sent_at
-                                        params.put(8, "1");                                             //estatus
-                                        params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
-
-                                        dBhelper.saveImpresiones(db, params);
-                                    }
-                                    row.close();
-                                }
-                                else if (data.get(0).equals("Vencida")){
-                                    if (ENVIROMENT)
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
-                                    else
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
-
-                                    if (row.getCount() > 0){
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("sent_at", item.getSendedAt());
-                                        cv.put("estatus", "1");
-                                        db.update((ENVIROMENT)?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VENCIDA_T, cv,
-                                                "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                        data.get(1), item.getFolio(), item.getTipo()});
-
-                                    }else{
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        if (item.getNumPrestamoIdGestion().trim().isEmpty())
-                                            params.put(0, data.get(1));  //num_prestamo_id_gestion
-                                        else
-                                            params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
-                                        params.put(1, item.getAsesorid());                              //asesor_id
-                                        params.put(2, item.getFolio());                                 //folio
-                                        params.put(3, item.getTipo());                                  //tipo_impresion
-                                        params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
-                                        params.put(5, item.getClavecliente());                          //clave_cliente
-                                        params.put(6, item.getGeneratedAt());                           //created_at
-                                        params.put(7, item.getSendedAt());                              //sent_at
-                                        params.put(8, "1");                                             //estatus
-                                        params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
-
-                                        dBhelper.saveImpresionesVencida(db, params);
-                                    }
-                                    row.close();
-                                }
-                            }
-                            else{
-                                if (item.getTipoCartera()  == 0|| item.getTipoCartera() == 1){//VIGENTE
-                                    if (ENVIROMENT)
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), item.getFolio(), item.getTipo()});
-                                    else
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), item.getFolio(), item.getTipo()});
-
-                                    if (row.getCount() > 0){
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("sent_at", item.getSendedAt());
-                                        cv.put("estatus", "1");
-                                        db.update((ENVIROMENT)?TBL_IMPRESIONES_VIGENTE:TBL_IMPRESIONES_VIGENTE_T, cv,
-                                                "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                        data.get(1), item.getFolio(), item.getTipo()});
-
-                                    }else{
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        if (item.getNumPrestamoIdGestion().trim().isEmpty())
-                                            params.put(0, data.get(1));  //num_prestamo_id_gestion
-                                        else
-                                            params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
-                                        params.put(1, item.getAsesorid());                              //asesor_id
-                                        params.put(2, item.getFolio());                                 //folio
-                                        params.put(3, item.getTipo());                                  //tipo_impresion
-                                        params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
-                                        params.put(5, item.getClavecliente());                          //clave_cliente
-                                        params.put(6, item.getGeneratedAt());                           //created_at
-                                        params.put(7, item.getSendedAt());                              //sent_at
-                                        params.put(8, "1");                                             //estatus
-                                        params.put(9, item.getExternalId());                                     //num_prestamo                                              //num_prestamo
-
-                                        dBhelper.saveImpresiones(db, params);
-                                    }
-                                    row.close();
-                                }
-                                else if (item.getTipoCartera() == 4){//VENCIDA
-
-                                    Log.e("ValidParams", data.get(1) + " - " + String.valueOf(item.getFolio()) + " - " + String.valueOf(item.getTipo()));
-
-                                    if (ENVIROMENT)
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
-                                    else
-                                        row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
-
-                                    Log.e("RowImpresion", "as"+row.getCount());
-                                    if (row.getCount() > 0){
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("sent_at", item.getSendedAt());
-                                        cv.put("estatus", "1");
-                                        db.update((ENVIROMENT)?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VENCIDA_T, cv,
-                                                "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                        data.get(1), item.getFolio(), item.getTipo()});
-
-                                    }else{
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        if (item.getNumPrestamoIdGestion().trim().isEmpty())
-                                            params.put(0, data.get(1));  //num_prestamo_id_gestion
-                                        else
-                                            params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
-                                        params.put(1, item.getAsesorid());                              //asesor_id
-                                        params.put(2, item.getFolio());                                 //folio
-                                        params.put(3, item.getTipo());                                  //tipo_impresion
-                                        params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
-                                        params.put(5, item.getClavecliente());                          //clave_cliente
-                                        params.put(6, item.getGeneratedAt());                           //created_at
-                                        params.put(7, item.getSendedAt());                              //sent_at
-                                        params.put(8, "1");                                             //estatus
-                                        params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
-
-                                        dBhelper.saveImpresionesVencida(db, params);
-                                    }
-                                    row.close();
-                                }
-                            }
-
-                        }
-                        break;
+                Call<List<MImpresionRes>> call;
+                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                    call = api.getUltimasImpresiones(session.getUser().get(0),
+                            String.valueOf(battery),
+                            getString(R.string.app_version),
+                            latitud,
+                            longitud,
+                            "Bearer "+ session.getUser().get(7));
+                }
+                else{
+                    call = api.getUltimasImpresiones(session.getUser().get(0),
+                            String.valueOf(battery),
+                            getString(R.string.app_version),
+                            "",
+                            "",
+                            "Bearer "+ session.getUser().get(7));
                 }
 
-                //cbGeolocalizaciones.setChecked(true);
-                GetCartera();
-                //GetGeolocalizaciones();
-                cbImpresiones.setChecked(true);
+                call.enqueue(new Callback<List<MImpresionRes>>() {
+                    @Override
+                    public void onResponse(Call<List<MImpresionRes>> call, Response<List<MImpresionRes>> response) {
+                        switch (response.code()){
+                            case 200:
+                                List<MImpresionRes> impresiones = response.body();
+                                Log.v("Cantidad impresiones","# "+impresiones.size());
+                                for (MImpresionRes item : impresiones){
+                                    Cursor row;
+                                    HashMap<Integer, String> data = Miscellaneous.GetNumPrestamo(item.getExternalId());
+                                    Log.e("TipoCarteta", String.valueOf(item.getTipoCartera()));
+                                    if (item.getTipoCartera() == -1) {
+                                        Log.e("Tipo",data.get(0)+"xxxxMisc");
+                                        if (data.get(0).equals("Vigente")){
+
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+
+                                            Log.e("Existe", "Vigente " + row.getCount());
+                                            if (row.getCount() > 0){
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("sent_at", item.getSendedAt());
+                                                cv.put("estatus", "1");
+                                               db.update(TBL_IMPRESIONES_VIGENTE_T, cv,
+                                                            "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
+                                                                    data.get(1), item.getFolio(), item.getTipo()});
+
+                                            }else{
+                                                Log.e("......","................");
+                                                HashMap<Integer, String> params = new HashMap<>();
+                                                Log.e("NumPrestamoIdGestion", String.valueOf(item.getNumPrestamoIdGestion()));
+                                                if (item.getNumPrestamoIdGestion().trim().isEmpty())
+                                                    params.put(0, data.get(1));  //num_prestamo_id_gestion
+                                                else
+                                                    params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
+                                                params.put(1, item.getAsesorid());                              //asesor_id
+                                                params.put(2, item.getFolio());                                 //folio
+                                                params.put(3, item.getTipo());                                  //tipo_impresion
+                                                params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
+                                                params.put(5, item.getClavecliente());                          //clave_cliente
+                                                params.put(6, item.getGeneratedAt());                           //created_at
+                                                params.put(7, item.getSendedAt());                              //sent_at
+                                                params.put(8, "1");                                             //estatus
+                                                params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
+
+                                                dBhelper.saveImpresiones(db, params);
+                                            }
+                                            row.close();
+                                        }
+                                        else if (data.get(0).equals("Vencida")){
+
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+
+                                            if (row.getCount() > 0){
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("sent_at", item.getSendedAt());
+                                                cv.put("estatus", "1");
+                                                db.update(TBL_IMPRESIONES_VENCIDA_T, cv,
+                                                        "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
+                                                                data.get(1), item.getFolio(), item.getTipo()});
+
+                                            }else{
+                                                HashMap<Integer, String> params = new HashMap<>();
+                                                if (item.getNumPrestamoIdGestion().trim().isEmpty())
+                                                    params.put(0, data.get(1));  //num_prestamo_id_gestion
+                                                else
+                                                    params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
+                                                params.put(1, item.getAsesorid());                              //asesor_id
+                                                params.put(2, item.getFolio());                                 //folio
+                                                params.put(3, item.getTipo());                                  //tipo_impresion
+                                                params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
+                                                params.put(5, item.getClavecliente());                          //clave_cliente
+                                                params.put(6, item.getGeneratedAt());                           //created_at
+                                                params.put(7, item.getSendedAt());                              //sent_at
+                                                params.put(8, "1");                                             //estatus
+                                                params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
+
+                                                dBhelper.saveImpresionesVencida(db, params);
+                                            }
+                                            row.close();
+                                        }
+                                    }
+                                    else{
+                                        if (item.getTipoCartera()  == 0|| item.getTipoCartera() == 1){//VIGENTE
+
+                                            Log.e("XXX: ","numPres: "+ data.get(1) +"folio: "+ item.getFolio()+" tipo:"+ item.getTipo());
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), item.getFolio(), item.getTipo()});
+
+                                            Log.e("XXX: ", "Total: "+row.getCount());
+                                            if (row.getCount() > 0){
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("sent_at", item.getSendedAt());
+                                                cv.put("estatus", "1");
+                                                db.update(TBL_IMPRESIONES_VIGENTE_T, cv,
+                                                        "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
+                                                                data.get(1), item.getFolio(), item.getTipo()});
+
+                                            }else{
+                                                HashMap<Integer, String> params = new HashMap<>();
+                                                if (item.getNumPrestamoIdGestion().trim().isEmpty())
+                                                    params.put(0, data.get(1));  //num_prestamo_id_gestion
+                                                else
+                                                    params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
+                                                params.put(1, item.getAsesorid());                              //asesor_id
+                                                params.put(2, item.getFolio());                                 //folio
+                                                params.put(3, item.getTipo());                                  //tipo_impresion
+                                                params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
+                                                params.put(5, item.getClavecliente());                          //clave_cliente
+                                                params.put(6, item.getGeneratedAt());                           //created_at
+                                                params.put(7, item.getSendedAt());                              //sent_at
+                                                params.put(8, "1");                                             //estatus
+                                                params.put(9, item.getExternalId().substring(9,15));                            //num_prestamo
+
+                                                dBhelper.saveImpresiones(db, params);
+                                            }
+                                            row.close();
+                                        }
+                                        else if (item.getTipoCartera() == 4){//VENCIDA
+
+                                            Log.e("ValidParams", data.get(1) + " - " + String.valueOf(item.getFolio()) + " - " + String.valueOf(item.getTipo()));
+                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+
+                                            Log.e("RowImpresion", "as"+row.getCount());
+                                            if (row.getCount() > 0){
+                                                ContentValues cv = new ContentValues();
+                                                cv.put("sent_at", item.getSendedAt());
+                                                cv.put("estatus", "1");
+                                                db.update((ENVIROMENT)?TBL_IMPRESIONES_VENCIDA:TBL_IMPRESIONES_VENCIDA_T, cv,
+                                                        "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
+                                                                data.get(1), item.getFolio(), item.getTipo()});
+
+                                            }else{
+                                                HashMap<Integer, String> params = new HashMap<>();
+                                                if (item.getNumPrestamoIdGestion().trim().isEmpty())
+                                                    params.put(0, data.get(1));  //num_prestamo_id_gestion
+                                                else
+                                                    params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
+                                                params.put(1, item.getAsesorid());                              //asesor_id
+                                                params.put(2, item.getFolio());                                 //folio
+                                                params.put(3, item.getTipo());                                  //tipo_impresion
+                                                params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
+                                                params.put(5, item.getClavecliente());                          //clave_cliente
+                                                params.put(6, item.getGeneratedAt());                           //created_at
+                                                params.put(7, item.getSendedAt());                              //sent_at
+                                                params.put(8, "1");                                             //estatus
+                                                params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
+
+                                                dBhelper.saveImpresionesVencida(db, params);
+                                            }
+                                            row.close();
+                                        }
+                                    }
+
+                                }
+                                break;
+                        }
+
+                        //cbGeolocalizaciones.setChecked(true);
+                        GetCartera();
+                        //GetGeolocalizaciones();
+                        cbImpresiones.setChecked(true);
                 /*Intent home = new Intent(ctx, Home.class);
                 home.putExtra("login", false);
                 startActivity(home);
                 finish();*/
 
-            }
+                    }
 
-            @Override
-            public void onFailure(Call<List<MImpresionRes>> call, Throwable t) {
-                Log.e("error", t.getMessage()+"asdasd");
-                Log.e("fail","impresiones");
+                    @Override
+                    public void onFailure(Call<List<MImpresionRes>> call, Throwable t) {
+                        Log.e("error", t.getMessage()+"asdasd");
+                        Log.e("fail","impresiones");
 
-                //GetGeolocalizaciones();
-                GetCartera();
-                cbImpresiones.setChecked(true);
+                        //GetGeolocalizaciones();
+                        GetCartera();
+                        cbImpresiones.setChecked(true);
                 /*Intent home = new Intent(ctx, Home.class);
                 home.putExtra("login", false);
                 startActivity(home);
                 finish();*/
+                    }
+                });
+
             }
         });
+
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+
+        String provider;
+
+        if (NetworkStatus.haveNetworkConnection(ctx)) {
+            Log.e("Proveedor", "RED");
+            provider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Log.e("Proveedor", "GPS");
+            provider = LocationManager.GPS_PROVIDER;
+        }
+
+        locationManager.requestSingleUpdate(provider, locationListener, null);
+
     }
 
     private void GetCartera(){
@@ -369,10 +408,8 @@ public class DescargaDatos extends AppCompatActivity {
                                 Log.e("CarteraName", cartera.get(i).getNombre()+" : "+ cartera.get(i).getId());
                                 switch (Miscellaneous.GetTipoCartera(cartera.get(i).getCarteraTipo())){
                                     case 1:
-                                        if (ENVIROMENT)
-                                            row = dBhelper.getRecords(TBL_CARTERA_IND, where, order, args);
-                                        else
-                                            row = dBhelper.getRecords(TBL_CARTERA_IND_T, where, order, args);
+
+                                        row = dBhelper.getRecords(TBL_CARTERA_IND_T, where, order, args);
 
                                         if (row.getCount() == 0){ //Registra la cartera de ind
                                             row.close();
@@ -398,15 +435,12 @@ public class DescargaDatos extends AppCompatActivity {
                                             values.put(17, "0");                                                //CC
                                             values.put(18, "0");                                                //AGF
                                             values.put(19, "");                                                 //CURP
-
+                                            values.put(20, String.valueOf(cartera.get(i).getDiasAtraso()));     //DIAS ATRASO
                                             /*values.put(17, (cartera.get(i).getCcInd()?"1":"0"));                //CC
                                             values.put(18, (cartera.get(i).getAgfInd()?"1":"0"));               //AGF
                                             values.put(19, cartera.get(i).getCurp());                           //CURP*/
 
-                                            if (ENVIROMENT)
-                                                dBhelper.saveCarteraInd(db, TBL_CARTERA_IND, values);
-                                            else
-                                                dBhelper.saveCarteraInd(db, TBL_CARTERA_IND_T, values);
+                                            dBhelper.saveCarteraInd(db, TBL_CARTERA_IND_T, values);
 
                                         }
                                         else{ //Actualiza la cartera de ind
@@ -429,22 +463,18 @@ public class DescargaDatos extends AppCompatActivity {
                                             cv.put("cc", 0);
                                             cv.put("agf", 0);
                                             cv.put("curp", "");
+                                            cv.put("dias_atraso", String.valueOf(cartera.get(i).getDiasAtraso()));
                                             /*cv.put("cc", (cartera.get(i).getCcInd()?1:0));
                                             cv.put("agf", (cartera.get(i).getAgfInd()?1:0));
                                             cv.put("curp", cartera.get(i).getCurp());*/
 
-                                            if (ENVIROMENT)
-                                                db.update(TBL_CARTERA_IND, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
-                                            else
-                                                db.update(TBL_CARTERA_IND_T, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
+                                            db.update(TBL_CARTERA_IND_T, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
                                         }
                                         row.close();
                                         break;
                                     case 2:
-                                        if (ENVIROMENT)
-                                            row = dBhelper.getRecords(TBL_CARTERA_GPO, where, order, args);
-                                        else
-                                            row = dBhelper.getRecords(TBL_CARTERA_GPO_T, where, order, args);
+
+                                        row = dBhelper.getRecords(TBL_CARTERA_GPO_T, where, order, args);
 
                                         if (row.getCount() == 0){ //Registra la cartera de gpo
                                             row.close();
@@ -467,6 +497,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             values.put(15, cartera.get(i).getGeolocalizadas());                 //GEOLOCALIZADAS
                                             values.put(16, "{}");                                               //CC
                                             values.put(17, "{}");                                               //AGF
+                                            values.put(18, String.valueOf(cartera.get(i).getDiasAtraso()));     //DIAS_ATRASO
                                             /*values.put(16, cartera.get(i).getCcGpo());                          //CC
                                             values.put(17, cartera.get(i).getAgfGpo());                         //AGF*/
 
@@ -490,11 +521,9 @@ public class DescargaDatos extends AppCompatActivity {
                                             cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                             cv.put("colonia", cartera.get(i).getColonia());
                                             cv.put("geolocalizadas", cartera.get(i).getGeolocalizadas());
+                                            cv.put("dias_atraso", String.valueOf(cartera.get(i).getDiasAtraso()));
 
-                                            if (ENVIROMENT)
-                                                db.update(TBL_CARTERA_GPO, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
-                                            else
-                                                db.update(TBL_CARTERA_GPO_T, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
+                                            db.update(TBL_CARTERA_GPO_T, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
                                         }
                                         row.close();
                                         break;
@@ -532,10 +561,8 @@ public class DescargaDatos extends AppCompatActivity {
 
         final Cursor row;
         String query;
-        if (ENVIROMENT)
-            query = "SELECT * FROM (SELECT id_cartera, '1' AS tipo FROM " + TBL_CARTERA_IND + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO +") AS cartera ";
-        else
-            query = "SELECT * FROM (SELECT id_cartera,'1' AS tipo FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO_T +") AS cartera ";
+
+        query = "SELECT * FROM (SELECT id_cartera,'1' AS tipo FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO_T +") AS cartera ";
 
         row = db.rawQuery(query, null);
 
@@ -600,6 +627,14 @@ public class DescargaDatos extends AppCompatActivity {
     private void QuitarLoading(int total, int avance){
         tvRegistradas.setText(String.valueOf(avance));
         if (avance == total) {
+            SessionManager session = new SessionManager(ctx);
+
+            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+            if (session.getUser().get(5).contains("ROLE_GESTOR"))
+                ss.GetGestionadas(ctx, "VENCIDA", false);
+            else if (session.getUser().get(5).contains("ROLE_ASESOR"))
+                ss.GetGestionadas(ctx, "VIGENTE", false);
+
             cbCartera.setChecked(true);
             Intent home = new Intent(ctx, Home.class);
             home.putExtra("login", false);
@@ -619,6 +654,10 @@ public class DescargaDatos extends AppCompatActivity {
                     List<MPrestamoRes> prestamos = response.body();
                     if (prestamos.size() > 0){
 
+                        ContentValues cv_cartera = new ContentValues();
+                        cv_cartera.put("estatus", "1");
+                        db.update(TBL_CARTERA_IND_T, cv_cartera, "id_cartera = ?", new String[]{String.valueOf(id)});
+
                             Cursor row;
 
                             Log.e("size antes for", ""+prestamos.size());
@@ -629,12 +668,10 @@ public class DescargaDatos extends AppCompatActivity {
                                 String order = "";
                                 String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
 
-                                if (ENVIROMENT)
-                                    row = dBhelper.getRecords(TBL_PRESTAMOS_IND, where, order, args);
-                                else
-                                    row = dBhelper.getRecords(TBL_PRESTAMOS_IND_T, where, order, args);
+                                row = dBhelper.getRecords(TBL_PRESTAMOS_IND_T, where, order, args);
 
-                                if (row.getCount() == 0){ //Registra el prestamo de ind
+                                if (row.getCount() == 0)
+                                { //Registra el prestamo de ind
                                     row.close();
                                     Log.e("Prestamo", "Registra Prestamo");
                                     HashMap<Integer, String> values = new HashMap<>();
@@ -650,16 +687,11 @@ public class DescargaDatos extends AppCompatActivity {
                                     values.put(9, String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                     values.put(10, prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                     values.put(11, prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                    values.put(12, (prestamos.get(i).getPagada())?"1":"0");                     //PAGADA
+                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
                                     values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA CREACION
                                     values.put(14, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
-                                    Log.e("ParamsPres", values.toString());
-                                    Log.e("--","-----------------------------------------------------");
-                                    if (ENVIROMENT)
-                                        dBhelper.savePrestamosInd(db, TBL_PRESTAMOS_IND, values);
-                                    else
-                                        dBhelper.savePrestamosInd(db, TBL_PRESTAMOS_IND_T, values);
+                                    dBhelper.savePrestamosInd(db, TBL_PRESTAMOS_IND_T, values);
 
                                     if (prestamos.get(i).getAval() != null) {
                                         MAval mAval = prestamos.get(i).getAval();
@@ -673,10 +705,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_aval.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA CREACION
                                         values_aval.put(7, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZACION
 
-                                        if (ENVIROMENT)
-                                            dBhelper.saveAval(db, TBL_AVAL, values_aval);
-                                        else
-                                            dBhelper.saveAval(db, TBL_AVAL_T, values_aval);
+                                        dBhelper.saveAval(db, TBL_AVAL_T, values_aval);
 
                                     }
 
@@ -706,10 +735,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             values_amortiz.put(19, Miscellaneous.ObtenerFecha(TIMESTAMP));                                  //FECHA DISPOSITIVO
                                             values_amortiz.put(20, Miscellaneous.ObtenerFecha(TIMESTAMP));                                  //FECHA ACTUALIZADO
 
-                                            if (ENVIROMENT)
-                                                dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES, values_amortiz);
-                                            else
-                                                dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES_T, values_amortiz);
+                                            dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES_T, values_amortiz);
                                         }
                                     }
 
@@ -724,10 +750,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                             values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
-                                            if (ENVIROMENT)
-                                                dBhelper.savePagos(db, TBL_PAGOS, values_pago);
-                                            else
-                                                dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
+                                            dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
                                         }
                                     }
                                 }
@@ -744,11 +767,10 @@ public class DescargaDatos extends AppCompatActivity {
                                     cv.put("tipo_cartera", prestamos.get(i).getTipoCartera());
 
                                     if (row.getInt(13) == 0)
-                                        cv.put("pagada", (prestamos.get(i).getPagada())?"1":"0");
+                                        cv.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");
                                     cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha("timestamp"));
 
-                                    db.update((ENVIROMENT)?TBL_PRESTAMOS_IND:TBL_PRESTAMOS_IND_T, cv,
-                                            "_id = ?", new String[]{row.getString(0)});
+                                    db.update(TBL_PRESTAMOS_IND_T, cv, "_id = ?", new String[]{row.getString(0)});
 
                                     String sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
                                     Cursor rowRuta = db.rawQuery(sql, new String[]{String.valueOf(prestamos.get(i).getId()), "SI", "PAGO"});
@@ -812,8 +834,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         cv_aval.put("telefono", mAval.getTelefono());                               //TELEFONO
                                         cv_aval.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));    //FECHA ACTUALIZACION
 
-                                        db.update((ENVIROMENT)?TBL_AVAL:TBL_AVAL_T, cv_aval,
-                                                "id_prestamo = ?", new String[]{String.valueOf(prestamos.get(i).getId())});
+                                        db.update(TBL_AVAL_T, cv_aval, "id_prestamo = ?", new String[]{String.valueOf(prestamos.get(i).getId())});
                                     }
 
                                     if (prestamos.get(i).getAmortizaciones().size() > 0){
@@ -846,15 +867,14 @@ public class DescargaDatos extends AppCompatActivity {
                                             rowAmortiz.close();
                                             cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                             //FECHA ACTUALIZADO
 
-                                            db.update((ENVIROMENT)?TBL_AMORTIZACIONES:TBL_AMORTIZACIONES_T, cv_amortiz,
-                                                    "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
                                         }
                                     }
 
                                     if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0){
                                         for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
-                                            Cursor row_pago = dBhelper.getRecords((ENVIROMENT)?TBL_PAGOS:TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
+                                            Cursor row_pago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
                                                     new String[]{String.valueOf(prestamos.get(i).getId()),mPago.getFecha(), String.valueOf(mPago.getMonto()), mPago.getBanco(),});
                                             if (row_pago.getCount() == 0){
                                                 HashMap<Integer, String> cv_pago = new HashMap<>();
@@ -865,7 +885,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 cv_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                                 cv_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
-                                                dBhelper.savePagos(db, (ENVIROMENT)?TBL_PAGOS:TBL_PAGOS_T, cv_pago);
+                                                dBhelper.savePagos(db, TBL_PAGOS_T, cv_pago);
                                             }
                                             row_pago.close();
                                         }
@@ -904,6 +924,10 @@ public class DescargaDatos extends AppCompatActivity {
                     List<MPrestamoGpoRes> prestamos = response.body();
                     if (prestamos.size() > 0){
 
+                        ContentValues cv_cartera = new ContentValues();
+                        cv_cartera.put("estatus", "1");
+                        db.update(TBL_CARTERA_GPO_T, cv_cartera, "id_cartera = ?", new String[]{String.valueOf(id)});
+
                         Cursor row;
 
                         Log.e("size antes for", ""+prestamos.size());
@@ -914,10 +938,7 @@ public class DescargaDatos extends AppCompatActivity {
                             String order = "";
                             String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
 
-                            if (ENVIROMENT)
-                                row = dBhelper.getRecords(TBL_PRESTAMOS_GPO, where, order, args);
-                            else
-                                row = dBhelper.getRecords(TBL_PRESTAMOS_GPO_T, where, order, args);
+                            row = dBhelper.getRecords(TBL_PRESTAMOS_GPO_T, where, order, args);
 
                             if (row.getCount() == 0){ //Registra el prestamo de gpo
                                 Log.e("Prestamo", "Registra Prestamo");
@@ -938,10 +959,7 @@ public class DescargaDatos extends AppCompatActivity {
                                 values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA CREACION
                                 values.put(14, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
-                                if (ENVIROMENT)
-                                    dBhelper.savePrestamosGpo(db, TBL_PRESTAMOS_GPO, values);
-                                else
-                                    dBhelper.savePrestamosGpo(db, TBL_PRESTAMOS_GPO_T, values);
+                                dBhelper.savePrestamosGpo(db, TBL_PRESTAMOS_GPO_T, values);
 
                                 if (prestamos.get(i).getIntegrantes() != null) {
                                     for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++){
@@ -997,10 +1015,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_amortiz.put(19, Miscellaneous.ObtenerFecha(TIMESTAMP));                     //FECHA DISPOSITIVO
                                         values_amortiz.put(20, Miscellaneous.ObtenerFecha(TIMESTAMP));                     //FECHA ACTUALIZADO
 
-                                        if (ENVIROMENT)
-                                            dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES, values_amortiz);
-                                        else
-                                            dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES_T, values_amortiz);
+                                        dBhelper.saveAmortizaciones(db, TBL_AMORTIZACIONES_T, values_amortiz);
                                     }
                                 }
 
@@ -1015,10 +1030,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                         values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
-                                        if (ENVIROMENT)
-                                            dBhelper.savePagos(db, TBL_PAGOS, values_pago);
-                                        else
-                                            dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
+                                        dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
                                     }
                                 }
                             }
@@ -1037,8 +1049,7 @@ public class DescargaDatos extends AppCompatActivity {
                                     cv_prestamo.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
                                 cv_prestamo.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
-                                db.update((ENVIROMENT)?TBL_PRESTAMOS_GPO:TBL_PRESTAMOS_GPO_T, cv_prestamo,
-                                        "_id = ?", new String[]{row.getString(0)});
+                                db.update(TBL_PRESTAMOS_GPO_T, cv_prestamo, "_id = ?", new String[]{row.getString(0)});
 
                                 String sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
                                 Cursor rowRuta = db.rawQuery(sql, new String[]{String.valueOf(prestamos.get(i).getId()), "SI", "PAGO"});
@@ -1105,8 +1116,7 @@ public class DescargaDatos extends AppCompatActivity {
                                         cv_miembro.put("curp", "");                                                             //CURP
                                         //cv_miembro.put("curp", mIntegrante.getCurp());                                          //CURP
 
-                                        db.update((ENVIROMENT)?TBL_MIEMBROS_GPO:TBL_MIEMBROS_GPO_T, cv_miembro,
-                                                "id_prestamo = ? AND id_integrante = ?",
+                                        db.update(TBL_MIEMBROS_GPO_T, cv_miembro, "id_prestamo = ? AND id_integrante = ?",
                                                 new String[]{String.valueOf(prestamos.get(i).getId()), String.valueOf(mIntegrante.getId())});
                                     }
                                 }//Termina If de actualizado de integrantes
@@ -1142,22 +1152,16 @@ public class DescargaDatos extends AppCompatActivity {
                                         rowAmortiz.close();
                                         cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
 
-                                        db.update((ENVIROMENT)?TBL_AMORTIZACIONES:TBL_AMORTIZACIONES_T, cv_amortiz,
-                                                "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
                                     }
                                 }//Termina If de Actualizado de amortizaciones
 
                                 if (prestamos.get(i).getPagos() != null &&prestamos.get(i).getPagos().size() > 0){
                                     for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
                                         MPago mPago = prestamos.get(i).getPagos().get(k);
-                                        Log.e("--","................................................");
-                                        Log.e("prestamoId", String.valueOf(prestamos.get(i).getId()));
-                                        Log.e("fecha", mPago.getFecha());
-                                        Log.e("banco", mPago.getBanco());
-                                        Log.e("monto", String.valueOf(mPago.getMonto()));
-                                        Cursor row_pago = dBhelper.getRecords((ENVIROMENT)?TBL_PAGOS:TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
+
+                                        Cursor row_pago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
                                                 new String[]{String.valueOf(prestamos.get(i).getId()),mPago.getFecha(), String.valueOf(mPago.getMonto()),mPago.getBanco()});
-                                        Log.e("RowPago",row.getCount()+"asd");
                                         if (row_pago.getCount() == 0){
                                             Log.e("registra","Pago");
                                             HashMap<Integer, String> cv_pago = new HashMap<>();
@@ -1168,7 +1172,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             cv_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                             cv_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
-                                            dBhelper.savePagos(db, (ENVIROMENT)?TBL_PAGOS:TBL_PAGOS_T, cv_pago);
+                                            dBhelper.savePagos(db, TBL_PAGOS_T, cv_pago);
                                         }
                                         row_pago.close();
                                         Log.e("--","...............................................");

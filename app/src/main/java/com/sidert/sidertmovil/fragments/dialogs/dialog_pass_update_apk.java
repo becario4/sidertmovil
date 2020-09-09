@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.Validator;
 
 
 public class dialog_pass_update_apk extends DialogFragment {
@@ -29,6 +30,7 @@ public class dialog_pass_update_apk extends DialogFragment {
     private ImageView ivClose;
 
     private SessionManager session;
+    private Validator validator;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class dialog_pass_update_apk extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
+        validator = new Validator();
         return v;
     }
 
@@ -61,13 +64,12 @@ public class dialog_pass_update_apk extends DialogFragment {
         @Override
         public void onClick(View view) {
             //if (etKeyMaster.getText().toString().trim().equals("$APKACVS20")){
-            if (true){
+            if (!validator.validate(etKeyMaster, new String[]{validator.REQUIRED})){
                 Configuracion configActivity = (Configuracion) getActivity();
-                configActivity.DownloadApk();
+                configActivity.DownloadApk(etKeyMaster.getText().toString().trim().toUpperCase());
                 dismiss();
             }
-            else
-                Toast.makeText(ctx, "Contraseña Incorrecta", Toast.LENGTH_SHORT).show();
+
         }
     };
 

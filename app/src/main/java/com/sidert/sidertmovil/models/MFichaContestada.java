@@ -12,6 +12,7 @@ public class MFichaContestada implements Serializable {
     private String estatusGestion;
     private String diaPago;
     private String timestamp;
+    private String fechaInicio;
 
     public String getIdGestion() {
         return idGestion;
@@ -75,5 +76,13 @@ public class MFichaContestada implements Serializable {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(String fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 }

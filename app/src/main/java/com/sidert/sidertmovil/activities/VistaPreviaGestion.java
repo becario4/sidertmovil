@@ -5,8 +5,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,14 +36,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.utils.CanvasCustom;
+import com.sidert.sidertmovil.utils.CustomCanvasResumen;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.UUID;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
@@ -48,6 +58,7 @@ import static com.sidert.sidertmovil.utils.Constants.ESTATUS;
 import static com.sidert.sidertmovil.utils.Constants.EVIDENCIA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEFUNCION;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_DEPOSITO;
+import static com.sidert.sidertmovil.utils.Constants.FECHA_FIN;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_PROMESA_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO_TICKET;
@@ -61,14 +72,19 @@ import static com.sidert.sidertmovil.utils.Constants.MONTO_REQUERIDO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_ACLARACION;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
 import static com.sidert.sidertmovil.utils.Constants.PARAMS;
 import static com.sidert.sidertmovil.utils.Constants.RESPONSE;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.UBICACION;
+import static com.sidert.sidertmovil.utils.Constants.firma;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 
 
@@ -77,6 +93,8 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private Context ctx;
 
     private Toolbar tbMain;
+    private TextView tvtitulo;
+    private TextView tvSubtitulo;
 
     private MapView mapGestion;
 
@@ -122,7 +140,11 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private Button btnConfirmar;
     private Button btnCancelar;
 
+    private String nombre = "";
+
     private GoogleMap mMap;
+
+    private Bundle datos;
 
     private Calendar mCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_TIMESTAMP, Locale.US);
@@ -138,6 +160,8 @@ public class VistaPreviaGestion extends AppCompatActivity {
         ctx = this;
 
         tbMain          = findViewById(R.id.tbMain);
+        tvtitulo        = findViewById(R.id.tvTitulo);
+        tvSubtitulo     = findViewById(R.id.tvSubtitulo);
 
         mapGestion  = findViewById(R.id.mapGestion);
 
@@ -189,9 +213,14 @@ public class VistaPreviaGestion extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Bundle datos = this.getIntent().getBundleExtra(PARAMS);
+        datos = this.getIntent().getBundleExtra(PARAMS);
 
         Log.e("DatosEnviar", datos.toString());
+
+        tvtitulo.setText("Resumen de gestión");
+
+        nombre = datos.getString(NOMBRE);
+
 
         if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
             mapGestion.setVisibility(View.GONE);
@@ -301,7 +330,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     }
                 }
                 else {
-                    Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, R.string.not_found, Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
@@ -369,12 +398,12 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     }
                 }
                 else {
-                    Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, R.string.not_found, Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
             else{
-                Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.not_found, Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -417,7 +446,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
             }
         }
         else{ //No hay información
-            Toast.makeText(ctx, "No se encontraron datos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, R.string.not_found, Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -432,6 +461,15 @@ public class VistaPreviaGestion extends AppCompatActivity {
         success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         success.show();
+
+        NoDetalle.setVisibility(View.GONE);
+        etNoDetalle.setVisibility(View.GONE);
+        EstusPago.setVisibility(View.GONE);
+        etEstatusPago.setVisibility(View.GONE);
+        etNuevoTelefono.setVisibility(View.GONE);
+        NuevoTelefono.setVisibility(View.GONE);
+        Firma.setVisibility(View.GONE);
+        ivFirma.setVisibility(View.GONE);
 
         btnCancelar.setOnClickListener(btnCancelar_OnClick);
         btnConfirmar.setOnClickListener(btnConfirmar_OnClick);
@@ -488,14 +526,108 @@ public class VistaPreviaGestion extends AppCompatActivity {
     private View.OnClickListener btnConfirmar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            String fechaFin = Miscellaneous.ObtenerFecha(TIMESTAMP);
+            tvtitulo.setText(nombre);
+            tvSubtitulo.setText("Fin Gestión "+fechaFin);
+
+            /*GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+                Bitmap bitmap;
+
+                @Override
+                public void onSnapshotReady(Bitmap snapshot) {
+                    // TODO Auto-generated method stub
+                    bitmap = snapshot;
+                    try {
+                        FileOutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/" + Miscellaneous.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg");
+
+                        // above "/mnt ..... png" => is a storage path (where image will be stored) + name of image you can customize as per your Requirement
+
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            mMap.snapshot(callback);*/
+            String name = "";
+            File img = null;
+
+            try {
+                //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + Miscellaneous.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
+                String mPath = ROOT_PATH+"Resumen";
+
+                // create bitmap screen capture
+                View v1 = getWindow().getDecorView().getRootView();
+                v1.setDrawingCacheEnabled(true);
+                Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                v1.setDrawingCacheEnabled(false);
+
+               /* View vCanvas = new CustomCanvasResumen(ctx, Miscellaneous.ObtenerFecha(TIMESTAMP), "Alejandro Isaias Lopez");
+
+                Canvas canvas = new Canvas(bitmap);
+                canvas.drawBitmap(bitmap, 0, 0, null);
+
+                vCanvas.draw(canvas);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);*/
+
+                File directory = new File(mPath);
+                if(!directory.exists())
+                {
+                    Log.v("Carpeta", "No existe Resumen");
+                    directory.mkdir();
+                }
+
+                name = UUID.randomUUID().toString() + ".jpg";
+                img = new File(mPath+"/"+name);
+
+
+                FileOutputStream outputStream = new FileOutputStream(img);
+                int quality = 100;
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                outputStream.flush();
+                outputStream.close();
+            } catch (Throwable e) {
+                // Several error may come out with file handling or DOM
+                e.printStackTrace();
+            }
+
+
+            Uri imgUri = Uri.parse(img.getPath());
+            Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+            whatsappIntent.setType("text/plain");
+            whatsappIntent.setPackage("com.whatsapp");
+            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+            whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+            whatsappIntent.setType("image/jpeg");
+            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            try {
+                ctx.startActivity(whatsappIntent);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+            }
+
             Intent i_result = new Intent();
             if (etEstatusPago.getVisibility() == View.VISIBLE){
                 i_result.putExtra(ESTATUS, etEstatusPago.getText().toString().trim().toUpperCase());
                 i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
                 i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
             }
+
+            if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
+                i_result.putExtra(UBICACION, false);
+            }
+
+            i_result.putExtra(FECHA_FIN, fechaFin);
+            i_result.putExtra(NOMBRE, name);
             i_result.putExtra(RESPONSE, true);
             setResult(RESULT_OK, i_result);
+
+
             finish();
         }
     };

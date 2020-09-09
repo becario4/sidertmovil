@@ -11,6 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_APK;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CATALOGOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CODIGOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
@@ -58,6 +59,10 @@ public class RetrofitClient {
                 break;
             case CONTROLLER_MOVIL:
                 base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_MOVIL;
+                //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_MOVIL;
+                break;
+            case CONTROLLER_APK:
+                base_url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_APK;
                 //base_url = WebServicesRoutes.BASE_URL + WebServicesRoutes.CONTROLLER_MOVIL;
                 break;
             case CONTROLLER_API:

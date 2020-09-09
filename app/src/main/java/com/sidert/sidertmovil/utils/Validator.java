@@ -96,7 +96,7 @@ public class Validator {
                     break;
                 case CREDITO:
                     pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(etx.getText().toString().replace(",",""));
                     if(!matcher.matches()) {
                         etx.setError(MENSAJE_MONTO_CREDITO);
                         error = true;
@@ -141,7 +141,7 @@ public class Validator {
                     break;
                 case ONLY_NUMBER:
                     pattern = Pattern.compile(PATTERN_ONLY_NUMBER);
-                    matcher = pattern.matcher(etx.getText().toString());
+                    matcher = pattern.matcher(etx.getText().toString().replace(",",""));
                     if(!matcher.matches()) {
                         etx.setError(ONLY_NUMBER_MESSAGE);
                         error = true;

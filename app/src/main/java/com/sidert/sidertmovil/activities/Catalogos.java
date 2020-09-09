@@ -23,6 +23,13 @@ import com.sidert.sidertmovil.utils.Constants;
 
 import java.util.ArrayList;
 
+import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
+import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
+import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
+import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
+import static com.sidert.sidertmovil.utils.Constants.SECTORES;
+
 public class Catalogos extends AppCompatActivity {
 
     public Context ctx;
@@ -55,8 +62,10 @@ public class Catalogos extends AppCompatActivity {
             tipo_catalogo = data.getString(Constants.CATALOGO);
             extra = data.getString(Constants.EXTRA,"");
             request_code = data.getInt(Constants.REQUEST_CODE);
-            if (!extra.isEmpty())
+            if (!extra.isEmpty() && tipo_catalogo.equals(COLONIAS))
                 getCatalogo(" WHERE cp = '"+extra+"'");
+            else if(!extra.isEmpty() && tipo_catalogo.equals(LOCALIDADES))
+                getCatalogo(" WHERE id_municipio = '"+extra+"'");
             else
                 getCatalogo("");
         } else {
@@ -68,8 +77,8 @@ public class Catalogos extends AppCompatActivity {
         Cursor row;
         ArrayList<ModeloCatalogoGral> catalogo = new ArrayList<>();
         switch (tipo_catalogo){
-            case Constants.ESTADOS:
-                row = dBhelper.getRecords(Constants.ESTADOS,value," ORDER BY estado_nombre ASC", null);
+            case ESTADOS:
+                row = dBhelper.getRecords(ESTADOS,value," ORDER BY estado_nombre ASC", null);
                 if (row.getCount() > 0){
                     row.moveToFirst();
                     for (int i = 0; i < row.getCount(); i++){
@@ -77,14 +86,14 @@ public class Catalogos extends AppCompatActivity {
                         mCatalogoGral.setId(row.getString(1));
                         mCatalogoGral.setNombre(row.getString(2));
                         mCatalogoGral.setExtra("");
-                        mCatalogoGral.setCatalogo(Constants.ESTADOS);
+                        mCatalogoGral.setCatalogo(ESTADOS);
                         catalogo.add(mCatalogoGral);
                         row.moveToNext();
                     }
                 }
                 break;
-            case Constants.OCUPACIONES:
-                row = dBhelper.getRecords(Constants.OCUPACIONES,value," ORDER BY ocupacion_nombre ASC", null);
+            case OCUPACIONES:
+                row = dBhelper.getRecords(OCUPACIONES,value," ORDER BY ocupacion_nombre ASC", null);
                 if (row.getCount() > 0){
                     row.moveToFirst();
                     for (int i = 0; i < row.getCount(); i++){
@@ -92,7 +101,7 @@ public class Catalogos extends AppCompatActivity {
                         mCatalogoGral.setId(row.getString(1));
                         mCatalogoGral.setNombre(row.getString(2));
                         mCatalogoGral.setExtra(row.getString(5));
-                        mCatalogoGral.setCatalogo(Constants.OCUPACIONES);
+                        mCatalogoGral.setCatalogo(OCUPACIONES);
                         catalogo.add(mCatalogoGral);
                         row.moveToNext();
                     }
@@ -113,8 +122,8 @@ public class Catalogos extends AppCompatActivity {
                     }
                 }
                 break;
-            case Constants.SECTORES:
-                row = dBhelper.getRecords(Constants.SECTORES,value," ORDER BY sector_nombre ASC", null);
+            case LOCALIDADES:
+                row = dBhelper.getRecords(LOCALIDADES,value," ORDER BY id_municipio ASC", null);
                 if (row.getCount() > 0){
                     row.moveToFirst();
                     for (int i = 0; i < row.getCount(); i++){
@@ -122,7 +131,22 @@ public class Catalogos extends AppCompatActivity {
                         mCatalogoGral.setId(row.getString(1));
                         mCatalogoGral.setNombre(row.getString(2));
                         mCatalogoGral.setExtra("");
-                        mCatalogoGral.setCatalogo(Constants.SECTORES);
+                        mCatalogoGral.setCatalogo(LOCALIDADES);
+                        catalogo.add(mCatalogoGral);
+                        row.moveToNext();
+                    }
+                }
+                break;
+            case SECTORES:
+                row = dBhelper.getRecords(SECTORES,value," ORDER BY sector_nombre ASC", null);
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+                    for (int i = 0; i < row.getCount(); i++){
+                        ModeloCatalogoGral mCatalogoGral = new ModeloCatalogoGral();
+                        mCatalogoGral.setId(row.getString(1));
+                        mCatalogoGral.setNombre(row.getString(2));
+                        mCatalogoGral.setExtra("");
+                        mCatalogoGral.setCatalogo(SECTORES);
                         catalogo.add(mCatalogoGral);
                         row.moveToNext();
                     }
@@ -135,11 +159,12 @@ public class Catalogos extends AppCompatActivity {
             public void FichaOnClick(ModeloCatalogoGral item) {
                 Intent data = new Intent();
                 switch (item.getCatalogo()){
-                    case Constants.ESTADOS:
-                    case Constants.OCUPACIONES:
-                    case Constants.COLONIAS:
-                    case Constants.SECTORES:
-                        data.putExtra(Constants.ITEM, item);
+                    case ESTADOS:
+                    case OCUPACIONES:
+                    case COLONIAS:
+                    case SECTORES:
+                    case LOCALIDADES:
+                        data.putExtra(ITEM, item);
                         setResult(request_code, data);
                         finish();
                         break;
@@ -173,16 +198,19 @@ public class Catalogos extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 switch (tipo_catalogo){
-                    case Constants.ESTADOS:
+                    case ESTADOS:
                         getCatalogo(" WHERE estado_nombre like '%"+newText+"%'");
                         break;
-                    case Constants.OCUPACIONES:
+                    case OCUPACIONES:
                         getCatalogo(" WHERE ocupacion_nombre like '%"+newText+"%'");
                         break;
                     case Constants.COLONIAS:
                         getCatalogo(" WHERE colonia_nombre like '%"+newText+"%' AND cp = '"+extra+"'");
                         break;
-                    case Constants.SECTORES:
+                    case LOCALIDADES:
+                        getCatalogo(" WHERE nombre like '%"+newText+"%' AND id_municipio = '"+extra+"'");
+                        break;
+                    case SECTORES:
                         getCatalogo(" WHERE sector_nombre like '%"+newText+"%'");
                         break;
                 }

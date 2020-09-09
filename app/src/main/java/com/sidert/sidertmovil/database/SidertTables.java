@@ -4,92 +4,7 @@ import android.provider.BaseColumns;
 
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
-import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
-import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
-import static com.sidert.sidertmovil.utils.Constants.FICHAS;
-import static com.sidert.sidertmovil.utils.Constants.FICHAS_T;
-import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION;
-import static com.sidert.sidertmovil.utils.Constants.GEOLOCALIZACION_T;
-import static com.sidert.sidertmovil.utils.Constants.GPO;
-import static com.sidert.sidertmovil.utils.Constants.GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.IDENTIFICACIONES;
-import static com.sidert.sidertmovil.utils.Constants.IND;
-import static com.sidert.sidertmovil.utils.Constants.IND_T;
-import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT;
-import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT_T;
-import static com.sidert.sidertmovil.utils.Constants.LOG_ASESSOR;
-import static com.sidert.sidertmovil.utils.Constants.LOG_ASESSOR_T;
-import static com.sidert.sidertmovil.utils.Constants.LOG_MANAGER;
-import static com.sidert.sidertmovil.utils.Constants.LOG_MANAGER_T;
-import static com.sidert.sidertmovil.utils.Constants.MUNICIPIOS;
-import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
-import static com.sidert.sidertmovil.utils.Constants.SECTORES;
-import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
-import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_IND;
-import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.STATUS_FICHAS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PLAZOS_PRESTAMOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VENCIDA;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VENCIDA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REPORTE_SESIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_V_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SOPORTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
-import static com.sidert.sidertmovil.utils.Constants.TICKETS;
+import static com.sidert.sidertmovil.utils.Constants.*;
 
 public class SidertTables {
 
@@ -274,30 +189,23 @@ public class SidertTables {
                 + SidertEntry.SERIE_ID          + " TEXT,"
                 + SidertEntry.TIMESTAMP         + " TEXT)";
 
-        static final String CREATE_TABLE_SOLICITUDES_T = "CREATE TABLE solicitudes_t ( " +
-                "id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "serie_id TEXT, " +
-                "tipo_solicitud INTEGER," +
-                "estatus INTEGER, " +
-                "id_originacion INTEGER, " +
-                "nombre TEXT, " +
-                "fecha_inicio TEXT, " +
-                "fecha_termino TEXT, " +
-                "fecha_envio TEXT, " +
-                "fecha_dispositivo TEXT, " +
-                "fecha_guardado TEXT)";
-
-        static final String CREATE_TABLE_DATOS_CREDITO_IND_T = "CREATE TABLE datos_credito_ind_t (" +
-                "id_credito INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_solicitud INTEGER," +
-                "plazo TEXT," +
-                "periodicidad TEXT," +
-                "fecha_desembolso TEXT," +
-                "dia_desembolso TEXT," +
-                "hora_visita TEXT," +
-                "monto_prestamo TEXT," +
-                "destino TEXT," +
-                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TABLE_DIRECCIONES = "CREATE TABLE " + TBL_DIRECCIONES + " (" +
+                "id_direccion INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "tipo_direccion TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "calle TEXT," +
+                "num_exterior TEXT," +
+                "num_interior TEXT," +
+                "lote TEXT," +
+                "manzana TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "ciudad TEXT," +
+                "localidad TEXT," +
+                "municipio TEXT," +
+                "estado TEXT)";
 
         static final String CREATE_TBL_SOLICITUDES = "CREATE TABLE " + TBL_SOLICITUDES + " (" +
                 "id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -349,15 +257,7 @@ public class SidertTables {
                 "tipo_vivienda TEXT," +
                 "parentesco TEXT," +
                 "otro_tipo_vivienda TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
+                "direccion_id TEXT," +
                 "tel_casa TEXT," +
                 "tel_celular TEXT," +
                 "tel_mensajes TEXT," +
@@ -365,6 +265,7 @@ public class SidertTables {
                 "tiempo_vivir_sitio INTEGER," +
                 "dependientes TEXT," +
                 "medio_contacto TEXT," +
+                "estado_cuenta TEXT," +
                 "email TEXT," +
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
@@ -379,14 +280,9 @@ public class SidertTables {
                 "nombre TEXT," +
                 "paterno TEXT," +
                 "materno TEXT," +
+                "nacionalidad TEXT," +
                 "ocupacion TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
+                "direccion_id TEXT," +
                 "ing_mensual TEXT," +
                 "gasto_mensual TEXT," +
                 "tel_casa TEXT," +
@@ -406,15 +302,8 @@ public class SidertTables {
                 "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "nombre TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
+                "direccion_id TEXT," +
+                "ocupacion TEXT," +
                 "actividad_economica TEXT," +
                 "destino_credito TEXT," +
                 "otro_destino TEXT," +
@@ -451,25 +340,21 @@ public class SidertTables {
                 "rfc TEXT," +
                 "curp TEXT," +
                 "curp_digito TEXT," +
+                "parentesco_cliente TEXT," +
                 "tipo_identificacion TEXT," +
                 "no_identificacion TEXT," +
                 "ocupacion TEXT," +
                 "actividad_economica TEXT," +
                 "destino_credito TEXT," +
                 "otro_destino TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
+                "direccion_id TEXT," +
                 "tipo_vivienda TEXT," +
                 "nombre_titular TEXT," +
                 "parentesco TEXT," +
+                "caracteristicas_domicilio TEXT," +
                 "antigueda INTEGER," +
+                "tiene_negocio INTEGER," +
+                "nombre_negocio TEXT," +
                 "ing_mensual TEXT," +
                 "ing_otros TEXT," +
                 "gasto_semanal TEXT," +
@@ -483,8 +368,12 @@ public class SidertTables {
                 "otro_medio_pago TEXT," +
                 "monto_maximo TEXT," +
                 "horario_localizacion TEXT," +
+                "activos_observables TEXT," +
                 "tel_casa TEXT," +
                 "tel_celular TEXT," +
+                "tel_mensajes TEXT," +
+                "tel_trabajo TEXT," +
+                "email TEXT," +
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "firma TEXT," +
@@ -492,17 +381,33 @@ public class SidertTables {
                 "comentario_rechazo TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_REFERENCIA_IND = "CREATE TABLE datos_referencia_ind_t (" +
+        static final String CREATE_TBL_REFERENCIA_IND = "CREATE TABLE "+TBL_REFERENCIA_IND+" (" +
                 "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "nombre TEXT," +
                 "paterno TEXT," +
                 "materno TEXT," +
-                "calle TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
-                "municipio TEXT," +
+                "fecha_nacimiento TEXT," +
+                "direccion_id TEXT," +
                 "tel_celular TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_CROQUIS_IND = "CREATE TABLE " + TBL_CROQUIS_IND + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "calle_principal TEXT," +
+                "lateral_uno TEXT," +
+                "lateral_dos TEXT," +
+                "calle_trasera TEXT," +
+                "referencias TEXT," +
+                "estatus_completado INTEGER)";
+        
+        static final String CREATE_TBL_POLITICAS_PLD_IND = "CREATE TABLE " + TBL_POLITICAS_PLD_IND + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "propietario_real INTEGER," +
+                "proveedor_recursos INTEGER," +
+                "persona_politica INTEGER," +
                 "estatus_completado INTEGER)";
 
         static final String CREATE_TBL_DOCUMENTOS = "CREATE TABLE " + TBL_DOCUMENTOS + " (" +
@@ -516,109 +421,8 @@ public class SidertTables {
                 "firma_asesor TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TABLE_NEGOCIO_IND_T = "CREATE TABLE datos_negocio_ind_t (" +
-                "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_solicitud INTEGER," +
-                "nombre TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
-                "actividad_economica TEXT," +
-                "antiguedad INTEGER," +
-                "ing_mensual TEXT," +
-                "ing_otros TEXT," +
-                "gasto_semanal TEXT," +
-                "gasto_agua TEXT," +
-                "gasto_luz TEXT," +
-                "gasto_telefono TEXT," +
-                "gasto_renta TEXT," +
-                "gasto_otros TEXT," +
-                "capacidad_pago TEXT," +
-                "dias_venta TEXT," +
-                "foto_fachada TEXT," +
-                "ref_domiciliaria TEXT," +
-                "estatus_completado INTEGER)";
-        
-        static final String CREATE_TABLE_AVAL_IND_T = "CREATE TABLE datos_aval_ind_t (" +
-                "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_solicitud INTEGER," +
-                "nombre TEXT," +
-                "paterno TEXT," +
-                "materno TEXT," +
-                "fecha_nacimiento TEXT," +
-                "edad TEXT," +
-                "genero INTEGER," +
-                "estado_nacimiento TEXT," +
-                "rfc TEXT," +
-                "homoclave TEXT," +
-                "curp TEXT," +
-                "curp_digito_veri TEXT," +
-                "tipo_identificacion TEXT," +
-                "no_identificacion TEXT," +
-                "ocupacion TEXT," +
-                "actividad_economica TEXT," +
-                "latitud TEXT," +
-                "longitud TEXT," +
-                "calle TEXT," +
-                "no_exterior TEXT," +
-                "no_interior TEXT," +
-                "manzana TEXT," +
-                "lote TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
-                "tipo_vivienda TEXT," +
-                "nombre_titular TEXT," +
-                "parentesco TEXT," +
-                "ing_mensual TEXT," +
-                "ing_otros TEXT," +
-                "gasto_semanal TEXT," +
-                "gasto_agua TEXT," +
-                "gasto_luz TEXT," +
-                "gasto_telefono TEXT," +
-                "gasto_renta TEXT," +
-                "gasto_otros TEXT," +
-                "horario_localizacion TEXT," +
-                "antiguedad INTEGER," +
-                "tel_casa TEXT," +
-                "tel_celular TEXT," +
-                "foto_fachada TEXT," +
-                "ref_domiciliaria TEXT," +
-                "firma TEXT," +
-                "estatus_rechazo INTEGER," +
-                "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
-        
-        static final String CREATE_TABLE_REFERENCIA_IND_T = "CREATE TABLE datos_referencia_ind_t (" +
-                "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_solicitud INTEGER," +
-                "nombre TEXT," +
-                "paterno TEXT," +
-                "materno TEXT," +
-                "calle TEXT," +
-                "cp TEXT," +
-                "colonia TEXT," +
-                "municipio TEXT," +
-                "tel_celular TEXT," +
-                "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_DOCUMENTOS_CLIENTES_T = "CREATE TABLE documentos_t (" +
-                "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_solicitud INTEGER," +
-                "ine_frontal TEXT," +
-                "ine_reverso TEXT," +
-                "curp TEXT," +
-                "comprobante TEXT," +
-                "codigo_barras TEXT," +
-                "firma_asesor TEXT," +
-                "estatus_completado INTEGER)";
-
-        static final String CREATE_TBL_DATOS_CREDITO_GPO_T = "CREATE TABLE datos_credito_gpo_t (" +
+        static final String CREATE_TBL_DATOS_CREDITO_GPO = "CREATE TABLE "+ TBL_CREDITO_GPO+" (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
                 "nombre_grupo TEXT," +
@@ -629,7 +433,7 @@ public class SidertTables {
                 "hora_visita TEXT," +
                 "estatus_completado INTEGER)";
         
-        static final String CREATE_TBL_INTEGRANTES_GPO_T = "CREATE TABLE datos_integrantes_gpo_t (" +
+        static final String CREATE_TBL_INTEGRANTES_GPO_T = "CREATE TABLE " + TBL_INTEGRANTES_GPO + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_credito INTEGER," +
                 "cargo INTEGER," +
@@ -646,21 +450,24 @@ public class SidertTables {
                 "tipo_identificacion TEXT," +
                 "no_identificacion TEXT," +
                 "nivel_estudio TEXT," +
+                "ocupacion TEXT," +
                 "estado_civil TEXT," +
                 "bienes INTEGER," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "id_solicitud_integrante INTEGER)";
         
-        static final String CREATE_TBL_TELEFONOS_INTEGRANTE_T = "CREATE TABLE telefonos_integrante_t (" +
+        static final String CREATE_TBL_TELEFONOS_INTEGRANTE_T = "CREATE TABLE "+TBL_TELEFONOS_INTEGRANTE+" (" +
                 "id_telefonico INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
                 "tel_casa TEXT," +
                 "tel_celular TEXT," +
                 "tel_mensaje TEXT," +
+                "tel_trabajo TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_DOMICILIO_INTEGRANTE_T = "CREATE TABLE domicilio_integrante_t (" +
+        static final String CREATE_TBL_DOMICILIO_INTEGRANTE_T = "CREATE TABLE "+TBL_DOMICILIO_INTEGRANTE+" (" +
                 "id_domicilio INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
                 "latitud TEXT," +
@@ -672,15 +479,20 @@ public class SidertTables {
                 "lote TEXT," +
                 "cp TEXT," +
                 "colonia TEXT," +
+                "ciudad TEXT," +
+                "localidad TEXT," +
+                "municipio TEXT," +
+                "estado TEXT," +
                 "tipo_vivienda TEXT," +
                 "parentesco TEXT," +
                 "otro_tipo_vivienda TEXT," +
                 "tiempo_vivir_sitio TEXT," +
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "dependientes TEXT)";
         
-        static final String CREATE_TBL_NEGOCIO_INTEGRANTE_T = "CREATE TABLE negocio_integrante_t (" +
+        static final String CREATE_TBL_NEGOCIO_INTEGRANTE_T = "CREATE TABLE "+TBL_NEGOCIO_INTEGRANTE+" (" +
                 "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
                 "nombre TEXT," +
@@ -693,41 +505,87 @@ public class SidertTables {
                 "lote TEXT," +
                 "cp TEXT," +
                 "colonia TEXT," +
+                "ciudad TEXT," +
+                "localidad TEXT," +
+                "municipio TEXT," +
+                "estado TEXT," +
+                "destino_credito TEXT," +
+                "otro_destino_credito TEXT," +
+                "ocupacion TEXT," +
                 "actividad_economica TEXT," +
                 "antiguedad TEXT," +
                 "ing_mensual TEXT," +
                 "ing_otros TEXT," +
                 "gasto_semanal TEXT," +
                 "capacidad_pago TEXT," +
+                "monto_maximo TEXT," +
+                "medios_pago TEXT," +
+                "otro_medio_pago TEXT," +
+                "num_ope_mensuales INTEGER," +
+                "num_ope_mensuales_efectivo INTEGER," +
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_CONYUGE_INTEGRANTE_T = "CREATE TABLE conyuge_integrante_t (" +
+        static final String CREATE_TBL_CONYUGE_INTEGRANTE_T = "CREATE TABLE "+TBL_CONYUGE_INTEGRANTE+" (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
                 "nombre TEXT," +
                 "paterno TEXT," +
                 "materno TEXT," +
+                "nacionalidad TEXT," +
                 "ocupacion TEXT," +
+                "calle TEXT," +
+                "no_exterior TEXT," +
+                "no_interior TEXT," +
+                "manzana TEXT," +
+                "lote TEXT," +
+                "cp TEXT," +
+                "colonia TEXT," +
+                "ciudad TEXT," +
+                "localidad TEXT," +
+                "municipio TEXT," +
+                "estado TEXT," +
+                "ingresos_mensual TEXT," +
+                "gasto_mensual TEXT," +
                 "tel_celular TEXT," +
-                "ingresos TEXT," +
+                "tel_trabajo TEXT," +
                 "estatus_completado INTEGER)";
                 
-        static final String CREATE_TBL_OTROS_DATOS_INTEGRANTE_T = "CREATE TABLE otros_datos_integrante_t (" +
+        static final String CREATE_TBL_OTROS_DATOS_INTEGRANTE = "CREATE TABLE "+TBL_OTROS_DATOS_INTEGRANTE+" (" +
                 "id_otro INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
+                "clasificacion_riesgo TEXT," +
                 "medio_contacto TEXT," +
                 "email TEXT," +
+                "estado_cuenta TEXT," +
                 "estatus_integrante INTEGER," +
                 "monto_solicitado TEXT," +
                 "casa_reunion INTEGER," +
                 "firma TEXT," +
                 "estatus_completado INTEGER)";
 
-        static final String CREATE_TBL_DOCUMENTOS_INTEGRANTE_T = "CREATE TABLE documentos_integrante_t (" +
+        static final String CREATE_TBL_CROQUIS_GPO = "CREATE TABLE " + TBL_CROQUIS_GPO + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "calle_principal TEXT," +
+                "lateral_uno TEXT," +
+                "lateral_dos TEXT," +
+                "calle_trasera TEXT," +
+                "referencias TEXT," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_POLITICAS_INTEGRANTE = "CREATE TABLE "+TBL_POLITICAS_PLD_INTEGRANTE+" (" +
+                "id_politica INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_integrante INTEGER," +
+                "propietario_real INTEGER," +
+                "proveedor_recursos INTEGER," +
+                "persona_politica INTEGER," +
+                "estatus_completado INTEGER)";
+
+        static final String CREATE_TBL_DOCUMENTOS_INTEGRANTE_T = "CREATE TABLE "+TBL_DOCUMENTOS_INTEGRANTE+" (" +
                 "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_integrante INTEGER," +
                 "ine_frontal TEXT," +
@@ -775,7 +633,8 @@ public class SidertTables {
                 "estatus TEXT DEFAULT '1'," +
                 "cc TEXT DEFAULT ''," +
                 "agf TEXT DEFAULT ''," +
-                "curp TEXT DEFAULT '')";
+                "curp TEXT DEFAULT ''," +
+                "dias_atraso TEXT DEFAULT '0')";
 
         public static final String CREATE_TBL_CARTERA_GPO_T = "CREATE TABLE " + TBL_CARTERA_GPO_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -797,7 +656,8 @@ public class SidertTables {
                 "geolocalizadas TEXT," +
                 "estatus TEXT DEFAULT '1',"+
                 "cc TEXT DEFAULT ''," +
-                "agf TEXT DEFAULT '')";
+                "agf TEXT DEFAULT ''," +
+                "dias_atraso TEXT DEFAULT '0')";
         
         public static final String CREATE_TBL_PRESTAMOS_IND_T = "CREATE TABLE " + TBL_PRESTAMOS_IND_T + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1228,6 +1088,13 @@ public class SidertTables {
                 "estatus_ticket TEXT," +
                 "estatus_envio INTEGER)";
 
+        public static final String CREATE_TBL_RESUMENES_GESTION = "CREATE TABLE " + TBL_RESUMENES_GESTION + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_respuesta TEXT," +
+                "nombre_resumen TEXT," +
+                "nombre_cliente TEXT," +
+                "tipo_gestion TEXT)";
+
         //================  TABLAS GENERALES  ===================================
 
         static final String CREATE_TABLE_ESTADOS = "CREATE TABLE " + TABLE_ESTADOS + "("
@@ -1267,6 +1134,52 @@ public class SidertTables {
                 + SidertEntry._ID                    + " INTEGER PRIMARY KEY,"
                 + SidertEntry.IDENTIFICACION_ID      + " INTEGER,"
                 + SidertEntry.IDENTIFICACION_NOMBRE  + " TEXT)";
+        
+        static final String CREATE_TABLE_LOCALIDADES = "CREATE TABLE " + LOCALIDADES + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_localidad INTEGER," +
+                "nombre TEXT," +
+                "id_municipio INTEGER)";
+
+        static final String CREATE_TABLE_IDENTIFICACIONES_TIPO = "CREATE TABLE " + TBL_IDENTIFICACIONES_TIPO + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_VIVIENDA_TIPOS = "CREATE TABLE " + TBL_VIVIENDA_TIPOS + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_ESTADOS_CIVILES = "CREATE TABLE " + TBL_ESTADOS_CIVILES + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_NIVELES_ESTUDIOS = "CREATE TABLE " + TBL_NIVELES_ESTUDIOS + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_MEDIOS_PAGO_ORIG = "CREATE TABLE " + TBL_MEDIOS_PAGO_ORI + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_PARENTESCOS = "CREATE TABLE " + TBL_PARENTESCOS + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_DESTINOS_CREDITO = "CREATE TABLE " + TBL_DESTINOS_CREDITO + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
+
+        static final String CREATE_TABLE_MEDIOS_CONTACTO = "CREATE TABLE " + TBL_MEDIOS_CONTACTO + " (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id INTEGER," +
+                "nombre TEXT)";
         
         
         static final String CREATE_TBL_CATEGORIA_TICKETS = "CREATE TABLE " + TICKETS + " (" +
@@ -1504,6 +1417,23 @@ public class SidertTables {
         static final String ADD_CURP_CARTERA = "ALTER TABLE " + TBL_CARTERA_IND_T +
                 " ADD COLUMN curp" +
                 " TEXT DEFAULT ''";
+
+        static final String ADD_DIAS_ATRASO_CARTERA_IND = "ALTER TABLE " + TBL_CARTERA_IND_T +
+                " ADD COLUMN dias_atraso" +
+                " TEXT DEFAULT '0'";
+
+        static final String ADD_DIAS_ATRASO_CARTERA_GPO = "ALTER TABLE " + TBL_CARTERA_GPO_T +
+                " ADD COLUMN dias_atraso" +
+                " TEXT DEFAULT '0'";
+
+        static final String ADD_ID_SOLICITUD_INTEGRANTE = "ALTER TABLE " + TBL_INTEGRANTES_GPO +
+                " ADD COLUMN id_solicitud_integrante" +
+                " TEXT DEFAULT 0";
+
+        static final String ADD_DEPENDIENTES_ECONOMICOS_INTEGRANTE = "ALTER TABLE " + TBL_DOMICILIO_INTEGRANTE +
+                " ADD COLUMN dependientes" +
+                " TEXT DEFAULT ''";
+
 
     }
 }

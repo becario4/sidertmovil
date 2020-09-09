@@ -50,7 +50,7 @@ public class orders_fragment extends Fragment {
             @Override
             public void initTabLayout(TabLayout Tabs) {
                 final TabsRecentsAdapter adapter = new TabsRecentsAdapter(getChildFragmentManager());
-                adapter.addFragment(new fichas_pendientes_fragment(), "Cartera");
+                adapter.addFragment(new fichas_pendientes_fragment(), ctx.getString(R.string.cartera));
                 adapter.addFragment(new route_fragment(), ctx.getString(R.string.route));
                 adapter.addFragment(new answers_fragment(), ctx.getString(R.string.answers));
                 mViewPager.setAdapter(adapter);
@@ -67,11 +67,11 @@ public class orders_fragment extends Fragment {
                 TextView tvTituloDos = mTabs.getTabAt(1).getCustomView().findViewById(R.id.tvTitulo);
                 TextView tvCountDos = mTabs.getTabAt(1).getCustomView().findViewById(R.id.tvCount);
                 TextView tvTituloTres = mTabs.getTabAt(2).getCustomView().findViewById(R.id.tvTitulo);
-                tvTituloUno.setText("Cartera");
+                tvTituloUno.setText(ctx.getString(R.string.cartera));
                 tvCountUno.setText("0");
-                tvTituloDos.setText("Ruta");
+                tvTituloDos.setText(ctx.getString(R.string.route));
                 tvCountDos.setText("0");
-                tvTituloTres.setText("Contestadas");
+                tvTituloTres.setText(ctx.getString(R.string.answers));
 
             }
         });

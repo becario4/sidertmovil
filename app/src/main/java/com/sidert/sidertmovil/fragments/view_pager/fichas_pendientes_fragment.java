@@ -182,8 +182,9 @@ public class fichas_pendientes_fragment extends Fragment{
         Cursor row;
         _m_carteraGral = new ArrayList<>();
 
-        String query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia, COALESCE(pi.tipo_cartera,'NO ENCONTRADO'), COALESCE(ri.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T +" AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id is null AND pi.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND ci.estatus = '1' UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, COALESCE(pg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rg.estatus, -1) AS parcial FROM "+TBL_CARTERA_GPO_T +" AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T +" AS rg ON pg.id_prestamo = rg.id_prestamo WHERE rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER by rg2._id DESC LIMIT 1) OR rg._id IS null AND pg.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND cg.estatus = '1' UNION SELECT cvi.id_cartera, cvi.nombre, cvi.direccion, cvi.is_ruta, cvi.ruta_obligado, cvi.dia, '' as tesorera, cvi.asesor_nombre, 'INDIVIDUAL' AS tipo, cvi.colonia, COALESCE(pvi.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvi.estatus, -1) AS parcial FROM " + TBL_CARTERA_IND_T + " AS cvi LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON cvi.id_cartera = pvi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_V_T + " AS rvi ON pvi.id_prestamo = rvi.id_prestamo WHERE rvi._id = (SELECT rvi2._id FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi2 WHERE rvi2.id_prestamo = pvi.id_prestamo ORDER BY rvi2._id DESC LIMIT 1) OR rvi._id is null AND pvi.tipo_cartera IN ('VENCIDA') AND cvi.estatus = '1' UNION SELECT cvg.id_cartera,cvg.nombre, cvg.direccion,cvg.is_ruta, cvg.ruta_obligado,cvg.dia,cvg.tesorera,cvg.asesor_nombre,'GRUPAL' AS tipo, cvg.colonia, COALESCE(pvg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvg.estatus, -1) AS parcial FROM " + TBL_CARTERA_GPO_T + " AS cvg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON cvg.id_cartera = pvg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_INTEGRANTE_T +" AS rvg ON pvg.id_prestamo = rvg.id_prestamo WHERE rvg._id = (SELECT rvg2._id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg2 WHERE rvg2.id_prestamo = pvg.id_prestamo ORDER by rvg2._id DESC LIMIT 1) OR rvg._id IS null AND pvg.tipo_cartera IN ('VENCIDA') AND cvg.estatus = '1') AS cartera "+where;
+        String query = "SELECT * FROM (SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,'' as tesorera,asesor_nombre,'INDIVIDUAL' AS tipo, colonia, COALESCE(pi.tipo_cartera,'NO ENCONTRADO'), COALESCE(ri.estatus, -1) AS parcial, ci.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T +" AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id is null AND pi.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND ci.estatus = '1' UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, COALESCE(pg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rg.estatus, -1) AS parcial, cg.dias_atraso FROM "+TBL_CARTERA_GPO_T +" AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T +" AS rg ON pg.id_prestamo = rg.id_prestamo WHERE rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER by rg2._id DESC LIMIT 1) OR rg._id IS null AND pg.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND cg.estatus = '1' UNION SELECT cvi.id_cartera, cvi.nombre, cvi.direccion, cvi.is_ruta, cvi.ruta_obligado, cvi.dia, '' as tesorera, cvi.asesor_nombre, 'INDIVIDUAL' AS tipo, cvi.colonia, COALESCE(pvi.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvi.estatus, -1) AS parcial, cvi.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS cvi LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON cvi.id_cartera = pvi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_V_T + " AS rvi ON pvi.id_prestamo = rvi.id_prestamo WHERE rvi._id = (SELECT rvi2._id FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi2 WHERE rvi2.id_prestamo = pvi.id_prestamo ORDER BY rvi2._id DESC LIMIT 1) OR rvi._id is null AND pvi.tipo_cartera IN ('VENCIDA') AND cvi.estatus = '1' UNION SELECT cvg.id_cartera,cvg.nombre, cvg.direccion,cvg.is_ruta, cvg.ruta_obligado,cvg.dia,cvg.tesorera,cvg.asesor_nombre,'GRUPAL' AS tipo, cvg.colonia, COALESCE(pvg.tipo_cartera,'NO ENCONTRADO'), COALESCE(rvg.estatus, -1) AS parcial, cvg.dias_atraso FROM " + TBL_CARTERA_GPO_T + " AS cvg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON cvg.id_cartera = pvg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_INTEGRANTE_T +" AS rvg ON pvg.id_prestamo = rvg.id_prestamo WHERE rvg._id = (SELECT rvg2._id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg2 WHERE rvg2.id_prestamo = pvg.id_prestamo ORDER by rvg2._id DESC LIMIT 1) OR rvg._id IS null AND pvg.tipo_cartera IN ('VENCIDA') AND cvg.estatus = '1') AS cartera "+where+" GROUP BY id_cartera";
 
+        Log.e("QUERYCartera", query);
         row = db.rawQuery(query, null);
 
         parent.SetUpBagde(0, row.getCount());
@@ -193,7 +194,6 @@ public class fichas_pendientes_fragment extends Fragment{
         String[] dataColonia;
         if (row.getCount() > 0){
             row.moveToFirst();
-            //dataAsesor = new String[row.getCount()];
             List<String> nombre = new ArrayList<>();
             List<String> dia = new ArrayList<>();
             List<String> colonia = new ArrayList<>();
@@ -202,7 +202,6 @@ public class fichas_pendientes_fragment extends Fragment{
                 nombre.add(row.getString(1));
                 dia.add(row.getString(5));
                 colonia.add(row.getString(9));
-                //asesor.add(row.getString(7));
                 MCarteraGnral mCarteraGeneral = new MCarteraGnral();
                 mCarteraGeneral.setId_cliente(row.getString(0));
                 mCarteraGeneral.setTipo(row.getString(8));
@@ -214,13 +213,13 @@ public class fichas_pendientes_fragment extends Fragment{
                 mCarteraGeneral.setIs_obligatorio(row.getInt(4)==1);
                 mCarteraGeneral.setTipoPrestamo(row.getString(10));
                 mCarteraGeneral.setParcial(row.getInt(11));
+                mCarteraGeneral.setDiasMora(Miscellaneous.Rango(row.getInt(12)));
                 _m_carteraGral.add(mCarteraGeneral);
                 row.moveToNext();
             }
 
             dataNombre = Miscellaneous.RemoverRepetidos(nombre);
             dataColonia = Miscellaneous.RemoverRepetidos(colonia);
-            //dataAsesor = Miscellaneous.RemoverRepetidos(asesor);
             dataDia = Miscellaneous.RemoverRepetidos(dia);
 
             adapterNombre = new ArrayAdapter<>(ctx,
@@ -232,14 +231,8 @@ public class fichas_pendientes_fragment extends Fragment{
             adapterColonia = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataColonia);
 
-            /*adapterAsesor = new ArrayAdapter<>(ctx,
-                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);*/
         }
         else{
-            /*dataAsesor = new String[1];
-            dataAsesor[0] = "";
-            adapterAsesor = new ArrayAdapter<>(ctx,
-                    R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);*/
 
             dataNombre = new String[1];
             dataNombre[0] = "";

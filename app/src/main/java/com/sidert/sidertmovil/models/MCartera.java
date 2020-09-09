@@ -93,6 +93,10 @@ public class MCartera {
     @Expose
     private String curp;
 
+    @SerializedName("dias_atraso")
+    @Expose
+    private Integer diasAtraso;
+
     public Integer getId() {
         return id;
     }
@@ -267,5 +271,13 @@ public class MCartera {
 
     public void setCurp(String curp) {
         this.curp = curp;
+    }
+
+    public Integer getDiasAtraso() {
+        return diasAtraso;
+    }
+
+    public void setDiasAtraso(Integer diasAtraso) {
+        this.diasAtraso = diasAtraso;
     }
 }
