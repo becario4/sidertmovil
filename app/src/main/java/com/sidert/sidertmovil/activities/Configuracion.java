@@ -1,10 +1,12 @@
 package com.sidert.sidertmovil.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,6 +48,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.sidert.sidertmovil.utils.Constants.TIPO;
+
 public class Configuracion extends AppCompatActivity {
 
     private Context ctx;
@@ -70,6 +74,7 @@ public class Configuracion extends AppCompatActivity {
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
         CardView cvDownloadApk = findViewById(R.id.cvDownloadApk);
+        CardView cvFechaHora = findViewById(R.id.cvFechaHora);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,6 +89,7 @@ public class Configuracion extends AppCompatActivity {
         cvFichasGestionadas.setOnClickListener(cvFichasGestionadas_OnClick);
         cvCatalogos.setOnClickListener(cvCatalogos_OnClick);
         cvDownloadApk.setOnClickListener(cvDownloadApk_OnClick);
+        cvFechaHora.setOnClickListener(cvFechaHora_OnClick);
     }
 
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
@@ -196,6 +202,20 @@ public class Configuracion extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             dialog_pass_update_apk dialogRoot = new dialog_pass_update_apk();
+            Bundle b = new Bundle();
+            b.putString(TIPO, "Download");
+            dialogRoot.setArguments(b);
+            dialogRoot.show(getSupportFragmentManager(), NameFragments.DIALOGUPDATEAPK);
+        }
+    };
+
+    private View.OnClickListener cvFechaHora_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            dialog_pass_update_apk dialogRoot = new dialog_pass_update_apk();
+            Bundle b = new Bundle();
+            b.putString(TIPO, "Settings");
+            dialogRoot.setArguments(b);
             dialogRoot.show(getSupportFragmentManager(), NameFragments.DIALOGUPDATEAPK);
         }
     };
@@ -245,6 +265,66 @@ public class Configuracion extends AppCompatActivity {
                 public void onFailure(Call<MResponseDefault> call, Throwable t) {
                     loading.dismiss();
                     Toast.makeText(ctx, "Ha ocurrido un error durante la descarga fail", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else{
+            final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
+                    R.string.not_wifi, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+            Objects.requireNonNull(not_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+            not_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            not_network.show();
+        }
+    }
+
+    public void SettingsApp(String password){
+        Log.e("Inicia", "valida la constraseña"+password);
+        if (NetworkStatus.haveNetworkConnection(ctx)){
+
+            final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
+            loading.show();
+
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_APK, ctx).create(ManagerInterface.class);
+
+            Call<MResponseDefault> call = api.settingsApp(password,
+                    "Bearer "+ session.getUser().get(7));
+
+            call.enqueue(new Callback<MResponseDefault>() {
+                @Override
+                public void onResponse(Call<MResponseDefault> call, Response<MResponseDefault> response) {
+                    Log.e("ResponseApp", ""+response.code());
+                    MResponseDefault res = response.body();
+                    switch (response.code()){
+                        case 200:
+                            startActivity(new Intent(Settings.ACTION_DATE_SETTINGS));
+                            break;
+                        case 404:
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                            builder.setMessage("No está autorizado para aplicar cambios en la configuración");
+                            builder.setPositiveButton("Aceptar", null);
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                            break;
+                        default:
+                            AlertDialog.Builder builderD = new AlertDialog.Builder(ctx);
+                            builderD.setMessage("Error al enviar los datos");
+                            builderD.setPositiveButton("Aceptar", null);
+                            AlertDialog dialogD = builderD.create();
+                            dialogD.show();
+                            break;
+                    }
+                    loading.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<MResponseDefault> call, Throwable t) {
+                    loading.dismiss();
+                    Toast.makeText(ctx, "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                 }
             });
         }

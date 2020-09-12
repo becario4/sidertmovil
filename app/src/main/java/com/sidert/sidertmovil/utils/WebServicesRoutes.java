@@ -53,8 +53,9 @@ public class WebServicesRoutes {
     public final static String WS_POST_ORIGINACION_GPO      = "grupales"; //Guarda la solicitud de credito grupal (originacion)
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día
     public final static String WS_POST_RESPUESTA_GESTION    = "gestiones"; //Guarda la respuesta gestion de recuperaciones
-    public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
-    public final static String WS_POST_DOWNLOAD_APK         = "downloadApk"; //Valida la contraseña para descarga archivo de apk
+    //public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
+    public final static String WS_GET_DOWNLOAD_APK         = "downloadApk"; //Valida la contraseña para descarga archivo de apk
+    public final static String WS_GET_SETTINGS_APP         = "settings"; //Valida la contraseña para activar configuraciones de la fecha y hora
     public final static String WS_POST_SOLICITUD_CANCELAR   = "solicitudCancelarGestion"; //Servicio para cancelar solicitud de una gestion
     public final static String WS_GET_GESTIONES_CANCELADAS  = "getGestionesCanceladas"; //Servicio para obtener las gestiones canceladas por el administrador
     public final static String WS_POST_RECIBO               = "guardarRecibo"; //Servicio para registrar los recibos CC yAGF

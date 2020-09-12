@@ -171,8 +171,12 @@ public class CodigosOxxo extends AppCompatActivity {
                         case 201:
                             MResCodigoOxxo referencia = response.body();
                             MCodigoOxxo item = referencia.getData();
+                            Log.e("numPrestamo",item.getNumPrestamo());
+                            Log.e("fechaAmortiz",item.getFechaAmortizacion());
+                            Log.e("nombrePdf",item.getNombrePdf());
                             String sql = "SELECT * FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? AND fecha_amortiz = ? AND nombre_pdf = ?";
                             Cursor row = db.rawQuery(sql, new String[]{item.getNumPrestamo(), item.getFechaAmortizacion(), item.getNombrePdf()});
+                            Log.e("RowCount", String.valueOf(row.getCount())+"total");
                             if (row.getCount() == 0) {
                                 params = new HashMap<>();
                                 params.put(0, String.valueOf(referencia.getData().getId()));

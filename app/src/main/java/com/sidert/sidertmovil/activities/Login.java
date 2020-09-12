@@ -4,14 +4,18 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -73,7 +77,6 @@ import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
 
 public class Login extends AppCompatActivity {
 
-    private Context ctx;
     private Context context;
     private ImageView IVlogo;
     private EditText etUser;
@@ -95,6 +98,8 @@ public class Login extends AppCompatActivity {
 
     private int countClick = 0;
 
+    private LocationManager locationManager;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +108,13 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         verifyPermission();
-        ctx             = getApplicationContext();
-        context         = this;
-        session         = new SessionManager(ctx);
 
-        dBhelper        = new DBhelper(ctx);
+        context         = this;
+        session         = new SessionManager(context);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        dBhelper        = new DBhelper(context);
         db              = dBhelper.getWritableDatabase();
 
         IVlogo          = findViewById(R.id.IVlogo);
@@ -134,6 +141,10 @@ public class Login extends AppCompatActivity {
         });
 
         IVlogo.setOnClickListener(IVlogo_OnClick);
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            AlertNoGps();
+
     }
 
     private View.OnClickListener IVlogo_OnClick = new View.OnClickListener() {
@@ -142,11 +153,11 @@ public class Login extends AppCompatActivity {
             countClick += 1;
 
             if (countClick == 3)
-                Toast.makeText(ctx, "Estas a 3 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Estas a 3 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
             if (countClick == 6)
-                Toast.makeText(ctx, "Estas a 2 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Estas a 2 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
             if (countClick == 9)
-                Toast.makeText(ctx, "Estas a 1 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Estas a 1 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
             if (countClick >= 9) {
                 etPassword.setVisibility(View.VISIBLE);
                 dialog_contrasena_root dialogRoot = new dialog_contrasena_root();
@@ -172,7 +183,7 @@ public class Login extends AppCompatActivity {
                         doLogin();
                     }
                     else{
-                        Toast.makeText(ctx, "Ingrese la contraseña", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Ingrese la contraseña", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -196,7 +207,7 @@ public class Login extends AppCompatActivity {
     };
 
     private void doLogin (){
-        if (NetworkStatus.haveNetworkConnection(ctx)){
+        if (NetworkStatus.haveNetworkConnection(context)){
 
             final AlertDialog loading = Popups.showLoadingDialog(context,R.string.please_wait, R.string.loading_info);
             loading.show();
@@ -209,7 +220,7 @@ public class Login extends AppCompatActivity {
 
             float battery = (level / (float)scale)*100;
 
-            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, ctx).create(ManagerInterface.class);
+            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, context).create(ManagerInterface.class);
 
 
 
@@ -231,7 +242,7 @@ public class Login extends AppCompatActivity {
 
                             if(isExternalStorageWritable()){
                                 String nameDir = "Files";
-                                crearDirectorioPrivado(ctx, nameDir);
+                                crearDirectorioPrivado(context, nameDir);
                             }
 
                             byte[] data = Base64.decode(res.getAccessToken().replace(".",";").split(";")[1], Base64.DEFAULT);
@@ -289,15 +300,15 @@ public class Login extends AppCompatActivity {
                                     //session.setSucursales(json_info.getString(SUCURSALES));
 
                                     Calendar c = Calendar.getInstance();
-                                    AlarmManager manager = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);
+                                    AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
                                     Intent myIntent;
                                     PendingIntent pendingIntent;
-                                    myIntent = new Intent(ctx, AlarmaTrackerReciver.class);
+                                    myIntent = new Intent(context, AlarmaTrackerReciver.class);
                                     myIntent.putExtra("logueo", "start");
-                                    pendingIntent = PendingIntent.getBroadcast(ctx, CANCEL_TRACKER_ID, myIntent, 0);
+                                    pendingIntent = PendingIntent.getBroadcast(context, CANCEL_TRACKER_ID, myIntent, 0);
                                     manager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 1000 * 60 * 15, pendingIntent);
 
-                                    new MyFireBaseInstanceIDService(ctx);
+                                    new MyFireBaseInstanceIDService(context);
 
                                     Intent home = new Intent(context, DescargaDatos.class);
                                     home.putExtra("login", true);
@@ -441,4 +452,27 @@ public class Login extends AppCompatActivity {
             etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
 
+    private void AlertNoGps(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("El sistema de GPS se encuentra desactivado, favor de ACTIVARLO!!!")
+                .setCancelable(false)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 100);
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100){
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                AlertNoGps();
+        }
+    }
 }

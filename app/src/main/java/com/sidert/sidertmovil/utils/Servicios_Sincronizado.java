@@ -650,7 +650,7 @@ public class Servicios_Sincronizado {
                         String estadoCivil = row_soli.getString(17);
                         json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
                         if (row_soli.getString(17).equals("CASADO(A)"))
-                            json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"BIENES MANCOMUNADOS":"BIENES SEPARADOS");
+                            json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
                         json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
                         if (row_soli.getString(19).equals("CASA FAMILIAR"))
                             json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
@@ -1069,6 +1069,7 @@ public class Servicios_Sincronizado {
                 for (int j = 0; j < rowIntegrante.getCount(); j++){
                     JSONObject json_solicitud = new JSONObject();
                     try {
+                        json_solicitud.put(K_TOTAL_INTEGRANTES, rowIntegrante.getCount());
                         json_solicitud.put(K_NOMBRE_GRUPO, row.getString(14).trim().toUpperCase());
                         json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row.getString(15)));
                         json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row.getString(16)));
@@ -1096,7 +1097,7 @@ public class Servicios_Sincronizado {
 
                         json_solicitante.put(K_ESTADO_CIVIL, rowIntegrante.getString(17));
                         if (rowIntegrante.getString(17).equals("CASADO(A)"))
-                            json_solicitante.put(K_BIENES, (rowIntegrante.getInt(18) == 1) ? "BIENES MANCOMUNADOS" : "BIENES SEPARADOS");
+                            json_solicitante.put(K_BIENES, (rowIntegrante.getInt(18) == 1) ? "MANCOMUNADOS" : "SEPARADOS");
 
                         json_solicitante.put(K_LATITUD, rowIntegrante.getString(32));
                         json_solicitante.put(K_LONGITUD, rowIntegrante.getString(33));
@@ -1286,8 +1287,8 @@ public class Servicios_Sincronizado {
                         Log.e("_","_______________________________________________________________________-");
                         Log.e("solicitudInt", json_solicitud.toString());
                         Log.e("_","_______________________________________________________________________-");
-                        /*new GuardarSolicitudGpo().execute(ctx, json_solicitud, fachadaCli, firmaCli, fachadaNeg, identiFrontal,
-                                identiReverso, curp,comprobante, rowIntegrante.getString(0),rowIntegrante.getString(1), id_solicitud);*/
+                        new GuardarSolicitudGpo().execute(ctx, json_solicitud, fachadaCli, firmaCli, fachadaNeg, identiFrontal,
+                                identiReverso, curp,comprobante, rowIntegrante.getString(0),rowIntegrante.getString(1), id_solicitud);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -3640,8 +3641,11 @@ public class Servicios_Sincronizado {
 
                             String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
+                            Log.e("RowAmortiz",String.valueOf(row_amortiz.getCount()));
+                            Log.e("--","------------------------------------------------");
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
+                                Log.e("ItemPago", String.valueOf(item.getPagoRealizado()));
                                 Double abono = item.getPagoRealizado();
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 
@@ -3665,7 +3669,7 @@ public class Servicios_Sincronizado {
                                     }
                                     else if (abono > 0 && abono < pendiente){
                                         ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
@@ -3770,7 +3774,7 @@ public class Servicios_Sincronizado {
                                     }
                                     else if (abono > 0 && abono < pendiente){
                                         ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));

@@ -1,27 +1,20 @@
 package com.sidert.sidertmovil;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 
-import com.opencsv.CSVReader;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.models.MLocalidades;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -118,7 +111,7 @@ public class SplashSidertActivity extends AppCompatActivity {
         Log.e("FABRICANTE", fabricante);
         Log.e("MODELO", modelo);
 
-        session.setDominio("http://192.168.100.5:", "8080");
+        //session.setDominio("http://192.168.100.5:", "8080");
 
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);

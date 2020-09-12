@@ -122,7 +122,9 @@ public class PrestamosClientes extends AppCompatActivity {
     }
 
     private void GetPrestamosInd (String id_cliente){
+        Log.e("Fecha", sdf.format(fi.getTime()).replace("-","")+"' AND "+sdf.format(ff.getTime()).replace("-",""));
         String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+        Log.e("SelectPrestamo", sql);
         //Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?", "", new String[]{id_cliente});
         Cursor row = db.rawQuery(sql, new String[]{id_cliente});
         row.moveToFirst();

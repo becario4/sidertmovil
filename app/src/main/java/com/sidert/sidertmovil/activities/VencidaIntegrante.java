@@ -2367,7 +2367,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                                     }
                                     else if (abono > 0 && abono < pendiente){
                                         ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));

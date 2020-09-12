@@ -2373,6 +2373,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     if (data != null){
 
                         if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
+
                             String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
                             Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
                             if (rowTraker.getCount() > 0) {
@@ -2392,10 +2393,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                         cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
                         cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
                         cv.put("estatus", "1");
-                        if (ENVIROMENT)
-                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
-                        else
-                            db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
+
+                        db.update(TBL_RESPUESTAS_GPO_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{parent.id_prestamo, parent.id_respuesta});
 
                         Cursor row;
                         String sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
@@ -2436,7 +2435,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                                     }
                                     else if (abono > 0 && abono < pendiente){
                                         ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", abono);
+                                        cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));

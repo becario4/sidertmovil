@@ -181,9 +181,12 @@ public class dialog_originacion_gpo extends DialogFragment {
             if (is_edit){
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
-                b.putInt(Constants.YEAR_CURRENT,myCalendar.get(Calendar.YEAR));
+                b.putInt(Constants.YEAR_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(0,4))));
+                b.putInt(Constants.MONTH_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaDesembolso.getText().toString().substring(5,7))-1)));
+                b.putInt(Constants.DAY_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(8,10))));
+                /*b.putInt(Constants.YEAR_CURRENT,myCalendar.get(Calendar.YEAR));
                 b.putInt(Constants.MONTH_CURRENT,myCalendar.get(Calendar.MONTH));
-                b.putInt(Constants.DAY_CURRENT,myCalendar.get(Calendar.DAY_OF_MONTH));
+                b.putInt(Constants.DAY_CURRENT,myCalendar.get(Calendar.DAY_OF_MONTH));*/
                 b.putString(Constants.DATE_CURRENT,sdf.format(myCalendar.getTime()));
                 b.putBoolean(Constants.FECHAS_POST, true);
                 dialogDatePicker.setArguments(b);

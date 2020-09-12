@@ -2579,4 +2579,48 @@ public class Miscellaneous {
         row.close();
         return destinosCredito;
     }
+
+    public static String EncodePassword(String password) {
+        String passEncryp = Base64.encodeToString(password.getBytes(), Base64.DEFAULT);
+        String symbols = "";
+        if (passEncryp.contains("==")){
+            symbols = "==";
+            passEncryp = passEncryp.replace("==","");
+        }
+        else if (passEncryp.contains("=")){
+            symbols = "=";
+            passEncryp = passEncryp.replace("=","");
+        }
+        String passEncode = "";
+        if(passEncryp.length() > 6) {
+            String pass1 = passEncryp.substring(0, 6);
+            String pass2 = passEncryp.substring(6, passEncryp.length());
+            passEncode = new StringBuilder(pass2).reverse().toString() + new StringBuilder(pass1).reverse().toString() + symbols;
+
+        }
+        else {
+            passEncode = new StringBuilder(passEncryp).reverse().toString();
+        }
+
+        return passEncode;
+    }
+
+    public static String DecodePassword(String password) {
+        String symbols = "";
+        if (password.contains("==")){
+            symbols = "==";
+            password = password.replace("==","");
+        }
+        else if (password.contains("=")){
+            symbols = "=";
+            password = password.replace("=","");
+        }
+
+        String passReverse = new StringBuilder(password).reverse().toString();
+
+        byte[] bytesDecodificado = Base64.decode(passReverse+symbols, Base64.DEFAULT);
+        String passDecodificada = new String(bytesDecodificado);
+
+        return passDecodificada;
+    }
 }

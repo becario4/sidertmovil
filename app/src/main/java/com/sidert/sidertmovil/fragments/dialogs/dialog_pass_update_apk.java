@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
+import static com.sidert.sidertmovil.utils.Constants.TIPO;
+
 
 public class dialog_pass_update_apk extends DialogFragment {
 
@@ -31,6 +34,7 @@ public class dialog_pass_update_apk extends DialogFragment {
 
     private SessionManager session;
     private Validator validator;
+    private String tipo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +52,8 @@ public class dialog_pass_update_apk extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
+        tipo = getArguments().getString(TIPO);
+
         validator = new Validator();
         return v;
     }
@@ -63,10 +69,19 @@ public class dialog_pass_update_apk extends DialogFragment {
     private View.OnClickListener btnAceptar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            //if (etKeyMaster.getText().toString().trim().equals("$APKACVS20")){
             if (!validator.validate(etKeyMaster, new String[]{validator.REQUIRED})){
+
                 Configuracion configActivity = (Configuracion) getActivity();
-                configActivity.DownloadApk(etKeyMaster.getText().toString().trim().toUpperCase());
+                switch (tipo){
+                    case "Download":
+                        configActivity.DownloadApk(etKeyMaster.getText().toString().trim());
+                        break;
+                    case "Settings" :
+                        Log.e("Settings", "Servicio");
+                        configActivity.SettingsApp(etKeyMaster.getText().toString().trim());
+                        break;
+                }
+
                 dismiss();
             }
 

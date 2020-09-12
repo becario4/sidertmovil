@@ -2707,7 +2707,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
+                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
                 i_colonia.putExtra(Constants.EXTRA, etCpCli.getText().toString().trim());
                 i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_CLIE);
@@ -2843,7 +2843,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.COLONIAS));
+                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
                 i_colonia.putExtra(Constants.EXTRA, etCpNeg.getText().toString().trim());
                 i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_NEG);
@@ -3008,7 +3008,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
                 i_colonia.putExtra(EXTRA, etCpCony.getText().toString().trim());
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CONY);

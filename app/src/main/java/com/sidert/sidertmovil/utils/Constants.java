@@ -545,6 +545,7 @@ public class Constants {
     public final static String K_CASA_REUNION                   = "casa_reunion";
     public final static String K_CARGO                          = "cargo";
     public final static String K_NOMBRE                         = "nombre";
+    public final static String K_TOTAL_INTEGRANTES              = "total_integrantes";
     public final static String K_NOMBRE_GRUPO                   = "nombre_grupo";
     public final static String K_PATERNO                        = "paterno";
     public final static String K_MATERNO                        = "materno";

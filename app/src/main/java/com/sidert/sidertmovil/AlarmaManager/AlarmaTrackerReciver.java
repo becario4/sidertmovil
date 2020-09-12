@@ -269,8 +269,8 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                             //ss.CancelGestiones(ctx, false);
                             //ss.SendRecibos(ctx, false);
                             //ss.SendCancelGestiones(ctx, false);
-                             ss.SendOriginacionInd (ctx, false);
-                            //ss.SendOriginacionGpo(ctx, false);
+                            ss.SendOriginacionInd (ctx, false);
+                            ss.SendOriginacionGpo(ctx, false);
                             //ss.GetUltimosRecibos(ctx);
 
                         } else

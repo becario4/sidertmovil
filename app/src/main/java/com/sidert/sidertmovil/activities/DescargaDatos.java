@@ -373,13 +373,13 @@ public class DescargaDatos extends AppCompatActivity {
 
         String provider;
 
-        if (NetworkStatus.haveNetworkConnection(ctx)) {
+        /*if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
-        } else {
+        } else {*/
             Log.e("Proveedor", "GPS");
             provider = LocationManager.GPS_PROVIDER;
-        }
+        //}
 
         locationManager.requestSingleUpdate(provider, locationListener, null);
 
@@ -766,6 +766,10 @@ public class DescargaDatos extends AppCompatActivity {
                                     cv.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());
                                     cv.put("tipo_cartera", prestamos.get(i).getTipoCartera());
 
+                                    Log.e(".",".............................................");
+                                    Log.e("Pagada",prestamos.get(i).getPagada()+" pagadaXd");
+                                    Log.e("Pagada", String.valueOf(prestamos.get(i).getPagada().equals("PAGADA")));
+                                    Log.e(".",".............................................");
                                     if (row.getInt(13) == 0)
                                         cv.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");
                                     cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha("timestamp"));

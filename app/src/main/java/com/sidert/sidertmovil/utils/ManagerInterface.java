@@ -79,8 +79,16 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET(WebServicesRoutes.WS_POST_DOWNLOAD_APK)
+    @GET(WebServicesRoutes.WS_GET_DOWNLOAD_APK)
     Call<MResponseDefault> downloadApk(@Query("password") String password,
+                                       @Header("Authorization") String auth);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_SETTINGS_APP)
+    Call<MResponseDefault> settingsApp(@Query("password") String password,
                                        @Header("Authorization") String auth);
 
     @POST(WebServicesRoutes.WS_LOGIN)
