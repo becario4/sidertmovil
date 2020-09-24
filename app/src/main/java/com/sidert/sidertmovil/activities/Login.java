@@ -17,10 +17,12 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
@@ -53,7 +55,6 @@ import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,19 +62,18 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.AUTHORITIES;
 import static com.sidert.sidertmovil.utils.Constants.CANCEL_TRACKER_ID;
-import static com.sidert.sidertmovil.utils.Constants.MAC_ADDRESSES;
 import static com.sidert.sidertmovil.utils.Constants.MATERNO;
 import static com.sidert.sidertmovil.utils.Constants.MODULOS;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_EMPLEADO;
 import static com.sidert.sidertmovil.utils.Constants.PATERNO;
 import static com.sidert.sidertmovil.utils.Constants.SERIE_ID;
-import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
 
 public class Login extends AppCompatActivity {
 
@@ -88,13 +88,14 @@ public class Login extends AppCompatActivity {
     private SessionManager session;
     private DBhelper dBhelper;
     private SQLiteDatabase db;
-    String[] perms = {  Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private ImageView ivSetting;
+    String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.CAMERA,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private int countClick = 0;
 
@@ -109,20 +110,21 @@ public class Login extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         verifyPermission();
 
-        context         = this;
-        session         = new SessionManager(context);
+        context = this;
+        session = new SessionManager(context);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        dBhelper        = new DBhelper(context);
-        db              = dBhelper.getWritableDatabase();
+        dBhelper = new DBhelper(context);
+        db = dBhelper.getWritableDatabase();
 
-        IVlogo          = findViewById(R.id.IVlogo);
-        etUser          = findViewById(R.id.etUser);
-        etPassword      = findViewById(R.id.etPassword);
-        btnLogin        = findViewById(R.id.btnLogin);
-        cvCovid         = findViewById(R.id.cvInfoCovid);
-        cvDenunciarPLD  = findViewById(R.id.cvDenciarPLD);
+        IVlogo = findViewById(R.id.IVlogo);
+        etUser = findViewById(R.id.etUser);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        cvCovid = findViewById(R.id.cvInfoCovid);
+        cvDenunciarPLD = findViewById(R.id.cvDenciarPLD);
+        ivSetting = findViewById(R.id.ivSetting);
 
         validator = new Validator();
 
@@ -130,6 +132,7 @@ public class Login extends AppCompatActivity {
 
         cvDenunciarPLD.setOnClickListener(cvDenunciarPLD_OnClick);
         cvCovid.setOnClickListener(cvCovid_OnClick);
+        ivSetting.setOnClickListener(ivSetting_OnClick);
 
         etUser.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -144,6 +147,8 @@ public class Login extends AppCompatActivity {
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             AlertNoGps();
+
+        //Log.e("EM",obtenerIMEI());
 
     }
 
@@ -170,19 +175,18 @@ public class Login extends AppCompatActivity {
     private View.OnClickListener btnLogin_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(!validator.validate(etUser, new String[] {validator.REQUIRED})) {
+            if (!validator.validate(etUser, new String[]{validator.REQUIRED})) {
                 if (!etUser.getText().toString().trim().equals("ASESOR") &&
-                !etUser.getText().toString().trim().equals("GESTOR") &&
-                !etUser.getText().toString().trim().equals("PROGRAMADORAND") &&
-                !etUser.getText().toString().trim().equals("PROGRAMADOR02") &&
-                !etUser.getText().toString().trim().equals("PROGRAMADORRUFI") &&
-                !etUser.getText().toString().trim().equals("ANALISTAFUNCIONAL"))
+                        !etUser.getText().toString().trim().equals("GESTOR") &&
+                        !etUser.getText().toString().trim().equals("PROGRAMADORAND") &&
+                        !etUser.getText().toString().trim().equals("PROGRAMADOR02") &&
+                        !etUser.getText().toString().trim().equals("PROGRAMADORRUFI") &&
+                        !etUser.getText().toString().trim().equals("ANALISTAFUNCIONAL"))
                     doLogin();
-                else{
+                else {
                     if (!validator.validate(etPassword, new String[]{validator.REQUIRED})) {
                         doLogin();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(context, "Ingrese la contraseña", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -206,10 +210,23 @@ public class Login extends AppCompatActivity {
         }
     };
 
-    private void doLogin (){
-        if (NetworkStatus.haveNetworkConnection(context)){
+    private View.OnClickListener ivSetting_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-            final AlertDialog loading = Popups.showLoadingDialog(context,R.string.please_wait, R.string.loading_info);
+            //builder.setMessage("EMEI: "+obtenerIMEI() + "\n" + "MAC: "+session.getMacAddress());
+            //builder.setPositiveButton("Aceptar", null);
+
+            //AlertDialog dialog = builder.create();
+            //dialog.show();
+        }
+    };
+
+    private void doLogin() {
+        if (NetworkStatus.haveNetworkConnection(context)) {
+
+            final AlertDialog loading = Popups.showLoadingDialog(context, R.string.please_wait, R.string.loading_info);
             loading.show();
 
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -218,16 +235,15 @@ public class Login extends AppCompatActivity {
             int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-            float battery = (level / (float)scale)*100;
+            float battery = (level / (float) scale) * 100;
 
             ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, context).create(ManagerInterface.class);
 
 
-
             Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
-                                                 session.getMacAddress(),
-                                                 etPassword.getText().toString().trim(),
-                                                 Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
+                    session.getMacAddress(),
+                    etPassword.getText().toString().trim(),
+                    Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
             /*Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
                     "password",
                     etPassword.getText().toString().trim(),
@@ -236,16 +252,16 @@ public class Login extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     AlertDialog dialog_mess;
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             LoginResponse res = response.body();
 
-                            if(isExternalStorageWritable()){
+                            if (isExternalStorageWritable()) {
                                 String nameDir = "Files";
                                 crearDirectorioPrivado(context, nameDir);
                             }
 
-                            byte[] data = Base64.decode(res.getAccessToken().replace(".",";").split(";")[1], Base64.DEFAULT);
+                            byte[] data = Base64.decode(res.getAccessToken().replace(".", ";").split(";")[1], Base64.DEFAULT);
 
                             try {
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
@@ -267,53 +283,53 @@ public class Login extends AppCompatActivity {
                                 json_info.getInt("id") == 1 || json_info.getInt("id") == 123 ||
                                 json_info.getInt("id") == 135 || json_info.getInt("id") == 157 ||
                                 json_info.getInt("id") == 200 || json_info.getInt("id") == 368) {*/
-                                    Log.e("JsonInfo", json_info.toString());
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, json_info.getString(SERIE_ID));
-                                    params.put(1, json_info.getString(NOMBRE_EMPLEADO) + " " +
-                                            json_info.getString(PATERNO) + " " +
-                                            json_info.getString(MATERNO));
-                                    params.put(2, Miscellaneous.ObtenerFecha("timestamp"));
-                                    params.put(3, "");
-                                    params.put(4, "1");
+                                Log.e("JsonInfo", json_info.toString());
+                                HashMap<Integer, String> params = new HashMap<>();
+                                params.put(0, json_info.getString(SERIE_ID));
+                                params.put(1, json_info.getString(NOMBRE_EMPLEADO) + " " +
+                                        json_info.getString(PATERNO) + " " +
+                                        json_info.getString(MATERNO));
+                                params.put(2, Miscellaneous.ObtenerFecha("timestamp"));
+                                params.put(3, "");
+                                params.put(4, "1");
 
-                                    dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
+                                dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
 
-                                    HashMap<Integer, String> params_sincro = new HashMap<>();
-                                    params_sincro.put(0, json_info.getString(SERIE_ID));
-                                    params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                                HashMap<Integer, String> params_sincro = new HashMap<>();
+                                params_sincro.put(0, json_info.getString(SERIE_ID));
+                                params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
 
 
-                                    dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+                                dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-                                    session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
-                                            Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
-                                            Miscellaneous.validString(json_info.getString(PATERNO)),
-                                            Miscellaneous.validString(json_info.getString(MATERNO)),
-                                            Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
-                                            Miscellaneous.validString(json_info.getString(AUTHORITIES)),
-                                            true,
-                                            Miscellaneous.validString(res.getAccessToken()),
-                                            Miscellaneous.validString(json_info.getString(MODULOS)),
-                                            Miscellaneous.validString(json_info.getString("id")));
+                                session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
+                                        Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
+                                        Miscellaneous.validString(json_info.getString(PATERNO)),
+                                        Miscellaneous.validString(json_info.getString(MATERNO)),
+                                        Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
+                                        Miscellaneous.validString(json_info.getString(AUTHORITIES)),
+                                        true,
+                                        Miscellaneous.validString(res.getAccessToken()),
+                                        Miscellaneous.validString(json_info.getString(MODULOS)),
+                                        Miscellaneous.validString(json_info.getString("id")));
 
-                                    //session.setSucursales(json_info.getString(SUCURSALES));
+                                //session.setSucursales(json_info.getString(SUCURSALES));
 
-                                    Calendar c = Calendar.getInstance();
-                                    AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
-                                    Intent myIntent;
-                                    PendingIntent pendingIntent;
-                                    myIntent = new Intent(context, AlarmaTrackerReciver.class);
-                                    myIntent.putExtra("logueo", "start");
-                                    pendingIntent = PendingIntent.getBroadcast(context, CANCEL_TRACKER_ID, myIntent, 0);
-                                    manager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 1000 * 60 * 15, pendingIntent);
+                                Calendar c = Calendar.getInstance();
+                                AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+                                Intent myIntent;
+                                PendingIntent pendingIntent;
+                                myIntent = new Intent(context, AlarmaTrackerReciver.class);
+                                myIntent.putExtra("logueo", "start");
+                                pendingIntent = PendingIntent.getBroadcast(context, CANCEL_TRACKER_ID, myIntent, 0);
+                                manager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 1000 * 60 * 15, pendingIntent);
 
-                                    new MyFireBaseInstanceIDService(context);
+                                new MyFireBaseInstanceIDService(context);
 
-                                    Intent home = new Intent(context, DescargaDatos.class);
-                                    home.putExtra("login", true);
-                                    startActivity(home);
-                                    finish();
+                                Intent home = new Intent(context, DescargaDatos.class);
+                                home.putExtra("login", true);
+                                startActivity(home);
+                                finish();
                                 /*}
                                 else{
                                     dialog_mess = Popups.showDialogMessage(context, Constants.login,
@@ -378,12 +394,11 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<LoginResponse> call, Throwable t) {
-                    Log.e("error", "fail: "+t.getMessage());
+                    Log.e("error", "fail: " + t.getMessage());
                     loading.dismiss();
                 }
             });
-        }
-        else{
+        } else {
             final AlertDialog error_connect = Popups.showDialogMessage(context, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
@@ -399,7 +414,7 @@ public class Login extends AppCompatActivity {
 
     public File crearDirectorioPrivado(Context context, String nombreDirectorio) {
         //Crear directorio privado en la carpeta Pictures.
-        File directorio =new File(
+        File directorio = new File(
                 context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 nombreDirectorio);
 
@@ -424,7 +439,8 @@ public class Login extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.CALL_PHONE,
-                Manifest.permission.BLUETOOTH};
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.READ_PHONE_STATE};
 
         int accessFinePermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
         int accessCoarsePermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -433,6 +449,7 @@ public class Login extends AppCompatActivity {
         int readStorage = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         int callPhone = checkSelfPermission(Manifest.permission.CALL_PHONE);
         int bluetooth = checkSelfPermission(Manifest.permission.BLUETOOTH);
+        int phoneState = checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
 
         if (cameraPermission == PackageManager.PERMISSION_GRANTED &&
                 accessFinePermission == PackageManager.PERMISSION_GRANTED &&
@@ -440,19 +457,20 @@ public class Login extends AppCompatActivity {
                 writeStorage == PackageManager.PERMISSION_GRANTED &&
                 readStorage == PackageManager.PERMISSION_GRANTED &&
                 callPhone == PackageManager.PERMISSION_GRANTED &&
-                bluetooth == PackageManager.PERMISSION_GRANTED) {
+                bluetooth == PackageManager.PERMISSION_GRANTED &&
+                phoneState == PackageManager.PERMISSION_GRANTED) {
             //se realiza metodo si es necesario...
         } else {
             requestPermissions(perms, permsRequestCode);
         }
     }
 
-    public void SetPass(boolean flag){
+    public void SetPass(boolean flag) {
         if (flag)
             etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
 
-    private void AlertNoGps(){
+    private void AlertNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("El sistema de GPS se encuentra desactivado, favor de ACTIVARLO!!!")
                 .setCancelable(false)
@@ -465,6 +483,21 @@ public class Login extends AppCompatActivity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private String obtenerIMEI() {
+        final TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //Hacemos la validación de métodos, ya que el método getDeviceId() ya no se admite para android Oreo en adelante, debemos usar el método getImei()
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                return null;
+            }
+            return telephonyManager.getImei();
+        }
+        else {
+            return telephonyManager.getDeviceId();
+        }
     }
 
     @Override

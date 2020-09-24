@@ -301,6 +301,8 @@ public class Configuracion extends AppCompatActivity {
                     MResponseDefault res = response.body();
                     switch (response.code()){
                         case 200:
+                            //ACTION_DATE_SETTINGS //configurar fecha y hora
+                            //ACTION_WIFI_SETTINGS //configurar conexiones de wifi
                             startActivity(new Intent(Settings.ACTION_DATE_SETTINGS));
                             break;
                         case 404:

@@ -75,6 +75,7 @@ public class dialog_date_picker extends DialogFragment {
         identifer       = getArguments().getInt(Constants.IDENTIFIER);
         ban = true;
 
+        Log.e("year_current", String.valueOf(year_current));
         valuesMonths = new String[]{"ENERO",
                                     "FEBRERO",
                                     "MARZO",
@@ -97,20 +98,32 @@ public class dialog_date_picker extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         myCalendar = Calendar.getInstance();
-        int i = year_current-71;
+
+        int i = myCalendar.get(Calendar.YEAR)-71;
         valuesYear = new String[73];
         int j = 0;
-        while (i<(year_current+2)){
+        while (i<(myCalendar.get(Calendar.YEAR)+2)){
             valuesYear[j] = ""+i;
             i++;
             j++;
+        }
+
+        int pos = 2;
+        for (int x = 72; x < valuesYear.length; x--){
+            Log.e("ValX: ",String.valueOf(x));
+            Log.e("Year: ",valuesYear[x]);
+
+            if (valuesYear[x].equals(String.valueOf(year_current))){
+                pos = Math.abs(73 - x);
+                break;
+            }
         }
 
         //----------  AÑO  -----------------------
         npYear.setMinValue(0);
         npYear.setMaxValue(valuesYear.length-1);
         npYear.setDisplayedValues(valuesYear);
-        npYear.setValue(valuesYear.length-2);
+        npYear.setValue(valuesYear.length-pos);
         npYear.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {

@@ -22,6 +22,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/blue_sidert</item>
+
         <item name="android:layout_marginLeft">33dp</item>
     </style>
 

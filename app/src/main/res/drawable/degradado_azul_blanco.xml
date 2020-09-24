@@ -11,8 +11,18 @@
                     android:angle="-45"
                     android:startColor="#2e3192"
                     android:endColor="#00C4FF"
+
                     android:type="linear" />
             </shape>
         </rotate>
     </item>
 </layer-list>
+
+<!--
+android:startColor="#2e3192"
+android:endColor="#00C4FF"
+
+android:startColor="@color/cafe_dark"
+                    android:endColor="@color/cafe_ligth"
+-->
+

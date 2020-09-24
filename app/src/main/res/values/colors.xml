@@ -3,6 +3,9 @@
     <color name="colorPrimary">#1576ba</color>
     <color name="colorPrimaryDark">#164D74</color>
     <color name="colorAccent">#1576ba</color>
+    <!--<color name="colorPrimary">#5b1b18</color>
+    <color name="colorPrimaryDark">#320000</color>
+    <color name="colorAccent">#8c463e</color> -->
     <color name="colorGrayDark">#adafb2</color>
     <color name="shadowdrawer">#ba6e6d6d</color>
     <color name="lightGray">#A6DAD7D7</color>
@@ -35,11 +38,18 @@
     <color name="disable">#60AEAFB1</color>
     <color name="complaint_bkg">#CB5E8AFF</color>
 
+    <color name="gray">#78797B</color>
+
 
     <color name="env_rojo">#CEF74C4C</color>
     <color name="env_anar">#E4E97547</color>
     <color name="env_amarillo">#DAE7CF3B</color>
     <color name="env_verde">#E168C06C</color>
+
+    <color name="cafe_dark">#5b1b18</color>
+    <color name="cafe_ligth">#bf7369</color>
+    <color name="verde_dark">#5d5d16</color>
+    <color name="verde_light">#beba6f</color>
 
    <!-- <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color> -->

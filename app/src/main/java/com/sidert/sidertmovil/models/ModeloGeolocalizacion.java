@@ -30,7 +30,6 @@ public class ModeloGeolocalizacion {
         this.individualesGestionadas = individualesGestionadas;
     }
 
-
     public class GrupalesGestionada {
 
         @SerializedName("id")

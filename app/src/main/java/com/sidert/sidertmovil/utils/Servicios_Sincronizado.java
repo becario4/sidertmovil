@@ -73,7 +73,7 @@ import static com.sidert.sidertmovil.utils.Constants.*;
 public class Servicios_Sincronizado {
 
     public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones){
-        Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas "+incluir_gestiones);
+        //Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas "+incluir_gestiones);
         SessionManager session = new SessionManager(ctx);
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -131,13 +131,34 @@ public class Servicios_Sincronizado {
                             for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++){
                                 Cursor rowGeoGi;
 
-                                String sql = "SELECT g.* FROM " + TBL_GEO_RESPUESTAS_T + " AS g LEFT JOIN " + TBL_CARTERA_IND_T + " AS ci ON ci.id_cartera = g.id_cartera LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON pi.id_cliente = ci.id_cartera  WHERE g.tipo_geolocalizacion = ?";
-                                rowGeoGi = db.rawQuery(sql, new String[]{modeloGeo.getIndividualesGestionadas().get(h).getTipo()});
+                                String sql = "SELECT g.* FROM " + TBL_GEO_RESPUESTAS_T + " AS g LEFT JOIN " + TBL_CARTERA_IND_T + " AS ci ON ci.id_cartera = g.id_cartera LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON pi.id_cliente = ci.id_cartera  WHERE g.tipo_geolocalizacion = ? AND pi.id_prestamo = ?";
+                                rowGeoGi = db.rawQuery(sql, new String[]{modeloGeo.getIndividualesGestionadas().get(h).getTipo(), String.valueOf(modeloGeo.getIndividualesGestionadas().get(h).getPrestamoId())});
 
+                                Log.e("-", "------------------------------------------------------");
                                 Log.e("SQL_IND", sql);
+                                Log.e("SQL_IND", modeloGeo.getIndividualesGestionadas().get(h).getTipo());
+                                Log.e("-", "------------------------------------------------------");
+
                                 if (rowGeoGi.getCount() > 0){
                                     rowGeoGi.moveToFirst();
+
                                     Log.e("ACtualza", "individual");
+                                    if (modeloGeo.getIndividualesGestionadas().get(h).getComentario().contains("PAPE")) {
+                                        Log.e("-", "------------------------------------------------------");
+                                        Log.e("latitud", modeloGeo.getIndividualesGestionadas().get(h).getLatitud());
+                                        Log.e("longitud", modeloGeo.getIndividualesGestionadas().get(h).getLongitud());
+                                        Log.e("direccion_capturada", modeloGeo.getIndividualesGestionadas().get(h).getDireccion());
+                                        Log.e("codigo_barras", modeloGeo.getIndividualesGestionadas().get(h).getBarcode());
+                                        Log.e("fachada", modeloGeo.getIndividualesGestionadas().get(h).getFotoFachada().replace("\"", ""));
+                                        Log.e("comentario", modeloGeo.getIndividualesGestionadas().get(h).getComentario());
+                                        Log.e("fecha_fin_geo", modeloGeo.getIndividualesGestionadas().get(h).getFechaGestionFin());
+                                        Log.e("fecha_envio_geo", modeloGeo.getIndividualesGestionadas().get(h).getFechaEnvio());
+                                        Log.e("Clave", rowGeoGi.getString(17));
+                                        Log.e("CartraId", rowGeoGi.getString(1));
+
+
+                                        Log.e("-", "------------------------------------------------------");
+                                    }
                                     ContentValues cv = new ContentValues();
                                     cv.put("latitud", modeloGeo.getIndividualesGestionadas().get(h).getLatitud());
                                     cv.put("longitud", modeloGeo.getIndividualesGestionadas().get(h).getLongitud());
@@ -3109,6 +3130,10 @@ public class Servicios_Sincronizado {
                         sql_geo = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND tipo_geolocalizacion = ?";
                         row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0), "CLIENTE"});
                         if (row_geo.getCount() == 0){
+
+                            Log.e("xxxx", "Cartera:"+row.getString(0));
+                            Log.e("xxxx","nombre:"+row.getString(2));
+
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, row.getString(0));
                             params.put(1, row.getString(5));

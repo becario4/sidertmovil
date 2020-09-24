@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.10</string>
+    <string name="app_version">2.4.11</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -223,7 +223,7 @@
     <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
     <string name="total_billetes_monedas">Total de billetes y monedas</string>
     <string name="valor_pago_realizado">Valores del Pago Realizado</string>
-    <string name="copy_rigth">© 2020 SIDERT. Derechos reservados.</string>
+    <string name="copy_rigth">© 2020 Sidert. Derechos reservados.</string>
 
     <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 

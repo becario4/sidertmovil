@@ -800,7 +800,7 @@ public class Miscellaneous {
 
     public static String Rango(int dias){
         String rango = "";
-        if (dias == 0)
+        if (dias <= 0)
             rango = "0 Días";
         else if(dias >= 1 && dias <= 7)
             rango = "1 - 7 Días";

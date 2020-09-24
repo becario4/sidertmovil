@@ -55,6 +55,11 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         SessionManager session = new SessionManager(this);
 
+        Log.e("Mac", Miscellaneous.EncodePassword(" F4:71:90:AC:9A:BC"));
+
+        Log.e("MacDecode", Miscellaneous.DecodePassword("+10TyA2NzR1ed1ja"));
+        Log.e("MacPrimero", Miscellaneous.DecodePassword("DJkOBljODFkOwkjOxcjO0YEI"));
+
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
@@ -111,7 +116,7 @@ public class SplashSidertActivity extends AppCompatActivity {
         Log.e("FABRICANTE", fabricante);
         Log.e("MODELO", modelo);
 
-        //session.setDominio("http://192.168.100.5:", "8080");
+        session.setDominio("http://192.168.100.5:", "8080");
 
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);
@@ -152,11 +157,11 @@ public class SplashSidertActivity extends AppCompatActivity {
             }
         }
 
-        new RegistrarColonias().execute();
+        /*new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();
+        new RegistrarLocalidades().execute();*/
 
-        /*Handler handler_home=new Handler();
+        Handler handler_home=new Handler();
         handler_home.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -165,7 +170,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 startActivity(start);
                 finish();
             }
-        },3000);*/
+        },3000);
 
     }
 
