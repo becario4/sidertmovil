@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nvAGF"
+        android:title="Apoyo Gasto Funerario"
+        android:icon="@drawable/ic_apoyo_funerario" />
+
+    <item
+        android:id="@+id/nvCC"
+        android:title="Círculo de Crédito"
+        android:icon="@drawable/ic_cc"/>
+</menu>

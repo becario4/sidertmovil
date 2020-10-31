@@ -18,6 +18,8 @@ import android.widget.NumberPicker;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
 import com.sidert.sidertmovil.activities.GenerarCurp;
+import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
+import com.sidert.sidertmovil.activities.RenovarIntegrante;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
@@ -198,6 +200,27 @@ public class dialog_date_picker extends DialogFragment {
                             integrante.setDate(sdf.format(myCalendar.getTime()), "fecha_promesa");
                             dismiss();
                         }
+                        else if(identifer == 13){
+                            Calendar c = Calendar.getInstance();
+                            String[] fechaDes = sdf.format(myCalendar.getTime()).split("-");
+                            c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
+                            int nD=c.get(Calendar.DAY_OF_WEEK);
+                            if (nD != 1) {
+                                RenovacionCreditoInd registerActivity = (RenovacionCreditoInd) getActivity();
+                                registerActivity.setDate(sdf.format(myCalendar.getTime()), "desembolso");
+                                dismiss();
+                            }
+                            else{
+                                AlertDialog success = new AlertDialog.Builder(getContext())
+                                        .setMessage("No se puede seleccionar domingo para día de desembolso")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
                         else {
                             Calendar c = Calendar.getInstance();
                             String[] fechaDes = sdf.format(myCalendar.getTime()).split("-");
@@ -346,6 +369,57 @@ public class dialog_date_picker extends DialogFragment {
                             if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
                                 SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacRef");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                        else if (identifer == 16){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                                RenovacionCreditoInd registerActivity = (RenovacionCreditoInd) getActivity();
+                                registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacAval");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                        else if (identifer == 17){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                                RenovacionCreditoInd registerActivity = (RenovacionCreditoInd) getActivity();
+                                registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacRef");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                        else if (identifer == 18){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                                RenovarIntegrante integranteActivity = (RenovarIntegrante) getActivity();
+                                integranteActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacCli");
                                 dismiss();
                             }
                             else{

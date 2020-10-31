@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
+import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
+import com.sidert.sidertmovil.activities.RenovarIntegrante;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Validator;
 
@@ -78,7 +80,16 @@ public class dialog_input_calle extends DialogFragment {
                 if (tipoSolicitud.equals("INDIVIDUAL")) {
                     SolicitudCreditoInd creditoInd = (SolicitudCreditoInd) getActivity();
                     creditoInd.setCalle(etCalle.getText().toString().trim().toUpperCase(), tipoCalle);
-                }else{
+                }
+                else if (tipoSolicitud.equals("INDIVIDUAL RENOVACION")){
+                    RenovacionCreditoInd renCreditoInd = (RenovacionCreditoInd) getActivity();
+                    renCreditoInd.setCalle(etCalle.getText().toString().trim().toUpperCase(), tipoCalle);
+                }
+                else if (tipoSolicitud.equals("GRUPAL RENOVACION")){
+                    RenovarIntegrante renCreditoInt = (RenovarIntegrante) getActivity();
+                    renCreditoInt.setCalle(etCalle.getText().toString().trim().toUpperCase(), tipoCalle);
+                }
+                else{
                     AgregarIntegrante creditoInt = (AgregarIntegrante) getActivity();
                     creditoInt.setCalle(etCalle.getText().toString().trim().toUpperCase(), tipoCalle);
                 }

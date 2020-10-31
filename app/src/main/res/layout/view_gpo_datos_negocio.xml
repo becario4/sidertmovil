@@ -717,6 +717,7 @@
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
             android:maxLength="2"
+            android:enabled="false"
             android:paddingLeft="10dp"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
@@ -786,7 +787,6 @@
                 android:src="@drawable/ic_camera_white" />
             <ImageView
                 android:id="@+id/ivFotoFachNeg"
-                android:rotation="90"
                 android:contentDescription="@string/facade_photo"
                 android:visibility="gone"
                 android:layout_width="match_parent"

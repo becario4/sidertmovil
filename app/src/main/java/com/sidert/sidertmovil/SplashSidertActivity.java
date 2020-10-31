@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_COL
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
@@ -53,12 +56,19 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Cursor row;
 
+        /*ContentValues c = new ContentValues();
+        c.put("id_solicitud_integrante", 4);
+        db.update(TBL_INTEGRANTES_GPO, c, "id_solicitud_integrante = ?", new String[]{"20"});*/
+
+        String cadenaNormalize = Normalizer.normalize("PEÑAÁ", Normalizer.Form.NFD);
+        String cadenaSinAcentos = cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
+        Log.e("CadenaSinAcentos", cadenaSinAcentos);
+
         SessionManager session = new SessionManager(this);
 
         Log.e("Mac", Miscellaneous.EncodePassword(" F4:71:90:AC:9A:BC"));
-
-        Log.e("MacDecode", Miscellaneous.DecodePassword("+10TyA2NzR1ed1ja"));
-        Log.e("MacPrimero", Miscellaneous.DecodePassword("DJkOBljODFkOwkjOxcjO0YEI"));
+        Log.e("MacDecodeXXX", Miscellaneous.DecodePassword("kDM6EDO6gzM6YTO6czQ6gDN="));
+        Log.e("MacPrimero", Miscellaneous.DecodePassword("xAjNy9GdzV2Z"));
 
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -117,6 +127,7 @@ public class SplashSidertActivity extends AppCompatActivity {
         Log.e("MODELO", modelo);
 
         session.setDominio("http://192.168.100.5:", "8080");
+        //session.setDominio("http://sidert.ddns.net:", "83");
 
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);
@@ -157,11 +168,11 @@ public class SplashSidertActivity extends AppCompatActivity {
             }
         }
 
-        /*new RegistrarColonias().execute();
+        new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();*/
+        new RegistrarLocalidades().execute();
 
-        Handler handler_home=new Handler();
+        /*Handler handler_home=new Handler();
         handler_home.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -170,7 +181,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 startActivity(start);
                 finish();
             }
-        },3000);
+        },3000);*/
 
     }
 

@@ -58,15 +58,13 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         holder.tvDesembolso.setText("Desembolso: "+item.getDesembolso());
         holder.tvMontoPrestamo.setText("Otorgado: "+Miscellaneous.moneyFormat(item.getMontoPrestamo()));
         holder.tvIdPrestamo.setText(item.getIdPrestamo());
-        if (item.getEstatus().equals("1")) {
-            holder.tvEstatus.setText("PAGADO");
-            holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.green));
-        }
-        else{
-            holder.tvEstatus.setText("S Móvil: " + Miscellaneous.moneyFormat(item.getSaldoCorte()));
-            holder.tvEstatus.setTextColor(ctx.getResources().getColor(R.color.shadowdrawer));
-        }
-        //holder.tvSaldoOmega.setText("");
+        if (item.getEstatus().equals("1"))
+            holder.tvPagado.setVisibility(View.VISIBLE);
+        else
+            holder.tvPagado.setVisibility(View.INVISIBLE);
+
+        holder.tvSaldoMovil.setText("S Móvil: " + Miscellaneous.moneyFormat(item.getSaldoCorte()));
+        holder.tvSaldoMovil.setTextColor(ctx.getResources().getColor(R.color.shadowdrawer));
         holder.tvSaldoOmega.setText("S Omega: " + Miscellaneous.moneyFormat(item.getSaldoOmega()));
 
         holder.bind(item);
@@ -83,16 +81,18 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         private TextView tvDesembolso;
         private TextView tvMontoPrestamo;
         private TextView tvIdPrestamo;
-        private TextView tvEstatus;
+        private TextView tvSaldoMovil;
         private TextView tvSaldoOmega;
+        private TextView tvPagado;
         public ViewHolder(@NonNull View v) {
             super(v);
-            tvNombre = v.findViewById(R.id.tvNombre);
-            tvDesembolso = v.findViewById(R.id.tvDesembolso);
+            tvNombre        = v.findViewById(R.id.tvNombre);
+            tvDesembolso    = v.findViewById(R.id.tvDesembolso);
             tvMontoPrestamo = v.findViewById(R.id.tvMontoPrestamo);
-            tvIdPrestamo = v.findViewById(R.id.tvIdPrestamo);
-            tvEstatus = v.findViewById(R.id.tvEstatus);
+            tvIdPrestamo    = v.findViewById(R.id.tvIdPrestamo);
+            tvSaldoMovil    = v.findViewById(R.id.tvSaldoMovil);
             tvSaldoOmega    = v.findViewById(R.id.tvSaldoOmega);
+            tvPagado        = v.findViewById(R.id.tvPagada);
         }
 
         public void bind (final MPrestamo item_prestamo){

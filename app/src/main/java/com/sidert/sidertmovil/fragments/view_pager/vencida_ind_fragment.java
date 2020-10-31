@@ -69,6 +69,7 @@ import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
@@ -134,6 +135,7 @@ import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.SCREEN_SHOT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
@@ -2409,6 +2411,25 @@ public class vencida_ind_fragment extends Fragment {
                         dBhelper.saveResumenGestion(db, values);
 
                         Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
+
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                        ss.SaveRespuestaGestion(ctx, false);
+
+                        Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
+                        Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+                        whatsappIntent.setType("text/plain");
+                        whatsappIntent.setPackage("com.whatsapp");
+                        whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + parent.nombre);
+                        whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                        whatsappIntent.setType("image/jpeg");
+                        whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        try {
+                            ctx.startActivity(whatsappIntent);
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+                        }
+
                         parent.finish();
                     }
                 }

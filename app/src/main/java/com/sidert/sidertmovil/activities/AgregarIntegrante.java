@@ -152,6 +152,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private String[] _riesgo;
 
     //===================  DATOS PERSONALES  ==================================
+    private LinearLayout llComentCli;
+    private TextView tvComentAdminCli;
     private TextView tvCargo;
     private EditText etNombreCli;
     private EditText etApPaternoCli;
@@ -161,8 +163,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private TextView tvGeneroCli;
     private RadioGroup rgGeneroCli;
     private TextView tvEstadoNacCli;
-    private TextView tvCurpCli;
-    private EditText etCurpIdCli;
+    private EditText etCurpCli;
+    //private EditText etCurpIdCli;
     private TextView tvRfcCli;
     private TextView tvTipoIdentificacion;
     private EditText etNumIdentifCli;
@@ -443,6 +445,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         Toolbar TBmain = findViewById(R.id.TBmain);
         setSupportActionBar(TBmain);
         //=================================  DATOS PERSONALES  =====================================
+        llComentCli         = findViewById(R.id.llComentCli);
+        tvComentAdminCli    = findViewById(R.id.tvComentAdminCli);
         tvCargo             = findViewById(R.id.tvCargo);
         etNombreCli         = findViewById(R.id.etNombreCli);
         etApPaternoCli      = findViewById(R.id.etApPaternoCli);
@@ -453,8 +457,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         rgGeneroCli         = findViewById(R.id.rgGeneroCli);
         tvEstadoNacCli      = findViewById(R.id.tvEstadoNacCli);
         tvRfcCli            = findViewById(R.id.tvRfcCli);
-        tvCurpCli           = findViewById(R.id.tvCurpCli);
-        etCurpIdCli         = findViewById(R.id.etCurpIdCli);
+        etCurpCli           = findViewById(R.id.etCurpCli);
+        //etCurpIdCli         = findViewById(R.id.etCurpIdCli);
         tvTipoIdentificacion = findViewById(R.id.tvTipoIdentificacion);
         etNumIdentifCli     = findViewById(R.id.etNumIdentifCli);
         tvEstudiosCli       = findViewById(R.id.tvEstudiosCli);
@@ -732,7 +736,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //==============================  PERSONALES LISTENER ======================================
         tvFechaNacCli.setOnClickListener(tvFechaNacCli_OnClick);
         tvEstadoNacCli.setOnClickListener(tvEstadoNacCli_OnClick);
-        tvCurpCli.addTextChangedListener(new TextWatcher() {
+        etCurpCli.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -750,9 +754,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (s.toString().contains("Curp no válida"))
                         tvRfcCli.setText("Rfc no válida");
                     else {
-                        tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0,10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
-                        Update("rfc", TBL_INTEGRANTES_GPO, tvRfcCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
                         Update("curp", TBL_INTEGRANTES_GPO, s.toString().trim().toUpperCase(), "id", id_integrante);
+                        if (s.toString().trim().length() >= 10) {
+                            tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
+                            Update("rfc", TBL_INTEGRANTES_GPO, tvRfcCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
+                        }
+                        else{
+                            tvRfcCli.setText("");
+                            Update("rfc", TBL_INTEGRANTES_GPO, tvRfcCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
+                        }
                     }
                 }
                 else {
@@ -762,7 +772,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
             }
         });
-        etCurpIdCli.addTextChangedListener(new TextWatcher() {
+        /*etCurpIdCli.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -775,13 +785,19 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("curp_digito_veri", TBL_INTEGRANTES_GPO, e.toString(), "id", id_integrante);
+                if (e.length() == 2){
+                    if (!validator.validate(etCurpIdCli, new String[]{validator.REQUIRED, validator.CURP_ID})) {
+                        if (Miscellaneous.CurpValidador(etCurpCli.getText() + etCurpIdCli.getText().toString().trim().toUpperCase()))
+                            Update("curp_digito_veri", TBL_INTEGRANTES_GPO, e.toString(), "id", id_integrante);
+                        else
+                            Update("curp_digito_veri", TBL_INTEGRANTES_GPO, "", "id", id_integrante);
+                    }
+                }
                 else
                     Update("curp_digito_veri", TBL_INTEGRANTES_GPO, "", "id", id_integrante);
 
             }
-        });
+        });*/
         tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
         etNumIdentifCli.addTextChangedListener(new TextWatcher() {
             @Override
@@ -2283,7 +2299,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         params.put(5,"");
 
                     Update("genero", TBL_INTEGRANTES_GPO, "0", "id", id_integrante);
-                    tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
                 }
                 else if(checkedId == R.id.rbMujer){
                     params.put(0, etNombreCli.getText().toString());
@@ -2299,7 +2315,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                     Update("genero", TBL_INTEGRANTES_GPO, "1", "id", id_integrante);
 
-                    tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
                 }
                 else {
                     params.put(0, etNombreCli.getText().toString());
@@ -2313,7 +2329,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     else
                         params.put(5,"");
 
-                    tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
                 }
             }
         });
@@ -3870,7 +3886,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 Update("fecha_nacimiento", TBL_INTEGRANTES_GPO, tvFechaNacCli.getText().toString().trim(), "id", id_integrante);
                 Update("edad", TBL_INTEGRANTES_GPO, tvEdadCli.getText().toString().trim(), "id", id_integrante);
-                tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -4145,6 +4161,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         row = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id = ? AND id_credito = ?", "", new String[]{id_integrante, id_credito});
         row.moveToFirst();
 
+        if (!row.getString(20).trim().isEmpty()){
+            llComentCli.setVisibility(View.VISIBLE);
+            tvComentAdminCli.setText(row.getString(20).toUpperCase());
+        }
+
         switch (row.getInt(2)){
             case 1:
                 tvCargo.setText(getResources().getString(R.string.presidente).toUpperCase());
@@ -4175,8 +4196,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         }
         tvEstadoNacCli.setText(row.getString(9));
         tvRfcCli.setText(row.getString(10));
-        tvCurpCli.setText(row.getString(11));
-        etCurpIdCli.setText(row.getString(12)); etCurpIdCli.setEnabled(is_edit);
+        etCurpCli.setText(row.getString(11)); etCurpCli.setEnabled(is_edit);
+        //etCurpIdCli.setText(row.getString(12)); etCurpIdCli.setEnabled(is_edit);
         tvTipoIdentificacion.setText(row.getString(13));
         etNumIdentifCli.setText(row.getString(14)); etNumIdentifCli.setEnabled(is_edit);
         tvEstudiosCli.setText(row.getString(15));
@@ -4500,7 +4521,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(false);
             }
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCurpIdCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
+            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCurpIdCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
             tvTipoIdentificacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etNumIdentifCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvEstudiosCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -4610,11 +4632,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer){
                 tvGeneroCli.setError(null);
                 if (!validatorTV.validate(tvEstadoNacCli, new String[]{validatorTV.REQUIRED}) &&
+                !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
                 (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
-                !tvRfcCli.getText().toString().trim().equals("Rfc no válida")) &&
-                !validatorTV.validate(tvCurpCli, new String[]{validatorTV.REQUIRED, validatorTV.CURP}) &&
-                !validator.validate(etCurpIdCli, new String[]{validator.REQUIRED, validator.CURP_ID})){
-                    if (Miscellaneous.CurpValidador(tvCurpCli.getText().toString().trim().toUpperCase()+etCurpIdCli.getText().toString().trim())){
+                !tvRfcCli.getText().toString().trim().equals("Rfc no válida"))){
+                    if (Miscellaneous.CurpValidador(etCurpCli.getText().toString().trim().toUpperCase())){
                         if (!validatorTV.validate(tvTipoIdentificacion, new String[]{validatorTV.REQUIRED}) &&
                         !validator.validate(etNumIdentifCli, new String[]{validator.REQUIRED}) &&
                         !validatorTV.validate(tvEstudiosCli, new String[]{validatorTV.REQUIRED}) &&
@@ -4655,8 +4676,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 }
                                 cv.put("estado_nacimiento", tvEstadoNacCli.getText().toString().trim());
                                 cv.put("rfc", tvRfcCli.getText().toString().trim());
-                                cv.put("curp", tvCurpCli.getText().toString().trim());
-                                cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
+                                cv.put("curp", etCurpCli.getText().toString().trim());
+                                //cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
                                 cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim());
                                 cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
                                 cv.put("nivel_estudio", tvEstudiosCli.getText().toString());
@@ -4676,7 +4697,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     }
                     else{
                         ivError1.setVisibility(View.VISIBLE);
-                        etCurpIdCli.setError("Curp no válida");
+                        etCurpCli.setError("Curp no válida");
                     }
                 }
                 else
@@ -5259,7 +5280,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
                         else
                             db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{id_integrante});*/
-                        tvCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
                     }
                 }
                 break;

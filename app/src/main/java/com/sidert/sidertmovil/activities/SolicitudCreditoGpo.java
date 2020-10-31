@@ -219,7 +219,6 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row_integrantes.getCount(); i++){
                 HashMap<Integer, String> item = new HashMap();
-                Log.e("id"+i, row_integrantes.getString(21));
                 item.put(0,row_integrantes.getString(0));
                 String nombre = row_integrantes.getString(3) + " " +row_integrantes.getString(4) + " " + row_integrantes.getString(5);
                 item.put(1, nombre.trim().toUpperCase());

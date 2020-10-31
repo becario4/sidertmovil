@@ -268,10 +268,11 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
 
                             ss.SendOriginacionInd (ctx, false);
                             ss.SendOriginacionGpo(ctx, false);
+                            ss.SendRecibos(ctx, false);
+                            ss.GetUltimosRecibos(ctx);
+
                             //ss.CancelGestiones(ctx, false);
-                            //ss.SendRecibos(ctx, false);
                             //ss.SendCancelGestiones(ctx, false);
-                            //ss.GetUltimosRecibos(ctx);
 
                         } else
                             Log.e("JOB", "Sin conexion a internet Geolocalizacion");

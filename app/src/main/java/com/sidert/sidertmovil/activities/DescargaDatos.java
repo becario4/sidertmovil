@@ -145,8 +145,13 @@ public class DescargaDatos extends AppCompatActivity {
          sc.GetMediosContacto(ctx);
          sc.GetDestinosCredito(ctx);
          sc.GetPlazosPrestamo(ctx);
-         //Servicios_Sincronizado ss = new Servicios_Sincronizado();
-         //ss.GetUltimosRecibos(ctx);
+
+         Servicios_Sincronizado ss = new Servicios_Sincronizado();
+         ss.GetPrestamos(ctx, false);
+         ss.GetPrestamosToRenovar(ctx);
+         ss.GetUltimosRecibos(ctx);
+         ss.GetSolicitudesRechazadasInd(ctx, false);
+        ss.GetSolicitudesRechazadasGpo(ctx, false);
     }
 
     private void GetUltimasImpresiones (){
@@ -687,7 +692,7 @@ public class DescargaDatos extends AppCompatActivity {
                                     values.put(9, String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                     values.put(10, prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                     values.put(11, prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
+                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");    //PAGADA
                                     values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA CREACION
                                     values.put(14, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
@@ -746,7 +751,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             values_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                             values_pago.put(1, mPago.getFecha());                                    //FECHA
                                             values_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                            values_pago.put(3,mPago.getBanco());                                     //BANCO
+                                            values_pago.put(3, Miscellaneous.validStr(mPago.getBanco()));                                    //BANCO
                                             values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                             values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
@@ -766,13 +771,9 @@ public class DescargaDatos extends AppCompatActivity {
                                     cv.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());
                                     cv.put("tipo_cartera", prestamos.get(i).getTipoCartera());
 
-                                    Log.e(".",".............................................");
-                                    Log.e("Pagada",prestamos.get(i).getPagada()+" pagadaXd");
-                                    Log.e("Pagada", String.valueOf(prestamos.get(i).getPagada().equals("PAGADA")));
-                                    Log.e(".",".............................................");
                                     if (row.getInt(13) == 0)
                                         cv.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");
-                                    cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha("timestamp"));
+                                    cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));
 
                                     db.update(TBL_PRESTAMOS_IND_T, cv, "_id = ?", new String[]{row.getString(0)});
 
@@ -862,11 +863,12 @@ public class DescargaDatos extends AppCompatActivity {
                                             Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
                                             if (rowAmortiz.getCount() > 0) {
                                                 rowAmortiz.moveToFirst();
-                                                if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1))
-                                                cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
-                                                cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                                    //PAGADO
-                                                cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                                    //NUMERO
-                                                cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                           //DIAS ATRASO
+                                                if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)) {
+                                                    cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
+                                                    cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                                    //PAGADO
+                                                    cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                                    //NUMERO
+                                                    cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                           //DIAS ATRASO
+                                                }
                                             }
                                             rowAmortiz.close();
                                             cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                             //FECHA ACTUALIZADO
@@ -885,7 +887,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 cv_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                                 cv_pago.put(1, mPago.getFecha());                                    //FECHA
                                                 cv_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                                cv_pago.put(3,mPago.getBanco());                                     //BANCO
+                                                cv_pago.put(3, Miscellaneous.validStr(mPago.getBanco()));            //BANCO
                                                 cv_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                                 cv_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
@@ -1030,6 +1032,10 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                         values_pago.put(1, mPago.getFecha());                                    //FECHA
                                         values_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
+                                        Log.e("Banco", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+                                        Log.e("Banco", "XXX"+prestamos.get(i).getId());
+                                        Log.e("Banco", "XXX"+mPago.getBanco());
+                                        Log.e("Banco", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
                                         values_pago.put(3,mPago.getBanco());                                     //BANCO
                                         values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                         values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
@@ -1131,15 +1137,15 @@ public class DescargaDatos extends AppCompatActivity {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
                                         cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
-                                        cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
-                                        cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                              //INTERES
-                                        cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                  //IVA
-                                        cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                             //COMISION
+                                        cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                            //CAPITAL
+                                        cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                            //INTERES
+                                        cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                    //IVA
+                                        cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                          //COMISION
                                         cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                //TOTAL
-                                        cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));                        //CAPITAL PAGADO
-                                        cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));                       //INTERES PAGADO
-                                        cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                           //IVA PAGADO
-                                        cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));              //INTERES MORATORIO PAGADO
+                                        cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));               //CAPITAL PAGADO
+                                        cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));               //INTERES PAGADO
+                                        cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                       //IVA PAGADO
+                                        cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));//INTERES MORATORIO PAGADO
                                         cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));                  //IVA_MORATORIO PAGADO
                                         cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                      //COMISION PAGADA
                                         String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";

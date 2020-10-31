@@ -10,40 +10,58 @@ public class MResUltimoRecibo implements Serializable {
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("prestamoId")
+    @SerializedName("usuario_id")
     @Expose
-    private Integer prestamoId;
-    @SerializedName("asesorId")
+    private Integer usuarioId;
+    @SerializedName("asesor_id")
     @Expose
     private String asesorId;
-    @SerializedName("tipoRecibo")
+    @SerializedName("grupo_id")
     @Expose
-    private String tipoRecibo;
-    @SerializedName("tipoImpresion")
+    private Integer grupoId;
+    @SerializedName("num_solicitud")
     @Expose
-    private String tipoImpresion;
-    @SerializedName("folio")
-    @Expose
-    private Integer folio;
-    @SerializedName("monto")
-    @Expose
-    private String monto;
-    @SerializedName("clave")
-    @Expose
-    private String clave;
+    private Integer numSolicitud;
     @SerializedName("nombre")
     @Expose
     private String nombre;
-    @SerializedName("curp")
+    @SerializedName("medio_pago_id")
     @Expose
-    private String curp;
-    @SerializedName("fechaImpreso")
+    private Integer medioPagoId;
+    @SerializedName("evidencia")
+    @Expose
+    private String evidencia;
+    @SerializedName("tipo_imagen")
+    @Expose
+    private Integer tipoImagen;
+    @SerializedName("cliente_id")
+    @Expose
+    private Object clienteId;
+    @SerializedName("folio")
+    @Expose
+    private String folio;
+    @SerializedName("tipo")
+    @Expose
+    private String tipo;
+    @SerializedName("folio_manual")
+    @Expose
+    private String folioManual;
+    @SerializedName("monto")
+    @Expose
+    private Double monto;
+    @SerializedName("tipo_impresion")
+    @Expose
+    private String tipoImpresion;
+    @SerializedName("fecha_impreso")
     @Expose
     private String fechaImpreso;
-    @SerializedName("fechaEnvio")
+    @SerializedName("fecha_termino")
+    @Expose
+    private String fechaTermino;
+    @SerializedName("fecha_envio")
     @Expose
     private String fechaEnvio;
-    @SerializedName("createdAt")
+    @SerializedName("created_at")
     @Expose
     private String createdAt;
 
@@ -55,12 +73,12 @@ public class MResUltimoRecibo implements Serializable {
         this.id = id;
     }
 
-    public Integer getPrestamoId() {
-        return prestamoId;
+    public Integer getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setPrestamoId(Integer prestamoId) {
-        this.prestamoId = prestamoId;
+    public void setUsuarioId(Integer usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getAsesorId() {
@@ -71,44 +89,20 @@ public class MResUltimoRecibo implements Serializable {
         this.asesorId = asesorId;
     }
 
-    public String getTipoRecibo() {
-        return tipoRecibo;
+    public Integer getGrupoId() {
+        return grupoId;
     }
 
-    public void setTipoRecibo(String tipoRecibo) {
-        this.tipoRecibo = tipoRecibo;
+    public void setGrupoId(Integer grupoId) {
+        this.grupoId = grupoId;
     }
 
-    public String getTipoImpresion() {
-        return tipoImpresion;
+    public Integer getNumSolicitud() {
+        return numSolicitud;
     }
 
-    public void setTipoImpresion(String tipoImpresion) {
-        this.tipoImpresion = tipoImpresion;
-    }
-
-    public Integer getFolio() {
-        return folio;
-    }
-
-    public void setFolio(Integer folio) {
-        this.folio = folio;
-    }
-
-    public String getMonto() {
-        return monto;
-    }
-
-    public void setMonto(String monto) {
-        this.monto = monto;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
+    public void setNumSolicitud(Integer numSolicitud) {
+        this.numSolicitud = numSolicitud;
     }
 
     public String getNombre() {
@@ -119,12 +113,76 @@ public class MResUltimoRecibo implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getCurp() {
-        return curp;
+    public Integer getMedioPagoId() {
+        return medioPagoId;
     }
 
-    public void setCurp(String curp) {
-        this.curp = curp;
+    public void setMedioPagoId(Integer medioPagoId) {
+        this.medioPagoId = medioPagoId;
+    }
+
+    public String getEvidencia() {
+        return evidencia;
+    }
+
+    public void setEvidencia(String evidencia) {
+        this.evidencia = evidencia;
+    }
+
+    public Integer getTipoImagen() {
+        return tipoImagen;
+    }
+
+    public void setTipoImagen(Integer tipoImagen) {
+        this.tipoImagen = tipoImagen;
+    }
+
+    public Object getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Object clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public String getFolio() {
+        return folio;
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getFolioManual() {
+        return folioManual;
+    }
+
+    public void setFolioManual(String folioManual) {
+        this.folioManual = folioManual;
+    }
+
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
+    }
+
+    public String getTipoImpresion() {
+        return tipoImpresion;
+    }
+
+    public void setTipoImpresion(String tipoImpresion) {
+        this.tipoImpresion = tipoImpresion;
     }
 
     public String getFechaImpreso() {
@@ -133,6 +191,14 @@ public class MResUltimoRecibo implements Serializable {
 
     public void setFechaImpreso(String fechaImpreso) {
         this.fechaImpreso = fechaImpreso;
+    }
+
+    public String getFechaTermino() {
+        return fechaTermino;
+    }
+
+    public void setFechaTermino(String fechaTermino) {
+        this.fechaTermino = fechaTermino;
     }
 
     public String getFechaEnvio() {
@@ -150,4 +216,5 @@ public class MResUltimoRecibo implements Serializable {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
 }

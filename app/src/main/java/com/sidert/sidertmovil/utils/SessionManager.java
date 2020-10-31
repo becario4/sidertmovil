@@ -69,7 +69,31 @@ public class SessionManager {
     private final String ESTATUS_CONTE_CIERRE   = "estatus_conte_cierre";
     private final String ESTATUS_PENDI_CIERRE   = "estatus_pendi_cierre";
     private final String CONTADOR_CIERRE        = "contador_cierre";
+
     private final String MAC_ADDRESS            = "mac_address";
+
+    private final String NOMBRE_CC_AGF             = "nombre_cc_agf";
+    private final String TIPO_PRESTAMO_GPO_CC_AGF  = "tipo_prestamo_gpo_cc_agf";
+    private final String TIPO_PRESTAMO_IND_CC_AGF  = "tipo_prestamo_ind_cc_agf";
+    private final String CONTADOR_CC_AGF           = "contador_cc_agf";
+
+    // Recibos de AGF y CC
+    private final String NOMBRE_RECIBO_CC_AGF       = "nombre_recibo_cc_agf";
+    private final String FOLIO_RECIBO_CC_AGF        = "folio_recibo_cc_agf";
+    private final String RECIBO_AGF                 = "recibo_agf";
+    private final String RECIBO_CC                  = "recibo_cc";
+    private final String RECIBO_ENVIDA_CC_AGF       = "recibo_enviada_cc_agf";
+    private final String RECIBO_PENDIENTE_CC_AGF    = "recibo_pendiente_cc_agf";
+    private final String CONTADOR_RECIBO_CC_AGF     = "contador_recibo_cc_agf";
+
+    // Gestiones de AGF y CC
+    private final String NOMBRE_GESTION_CC_AGF = "nombre_gestion_cc_agf";
+    private final String GESTION_AGF = "gestion_agf";
+    private final String GESTION_CC = "gestion_cc";
+    private final String GESTION_ENVIDA_CC_AGF = "gestion_enviada_cc_agf";
+    private final String GESTION_PENDIENTE_CC_AGF = "gestion_pendiente_cc_agf";
+    private final String CONTADOR_GESTION_CC_AGF = "gestion_recibo_cc_agf";
+
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -200,6 +224,82 @@ public class SessionManager {
         filtros.add(preferences.getString(ESTATUS_PENDI_CIERRE, "0"));
         filtros.add(preferences.getString(NOMBRE_CIERRE,""));
         filtros.add(preferences.getString(CONTADOR_CIERRE, "0"));
+        return filtros;
+    }
+
+    //===================== Filtros de CC y AGF  ===================================================
+
+    public void setFiltrosCCAGF (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(NOMBRE_CC_AGF, filtros.get(NOMBRE_CC_AGF));
+        editor.putString(TIPO_PRESTAMO_GPO_CC_AGF, filtros.get(TIPO_PRESTAMO_GPO_CC_AGF));
+        editor.putString(TIPO_PRESTAMO_IND_CC_AGF, filtros.get(TIPO_PRESTAMO_IND_CC_AGF));
+        editor.putString(CONTADOR_CC_AGF, filtros.get(CONTADOR_CC_AGF));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCCAGF (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(NOMBRE_CC_AGF, ""));
+        filtros.add(preferences.getString(TIPO_PRESTAMO_GPO_CC_AGF, "0"));
+        filtros.add(preferences.getString(TIPO_PRESTAMO_IND_CC_AGF,"0"));
+        filtros.add(preferences.getString(CONTADOR_CC_AGF, "0"));
+        return filtros;
+    }
+
+    //===================== Filtros de Recibos de CC y AGF  ===================================================
+
+    public void setFiltrosRecibosCCAGF (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(NOMBRE_RECIBO_CC_AGF, filtros.get(NOMBRE_RECIBO_CC_AGF));
+        editor.putString(FOLIO_RECIBO_CC_AGF, filtros.get(FOLIO_RECIBO_CC_AGF));
+        editor.putString(RECIBO_AGF, filtros.get(RECIBO_AGF));
+        editor.putString(RECIBO_CC, filtros.get(RECIBO_CC));
+        editor.putString(RECIBO_ENVIDA_CC_AGF, filtros.get(RECIBO_ENVIDA_CC_AGF));
+        editor.putString(RECIBO_PENDIENTE_CC_AGF, filtros.get(RECIBO_PENDIENTE_CC_AGF));
+        editor.putString(CONTADOR_RECIBO_CC_AGF, filtros.get(CONTADOR_RECIBO_CC_AGF));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosRecibosCCAGF (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(NOMBRE_RECIBO_CC_AGF, ""));       //0 nombre
+        filtros.add(preferences.getString(FOLIO_RECIBO_CC_AGF, ""));        //1 folio
+        filtros.add(preferences.getString(RECIBO_AGF, "0"));                //2 agf
+        filtros.add(preferences.getString(RECIBO_CC,"0"));                  //3 cc
+        filtros.add(preferences.getString(RECIBO_ENVIDA_CC_AGF, "0"));      //4 enviadas
+        filtros.add(preferences.getString(RECIBO_PENDIENTE_CC_AGF,"0"));    //5 pendientes
+        filtros.add(preferences.getString(CONTADOR_RECIBO_CC_AGF, "0"));    //6 contador
+        return filtros;
+    }
+
+    //===================== Filtros de Gestiones de CC y AGF  ===================================================
+
+    public void setFiltrosGestionesCCAGF (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(NOMBRE_GESTION_CC_AGF, filtros.get(NOMBRE_GESTION_CC_AGF));
+        editor.putString(GESTION_AGF, filtros.get(GESTION_AGF));
+        editor.putString(GESTION_CC, filtros.get(GESTION_CC));
+        editor.putString(GESTION_ENVIDA_CC_AGF, filtros.get(GESTION_ENVIDA_CC_AGF));
+        editor.putString(GESTION_PENDIENTE_CC_AGF, filtros.get(GESTION_PENDIENTE_CC_AGF));
+        editor.putString(CONTADOR_GESTION_CC_AGF, filtros.get(CONTADOR_GESTION_CC_AGF));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosGestionCCAGF (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(NOMBRE_GESTION_CC_AGF, ""));      //0 nombre
+        filtros.add(preferences.getString(GESTION_AGF, "0"));               //1 agf
+        filtros.add(preferences.getString(GESTION_CC,"0"));                 //2 cc
+        filtros.add(preferences.getString(GESTION_ENVIDA_CC_AGF, "0"));     //3 enviada
+        filtros.add(preferences.getString(GESTION_PENDIENTE_CC_AGF,"0"));   //4 pendiente
+        filtros.add(preferences.getString(CONTADOR_GESTION_CC_AGF, "0"));
         return filtros;
     }
 

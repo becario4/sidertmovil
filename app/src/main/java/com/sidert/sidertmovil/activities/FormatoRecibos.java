@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sewoo.port.android.BluetoothPort;
@@ -32,6 +34,7 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MFormatoRecibo;
 import com.sidert.sidertmovil.models.MTicketCC;
+import com.sidert.sidertmovil.models.RecibosAgfCC;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
@@ -45,6 +48,8 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
+import static com.sidert.sidertmovil.utils.Constants.FOLIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
 import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
 
 public class FormatoRecibos extends AppCompatActivity {
@@ -65,9 +70,11 @@ public class FormatoRecibos extends AppCompatActivity {
     private static final String fileName = dir + "//BTPrinter";
     private String lastConnAddr;
 
+    Context ctx;
+
     private String ban = "";
     private Thread hThread;
-    private Context ctx;
+
 
     private Button btnOriginal;
     private Button btnCopia;
@@ -87,11 +94,21 @@ public class FormatoRecibos extends AppCompatActivity {
     private TextView tvTipoFirma;
     private TextView tvNombreFirma;
 
-    private MFormatoRecibo mRecibo;
-    private MTicketCC mTicket;
+    //private MFormatoRecibo mRecibo;
+    //private MTicketCC mTicket;
+    private RecibosAgfCC ticket;
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+
+    private int resImpresion = 0;
+    private boolean isReeimpresion = false;
+
+    private String nombre ="";
+    private String nomFirma = "";
+    private String monto = "0.0";
+    private String tipo = "";
+    private int meses = 0;
 
 
     @SuppressLint("SetTextI18n")
@@ -128,13 +145,43 @@ public class FormatoRecibos extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
-        String tipo_recibo = "";
+        nombre      = getIntent().getStringExtra("nombre");
+        nomFirma    = getIntent().getStringExtra("nombre_firma");
+        monto       = getIntent().getStringExtra("monto");
+        meses       = getIntent().getIntExtra("meses",0);
+        tipo        = getIntent().getStringExtra("tipo");
 
-            mRecibo = (MFormatoRecibo) getIntent().getSerializableExtra(TICKET_CC);
 
-            Log.e("Resimpre2", String.valueOf(mRecibo.getResImpresion()));
-            tipo_recibo = mRecibo.getTipoRecibo();
-            if (mRecibo.isTipoImpresion()){ // si es original
+        ticket = new RecibosAgfCC();
+        ticket.setGrupoId(getIntent().getStringExtra("grupo_id"));
+        ticket.setNumSolicitud(getIntent().getStringExtra("num_solicitud"));
+        ticket.setNombre(nombre);
+        ticket.setNombreFirma(nomFirma);
+        ticket.setTipoImpresion("O");
+        ticket.setMonto(monto);
+        ticket.setTipoRecibo(tipo);
+        ticket.setResImpresion(0);
+        ticket.setReeimpresion(false);
+
+        resImpresion = getIntent().getIntExtra("res_impresion", 0);
+        isReeimpresion = getIntent().getBooleanExtra("is_reeimpresion", false);
+
+        tvTipoImpresion.setText("Original");
+        tvTipoFirma.setText("Firma Asesor");
+        tvNombreFirma.setText(session.getUser().get(1));
+
+        tvTimestamp.setText(Miscellaneous.ObtenerFecha("timestamp"));
+
+        tvNombreCliente.setText(nombre);
+
+        tvTipoRecibo.setText("APOYO PARA GASTOS FUNERARIOS");
+        tvPago.setText(Miscellaneous.moneyFormat(monto));
+        if (monto.contains(".5"))
+            tvCantidadLetra.setText(Miscellaneous.cantidadLetra(monto) + " pesos 50/100 M.N.");
+        else
+            tvCantidadLetra.setText(Miscellaneous.cantidadLetra(monto) + " pesos 00/100 M.N.");
+
+            if (ticket.getTipoImpresion().equals("O")){ // si es original
                 tvTipoImpresion.setText("Original");
                 tvTipoFirma.setText("Firma Asesor");
                 tvNombreFirma.setText(session.getUser().get(1));
@@ -144,29 +191,28 @@ public class FormatoRecibos extends AppCompatActivity {
                 btnCopia.setVisibility(View.VISIBLE);
                 tvTipoImpresion.setText("Copia");
                 tvTipoFirma.setText("Firma Cliente");
-                tvNombreFirma.setText(mRecibo.getNombreCliente());
+                tvNombreFirma.setText(nomFirma);
             }
 
             tvTimestamp.setText(Miscellaneous.ObtenerFecha("timestamp"));
 
-            tvNombreCliente.setText(mRecibo.getNombreCliente());
+            tvNombreCliente.setText(nombre);
 
 
 
-        switch (tipo_recibo){
+        switch (tipo){
             case "CC": //Formato circulo de credito
                 tvTipoRecibo.setText("CIRCULO DE CREDITO");
-                tvPago.setText(Miscellaneous.moneyFormat(mRecibo.getMonto()));
+                tvPago.setText(Miscellaneous.moneyFormat(monto));
                 tvCantidadLetra.setText("Diecisiete pesos 50/100 M.N.");
                 break;
             case "AGF": //Formato de gastos funerarios
                 tvTipoRecibo.setText("APOYO PARA GASTOS FUNERARIOS");
-                tvPago.setText(Miscellaneous.moneyFormat(mRecibo.getMonto()));
-                Log.e("Contains", String.valueOf(mRecibo.getMonto().contains(".5"))+ "  "+mRecibo.getMonto());
-                if (mRecibo.getMonto().contains(".5"))
-                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + " pesos 50/100 M.N.");
+                tvPago.setText(Miscellaneous.moneyFormat(monto));
+                if (monto.contains(".5"))
+                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(monto) + " pesos 50/100 M.N.");
                 else
-                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(mRecibo.getMonto()) + " pesos 00/100 M.N.");
+                    tvCantidadLetra.setText(Miscellaneous.cantidadLetra(monto) + " pesos 00/100 M.N.");
                 break;
         }
 
@@ -193,6 +239,7 @@ public class FormatoRecibos extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
+
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
             }catch (Exception e){
                 e.printStackTrace();
@@ -204,7 +251,8 @@ public class FormatoRecibos extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
-                mRecibo.setTipoImpresion(false);
+
+                ticket.setTipoImpresion("C");
                 new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
             }catch (Exception e){
                 e.printStackTrace();
@@ -215,8 +263,8 @@ public class FormatoRecibos extends AppCompatActivity {
     private View.OnClickListener btnOriginalRe_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mRecibo.setTipoImpresion(true);
-            mRecibo.setReeimpresion(true);
+            ticket.setTipoImpresion("O");
+            isReeimpresion = true;
             new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
         }
     };
@@ -224,8 +272,8 @@ public class FormatoRecibos extends AppCompatActivity {
     private View.OnClickListener btnCopiaRe_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mRecibo.setTipoImpresion(false);
-            mRecibo.setReeimpresion(true);
+            isReeimpresion = true;
+            ticket.setTipoImpresion("C");
             new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
         }
     };
@@ -272,14 +320,15 @@ public class FormatoRecibos extends AppCompatActivity {
                 hThread.start();
 
                 PrintRecibos print = new PrintRecibos();
-                print.WriteTicket(ctx, mRecibo);
+                print.WriteTicket(ctx, ticket);
                 try{
-                if (!mRecibo.isReeimpresion()) {
-                    if (mRecibo.isTipoImpresion()) {
+                if (!isReeimpresion) {
+                    if (ticket.getTipoImpresion().equals("O")) {
+                        resImpresion = 1;
                         bluetoothPort.disconnect();
                         tvTipoImpresion.setText("Copia");
                         tvTipoFirma.setText("Firma Cliente");
-                        tvNombreFirma.setText(mRecibo.getNombreCliente());
+                        tvNombreFirma.setText(nomFirma);
                         btnOriginal.setVisibility(View.GONE);
                         btnCopia.setVisibility(View.VISIBLE);
                         btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
@@ -287,6 +336,7 @@ public class FormatoRecibos extends AppCompatActivity {
                     } else {
                         //String sql = "SELECT * FROM " + ;
                         //Cursor row = db.rawQuery(sql, new String[]{mRecibo.getNombreCliente().toUpperCase()});
+                        resImpresion = 2;
                         bluetoothPort.disconnect();
                         btnCopia.setVisibility(View.GONE);
                         btnCopiaRe.setVisibility(View.VISIBLE);
@@ -368,10 +418,11 @@ public class FormatoRecibos extends AppCompatActivity {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
-                Log.e("IsReimpresion", String.valueOf(mRecibo.isReeimpresion()));
-                Log.e("ResImpresion", String.valueOf(mRecibo.getResImpresion()));
-                if (!mRecibo.isReeimpresion()) {
-                    switch (mRecibo.getResImpresion()) {
+
+                String sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND nombre = ?";
+                Cursor row = db.rawQuery(sql, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud(), ticket.getTipoRecibo(), ticket.getNombre()});
+                if (row.getCount() < 3) {
+                    switch (row.getCount()) {
                         case 0:
                             btnOriginal.setVisibility(View.VISIBLE);
                             btnOriginal.setEnabled(true);
@@ -556,11 +607,37 @@ public class FormatoRecibos extends AppCompatActivity {
      * */
     public void sendResponse(boolean success, int resultPrint, String resultMess){
         saveSettingFile();
+        String sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ?";
+        Cursor row = db.rawQuery(sql, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud(), ticket.getTipoRecibo()});
+        row.moveToFirst();
+        resultPrint = row.getCount();
+        if (row.getCount() == 1)
+            resultPrint = 1;
+        else if (row.getCount() >= 2)
+            resultPrint = 2;
+
+        switch (resultPrint) {
+            case 0:
+                resultMess = ctx.getResources().getString(R.string.not_print);
+                break;
+            case 1:
+                resultMess = ctx.getResources().getString(R.string.print_original);
+                break;
+            case 2:
+                resultMess = ctx.getResources().getString(R.string.print_original_copy);
+                break;
+        }
+
         Intent intent = new Intent();
         if(success){
             intent.putExtra(Constants.MESSAGE, resultMess);
             intent.putExtra(Constants.RES_PRINT, resultPrint);
-            intent.putExtra(Constants.FOLIO, 1);
+            try {
+                intent.putExtra(Constants.FOLIO, row.getInt(4));
+            }
+            catch (Exception e){
+                intent.putExtra(FOLIO, 0);
+            }
             setResult(RESULT_OK, intent);
         }else{
             intent.putExtra(Constants.MESSAGE, resultMess);
@@ -575,7 +652,7 @@ public class FormatoRecibos extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 String message = "";
-                switch (this.mRecibo.getResImpresion()) {
+                switch (resImpresion) {
                     case 0:
                         message = ctx.getResources().getString(R.string.not_print);
                         break;
@@ -586,7 +663,7 @@ public class FormatoRecibos extends AppCompatActivity {
                         message = ctx.getResources().getString(R.string.print_original_copy);
                         break;
                 }
-                sendResponse(true, 2, message);
+                sendResponse(true, resImpresion, message);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -601,7 +678,7 @@ public class FormatoRecibos extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         String message;
-        switch (this.mRecibo.getResImpresion()) {
+        switch (resImpresion) {
             case 0:
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
@@ -615,7 +692,7 @@ public class FormatoRecibos extends AppCompatActivity {
                 message = ctx.getResources().getString(R.string.not_print);
                 break;
         }
-        sendResponse(true, this.mRecibo.getResImpresion(), message);
+        sendResponse(true, resImpresion, message);
     }
 
     /**

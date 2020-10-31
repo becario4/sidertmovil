@@ -138,6 +138,7 @@ public class route_fragment extends Fragment{
                 Intent i_prestamos = new Intent(boostrap, PrestamosClientes.class);
                 i_prestamos.putExtra(ID_CARTERA, item.getId_cliente());
                 i_prestamos.putExtra(TIPO, item.getTipo());
+                i_prestamos.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i_prestamos);
             }
 

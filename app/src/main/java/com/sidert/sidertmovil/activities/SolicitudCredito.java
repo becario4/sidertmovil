@@ -131,7 +131,7 @@ public class SolicitudCredito extends AppCompatActivity {
         rvOriginacion.setLayoutManager(new LinearLayoutManager(ctx));
         rvOriginacion.setHasFixedSize(false);
 
-        initComponents();
+        //initComponents();
 
         fbAgregar = findViewById(R.id.fbAgregar);
         llGpo = findViewById(R.id.llGpo);
@@ -200,6 +200,7 @@ public class SolicitudCredito extends AppCompatActivity {
                 item.put(3, row.getString(11));         //Estatus
                 item.put(4, row.getString(7));          //Fecha Termino
                 item.put(5, row.getString(10));         //Fecha Envio
+                item.put(6, row.getString(4));          //id_originacion
                 data.add(item);
                 row.moveToNext();
             }

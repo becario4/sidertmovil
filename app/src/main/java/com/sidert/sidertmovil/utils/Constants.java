@@ -69,6 +69,8 @@ public class Constants {
     public final static String RESPONSE                 = "response";
     public final static String CODE                     = "code";
 
+    public final static String SCREEN_SHOT              = "response";
+
     public final static String RES_PRINT                = "res_print";
 
     public final static String uri_signature            = "uri_signature";
@@ -212,6 +214,8 @@ public class Constants {
     public final static String PAGO_REQUERIDO               = "PagoRequerido";
     public final static String FIRMA_IMAGE                  = "FirmaImage";
     public final static String TIPO_IMAGEN                  = "TipoImagen";
+
+    public final static String ID_CREDITO                   = "id_credito";
 
     public final static String FECHA_INI                    = "Fecha_Ini";
 
@@ -366,6 +370,7 @@ public class Constants {
     public final static String TBL_SUCURSALES           = "tbl_sucursales";
     public final static String TBL_CODIGOS_OXXO         = "tbl_codigos_oxxo";
     public final static String TBL_RESUMENES_GESTION    = "tbl_resumenes_gestion";
+    public final static String TBL_PRESTAMOS_TO_RENOVAR    = "tbl_prestamos_to_renovar";
     //public final static String SOLICITUDES              = "solicitudes";
     //public final static String SOLICITUDES_T            = "solicitudes_t";
 
@@ -448,6 +453,35 @@ public class Constants {
     public final static String TBL_AVAL   = "tbl_aval";
 
     public static final String TBL_CANCELACIONES       = "tbl_cancelaciones";
+
+    public final static String TBL_SOLICITUDES_REN          = "tbl_solicitudes_ren";
+    public final static String TBL_CREDITO_IND_REN          = "tbl_credito_ind_ren";
+    public final static String TBL_CLIENTE_IND_REN          = "tbl_cliente_ind_ren";
+    public final static String TBL_CONYUGE_IND_REN          = "tbl_conyuge_ind_ren";
+    public final static String TBL_ECONOMICOS_IND_REN       = "tbl_economicos_ind_ren";
+    public final static String TBL_NEGOCIO_IND_REN          = "tbl_negocio_ind_ren";
+    public final static String TBL_AVAL_IND_REN             = "tbl_aval_ren";
+    public final static String TBL_REFERENCIA_IND_REN       = "tbl_referencia_ind_ren";
+    public final static String TBL_CROQUIS_IND_REN          = "tbl_croquis_ind_ren";
+    public final static String TBL_POLITICAS_PLD_IND_REN    = "tbl_politicas_pld_ind_ren";
+    public final static String TBL_DIRECCIONES_REN          = "tbl_direcciones_ren";
+    public final static String TBL_DOCUMENTOS_REN            = "tbl_documentos_ren";
+
+    public final static String TBL_CREDITO_GPO_REN                  = "tbl_credito_gpo_ren";
+    public final static String TBL_INTEGRANTES_GPO_REN              = "tbl_integrantes_gpo_ren";
+    public final static String TBL_TELEFONOS_INTEGRANTE_REN         = "tbl_telefonos_integrante_ren";
+    public final static String TBL_DOMICILIO_INTEGRANTE_REN         = "tbl_domicilio_integrante_ren";
+    public final static String TBL_NEGOCIO_INTEGRANTE_REN           = "tbl_negocio_integrante_ren";
+    public final static String TBL_CONYUGE_INTEGRANTE_REN           = "tbl_conyuge_integrante_ren";
+    public final static String TBL_OTROS_DATOS_INTEGRANTE_REN       = "tbl_otros_datos_integrante_ren";
+    public final static String TBL_CROQUIS_GPO_REN                  = "tbl_croquis_gpo_ren";
+    public final static String TBL_POLITICAS_PLD_INTEGRANTE_REN     = "tbl_politicas_pld_integrante_ren";
+    public final static String TBL_DOCUMENTOS_INTEGRANTE_REN        = "tbl_documentos_integrante_ren";
+
+    public final static String TBL_PRESTAMOS                        = "tbl_prestamos";
+
+    public final static String TBL_RECIBOS_AGF_CC                   = "tbl_recibos_agf_cc";
+    public final static String TBL_RECUPERACION_RECIBOS             = "tbl_recuperacion_recibos";
 
 
     public final static String STATUS_FICHAS                = "status_fichas";
@@ -536,9 +570,15 @@ public class Constants {
     public final static String K_MONTO_LETRA                    = "monto_letra";
     public final static String K_DESTINO_PRESTAMO               = "destino_prestamo";
     public final static String K_CLASIFICACION_RIESGO           = "clasificacion_riesgo";
+    public final static String K_COMPORTAMIENTO_PAGO            = "comportamiento_pago";
+    public final static String K_OBSERVACIONES                  = "observaciones";
+    public final static String K_TIPO_SOLICITUD                 = "tipo_solicitud";
+    public final static String K_CLIENTE_ID                     = "cliente_id";
+    public final static String K_GRUPO_ID                       = "grupo_id";
     public final static String K_ESTATUS_INTEGRANTE             = "estatus_integrante";
     public final static String K_FECHA_INICIO                   = "fecha_inicio";
     public final static String K_FECHA_ENVIO                    = "fecha_envio";
+    public final static String K_SOLICITUD_ID                   = "solicitud_id";
     public final static String K_FECHA_TERMINO                  = "fecha_termino";
     public final static String K_SOLICITANTE                    = "solicitante";
     public final static String K_OTROS_DATOS                    = "otros_datos";

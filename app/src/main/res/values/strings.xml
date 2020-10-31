@@ -404,6 +404,13 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>BAJO</item>           <!--2-->
     </string-array>
 
+    <string-array name="comportamiento_pago">
+        <item>NO RECOMENDABLE</item>  <!--0-->
+        <item>REGULAR</item>          <!--1-->
+        <item>BUENO</item>            <!--2-->
+        <item>EXCELENTE</item>        <!--2-->
+    </string-array>
+
     <string-array name="tipo_casa_aval"></string-array>
 
     <string-array name="estatus_ticket">

@@ -34,6 +34,9 @@ public class WebServicesRoutes {
     public final static String WS_LOGIN                     = "token"; //Servicio para inicio de sesion
     //public final static String WS_LOGIN_movil               = "token"; //Servicio para inicio de sesion para movil
     public final static String WS_GET_CARTERA               = "carteras"; //Servicio para obtener la cartera
+    public final static String WS_GET_PRESTAMOS_AGF_CC      = "prestamos"; //Servicio para obtener prestamos para AGF y CC
+    public final static String WS_GET_PRESTAMO_RENOVAR      = "ultimoprestamoind"; //Servicio para obtener datos del cliente para renovacion
+    public final static String WS_GET_PRESTAMO_RENOVAR_GPO  = "ultimoprestamogpo"; //Servicio para obtener datos del grupo para renovacion
     public final static String WS_GET_TICKETS               = "getTickets"; //Servicio para obtener la cartera
     public final static String WS_GET_ULTIMAS_IMPRESIONES   = "ultimosRegistro"; //Servicio para obtener los ultimos registros de impresiones
     public final static String WS_POST_IMPRESIONES          = "impresion"; //Servicio para registrar las impresiones
@@ -42,6 +45,7 @@ public class WebServicesRoutes {
     public final static String WS_GET_SUCURSALES            = "getSucursales"; //Servicio para para obtener mis sucursales son sus asesores correspondientes
     public final static String WS_GET_PRESTAMOS_IND         = "prestamos/cliente/{id_cliente}"; //Servicio para obtener los prestamos individuales
     public final static String WS_GET_PRESTAMOS_GPO         = "prestamos/grupo/{id_grupo}"; //Servicio para obtener los prestamos grupales
+    public final static String WS_POST_SAVE_AGF             = "saveAgf"; //Servicio para guardar los recibos de apoyo a gastos funerarios
     public final static String WS_MAILBOX                   = "Denuncia"; //Servicio para buzón de quejas o sugerencias
     public final static String WS_SYNCHRONIZEBD             = "UltimosRegistrosLog"; //Servicio para obtener los registros de impresiones y actualizar su BD local
     public final static String WS_GET_GEOLOCALIZACIONES     = "GetGeolocalizadas"; //Servicio para obtener las fichas de geolocalización
@@ -54,8 +58,9 @@ public class WebServicesRoutes {
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día
     public final static String WS_POST_RESPUESTA_GESTION    = "gestiones"; //Guarda la respuesta gestion de recuperaciones
     //public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
-    public final static String WS_GET_DOWNLOAD_APK         = "downloadApk"; //Valida la contraseña para descarga archivo de apk
-    public final static String WS_GET_SETTINGS_APP         = "settings"; //Valida la contraseña para activar configuraciones de la fecha y hora
+    public final static String WS_GET_DOWNLOAD_APK          = "downloadApk"; //Valida la contraseña para descarga archivo de apk
+    public final static String WS_GET_SETTINGS_APP          = "settings"; //Valida la contraseña para activar configuraciones de la fecha y hora
+    public final static String WS_GET_PRESTAMOS_RENOVAR     = "prestamostorenovar"; //Obtiene los prestamos listos para renovar
     public final static String WS_POST_SOLICITUD_CANCELAR   = "solicitudCancelarGestion"; //Servicio para cancelar solicitud de una gestion
     public final static String WS_GET_GESTIONES_CANCELADAS  = "getGestionesCanceladas"; //Servicio para obtener las gestiones canceladas por el administrador
     public final static String WS_POST_RECIBO               = "guardarRecibo"; //Servicio para registrar los recibos CC yAGF
@@ -63,7 +68,8 @@ public class WebServicesRoutes {
     public final static String WS_POST_SOPORTE              = "guardarTicket"; //Servicio para registrar los levantamientos de soporte
     public final static String WS_GET_ULTIMOS_RECIBOS       = "getUltimoRecibo"; //Servicio para obtener los ultimos folio de recibos entre CC y AGF
     public final static String WS_GET_GESTIONES             = "getUltimasGestiones"; //Servicio para obtener las ultimas gestiones de la semana actual
-
+    public final static String WS_GET_SOLIC_RECHAZO_IND     = "individuales_rechazos"; //Obtiene un listado de las solicitudes para obtener las secciones de la solicitud y su estatus
+    public final static String WS_GET_SOLIC_RECHAZO_GPO     = "grupales_rechazos"; //Obtiene un listado de las solicitudes de los integrantes del grupo que fueron rechazados
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México
@@ -81,6 +87,7 @@ public class WebServicesRoutes {
     public final static String WS_GET_NIVELES_ESTUDIOS      = "GetNivelesEstudios"; //Obtiene el catálogo de los niveles de estudios
     public final static String WS_GET_MEDIOS_PAGO_ORIG      = "GetMediosPagoOriginacion"; //Obtiene el catálogo de los medios de pagos de originación
     public final static String WS_GET_PARENTESCOS           = "GetParentescos"; //Obtiene el catálogo de los parentescos
+
 
 
 }

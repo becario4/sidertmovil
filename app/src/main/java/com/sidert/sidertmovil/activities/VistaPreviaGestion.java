@@ -82,6 +82,7 @@ import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_ACTUAL;
 import static com.sidert.sidertmovil.utils.Constants.SALDO_CORTE;
+import static com.sidert.sidertmovil.utils.Constants.SCREEN_SHOT;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.UBICACION;
 import static com.sidert.sidertmovil.utils.Constants.firma;
@@ -596,7 +597,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
             }
 
 
-            Uri imgUri = Uri.parse(img.getPath());
+            /*Uri imgUri = Uri.parse(img.getPath());
             Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
             whatsappIntent.setType("text/plain");
             whatsappIntent.setPackage("com.whatsapp");
@@ -609,7 +610,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 ctx.startActivity(whatsappIntent);
             } catch (android.content.ActivityNotFoundException ex) {
                 Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
-            }
+            }*/
 
             Intent i_result = new Intent();
             if (etEstatusPago.getVisibility() == View.VISIBLE){
@@ -625,6 +626,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
             i_result.putExtra(FECHA_FIN, fechaFin);
             i_result.putExtra(NOMBRE, name);
             i_result.putExtra(RESPONSE, true);
+            i_result.putExtra(SCREEN_SHOT, img.getPath());
             setResult(RESULT_OK, i_result);
 
 

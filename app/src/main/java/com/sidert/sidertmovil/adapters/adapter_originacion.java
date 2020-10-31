@@ -60,13 +60,14 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
             holder.tvFechaEnvio.setText("Envío: "+item.get(5));
             holder.tvFechaEnvio.setVisibility(View.VISIBLE);
         }
-        else
+        else {
             holder.tvFechaEnvio.setVisibility(View.GONE);
+        }
 
         holder.ivInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ctx, "Formulario incompletado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, "Formulario incompleto", Toast.LENGTH_SHORT).show();
             }
         });
         holder.bind(item);

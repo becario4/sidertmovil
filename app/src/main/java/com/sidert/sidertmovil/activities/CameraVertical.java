@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,10 +82,10 @@ public class CameraVertical extends AppCompatActivity {
     //Check state orientation of output image
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static{
-        ORIENTATIONS.append(Surface.ROTATION_0,0);
-        ORIENTATIONS.append(Surface.ROTATION_90,90);
-        ORIENTATIONS.append(Surface.ROTATION_180,180);
-        ORIENTATIONS.append(Surface.ROTATION_270,0);
+        ORIENTATIONS.append(Surface.ROTATION_0,90);
+        ORIENTATIONS.append(Surface.ROTATION_90,0);
+        ORIENTATIONS.append(Surface.ROTATION_180,270);
+        ORIENTATIONS.append(Surface.ROTATION_270,180);
     }
 
     private String cameraId;
@@ -161,6 +162,9 @@ public class CameraVertical extends AppCompatActivity {
 
             @Override
             public void onOrientationChanged(int orientation) {
+
+                Log.e("Orientacion", String.valueOf(orientation));
+
                 if (orientation > 340 && orientation < 360 || orientation > -5 && orientation < 20){
                     flBlock.setVisibility(View.GONE);
                     ibCapture.setEnabled(true);
@@ -278,7 +282,7 @@ public class CameraVertical extends AppCompatActivity {
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
             captureBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 100);
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,270);
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90);
 
             //file = new File(Environment.getExternalStorageDirectory()+"/"+name_photo+".jpg");
             List<Surface> outputSurface = new ArrayList<>(2);
@@ -367,7 +371,7 @@ public class CameraVertical extends AppCompatActivity {
             //captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
             captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 100);
             captureRequestBuilder.addTarget(surface);
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,270);
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,0);
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {

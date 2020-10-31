@@ -132,6 +132,7 @@ public class geo_pendientes_fragment extends Fragment {
                         i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
                         i_geolocalizacion.putExtra(Constants._ID, item.getId());
                         i_geolocalizacion.putExtra(Constants.MODULO, modulo);
+                        i_geolocalizacion.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(i_geolocalizacion);
                         break;
                     case 2:
@@ -139,6 +140,7 @@ public class geo_pendientes_fragment extends Fragment {
                         i_geolocalizacion.putExtra(Constants.NUM_SOLICITUD, item.getNum_solicitud());
                         i_geolocalizacion.putExtra(Constants._ID, item.getId());
                         i_geolocalizacion.putExtra(Constants.MODULO, modulo);
+                        i_geolocalizacion.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(i_geolocalizacion);
                         break;
                     default:

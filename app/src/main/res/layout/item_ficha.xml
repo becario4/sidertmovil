@@ -35,7 +35,7 @@
             android:layout_marginRight="4dp"
             android:background="@color/shadowdrawer"
             android:layout_width="@dimen/dp1"
-            android:layout_height="120dp"/>
+            android:layout_height="90dp"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_weight="1"
@@ -72,7 +72,7 @@
                 android:id="@+id/tvDireccion"
                 android:layout_marginTop="3dp"
                 android:textSize="13sp"
-                android:maxLines="3"
+                android:maxLines="2"
                 android:ellipsize="end"
                 android:textColor="@color/shadowdrawer"
                 android:layout_width="match_parent"

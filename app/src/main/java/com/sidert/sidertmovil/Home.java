@@ -33,6 +33,7 @@ import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.CirculoCredito;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
+import com.sidert.sidertmovil.activities.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
@@ -201,6 +202,10 @@ public class Home extends AppCompatActivity{
                 case R.id.nvOriginacion:
                     Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
                     startActivity(i_solicitud);
+                    break;
+                case R.id.nvRenovacion:
+                    Intent i_renovacion = new Intent(getApplicationContext(), RenovacionCredito.class);
+                    startActivity(i_renovacion);
                     break;
                 case R.id.nvConfiguraciones:
                     Intent i_config = new Intent(getApplicationContext(), Configuracion.class);

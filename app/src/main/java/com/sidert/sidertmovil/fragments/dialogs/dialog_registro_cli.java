@@ -146,7 +146,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(9, "");                                      //FECHA GUARDADO
         params.put(10, "0");                                    //ESTATUS
 
-        id = dBhelper.saveSolicitudes(db, params);
+        id = dBhelper.saveSolicitudes(db, params, 1);
 
         //Inserta registro de datos del credito
         params = new HashMap<>();
@@ -180,7 +180,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(12, "");                                                    //MUNICIPIO
         params.put(13, "");                                                    //ESTADO
 
-        id_direccion_cli = dBhelper.saveDirecciones(db, params);
+        id_direccion_cli = dBhelper.saveDirecciones(db, params, 1);
 
         //Inserta registro de datos del cliente
         params = new HashMap<>();
@@ -222,7 +222,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(35, "");                                                     //COMENTARIO RECHAZO
         params.put(36, "0");                                                    //ESTATUS COMPLETO
 
-        id_cliente = dBhelper.saveDatosPersonales(db, params);
+        id_cliente = dBhelper.saveDatosPersonales(db, params, 1);
 
         //Inserta registro de direccion del cliente
         params = new HashMap<>();
@@ -241,7 +241,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(12, "");                                                    //MUNICIPIO
         params.put(13, "");                                                    //ESTADO
 
-        id_direccion_cony = dBhelper.saveDirecciones(db, params);
+        id_direccion_cony = dBhelper.saveDirecciones(db, params, 1);
 
         //Inserta registro de datos conyuge
         params = new HashMap<>();
@@ -258,7 +258,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(10, "");                                     //TEL CELULAR
         params.put(11, "0");                                    //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosConyuge(db, params);
+        dBhelper.saveDatosConyuge(db, params, 1);
 
         //Inserta registro de datos economicos
         params = new HashMap<>();
@@ -269,7 +269,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(4, "");                                      //INGRESO
         params.put(5, "0");                                     //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosEconomicos(db, params);
+        dBhelper.saveDatosEconomicos(db, params, 1);
 
         //Inserta registro de direccion del negocio
         params = new HashMap<>();
@@ -288,7 +288,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(12, "");                                                    //MUNICIPIO
         params.put(13, "");                                                    //ESTADO
 
-        id_direccion_neg = dBhelper.saveDirecciones(db, params);
+        id_direccion_neg = dBhelper.saveDirecciones(db, params, 1);
 
         //Inserta registro de negocio
         params = new HashMap<>();
@@ -318,8 +318,9 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(23,"");                                  //FOTO FACHADA
         params.put(24,"");                                  //REF DOMICILIARIA
         params.put(25,"0");                                 //ESTATUS COMPLETADO
+        params.put(26,"");                                  //COMENTARIO RECHAZO
 
-        dBhelper.saveDatosNegocio(db, params);
+        dBhelper.saveDatosNegocio(db, params, 1);
 
         //Inserta registro de direccion del aval
         params = new HashMap<>();
@@ -338,7 +339,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(12, "");                                                    //MUNICIPIO
         params.put(13, "");                                                    //ESTADO
 
-        id_direccion_aval = dBhelper.saveDirecciones(db, params);
+        id_direccion_aval = dBhelper.saveDirecciones(db, params, 1);
 
         //Inserta registro del aval
         params = new HashMap<>();
@@ -394,7 +395,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(49, "");                                 //COMENTARIO RECHAZO
         params.put(50, "0");                                //ESTATUS RECHAZO
 
-        dBhelper.saveDatosAval(db, params);
+        dBhelper.saveDatosAval(db, params, 1);
 
         //Inserta registro de direccion del referencia
         params = new HashMap<>();
@@ -413,7 +414,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(12, "");                                                    //MUNICIPIO
         params.put(13, "");                                                    //ESTADO
 
-        id_direccion_ref = dBhelper.saveDirecciones(db, params);
+        id_direccion_ref = dBhelper.saveDirecciones(db, params, 1);
 
         //Inserta registro de referencia
         params = new HashMap<>();
@@ -425,8 +426,9 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(5, String.valueOf(id_direccion_ref));    //DIRECCION ID
         params.put(6, "");                                  //TEL_CELULAR
         params.put(7, "0");                                 //ESTATUS COMPLETADO
+        params.put(8, "");                                  //COMENTARIO RECHAZO
 
-        dBhelper.saveReferencia(db, params);
+        dBhelper.saveReferencia(db, params, 1);
 
         //Inserta registro de croquis
         params = new HashMap<>();
@@ -437,8 +439,9 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(4, "");                                  //CALLE TRASERA
         params.put(5, "");                                  //REFERENCIAS
         params.put(6, "0");                                 //ESTATUS COMPLETADO
+        params.put(7, "");                                  //COMENTARIO RECHAZO
 
-        dBhelper.saveCroquisInd(db, params);
+        dBhelper.saveCroquisInd(db, params, 1);
 
         //Inserta registro de politicas
         params = new HashMap<>();
@@ -448,7 +451,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(3, "0");                                 //PERSONA POLITICA
         params.put(4, "0");                                 //ESTATUS COMPLETADO
 
-        dBhelper.savePoliticasInd(db, params);
+        dBhelper.savePoliticasInd(db, params, 1);
 
         //Inseta registro de documentos
         params = new HashMap<>();
@@ -461,7 +464,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(6, "");                      //FIRMA ASESOR
         params.put(7, "0");                     //ESTATUS COMPLETADO
 
-        dBhelper.saveDocumentosClientes(db, params);
+        dBhelper.saveDocumentosClientes(db, params, 1);
 
         mListener.onComplete(id, String.valueOf(id_cliente),
                 etNombre.getText().toString().trim().toUpperCase(),

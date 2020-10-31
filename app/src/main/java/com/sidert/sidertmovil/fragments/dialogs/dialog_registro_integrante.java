@@ -47,6 +47,7 @@ import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 
@@ -91,8 +92,6 @@ public class dialog_registro_integrante extends DialogFragment {
 
     private int id_credito = 0;
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_registro_integrante, container, false);
@@ -132,7 +131,7 @@ public class dialog_registro_integrante extends DialogFragment {
         public void onClick(View v) {
             dialog_cargo_integrante dlg_cargo = new dialog_cargo_integrante();
             Bundle b = new Bundle();
-            Cursor row = dBhelper.getCargoGrupo(String.valueOf(id_credito));
+            Cursor row = dBhelper.getCargoGrupo(String.valueOf(id_credito), 1);
             Log.e("cargo", String.valueOf(row.getCount())+";");
             if (row.getCount() > 0){
                 row.moveToFirst();
@@ -155,6 +154,7 @@ public class dialog_registro_integrante extends DialogFragment {
                     row.moveToNext();
                 }
                 row.close();
+
                 Cursor r_integrantes = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "COUNT(cargo)", " WHERE id_credito = ? AND cargo = ?", "", new String[]{String.valueOf(id_credito), "4"});
                 if (r_integrantes.getCount() > 0){
                     r_integrantes.moveToFirst();
@@ -205,6 +205,8 @@ public class dialog_registro_integrante extends DialogFragment {
     };
 
     private void saveIntegrante(){
+
+        int tipo = 1;
         long id = 0;
         //Inserta registro de integrante
         HashMap<Integer, String> params = new HashMap<>();
@@ -231,7 +233,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(20, "0");                                                    //ESTATUS COMPLETO
         params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
 
-        id = dBhelper.saveIntegrantesGpo(db, params);
+        id = dBhelper.saveIntegrantesGpo(db, params, tipo);
 
         //Inserta registro de datos telefonicos
         params = new HashMap<>();
@@ -242,7 +244,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(4, "");                              //TEL TRABAJO
         params.put(5, "0");                             //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosTelefonicos(db, params);
+        dBhelper.saveDatosTelefonicos(db, params, tipo);
 
         //Inserta registro de datos domicilio
         params = new HashMap<>();
@@ -269,7 +271,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(20, "0");                        //ESTATUS COMPLETO
         params.put(21, "");                         //DEPENDIENTES ECONOMICOS
 
-        dBhelper.saveDatosDomicilio(db, params);
+        dBhelper.saveDatosDomicilio(db, params, tipo);
 
         //Inserta registro de negocio
         params = new HashMap<>();
@@ -308,7 +310,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(32,"");                          //COMENTARIO RECHAZADO
         params.put(33,"0");                         //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosNegocioGpo(db, params);
+        dBhelper.saveDatosNegocioGpo(db, params, tipo);
 
         //Inserta registro del conyuge
         params = new HashMap<>();
@@ -335,7 +337,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(20, "");                          //TEL CELULAR
         params.put(21, "0");                         //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosConyugeGpo(db, params);
+        dBhelper.saveDatosConyugeGpo(db, params, tipo);
 
         //Inserta otros datos del integrante
         params = new HashMap<>();
@@ -350,7 +352,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(8, "");                          //FIRMA
         params.put(9, "0");                         //ESTATUS COMPLETADO
 
-        dBhelper.saveDatosOtrosGpo(db, params);
+        dBhelper.saveDatosOtrosGpo(db, params, tipo);
 
         //Inserta registro de croquis
         params = new HashMap<>();
@@ -362,7 +364,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(5, "");                                  //REFERENCIAS
         params.put(6, "0");                                 //ESTATUS COMPLETADO
 
-        dBhelper.saveCroquisGpo(db, params);
+        dBhelper.saveCroquisGpo(db, params, tipo);
 
         //Inserta registro de politicas de integrante
         params = new HashMap<>();
@@ -372,7 +374,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(3, "0");                     //PERSONA POLITICA
         params.put(4, "0");                     //ESTATUS COMPLETADO
 
-        dBhelper.savePoliticasIntegrante(db, params);
+        dBhelper.savePoliticasIntegrante(db, params, tipo);
 
         //Inserta registro de documentos de integrante
         params = new HashMap<>();
@@ -383,7 +385,7 @@ public class dialog_registro_integrante extends DialogFragment {
         params.put(4, "");                      //COMPROBANTE
         params.put(5, "0");                     //ESTATUS COMPLETADO
 
-        dBhelper.saveDocumentosIntegrante(db, params);
+        dBhelper.saveDocumentosIntegrante(db, params, tipo);
 
         mListener.onComplete(id,etNombre.getText().toString().trim().toUpperCase(),etPaterno.getText().toString().trim().toUpperCase(),etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
         getDialog().dismiss();

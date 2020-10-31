@@ -58,11 +58,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.DATE;
 import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
+import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
 import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
+import static com.sidert.sidertmovil.utils.Constants.MUNICIPIOS;
+import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
+import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DESTINOS_CREDITO;
@@ -93,7 +99,16 @@ public class Miscellaneous {
         if (str == null ||str.equals("null")) {
             return "";
         } else {
-            return String.valueOf(str);
+            return String.valueOf(str).trim();
+        }
+    }
+
+    /*Validación de que no sea null ni vacio*/
+    public static Integer validInt(Object str) {
+        if (str == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(String.valueOf(str));
         }
     }
 
@@ -468,15 +483,6 @@ public class Miscellaneous {
         return consonante;
     }
 
-    private static boolean esVocal(char c){
-        Log.e("Value",String.valueOf(!String.valueOf(c).contains("AEIOU ")));
-        if ("AEIOU ".contains(String.valueOf(c))){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
     /* Genera la autorización para la servicios */
     public static String authorization (String user, String pass){
         String credential = user + ":" + pass;
@@ -554,99 +560,6 @@ public class Miscellaneous {
         }
 
         return String.valueOf(year);
-    }
-
-    /* Borra duplicados de tabla de Geolocalizacion  */
-    public static boolean BorrarDuplicadosGeo (Context ctx){
-        boolean flag = false;
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Cursor rows = dBhelper.getRecords(Constants.GEOLOCALIZACION, "", " GROUP BY ficha_id, num_solicitud ORDER BY _id ASC", null);
-        if (rows.getCount() > 0){
-            //Log.e("Total GroupID", ""+rows.getCount());
-            String ids = "";
-            rows.moveToFirst();
-            for(int i = 0; i < rows.getCount(); i++){
-                //Log.e("Ficha"+rows.getString(0), rows.getString(1)+" "+rows.getString(5));
-                String _id = rows.getString(0);
-                String ficha_id = rows.getString(1);
-                String num_solucitud = rows.getString(5);
-                int status = rows.getInt(21);
-                if (i == 0)
-                    ids = _id;
-                else
-                    ids += ","+_id;
-                Cursor fichas = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE _id <> '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", " ORDER BY _id ASC", null);
-                if(fichas.getCount() > 0){
-                    fichas.moveToFirst();
-                    //Log.e("Total Iguales", ""+fichas.getCount());
-                    for (int j = 0; j < fichas.getCount(); j++){
-                        /*if (fichas.getString(1).equals("1137")) {
-                            Log.e("Ficha " + j, "cliente: " + fichas.getString(4));
-                            Log.e("Ficha " + j, "res_uno: " + fichas.getString(13));
-                            Log.e("Ficha " + j, "res_dos: " + fichas.getString(14));
-                            Log.e("Ficha " + j, "res_tres: " + fichas.getString(15));
-                            Log.e("Ficha " + j, "fecha_uno: " + fichas.getString(16));
-                            Log.e("Ficha " + j, "fecha_dos: " + fichas.getString(17));
-                            Log.e("Ficha " + j, "fecha_tres: " + fichas.getString(18));
-                            Log.e("--", "--------------------------------------------------------------------------------------------");
-                        }*/
-                        if (!fichas.getString(13).trim().isEmpty()){
-                            ContentValues valores = new ContentValues();
-                            valores.put("res_uno",fichas.getString(13));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (!fichas.getString(14).trim().isEmpty()){
-                            ContentValues valores = new ContentValues();
-                            valores.put("res_dos",fichas.getString(14));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = "+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (!fichas.getString(15).trim().isEmpty()){
-                            ContentValues valores = new ContentValues();
-                            valores.put("res_tres",fichas.getString(15));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (!fichas.getString(16).trim().isEmpty() && fichas.getString(16).length() > 1){
-                            ContentValues valores = new ContentValues();
-                            valores.put("fecha_env_uno",fichas.getString(16));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (!fichas.getString(17).trim().isEmpty() && fichas.getString(17).length() > 1){
-                            ContentValues valores = new ContentValues();
-                            valores.put("fecha_env_dos",fichas.getString(17));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (!fichas.getString(18).trim().isEmpty() && fichas.getString(18).length() > 1){
-                            ContentValues valores = new ContentValues();
-                            valores.put("fecha_env_tres",fichas.getString(18));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        if (fichas.getInt(21) > status){
-                            status = fichas.getInt(21);
-                            ContentValues valores = new ContentValues();
-                            valores.put("status",fichas.getInt(21));
-                            db.update(Constants.GEOLOCALIZACION, valores, "_id = '"+_id+"' AND ficha_id = '"+ficha_id+"' AND num_solicitud = '"+num_solucitud+"'", null);
-                        }
-
-                        //Log.e("Igual",fichas.getString(0)+" "+fichas.getString(1)+" "+fichas.getString(5));
-                        fichas.moveToNext();
-                    }
-                }
-                rows.moveToNext();
-            }
-
-            db.execSQL("DELETE FROM " + Constants.GEOLOCALIZACION + " WHERE _id NOT  IN "+"("+ids+")");
-
-            //Log.e("IDS", "("+ids+")");
-        }
-        return flag;
     }
 
     /* Descarga una imagen de un URL */
@@ -792,7 +705,6 @@ public class Miscellaneous {
                 catalogo.add(mOcupaciones);
                 row.moveToNext();
             }
-
         }
 
         return catalogo;
@@ -822,6 +734,7 @@ public class Miscellaneous {
 
     /* Para saber si es vocal */
     public static boolean esVocal(Character texto){
+        Log.e("TEXTO", texto.toString());
         if (texto == 'a' || texto == 'e'|| texto == 'i' || texto == 'o' || texto == 'u'
                 || texto == 'A' || texto == 'E' || texto == 'I' || texto == 'O' || texto == 'U'
                 || texto == 'Á' || texto == 'É' || texto == 'Í' || texto == 'Ó' || texto == 'Ú'
@@ -867,12 +780,11 @@ public class Miscellaneous {
         nombreTexto = nombreTexto.replaceAll("\\bJOSÉ\\s\\b","");
         nombreTexto = nombreTexto.replaceAll("\\bJ\\.\\s\\b","");
 
-        String primerApellidoTexto = RemoveTildes(params.get(1).toUpperCase());
+        String primerApellidoTexto = RemoveTildes(params.get(1).toUpperCase().replace("Ñ","X"));
         primerApellidoTexto = primerApellidoTexto.replaceAll("/","X");
         primerApellidoTexto = primerApellidoTexto.replaceAll("-","X");
 
-        String segundoApellidoTexto = RemoveTildes(params.get(2).toUpperCase());
-
+        String segundoApellidoTexto = RemoveTildes(params.get(2).toUpperCase().replace("Ñ","X"));
         String fechaNacimientoTexto = params.get(3).toUpperCase();
 
         String fechaNacimientoTextotest = fechaNacimientoTexto;
@@ -902,7 +814,7 @@ public class Miscellaneous {
         if (nombreTexto.isEmpty() || primerApellidoTexto.isEmpty() || fechaNacimientoTexto.isEmpty()
                 || fechaNacimientoTexto.length() < 6 || sexoTexto.isEmpty() || estadoTexto.isEmpty()){
             datosCorrectos = false;
-            resultado = "Curp no válida";
+            resultado = "";
 
         }
 
@@ -950,25 +862,47 @@ public class Miscellaneous {
                 listaResultado.add(primerApellidoLista.get(0));
                 listaResultado.add(primerApellidoLista.get(1));
             }else{
-                boolean romperIf = false;
-                for (int i=0; i < primerApellidoLista.size();i++){
-                    if(esVocal(primerApellidoLista.get(i)) && romperIf == false){
-                        listaResultado.add(primerApellidoLista.get(i));
-                        posicionPrimeraVocal = i;
-                        romperIf = true;
+                if (!esVocal(primerApellidoLista.get(0))){
+                    listaResultado.add(primerApellidoLista.get(0));
+                    for (int i=0; i < primerApellidoLista.size();i++){
+                        if(esVocal(primerApellidoLista.get(i))){
+                            listaResultado.add(primerApellidoLista.get(i));
+                            break;
+                        }
                     }
+
+                }
+                else{
+                    boolean primerletra = true;
+                    boolean primervocal = true;
+                    for (int i=0; i < primerApellidoLista.size();i++){
+                        Log.e("Letra--", primerApellidoLista.get(i).toString());
+                        Log.e("Letra--", ""+esVocal(primerApellidoLista.get(i)));
+                        if(primerletra){
+                            listaResultado.add(primerApellidoLista.get(i));
+                            primerletra = false;
+                        }
+                        else if (primervocal){
+                            if(esVocal(primerApellidoLista.get(i))){
+                                listaResultado.add(primerApellidoLista.get(i));
+                                primervocal = false;
+                            }
+                        }
+
+                    }
+
                 }
             }
 
             //segunda letra: buscamos la primera vocal interna del apellido
 
-            if (listaResultado.size() == 1){
-                for (int i=posicionPrimeraVocal+1 ; i < primerApellidoLista.size(); i++){
+            /*if (listaResultado.size() == 1){
+                for (int i = 0 ; i < primerApellidoLista.size(); i++){
                     if(esVocal(primerApellidoLista.get(i)) && listaResultado.size() < 2){
                         listaResultado.add(primerApellidoLista.get(i));
                     }
                 }
-            }
+            }*/
 
             if(listaResultado.size()==1){
                 listaResultado.add('X');
@@ -1119,7 +1053,7 @@ public class Miscellaneous {
 
         }
         else
-            resultado = "Curp no válida";
+            resultado = "";
 
         return resultado;
     }
@@ -1172,21 +1106,38 @@ public class Miscellaneous {
         int riesgo_id = 0;
         switch (riesgo){
             case "ALTO":
-                riesgo_id = 1;
+                riesgo_id = 3;
                 break;
             case "MEDIO":
                 riesgo_id = 2;
                 break;
             case "BAJO":
-                riesgo_id = 3;
+                riesgo_id = 1;
                 break;
         }
         return riesgo_id;
     }
 
+    public static String GetRiesgo (int riesgo_id){
+        String riesgo = "";
+        switch (riesgo_id){
+            case 3:
+                riesgo = "ALTO";
+                break;
+            case 2:
+                riesgo = "MEDIO";
+                break;
+            case 1:
+                riesgo = "BAJO";
+                break;
+        }
+        return riesgo;
+    }
+
     public static boolean CurpValidador(String curp){
         String diccionario = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
         String curp17 = curp.substring(0,17);
+        Log.e("Curp17", curp17);
         double lngSuma = 0.0;
         double lngDigito = 0.0;
         for (int i = 0; i < 17; i++){
@@ -1196,7 +1147,7 @@ public class Miscellaneous {
         if (lngDigito == 10) lngDigito = 0;
 
         Log.e("CurpValidator", String.valueOf(lngDigito));
-        Log.e("CurpValidator", String.valueOf(Integer.parseInt(curp.substring(17,18))));
+        //Log.e("CurpValidator", String.valueOf(Integer.parseInt(curp.substring(17,18))));
         Log.e("CurpValidator", String.valueOf(lngDigito == Integer.parseInt(curp.substring(17,18))));
 
         if (lngDigito == Integer.parseInt(curp.substring(17,18)))
@@ -1734,6 +1685,235 @@ public class Miscellaneous {
         return flag;
     }
 
+    public static String GetColonia(Context ctx, int id){
+        String colonia = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT colonia_nombre FROM " + COLONIAS + " WHERE colonia_id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            colonia = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return colonia;
+
+    }
+
+    public static String GetLocalidad(Context ctx, int id){
+        String localidad = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + LOCALIDADES + " WHERE id_localidad = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            localidad = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return localidad;
+
+    }
+
+    public static String GetMunicipio(Context ctx, int id){
+        String municipio = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT municipio_nombre FROM " + MUNICIPIOS + " WHERE municipio_id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            municipio = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return municipio;
+
+    }
+
+    public static String GetEstado(Context ctx, int id){
+        String estado = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT estado_nombre FROM " + ESTADOS + " WHERE estado_id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            estado = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return estado;
+
+    }
+
+    public static String GetOcupacion(Context ctx, int id){
+        String ocupacion = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT ocupacion_nombre FROM " + OCUPACIONES + " WHERE ocupacion_id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            ocupacion = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return ocupacion;
+
+    }
+
+    public static String GetSector(Context ctx, int id){
+        String ocupacion = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT sector_nombre FROM " + OCUPACIONES + " AS o INNER JOIN " + SECTORES + " AS s ON s.sector_id = o.sector_id WHERE o.ocupacion_id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            ocupacion = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return ocupacion;
+
+    }
+
+    public static String GetEstudio(Context ctx, int id){
+        String estudio = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_NIVELES_ESTUDIOS + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            estudio = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return estudio;
+
+    }
+
+    public static String GetParentesco(Context ctx, int id){
+        String parentesco = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_PARENTESCOS + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            parentesco = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return parentesco;
+
+    }
+
+    public static String GetEstadoCivil(Context ctx, int id){
+        String estadoCivil = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_ESTADOS_CIVILES + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            estadoCivil = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return estadoCivil;
+    }
+
+    public static String GetTipoIdentificacion(Context ctx, int id){
+        String tipoIdentificacion = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_IDENTIFICACIONES_TIPO + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            tipoIdentificacion = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return tipoIdentificacion;
+    }
+
+    public static String GetViviendaTipo(Context ctx, int id){
+        String viviendaTipo = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_VIVIENDA_TIPOS + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            viviendaTipo = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return viviendaTipo;
+    }
+
+    public static String GetMedioContacto(Context ctx, int id){
+        String medioContacto = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_MEDIOS_CONTACTO + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            medioContacto = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return medioContacto;
+    }
+
+    public static String GetDestinoCredito(Context ctx, int id){
+        String medioContacto = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT nombre FROM " + TBL_DESTINOS_CREDITO + " WHERE id = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            medioContacto = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+
+        return medioContacto;
+    }
+
     public static int ContactoCliente(TextView tv){
         int contacto = -1;
         switch (tv.getText().toString().trim().toUpperCase()){
@@ -1787,6 +1967,40 @@ public class Miscellaneous {
                 break;
         }
         return requerido;
+    }
+
+    public static int GetMedioPagoId(String str){
+        int medioPago = -1;
+        switch (str){
+            case "BANAMEX":
+                medioPago = 0;
+                break;
+            case "BANORTE":
+                medioPago = 1;
+                break;
+            case "BANCOMER":
+                medioPago = 2;
+                break;
+            case "TELECOM":
+                medioPago = 3;
+                break;
+            case "BANSEFI":
+                medioPago = 4;
+                break;
+            case "OXXO":
+                medioPago = 5;
+                break;
+            case "EFECTIVO":
+                medioPago = 6;
+                break;
+            case "SIDERT":
+                medioPago = 7;
+                break;
+            case "BANAMEX722":
+                medioPago = 8;
+                break;
+        }
+        return medioPago;
     }
 
     public static int MedioPago(TextView tv){

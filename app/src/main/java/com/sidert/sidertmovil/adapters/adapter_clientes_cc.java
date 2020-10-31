@@ -12,22 +12,23 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.models.MTicketCC;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_cc.ViewHolder> {
 
     private Context ctx;
-    private List<MTicketCC> data;
-    private Event evento;
+    private List<HashMap<Integer, String>> data;
+    /*private Event evento;
 
     public interface Event {
         void ClienteOnClick(MTicketCC item);
-    }
+    }*/
 
-    public adapter_clientes_cc(Context ctx, List<MTicketCC> data, Event evento) {
+    public adapter_clientes_cc(Context ctx, List<HashMap<Integer, String>> data) {
         this.ctx = ctx;
         this.data = data;
-        this.evento = evento;
+        //this.evento = evento;
     }
 
     @NonNull
@@ -39,15 +40,15 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MTicketCC item = data.get(position);
-        holder.tvNombre.setText((Html.fromHtml("<b>"+item.getNombreCliente()+"</b> ")));
-        holder.tvRecibo.setText(Html.fromHtml("<b>Recibo:</b> "+item.getTipoRecibo()));
-        holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+item.getTipoImpresion()));
-        holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.getFolio()));
-        holder.tvFechaImpreso.setText(Html.fromHtml("<b>Fecha Impreso:</b> "+item.getFechaImpresion()));
-        holder.tvFechaEnvio.setText(Html.fromHtml("<b>Fecha Envio:</b> "+item.getFechaEnvio()));
+        HashMap<Integer, String> item = data.get(position);
+        holder.tvNombre.setText((Html.fromHtml("<b>"+item.get(0)+"</b> ")));
+        holder.tvRecibo.setText(Html.fromHtml("<b>Recibo:</b> "+item.get(4)));
+        holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+item.get(5)));
+        holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.get(1)));
+        holder.tvFechaImpreso.setText(Html.fromHtml("<b>Fecha Impreso:</b> "+item.get(2)));
+        holder.tvFechaEnvio.setText(Html.fromHtml("<b>Fecha Envio:</b> "+item.get(3)));
 
-        holder.bind(item);
+        //holder.bind(item);
     }
 
     @Override
@@ -72,13 +73,13 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
             tvFechaEnvio    = v.findViewById(R.id.tvFechaEnvio);
         }
 
-        public void bind (final MTicketCC item){
+        /*public void bind (final MTicketCC item){
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     evento.ClienteOnClick(item);
                 }
             });
-        }
+        }*/
     }
 }

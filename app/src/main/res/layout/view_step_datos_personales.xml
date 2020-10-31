@@ -6,6 +6,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Comentario de rechazo -->
+    <LinearLayout
+        android:id="@+id/llComentCli"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Comentario de Rechazo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvComentAdminCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingRight="10dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--  Nombre(s)  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -217,6 +250,57 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  CURP  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="CURP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/etCurpCli"
+                android:paddingLeft="10dp"
+                android:maxLength="18"
+                android:inputType="textCapCharacters"
+                android:textColor="@drawable/edit_text_selector"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+            <!--<TextView
+                android:id="@+id/tvCurpCli"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:layout_weight="2"
+                android:background="@drawable/bkg_rounded_edges_blocked_left"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />-->
+            <!--<EditText
+                android:id="@+id/etCurpIdCli"
+                android:hint="Dígitos Veri."
+                android:textColor="@drawable/edit_text_selector"
+                android:inputType="number"
+                android:maxLength="2"
+                android:textSize="17sp"
+                android:paddingLeft="5dp"
+                android:background="@drawable/et_rounded_right"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/et_height" />-->
+        </LinearLayout>
+
+
+    </LinearLayout>
+
     <!--  RFC  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -242,48 +326,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/et_height" />
         </LinearLayout>
-
-    </LinearLayout>
-
-    <!--  CURP  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="CURP"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tvCurpCli"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:layout_weight="2"
-                android:background="@drawable/bkg_rounded_edges_blocked_left"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-            <EditText
-                android:id="@+id/etCurpIdCli"
-                android:hint="Dígitos Veri."
-                android:textColor="@drawable/edit_text_selector"
-                android:inputType="number"
-                android:maxLength="2"
-                android:textSize="17sp"
-                android:paddingLeft="5dp"
-                android:background="@drawable/et_rounded_right"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
 
     </LinearLayout>
 
@@ -384,7 +426,7 @@
             android:id="@+id/etNumIdentifCli"
             android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:maxLength="20"
+            android:maxLength="18"
             android:inputType="textCapCharacters"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -1216,7 +1258,6 @@
                 android:src="@drawable/ic_camera_white" />
             <ImageView
                 android:id="@+id/ivFotoFachCli"
-                android:rotation="90"
                 android:contentDescription="@string/facade_photo"
                 android:visibility="gone"
                 android:layout_width="match_parent"

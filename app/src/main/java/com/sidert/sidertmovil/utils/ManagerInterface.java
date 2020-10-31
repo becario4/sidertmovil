@@ -10,6 +10,11 @@ import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MPlazos;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
+import com.sidert.sidertmovil.models.MPrestamosAgfCc;
+import com.sidert.sidertmovil.models.MPrestamosRenovar;
+import com.sidert.sidertmovil.models.MRenovacion;
+import com.sidert.sidertmovil.models.MRenovacionGrupal;
+import com.sidert.sidertmovil.models.MResAgf;
 import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.models.MResRecibo;
@@ -26,6 +31,8 @@ import com.sidert.sidertmovil.models.MSendImpresion;
 import com.sidert.sidertmovil.models.MSendRecibo;
 import com.sidert.sidertmovil.models.MSendSoporte;
 import com.sidert.sidertmovil.models.MSolicitudCancelacion;
+import com.sidert.sidertmovil.models.MSolicitudRechazoGpo;
+import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.MSucursal;
 import com.sidert.sidertmovil.models.MSucursales;
 import com.sidert.sidertmovil.models.MTickets;
@@ -91,6 +98,13 @@ public interface ManagerInterface {
     Call<MResponseDefault> settingsApp(@Query("password") String password,
                                        @Header("Authorization") String auth);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_RENOVAR)
+    Call<List<MPrestamosRenovar>> getPrestamoToRenovar(@Header("Authorization") String auth);
+
     @POST(WebServicesRoutes.WS_LOGIN)
     @FormUrlEncoded
     Call<LoginResponse> login(@Field(Constants.USERNAME) String username,
@@ -125,6 +139,23 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMO_RENOVAR)
+    Call<MRenovacion> getPrestamoRenovar(@Query("prestamoId") String prestamoId,
+                                         @Query("clienteId") String clienteId,
+                                         @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMO_RENOVAR_GPO)
+    Call<MRenovacionGrupal> getPrestamoRenovarGpo(@Query("grupoId") String grupoId,
+                                                  @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @GET(WebServicesRoutes.WS_GET_TICKETS)
     Call<List<MResTicket>> getTickets(@Query("usuario_id") String usuario_id,
                                       @Header("Authorization") String barer_token);
@@ -134,7 +165,7 @@ public interface ManagerInterface {
             "Content-Type: application/json"
     })
     @GET(WebServicesRoutes.WS_GET_ULTIMOS_RECIBOS)
-    Call<List<MResUltimoRecibo>> getUltimosRecibos(@Query("asesor_id") String asesorId,
+    Call<List<MResUltimoRecibo>> getUltimosRecibos(@Query("usuario_id") String usuarioId,
                                                    @Header("Authorization") String barer_token);
 
     @Headers({
@@ -179,6 +210,20 @@ public interface ManagerInterface {
     @POST(WebServicesRoutes.WS_POST_IMPRESIONES)
     Call<List<String>> guardarImpresiones(@Body List<MSendImpresion> impresion,
                                     @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_SOLIC_RECHAZO_IND)
+    Call<List<MSolicitudRechazoInd>> getSolicitudRechazoInd(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_SOLIC_RECHAZO_GPO)
+    Call<List<MSolicitudRechazoGpo>> getSolicitudRechazoGpo(@Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -233,9 +278,36 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_AGF_CC)
+    Call<List<MPrestamosAgfCc>> getPrestamosAgfCc(@Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @GET(WebServicesRoutes.WS_GET_PRESTAMOS_GPO)
     Call<List<MPrestamoGpoRes>> getPrestamosGpo(@Path("id_grupo") int id_grupo,
                                              @Header("Authorization") String barer_token);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_SAVE_AGF)
+    Call<MResAgf> guardarAGF(@Header("Authorization") String token,
+                             @Part("grupo_id") RequestBody grupoId,
+                             @Part("num_solicitud") RequestBody numSolicitud,
+                             @Part("nombre") RequestBody nombre,
+                             @Part("medio_pago_id") RequestBody medioPagoId,
+                             @Part("evidencia") RequestBody evidencia,
+                             @Part("tipo_imagen") RequestBody tipoImagen,
+                             @Part("folio") RequestBody folio,
+                             @Part("tipo_impresion") RequestBody tipoImpresion,
+                             @Part("monto") RequestBody monto,
+                             @Part("fecha_impreso") RequestBody fechaImpreso,
+                             @Part("fecha_envio") RequestBody fechaEnvio,
+                             @Part("folio_manual") RequestBody folioManual,
+                             @Part("cliente_id") RequestBody clienteId,
+                             @Part("tipo") RequestBody tipo,
+                             @Part("fecha_termino") RequestBody fechaTermino,
+                             @Part MultipartBody.Part foto);
 
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)
@@ -325,6 +397,21 @@ public interface ManagerInterface {
                                                   @Part MultipartBody.Part identificacion_frontal,
                                                   @Part MultipartBody.Part identificacion_reverso,
                                                   @Part MultipartBody.Part curp,
+                                                  @Part MultipartBody.Part comprobante_domicilio,
+                                                  @Part MultipartBody.Part firma_asesor,
+                                                  @Part("solicitud_id") RequestBody solicitudId);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_ORIGINACION_IND)
+    Call<MResSaveSolicitud> guardarRenovacionInd(@Header("Authorization") String token,
+                                                  @Part("solicitud") RequestBody solicitud,
+                                                  @Part MultipartBody.Part fachada_cliente,
+                                                  @Part MultipartBody.Part firma_cliente,
+                                                  @Part MultipartBody.Part fachada_negocio,
+                                                  @Part MultipartBody.Part fachada_aval,
+                                                  @Part MultipartBody.Part firma_aval,
+                                                  @Part MultipartBody.Part identificacion_frontal,
+                                                  @Part MultipartBody.Part identificacion_reverso,
                                                   @Part MultipartBody.Part comprobante_domicilio,
                                                   @Part MultipartBody.Part firma_asesor);
 

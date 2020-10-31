@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="400dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Nombre(s) del Integrante"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etNombre"
+                        android:inputType="textCapCharacters"
+                        android:paddingLeft="10dp"
+                        android:maxLength="20"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Apellido Paterno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etPaterno"
+                        android:inputType="textCapCharacters"
+                        android:paddingLeft="10dp"
+                        android:maxLength="20"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Apellido Materno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etMaterno"
+                        android:inputType="textCapCharacters"
+                        android:paddingLeft="10dp"
+                        android:maxLength="20"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <!--  Cargo  -->
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Cargo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvCargo"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnGuardar"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@color/white"
+                    android:text="Guardar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnCancelar"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn_rounded_yellow"
+                    android:textColor="@color/black"
+                    android:text="Cancelar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

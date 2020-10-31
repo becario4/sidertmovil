@@ -309,7 +309,7 @@ public class dialog_originacion_gpo extends DialogFragment {
         params.put(9, "");                                      //FECHA GUARDADO
         params.put(10, "0");                                    //ESTATUS
 
-        id_solicitud = dBhelper.saveSolicitudes(db, params);
+        id_solicitud = dBhelper.saveSolicitudes(db, params, 1);
 
 
 
@@ -325,7 +325,7 @@ public class dialog_originacion_gpo extends DialogFragment {
         params.put(6, tvHoraVisita.getText().toString().trim());
         params.put(7,"0");
 
-        id_credito = dBhelper.saveDatosCreditoGpo(db, params);
+        id_credito = dBhelper.saveDatosCreditoGpo(db, params, 1);
 
         mListener.onComplete(id_solicitud,
                 id_credito,etNombre.getText().toString().trim().toUpperCase(),

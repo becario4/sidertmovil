@@ -121,7 +121,7 @@ public class fichas_pendientes_fragment extends Fragment{
         rvFichas = view.findViewById(R.id.rvFichas);
 
         rvFichas.setLayoutManager(new LinearLayoutManager(ctx));
-        rvFichas.setHasFixedSize(false);
+        //rvFichas.setHasFixedSize(false);
 
         _m_carteraGral = new ArrayList<>();
 
@@ -142,6 +142,7 @@ public class fichas_pendientes_fragment extends Fragment{
                 Intent i_prestamos = new Intent(boostrap, PrestamosClientes.class);
                 i_prestamos.putExtra(ID_CARTERA, item.getId_cliente());
                 i_prestamos.putExtra(TIPO, item.getTipo());
+                i_prestamos.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i_prestamos);
             }
 

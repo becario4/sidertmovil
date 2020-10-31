@@ -40,8 +40,8 @@ public class Validator {
     private final String PATTERN_GENERAL        = "[0-9 A-Za-zÑñÁáÉéÍíÓóÚú&.,-_]*";
     private final String PATTERN_MONEY          = "([0-9,]+(.[0-9]{1,2})?)";
     private final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
-    private final String PATTERN_CURP           = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}";
-    private final String PATTERN_CURP_ID        = "[0-9]{2}";
+    private final String PATTERN_CURP           = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9]{2}|[A][0-9]";
+    private final String PATTERN_CURP_ID        = "[0-9]{2}|[A][0-9]";
     private final String PATTERN_CP             = "[1-9][0-9]{4}";
     private final String PATTERN_HOMOCLAVE      = "[A-Z]{2}[0-9]";
     private final String PATTERN_EMAIL          = "^(.+)@(.+)$";

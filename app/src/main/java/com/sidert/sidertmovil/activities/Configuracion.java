@@ -119,11 +119,16 @@ public class Configuracion extends AppCompatActivity {
 
                             ss.SendOriginacionInd (ctx, false);
                             ss.SendOriginacionGpo(ctx, false);
-                            //ss.CancelGestiones(ctx, true);
-                            //ss.SendRecibos(ctx, true);
-                            //ss.GetUltimosRecibos(ctx);
-                            //ss.SendCancelGestiones(ctx, true);
+                            ss.SendRenovacionInd(ctx, false);
+                            ss.SendRenovacionGpo(ctx, false);
 
+                            ss.SendRecibos(ctx, true);
+                            ss.GetUltimosRecibos(ctx);
+
+                            ss.GetSolicitudesRechazadasInd(ctx, false);
+
+                            //ss.CancelGestiones(ctx, true);
+                            //ss.SendCancelGestiones(ctx, true);
 
                         }
                         cvSincronizarFichas.setEnabled(true);

@@ -10,7 +10,7 @@
     <item
         android:id="@+id/nvGeolocalizar"
         android:title="Geolocalizar"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/ic_pin" />
     <!-- 2 -->
     <item
@@ -27,8 +27,8 @@
     <!-- 4 -->
     <item
         android:id="@+id/nvCC"
-        android:title="Círculo Crédito"
-        android:visible="false"
+        android:title="CC | AGF"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 5 -->
     <item
@@ -44,19 +44,25 @@
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
+        android:id="@+id/nvRenovacion"
+        android:title="Renovación"
+        android:visible="true"
+        android:icon="@drawable/item_orders" />
+    <!-- 8 -->
+    <item
         android:id="@+id/nvLogin"
         android:title="Sesiones "
         android:visible="false"
         android:icon="@drawable/ic_users" />
 
-    <!-- 8 -->
+    <!-- 9 -->
     <item
         android:id="@+id/nvMesaAyuda"
         android:title="Mesa de Ayuda"
         android:visible="true"
         android:icon="@drawable/ic_mesa_ayuda" />
 
-    <!-- 9 -->
+    <!-- 10 -->
     <item
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"

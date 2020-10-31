@@ -74,6 +74,7 @@ import static com.sidert.sidertmovil.utils.Constants.MODULOS;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_EMPLEADO;
 import static com.sidert.sidertmovil.utils.Constants.PATERNO;
 import static com.sidert.sidertmovil.utils.Constants.SERIE_ID;
+import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
 
 public class Login extends AppCompatActivity {
 
@@ -244,6 +245,10 @@ public class Login extends AppCompatActivity {
                     session.getMacAddress(),
                     etPassword.getText().toString().trim(),
                     Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
+            /*Call<LoginResponse> call = api.login("ASESOR426",
+                    Miscellaneous.DecodePassword("MzQ6QkQ6I0Q6EjM6YTQ6MkR="),
+                    etPassword.getText().toString().trim(),
+                    Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));*/
             /*Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
                     "password",
                     etPassword.getText().toString().trim(),
@@ -313,7 +318,7 @@ public class Login extends AppCompatActivity {
                                         Miscellaneous.validString(json_info.getString(MODULOS)),
                                         Miscellaneous.validString(json_info.getString("id")));
 
-                                //session.setSucursales(json_info.getString(SUCURSALES));
+                                session.setSucursales(json_info.getString(SUCURSALES));
 
                                 Calendar c = Calendar.getInstance();
                                 AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);

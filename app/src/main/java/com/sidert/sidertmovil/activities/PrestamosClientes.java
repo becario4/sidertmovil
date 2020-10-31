@@ -119,12 +119,15 @@ public class PrestamosClientes extends AppCompatActivity {
         fi.add(Calendar.DAY_OF_YEAR, -(nD -2));
         ff.add(Calendar.DAY_OF_YEAR, ((7-nD)+1));
 
+        Log.e("FechaIni", sdf.format(fi.getTime()));
+        Log.e("FechaFin", sdf.format(ff.getTime()));
+
     }
 
     private void GetPrestamosInd (String id_cliente){
-        Log.e("Fecha", sdf.format(fi.getTime()).replace("-","")+"' AND "+sdf.format(ff.getTime()).replace("-",""));
-        String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
-        Log.e("SelectPrestamo", sql);
+        //String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+        String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?";
+
         //Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?", "", new String[]{id_cliente});
         Cursor row = db.rawQuery(sql, new String[]{id_cliente});
         row.moveToFirst();
@@ -134,17 +137,18 @@ public class PrestamosClientes extends AppCompatActivity {
 
             for (int i = 0; i < row.getCount(); i++) {
                 MPrestamo item = new MPrestamo();
-                item.setId(row.getString(2));
-                item.setNombre(row.getString(0));
-                item.setDesembolso(row.getString(6));
-                item.setMontoPrestamo(row.getString(7));
-                item.setMontoRestante(row.getString(8));
-                item.setMontoAmortiz(row.getString(9));
-                item.setIdPrestamo(row.getString(4));
-                item.setEstatus(row.getString(14));
-                item.setTipo(1);
-                item.setTipoPrestamo(row.getString(13));
-                item.setNumAmortiz(row.getString(11));
+                item.setNombre(row.getString(0));               //NOMBRE
+                item.setId(row.getString(2));                   //ID_PRESTAMO
+                item.setDesembolso(row.getString(6));           //FECHA DESEMBOLSO
+                item.setMontoPrestamo(row.getString(7));        //MONTO OTORGADO
+                item.setMontoRestante(row.getString(8));        //MONTO TOTAL
+                item.setMontoAmortiz(row.getString(9));         //MONTO AMORTIZACION
+                item.setIdPrestamo(row.getString(4));           //NUM PRESTAMO
+                item.setEstatus(row.getString(14));             //PAGADA
+                item.setTipo(1);                                  //TIPO PRESTAMO
+                item.setTipoPrestamo(row.getString(13));        //TIPO CARTERA
+                item.setNumAmortiz(row.getString(11));          //NUM AMORTIZACION
+
                 Cursor rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
 
                 if (rowSaldoCorte.getCount() > 0){
@@ -217,7 +221,8 @@ public class PrestamosClientes extends AppCompatActivity {
     }
 
     private void GetPrestamosGpo (final String id_grupo){
-        String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_GPO_T + " AS p INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+        //String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_GPO_T + " AS p INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+        String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_GPO_T + " AS p INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ?";
         Cursor row = db.rawQuery(sql, new String[]{id_grupo});
         //Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_GPO_T+" AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ?", "", new String[]{id_grupo});
         row.moveToFirst();
@@ -369,7 +374,5 @@ public class PrestamosClientes extends AppCompatActivity {
                 break;
         }
 
-        Servicios_Sincronizado ss = new Servicios_Sincronizado();
-        ss.SaveRespuestaGestion(ctx, false);
     }
 }

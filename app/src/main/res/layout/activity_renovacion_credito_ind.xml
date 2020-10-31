@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/CLcontainer"
+    android:clipChildren="false"
+    android:background="@android:color/white"
+    android:layout_marginStart="@dimen/paddingcl">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/TBmain"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Renovación Individual"
+                app:titleTextColor="@color/white"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            <android.support.design.widget.TabLayout
+                android:id="@+id/mTabLayout"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabTextColor="@color/colorGrayDark"
+                app:tabSelectedTextColor="@android:color/white"
+                app:tabIndicatorColor="@android:color/white"
+                app:tabMode="scrollable"
+                app:tabGravity="fill"
+                app:tabMaxWidth="0dp"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true">
+
+                <!-- Datos del credito -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llCredito"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError1"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Crédito"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown1"
+                            android:visibility="gone"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp1"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosCredito"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_ren_credito"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos personales -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llPersonales"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError2"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos Personales del Solicitante"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown2"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp2"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosPersonales"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_personales"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos del conyuge -->
+                <LinearLayout
+                    android:id="@+id/llConyuge"
+                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError3"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Conyuge"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown3"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp3"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosConyuge"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_conyuge"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos económicos -->
+                <LinearLayout
+                    android:id="@+id/llPropiedades"
+                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llEconomicos"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError4"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos Económicos"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown4"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp4"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosEconomicos"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_economicos"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos del negocio -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llNegocio"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError5"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Negocio o Actividad Económica"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown5"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp5"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosNegocio"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_negocio"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos del aval -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llAval"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError6"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingLeft="15dp"
+                            android:paddingTop="5dp"
+                            android:text="Datos del Aval"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/ivDown6"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp6"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosAval"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_aval"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Datos de referencia -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llReferencia"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError7"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Referencia del Solicitante"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown7"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp7"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosReferencia"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_referencias_solicitante"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Croquis del solicitante -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llCroquis"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError8"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Croquis del Solicitante"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown8"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp8"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosCroquis"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_croquis_solicitante"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Politicas de conocimiento del cliente PLD -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llPoliticas"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError9"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Políticas de Conocimiento del cliente PLD"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown9"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp9"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosPoliticas"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_politicas_solicitante"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Documentos  -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llDocumentos"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError10"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Escaneo de Documentos"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown10"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp10"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosDocumentos"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_documentos"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

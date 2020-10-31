@@ -8,47 +8,35 @@ import java.util.Date;
 
 public class MSendRecibo implements Serializable {
 
-    @SerializedName("prestamoId")
+    @SerializedName("grupo_id")
     @Expose
-    private Long prestamoId;
+    private Long grupoId;
 
-    @SerializedName("asesorId")
+    @SerializedName("num_solicitud")
     @Expose
-    private String asesorId;
-
-    @SerializedName("tipoRecibo")
-    @Expose
-    private String tipo_recibo;
-
-    @SerializedName("tipoImpresion")
-    @Expose
-    private String tipoImpresion;
-
-    @SerializedName("folio")
-    @Expose
-    private Long folio;
+    private Long numSolicitud;
 
     @SerializedName("monto")
     @Expose
     private String monto;
 
-    @SerializedName("clave")
+    @SerializedName("folio")
     @Expose
-    private String clave;
+    private Long folio;
 
-    @SerializedName("nombre")
+    @SerializedName("tipo_recibo")
     @Expose
-    private String nombre;
+    private String tipoRecibo;
 
-    @SerializedName("curp")
+    @SerializedName("tipo_impresion")
     @Expose
-    private String curp;
+    private String tipoImpresion;
 
-    @SerializedName("fechaImpreso")
+    @SerializedName("fecha_impresion")
     @Expose
-    private String fechaImpreso;
+    private String fechaImpresion;
 
-    @SerializedName("fechaEnvio")
+    @SerializedName("fecha_envio")
     @Expose
     private String fechaEnvio;
 
@@ -56,44 +44,24 @@ public class MSendRecibo implements Serializable {
     @Expose
     private Long usuarioId;
 
-    public Long getPrestamoId() {
-        return prestamoId;
+    @SerializedName("nombre")
+    @Expose
+    private String nombre;
+
+    public Long getGrupoId() {
+        return grupoId;
     }
 
-    public void setPrestamoId(Long prestamoId) {
-        this.prestamoId = prestamoId;
+    public void setGrupoId(Long grupoId) {
+        this.grupoId = grupoId;
     }
 
-    public String getAsesorId() {
-        return asesorId;
+    public Long getNumSolicitud() {
+        return numSolicitud;
     }
 
-    public void setAsesorId(String asesorId) {
-        this.asesorId = asesorId;
-    }
-
-    public String getTipo_recibo() {
-        return tipo_recibo;
-    }
-
-    public void setTipo_recibo(String tipo_recibo) {
-        this.tipo_recibo = tipo_recibo;
-    }
-
-    public String getTipoImpresion() {
-        return tipoImpresion;
-    }
-
-    public void setTipoImpresion(String tipoImpresion) {
-        this.tipoImpresion = tipoImpresion;
-    }
-
-    public Long getFolio() {
-        return folio;
-    }
-
-    public void setFolio(Long folio) {
-        this.folio = folio;
+    public void setNumSolicitud(Long numSolicitud) {
+        this.numSolicitud = numSolicitud;
     }
 
     public String getMonto() {
@@ -104,36 +72,36 @@ public class MSendRecibo implements Serializable {
         this.monto = monto;
     }
 
-    public String getClave() {
-        return clave;
+    public Long getFolio() {
+        return folio;
     }
 
-    public void setClave(String clave) {
-        this.clave = clave;
+    public void setFolio(Long folio) {
+        this.folio = folio;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getTipoRecibo() {
+        return tipoRecibo;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setTipoRecibo(String tipoRecibo) {
+        this.tipoRecibo = tipoRecibo;
     }
 
-    public String getCurp() {
-        return curp;
+    public String getTipoImpresion() {
+        return tipoImpresion;
     }
 
-    public void setCurp(String curp) {
-        this.curp = curp;
+    public void setTipoImpresion(String tipoImpresion) {
+        this.tipoImpresion = tipoImpresion;
     }
 
-    public String getFechaImpreso() {
-        return fechaImpreso;
+    public String getFechaImpresion() {
+        return fechaImpresion;
     }
 
-    public void setFechaImpreso(String fechaImpreso) {
-        this.fechaImpreso = fechaImpreso;
+    public void setFechaImpresion(String fechaImpresion) {
+        this.fechaImpresion = fechaImpresion;
     }
 
     public String getFechaEnvio() {
@@ -150,5 +118,13 @@ public class MSendRecibo implements Serializable {
 
     public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }

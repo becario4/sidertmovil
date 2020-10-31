@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Constants;
 
@@ -70,6 +71,14 @@ public class dialog_time_picker extends DialogFragment {
                     Intent i = new Intent();
                     i.putExtra("hora", valuesHour[npHour.getValue()]+":"+valuesMinute[npMinute.getValue()]);
                     getTargetFragment().onActivityResult(159,753,i);
+                    break;
+                case 4:
+                    RenovacionCreditoInd renHoraVisitaAct = (RenovacionCreditoInd) getActivity();
+                    renHoraVisitaAct.setTimer(valuesHour[npHour.getValue()]+":"+valuesMinute[npMinute.getValue()], "HoraVisita");
+                    break;
+                case 5:
+                    RenovacionCreditoInd renHoraVisitaAval = (RenovacionCreditoInd) getActivity();
+                    renHoraVisitaAval.setTimer(valuesHour[npHour.getValue()]+":"+valuesMinute[npMinute.getValue()], "HoraVisitaAval");
                     break;
             }
             dismiss();
