@@ -67,6 +67,7 @@ public class RenovacionCredito extends AppCompatActivity {
                 item.put(3, row.getString(11));         //Estatus
                 item.put(4, row.getString(7));          //Fecha Termino
                 item.put(5, row.getString(10));         //Fecha Envio
+
                 data.add(item);
                 row.moveToNext();
             }

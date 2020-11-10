@@ -227,6 +227,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                 item.put(4, "");
                 item.put(5, "");
                 item.put(6, row_integrantes.getString(1));
+                item.put(7, row_integrantes.getString(20));
                 data.add(item);
                 row_integrantes.moveToNext();
             }
@@ -234,13 +235,17 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_integrante = new Intent(ctx, AgregarIntegrante.class);
-                    i_integrante.putExtra("is_new", false);
-                    i_integrante.putExtra("id_integrante", item.get(0));
-                    i_integrante.putExtra("id_credito", item.get(6));
-                    i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
-                    i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i_integrante);
+                    Intent i_integrante = null;
+
+                    if (i_integrante == null) {
+                        i_integrante = new Intent(ctx, AgregarIntegrante.class);
+                        i_integrante.putExtra("is_new", false);
+                        i_integrante.putExtra("id_integrante", item.get(0));
+                        i_integrante.putExtra("id_credito", item.get(6));
+                        i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
+                        i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(i_integrante);
+                    }
                 }
             });
 
@@ -370,17 +375,16 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             case R.id.enviar:
                 Cursor row_credito = null;
 
-                row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
+                row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ? AND estatus_completado <> 3", "", new String[]{String.valueOf(id_credito)});
 
                 if (row_credito.getCount() > 7){
-                    Cursor row_cargo;
 
-                    row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
+                    Cursor row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4 AND estatus_completado IN (0,1,2)", "", new String[]{String.valueOf(id_credito)});
 
                     if (row_cargo.getCount() == 3){
                         Cursor row_reunion;
 
-                        row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
+                        row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1 AND i.estatus_completado IN (0,1,2)", "", new String[]{String.valueOf(id_credito)});
 
                         Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
                         row_total.moveToFirst();

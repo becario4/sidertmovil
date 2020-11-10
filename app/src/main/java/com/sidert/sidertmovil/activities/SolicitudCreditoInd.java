@@ -7462,7 +7462,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         boolean save_cliente = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
         !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
@@ -7664,8 +7664,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private boolean saveConyuge(){
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApMaternoCony, new String[]{validator.GENERAL}) &&
+        !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
+        !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etNacionalidadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
         !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
@@ -7871,8 +7871,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         boolean save_aval = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoAval, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApMaternoAval, new String[]{validator.GENERAL}) &&
+        !validator.validate(etApPaternoAval, new String[] {validator.ONLY_TEXT}) &&
+        !validator.validate(etApMaternoAval, new String[]{validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvFechaNacAval, new String[]{validatorTV.REQUIRED}) &&
         !validatorTV.validate(tvEdadAval, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
             if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre ||
@@ -8084,7 +8084,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private boolean saveReferencia() {
         boolean save_referencia = false;
         if (!validator.validate(etNombreRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        !validator.validate(etApPaternoRef, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etApMaternoRef, new String[]{validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvFechaNacRef, new String[]{validator.REQUIRED}) &&
         !validator.validate(etCalleRef, new String[]{validator.REQUIRED}) &&
@@ -8093,7 +8093,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validator.validate(etCiudadRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvLocalidadRef, new String[]{validatorTV.REQUIRED}) &&
         !Miscellaneous.ValidTextView(tvMunicipioRef) &&
-         !Miscellaneous.ValidTextView(tvEstadoRef) &&
+        !Miscellaneous.ValidTextView(tvEstadoRef) &&
         !validator.validate(etTelCelRef, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})) {
             ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
@@ -8588,8 +8588,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 documentacion = saveDocumentacion();
 
                 if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion){
-
-                   Toast.makeText(ctx, "Guarda la solicitud", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "Guarda la solicitud", Toast.LENGTH_SHORT).show();
 
                     Update("estatus_completado", TBL_CREDITO_IND, "1");
                     Update("estatus_completado", TBL_CLIENTE_IND, "1");
@@ -8602,18 +8601,24 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     Update("estatus_completado", TBL_POLITICAS_PLD_IND, "1");
                     Update("estatus_completado", TBL_DOCUMENTOS, "1");
 
-                    ContentValues cv = new ContentValues();
-                    cv.put("estatus", 1);
-                    cv.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+                    Update("comentario_rechazo", TBL_CLIENTE_IND, "");
+                    Update("comentario_rechazo", TBL_NEGOCIO_IND, "");
+                    Update("comentario_rechazo", TBL_AVAL_IND, "");
+                    Update("comentario_rechazo", TBL_REFERENCIA_IND, "");
+                    Update("comentario_rechazo", TBL_CROQUIS_IND, "");
 
-                    db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+                   ContentValues cv = new ContentValues();
+                   cv.put("estatus", 1);
+                   cv.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
 
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SendOriginacionInd(ctx, false);
-                    loading.dismiss();
-                    Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
+                   db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
 
-                    finish();
+                   Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                   ss.SendOriginacionInd(ctx, false);
+                   loading.dismiss();
+                   Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
+
+                   finish();
 
                 }
                 else {

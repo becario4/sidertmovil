@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +50,17 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
                 holder.ivInfo.setVisibility(View.GONE);
         }
 
+        if (item.containsKey(7)){
+            if (!item.get(7).trim().isEmpty()) {
+                holder.tvComentario.setVisibility(View.VISIBLE);
+                holder.tvComentario.setText(Miscellaneous.ucFirst(item.get(7)));
+            }
+            else {
+                holder.tvComentario.setVisibility(View.GONE);
+                holder.tvComentario.setText("");
+            }
+        }
+
         if (!item.get(4).trim().isEmpty()){
             holder.tvFechaTermino.setText("Terminó: "+item.get(4));
             holder.tvFechaTermino.setVisibility(View.VISIBLE);
@@ -82,13 +94,15 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         private TextView tvFechaTermino;
         private TextView tvFechaEnvio;
         private ImageView ivInfo;
+        private TextView tvComentario;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvNombre);
-            tvFechaTermino = itemView.findViewById(R.id.tvFechaTermino);
-            tvFechaEnvio = itemView.findViewById(R.id.tvFechaEnvio);
-            ivInfo = itemView.findViewById(R.id.ivInfo);
+            tvNombre        = itemView.findViewById(R.id.tvNombre);
+            tvFechaTermino  = itemView.findViewById(R.id.tvFechaTermino);
+            tvFechaEnvio    = itemView.findViewById(R.id.tvFechaEnvio);
+            ivInfo          = itemView.findViewById(R.id.ivInfo);
+            tvComentario    = itemView.findViewById(R.id.tvComentario);
         }
 
         public void bind (final HashMap<Integer, String> item){

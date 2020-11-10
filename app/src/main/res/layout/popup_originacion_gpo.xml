@@ -36,7 +36,7 @@
                         android:id="@+id/etNombreGpo"
                         android:inputType="textCapCharacters"
                         android:paddingLeft="10dp"
-                        android:maxLength="20"
+                        android:maxLength="50"
                         android:textColor="@drawable/edit_text_selector"
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"

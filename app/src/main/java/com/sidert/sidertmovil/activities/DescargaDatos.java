@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -133,7 +134,7 @@ public class DescargaDatos extends AppCompatActivity {
          sc.GetCategoriasTickets(ctx);
          sc.GetEstados(ctx);
 
-         sc.GetSectores(ctx);
+         /*sc.GetSectores(ctx);
          sc.GetOcupaciones(ctx);
          sc.GetMediosPagoOri(ctx);
          sc.GetNivelesEstudios(ctx);
@@ -151,7 +152,7 @@ public class DescargaDatos extends AppCompatActivity {
          ss.GetPrestamosToRenovar(ctx);
          ss.GetUltimosRecibos(ctx);
          ss.GetSolicitudesRechazadasInd(ctx, false);
-        ss.GetSolicitudesRechazadasGpo(ctx, false);
+        ss.GetSolicitudesRechazadasGpo(ctx, false);*/
     }
 
     private void GetUltimasImpresiones (){
@@ -194,18 +195,19 @@ public class DescargaDatos extends AppCompatActivity {
                         switch (response.code()){
                             case 200:
                                 List<MImpresionRes> impresiones = response.body();
-                                Log.v("Cantidad impresiones","# "+impresiones.size());
+
                                 for (MImpresionRes item : impresiones){
                                     Cursor row;
                                     HashMap<Integer, String> data = Miscellaneous.GetNumPrestamo(item.getExternalId());
-                                    Log.e("TipoCarteta", String.valueOf(item.getTipoCartera()));
+
+                                    Log.e("TipoCartera", String.valueOf(item.getTipoCartera()));
                                     if (item.getTipoCartera() == -1) {
-                                        Log.e("Tipo",data.get(0)+"xxxxMisc");
+
                                         if (data.get(0).equals("Vigente")){
 
-                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+                                            Log.e("nPre folio tipo_imp",data.get(1) +" "+ String.valueOf(item.getFolio()) +" "+  String.valueOf(item.getTipo()));
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
-                                            Log.e("Existe", "Vigente " + row.getCount());
                                             if (row.getCount() > 0){
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -215,9 +217,9 @@ public class DescargaDatos extends AppCompatActivity {
                                                                     data.get(1), item.getFolio(), item.getTipo()});
 
                                             }else{
-                                                Log.e("......","................");
+
                                                 HashMap<Integer, String> params = new HashMap<>();
-                                                Log.e("NumPrestamoIdGestion", String.valueOf(item.getNumPrestamoIdGestion()));
+
                                                 if (item.getNumPrestamoIdGestion().trim().isEmpty())
                                                     params.put(0, data.get(1));  //num_prestamo_id_gestion
                                                 else
@@ -230,6 +232,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 params.put(6, item.getGeneratedAt());                           //created_at
                                                 params.put(7, item.getSendedAt());                              //sent_at
                                                 params.put(8, "1");                                             //estatus
+                                                Log.e("NumPrestamo", data.get(1));
                                                 params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
 
                                                 dBhelper.saveImpresiones(db, params);
@@ -238,7 +241,8 @@ public class DescargaDatos extends AppCompatActivity {
                                         }
                                         else if (data.get(0).equals("Vencida")){
 
-                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+                                            Log.e("nPre folio tipo_imp",data.get(1) +" "+ String.valueOf(item.getFolio()) +" "+  String.valueOf(item.getTipo()));
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
                                             if (row.getCount() > 0){
                                                 ContentValues cv = new ContentValues();
@@ -262,6 +266,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 params.put(6, item.getGeneratedAt());                           //created_at
                                                 params.put(7, item.getSendedAt());                              //sent_at
                                                 params.put(8, "1");                                             //estatus
+                                                Log.e("NumPrestamo", data.get(1));
                                                 params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
 
                                                 dBhelper.saveImpresionesVencida(db, params);
@@ -272,10 +277,10 @@ public class DescargaDatos extends AppCompatActivity {
                                     else{
                                         if (item.getTipoCartera()  == 0|| item.getTipoCartera() == 1){//VIGENTE
 
-                                            Log.e("XXX: ","numPres: "+ data.get(1) +"folio: "+ item.getFolio()+" tipo:"+ item.getTipo());
+                                            Log.e("nPre folio tipo_imp",data.get(1) +" "+ String.valueOf(item.getFolio()) +" "+  String.valueOf(item.getTipo()));
                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), item.getFolio(), item.getTipo()});
 
-                                            Log.e("XXX: ", "Total: "+row.getCount());
+                                            Log.e("CountRow", String.valueOf(row.getCount())+" asda");
                                             if (row.getCount() > 0){
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -298,7 +303,8 @@ public class DescargaDatos extends AppCompatActivity {
                                                 params.put(6, item.getGeneratedAt());                           //created_at
                                                 params.put(7, item.getSendedAt());                              //sent_at
                                                 params.put(8, "1");                                             //estatus
-                                                params.put(9, item.getExternalId().substring(9,15));                            //num_prestamo
+                                                Log.e("NumPrestamo", item.getExternalId().substring(9,15));
+                                                params.put(9, data.get(1));                            //num_prestamo
 
                                                 dBhelper.saveImpresiones(db, params);
                                             }
@@ -306,10 +312,8 @@ public class DescargaDatos extends AppCompatActivity {
                                         }
                                         else if (item.getTipoCartera() == 4){//VENCIDA
 
-                                            Log.e("ValidParams", data.get(1) + " - " + String.valueOf(item.getFolio()) + " - " + String.valueOf(item.getTipo()));
-                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo like '%?%'  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
-                                            Log.e("RowImpresion", "as"+row.getCount());
                                             if (row.getCount() > 0){
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -332,6 +336,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 params.put(6, item.getGeneratedAt());                           //created_at
                                                 params.put(7, item.getSendedAt());                              //sent_at
                                                 params.put(8, "1");                                             //estatus
+                                                Log.e("NumPrestamo", data.get(1));
                                                 params.put(9, data.get(1));                                     //num_prestamo                                              //num_prestamo
 
                                                 dBhelper.saveImpresionesVencida(db, params);
@@ -358,7 +363,6 @@ public class DescargaDatos extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<List<MImpresionRes>> call, Throwable t) {
                         Log.e("error", t.getMessage()+"asdasd");
-                        Log.e("fail","impresiones");
 
                         //GetGeolocalizaciones();
                         GetCartera();
@@ -378,13 +382,15 @@ public class DescargaDatos extends AppCompatActivity {
 
         String provider;
 
-        /*if (NetworkStatus.haveNetworkConnection(ctx)) {
-            Log.e("Proveedor", "RED");
-            provider = LocationManager.NETWORK_PROVIDER;
-        } else {*/
-            Log.e("Proveedor", "GPS");
+        if (Build.MODEL.contains("Redmi")){
             provider = LocationManager.GPS_PROVIDER;
-        //}
+        }
+        else {
+            if (NetworkStatus.haveNetworkConnection(ctx))
+                provider = LocationManager.NETWORK_PROVIDER;
+            else
+                provider = LocationManager.GPS_PROVIDER;
+        }
 
         locationManager.requestSingleUpdate(provider, locationListener, null);
 
@@ -410,7 +416,6 @@ public class DescargaDatos extends AppCompatActivity {
                                 String where = " WHERE id_cartera = ?";
                                 String order = "";
                                 String[] args =  new String[] {String.valueOf(cartera.get(i).getId())};
-                                Log.e("CarteraName", cartera.get(i).getNombre()+" : "+ cartera.get(i).getId());
                                 switch (Miscellaneous.GetTipoCartera(cartera.get(i).getCarteraTipo())){
                                     case 1:
 
@@ -506,8 +511,6 @@ public class DescargaDatos extends AppCompatActivity {
                                             /*values.put(16, cartera.get(i).getCcGpo());                          //CC
                                             values.put(17, cartera.get(i).getAgfGpo());                         //AGF*/
 
-                                            Log.e("geolocalizadas", "xx"+cartera.get(i).getGeolocalizadas());
-
                                             dBhelper.saveCarteraGpo(db, TBL_CARTERA_GPO_T, values);
                                         }
                                         else{ //Actualiza la cartera de gpo
@@ -539,7 +542,6 @@ public class DescargaDatos extends AppCompatActivity {
 
                         break;
                     default:
-                        Log.e("Mensaje", response.raw().toString());
                         cbCartera.setChecked(true);
                         Intent home = new Intent(ctx, Home.class);
                         home.putExtra("login", false);
@@ -665,10 +667,7 @@ public class DescargaDatos extends AppCompatActivity {
 
                             Cursor row;
 
-                            Log.e("size antes for", ""+prestamos.size());
                             for (int i = 0; i < prestamos.size(); i++){
-                                Log.e("Count i", ""+i);
-                                Log.e("id_prestamo", ""+prestamos.get(i).getId());
                                 String where = " WHERE id_prestamo = ?";
                                 String order = "";
                                 String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
@@ -678,7 +677,6 @@ public class DescargaDatos extends AppCompatActivity {
                                 if (row.getCount() == 0)
                                 { //Registra el prestamo de ind
                                     row.close();
-                                    Log.e("Prestamo", "Registra Prestamo");
                                     HashMap<Integer, String> values = new HashMap<>();
                                     values.put(0, String.valueOf(prestamos.get(i).getId()));                    //ID PRESTAMO
                                     values.put(1, String.valueOf(prestamos.get(i).getClienteId()));             //CLIENTE ID
@@ -793,8 +791,6 @@ public class DescargaDatos extends AppCompatActivity {
                                         } catch (ParseException e) {
                                             e.printStackTrace();
                                         }
-
-                                        Log.e("NumeroWeek ", ": "+weekFechaEst);
 
                                         double sumPago = 0;
                                         for (int r = 0; r < rowRuta.getCount(); r++){
@@ -925,7 +921,6 @@ public class DescargaDatos extends AppCompatActivity {
         call.enqueue(new Callback<List<MPrestamoGpoRes>>() {
             @Override
             public void onResponse(Call<List<MPrestamoGpoRes>> call, Response<List<MPrestamoGpoRes>> response) {
-                Log.e("gpo","id_carteta: "+id+ " code"+response.code());
                 if (response.code() == 200){
                     List<MPrestamoGpoRes> prestamos = response.body();
                     if (prestamos.size() > 0){
@@ -936,10 +931,7 @@ public class DescargaDatos extends AppCompatActivity {
 
                         Cursor row;
 
-                        Log.e("size antes for", ""+prestamos.size());
                         for (int i = 0; i < prestamos.size(); i++){
-                            Log.e("Count i", ""+i);
-                            Log.e("id_prestamo", ""+prestamos.get(i).getId());
                             String where = " WHERE id_prestamo = ?";
                             String order = "";
                             String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
@@ -947,7 +939,6 @@ public class DescargaDatos extends AppCompatActivity {
                             row = dBhelper.getRecords(TBL_PRESTAMOS_GPO_T, where, order, args);
 
                             if (row.getCount() == 0){ //Registra el prestamo de gpo
-                                Log.e("Prestamo", "Registra Prestamo");
                                 HashMap<Integer, String> values = new HashMap<>();
                                 values.put(0, String.valueOf(prestamos.get(i).getId()));                    //ID PRESTAMO
                                 values.put(1, String.valueOf(prestamos.get(i).getGrupoId()));               //GRUPO ID
@@ -970,8 +961,6 @@ public class DescargaDatos extends AppCompatActivity {
                                 if (prestamos.get(i).getIntegrantes() != null) {
                                     for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++){
                                         MIntegrante mIntegrante = prestamos.get(i).getIntegrantes().get(l);
-                                        Log.e("clave", mIntegrante.getClave()+" -----");
-                                        Log.e("prestamoIntegrante", mIntegrante.getPrestamoId()+" -----");
                                         HashMap<Integer, String> values_miembro = new HashMap<>();
                                         values_miembro.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                         values_miembro.put(1, String.valueOf(mIntegrante.getId()));                 //INTEGRANTE ID
@@ -1032,10 +1021,6 @@ public class DescargaDatos extends AppCompatActivity {
                                         values_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                         values_pago.put(1, mPago.getFecha());                                    //FECHA
                                         values_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                        Log.e("Banco", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
-                                        Log.e("Banco", "XXX"+prestamos.get(i).getId());
-                                        Log.e("Banco", "XXX"+mPago.getBanco());
-                                        Log.e("Banco", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
                                         values_pago.put(3,mPago.getBanco());                                     //BANCO
                                         values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                         values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
@@ -1064,7 +1049,6 @@ public class DescargaDatos extends AppCompatActivity {
                                 String sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ?";
                                 Cursor rowRuta = db.rawQuery(sql, new String[]{String.valueOf(prestamos.get(i).getId()), "SI", "PAGO"});
 
-                                Log.e("RowRutaTotal", rowRuta.getCount()+" XD");
                                 if (rowRuta.getCount() > 0){
                                     rowRuta.moveToFirst();
                                     int weekFechaEst = 0;
@@ -1173,7 +1157,6 @@ public class DescargaDatos extends AppCompatActivity {
                                         Cursor row_pago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
                                                 new String[]{String.valueOf(prestamos.get(i).getId()),mPago.getFecha(), String.valueOf(mPago.getMonto()),mPago.getBanco()});
                                         if (row_pago.getCount() == 0){
-                                            Log.e("registra","Pago");
                                             HashMap<Integer, String> cv_pago = new HashMap<>();
                                             cv_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                             cv_pago.put(1, mPago.getFecha());                                    //FECHA
@@ -1185,7 +1168,6 @@ public class DescargaDatos extends AppCompatActivity {
                                             dBhelper.savePagos(db, TBL_PAGOS_T, cv_pago);
                                         }
                                         row_pago.close();
-                                        Log.e("--","...............................................");
                                     }
                                 }//Termina If de Actualizar pagos
 

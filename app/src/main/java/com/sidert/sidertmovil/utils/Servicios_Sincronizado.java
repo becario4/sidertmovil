@@ -1537,7 +1537,6 @@ public class Servicios_Sincronizado {
         Cursor row = db.rawQuery(sql, null);
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
-
         if (row.getCount() > 0){
             row.moveToFirst();
 
@@ -1551,8 +1550,8 @@ public class Servicios_Sincronizado {
                         "INNER JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante " +
                         "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS p ON i.id = p.id_integrante " +
                         "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS docu ON i.id = docu.id_integrante " +
-                        "WHERE i.id_credito = ? AND i.id_solicitud_integrante = ?";
-                Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{row.getString(12), "0"});
+                        "WHERE i.id_credito = ? AND i.estatus_completado = ?";
+                Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{row.getString(12), "1"});
                 rowIntegrante.moveToFirst();
                 String id_solicitud = row.getString(0);
                 Log.e("Count","a: "+row.getString(14));
@@ -1778,8 +1777,22 @@ public class Servicios_Sincronizado {
                         Log.e("_","_______________________________________________________________________-");
                         Log.e("solicitudInt", json_solicitud.toString());
                         Log.e("_","_______________________________________________________________________-");
-                        new GuardarSolicitudGpo().execute(ctx, json_solicitud, fachadaCli, firmaCli, fachadaNeg, identiFrontal,
-                                identiReverso, curp,comprobante, rowIntegrante.getString(0),rowIntegrante.getString(1), id_solicitud);
+                        new GuardarSolicitudGpo().execute(
+                                ctx,
+                                json_solicitud,
+                                fachadaCli,
+                                firmaCli,
+                                fachadaNeg,
+                                identiFrontal,
+                                identiReverso,
+                                curp,
+                                comprobante,
+                                rowIntegrante.getString(0),
+                                rowIntegrante.getString(1),
+                                id_solicitud,
+                                String.valueOf(rowIntegrante.getLong(22)),
+                                String.valueOf(row.getLong(4))
+                        );
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1889,6 +1902,7 @@ public class Servicios_Sincronizado {
                 Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{row.getString(12), "0"});
                 rowIntegrante.moveToFirst();
                 String id_solicitud = row.getString(0);
+                Long id_solicitud_grupal = row.getLong(4);
                 Log.e("Count","a: "+row.getString(14));
                 Log.e("RENOVACION_GPO", "Total: "+rowIntegrante.getCount());
                 for (int j = 0; j < rowIntegrante.getCount(); j++){
@@ -2115,8 +2129,21 @@ public class Servicios_Sincronizado {
                         Log.e("_","_______________________________________________________________________-");
                         Log.e("solicitudInt", json_solicitud.toString());
                         Log.e("_","_______________________________________________________________________-");
-                        new GuardarRenovacionGpo().execute(ctx, json_solicitud, fachadaCli, firmaCli, fachadaNeg, identiFrontal,
-                                identiReverso, curp,comprobante, rowIntegrante.getString(0),rowIntegrante.getString(1), id_solicitud);
+                        new GuardarRenovacionGpo().execute(
+                                ctx,
+                                json_solicitud,
+                                fachadaCli,
+                                firmaCli,
+                                fachadaNeg,
+                                identiFrontal,
+                                identiReverso,
+                                curp,
+                                comprobante,
+                                rowIntegrante.getString(0),
+                                rowIntegrante.getString(1),
+                                id_solicitud,
+                                String.valueOf(rowIntegrante.getLong(22)),
+                                String.valueOf(row.getLong(4)));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -2844,11 +2871,11 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_AVAL_IND + " AS ava ON s.id_solicitud = ava.id_solicitud " +
                                             "JOIN " + TBL_REFERENCIA_IND + " AS ref ON s.id_solicitud = ref.id_solicitud " +
                                             "JOIN " + TBL_CROQUIS_IND + " AS cro ON s.id_solicitud = cro.id_solicitud " +
-                                            "WHERE s.id_originacion = ?";
+                                            "WHERE s.id_originacion = ? AND s.estatus = 2";
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
                                     if (row.getCount() > 0) {
                                         row.moveToFirst();
-                                        if (item.getSolicitudEstadoId() == 4) {
+                                        if (item.getSolicitudEstadoId() == 4) { //Actualiza solicitudes de originacion que fueron rechazadas por error de datos
                                             if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
                                                 cv = new ContentValues();
                                                 cv.put("estatus", 0);
@@ -2919,7 +2946,8 @@ public class Servicios_Sincronizado {
                                                 cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
                                                 db.update(TBL_CROQUIS_IND, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
                                             }
-                                        } else if (item.getSolicitudEstadoId() == 2) {
+                                        }
+                                        else if (item.getSolicitudEstadoId() == 2) { //Actualiza solicitudes de originacion que fueron solicitudes rechazadas
                                             cv = new ContentValues();
                                             cv.put("estatus", 3);
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
@@ -2930,7 +2958,7 @@ public class Servicios_Sincronizado {
                                         }
                                     }
                                 }
-                                else{
+                                else{ //Actualiza solicitudes de renovacion que fueron rechazadas por la administradora
                                     sql = "SELECT s.id_solicitud, cre.id_credito, cli.id_cliente, con.id_conyuge, eco.id_economico, neg.id_negocio, ava.id_aval, ref.id_referencia, cro.id FROM " + TBL_SOLICITUDES_REN + " AS s " +
                                             "JOIN " + TBL_CREDITO_IND_REN + " AS cre ON s.id_solicitud = cre.id_solicitud " +
                                             "JOIN " + TBL_CLIENTE_IND_REN + " AS cli ON s.id_solicitud = cli.id_solicitud " +
@@ -2940,14 +2968,12 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_AVAL_IND_REN + " AS ava ON s.id_solicitud = ava.id_solicitud " +
                                             "JOIN " + TBL_REFERENCIA_IND_REN + " AS ref ON s.id_solicitud = ref.id_solicitud " +
                                             "JOIN " + TBL_CROQUIS_IND_REN + " AS cro ON s.id_solicitud = cro.id_solicitud " +
-                                            "WHERE s.id_originacion = ?";
+                                            "WHERE s.id_originacion = ? AND s.estatus = 2";
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
-                                    Log.e("----------","-------------------------------------");
-                                    Log.e("----------","----"+row.getCount()+"-------------");
-                                    Log.e("----------","-------------------------------------");
+
                                     if (row.getCount() > 0) {
                                         row.moveToFirst();
-                                        if (item.getSolicitudEstadoId() == 4) {
+                                        if (item.getSolicitudEstadoId() == 4) {//Actualiza solicitud de originacion que rechazo la adminitradora para correccion de datos
                                             if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
                                                 cv = new ContentValues();
                                                 cv.put("estatus", 0);
@@ -3013,7 +3039,8 @@ public class Servicios_Sincronizado {
                                                 cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
                                                 db.update(TBL_CROQUIS_IND_REN, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
                                             }
-                                        } else if (item.getSolicitudEstadoId() == 2) {
+                                        }
+                                        else if (item.getSolicitudEstadoId() == 2) { //Solicitud de renovacion rechazada
                                             cv = new ContentValues();
                                             cv.put("estatus", 3);
                                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
@@ -3062,7 +3089,7 @@ public class Servicios_Sincronizado {
                                 ContentValues cv;
                                 String sql = "";
                                 Cursor row = null;
-                                if (item.getTipoSolicitud() == 1) {
+                                if (item.getTipoSolicitud() == 1) { //rechazo de solicitud de originacion
                                     Log.e("IDSOLCIITUD", "ID: "+item.getIdSolicitudIntegrante());
                                     //                 0                        1                   2              3                4              5               6                    7               8                  9
                                     sql = "SELECT i.id AS id_integrante, tel.id_telefonico, dom.id_domicilio, neg.id_negocio, con.id_conyuge, otr.id_otro, cro.id AS id_croquis, pol.id_politica, doc.id_documento, sol.id_solicitud FROM " + TBL_INTEGRANTES_GPO + " AS i " +
@@ -3076,59 +3103,70 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante " +
                                             "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS pol ON i.id = pol.id_integrante " +
                                             "JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS doc ON i.id = doc.id_integrante " +
-                                            "WHERE id_solicitud_integrante = ?";
+                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
-                                    if (row.getCount() > 0){
+                                    if (row.getCount() > 0){ //Existe algun registro de originacion
                                         row.moveToFirst();
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        cv.put("comentario_rechazo", item.getComentarioAdmin());
-                                        db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
+                                        if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
+                                            cv = new ContentValues();
+                                            cv.put("cargo", item.getCargo());
+                                            cv.put("estatus_completado", 0);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_TELEFONOS_INTEGRANTE, cv, "id_telefonico = ?", new String[]{row.getString(1)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_TELEFONOS_INTEGRANTE, cv, "id_telefonico = ?", new String[]{row.getString(1)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_DOMICILIO_INTEGRANTE, cv, "id_domicilio = ?", new String[]{row.getString(2)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOMICILIO_INTEGRANTE, cv, "id_domicilio = ?", new String[]{row.getString(2)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_negocio = ?", new String[]{row.getString(3)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_negocio = ?", new String[]{row.getString(3)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_CONYUGE_INTEGRANTE, cv, "id_conyuge = ?", new String[]{row.getString(4)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CONYUGE_INTEGRANTE, cv, "id_conyuge = ?", new String[]{row.getString(4)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_OTROS_DATOS_INTEGRANTE, cv, "id_otro = ?", new String[]{row.getString(5)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            if (item.getCargo() == 3)
+                                                cv.put("casa_reunion", 1);
+                                            db.update(TBL_OTROS_DATOS_INTEGRANTE, cv, "id_otro = ?", new String[]{row.getString(5)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_CROQUIS_GPO, cv, "id = ?", new String[]{row.getString(6)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CROQUIS_GPO, cv, "id = ?", new String[]{row.getString(6)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_POLITICAS_PLD_INTEGRANTE, cv, "id_politica = ?", new String[]{row.getString(7)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_POLITICAS_PLD_INTEGRANTE, cv, "id_politica = ?", new String[]{row.getString(7)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus_completado", 0);
-                                        db.update(TBL_DOCUMENTOS_INTEGRANTE, cv, "id_documento = ?", new String[]{row.getString(8)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOCUMENTOS_INTEGRANTE, cv, "id_documento = ?", new String[]{row.getString(8)});
 
-                                        cv = new ContentValues();
-                                        cv.put("estatus", 0);
-                                        cv.put("id_originacion", String.valueOf(item.getId()));
-                                        cv.put("fecha_termino", "");
-                                        cv.put("fecha_envio", "");
-                                        cv.put("fecha_guardado", "");
-                                        db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 0);
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            cv.put("fecha_termino", "");
+                                            cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                        }
+                                        else{ //Es rechazo completo de la solicitud
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 3);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
+                                        }
                                     }
                                 }
-                                else{
+                                else{ //rechazo de solicitud grupal de renovacion
                                     //                 0                        1                   2              3                4              5               6                    7               8                  9
                                     sql = "SELECT i.id AS id_integrante, tel.id_telefonico, dom.id_domicilio, neg.id_negocio, con.id_conyuge, otr.id_otro, cro.id AS id_croquis, pol.id_politica, doc.id_documento, sol.id_solicitud FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
                                             "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
@@ -3141,9 +3179,66 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
                                             "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
                                             "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
-                                            "WHERE id_solicitud_integrante = ?";
+                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
+
+                                    if (row.getCount() > 0){ //Existe algun registro de renovacion
+                                        row.moveToFirst();
+                                        if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_TELEFONOS_INTEGRANTE_REN, cv, "id_telefonico = ?", new String[]{row.getString(1)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOMICILIO_INTEGRANTE_REN, cv, "id_domicilio = ?", new String[]{row.getString(2)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_NEGOCIO_INTEGRANTE_REN, cv, "id_negocio = ?", new String[]{row.getString(3)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_conyuge = ?", new String[]{row.getString(4)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_OTROS_DATOS_INTEGRANTE_REN, cv, "id_otro = ?", new String[]{row.getString(5)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CROQUIS_GPO_REN, cv, "id = ?", new String[]{row.getString(6)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_POLITICAS_PLD_INTEGRANTE_REN, cv, "id_politica = ?", new String[]{row.getString(7)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOCUMENTOS_INTEGRANTE_REN, cv, "id_documento = ?", new String[]{row.getString(8)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 0);
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            cv.put("fecha_termino", "");
+                                            cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                        }
+                                        else{//Es rechazo de solcitud completo
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 3);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
+                                        }
+
+                                    }
 
                                 }
                                 row.close();
@@ -4575,7 +4670,7 @@ public class Servicios_Sincronizado {
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        String sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
+        String sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
         Cursor row = db.rawQuery(sql, new String[]{"0"});
 
         if (row.getCount() > 0){
@@ -4583,10 +4678,10 @@ public class Servicios_Sincronizado {
             for (int i = 0; i < row.getCount(); i++){
                 if (row.getInt(4) == 1)
                     new RegistrarDatosRenovacion().
-                            execute(ctx, row.getString(0), row.getString(1), row.getString(2));
+                            execute(ctx, row.getString(0), row.getString(1), row.getString(2), row.getString(6));
                 else
                     new RegistrarDatosRenovacionGpo().
-                            execute(ctx, row.getString(0), row.getString(4), row.getString(5));
+                            execute(ctx, row.getString(0), row.getString(4), row.getString(5), row.getString(6));
                 row.moveToNext();
             }
         }
@@ -4608,6 +4703,7 @@ public class Servicios_Sincronizado {
             String _id = (String) obj[1];
             final String prestamoId = (String) obj[2];
             final String clienteId = (String) obj[3];
+            final String fechaVencimiento = (String) obj[4];
 
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
@@ -4623,6 +4719,28 @@ public class Servicios_Sincronizado {
                         case 200:
                             MRenovacion item = response.body();
 
+                            int tipoSolicitud = 0;
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            Date fechaInicial = null;
+                            Date fechaFinal = null;
+                            try {
+                                fechaInicial = dateFormat.parse(fechaVencimiento);
+                                fechaFinal=dateFormat.parse(Miscellaneous.ObtenerFecha(FECHA).toLowerCase());
+
+                                int dias = (int) ((fechaFinal.getTime()-fechaInicial.getTime())/86400000);
+
+                                if (dias >= 364)
+                                    tipoSolicitud = 1;
+                                else
+                                    tipoSolicitud = 2;
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            int dias=(int) ((fechaFinal.getTime()-fechaInicial.getTime())/86400000);
+
                             long id = 0;
                             long id_cliente = 0;
                             long id_direccion_cli = 0;
@@ -4631,7 +4749,9 @@ public class Servicios_Sincronizado {
                             long id_direccion_aval = 0;
                             long id_direccion_ref = 0;
 
-                            String nombre = (item.getCliente().getNombre().trim().toUpperCase()+" "+item.getCliente().getPaterno().trim().toUpperCase()+" "+item.getCliente().getMaterno().trim().toUpperCase()).trim().toUpperCase();
+                            String nombre = (Miscellaneous.validStr(item.getCliente().getNombre())+" "+
+                                    Miscellaneous.validStr(item.getCliente().getPaterno())+" "+
+                                    Miscellaneous.validStr(item.getCliente().getMaterno())).trim().toUpperCase();
 
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, ctx.getString(R.string.vol_solicitud));                               //VOL SOLICITUD
@@ -4646,7 +4766,7 @@ public class Servicios_Sincronizado {
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
 
-                            id = dBhelper.saveSolicitudes(db, params, 2);
+                            id = dBhelper.saveSolicitudes(db, params, tipoSolicitud);
 
                             //Inserta registro de datos del credito
                             params = new HashMap<>();
@@ -4657,13 +4777,13 @@ public class Servicios_Sincronizado {
                             params.put(4,"");                                                       //DIA DESEMBOLSO
                             params.put(5,"");                                                       //HORA VISITA
                             params.put(6,"");                                                       //MONTO PRESTAMO
-                            params.put(7,String.valueOf(item.getPrestamo().getNumCiclo()));         //CICLO
+                            params.put(7,String.valueOf(Miscellaneous.validInt(item.getPrestamo().getNumCiclo())));         //CICLO
                             params.put(8, String.valueOf(item.getPrestamo().getMonto()));           //CREDITO ANTERIOR
                             params.put(9,"");                                                       //COMPORTAMIENTO PAGO
-                            params.put(10,String.valueOf(item.getPrestamo().getClienteId()));       //NUM CLIENTE
+                            params.put(10,String.valueOf(Miscellaneous.validInt(item.getPrestamo().getClienteId())));       //NUM CLIENTE
                             params.put(11,"");                                                      //OBSERVACIONES
                             params.put(12,"");                                                      //DESTINO
-                            params.put(13,Miscellaneous.GetRiesgo(item.getPrestamo().getNivelRiesgo()));//CLASIFICACION RIESGO
+                            params.put(13,Miscellaneous.GetRiesgo(Miscellaneous.validInt(item.getPrestamo().getNivelRiesgo())));//CLASIFICACION RIESGO
                             params.put(14,"0");                                                     //ESTATUS COMPLETO
 
                             dBhelper.saveDatosCreditoRen(db, params);
@@ -4673,39 +4793,36 @@ public class Servicios_Sincronizado {
                             params.put(0, "CLIENTE");                                                              //TIPO DIRECCION
                             params.put(1, Miscellaneous.validStr(item.getCliente().getLatitud()));                 //LATITUD
                             params.put(2, Miscellaneous.validStr(item.getCliente().getLongitud()));                //LONGITUD
-                            params.put(3, item.getCliente().getCalle());                                           //CALLE
-                            params.put(4, item.getCliente().getNoExterior());                                      //NO EXTERIOR
+                            params.put(3, Miscellaneous.validStr(item.getCliente().getCalle()));                   //CALLE
+                            params.put(4, Miscellaneous.validStr(item.getCliente().getNoExterior()));              //NO EXTERIOR
                             params.put(5, Miscellaneous.validStr(item.getCliente().getNoInterior()));              //NO INTERIOR
                             params.put(6, Miscellaneous.validStr(item.getCliente().getNoManzana()));               //MANZANA
                             params.put(7, Miscellaneous.validStr(item.getCliente().getNoLote()));                  //LOTE
-                            params.put(8, String.valueOf(item.getCliente().getCodigoPostal()));                    //CP
-                            params.put(9, Miscellaneous.GetColonia(ctx, item.getCliente().getColoniaId()));        //COLONIA
-                            params.put(10, item.getCliente().getCiudad());                                         //CIUDAD
-                            params.put(11, Miscellaneous.GetLocalidad(ctx, item.getCliente().getLocalidadId()));   //LOCALIDAD
-                            params.put(12, Miscellaneous.GetMunicipio(ctx, item.getCliente().getMunicipioId()));   //MUNICIPIO
-                            params.put(13, Miscellaneous.GetEstado(ctx, item.getCliente().getEstadoId()));         //ESTADO
+                            params.put(8, String.valueOf(Miscellaneous.validInt(item.getCliente().getCodigoPostal())));//CP
+                            params.put(9, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(item.getCliente().getColoniaId())));//COLONIA
+                            params.put(10, Miscellaneous.validStr(item.getCliente().getCiudad()));                 //CIUDAD
+                            params.put(11, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(item.getCliente().getLocalidadId())));//LOCALIDAD
+                            params.put(12, Miscellaneous.GetMunicipio(ctx, Miscellaneous.validInt(item.getCliente().getMunicipioId())));//MUNICIPIO
+                            params.put(13, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(item.getCliente().getEstadoId())));//ESTADO
 
                             id_direccion_cli = dBhelper.saveDirecciones(db, params, 2);
 
                             //Inserta registro de datos del cliente
 
-                            Log.e("X","XXxxxxxxxxxxxxxxxxxx");
-                            Log.e("X",""+item.getCliente().getNombre().trim().toUpperCase());
-                            Log.e("X","XXxxxxxxxxxxxxxxxxxx");
                             params = new HashMap<>();
                             params.put(0, String.valueOf(id));                                      //ID SOLICITUD
-                            params.put(1, item.getCliente().getNombre().trim().toUpperCase());      //NOMBRE
-                            params.put(2, item.getCliente().getPaterno().trim().toUpperCase());     //PATERNO
-                            params.put(3, item.getCliente().getMaterno().trim().toUpperCase());     //MATERNO
-                            params.put(4, item.getCliente().getFechaNacimiento());                  //FECHA NACIMIENTO
+                            params.put(1, Miscellaneous.validStr(item.getCliente().getNombre().trim().toUpperCase()));      //NOMBRE
+                            params.put(2, Miscellaneous.validStr(item.getCliente().getPaterno().trim().toUpperCase()));     //PATERNO
+                            params.put(3, Miscellaneous.validStr(item.getCliente().getMaterno().trim().toUpperCase()));     //MATERNO
+                            params.put(4, Miscellaneous.validStr(item.getCliente().getFechaNacimiento()));                  //FECHA NACIMIENTO
                             params.put(5, Miscellaneous.GetEdad(item.getCliente().getFechaNacimiento()));//EDAD
                             params.put(6, String.valueOf(item.getCliente().getGenero()));           //GENERO
-                            params.put(7, Miscellaneous.GetEstado(ctx, item.getCliente().getEstadoNacimiento()));                                                      //ESTADO NACIMIENTO
-                            params.put(8, Miscellaneous.validStr(item.getCliente().getRfc()));      //RFC
-                            params.put(9, item.getCliente().getCurp());                             //CURP
+                            params.put(7, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(item.getCliente().getEstadoNacimiento())));//ESTADO NACIMIENTO
+                            params.put(8, Miscellaneous.validStr(Miscellaneous.validStr(item.getCliente().getRfc())));     //RFC
+                            params.put(9, Miscellaneous.validStr(Miscellaneous.validStr(item.getCliente().getCurp())));     //CURP
                             params.put(10, "");                                                     //CURP DIGITO VERI
-                            params.put(11, Miscellaneous.GetOcupacion(ctx, item.getCliente().getOcupacionId())); //OCUPACION
-                            params.put(12, Miscellaneous.GetSector(ctx, item.getCliente().getOcupacionId()));   //ACTIVIDAD ECONOMICA
+                            params.put(11, Miscellaneous.GetOcupacion(ctx, Miscellaneous.validInt(item.getCliente().getOcupacionId()))); //OCUPACION
+                            params.put(12, Miscellaneous.GetSector(ctx, Miscellaneous.validInt(item.getCliente().getOcupacionId())));   //ACTIVIDAD ECONOMICA
                             params.put(13, Miscellaneous.GetTipoIdentificacion(ctx, item.getCliente().getIdentificacionTipoId()));                                                     //TIPO IDENTIFICACION
                             params.put(14, Miscellaneous.validStr(item.getCliente().getNoIdentificacion()));//NUM IDENTIFICACION
                             params.put(15, Miscellaneous.GetEstudio(ctx, item.getCliente().getEstudioNivelId()));   //NIVEL ESTUDIO
@@ -4725,7 +4842,7 @@ public class Servicios_Sincronizado {
                                 params.put(26, "0");                                                //TIEMPO VIVIR SITIO
                             params.put(27, Miscellaneous.validStr(item.getCliente().getDependientesEconomico()));  //DEPENDIENTES
                             params.put(28, Miscellaneous.GetMedioContacto(ctx, item.getCliente().getMedioContactoId()));                                                     //MEDIO CONTACTO
-                            params.put(29, item.getCliente().getEstadoCuenta());                    //ESTADO CUENTA
+                            params.put(29, Miscellaneous.validStr(item.getCliente().getEstadoCuenta()));//ESTADO CUENTA
                             params.put(30, Miscellaneous.validStr(item.getCliente().getEmail()));   //EMAIL
                             params.put(31, "");                                                     //FOTO FACHADA
                             params.put(32, Miscellaneous.validStr(item.getCliente().getReferencia()));//REF DOMICILIARIA
@@ -4747,11 +4864,11 @@ public class Servicios_Sincronizado {
                             params.put(6, Miscellaneous.validStr(item.getConyuge().getNoManzana()));//MANZANA
                             params.put(7, Miscellaneous.validStr(item.getConyuge().getNoLote()));   //LOTE
                             params.put(8, (item.getConyuge().getCodigoPostal() == 0)?"":String.valueOf(item.getConyuge().getCodigoPostal())); //CP
-                            params.put(9, Miscellaneous.GetColonia(ctx, item.getConyuge().getColoniaId())); //COLONIA
+                            params.put(9, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(item.getConyuge().getColoniaId()))); //COLONIA
                             params.put(10, Miscellaneous.validStr(item.getConyuge().getCiudad()));  //CIUDAD
-                            params.put(11, Miscellaneous.GetLocalidad(ctx, item.getConyuge().getLocalidadId())); //LOCALIDAD
-                            params.put(12, Miscellaneous.GetMunicipio(ctx, item.getConyuge().getMunicipioId())); //MUNICIPIO
-                            params.put(13, Miscellaneous.GetEstado(ctx, item.getConyuge().getEstadoId())); //ESTADO
+                            params.put(11, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(item.getConyuge().getLocalidadId()))); //LOCALIDAD
+                            params.put(12, Miscellaneous.GetMunicipio(ctx, Miscellaneous.validInt(item.getConyuge().getMunicipioId()))); //MUNICIPIO
+                            params.put(13, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(item.getConyuge().getEstadoId()))); //ESTADO
 
                             id_direccion_cony = dBhelper.saveDirecciones(db, params, 2);
 
@@ -4761,8 +4878,8 @@ public class Servicios_Sincronizado {
                             params.put(1, Miscellaneous.validStr(item.getConyuge().getNombre()).toUpperCase()); //NOMBRE
                             params.put(2, Miscellaneous.validStr(item.getConyuge().getPaterno()).toUpperCase());//PATERNO
                             params.put(3, Miscellaneous.validStr(item.getConyuge().getMaterno()).toUpperCase());//MATERNO
-                            params.put(4, item.getConyuge().getNacionalidad());                                 //NACIONALIDAD
-                            params.put(5, Miscellaneous.GetOcupacion(ctx, item.getConyuge().getOcupacionId())); //OCUPACION
+                            params.put(4, Miscellaneous.validStr(item.getConyuge().getNacionalidad()));         //NACIONALIDAD
+                            params.put(5, Miscellaneous.GetOcupacion(ctx, Miscellaneous.validInt(item.getConyuge().getOcupacionId()))); //OCUPACION
                             params.put(6, String.valueOf(id_direccion_cony));                                   //DIRECCION ID
                             params.put(7, String.valueOf(item.getConyuge().getIngresoMensual()));               //ING MENSUAL
                             params.put(8, String.valueOf(item.getConyuge().getGastoMensual()));                 //GASTO MENSUAL
@@ -4856,13 +4973,13 @@ public class Servicios_Sincronizado {
                             //Inserta registro del aval
                             params = new HashMap<>();
                             params.put(0, String.valueOf(id));                  //ID SOLICITUD
-                            params.put(1, Miscellaneous.validStr(item.getAval().getNombre()).toUpperCase());                                  //NOMBRE
-                            params.put(2, Miscellaneous.validStr(item.getAval().getPaterno()).toUpperCase());                                 //PATERNO
-                            params.put(3, Miscellaneous.validStr(item.getAval().getMaterno()).toUpperCase());                                 //MATERNO
+                            params.put(1, Miscellaneous.validStr(item.getAval().getNombre()).toUpperCase());          //NOMBRE
+                            params.put(2, Miscellaneous.validStr(item.getAval().getPaterno()).toUpperCase());         //PATERNO
+                            params.put(3, Miscellaneous.validStr(item.getAval().getMaterno()).toUpperCase());         //MATERNO
                             params.put(4, Miscellaneous.validStr(item.getAval().getFechaNacimiento()));               //FECHA NACIMIENTO
                             params.put(5, String.valueOf(item.getAval().getEdad()));                                  //EDAD
-                            params.put(6, String.valueOf(Miscellaneous.validInt(item.getAval().getGenero())));                                  //GENERO
-                            params.put(7, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(item.getAval().getEstadoNacimientoId())));      //ESTADO NACIMIENTO
+                            params.put(6, String.valueOf(Miscellaneous.validInt(item.getAval().getGenero())));        //GENERO
+                            params.put(7, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(item.getAval().getEstadoNacimientoId())));//ESTADO NACIMIENTO
                             params.put(8, Miscellaneous.validStr(item.getAval().getRfc()));                           //RFC
                             params.put(9, Miscellaneous.validStr(item.getAval().getCurp()));                          //CURP
                             params.put(10, "");                                                                       //CURP DIGITO
@@ -4911,9 +5028,9 @@ public class Servicios_Sincronizado {
 
                             //Inserta registro de direccion del referencia
                             params = new HashMap<>();
-                            params.put(0, "REFERENCIA");                                           //TIPO DIRECCION
-                            params.put(1, "");                                                     //LATITUD
-                            params.put(2, "");                                                     //LONGITUD
+                            params.put(0, "REFERENCIA");                                                 //TIPO DIRECCION
+                            params.put(1, "");                                                           //LATITUD
+                            params.put(2, "");                                                           //LONGITUD
                             params.put(3, Miscellaneous.validStr(item.getReferencia().getCalle()));      //CALLE
                             params.put(4, Miscellaneous.validStr(item.getReferencia().getNoExterior())); //NO EXTERIOR
                             params.put(5, Miscellaneous.validStr(item.getReferencia().getNoInterior())); //NO INTERIOR
@@ -4930,15 +5047,15 @@ public class Servicios_Sincronizado {
 
                             //Inserta registro de referencia
                             params = new HashMap<>();
-                            params.put(0, String.valueOf(id));                  //ID SOLICITUD
-                            params.put(1, item.getReferencia().getNombre().toUpperCase());                    //NOMBRE
-                            params.put(2, item.getReferencia().getPaterno().toUpperCase());                   //PATERNO
-                            params.put(3, item.getReferencia().getMaterno().toUpperCase());                   //MATERNO
-                            params.put(4, Miscellaneous.validStr(item.getReferencia().getFechaNacimiento())); //FECHA NACIMIENTO
-                            params.put(5, String.valueOf(id_direccion_ref));    //DIRECCION ID
-                            params.put(6, Miscellaneous.validStr(item.getReferencia().getTelCelular()));      //TEL_CELULAR
-                            params.put(7, "0");                                 //ESTATUS COMPLETADO
-                            params.put(8, "");                                  //COMENTARIO RECHAZO
+                            params.put(0, String.valueOf(id));                                                     //ID SOLICITUD
+                            params.put(1, Miscellaneous.validStr(item.getReferencia().getNombre().toUpperCase())); //NOMBRE
+                            params.put(2, Miscellaneous.validStr(item.getReferencia().getPaterno().toUpperCase()));//PATERNO
+                            params.put(3, Miscellaneous.validStr(item.getReferencia().getMaterno().toUpperCase()));//MATERNO
+                            params.put(4, Miscellaneous.validStr(item.getReferencia().getFechaNacimiento()));      //FECHA NACIMIENTO
+                            params.put(5, String.valueOf(id_direccion_ref));                                       //DIRECCION ID
+                            params.put(6, Miscellaneous.validStr(item.getReferencia().getTelCelular()));           //TEL_CELULAR
+                            params.put(7, "0");                                                                    //ESTATUS COMPLETADO
+                            params.put(8, "");                                                                     //COMENTARIO RECHAZO
 
                             dBhelper.saveReferencia(db, params, 2);
 
@@ -5018,6 +5135,7 @@ public class Servicios_Sincronizado {
             String _id = (String) obj[1];
             final String grupoId = (String) obj[2];
             final String nombreGpo = (String) obj[3];
+            final String fechaVencimiento = (String) obj[4];
 
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
@@ -5074,16 +5192,16 @@ public class Servicios_Sincronizado {
                                 params = new HashMap<>();
                                 params.put(0, String.valueOf(id_credito));                              //ID CREDITO
                                 params.put(1, String.valueOf(cliente.getTipoIntegrante()));             //CARGO
-                                params.put(2, cliente.getNombre());                                     //NOMBRE(S)
-                                params.put(3, cliente.getPaterno());                                    //PATERNO
-                                params.put(4, cliente.getMaterno());                                    //MATERNO
-                                params.put(5, cliente.getFechaNacimiento());                            //FECHA NACIMIENTO
+                                params.put(2, Miscellaneous.validStr(cliente.getNombre()).trim().toUpperCase()); //NOMBRE(S)
+                                params.put(3, Miscellaneous.validStr(cliente.getPaterno()).trim().toUpperCase());//PATERNO
+                                params.put(4, Miscellaneous.validStr(cliente.getMaterno()).trim().toUpperCase());//MATERNO
+                                params.put(5, Miscellaneous.validStr(cliente.getFechaNacimiento().trim()));                            //FECHA NACIMIENTO
                                 params.put(6, Miscellaneous.GetEdad(cliente.getFechaNacimiento()));     //EDAD
                                 params.put(7, String.valueOf(cliente.getGenero()));                     //GENERO
                                 params.put(8, Miscellaneous.GetEstado(ctx, cliente.getEstadoNacimiento())); //ESTADO NACIMIENTO
                                 params.put(9, Miscellaneous.validStr(cliente.getRfc()));                //RFC
-                                params.put(10, Miscellaneous.validStr(cliente.getCurp()).substring(0,16)); //CURP
-                                params.put(11, Miscellaneous.validStr(cliente.getCurp()).substring(16,18)); //CURP DIGITO VERI
+                                params.put(10, Miscellaneous.validStr(cliente.getCurp()));               //CURP
+                                params.put(11, "");                                                     //CURP DIGITO VERI
                                 params.put(12, Miscellaneous.GetTipoIdentificacion(ctx, cliente.getIdentificacionTipoId())); //TIPO IDENTIFICACION
                                 params.put(13, Miscellaneous.validStr(cliente.getNoIdentificacion()));  //NO IDENTIFICACION
                                 params.put(14, Miscellaneous.GetEstudio(ctx, cliente.getEstudioNivelId())); //NIVEL ESTUDIO
@@ -5123,14 +5241,14 @@ public class Servicios_Sincronizado {
                                 params.put(5, Miscellaneous.validStr(cliente.getNoInterior()));             //NO INTERIOR
                                 params.put(6, Miscellaneous.validStr(cliente.getNoManzana()));              //MANZANA
                                 params.put(7, Miscellaneous.validStr(cliente.getNoLote()));                 //LOTE
-                                params.put(8, String.valueOf(cliente.getCodigoPostal()));                   //CP
-                                params.put(9, Miscellaneous.GetColonia(ctx, cliente.getColoniaId()));       //COLONIA
+                                params.put(8, String.valueOf(Miscellaneous.validInt(cliente.getCodigoPostal()))); //CP
+                                params.put(9, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(cliente.getColoniaId())));//COLONIA
                                 params.put(10, Miscellaneous.validStr(cliente.getCiudad()));                //CIUDAD
-                                params.put(11, Miscellaneous.GetLocalidad(ctx, cliente.getLocalidadId()));  //LOCALIDAD
-                                params.put(12, Miscellaneous.GetMunicipio(ctx, cliente.getMunicipioId()));  //MUNICIPIO
-                                params.put(13, Miscellaneous.GetEstado(ctx, cliente.getEstadoId()));        //ESTADO
-                                params.put(14, Miscellaneous.GetViviendaTipo(ctx, cliente.getViviendaTipoId())); //TIPO VIVIENDA
-                                params.put(15, Miscellaneous.GetParentesco(ctx, cliente.getParentescoId())); //PARENTESCO
+                                params.put(11, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(cliente.getLocalidadId())));  //LOCALIDAD
+                                params.put(12, Miscellaneous.GetMunicipio(ctx, Miscellaneous.validInt(cliente.getMunicipioId())));  //MUNICIPIO
+                                params.put(13, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(cliente.getEstadoId())));//ESTADO
+                                params.put(14, Miscellaneous.GetViviendaTipo(ctx, Miscellaneous.validInt(cliente.getViviendaTipoId()))); //TIPO VIVIENDA
+                                params.put(15, Miscellaneous.GetParentesco(ctx, Miscellaneous.validInt(cliente.getParentescoId()))); //PARENTESCO
                                 params.put(16, Miscellaneous.validStr(cliente.getOtroTipoVivienda()));       //OTRO TIPO VIVIENDA
                                 if (!Miscellaneous.validStr(cliente.getTiempoVivirSitio()).isEmpty())
                                     params.put(17, cliente.getTiempoVivirSitio());
@@ -5154,17 +5272,17 @@ public class Servicios_Sincronizado {
                                 params.put(6, Miscellaneous.validStr(negocio.getNoInterior()));                             //NO INTERIOR
                                 params.put(7, Miscellaneous.validStr(negocio.getNoManzana()));                              //MANZANA
                                 params.put(8, Miscellaneous.validStr(negocio.getNoLote()));                                 //LOTE
-                                params.put(9, String.valueOf(negocio.getCodigoPostal()));                                   //CP
-                                params.put(10, Miscellaneous.GetColonia(ctx, negocio.getColoniaId()));                      //COLONIA
+                                params.put(9, String.valueOf(Miscellaneous.validInt(negocio.getCodigoPostal())));           //CP
+                                params.put(10, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(negocio.getColoniaId())));//COLONIA
                                 params.put(11, Miscellaneous.validStr(negocio.getCiudad()));                                //CIUDAD
-                                params.put(12, Miscellaneous.GetLocalidad(ctx, negocio.getLocalidadId()));                  //LOCALIDAD
-                                params.put(13, Miscellaneous.GetMunicipio(ctx, negocio.getMunicipioId()));                  //MUNICIPIO
-                                params.put(14, Miscellaneous.GetEstado(ctx, negocio.getEstadoId()));                        //ESTADO
-                                params.put(15, Miscellaneous.GetDestinoCredito(ctx, negocio.getDestinoCreditoId()));        //DESTINO CREDITO
+                                params.put(12, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(negocio.getLocalidadId())));//LOCALIDAD
+                                params.put(13, Miscellaneous.GetMunicipio(ctx, Miscellaneous.validInt(negocio.getMunicipioId())));//MUNICIPIO
+                                params.put(14, Miscellaneous.GetEstado(ctx, Miscellaneous.validInt(negocio.getEstadoId())));//ESTADO
+                                params.put(15, Miscellaneous.GetDestinoCredito(ctx, Miscellaneous.validInt(negocio.getDestinoCreditoId())));//DESTINO CREDITO
                                 params.put(16, Miscellaneous.validStr(negocio.getOtroDestinoCredito()));                    //OTRO DESTINO CREDITO
-                                params.put(17, Miscellaneous.GetOcupacion(ctx, negocio.getOcupacionId()));                  //OCUPACION
-                                params.put(18, Miscellaneous.GetSector(ctx, negocio.getSectorId()));                        //ACTIVIDAD ECONOMICA
-                                params.put(19, String.valueOf(negocio.getAntiguedad()));                                    //ANTIGUEDA
+                                params.put(17, Miscellaneous.GetOcupacion(ctx, Miscellaneous.validInt(negocio.getOcupacionId())));//OCUPACION
+                                params.put(18, Miscellaneous.GetSector(ctx, Miscellaneous.validInt(negocio.getSectorId())));//ACTIVIDAD ECONOMICA
+                                params.put(19, String.valueOf(Miscellaneous.validInt(negocio.getAntiguedad())));            //ANTIGUEDA
                                 params.put(20, "");                                                                         //INGRESO MENSUAL
                                 params.put(21, "");                                                                         //INGRESOS OTROS
                                 params.put(22, "");                                                                         //GASTO MENSUAL
@@ -5184,7 +5302,7 @@ public class Servicios_Sincronizado {
 
                                 //Inserta registro del conyuge
                                 params = new HashMap<>();
-                                params.put(0, String.valueOf(id));          //ID INTEGRANTE
+                                params.put(0, String.valueOf(id));                                        //ID INTEGRANTE
                                 params.put(1, Miscellaneous.validStr(conyuge.getNombre()));               //NOMBRE
                                 params.put(2, Miscellaneous.validStr(conyuge.getPaterno()));              //PATERNO
                                 params.put(3, Miscellaneous.validStr(conyuge.getMaterno()));              //MATERNO
@@ -6153,6 +6271,8 @@ public class Servicios_Sincronizado {
             final String id = (String) params[9];
             final String credito = (String) params[10];
             final String id_solicitud = (String) params[11];
+            final String id_solicitud_integrante = (String) params[12];
+            final String id_solicitud_grupal = (String) params[13];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -6243,7 +6363,10 @@ public class Servicios_Sincronizado {
 
             RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, solicitud.toString());
 
-            Log.e("solicitud", solicitud.toString());
+            RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_grupal);
+
+            RequestBody solicitudIntegranteIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_integrante);
+
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
             Call<MResSaveSolicitud> call = api.guardarOriginacionGpo("Bearer "+ session.getUser().get(7),
@@ -6254,7 +6377,9 @@ public class Servicios_Sincronizado {
                     foto_ine_frontal,
                     foto_ine_reverso,
                     foto_curp,
-                    foto_comprobante);
+                    foto_comprobante,
+                    solicitudIdBody,
+                    solicitudIntegranteIdBody);
 
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
@@ -6265,7 +6390,8 @@ public class Servicios_Sincronizado {
                         case 200:
                             MResSaveSolicitud res = response.body();
                             ContentValues cv = new ContentValues();
-                            cv.put("id_solicitud_integrante",res.getIdSolicitud());
+                            cv.put("id_solicitud_integrante", res.getIdSolicitud());
+                            cv.put("estatus_completado", 2);
                             db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{id});
 
                             String sql = "SELECT id_solicitud_integrante FROM " + TBL_INTEGRANTES_GPO + " WHERE id_credito = ? AND id_solicitud_integrante = ?";
@@ -6311,6 +6437,8 @@ public class Servicios_Sincronizado {
             final String id = (String) params[9];
             final String credito = (String) params[10];
             final String id_solicitud = (String) params[11];
+            final String id_solicitud_integrante = (String) params[12];
+            final String id_solicitud_grupal = (String) params[13];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -6404,6 +6532,8 @@ public class Servicios_Sincronizado {
             }*/
 
             RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, solicitud.toString());
+            RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_grupal);
+            RequestBody solicitudIntegranteIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_integrante);
 
             Log.e("solicitud", solicitud.toString());
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
@@ -6416,7 +6546,9 @@ public class Servicios_Sincronizado {
                     foto_ine_frontal,
                     foto_ine_reverso,
                     foto_curp,
-                    foto_comprobante);
+                    foto_comprobante,
+                    solicitudIdBody,
+                    solicitudIntegranteIdBody);
 
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
@@ -6428,6 +6560,7 @@ public class Servicios_Sincronizado {
                             MResSaveSolicitud res = response.body();
                             ContentValues cv = new ContentValues();
                             cv.put("id_solicitud_integrante",res.getIdSolicitud());
+                            cv.put("estatus_completado",2);
                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{id});
 
                             String sql = "SELECT id_solicitud_integrante FROM " + TBL_INTEGRANTES_GPO_REN + " WHERE id_credito = ? AND id_solicitud_integrante = ?";

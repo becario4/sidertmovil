@@ -425,7 +425,9 @@ public interface ManagerInterface {
                                                   @Part MultipartBody.Part identificacion_frontal,
                                                   @Part MultipartBody.Part identificacion_reverso,
                                                   @Part MultipartBody.Part curp,
-                                                  @Part MultipartBody.Part comprobante_domicilio);
+                                                  @Part MultipartBody.Part comprobante_domicilio,
+                                                  @Part("solicitud_id") RequestBody solicitud_grupal_id,
+                                                  @Part("solicitud_integrante_id") RequestBody solicitud_integrante_id);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_CIERRE_DIA)

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -35,15 +34,9 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Objects;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -117,15 +110,16 @@ public class Configuracion extends AppCompatActivity {
                             ss.SendTracker(ctx, true);
                             ss.GetTickets(ctx, true);
 
-                            ss.SendOriginacionInd (ctx, false);
-                            ss.SendOriginacionGpo(ctx, false);
-                            ss.SendRenovacionInd(ctx, false);
-                            ss.SendRenovacionGpo(ctx, false);
+                            //ss.SendOriginacionInd (ctx, false);
+                            //ss.SendOriginacionGpo(ctx, false);
+                            //ss.SendRenovacionInd(ctx, false);
+                            //ss.SendRenovacionGpo(ctx, false);
 
-                            ss.SendRecibos(ctx, true);
-                            ss.GetUltimosRecibos(ctx);
+                            //ss.SendRecibos(ctx, true);
+                            //ss.GetUltimosRecibos(ctx);
 
-                            ss.GetSolicitudesRechazadasInd(ctx, false);
+                            //ss.GetSolicitudesRechazadasInd(ctx, false);
+                            //ss.GetSolicitudesRechazadasGpo(ctx, false);
 
                             //ss.CancelGestiones(ctx, true);
                             //ss.SendCancelGestiones(ctx, true);

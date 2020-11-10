@@ -784,6 +784,8 @@ public class Miscellaneous {
         primerApellidoTexto = primerApellidoTexto.replaceAll("/","X");
         primerApellidoTexto = primerApellidoTexto.replaceAll("-","X");
 
+        primerApellidoTexto = (!primerApellidoTexto.trim().isEmpty())?primerApellidoTexto:"XXXX";
+
         String segundoApellidoTexto = RemoveTildes(params.get(2).toUpperCase().replace("Ñ","X"));
         String fechaNacimientoTexto = params.get(3).toUpperCase();
 

@@ -180,7 +180,7 @@ public class dialog_registro_integrante extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (!validator.validate(etNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                    !validator.validate(etPaterno, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                    !validator.validate(etPaterno, new String[]{validator.ONLY_TEXT}) &&
                     !validator.validate(etMaterno, new String[]{validator.ONLY_TEXT}) &&
                     !validatorTV.validate(tvCargo, new String[]{validatorTV.REQUIRED})){
                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,

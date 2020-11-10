@@ -172,6 +172,7 @@ public class impression_history_fragment extends Fragment {
 
         row = db.rawQuery(sql, null);
 
+        Log.e("CountImr", row.getCount()+ " XD");
         if (row.getCount() > 0){
 
             ArrayList<ImpressionsFields> obj = new ArrayList<>();

@@ -109,14 +109,19 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CONY
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_NEG;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_SOLICITUD;
@@ -150,6 +155,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private String[] _riesgo;
 
     //===================  DATOS PERSONALES  ==================================
+    private LinearLayout llComentCli;
+    private TextView tvComentAdminCli;
     private TextView tvCargo;
     private EditText etNombreCli;
     private EditText etApPaternoCli;
@@ -447,6 +454,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         Toolbar TBmain = findViewById(R.id.TBmain);
         setSupportActionBar(TBmain);
         //=================================  DATOS PERSONALES  =====================================
+        llComentCli         = findViewById(R.id.llComentCli);
+        tvComentAdminCli    = findViewById(R.id.tvComentAdminCli);
         tvCargo             = findViewById(R.id.tvCargo);
         etNombreCli         = findViewById(R.id.etNombreCli);
         etApPaternoCli      = findViewById(R.id.etApPaternoCli);
@@ -4138,7 +4147,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         Log.e("Count", row.getCount()+" XDXDXDXDXD");
 
-        if (row.getInt(0) == 1 &&
+        if ((row.getInt(0) == 1 || row.getInt(0) == 2 || row.getInt(0) == 3) &&
                 row.getInt(2) == 1 &&
                 row.getInt(3) == 1 &&
                 row.getInt(4) == 1 &&
@@ -4159,6 +4168,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         row = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id = ? AND id_credito = ?", "", new String[]{id_integrante, id_credito});
         row.moveToFirst();
 
+        if (!row.getString(20).trim().isEmpty()){
+            llComentCli.setVisibility(View.VISIBLE);
+            tvComentAdminCli.setText(row.getString(20).toUpperCase());
+        }
+
         switch (row.getInt(2)){
             case 1:
                 tvCargo.setText(getResources().getString(R.string.presidente).toUpperCase());
@@ -4176,7 +4190,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         isNuevo = row.getInt(23) == 1;
 
-
         etNombreCli.setText(row.getString(3)); etNombreCli.setEnabled(false);
         etApPaternoCli.setText(row.getString(4)); etApPaternoCli.setEnabled(false);
         etApMaternoCli.setText(row.getString(5)); etApMaternoCli.setEnabled(false);
@@ -4185,7 +4198,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
             etCurpCli.setEnabled(is_edit);
-            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_right));
+            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
             llCurp.setVisibility(View.VISIBLE);
         }
         else {
@@ -4195,7 +4208,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCurpCli.setEnabled(false);
-            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
+            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
         tvEdadCli.setText(row.getString(7));
         switch (row.getInt(8)){
@@ -4294,7 +4307,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         etReferenciaCli.setText(row.getString(20)); etReferenciaCli.setEnabled(is_edit);
         row.close(); //Cierra datos del domicilio del integrante
-
 
         //Datos Negocio
         row = dBhelper.getRecords(TBL_NEGOCIO_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
@@ -4638,7 +4650,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         boolean save_integrante = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
@@ -4946,8 +4958,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private boolean saveConyuge(){
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApMaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
+                !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etNacionalidad, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
@@ -5215,6 +5227,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
                         datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos){
                     Update("estatus_completado", TBL_INTEGRANTES_GPO_REN, "1", "id", id_integrante);
+
+                    Update("comentario_rechazo", TBL_INTEGRANTES_GPO_REN, "","id", id_integrante);
+
                     finish();
                 }
                 else{

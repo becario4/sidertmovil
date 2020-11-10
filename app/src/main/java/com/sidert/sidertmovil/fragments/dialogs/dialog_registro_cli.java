@@ -98,7 +98,7 @@ public class dialog_registro_cli extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (!validator.validate(etNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etPaterno, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etPaterno, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etMaterno, new String[]{validator.ONLY_TEXT})){
                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                         R.string.datos_correctos, R.string.yes, new Popups.DialogMessage() {

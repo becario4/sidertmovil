@@ -126,30 +126,30 @@ public class SidertTables {
 
         static final String CREATE_TABLE_FICHAS_T = "CREATE TABLE " + TABLE_FICHAS_T + "("
                 + SidertEntry._ID + " INTEGER PRIMARY KEY,"   //0
-                + SidertEntry.ASESOR_ID + " TEXT,"                  //1
-                + SidertEntry.EXTERNAL_ID + " TEXT,"                  //2
+                + SidertEntry.ASESOR_ID + " TEXT,"            //1
+                + SidertEntry.EXTERNAL_ID + " TEXT,"          //2
                 + SidertEntry.FORM + " TEXT,"                  //3
-                + SidertEntry.FECHA_ASIGNACION + " TEXT,"                  //4
-                + SidertEntry.DIA_SEMANA + " TEXT,"                  //5
-                + SidertEntry.FECHA_PAGO + " TEXT,"                  //6
-                + SidertEntry.PRESTAMO_OBJ + " TEXT,"                  //7
-                + SidertEntry.NOMBRE + " TEXT,"                  //8
-                + SidertEntry.CLAVE + " TEXT,"                  //9
-                + SidertEntry.DATOS_OBJ + " TEXT,"                  //10
-                + SidertEntry.AVAL_OBJ + " TEXT,"                  //11
-                + SidertEntry.PRESIDENTA_OBJ + " TEXT,"                  //12
-                + SidertEntry.TESORERA_OBJ + " TEXT,"                  //13
-                + SidertEntry.SECRETARIA_OBJ + " TEXT,"                  //14
-                + SidertEntry.REPORTE_OMEGA_OBJ + " TEXT,"                  //15
-                + SidertEntry.TABLA_PAGOS_OBJ + " TEXT,"                  //16
-                + SidertEntry.IMPRESION + " INTEGER,"               //17
-                + SidertEntry.FECHA_INI + " TEXT,"                  //18
-                + SidertEntry.FECHA_TER + " TEXT,"                  //19
-                + SidertEntry.FECHA_ENV + " TEXT,"                  //20
-                + SidertEntry.FECHA_CON + " TEXT,"                  //21
-                + SidertEntry.RESPUESTA + " TEXT,"                  //22
-                + SidertEntry.STATUS + " INTEGER,"               //23
-                + SidertEntry.TIMESTAMP + " TEXT)";                 //24
+                + SidertEntry.FECHA_ASIGNACION + " TEXT,"      //4
+                + SidertEntry.DIA_SEMANA + " TEXT,"            //5
+                + SidertEntry.FECHA_PAGO + " TEXT,"            //6
+                + SidertEntry.PRESTAMO_OBJ + " TEXT,"          //7
+                + SidertEntry.NOMBRE + " TEXT,"                //8
+                + SidertEntry.CLAVE + " TEXT,"                 //9
+                + SidertEntry.DATOS_OBJ + " TEXT,"             //10
+                + SidertEntry.AVAL_OBJ + " TEXT,"              //11
+                + SidertEntry.PRESIDENTA_OBJ + " TEXT,"        //12
+                + SidertEntry.TESORERA_OBJ + " TEXT,"          //13
+                + SidertEntry.SECRETARIA_OBJ + " TEXT,"        //14
+                + SidertEntry.REPORTE_OMEGA_OBJ + " TEXT,"     //15
+                + SidertEntry.TABLA_PAGOS_OBJ + " TEXT,"       //16
+                + SidertEntry.IMPRESION + " INTEGER,"          //17
+                + SidertEntry.FECHA_INI + " TEXT,"             //18
+                + SidertEntry.FECHA_TER + " TEXT,"             //19
+                + SidertEntry.FECHA_ENV + " TEXT,"             //20
+                + SidertEntry.FECHA_CON + " TEXT,"             //21
+                + SidertEntry.RESPUESTA + " TEXT,"             //22
+                + SidertEntry.STATUS + " INTEGER,"             //23
+                + SidertEntry.TIMESTAMP + " TEXT)";            //24
 
         static final String CREATE_TABLE_GEOLOCALIZACION_T = "CREATE TABLE " + TABLE_GEOLOCALIZACION_T + "("
                 + SidertEntry._ID + " INTEGER PRIMARY KEY,"

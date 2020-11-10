@@ -4140,7 +4140,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         Cursor row = db.rawQuery(sql, new String[]{id_credito, id_integrante});
         row.moveToFirst();
 
-        if (row.getInt(0) == 1 &&
+        if ((row.getInt(0) == 1 || row.getInt(0) == 2 || row.getInt(0) == 3) &&
         row.getInt(2) == 1 &&
         row.getInt(3) == 1 &&
         row.getInt(4) == 1 &&
@@ -4413,7 +4413,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             cbCasaReuniones.setChecked(true);
             llCroquis.setVisibility(View.VISIBLE);
         }
-        Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1", "", null);
+        Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1 AND i.estatus_completado IN (0,1,2)", "", null);
         row_casa.moveToFirst();
         if (row_casa.getCount() > 0 && row_casa.getInt(0) != Integer.parseInt(id_integrante)){
             cbCasaReuniones.setEnabled(false);
@@ -4624,7 +4624,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         boolean save_integrante = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
         !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
@@ -4682,6 +4682,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
                                 cv.put("nivel_estudio", tvEstudiosCli.getText().toString());
                                 cv.put("ocupacion", tvOcupacionCli.getText().toString());
+
 
                                 db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
 
@@ -4932,8 +4933,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private boolean saveConyuge(){
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApPaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-        !validator.validate(etApMaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
+        !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etNacionalidad, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
         !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
@@ -5201,6 +5202,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
                 datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos){
                     Update("estatus_completado", TBL_INTEGRANTES_GPO, "1", "id", id_integrante);
+                    Update("comentario_rechazo", TBL_INTEGRANTES_GPO, "", "id", id_integrante);
                     finish();
                 }
                 else{

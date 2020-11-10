@@ -171,9 +171,6 @@ public class CodigosOxxo extends AppCompatActivity {
                         case 201:
                             MResCodigoOxxo referencia = response.body();
                             MCodigoOxxo item = referencia.getData();
-                            Log.e("numPrestamo",item.getNumPrestamo());
-                            Log.e("fechaAmortiz",item.getFechaAmortizacion());
-                            Log.e("nombrePdf",item.getNombrePdf());
                             String sql = "SELECT * FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? AND fecha_amortiz = ? AND nombre_pdf = ?";
                             Cursor row = db.rawQuery(sql, new String[]{item.getNumPrestamo(), item.getFechaAmortizacion(), item.getNombrePdf()});
                             Log.e("RowCount", String.valueOf(row.getCount())+"total");
@@ -247,8 +244,11 @@ public class CodigosOxxo extends AppCompatActivity {
                 @Override
                 public void CompartirClick(Boolean enabled, String nombrePDF) {
                     if (enabled) {
-                        String url = session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS +
+                        String url = session.getDominio().get(0) + session.getDominio().get(1) +
+                                WebServicesRoutes.CONTROLLER_FICHAS +
                                 WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
+
+                        //http://sidert.ddns.net:83/api/fichas/uploads/codigos_oxxo/ nombre_del archivo.pdf
 
                         Log.e("url_pdf", url);
 

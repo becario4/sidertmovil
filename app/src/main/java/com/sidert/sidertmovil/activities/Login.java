@@ -271,19 +271,6 @@ public class Login extends AppCompatActivity {
                             try {
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
 
-                                /*boolean isLogin = false;
-                                Log.e("MAC_ADDRESSES", String.valueOf(json_info.has(MAC_ADDRESSES)));
-                                if (json_info.has(MAC_ADDRESSES)){
-                                    JSONArray macAddresses = json_info.getJSONArray(MAC_ADDRESSES);
-                                    for(int i = 0 ; i < macAddresses.length(); i++){
-                                        JSONObject item = macAddresses.getJSONObject(i);
-                                        if (session.getMacAddress().equals(item.getString("mac_address"))){
-                                            isLogin = true;
-                                            break;
-                                        }
-                                    }
-                                }*/
-
                                 /*if (true || json_info.getInt("id") == 134 || json_info.getInt("id") == 119 ||
                                 json_info.getInt("id") == 1 || json_info.getInt("id") == 123 ||
                                 json_info.getInt("id") == 135 || json_info.getInt("id") == 157 ||
@@ -318,7 +305,7 @@ public class Login extends AppCompatActivity {
                                         Miscellaneous.validString(json_info.getString(MODULOS)),
                                         Miscellaneous.validString(json_info.getString("id")));
 
-                                session.setSucursales(json_info.getString(SUCURSALES));
+                                //session.setSucursales(json_info.getString(SUCURSALES));
 
                                 Calendar c = Calendar.getInstance();
                                 AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);

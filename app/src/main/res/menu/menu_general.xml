@@ -10,7 +10,7 @@
     <item
         android:id="@+id/nvGeolocalizar"
         android:title="Geolocalizar"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/ic_pin" />
     <!-- 2 -->
     <item
@@ -28,7 +28,7 @@
     <item
         android:id="@+id/nvCC"
         android:title="CC | AGF"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 5 -->
     <item
@@ -40,13 +40,13 @@
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item

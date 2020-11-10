@@ -15,9 +15,13 @@ public class MSolicitudRechazoGpo implements Serializable {
     @Expose
     private Integer idSolicitudIntegrante;
 
-    @SerializedName("solicitud_estado_id")
+    @SerializedName("solicitud_estado_id_solicitud")
     @Expose
-    private Integer solicitudEstadoId;
+    private Integer solicitudEstadoIdSolicitud;
+
+    @SerializedName("solicitud_estado_id_integrante")
+    @Expose
+    private Integer solicitudEstadoIdIntegrante;
 
     @SerializedName("tipo_solicitud")
     @Expose
@@ -30,6 +34,10 @@ public class MSolicitudRechazoGpo implements Serializable {
     @SerializedName("comentario_admin")
     @Expose
     private String comentarioAdmin;
+
+    @SerializedName("cargo")
+    @Expose
+    private Integer cargo;
 
     public Integer getId() {
         return id;
@@ -47,12 +55,20 @@ public class MSolicitudRechazoGpo implements Serializable {
         this.idSolicitudIntegrante = idSolicitudIntegrante;
     }
 
-    public Integer getSolicitudEstadoId() {
-        return solicitudEstadoId;
+    public Integer getSolicitudEstadoIdSolicitud() {
+        return solicitudEstadoIdSolicitud;
     }
 
-    public void setSolicitudEstadoId(Integer solicitudEstadoId) {
-        this.solicitudEstadoId = solicitudEstadoId;
+    public void setSolicitudEstadoIdSolicitud(Integer solicitudEstadoIdSolicitud) {
+        this.solicitudEstadoIdSolicitud = solicitudEstadoIdSolicitud;
+    }
+
+    public Integer getSolicitudEstadoIdIntegrante() {
+        return solicitudEstadoIdIntegrante;
+    }
+
+    public void setSolicitudEstadoIdIntegrante(Integer solicitudEstadoIdIntegrante) {
+        this.solicitudEstadoIdIntegrante = solicitudEstadoIdIntegrante;
     }
 
     public Integer getTipoSolicitud() {
@@ -78,4 +94,13 @@ public class MSolicitudRechazoGpo implements Serializable {
     public void setComentarioAdmin(String comentarioAdmin) {
         this.comentarioAdmin = comentarioAdmin;
     }
+
+    public Integer getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(Integer cargo) {
+        this.cargo = cargo;
+    }
+
 }

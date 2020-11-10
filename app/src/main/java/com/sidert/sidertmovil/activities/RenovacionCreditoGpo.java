@@ -175,7 +175,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         hora_visita = row.getString(7);
         observaciones = row.getString(9);
 
-        is_edit = row.getInt(9) == 1;
+        is_edit = row.getInt(12) == 0;
         if (!is_edit) {
             invalidateOptionsMenu();
             fabAgregar.hide();
@@ -198,6 +198,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 item.put(4, "");
                 item.put(5, "");
                 item.put(6, row_integrantes.getString(1));
+                item.put(7, row_integrantes.getString(20));
                 data.add(item);
                 row_integrantes.moveToNext();
             }

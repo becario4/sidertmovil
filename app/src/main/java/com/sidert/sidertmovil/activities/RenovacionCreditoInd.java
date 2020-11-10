@@ -6921,7 +6921,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         boolean save_cliente = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
@@ -7123,8 +7123,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private boolean saveConyuge(){
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApMaternoCony, new String[]{validator.GENERAL}) &&
+                !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
+                !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etNacionalidadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
@@ -7329,8 +7329,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         boolean save_aval = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoAval, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApMaternoAval, new String[]{validator.GENERAL}) &&
+                !validator.validate(etApPaternoAval, new String[] {validator.ONLY_TEXT}) &&
+                !validator.validate(etApMaternoAval, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacAval, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvEdadAval, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
             if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre ||
@@ -7543,7 +7543,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private boolean saveReferencia() {
         boolean save_referencia = false;
         if (!validator.validate(etNombreRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etApPaternoRef, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoRef, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacRef, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etCalleRef, new String[]{validator.REQUIRED}) &&
@@ -7749,6 +7749,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     Update("estatus_completado", TBL_CROQUIS_IND_REN, "1");
                     Update("estatus_completado", TBL_POLITICAS_PLD_IND_REN, "1");
                     Update("estatus_completado", TBL_DOCUMENTOS_REN, "1");
+
+                    Update("comentario_rechazo", TBL_CLIENTE_IND_REN, "");
+                    Update("comentario_rechazo", TBL_NEGOCIO_IND_REN, "");
+                    Update("comentario_rechazo", TBL_AVAL_IND_REN, "");
+                    Update("comentario_rechazo", TBL_REFERENCIA_IND_REN, "");
+                    Update("comentario_rechazo", TBL_CROQUIS_IND_REN, "");
 
                     ContentValues cv = new ContentValues();
                     cv.put("estatus", 1);

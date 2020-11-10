@@ -56,19 +56,7 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Cursor row;
 
-        /*ContentValues c = new ContentValues();
-        c.put("id_solicitud_integrante", 4);
-        db.update(TBL_INTEGRANTES_GPO, c, "id_solicitud_integrante = ?", new String[]{"20"});*/
-
-        String cadenaNormalize = Normalizer.normalize("PEÑAÁ", Normalizer.Form.NFD);
-        String cadenaSinAcentos = cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
-        Log.e("CadenaSinAcentos", cadenaSinAcentos);
-
         SessionManager session = new SessionManager(this);
-
-        Log.e("Mac", Miscellaneous.EncodePassword(" F4:71:90:AC:9A:BC"));
-        Log.e("MacDecodeXXX", Miscellaneous.DecodePassword("kDM6EDO6gzM6YTO6czQ6gDN="));
-        Log.e("MacPrimero", Miscellaneous.DecodePassword("xAjNy9GdzV2Z"));
 
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -98,35 +86,19 @@ public class SplashSidertActivity extends AppCompatActivity {
 
                 String newMacAddress = mac[0]+":"+mac[1]+":"+mac[2]+":"+mac[3]+":"+mac[4]+":"+mac[5];
                 session.setAddress(newMacAddress.toUpperCase());
-                Log.e("asdasda",newMacAddress.toUpperCase());
-
             }
         } catch (Exception ex) {
             //handle exception
         }
 
-        row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, "","", null);
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                Log.e(row.getColumnName(0), row.getString(0));
-                Log.e(row.getColumnName(1), row.getString(1));
-                Log.e(row.getColumnName(2), row.getString(2));
-                Log.e(row.getColumnName(3), row.getString(3));
-                Log.e(row.getColumnName(24), row.getString(24));
-                Log.e(row.getColumnName(25), row.getString(25));
 
-                row.moveToNext();
-            }
-        }
+        //String fabricante = Build.MANUFACTURER;
+        //String modelo = Build.MODEL;
 
-        String fabricante = Build.MANUFACTURER;
-        String modelo = Build.MODEL;
+        //Log.e("FABRICANTE", fabricante);
+        //Log.e("MODELO", modelo);
 
-        Log.e("FABRICANTE", fabricante);
-        Log.e("MODELO", modelo);
-
-        session.setDominio("http://192.168.100.5:", "8080");
+        //session.setDominio("http://192.168.100.5:", "8080");
         //session.setDominio("http://sidert.ddns.net:", "83");
 
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
@@ -155,24 +127,11 @@ public class SplashSidertActivity extends AppCompatActivity {
             Log.e("DiasLogin", String.valueOf(dias));
         }
 
-        Cursor r = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, "","", null);
-        if (r.getCount() > 0){
-            r.moveToFirst();
-            for (int i = 0; i < r.getCount(); i++){
-                Log.e(r.getColumnName(0), r.getString(0));
-                Log.e(r.getColumnName(1), r.getString(1));
-                Log.e(r.getColumnName(2), r.getString(2));
-                Log.e(r.getColumnName(3), r.getString(3));
-                Log.e(r.getColumnName(4), r.getString(4));
-                r.moveToNext();
-            }
-        }
-
-        new RegistrarColonias().execute();
+        /*new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();
+        new RegistrarLocalidades().execute();*/
 
-        /*Handler handler_home=new Handler();
+        Handler handler_home=new Handler();
         handler_home.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -181,7 +140,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 startActivity(start);
                 finish();
             }
-        },3000);*/
+        },3000);
 
     }
 
@@ -199,12 +158,11 @@ public class SplashSidertActivity extends AppCompatActivity {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         String[] localidad = line.split(",");
+
                         HashMap<Integer, String> values = new HashMap<>();
-                        values.put(0, localidad[0]);
-                        values.put(1, localidad[2]);
-                        values.put(2, localidad[1]);
-
-
+                        values.put(0, localidad[0].trim());
+                        values.put(1, localidad[2].trim().toUpperCase());
+                        values.put(2, localidad[1].trim());
                         dBhelper.saveLocalidades(db, values);
                     }
                 } catch (IOException e) {
@@ -295,16 +253,16 @@ public class SplashSidertActivity extends AppCompatActivity {
                             new InputStreamReader(is, Charset.forName(UTF_8))
                     );
                     String line;
+                    int i = 0;
                     while ((line = reader.readLine()) != null) {
                         String[] colonia = line.split(";");
                         HashMap<Integer, String> values = new HashMap<>();
-                        values.put(0, colonia[0]);
-                        values.put(1, colonia[2]);
-                        values.put(2, colonia[3]);
-                        values.put(3, colonia[1]);
-
-
+                        values.put(0, colonia[0].trim());
+                        values.put(1, colonia[2].trim().toUpperCase());
+                        values.put(2, colonia[3].trim());
+                        values.put(3, colonia[1].trim());
                         dBhelper.saveColonias(db, values);
+                        i += 1;
                     }
                 } catch (IOException e) {
 
