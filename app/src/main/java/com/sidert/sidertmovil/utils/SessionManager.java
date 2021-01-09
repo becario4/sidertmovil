@@ -55,7 +55,9 @@ public class SessionManager {
     private final String ASESOR_CARTERA_P   = "asesor_cartera_p";
     private final String ASESOR_CARTERA_R   = "asesor_cartera_r";
     private final String CONTADOR_CARTERA_P = "contador_cartera_p";
+    private final String PARCIAL_CARTERA_P = "parcial_cartera_p";
     private final String CONTADOR_CARTERA_R = "contador_cartera_r";
+    private final String PARCIAL_CARTERA_R  = "parcial_cartera_r";
     private final String NOMBRE_CARTERA_C   = "nombre_cartera_c";
     private final String TIPO_CARTERA_IND_C = "tipo_cartera_ind_c";
     private final String TIPO_CARTERA_GPO_C = "tipo_cartera_gpo_c";
@@ -314,6 +316,7 @@ public class SessionManager {
         editor.putString(COLONIA_CARTERA_P, filtros.get(COLONIA_CARTERA_P));
         editor.putString(ASESOR_CARTERA_P, filtros.get(ASESOR_CARTERA_P));
         editor.putString(CONTADOR_CARTERA_P, filtros.get(CONTADOR_CARTERA_P));
+        editor.putString(PARCIAL_CARTERA_P, filtros.get(PARCIAL_CARTERA_P));
         editor.commit();
     }
 
@@ -327,6 +330,7 @@ public class SessionManager {
         filtros.add(preferences.getString(COLONIA_CARTERA_P, ""));
         filtros.add(preferences.getString(ASESOR_CARTERA_P, "0"));
         filtros.add(preferences.getString(CONTADOR_CARTERA_P, "0"));
+        filtros.add(preferences.getString(PARCIAL_CARTERA_P, "0"));
         return filtros;
     }
 
@@ -340,6 +344,7 @@ public class SessionManager {
         editor.putString(COLONIA_CARTERA_R, filtros.get(COLONIA_CARTERA_R));
         editor.putString(ASESOR_CARTERA_R, filtros.get(ASESOR_CARTERA_R));
         editor.putString(CONTADOR_CARTERA_R, filtros.get(CONTADOR_CARTERA_R));
+        editor.putString(PARCIAL_CARTERA_R, filtros.get(PARCIAL_CARTERA_R));
         editor.commit();
     }
 
@@ -353,6 +358,7 @@ public class SessionManager {
         filtros.add(preferences.getString(COLONIA_CARTERA_R, ""));
         filtros.add(preferences.getString(ASESOR_CARTERA_R, "0"));
         filtros.add(preferences.getString(CONTADOR_CARTERA_R, "0"));
+        filtros.add(preferences.getString(PARCIAL_CARTERA_R, "0"));
         return filtros;
     }
 
@@ -390,7 +396,7 @@ public class SessionManager {
         editor.putString(AP_MATERNO, apMaterno);       //3
         editor.putString(USER_NAME, userName);         //4
         editor.putString(TYPE_USER, type_user);        //5
-        editor.putBoolean(FLAG, flag);                 //6
+        editor.putBoolean(FLAG, flag);                 //6 para inicio de sesion
         editor.putString(ACCESS_TOKEN, access_token);  //7
         editor.putString(MODULOS, modulos);            //8
         editor.putString(ID_CARTERA, ID);            //9

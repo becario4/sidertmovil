@@ -8,17 +8,22 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
@@ -26,6 +31,7 @@ import com.sidert.sidertmovil.models.MailBoxPLD;
 import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
@@ -43,14 +49,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_DENUNCIAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 
 public class dialog_mailbox extends DialogFragment {
 
     private Context ctx;
-    private EditText etSubject;
+    //private EditText etSubject;
+    private Spinner spAsunto;
+    private LinearLayout llOtroAsunto;
+    private EditText etOtroAsunto;
     private EditText etNombreDenunciado;
     private Spinner spPuestoDenunciado;
     private MultiAutoCompleteTextView etReason;
+    private TextView tvConceptoSize;
     private Button btnSend;
     private ImageView ivClose;
 
@@ -66,10 +77,14 @@ public class dialog_mailbox extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_mailbox, container, false);
         ctx         = getContext();
-        etSubject   = view.findViewById(R.id.etSubject);
+        //etSubject   = view.findViewById(R.id.etSubject);
+        spAsunto            = view.findViewById(R.id.spAsunto);
+        llOtroAsunto        = view.findViewById(R.id.llOtroAsunto);
+        etOtroAsunto        = view.findViewById(R.id.etOtroAsunto);
         etNombreDenunciado  = view.findViewById(R.id.etNombreDenunciado);
         spPuestoDenunciado  = view.findViewById(R.id.spPuestoDenunciado);
         etReason    = view.findViewById(R.id.etReason);
+        tvConceptoSize  = view.findViewById(R.id.tvConceptoSize);
         btnSend     = view.findViewById(R.id.btnSend);
         ivClose    = view.findViewById(R.id.ivClose);
 
@@ -90,81 +105,86 @@ public class dialog_mailbox extends DialogFragment {
 
         btnSend.setOnClickListener(btnSend_OnClick);
         ivClose.setOnClickListener(ivClose_OnClick);
+
+        spAsunto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 1){
+                    llOtroAsunto.setVisibility(View.VISIBLE);
+                }
+                else{
+                    llOtroAsunto.setVisibility(View.GONE);
+                    etOtroAsunto.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        etReason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable e) {
+                tvConceptoSize.setText(e.length()+"/400");
+            }
+        });
     }
 
     private View.OnClickListener btnSend_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
-            if(!validator.validate(etSubject, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
-                    !validator.validate(etNombreDenunciado, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
-                    !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) {
-
-                if (spPuestoDenunciado.getSelectedItemPosition() != 0){
-                    if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
-                            (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
-                            (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
-                    {
-                        SendComplaint();
+            if (spAsunto.getSelectedItemPosition() != 0){
+                if ((spAsunto.getSelectedItemPosition() > 1  &&
+                !validator.validate(etNombreDenunciado, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) ||
+                (spAsunto.getSelectedItemPosition() == 1  &&
+                !validator.validate(etOtroAsunto, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etNombreDenunciado, new String[] {validator.REQUIRED, validator.ONLY_TEXT}) &&
+                !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL}))
+                ){
+                    if (spPuestoDenunciado.getSelectedItemPosition() != 0){
+                        if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
+                                (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
+                                (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
+                        {
+                            //Toast.makeText(ctx, "Se envia mensaje", Toast.LENGTH_SHORT).show();
+                            SendComplaint();
+                        }
+                        else{
+                            final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.face_dissatisfied,
+                                    R.string.limit_mailbox, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
+                                            getDialog().dismiss();
+                                        }
+                                    });
+                            limitDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            limitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            limitDialog.show();
+                        }
                     }
                     else{
-                        final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.face_dissatisfied,
-                                R.string.limit_mailbox, R.string.accept, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        dialog.dismiss();
-                                        getDialog().dismiss();
-                                    }
-                                });
-                        limitDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        limitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        limitDialog.show();
+                        Toast.makeText(ctx, "Seleccione el puesto del denunciado", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else{
-                    Toast.makeText(ctx, "Seleccione el puesto del denunciado", Toast.LENGTH_SHORT).show();
-                }
-
-
             }
-            /*if(!validator.validate(etSubject, new String[] {validator.REQUIRED, validator.GENERAL}) &&
-               !validator.validate(etReason, new String[] {validator.REQUIRED, validator.GENERAL})) {
+            else
+                Toast.makeText(ctx, "Seleccione el asunto", Toast.LENGTH_SHORT).show();
 
-                if( (session.getMailBox().get(0).equals("") || session.getMailBox().get(1).equals("0")) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), true) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS) ||
-                        (validateDate(session.getMailBox().get(0), sdf.format(calendar.getTime()), false) && Integer.parseInt(session.getMailBox().get(1)) <= Constants.LIMIT_COMPLAINTS))
-                {
-                    if (!Miscellaneous.loadSettingFile(fileName).isEmpty()){
-                        SendComplaint();
-                    }
-                    else {
-                        final AlertDialog file_not_exist = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.error_contact_TI), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                dialog.dismiss();
-                                getDialog().dismiss();
-                            }
-                        }, null, null);
-                        file_not_exist.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        file_not_exist.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        file_not_exist.show();
-                    }
-
-                }
-                else{
-                    final AlertDialog limitDialog = Popups.showDialogMessage(ctx, Constants.not_network, ctx.getResources().getString(R.string.limit_mailbox), ctx.getResources().getString(R.string.accept), new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            dialog.dismiss();
-                            getDialog().dismiss();
-                        }
-                    }, null, null);
-                    limitDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    limitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    limitDialog.show();
-                }
-
-            }*/
         }
     };
 
@@ -204,36 +224,29 @@ public class dialog_mailbox extends DialogFragment {
             final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
-            byte[] data;
-            String encode = "";
-            try {
-                String[] fecha = sdf.format(calendar.getTime()).split("-");
-                String fecha_mod = fecha[0]+"Q"+fecha[1]+"V"+fecha[2]+"V";
-                data = fecha_mod.getBytes("UTF-8");
-                encode = Base64.encodeToString(data, Base64.DEFAULT);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_DENUNCIAS, ctx).create(ManagerInterface.class);
 
-            MailBoxPLD obj = new MailBoxPLD(encode,
+            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+
+            MailBoxPLD obj = new MailBoxPLD("",
                     sdf.format(calendar.getTime()),
-                    etNombreDenunciado.getText().toString().trim(),
+                    Miscellaneous.GetStr(etNombreDenunciado),
                     spPuestoDenunciado.getSelectedItem().toString(),
-                    "Denuncia desde android",
-                    etReason.getText().toString());
+                    Miscellaneous.GetStr(etOtroAsunto),
+                    spAsunto.getSelectedItemId(),
+                    Miscellaneous.GetStr(etReason));
 
-            Log.v("objeto", obj.toString());
+            Log.e("objeto", Miscellaneous.ConvertToJson(obj));
             Call<MailBoxResponse> call = api.setMailBox(obj);
 
 
             call.enqueue(new Callback<MailBoxResponse>() {
                 @Override
                 public void onResponse(Call<MailBoxResponse> call, Response<MailBoxResponse> response) {
+                    Log.e("CodeDenuncia", "Code: "+response.code());
+
                     loading.dismiss();
                     MailBoxResponse res = response.body();
-                    Log.v("respuesta", res.getCode()+" code");
                     switch (res.getCode()){
                         case 200:
                             session.setMailBox(sdf.format(calendar.getTime()),(session.getMailBox().get(1) + 1) );

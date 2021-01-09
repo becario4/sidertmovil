@@ -222,6 +222,57 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <!--  Credito autorizado  -->
+    <LinearLayout
+        android:id="@+id/llCreditoAutorizado"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Crédito Autorizado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCredAutorizado"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
+            android:drawableStart="@drawable/ic_money"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Cantidad autorizads en letra  -->
+    <LinearLayout
+        android:id="@+id/llCantidadAutorizadaLetra"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Autorizado en Letra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvCantidadAutorizadoLetra"
+            android:textSize="17sp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--  Casa para reuniones  -->
     <LinearLayout
         android:layout_marginTop="10dp"

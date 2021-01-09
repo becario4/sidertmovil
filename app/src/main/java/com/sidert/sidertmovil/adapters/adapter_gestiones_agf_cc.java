@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +38,12 @@ public class adapter_gestiones_agf_cc extends RecyclerView.Adapter<adapter_gesti
         HashMap<Integer, String> item = data.get(position);
 
         holder.tvNombre.setText(item.get(0));
-        holder.tvtipo.setText("Tipo: "+item.get(1));
-        holder.tvMonto.setText("Monto: "+item.get(2));
-        holder.tvMedioPago.setText("Medio Pago: "+item.get(3));
-        holder.tvFolio.setText("Folio: "+ Miscellaneous.validStr(item.get(4)));
-        holder.tvFechaTermino.setText("Fecha Termino: "+item.get(5));
-        holder.tvFechaEnvio.setText("Fecha Envio: "+item.get(6));
+        holder.tvtipo.setText((Html.fromHtml("<b>Tipo:</b> "+item.get(1))));
+        holder.tvMonto.setText((Html.fromHtml("<b>Monto:</b> "+Miscellaneous.moneyFormat(item.get(2)))));
+        holder.tvMedioPago.setText((Html.fromHtml("<b>Medio Pago:</b> "+item.get(3))));
+        holder.tvFolio.setText((Html.fromHtml("<b>Folio</b> "+item.get(4))));
+        holder.tvFechaTermino.setText((Html.fromHtml("<b>Fecha Término: </b> "+item.get(5))));
+        holder.tvFechaEnvio.setText((Html.fromHtml("<b>Fecha Envío</b> "+item.get(6))));
 
         if (!Miscellaneous.validStr(item.get(4)).isEmpty())
             holder.tvFolio.setVisibility(View.VISIBLE);

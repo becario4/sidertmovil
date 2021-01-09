@@ -115,11 +115,7 @@ public class geo_completadas_fragment extends Fragment {
         adapter = new adapter_geo_pendientes(ctx, _m_geolocalizacion, new adapter_geo_pendientes.Event() {
             @Override
             public void GeoOnClick(ModelGeolocalizacion item, int modulo) {
-                Cursor row;
-                if (Constants.ENVIROMENT)
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
-                else
-                    row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
+                Cursor row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, " WHERE num_solicitud = '"+item.getNum_solicitud()+"'", "", null);
                 row.moveToFirst();
                 Intent i_geolocalizacion;
                 switch (item.getTipo_form()) {

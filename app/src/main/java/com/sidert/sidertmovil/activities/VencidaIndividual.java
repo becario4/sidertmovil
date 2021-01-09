@@ -27,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
@@ -115,10 +114,7 @@ public class VencidaIndividual extends AppCompatActivity {
             }
         }
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+        row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0) {
             row.moveToFirst();
@@ -136,10 +132,7 @@ public class VencidaIndividual extends AppCompatActivity {
         }
         row.close();
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_AMORTIZACIONES + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+        row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();

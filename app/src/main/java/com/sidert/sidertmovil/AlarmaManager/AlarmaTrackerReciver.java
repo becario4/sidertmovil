@@ -256,7 +256,6 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                         }, 60000);
 
                         if (NetworkStatus.haveNetworkConnection(ctx)) {
-                            Log.e("JOB", "Con conexion a internet Geolocalizacion");
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                             ss.SaveGeolocalizacion(ctx, false);
                             ss.SaveRespuestaGestion(ctx, false);
@@ -266,10 +265,18 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                             ss.SaveCierreDia(ctx, false);
                             ss.GetTickets(ctx, false);
 
+                            //ss.MontoAutorizado(ctx, false);
                             //ss.SendOriginacionInd (ctx, false);
                             //ss.SendOriginacionGpo(ctx, false);
+
                             //ss.SendRecibos(ctx, false);
                             //ss.GetUltimosRecibos(ctx);
+                            //ss.SendConsultaCC(ctx, false);
+
+                            //ss.SendRenovacionInd(ctx, false);
+                            //ss.SendRenovacionGpo(ctx, false);
+                            //ss.GetSolicitudesRechazadasInd(ctx, false);
+                            //ss.GetSolicitudesRechazadasGpo(ctx, false);
 
                             //ss.CancelGestiones(ctx, false);
                             //ss.SendCancelGestiones(ctx, false);

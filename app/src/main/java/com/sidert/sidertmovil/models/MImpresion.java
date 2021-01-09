@@ -20,6 +20,9 @@ public class MImpresion implements Serializable {
     private String tipoGestion;
     private String nombreFirma;
     private String claveCliente;
+    private String fechaUltimoPago;
+    private String MontoUltimoPago;
+    private String telefono;
 
     public String getIdPrestamo() {
         return idPrestamo;
@@ -147,5 +150,29 @@ public class MImpresion implements Serializable {
 
     public void setClaveCliente(String claveCliente) {
         this.claveCliente = claveCliente;
+    }
+
+    public String getFechaUltimoPago() {
+        return fechaUltimoPago;
+    }
+
+    public void setFechaUltimoPago(String fechaUltimoPago) {
+        this.fechaUltimoPago = fechaUltimoPago;
+    }
+
+    public String getMontoUltimoPago() {
+        return MontoUltimoPago;
+    }
+
+    public void setMontoUltimoPago(String montoUltimoPago) {
+        MontoUltimoPago = montoUltimoPago;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

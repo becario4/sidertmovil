@@ -52,6 +52,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.NameFragments.DIALOGCODIGOOXXO;
 
+/**Vista para visualizar los codigos oxxo generados y por generar*/
 public class CodigosOxxo extends AppCompatActivity {
 
     private Context ctx;
@@ -99,6 +100,7 @@ public class CodigosOxxo extends AppCompatActivity {
 
         fbGenerar = findViewById(R.id.fbGenerar);
 
+        /**Obtencion de datos del prestamo para generacion de codigos oxxo*/
         id_prestamo = getIntent().getLongExtra(ID_PRESTAMO, 0);
         tipo = getIntent().getIntExtra(TIPO,0);
         numPrestamo = getIntent().getStringExtra(NUMERO_DE_PRESTAMO);
@@ -107,12 +109,15 @@ public class CodigosOxxo extends AppCompatActivity {
         clave = getIntent().getStringExtra(CLAVE);
         nombre = getIntent().getStringExtra(NOMBRE);
 
+        /**Evento para generar un nuevo codigo oxxo*/
         fbGenerar.setOnClickListener(fbGenerar_OnClick);
 
+        /**Funcion para obtener codigos oxxo ya generados*/
         GetCodigos();
 
     }
 
+    /**Evento para abrir un dialog para generar el codigo oxxo*/
     private View.OnClickListener fbGenerar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -127,13 +132,18 @@ public class CodigosOxxo extends AppCompatActivity {
         }
     };
 
+    /**Funcion para consumir servicio que generar el codigo de oxxo*/
     public void GenerarCodigo(){
+        /**Valida si tiene conexion a internet*/
         if (NetworkStatus.haveNetworkConnection(ctx)){
+            /**Loading de esperar mientras espera un respuesta*/
             final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
+            /**Interfaz para realizar peticiones*/
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CODIGOS, ctx).create(ManagerInterface.class);
 
+            /**Se prepara la peticion colocando los debidos parametros*/
             Call<MResCodigoOxxo> call = api.generarCodigo(session.getUser().get(7),
                     session.getUser().get(9),
                     numPrestamo,
@@ -146,12 +156,14 @@ public class CodigosOxxo extends AppCompatActivity {
                     session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3),
                     Miscellaneous.GetFechaDomingo());
 
+            /**Se realiza la peticion para generar el codigo oxxo*/
             call.enqueue(new Callback<MResCodigoOxxo>() {
                 @Override
                 public void onResponse(Call<MResCodigoOxxo> call, Response<MResCodigoOxxo> response) {
                     Log.e("Codigo",String.valueOf(response.code()));
                     switch (response.code()){
                         case 200:
+                            /**Se obtiene el objeto del codigo solicitado y se guarda en el movil*/
                             MResCodigoOxxo oxxo = response.body();
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, String.valueOf(oxxo.getData().getId()));
@@ -162,19 +174,23 @@ public class CodigosOxxo extends AppCompatActivity {
                             params.put(5, oxxo.getData().getNombrePdf());
                             params.put(6, oxxo.getData().getCreatedAt());
                             params.put(7, oxxo.getData().getFechaVencimiento());
-
+                            /**Guarda codigo para despues ser compartido por whatsapp*/
                             dBhelper.saveCodigosOxxo(db, params);
 
+                            /**Para actualizar el listado de codigos*/
                             GetCodigos();
 
                             break;
                         case 201:
+                            /**En caso de que ese codigo ya fue generado y no lo tiene en el dispositivo*/
                             MResCodigoOxxo referencia = response.body();
                             MCodigoOxxo item = referencia.getData();
+                            /**Se prepara la consulta para saber si no lo tiene registrado*/
                             String sql = "SELECT * FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? AND fecha_amortiz = ? AND nombre_pdf = ?";
                             Cursor row = db.rawQuery(sql, new String[]{item.getNumPrestamo(), item.getFechaAmortizacion(), item.getNombrePdf()});
                             Log.e("RowCount", String.valueOf(row.getCount())+"total");
                             if (row.getCount() == 0) {
+                                /**En caso de no existir en el movil se registra*/
                                 params = new HashMap<>();
                                 params.put(0, String.valueOf(referencia.getData().getId()));
                                 params.put(1, session.getUser().get(0));
@@ -208,6 +224,7 @@ public class CodigosOxxo extends AppCompatActivity {
 
         }
         else{
+            /**No cuenta con conexion de internet*/
             final AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
@@ -221,13 +238,17 @@ public class CodigosOxxo extends AppCompatActivity {
         }
     }
 
+    /**Funcion para obtener los codigos ya generados y registrados en el movil*/
     private void GetCodigos(){
+        /**Se prepara la consulta de obtencion de codigos y ordenados por fecha de creacion*/
         String sql = "SELECT fecha_amortiz, monto_amortiz, nombre_pdf, fecha_vencimiento FROM " + TBL_CODIGOS_OXXO + " WHERE num_prestamo = ? ORDER BY created_at DESC";
         Cursor row = db.rawQuery(sql, new String[]{numPrestamo});
 
+        /**En caso de obtener registros*/
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<MCodigoOxxo> data = new ArrayList<>();
+            /**Se recorre el resultado de la consulta*/
             for (int i = 0; i < row.getCount(); i++){
                 MCodigoOxxo item = new MCodigoOxxo();
                 item.setFechaAmortizacion(row.getString(0));
@@ -243,7 +264,9 @@ public class CodigosOxxo extends AppCompatActivity {
             adapter = new adapter_codigos_oxxo(ctx, data, new adapter_codigos_oxxo.Event() {
                 @Override
                 public void CompartirClick(Boolean enabled, String nombrePDF) {
+                    /**Evento para compartir la referencia por whatsapp*/
                     if (enabled) {
+                        /**Se establece la URL dominio + puerto + controlador + funcion + nombre_archivo.pdf*/
                         String url = session.getDominio().get(0) + session.getDominio().get(1) +
                                 WebServicesRoutes.CONTROLLER_FICHAS +
                                 WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
@@ -252,15 +275,19 @@ public class CodigosOxxo extends AppCompatActivity {
 
                         Log.e("url_pdf", url);
 
+                        /**Se prepara el mensaje para compartir por whatsapp colocando la url generada anteriormente*/
                         String mensaje = "Estimado cliente SIDERT: \n" +
                                 "Accede desde este enlace, el cual es el único medio digital oficial para obtener tus referencias bancarias.\n" +
                                 "Click Aquí para descargarlo: " + url + " \uD83D\uDC48\n" +
                                 "Atención‼️ No aceptes imágenes de tarjetas de débito u otras cuentas que no sean las que descargas desde el link \n" +
                                 "Cualquier duda y/o aclaración comunícate al 800 122 6666 \uD83D\uDCDE\n" +
                                 "El enlace tiene una vigencia de 48 hrs";
+
+                        /**Se crea el intent para abrir whatsapp*/
                         Intent waIntent = new Intent(Intent.ACTION_SEND);
                         waIntent.setType("text/plain");
                         waIntent.setPackage("com.whatsapp");
+                        /**Se verifica si tiene instalado la aplicacion de whatsapp*/
                         if (waIntent != null) {
                             waIntent.putExtra(
                                     Intent.EXTRA_TEXT,
@@ -271,6 +298,7 @@ public class CodigosOxxo extends AppCompatActivity {
                                     .show();
                     }
                     else{
+                        /**En caso de que la referencia ya este caducada por la fecha de amortizacion*/
                         final AlertDialog dlg = Popups.showDialogMessage(ctx, Constants.warning,
                                 R.string.referencia_no_disponible, R.string.accept, new Popups.DialogMessage() {
                                     @Override

@@ -28,13 +28,13 @@
         <TextView
             android:id="@+id/tvComentAdminCro"
             android:textSize="17sp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:paddingRight="10dp"
             android:textColor="@color/black"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:background="@drawable/bkg_rounded_edges_blocked_red"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

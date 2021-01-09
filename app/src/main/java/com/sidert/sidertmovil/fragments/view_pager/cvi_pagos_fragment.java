@@ -22,7 +22,6 @@ import com.sidert.sidertmovil.models.MPago;
 
 import java.util.ArrayList;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS;
@@ -76,11 +75,7 @@ public class cvi_pagos_fragment extends Fragment {
     }
 
     private void GetPagos(){
-        Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_PAGOS, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{id_prestamo});
+        Cursor row = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{id_prestamo});
 
         ArrayList<MPago> _pagos = new ArrayList<>();
         if (row.getCount() > 0){
@@ -102,11 +97,7 @@ public class cvi_pagos_fragment extends Fragment {
     }
 
     private void GetAmortiz(){
-        Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_AMORTIZACIONES, " WHERE id_prestamo = ?", " ORDER BY numero ASC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_AMORTIZACIONES_T, " WHERE id_prestamo = ?", " ORDER BY numero ASC", new String[]{id_prestamo});
+        Cursor row = dBhelper.getRecords(TBL_AMORTIZACIONES_T, " WHERE id_prestamo = ?", " ORDER BY numero ASC", new String[]{id_prestamo});
 
         ArrayList<MAmortizacion> _amortiz = new ArrayList<>();
         if (row.getCount() > 0){

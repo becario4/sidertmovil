@@ -29,6 +29,7 @@ public class NameFragments {
     public final static String FINANCIALINFO        = "financial_info_fragment";
     public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
     public final static String SYNCHRONIZE_DB       = "synchronize_db_fragment";
+    public final static String AUTORIZAR_CC         = "autorizar_cc_fragment";
 
     //TODO: Dialogos
     public final static String DIALOGDETAILSORDER               = "dialog_details_order";
@@ -44,6 +45,7 @@ public class NameFragments {
     public final static String DIALOGUPDATEAPK                  = "dialog_update_apk";
     public final static String DIALOGTIMEPICKER                 = "dialog_time_picker";
     public final static String DIALOGORIGINACIONGPO             = "dialog_originacion_gpo";
+    public final static String DIALOGINFOAUTORIZARCC            = "dialog_info_autorizar_cc";
     public final static String DIALOGRENOVACIONGPO              = "dialog_renovacion_gpo";
     public final static String DIALOGOCIRCULOCREDITO            = "dialog_circulo_credito";
     public final static String DIALOGORIGINACIONIND             = "dialog_registro_cli";

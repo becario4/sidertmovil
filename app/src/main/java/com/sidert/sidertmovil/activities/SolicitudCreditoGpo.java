@@ -54,7 +54,6 @@ import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;

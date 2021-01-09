@@ -17,6 +17,7 @@ import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
+import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.activities.GenerarCurp;
 import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
 import com.sidert.sidertmovil.activities.RenovarIntegrante;
@@ -101,8 +102,8 @@ public class dialog_date_picker extends DialogFragment {
 
         myCalendar = Calendar.getInstance();
 
-        int i = myCalendar.get(Calendar.YEAR)-71;
-        valuesYear = new String[73];
+        int i = myCalendar.get(Calendar.YEAR)-81;
+        valuesYear = new String[83];
         int j = 0;
         while (i<(myCalendar.get(Calendar.YEAR)+2)){
             valuesYear[j] = ""+i;
@@ -111,12 +112,12 @@ public class dialog_date_picker extends DialogFragment {
         }
 
         int pos = 2;
-        for (int x = 72; x < valuesYear.length; x--){
+        for (int x = 82; x < valuesYear.length; x--){
             Log.e("ValX: ",String.valueOf(x));
             Log.e("Year: ",valuesYear[x]);
 
             if (valuesYear[x].equals(String.valueOf(year_current))){
-                pos = Math.abs(73 - x);
+                pos = Math.abs(83 - x);
                 break;
             }
         }
@@ -420,6 +421,24 @@ public class dialog_date_picker extends DialogFragment {
                             if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
                                 RenovarIntegrante integranteActivity = (RenovarIntegrante) getActivity();
                                 integranteActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacCli");
+                                dismiss();
+                            }
+                            else{
+                                new AlertDialog.Builder(getContext())
+                                        .setMessage("Solo personas mayores de 18 años.")
+                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                        else if (identifer == 19){
+
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 90) {
+                                ConsultarCC consultarCCActivity = (ConsultarCC) getActivity();
+                                consultarCCActivity.setDate(sdf.format(myCalendar.getTime()));
                                 dismiss();
                             }
                             else{

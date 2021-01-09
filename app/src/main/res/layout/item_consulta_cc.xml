@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="3dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="3dp">
+    <LinearLayout
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/ivEstatus"
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+        <LinearLayout
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvProducto"
+                android:textSize="@dimen/tvsize"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvNombre"
+                android:textColor="@color/dark"
+                android:textSize="@dimen/tvsize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvDireccion"
+                android:textSize="15sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/ivInfo"
+            android:src="@drawable/ic_info_blue"
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

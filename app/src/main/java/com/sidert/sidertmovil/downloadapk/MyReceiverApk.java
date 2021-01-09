@@ -102,6 +102,7 @@ public class MyReceiverApk extends BroadcastReceiver {
     }
 
     public void DownloadApk(String url){
+        Log.e("URLXD", url);
         loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
         loading.show();

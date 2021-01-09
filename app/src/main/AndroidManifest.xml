@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <uses-feature android:name="android.hardware.camera2.full" />
 
@@ -28,8 +29,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ResumenCCAGF"></activity>
-        <activity android:name=".activities.IntegrantesCC" />
+        <activity android:name=".activities.CobrosCC"></activity>
+        <activity android:name=".activities.ConsultadosCC" />
+        <activity android:name=".activities.RecuperacionCC" />
+        <activity android:name=".activities.ConsultarCC" />
+        <activity android:name=".activities.SolicitudIntegrante" />
+        <activity android:name=".activities.SolicitudGpo" />
+        <activity android:name=".activities.SolicitudInd" />
+        <activity android:name=".activities.Solicitudes" />
+        <activity android:name=".activities.ResumenCCAGF" />
         <activity android:name=".activities.RecuperacionRecibos" />
         <activity android:name=".activities.RenovarIntegrante" />
         <activity android:name=".activities.RenovacionCreditoGpo" />

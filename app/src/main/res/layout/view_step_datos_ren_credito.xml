@@ -6,6 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--  Tipo Solicitud  -->
+    <LinearLayout
+        android:id="@+id/llTipoSolicitud"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tipo Solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvTipoSolicitud"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!--  Plazo  -->
     <LinearLayout
         android:orientation="horizontal"
@@ -126,6 +150,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvMontoPrestamo"
             android:textColor="@android:color/black"
             android:text="Monto del préstamo"
             android:layout_width="match_parent"
@@ -224,6 +249,57 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Monto Autorizado  -->
+    <LinearLayout
+        android:id="@+id/llMontoAutorizado"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Autorizado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etMontoAutorizado"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textColor="@drawable/edit_text_selector"
+            android:drawableStart="@drawable/ic_money"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Cantidad autorizada en letra  -->
+    <LinearLayout
+        android:id="@+id/llCantidadAutorizadaLetra"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Monto Autorizado en Letra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvCantidadAutorizadaLetra"
+            android:textSize="17sp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--  Monto del prestamo anterior  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -231,6 +307,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvMontoAnterior"
             android:textColor="@android:color/black"
             android:text="Monto del crédito anterior"
             android:layout_width="match_parent"
@@ -256,6 +333,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvCiclo"
             android:textColor="@android:color/black"
             android:text="Número de ciclo"
             android:layout_width="match_parent"
@@ -280,6 +358,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvComportamiento"
             android:textColor="@color/black"
             android:text="Comportamiento de pago"
             android:focusable="false"
@@ -309,8 +388,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/tvObservaciones"
             android:textColor="@android:color/black"
-            android:text="Obserivaciones"
+            android:text="Observaciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

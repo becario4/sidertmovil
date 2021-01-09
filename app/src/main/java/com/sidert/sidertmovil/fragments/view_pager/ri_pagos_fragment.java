@@ -23,10 +23,7 @@ import com.sidert.sidertmovil.models.MPago;
 
 import java.util.ArrayList;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
 
 public class ri_pagos_fragment extends Fragment{

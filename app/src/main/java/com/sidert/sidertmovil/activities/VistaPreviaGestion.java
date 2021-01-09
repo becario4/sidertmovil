@@ -153,12 +153,16 @@ public class VistaPreviaGestion extends AppCompatActivity {
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
     private DecimalFormat nFormat = new DecimalFormat("#,###.##", symbols);
 
+    private Miscellaneous m;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vista_previa_gestion);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx = this;
+
+        m = new Miscellaneous();
 
         tbMain          = findViewById(R.id.tbMain);
         tvtitulo        = findViewById(R.id.tvTitulo);
@@ -251,22 +255,22 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
                 Log.e("MONTOREQUERIDO", "# "+datos.getDouble(MONTO_REQUERIDO,0));
                 EstusPago.setVisibility(View.VISIBLE);
-                if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) == 0)
+                if (datos.getDouble(MONTO_REQUERIDO,0) - m.doubleFormatTV(etPagoRealizado) == 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo));
-                else if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) < 0)
+                else if (datos.getDouble(MONTO_REQUERIDO,0) - m.doubleFormatTV(etPagoRealizado) < 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_completo_adelanto));
-                else if (datos.getDouble(MONTO_REQUERIDO,0) - Miscellaneous.doubleFormatTV(etPagoRealizado) > 0)
+                else if (datos.getDouble(MONTO_REQUERIDO,0) - m.doubleFormatTV(etPagoRealizado) > 0)
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pago_parcial));
                 else
                     etEstatusPago.setText(ctx.getResources().getString(R.string.pay_status));
                 etEstatusPago.setVisibility(View.VISIBLE);
 
                 SaldoActual.setVisibility(View.VISIBLE);
-                etSaldoActual.setText(String.valueOf(nFormat.format(Miscellaneous.doubleFormatTV(etSaldoCorte) - Miscellaneous.doubleFormatTV(etPagoRealizado))));
+                etSaldoActual.setText(String.valueOf(nFormat.format(m.doubleFormatTV(etSaldoCorte) - m.doubleFormatTV(etPagoRealizado))));
                 etSaldoActual.setVisibility(View.VISIBLE);
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
-                if (Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7 || Miscellaneous.MedioPago(etMedioPago) == 8){ //Banco y Oxxo
+                if (m.GetMedioPagoId(m.GetStr(etMedioPago)) >= 0 && m.GetMedioPagoId(m.GetStr(etMedioPago)) < 6 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 7 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 8){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -276,7 +280,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     PagoRealizado.setVisibility(View.VISIBLE);
                     etPagoRealizado.setText(String.valueOf(nFormat.format(Double.parseDouble(datos.getString(PAGO_REALIZADO)))));
                     etPagoRealizado.setVisibility(View.VISIBLE);
-                    if (Miscellaneous.MedioPago(etMedioPago) == 7){
+                    if (m.GetMedioPagoId(m.GetStr(etMedioPago)) == 7){
 
                     }
                     if (datos.containsKey(RESUMEN_INTEGRANTES)){
@@ -300,7 +304,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
-                else if (Miscellaneous.MedioPago(etMedioPago) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
+                else if (m.GetMedioPagoId(m.GetStr(etMedioPago)) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setText(datos.getString(MEDIO_PAGO));
                     etMedioPago.setVisibility(View.VISIBLE);
@@ -341,7 +345,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 etResultadoGestion.setVisibility(View.VISIBLE);
 
                 etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
-                if (Miscellaneous.MotivoNoPago(etMotivoNoPago) == 1){ //Motivo de no pago Fallecimiento
+                if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 1){ //Motivo de no pago Fallecimiento
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -361,7 +365,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
-                else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  0|| Miscellaneous.MotivoNoPago(etMotivoNoPago) == 2){ //Motivo de no pago Negación u Otro
+                else if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) ==  0|| m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 2){ //Motivo de no pago Negación u Otro
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
                     etMotivoNoPago.setVisibility(View.VISIBLE);
@@ -378,7 +382,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                         ivFirma.setVisibility(View.VISIBLE);
                     }
                 }
-                else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  3){ //PROMESA DE PAGO
+                else if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) ==  3){ //PROMESA DE PAGO
                     Fecha.setVisibility(View.VISIBLE);
                     Fecha.setText("Fecha de Promesa de Pago");
                     etFecha.setText(datos.getString(FECHA_PROMESA_PAGO));
@@ -528,7 +532,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String fechaFin = Miscellaneous.ObtenerFecha(TIMESTAMP);
+            String fechaFin = m.ObtenerFecha(TIMESTAMP);
             tvtitulo.setText(nombre);
             tvSubtitulo.setText("Fin Gestión "+fechaFin);
 
@@ -540,7 +544,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     // TODO Auto-generated method stub
                     bitmap = snapshot;
                     try {
-                        FileOutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/" + Miscellaneous.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg");
+                        FileOutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/" + m.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg");
 
                         // above "/mnt ..... png" => is a storage path (where image will be stored) + name of image you can customize as per your Requirement
 
@@ -556,7 +560,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
             File img = null;
 
             try {
-                //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + Miscellaneous.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
+                //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + m.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
                 String mPath = ROOT_PATH+"Resumen";
 
                 // create bitmap screen capture
@@ -565,7 +569,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
                 v1.setDrawingCacheEnabled(false);
 
-               /* View vCanvas = new CustomCanvasResumen(ctx, Miscellaneous.ObtenerFecha(TIMESTAMP), "Alejandro Isaias Lopez");
+               /* View vCanvas = new CustomCanvasResumen(ctx, m.ObtenerFecha(TIMESTAMP), "Alejandro Isaias Lopez");
 
                 Canvas canvas = new Canvas(bitmap);
                 canvas.drawBitmap(bitmap, 0, 0, null);

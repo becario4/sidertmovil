@@ -53,6 +53,7 @@ import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.NameFragments.DIALOGDATEPICKER;
 
+/**Esta clase era para la primer propuesta de circlo de credito ya no se ocupa esta clase se podria borrar*/
 public class GenerarCurp extends AppCompatActivity {
 
     private Context ctx;

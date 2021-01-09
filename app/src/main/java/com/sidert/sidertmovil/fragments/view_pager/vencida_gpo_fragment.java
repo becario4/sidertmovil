@@ -21,7 +21,6 @@ import com.sidert.sidertmovil.models.MIntegrante;
 
 import java.util.ArrayList;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
@@ -63,12 +62,7 @@ public class vencida_gpo_fragment extends Fragment {
     }
 
     private void GetIntegrantes(String id_prestamo){
-        Cursor row;
-
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_MIEMBROS_GPO, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
+        Cursor row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();

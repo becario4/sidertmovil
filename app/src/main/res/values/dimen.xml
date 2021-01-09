@@ -9,6 +9,9 @@
 
     <dimen name="textsize">16sp</dimen>
 
+    <dimen name="tvsize">18sp</dimen>
+    <dimen name="etsize">17sp</dimen>
+
     <dimen name="textsize_preview">14sp</dimen>
     <!-- <dimen name="textsize">16sp</dimen> -->
     <dimen name="labelsize">15sp</dimen>

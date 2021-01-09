@@ -26,6 +26,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 
+/**Clase para capturar firma digital*/
 public class CapturarFirma extends AppCompatActivity {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -60,11 +61,14 @@ public class CapturarFirma extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
         assert data != null;
+
+        /**Si en los datos que se mandan a la clase viene la llave Tipo que es mas para Originacion/Renovacion*/
         if (data.containsKey(Constants.TIPO)) {
             final AlertDialog solicitud;
+
             switch (data.getString(Constants.TIPO, "")) {
                 case "CLIENTE":
-                case "AVAL":
+                case "AVAL":/**Si es Tipo (AVAL,CLIENTE) se muestra un mensaje*/
                     solicitud = Popups.showDialogMessage(this, Constants.warning,
                             R.string.mess_solicitud, R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -89,12 +93,14 @@ public class CapturarFirma extends AppCompatActivity {
 
             @Override
             public void onSigned() {
+                /**Comenzo a capturar la firma y habilita el menu*/
                 flag = true;
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onClear() {
+                /**Se limpia el canvas de la firma y oculta el menu*/
                 flag = false;
                 invalidateOptionsMenu();
             }
@@ -104,11 +110,14 @@ public class CapturarFirma extends AppCompatActivity {
 
     }
 
+    /**Cuando el usuario quiere salir de la vista y ha realizado cambios y no los ha guardado
+     * se muestra un mensaje de confirmacion*/
     private void dlg_confirm_exit (){
         final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, Constants.firma,
                 R.string.confirm_exit, R.string.yes, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
+                        /**El usuario confirma que va a guardar la firma digital y retorna el byteArray para visualizar la firma*/
                         Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
 
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -125,6 +134,7 @@ public class CapturarFirma extends AppCompatActivity {
                 }, R.string.cancel, new Popups.DialogMessage() {
                     @Override
                     public void OnClickListener(AlertDialog dialog) {
+
                         dialog.dismiss();
                     }
                 });
@@ -133,6 +143,7 @@ public class CapturarFirma extends AppCompatActivity {
         firma_dlg.show();
     }
 
+    /**Evento para mostrar las politicas de privacidad no se ocupa */
     private View.OnClickListener tvPrivacyPolices_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -142,6 +153,7 @@ public class CapturarFirma extends AppCompatActivity {
         }
     };
 
+    /**Funcion para el boton de Back del dispositivo*/
     @Override
     public void onBackPressed() {
         if (flag) {
@@ -152,6 +164,7 @@ public class CapturarFirma extends AppCompatActivity {
     }
 
 
+    /**Valida si tiene permisos de almacenamientos*/
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -165,6 +178,7 @@ public class CapturarFirma extends AppCompatActivity {
         }
     }
 
+    /**Infla el menu de acuerdo si ha realizado cambios (firmo)*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -177,17 +191,18 @@ public class CapturarFirma extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Selecciono Retroceso del Toolbar <- */
                 if (flag){
                     dlg_confirm_exit();
                 }
                 else
                     finish();
                 break;
-            case R.id.save:
+            case R.id.save:/**Guarda la firma obteniendo la firma en byteArray para retornarlo*/
                 Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -199,7 +214,7 @@ public class CapturarFirma extends AppCompatActivity {
                 setResult(RESULT_OK,res);
                 finish();
                 break;
-            case R.id.clear:
+            case R.id.clear:/**Limpia el canvas para poder seguir dibujando*/
                 mSignaturePad.clear();
                 break;
 

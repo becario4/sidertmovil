@@ -33,8 +33,10 @@ public class WebServicesRoutes {
     //Servicios
     public final static String WS_LOGIN                     = "token"; //Servicio para inicio de sesion
     //public final static String WS_LOGIN_movil               = "token"; //Servicio para inicio de sesion para movil
+    public final static String WS_POST_MONTO_AUTORIZAR      = "ActualizarMonto"; //Servicio para autorizar el monto de una solicitud
     public final static String WS_GET_CARTERA               = "carteras"; //Servicio para obtener la cartera
     public final static String WS_GET_PRESTAMOS_AGF_CC      = "prestamos"; //Servicio para obtener prestamos para AGF y CC
+    public final static String WS_GET_SOLICITUDES_AUTORIZADAS = "solicitudesAutorizar"; //Servicio para obtener las solicitudes pre autorizadas por la administradora
     public final static String WS_GET_PRESTAMO_RENOVAR      = "ultimoprestamoind"; //Servicio para obtener datos del cliente para renovacion
     public final static String WS_GET_PRESTAMO_RENOVAR_GPO  = "ultimoprestamogpo"; //Servicio para obtener datos del grupo para renovacion
     public final static String WS_GET_TICKETS               = "getTickets"; //Servicio para obtener la cartera
@@ -45,8 +47,10 @@ public class WebServicesRoutes {
     public final static String WS_GET_SUCURSALES            = "getSucursales"; //Servicio para para obtener mis sucursales son sus asesores correspondientes
     public final static String WS_GET_PRESTAMOS_IND         = "prestamos/cliente/{id_cliente}"; //Servicio para obtener los prestamos individuales
     public final static String WS_GET_PRESTAMOS_GPO         = "prestamos/grupo/{id_grupo}"; //Servicio para obtener los prestamos grupales
+    public final static String WS_GET_ULTIMO_RECIBO_CC      = "getUltimoReciboCC"; //Servicio para obtener el ultimo recibo(folio) de cobros de CC
     public final static String WS_POST_SAVE_AGF             = "saveAgf"; //Servicio para guardar los recibos de apoyo a gastos funerarios
-    public final static String WS_MAILBOX                   = "Denuncia"; //Servicio para buzón de quejas o sugerencias
+    public final static String WS_POST_SAVE_CC             = "saveCc"; //Servicio para guardar los recibos de circulo de credito
+    public final static String WS_MAILBOX                   = "DenunciaPld"; //Servicio para buzón de quejas o sugerencias
     public final static String WS_SYNCHRONIZEBD             = "UltimosRegistrosLog"; //Servicio para obtener los registros de impresiones y actualizar su BD local
     public final static String WS_GET_GEOLOCALIZACIONES     = "GetGeolocalizadas"; //Servicio para obtener las fichas de geolocalización
     public final static String WS_GET_LOG_ASESORES          = "logAsesores"; //Servicio para obtener el inicio de sesion de los asesores
@@ -57,7 +61,7 @@ public class WebServicesRoutes {
     public final static String WS_POST_ORIGINACION_GPO      = "grupales"; //Guarda la solicitud de credito grupal (originacion)
     public final static String WS_POST_CIERRE_DIA           = "SaveCierreDia"; //Guarda el cierre de día
     public final static String WS_POST_RESPUESTA_GESTION    = "gestiones"; //Guarda la respuesta gestion de recuperaciones
-    //public final static String WS_GET_DOWNLOAD_APK          = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
+    public final static String WS_GET_DOWNLOAD_APK_NEW      = "uploads/apks/sidert_movil.apk"; //Descarga archivo de apk
     public final static String WS_GET_DOWNLOAD_APK          = "downloadApk"; //Valida la contraseña para descarga archivo de apk
     public final static String WS_GET_SETTINGS_APP          = "settings"; //Valida la contraseña para activar configuraciones de la fecha y hora
     public final static String WS_GET_PRESTAMOS_RENOVAR     = "prestamostorenovar"; //Obtiene los prestamos listos para renovar
@@ -70,6 +74,8 @@ public class WebServicesRoutes {
     public final static String WS_GET_GESTIONES             = "getUltimasGestiones"; //Servicio para obtener las ultimas gestiones de la semana actual
     public final static String WS_GET_SOLIC_RECHAZO_IND     = "individuales_rechazos"; //Obtiene un listado de las solicitudes para obtener las secciones de la solicitud y su estatus
     public final static String WS_GET_SOLIC_RECHAZO_GPO     = "grupales_rechazos"; //Obtiene un listado de las solicitudes de los integrantes del grupo que fueron rechazados
+    public final static String WS_CONSULTA_CC               = "circulo"; //Servicio para consultar datos para circulo de crédito
+    public final static String WS_AUTORIZAR_CC              = "v_circulo?";
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México

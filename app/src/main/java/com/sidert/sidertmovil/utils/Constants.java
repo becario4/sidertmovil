@@ -6,7 +6,7 @@ import retrofit2.http.PUT;
 
 public class Constants {
 
-    public final static boolean ENVIROMENT          = false;
+    public final static boolean ENVIROMENT         = false;
 
     // CONTROLADORES
     public final static String CONTROLLER_LOGIN       = "login";
@@ -425,6 +425,9 @@ public class Constants {
 
     public final static String TBL_PLAZOS_PRESTAMOS         = "tbl_plazos_prestamos";
 
+    public final static String TBL_TELEFONOS_CLIENTE         = "tbl_telefonos_cliente";
+
+
     public final static String TBL_CIERRE_DIA_T             = "tbl_cierre_dia_t";
 
     public final static String TBL_IMPRESIONES_VIGENTE_T    = "tbl_impresiones_vigente_t";
@@ -454,6 +457,28 @@ public class Constants {
 
     public static final String TBL_CANCELACIONES       = "tbl_cancelaciones";
 
+    public final static String TBL_SOLICITUDES_AUTO         = "tbl_solicitudes_auto";
+    public final static String TBL_CREDITO_IND_AUTO          = "tbl_credito_ind_auto";
+    public final static String TBL_CLIENTE_IND_AUTO          = "tbl_cliente_ind_auto";
+    public final static String TBL_CONYUGE_IND_AUTO          = "tbl_conyuge_ind_auto";
+    public final static String TBL_ECONOMICOS_IND_AUTO       = "tbl_economicos_ind_auto";
+    public final static String TBL_NEGOCIO_IND_AUTO          = "tbl_negocio_ind_auto";
+    public final static String TBL_AVAL_IND_AUTO             = "tbl_aval_auto";
+    public final static String TBL_REFERENCIA_IND_AUTO       = "tbl_referencia_ind_auto";
+    public final static String TBL_CROQUIS_IND_AUTO          = "tbl_croquis_ind_auto";
+    public final static String TBL_POLITICAS_PLD_IND_AUTO    = "tbl_politicas_pld_ind_auto";
+    public final static String TBL_DIRECCIONES_AUTO          = "tbl_direcciones_auto";
+
+    public final static String TBL_CREDITO_GPO_AUTO          = "tbl_credito_gpo_auto";
+    public final static String TBL_INTEGRANTES_GPO_AUTO      = "tbl_integrantes_gpo_auto";
+    public final static String TBL_TELEFONOS_INTEGRANTE_AUTO = "tbl_telefonos_integrante_auto";
+    public final static String TBL_DOMICILIO_INTEGRANTE_AUTO = "tbl_domicilio_integrante_auto";
+    public final static String TBL_NEGOCIO_INTEGRANTE_AUTO   = "tbl_negocio_integrante_auto";
+    public final static String TBL_CONYUGE_INTEGRANTE_AUTO   = "tbl_conyuge_integrante_auto";
+    public final static String TBL_OTROS_DATOS_INTEGRANTE_AUTO = "tbl_otros_datos_integrante_auto";
+    public final static String TBL_CROQUIS_GPO_AUTO          = "tbl_croquis_gpo_auto";
+    public final static String TBL_POLITICAS_PLD_INTEGRANTE_AUTO = "tbl_politicas_pld_integrante_auto";
+
     public final static String TBL_SOLICITUDES_REN          = "tbl_solicitudes_ren";
     public final static String TBL_CREDITO_IND_REN          = "tbl_credito_ind_ren";
     public final static String TBL_CLIENTE_IND_REN          = "tbl_cliente_ind_ren";
@@ -482,6 +507,10 @@ public class Constants {
 
     public final static String TBL_RECIBOS_AGF_CC                   = "tbl_recibos_agf_cc";
     public final static String TBL_RECUPERACION_RECIBOS             = "tbl_recuperacion_recibos";
+
+    public final static String TBL_CONSULTA_CC                      = "tbl_consulta_cc";
+    public final static String TBL_RECIBOS_CC                       = "tbl_recibos_cc";
+    public final static String TBL_RECUPERACION_RECIBOS_CC          = "tbl_recuperacion_recibos_cc";
 
 
     public final static String STATUS_FICHAS                = "status_fichas";

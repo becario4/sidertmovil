@@ -1,27 +1,34 @@
 package com.sidert.sidertmovil;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.bitly.Bitly;
+import com.bitly.Error;
+import com.bitly.Response;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.utils.AES;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.WebServicesRoutes;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
+import java.net.URL;
 import java.nio.charset.Charset;
-import java.text.Normalizer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +37,6 @@ import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_COL
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class SplashSidertActivity extends AppCompatActivity {
@@ -56,8 +60,10 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Cursor row;
 
+        /**Clase donde se guardan todas las variables de sesion*/
         SessionManager session = new SessionManager(this);
 
+        /**Es para obtener la direccion MAC y guardarlo en variables de sesion*/
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
@@ -85,34 +91,35 @@ public class SplashSidertActivity extends AppCompatActivity {
                 }
 
                 String newMacAddress = mac[0]+":"+mac[1]+":"+mac[2]+":"+mac[3]+":"+mac[4]+":"+mac[5];
+                /**Se guarda la MacAddress en variable de sesion*/
                 session.setAddress(newMacAddress.toUpperCase());
             }
         } catch (Exception ex) {
             //handle exception
         }
 
+        Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
 
-        //String fabricante = Build.MANUFACTURER;
-        //String modelo = Build.MODEL;
+        //session.setDominio("http://192.168.100.58:", "8080");
 
-        //Log.e("FABRICANTE", fabricante);
-        //Log.e("MODELO", modelo);
-
-        //session.setDominio("http://192.168.100.5:", "8080");
         //session.setDominio("http://sidert.ddns.net:", "83");
 
+        /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);
-
+        /**Encontraron registros de login*/
         if (row.getCount() > 0){
             row.moveToFirst();
 
+            /**Se separa la fecha de la hora*/
             String[] fechaLogin = row.getString(3).split(" ");
+            /**Se separa la fecha por segmentos (año - mes - dia)*/
             String[] newFecha = fechaLogin[0].split("-");
+            /**Se valida cuantos dias de atraso tiene el ultimo login con la fecha actual*/
             int dias = Miscellaneous.GetDiasAtraso(newFecha[2]+"-"+newFecha[1]+"-"+newFecha[0]);
 
+            /**Si los dias de atraso es mayor o igual a 1 se cierra sesion colocando en FLAG = false*/
             if (dias >= 1){
-                //session.deleteUser();
                 session.setUser(session.getUser().get(0),
                         session.getUser().get(1),
                         session.getUser().get(2),
@@ -124,13 +131,18 @@ public class SplashSidertActivity extends AppCompatActivity {
                         session.getUser().get(8),
                         session.getUser().get(9));
             }
-            Log.e("DiasLogin", String.valueOf(dias));
+
         }
 
+        /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
+        las secciones de originacion y renovacion de los estados de
+        Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
         /*new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
         new RegistrarLocalidades().execute();*/
 
+
+        /**Este proceso era antes de lanzar originacion y renovacion*/
         Handler handler_home=new Handler();
         handler_home.postDelayed(new Runnable() {
             @Override
@@ -144,6 +156,7 @@ public class SplashSidertActivity extends AppCompatActivity {
 
     }
 
+    /**Registra las localidades de los estados de Veracruz, Puebla, Tlaxcala*/
     public class RegistrarLocalidades extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -151,6 +164,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             Cursor row = dBhelper.getRecords(LOCALIDADES, "", "", null);
             if (row.getCount() == 0) {
                 try {
+                    /**Lee el archivo que se encuentra en la carpeta res/raw/localidades*/
                     InputStream is = getResources().openRawResource(R.raw.localidades);
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(is, Charset.forName(UTF_8))
@@ -159,6 +173,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                     while ((line = reader.readLine()) != null) {
                         String[] localidad = line.split(",");
 
+                        /**Registra las localidades*/
                         HashMap<Integer, String> values = new HashMap<>();
                         values.put(0, localidad[0].trim());
                         values.put(1, localidad[2].trim().toUpperCase());
@@ -177,6 +192,8 @@ public class SplashSidertActivity extends AppCompatActivity {
             super.onPostExecute(s);
             localidad = true;
 
+            /**cuando se registren todas las localidades, municipios y colonias
+            se validara en la clase MainActivity si requiere login o ya no*/
             if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {
@@ -192,6 +209,7 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
     }
 
+    /**Registra las municipios de los estados de Veracruz, Puebla, Tlaxcala*/
     public class RegistrarMunicipios extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -199,6 +217,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, "", "", null);
             if (row.getCount() == 0) {
                 try {
+                    /**Lee el archivo que se encuentra en la carpeta res/raw/municipios.csv*/
                     InputStream is = getResources().openRawResource(R.raw.municipios);
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(is, Charset.forName(UTF_8))
@@ -206,12 +225,12 @@ public class SplashSidertActivity extends AppCompatActivity {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         String[] municipio = line.split(",");
+
+                        /**Registra los municipios*/
                         HashMap<Integer, String> values = new HashMap<>();
                         values.put(0, municipio[0]);
                         values.put(1, municipio[2]);
                         values.put(2, municipio[1]);
-
-
                         dBhelper.saveMunicipios(db, values);
                     }
                 } catch (IOException e) {
@@ -226,6 +245,8 @@ public class SplashSidertActivity extends AppCompatActivity {
             super.onPostExecute(s);
             municipio = true;
 
+            /**cuando se registren todas las localidades, municipios y colonias
+            se validara en la clase MainActivity si requiere login o ya no*/
             if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {
@@ -241,6 +262,7 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
     }
 
+    /**Registra las colonias de los estados de Veracruz, Puebla, Tlaxcala*/
     public class RegistrarColonias extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -248,6 +270,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             Cursor row = dBhelper.getRecords(TABLE_COLONIAS, "", "", null);
             if (row.getCount() == 0) {
                 try {
+                    /**Lee el archivo que se encuentra en la carpeta res/raw/colonias.csv*/
                     InputStream is = getResources().openRawResource(R.raw.colonias);
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(is, Charset.forName(UTF_8))
@@ -256,6 +279,8 @@ public class SplashSidertActivity extends AppCompatActivity {
                     int i = 0;
                     while ((line = reader.readLine()) != null) {
                         String[] colonia = line.split(";");
+
+                        /**Se registra las colonias*/
                         HashMap<Integer, String> values = new HashMap<>();
                         values.put(0, colonia[0].trim());
                         values.put(1, colonia[2].trim().toUpperCase());
@@ -278,6 +303,8 @@ public class SplashSidertActivity extends AppCompatActivity {
             super.onPostExecute(s);
             colonia =  true;
 
+            /**cuando se registren todas las localidades, municipios y colonias
+            se validara en la clase MainActivity si requiere login o ya no*/
             if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {

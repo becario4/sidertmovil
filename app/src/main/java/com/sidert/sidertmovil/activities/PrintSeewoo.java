@@ -49,7 +49,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
@@ -62,6 +61,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 
+/**Clase para un preview de la impresion de las gestiones de VIGENTE, COBRANZA, VENCIDA de individual o grupal*/
 public class PrintSeewoo extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 2;
@@ -142,17 +142,21 @@ public class PrintSeewoo extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
+        /**Se recibe el objecto que se mando entre clases*/
         item = (MImpresion) getIntent().getSerializableExtra("order");
 
         Log.e("ResImpresion", item.getResultPrint()+" as");
-        if (item.getResultPrint() == 0){
+        /**Comienza a validar el tipo de prestamo y de gestion
+         * para realizar el preview de la impresion y validar si ya se han
+         * hecho impresiones antes*/
+        if (item.getResultPrint() == 0){ /**No se han hecho impresiones*/
             if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
                 tvSignature.setText("Firma Asesor:");
             else if (item.getTipoPrestamo().contains("VENCIDA"))
                 tvSignature.setText("Firma Gestor:");
             tvNameSignature.setText(item.getNombreAsesor());
         }
-        else if (item.getResultPrint() == 1){
+        else if (item.getResultPrint() == 1){/**Se ha impreso solo Original*/
             if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA")){
                 if (item.getTipoGestion().equals("INDIVIDUAL")){
                     tvSignature.setText("Firma Cliente:");
@@ -168,14 +172,16 @@ public class PrintSeewoo extends AppCompatActivity {
                 tvNameSignature.setText(item.getNombre());
             }
         }
-        else{
+        else{/**Ya se realizaron impresiones original y grupal y muestra botones de reimpresion*/
             llReimpreion.setVisibility(View.VISIBLE);
             mReimpresion = new MReimpresion();
+            /**Se busca datos de la impresion para poder generar un reimpresion*/
             Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion(), "O"});
 
             Log.e("CountRecibos", "XXX: "+row.getCount());
             if (row.getCount() > 0){
                 row.moveToFirst();
+                /**Se actualiza el objeto para los datos de la reimpresion*/
                 mReimpresion.setIdPrestamo(item.getIdPrestamo());
                 mReimpresion.setIdGestion(item.getIdGestion());
                 mReimpresion.setMontoPrestamo(item.getMontoPrestamo());
@@ -191,6 +197,10 @@ public class PrintSeewoo extends AppCompatActivity {
                 mReimpresion.setTipoPrestamo(item.getTipoPrestamo());
                 mReimpresion.setTipoGestion(item.getTipoGestion());
                 mReimpresion.setNombreFirma(item.getNombreFirma());
+                mReimpresion.setFechaUltimoPago(item.getFechaUltimoPago());
+                mReimpresion.setMontoUltimoPago(item.getMontoUltimoPago());
+                mReimpresion.setTelefono(item.getTelefono());
+                mReimpresion.setNombreGrupo(item.getNombreGrupo());
             }
             row.close();
 
@@ -198,6 +208,7 @@ public class PrintSeewoo extends AppCompatActivity {
             Toast.makeText(ctx, ctx.getResources().getString(R.string.print_original_copy), Toast.LENGTH_SHORT).show();
         }
 
+        /**Se colocan datos del preview de la impresion*/
         tvNumLoan.setText(item.getNumeroPrestamo());
         tvNumClient.setText(item.getNumeroCliente());
         tvNameClient.setText(item.getNombre());
@@ -228,11 +239,13 @@ public class PrintSeewoo extends AppCompatActivity {
             Toast.makeText(ctx, ctx.getResources().getString(R.string.error_contact_TI), Toast.LENGTH_SHORT).show();
         }
 
-        //Valida si se está obteniendo datos y que de dentro de los datos contenga la key = 'formiikdata'
-        //if (this.getIntent() != null && this.getIntent().hasExtra("Data"))
+        /**Se valida si se mandaron datos a la clase de lo contrario se cerrara la vista*/
         if (this.getIntent() != null)
         {
+            /**Funcion para leer un arichivo(BTprint) almacenado en la raiz del dispositivo dentro
+             * de la carpeta temp*/
             loadSettingFile();
+            /**Funcion para validar si el bluetooh esta activo*/
             bluetoothSetup();
         }
         else
@@ -240,17 +253,20 @@ public class PrintSeewoo extends AppCompatActivity {
             finish();
         }
 
+        /**Funcion para obtener todos los dispositivo sincronizados con el equipo movil*/
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         addPairedDevices();
 
+        /**Evento de clic para realizar las impresiones*/
         btnPrintOriginal.setOnClickListener(btnPrintOriginal_OnClick);
         btnPrintCopy.setOnClickListener(btnPrintCopy_OnClick);
-
+        /**Evento de clic para realizar las reimpresiones*/
         btnReprintOriginal.setOnClickListener(btnReprintOriginal_OnClick);
         btnReprintCopia.setOnClickListener(btnReprintCopia_OnClick);
 
     }
 
+    /**Evento de click para realizar la impresion original*/
     private View.OnClickListener btnPrintOriginal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -264,6 +280,7 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     };
 
+    /**Evento de click para realizar la impresion copia*/
     private View.OnClickListener btnPrintCopy_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -276,6 +293,7 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     };
 
+    /**Evento de click para realizar la reimpresion original*/
     private View.OnClickListener btnReprintOriginal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -289,6 +307,7 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     };
 
+    /**Evento de click para realizar la reimpresion copia*/
     private View.OnClickListener btnReprintCopia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -302,6 +321,7 @@ public class PrintSeewoo extends AppCompatActivity {
     };
 
     // Bluetooth Connection Task.
+    /**Tarea asincrona para conectar con la impresora y realizar las reimpresiones*/
     public class connTaskReprint extends AsyncTask<Object, Void, Integer>
     {
         final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
@@ -314,15 +334,18 @@ public class PrintSeewoo extends AppCompatActivity {
             super.onPreExecute();
         }
 
+        /**Se realiza el emparejamiento con la impresora se retorna 0 si fue correcto
+         * o -1 si no se logró conectar*/
         @Override
         protected Integer doInBackground(Object... params)
         {
             int  retVal;
             try
             {
+                /**se realiza la conexion a la impresora con la mac addres que se mando*/
                 ban = (String) params[1];
                 bluetoothPort.connect((BluetoothDevice)params[0],true);
-
+                /**se guarda la mac address para que posteriormente si guarde en el archivo de BTprinter*/
                 lastConnAddr = ((BluetoothDevice)params[0]).getAddress();
                 retVal = 0;
             }
@@ -333,17 +356,20 @@ public class PrintSeewoo extends AppCompatActivity {
             return retVal;
         }
 
+        /**Funcion donde valida el estatus de conexion con la impresora*/
         @Override
         protected void onPostExecute(Integer result)
         {
             loading.dismiss();
+            /**Si fue un success comenzara a imprimir*/
             if(result == 0)	// Connection success.
             {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
-
+                /**Se crea la instancia para comenzar a reimprimir*/
                 ReprintTicket Reprint = new ReprintTicket();
+                /**se le manda al constructor el objecto a reimprimir*/
                 Reprint.WriteTicket(ctx, mReimpresion);
                 try {
                     bluetoothPort.disconnect();
@@ -356,6 +382,7 @@ public class PrintSeewoo extends AppCompatActivity {
             }
             else	// Connection failed.
             {
+                /**Mensaje en error de conexion con la impresora*/
                 final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.print_off,
                         R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
                             @Override
@@ -378,6 +405,7 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     // Bluetooth Connection Task.
+    /**Tarea asincrona para conectar con la impresora y realizar las impresiones*/
     public class connTask extends AsyncTask<Object, Void, Integer>
     {
         final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
@@ -390,15 +418,19 @@ public class PrintSeewoo extends AppCompatActivity {
             super.onPreExecute();
         }
 
+        /**Se realiza el emparejamiento con la impresora se retorna 0 si fue correcto
+         * o -1 si no se logró conectar*/
         @Override
         protected Integer doInBackground(Object... params)
         {
             int  retVal;
             try
             {
+                /**se realiza la conexion a la impresora con la mac addres que se mando*/
                 ban = (String) params[1];
                 bluetoothPort.connect((BluetoothDevice)params[0],true);
 
+                /**se guarda la mac address para que posteriormente si guarde en el archivo de BTprinter*/
                 lastConnAddr = ((BluetoothDevice)params[0]).getAddress();
                 retVal = 0;
             }
@@ -409,31 +441,30 @@ public class PrintSeewoo extends AppCompatActivity {
             return retVal;
         }
 
+        /**Funcion donde valida el estatus de conexion con la impresora*/
         @Override
         protected void onPostExecute(Integer result)
         {
             loading.dismiss();
+            /**Si fue un success comenzara a imprimir*/
             if(result == 0)	// Connection success.
             {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
 
+                /**Se crea la instancia para comenzar a reimprimir*/
                 PrintTicket print = new PrintTicket();
+                /**se le manda al constructor el objecto a imprimir*/
                 print.WriteTicket(ctx, item);
                 try {
-                if (ban.equals("O")){
-                    bluetoothPort.disconnect();
-                    item.setResultPrint(1);
-                    ContentValues cv = new ContentValues();
-                    cv.put("res_impresion", 1);
-                    if (ENVIROMENT) {
-                        if (item.getTipoGestion().equals("INDIVIDUAL"))
-                            db.update(TBL_RESPUESTAS_IND, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                        else
-                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                    }
-                    else {
+                    /**se valida si es una impresion original para actualizar el res_impresion y habilitar el boton de la copia*/
+                    if (ban.equals("O")){
+                        bluetoothPort.disconnect();
+                        item.setResultPrint(1);
+                        ContentValues cv = new ContentValues();
+                        cv.put("res_impresion", 1);
+
                         if (item.getTipoGestion().equals("INDIVIDUAL")) {
                             if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
                                 db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
@@ -449,22 +480,17 @@ public class PrintSeewoo extends AppCompatActivity {
                             else
                                 db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
                         }
+
+                        btnPrintOriginal.setVisibility(View.GONE);
+                        btnPrintCopy.setVisibility(View.VISIBLE);
+                        btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
+                        btnPrintCopy.setEnabled(true);
                     }
-                    btnPrintOriginal.setVisibility(View.GONE);
-                    btnPrintCopy.setVisibility(View.VISIBLE);
-                    btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
-                    btnPrintCopy.setEnabled(true);
-                }
-                else{
-                    ContentValues cv = new ContentValues();
-                    cv.put("res_impresion", 2);
-                    if (ENVIROMENT) {
-                        if (item.getTipoGestion().equals("INDIVIDUAL"))
-                            db.update(TBL_RESPUESTAS_IND, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                        else
-                            db.update(TBL_RESPUESTAS_GPO, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
-                    }
-                    else {
+                    /**En caso de ser una copia se actualizan el res_impresion, se visualizan los botones de reimpresion y se crea el objecto de reimpresion*/
+                    else{
+                        ContentValues cv = new ContentValues();
+                        cv.put("res_impresion", 2);
+
                         if (item.getTipoGestion().equals("INDIVIDUAL")) {
                             if (item.getTipoPrestamo().equals("VIGENTE") || item.getTipoPrestamo().equals("COBRANZA"))
                                 db.update(TBL_RESPUESTAS_IND_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
@@ -477,34 +503,36 @@ public class PrintSeewoo extends AppCompatActivity {
                             else
                                 db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{item.getIdPrestamo(), item.getIdGestion()});
                         }
+
+                        btnPrintCopy.setVisibility(View.GONE);
+                        llReimpreion.setVisibility(View.VISIBLE);
+                        bluetoothPort.disconnect();
+                        item.setResultPrint(2);
+
+                        Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
+                        row.moveToFirst();
+                        mReimpresion = new MReimpresion();
+                        mReimpresion.setIdPrestamo(item.getIdPrestamo());
+                        mReimpresion.setIdGestion(item.getIdGestion());
+                        mReimpresion.setMontoPrestamo(item.getMontoPrestamo());
+                        mReimpresion.setFolio(row.getString(3));
+                        mReimpresion.setMonto(row.getString(5));
+                        mReimpresion.setClaveCliente(item.getClaveCliente());
+                        mReimpresion.setNumeroPrestamo(item.getNumeroPrestamo());
+                        mReimpresion.setNumeroCliente(item.getNumeroCliente());
+                        mReimpresion.setNombre(item.getNombre());
+                        mReimpresion.setNombreGrupo(item.getNombreGrupo());
+                        mReimpresion.setPagoRequerido(item.getPagoRequerido());
+                        mReimpresion.setNombreAsesor(item.getNombreAsesor());
+                        mReimpresion.setAsesorId(item.getAsesorId());
+                        mReimpresion.setTipoPrestamo(item.getTipoPrestamo());
+                        mReimpresion.setTipoGestion(item.getTipoGestion());
+                        mReimpresion.setNombreFirma(item.getNombreFirma());
+                        mReimpresion.setFechaUltimoPago(item.getFechaUltimoPago());
+                        mReimpresion.setMontoUltimoPago(item.getMontoUltimoPago());
+                        mReimpresion.setTelefono(item.getTelefono());
+
                     }
-
-                    btnPrintCopy.setVisibility(View.GONE);
-                    llReimpreion.setVisibility(View.VISIBLE);
-                    bluetoothPort.disconnect();
-                    item.setResultPrint(2);
-
-                    Cursor row = dBhelper.getRecords((item.getTipoPrestamo().contains("VENCIDA"))?TBL_IMPRESIONES_VENCIDA_T:TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo_id_gestion = ?", "", new String[]{item.getNumeroPrestamo()+"-"+item.getIdGestion()});
-                    row.moveToFirst();
-                    mReimpresion = new MReimpresion();
-                    mReimpresion.setIdPrestamo(item.getIdPrestamo());
-                    mReimpresion.setIdGestion(item.getIdGestion());
-                    mReimpresion.setMontoPrestamo(item.getMontoPrestamo());
-                    mReimpresion.setFolio(row.getString(3));
-                    mReimpresion.setMonto(row.getString(5));
-                    mReimpresion.setClaveCliente(item.getClaveCliente());
-                    mReimpresion.setNumeroPrestamo(item.getNumeroPrestamo());
-                    mReimpresion.setNumeroCliente(item.getNumeroCliente());
-                    mReimpresion.setNombre(item.getNombre());
-                    mReimpresion.setNombreGrupo(item.getNombreGrupo());
-                    mReimpresion.setPagoRequerido(item.getPagoRequerido());
-                    mReimpresion.setNombreAsesor(item.getNombreAsesor());
-                    mReimpresion.setAsesorId(item.getAsesorId());
-                    mReimpresion.setTipoPrestamo(item.getTipoPrestamo());
-                    mReimpresion.setTipoGestion(item.getTipoGestion());
-                    mReimpresion.setNombreFirma(item.getNombreFirma());
-
-                }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -513,6 +541,8 @@ public class PrintSeewoo extends AppCompatActivity {
             }
             else	// Connection failed.
             {
+                /**En caso de que cuando le dan en imprimir original o copia y no se logra conectar con la impresora
+                 * muesta un mensaje de error de conexion*/
                 final AlertDialog errorPrint = Popups.showDialogMessage(ctx, Constants.print_off,
                 R.string.error_connect_print, R.string.accept, new Popups.DialogMessage() {
                     @Override
@@ -535,6 +565,7 @@ public class PrintSeewoo extends AppCompatActivity {
     }
 
     // add paired device to list
+    /**tarea asincrona para realizar el emparejamiento con la impresora*/
     public class pairBluetoothTask extends AsyncTask<BluetoothDevice, Void, Integer>
     {
         final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
@@ -547,6 +578,8 @@ public class PrintSeewoo extends AppCompatActivity {
             super.onPreExecute();
         }
 
+        /**Realiza la conexion con la impresora si fue correcta retorna el valor de 0
+         * en caso de no conectar retorna valor -1*/
         @Override
         protected Integer doInBackground(BluetoothDevice... params)
         {
@@ -557,6 +590,7 @@ public class PrintSeewoo extends AppCompatActivity {
 
                 lastConnAddr = params[0].getAddress();
                 retVal = 0;
+                /**Actualiza la direccion mac en el archivo BTprinter con la direccion mac que si logro conectar*/
                 saveSettingFile();
             }
             catch (IOException e)
@@ -569,18 +603,20 @@ public class PrintSeewoo extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
+            /**Valida el estatus de conexion con la impresora*/
             if(result == 0)	// Connection success.
             {
                 RequestHandler rh = new RequestHandler();
                 hThread = new Thread(rh);
                 hThread.start();
+                /**Valida el valor de res_print para saber que impresiones se ha hecho*/
                 switch (item.getResultPrint()){
-                    case 0:
+                    case 0:/**Si no se han realizado impresiones habilita el de imprimir original*/
                         btnPrintOriginal.setVisibility(View.VISIBLE);
                         btnPrintOriginal.setEnabled(true);
                         btnPrintOriginal.setBackgroundResource(R.drawable.btn_rounded_blue);
                         break;
-                    case 1:
+                    case 1:/**Ya imprimir original por lo tanto habilita el de la copia*/
                         btnPrintOriginal.setVisibility(View.GONE);
                         btnPrintOriginal.setEnabled(false);
                         btnPrintOriginal.setBackgroundResource(R.drawable.btn_disable);
@@ -589,7 +625,7 @@ public class PrintSeewoo extends AppCompatActivity {
                         btnPrintCopy.setEnabled(true);
                         btnPrintCopy.setBackgroundResource(R.drawable.btn_rounded_blue);
                         break;
-                    case 2:
+                    case 2:/**Ya se imprimieron ambos recibos asi que oculta esos botones para no volver a imprimir*/
                         btnPrintCopy.setVisibility(View.GONE);
                         btnPrintOriginal.setVisibility(View.GONE);
                         break;
@@ -605,6 +641,7 @@ public class PrintSeewoo extends AppCompatActivity {
                 }
             }
             else{
+                /**Muestra mensaje de error de conexion*/
                 final AlertDialog errorConnect = Popups.showDialogConfirm(ctx, Constants.print_off,
                         R.string.error_connect_print, R.string.connect, new Popups.DialogMessage() {
                     @Override
@@ -680,7 +717,7 @@ public class PrintSeewoo extends AppCompatActivity {
         remoteDevices = new Vector<>();
     }
 
-    /*
+    /**
     * Obtiene la ADDRESS de la impresora de un archivo llamado BTPrinter
     * dentro de la carpeta temp y lo coloca en el EditText
     * */
@@ -709,7 +746,7 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     }
 
-    //Guarda la ultima ADDRESS emparejada en el archivo BTPrinter
+    /**Guarda la ultima ADDRESS emparejada en el archivo BTPrinter*/
     private void saveSettingFile()
     {
         try
@@ -729,13 +766,16 @@ public class PrintSeewoo extends AppCompatActivity {
         }
     }
 
-    /*
+    /**
     * Generación de la respuesta para la actividad para identificar que
     * impresiones se han realizado
     *
     * @param success para saber si se realizó impresión
     * @param resultPrint que tipo de impresión se ha ejecutado
     * @param resultMess mensaje para usuario que tipo de impresión ha realizado
+    *
+    * @return folio que se imprimio
+    * @return mensaje
     * */
     public void sendResponse(boolean success, int resultPrint, String resultMess){
         saveSettingFile();
@@ -765,7 +805,7 @@ public class PrintSeewoo extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Al seleccionar el menu de retroceso del toolbar (<-) se valida si se han hecho impresiones para establecer el mensaje*/
                 String message = "";
                 switch (this.item.getResultPrint()) {
                     case 0:
@@ -790,6 +830,8 @@ public class PrintSeewoo extends AppCompatActivity {
 
     }
 
+    /**Cuando le dan click al boton de back del dispositivo
+     * se valida si se ha hecho impresiones para estables el mensaje*/
     @Override
     public void onBackPressed() {
         String message;

@@ -20,13 +20,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_originacion;
@@ -38,39 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
-/*import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_AVAL_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CLIENTE_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CONYUGE_IND_T;*/
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_GPO_T;
-/*import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_CREDITO_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_ECONOMICOS_IND_T;*/
-import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
-/*import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_NEGOCIO_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_REFERENCIA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS;*/
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
-//import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_T;
-import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
-//import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES;
-//import static com.sidert.sidertmovil.utils.Constants.SOLICITUDES_T;
+
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
@@ -92,8 +65,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANT
 import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 
 public class SolicitudCredito extends AppCompatActivity {
 
@@ -104,6 +75,7 @@ public class SolicitudCredito extends AppCompatActivity {
 
     private adapter_originacion adapter;
     private RecyclerView rvOriginacion;
+    private WebView wv;
 
     private LinearLayout llGpo;
     private LinearLayout llInd;
@@ -152,8 +124,10 @@ public class SolicitudCredito extends AppCompatActivity {
         llGpo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                llGpo.setEnabled(false);
                 Intent i_solicitud_gpo = new Intent(ctx, SolicitudCreditoGpo.class);
                 i_solicitud_gpo.putExtra("is_new",true);
+                i_solicitud_gpo.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i_solicitud_gpo);
             }
         });
@@ -161,8 +135,10 @@ public class SolicitudCredito extends AppCompatActivity {
         llInd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                llInd.setEnabled(false);
                 Intent i_solicitud_ind = new Intent(ctx, SolicitudCreditoInd.class);
                 i_solicitud_ind.putExtra("is_new", true);
+                i_solicitud_ind.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i_solicitud_ind);
             }
         });
@@ -193,7 +169,7 @@ public class SolicitudCredito extends AppCompatActivity {
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row.getCount(); i++){
                 HashMap<Integer, String> item = new HashMap();
-                Log.e("id_solicitud", row.getString(0) + " nombre: "+row.getString(5));
+                Log.e("id_solicitud", row.getString(4)+" "+row.getString(0) + " nombre: "+row.getString(5)+ " "+row.getString(11));
                 item.put(0,row.getString(0));           //ID solicitud
                 item.put(1, row.getString(5).trim().toUpperCase()); //Nombre
                 item.put(2, row.getString(3));          //Tipo solicitud
@@ -201,6 +177,7 @@ public class SolicitudCredito extends AppCompatActivity {
                 item.put(4, row.getString(7));          //Fecha Termino
                 item.put(5, row.getString(10));         //Fecha Envio
                 item.put(6, row.getString(4));          //id_originacion
+
                 data.add(item);
                 row.moveToNext();
             }
@@ -368,6 +345,8 @@ public class SolicitudCredito extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initComponents();
+        llGpo.setEnabled(true);
+        llInd.setEnabled(true);
 
     }
 }

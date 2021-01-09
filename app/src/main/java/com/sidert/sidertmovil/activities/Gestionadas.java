@@ -56,6 +56,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
 
+/**Vista para la obtencion de gestiones realizadas (VIGENTE, COBRANZA, VENCIDA) de individual o grupal*/
 public class Gestionadas extends AppCompatActivity {
 
     private Context ctx;
@@ -97,21 +98,28 @@ public class Gestionadas extends AppCompatActivity {
         rvGestionadas.setLayoutManager(new LinearLayoutManager(ctx));
         rvGestionadas.setHasFixedSize(false);
 
+        /**Obtencionde datos que se pasaron entre clases*/
         id_prestamo = getIntent().getStringExtra(ID_PRESTAMO);
         tbl = getIntent().getStringExtra(TBL_NAME);
         tbl_cartera = getIntent().getStringExtra(TIPO_CARTERA);
         tipo_prestamo = getIntent().getStringExtra(TIPO_PRESTAMO);
         tipo_gestion = getIntent().getIntExtra(TIPO_GESTION, 0);
 
-        //init();
     }
 
+    /**Funcion para obtener las respuestas de gestion completadas*/
     private void init (){
         Cursor row = null;
         Log.e("Tabla", tbl);
+        /**Se prepara la consulta para obtener las respuestas dependiendo al nombre de tabla
+         * que se mando para saber si buscan en TBL_RESPUESTAS_IND_T, TBL_RESPUESTAS_GPO_T
+         * TBL_RESPUESTAS_IND_V_T o TBL_RESPUESTAS_INTEGRANTES y se busca por estatus
+         * que son lo que se colocan "1","2","3" que corresponden a
+         * pendiente de envio, enviadas, canceladas respectivamente el 3 no se ocupa porque
+         * aun no se libera la actualizacion para cancelar respuestas pero no afecta que se mande
+         * el estatus 3*/
         String sql = "SELECT r.*, COALESCE(c.estatus, '') AS estatus_cancel, COALESCE(c.comentario_admin, '') AS comentario_cancel FROM " + tbl + " r LEFT JOIN " + TBL_CANCELACIONES + " AS c ON r._id = c.id_respuesta AND c.tipo_gestion = ? WHERE r.id_prestamo = ? AND r.estatus  IN (?,?,?) ORDER BY r.fecha_inicio DESC";
         row = db.rawQuery(sql, new String[]{String.valueOf(tipo_gestion),id_prestamo, "1","2","3"});
-        //row = dBhelper.getRecords(tbl, " WHERE id_prestamo = ? AND estatus  IN(?,?)", " ORDER BY fecha_inicio DESC", new String[]{id_prestamo, "1","2" });
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -119,6 +127,8 @@ public class Gestionadas extends AppCompatActivity {
             for(int i = 0; i < row.getCount(); i++){
                 MGestionada gestionadas = new MGestionada();
                 gestionadas.setIdGestion(row.getString(0));
+                /**Se valida el tipo de gestion(1=individual,2=grupal) y tipo de prestamo(vigente,vencida)
+                 * por lo de las posiciones de las columnas*/
                 if (tipo_gestion == 2 && tipo_prestamo.equals("VENCIDA"))
                     gestionadas.setFechaGestion(row.getString(24));
                 else {
@@ -214,6 +224,7 @@ public class Gestionadas extends AppCompatActivity {
 
                 @Override
                 public void GestionadaClick(MGestionada item) {
+                    /**Evento al dar tap a una gestiones para poder ver un resumen de su gestion*/
                     Cursor row;
                     Log.e("id_ges", item.getIdGestion());
                     String sql = "SELECT r.*, COALESCE(rg.nombre_resumen, '') AS nombre_resumen, COALESCE(rg.nombre_cliente, '') AS nombre_cliente FROM " + tbl + " AS r LEFT JOIN "+TBL_RESUMENES_GESTION+" AS rg ON r._id = rg.id_respuesta AND rg.tipo_gestion = '"+tipo_gestion+"' WHERE r._id = ?";
@@ -367,6 +378,8 @@ public class Gestionadas extends AppCompatActivity {
 
                         Log.e("SIDERTMOVIL", b.toString());
 
+                        /**Una vez cargado todos los datos a mandar a la vista para el resumen se lanza la actividad
+                         * VisteGestion.class que mostrará los datos*/
                         Intent i_preview = new Intent(ctx, VistaGestion.class);
                         i_preview.putExtra(PARAMS,b);
                         startActivity(i_preview);
@@ -375,8 +388,10 @@ public class Gestionadas extends AppCompatActivity {
 
                 @Override
                 public void SendClickLong(MGestionada item) {
+                    /**Evento de un tap largo para envio de gestion porque está en pendiente de envio
+                     * ya no se ocupa porque ya no está la funcion*/
                     //Toast.makeText(ctx, "Enviando Gestion", Toast.LENGTH_SHORT).show();
-                    //SendForceGestion(item);
+
                 }
             });
 

@@ -28,7 +28,7 @@ public class adapter_prestamos_agf extends RecyclerView.Adapter<adapter_prestamo
 
     public interface Event {
         void AgfOnClick(HashMap<Integer, String> item);
-        void CcOnClick(HashMap<Integer, String> item);
+        //void CcOnClick(HashMap<Integer, String> item);
     }
 
     public adapter_prestamos_agf(Context ctx, List<HashMap<Integer, String>> data, Event evento) {
@@ -86,7 +86,8 @@ public class adapter_prestamos_agf extends RecyclerView.Adapter<adapter_prestamo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    PopupMenu popup = new PopupMenu(view.getContext(), view);
+                    evento.AgfOnClick(pres);
+                    /*PopupMenu popup = new PopupMenu(view.getContext(), view);
                     try {
                         Field[] fields = popup.getClass().getDeclaredFields();
                         for (Field field : fields) {
@@ -119,7 +120,7 @@ public class adapter_prestamos_agf extends RecyclerView.Adapter<adapter_prestamo
                             }
                         }
                     });
-                    popup.show();
+                    popup.show();*/
                 }
             });
         }

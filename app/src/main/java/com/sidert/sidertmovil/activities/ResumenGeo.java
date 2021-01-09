@@ -135,11 +135,7 @@ public class ResumenGeo extends AppCompatActivity {
     }
 
     private void GetResumenGeo (){
-        Cursor row;
-        if (Constants.ENVIROMENT)
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION, "", "", null);
-        else
-            row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, "", "", null);
+        Cursor row = dBhelper.getRecords(Constants.GEOLOCALIZACION_T, "", "", null);
 
         if (row.getCount() > 0){
             row.moveToFirst();

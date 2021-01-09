@@ -240,6 +240,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                finish();
                 break;
             case R.id.enviar:
                 Cursor row_credito = null;

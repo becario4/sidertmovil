@@ -85,6 +85,7 @@ public class Login extends AppCompatActivity {
     private Button btnLogin;
     private CardView cvCovid;
     private CardView cvDenunciarPLD;
+    private TextView tvAmbiente;
     private Validator validator;
     private SessionManager session;
     private DBhelper dBhelper;
@@ -109,8 +110,10 @@ public class Login extends AppCompatActivity {
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        /**Funcion para ver que permisos de la app tiene concedidos*/
         verifyPermission();
 
+        /**Inicializacion de variables*/
         context = this;
         session = new SessionManager(context);
 
@@ -125,15 +128,24 @@ public class Login extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         cvCovid = findViewById(R.id.cvInfoCovid);
         cvDenunciarPLD = findViewById(R.id.cvDenciarPLD);
+        tvAmbiente = findViewById(R.id.tvAmbiente);
         ivSetting = findViewById(R.id.ivSetting);
 
         validator = new Validator();
 
+        /**Evento click para iniciar sesion*/
         btnLogin.setOnClickListener(btnLogin_OnClick);
-
+        /**Evento click para Denuncia PLD*/
         cvDenunciarPLD.setOnClickListener(cvDenunciarPLD_OnClick);
+        /**Evento click para Comunicados COVID*/
         cvCovid.setOnClickListener(cvCovid_OnClick);
+        /**Evento click para configuracion PD: no se esta ocupando*/
         ivSetting.setOnClickListener(ivSetting_OnClick);
+
+        /**Se valida si el dominio y el puerto guardado es diferente al de produccion
+         * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
+        if (!session.getDominio().get(0).contains("sidert.ddns.net") || !session.getDominio().get(1).equals("83"))
+            tvAmbiente.setVisibility(View.VISIBLE);
 
         etUser.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -144,8 +156,10 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        /**Evento clic para habilitar otras configuraciones*/
         IVlogo.setOnClickListener(IVlogo_OnClick);
 
+        /**Valida que el GPS esté activo*/
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             AlertNoGps();
 
@@ -153,6 +167,7 @@ public class Login extends AppCompatActivity {
 
     }
 
+    /**Evento al dar click en el logo de sidert, mas de 10 taps para abrir una ventana de condiguraciones*/
     private View.OnClickListener IVlogo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -165,6 +180,8 @@ public class Login extends AppCompatActivity {
             if (countClick == 9)
                 Toast.makeText(context, "Estas a 1 pasos de visualizar la contraseña", Toast.LENGTH_SHORT).show();
             if (countClick >= 9) {
+                /**Cuando son mas de 10 taps abre un dialogFragment para configuraciones
+                 * de dominion o visualizar contraseña y mostrar campo de contraseña*/
                 etPassword.setVisibility(View.VISIBLE);
                 dialog_contrasena_root dialogRoot = new dialog_contrasena_root();
                 dialogRoot.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
@@ -173,10 +190,13 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    /**Evento al dar click en INICIAR SESION  */
     private View.OnClickListener btnLogin_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            /**Valida que Campo usuario sea requerido*/
             if (!validator.validate(etUser, new String[]{validator.REQUIRED})) {
+                /**Valida que si el usuario es diferente a alguno de los siguientes */
                 if (!etUser.getText().toString().trim().equals("ASESOR") &&
                         !etUser.getText().toString().trim().equals("GESTOR") &&
                         !etUser.getText().toString().trim().equals("PROGRAMADORAND") &&
@@ -185,6 +205,7 @@ public class Login extends AppCompatActivity {
                         !etUser.getText().toString().trim().equals("ANALISTAFUNCIONAL"))
                     doLogin();
                 else {
+                    /**En caso de ser igual sea requerido una contraseña*/
                     if (!validator.validate(etPassword, new String[]{validator.REQUIRED})) {
                         doLogin();
                     } else {
@@ -195,6 +216,7 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    /**Evento para abrir una vista un dialogFragment para Denuncias PLD*/
     private View.OnClickListener cvDenunciarPLD_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -203,6 +225,7 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    /**Evento para abrir un vista de comunicados CODIV*/
     private View.OnClickListener cvCovid_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -211,6 +234,7 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    /**Evento para mostrar informacion del equipo como el IMEI o MAC ADDRESS pero ya no se ocupa*/
     private View.OnClickListener ivSetting_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -224,58 +248,59 @@ public class Login extends AppCompatActivity {
         }
     };
 
+    /**Funcion para realizar la peticion de inicio de sesion movil*/
     private void doLogin() {
+        /**Valida que tenga cualquier tiene de internet WIFI o DATOS MOVILES*/
         if (NetworkStatus.haveNetworkConnection(context)) {
 
+            /**Venta de loading*/
             final AlertDialog loading = Popups.showLoadingDialog(context, R.string.please_wait, R.string.loading_info);
             loading.show();
 
-            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-            Intent batteryStatus = registerReceiver(null, ifilter);
-
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
-            float battery = (level / (float) scale) * 100;
-
+            /**Se crea la interfaz de la peticion de login*/
             ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, context).create(ManagerInterface.class);
 
 
+            /**Se le pasan los datos a la interfaz*/
             Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
                     session.getMacAddress(),
                     etPassword.getText().toString().trim(),
                     Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
-            /*Call<LoginResponse> call = api.login("ASESOR426",
-                    Miscellaneous.DecodePassword("MzQ6QkQ6I0Q6EjM6YTQ6MkR="),
+            /**Este es para cuando se quiere hacer una prueba con otro usuario
+             * solo hay que colocarle el usuario y el mac que tiene en BD
+             * eso es mas para mi cuando voy a revisar la cartera de algun asesor*/
+            /*Call<LoginResponse> call = api.login("GESTOR600",
+                    Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="),
                     etPassword.getText().toString().trim(),
                     Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));*/
-            /*Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
-                    "password",
-                    etPassword.getText().toString().trim(),
-                    Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));*/
+            /**Se realiza la peticion de inciio de sesion*/
             call.enqueue(new Callback<LoginResponse>() {
                 @Override
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     AlertDialog dialog_mess;
+                    /**Se valida el codigo de respuesta de la peticion*/
                     switch (response.code()) {
                         case 200:
+                            /**Se Deserializa la respuesta  */
                             LoginResponse res = response.body();
 
+                            /**Si tiene permiso de escribir el almacenamiento para crear
+                             * el directorio donde se guardaran las imagenes*/
                             if (isExternalStorageWritable()) {
                                 String nameDir = "Files";
                                 crearDirectorioPrivado(context, nameDir);
                             }
 
+                            /**Se desencripta el token */
                             byte[] data = Base64.decode(res.getAccessToken().replace(".", ";").split(";")[1], Base64.DEFAULT);
 
                             try {
+                                /**Se convierte a JSON el token*/
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
 
-                                /*if (true || json_info.getInt("id") == 134 || json_info.getInt("id") == 119 ||
-                                json_info.getInt("id") == 1 || json_info.getInt("id") == 123 ||
-                                json_info.getInt("id") == 135 || json_info.getInt("id") == 157 ||
-                                json_info.getInt("id") == 200 || json_info.getInt("id") == 368) {*/
                                 Log.e("JsonInfo", json_info.toString());
+
+                                /**Guarda un registro para el log de inicio de sesion*/
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, json_info.getString(SERIE_ID));
                                 params.put(1, json_info.getString(NOMBRE_EMPLEADO) + " " +
@@ -284,29 +309,33 @@ public class Login extends AppCompatActivity {
                                 params.put(2, Miscellaneous.ObtenerFecha("timestamp"));
                                 params.put(3, "");
                                 params.put(4, "1");
-
                                 dBhelper.saveRecordLogin(db, SidertTables.SidertEntry.TABLE_LOGIN_REPORT_T, params);
 
+                                /**Guarda un registro para log de sincronizaciones*/
                                 HashMap<Integer, String> params_sincro = new HashMap<>();
                                 params_sincro.put(0, json_info.getString(SERIE_ID));
                                 params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
-
-
                                 dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
-                                session.setUser(Miscellaneous.validString(json_info.getString(SERIE_ID)),
-                                        Miscellaneous.validString(json_info.getString(NOMBRE_EMPLEADO)),
-                                        Miscellaneous.validString(json_info.getString(PATERNO)),
-                                        Miscellaneous.validString(json_info.getString(MATERNO)),
-                                        Miscellaneous.validString(json_info.getString(Constants.USER_NAME)),
-                                        Miscellaneous.validString(json_info.getString(AUTHORITIES)),
-                                        true,
-                                        Miscellaneous.validString(res.getAccessToken()),
-                                        Miscellaneous.validString(json_info.getString(MODULOS)),
-                                        Miscellaneous.validString(json_info.getString("id")));
+                                /**Guarda en variables de sesion los datos de usuario*/
+                                session.setUser(Miscellaneous.validStr(json_info.getString(SERIE_ID)),    //SerieID
+                                        Miscellaneous.validStr(json_info.getString(NOMBRE_EMPLEADO)),     //Nombre
+                                        Miscellaneous.validStr(json_info.getString(PATERNO)),             //Ap_paterno
+                                        Miscellaneous.validStr(json_info.getString(MATERNO)),             //Ap_materno
+                                        Miscellaneous.validStr(json_info.getString(Constants.USER_NAME)), //Username
+                                        Miscellaneous.validStr(json_info.getString(AUTHORITIES)),         //Autorizaciones
+                                        true,                                                        //Bandera para inicio de sesion
+                                        Miscellaneous.validStr(res.getAccessToken()),                     //AccessToken
+                                        Miscellaneous.validStr(json_info.getString(MODULOS)),             //Modulos Permitidos
+                                        Miscellaneous.validStr(json_info.getString("id")));         //UserId que se ocupara para peticiones
 
-                                //session.setSucursales(json_info.getString(SUCURSALES));
+                                /**Se guarda en variables de sesion las sucursales que tiene asginada*/
+                                session.setSucursales(json_info.getString(SUCURSALES));
 
+                                Log.e("SUCURSALES","--------->"+session.getSucursales());
+
+                                /**Se crea una alarma que para cada 15 minutos este
+                                 * realizando peticiones para envio o descarga de informacion*/
                                 Calendar c = Calendar.getInstance();
                                 AlarmManager manager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
                                 Intent myIntent;
@@ -316,26 +345,14 @@ public class Login extends AppCompatActivity {
                                 pendingIntent = PendingIntent.getBroadcast(context, CANCEL_TRACKER_ID, myIntent, 0);
                                 manager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 1000 * 60 * 15, pendingIntent);
 
+                                /**Se realiza una instancia para obtener el tokenDevice para peticiones Push*/
                                 new MyFireBaseInstanceIDService(context);
 
+                                /**Abre la vista de descarga de informacion como cartera y catalogos*/
                                 Intent home = new Intent(context, DescargaDatos.class);
                                 home.putExtra("login", true);
                                 startActivity(home);
                                 finish();
-                                /*}
-                                else{
-                                    dialog_mess = Popups.showDialogMessage(context, Constants.login,
-                                            R.string.error_mac_address, R.string.accept, new Popups.DialogMessage() {
-                                                @Override
-
-                                                public void OnClickListener(AlertDialog dialog) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    dialog_mess.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                    dialog_mess.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                    dialog_mess.show();
-                                }*/
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -343,6 +360,8 @@ public class Login extends AppCompatActivity {
 
                             break;
                         case 404:
+                            /**En caso de que se quiere iniciar con otro usuario no le va permitir o no tenga registrado en DB
+                             * mac address y la constraseña*/
                             dialog_mess = Popups.showDialogMessage(context, Constants.login,
                                     R.string.error_mac_address, R.string.accept, new Popups.DialogMessage() {
                                         @Override
@@ -356,6 +375,7 @@ public class Login extends AppCompatActivity {
                             dialog_mess.show();
                             break;
                         case 400:
+                            /**En caso de sean incorrectas las contraseñas*/
                             dialog_mess = Popups.showDialogMessage(context, Constants.login,
                                     R.string.credenciales_incorrectas, R.string.accept, new Popups.DialogMessage() {
                                         @Override
@@ -369,6 +389,8 @@ public class Login extends AppCompatActivity {
                             dialog_mess.show();
                             break;
                         default:
+                            /**Cuando el servicio no este disponibles que este apagado el servidor o
+                             * no tenga los suficientes datos para realizar la peticion*/
                             dialog_mess = Popups.showDialogMessage(context, Constants.login,
                                     R.string.servicio_no_disponible, R.string.accept, new Popups.DialogMessage() {
                                         @Override
@@ -391,6 +413,7 @@ public class Login extends AppCompatActivity {
                 }
             });
         } else {
+            /**Cuando no tenga conexion a internet*/
             final AlertDialog error_connect = Popups.showDialogMessage(context, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
@@ -404,6 +427,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    /**Funcion para crear el directorio dentro la app para guardar las imagenes tomadas*/
     public File crearDirectorioPrivado(Context context, String nombreDirectorio) {
         //Crear directorio privado en la carpeta Pictures.
         File directorio = new File(
@@ -422,6 +446,9 @@ public class Login extends AppCompatActivity {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
+    /**Se le pregunta al usuario que tiene que aceptar esos permisos
+     * Ubicacion, Camara, Almacenamiento, Telefono, Bluetooth, Estado Telefono, SMS
+     * */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void verifyPermission() {
         int permsRequestCode = 100;
@@ -432,7 +459,8 @@ public class Login extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.BLUETOOTH,
-                Manifest.permission.READ_PHONE_STATE};
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.SEND_SMS};
 
         int accessFinePermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
         int accessCoarsePermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -442,6 +470,7 @@ public class Login extends AppCompatActivity {
         int callPhone = checkSelfPermission(Manifest.permission.CALL_PHONE);
         int bluetooth = checkSelfPermission(Manifest.permission.BLUETOOTH);
         int phoneState = checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
+        int sms = checkSelfPermission(Manifest.permission.SEND_SMS);
 
         if (cameraPermission == PackageManager.PERMISSION_GRANTED &&
                 accessFinePermission == PackageManager.PERMISSION_GRANTED &&
@@ -450,7 +479,8 @@ public class Login extends AppCompatActivity {
                 readStorage == PackageManager.PERMISSION_GRANTED &&
                 callPhone == PackageManager.PERMISSION_GRANTED &&
                 bluetooth == PackageManager.PERMISSION_GRANTED &&
-                phoneState == PackageManager.PERMISSION_GRANTED) {
+                phoneState == PackageManager.PERMISSION_GRANTED &&
+                sms == PackageManager.PERMISSION_GRANTED) {
             //se realiza metodo si es necesario...
         } else {
             requestPermissions(perms, permsRequestCode);
@@ -462,6 +492,7 @@ public class Login extends AppCompatActivity {
             etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
 
+    /**Alerta para habilitar el GPS desde configuraciones*/
     private void AlertNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("El sistema de GPS se encuentra desactivado, favor de ACTIVARLO!!!")
@@ -477,6 +508,7 @@ public class Login extends AppCompatActivity {
         alert.show();
     }
 
+    /**Funcion para obtener el IMEI, validar para versiones Samsung o Redmi PD:no se ocupa*/
     private String obtenerIMEI() {
         final TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -496,6 +528,8 @@ public class Login extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100){
+            /**En caso de rechazar el permiso de ubicacion se le seguira preguntando
+             * hasta que el usuario acepte*/
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
                 AlertNoGps();
         }

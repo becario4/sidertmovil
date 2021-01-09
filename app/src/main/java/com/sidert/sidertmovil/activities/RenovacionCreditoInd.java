@@ -573,7 +573,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private GoogleMap mMapAval;
 
 
-
     private Validator validator;
     private ValidatorTextView validatorTV;
 
@@ -596,6 +595,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     boolean isEditDoc = true;
 
     boolean hasFractionalPart = false;
+    
+    private Miscellaneous m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -608,6 +609,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         df.setDecimalSeparatorAlwaysShown(true);
 
         ctx = this;
+        
+        m = new Miscellaneous();
 
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
@@ -621,329 +624,329 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         TBmain = findViewById(R.id.TBmain);
 
-        _plazo                  = getResources().getStringArray(R.array.intervalo);
-        _frecuencia             = getResources().getStringArray(R.array.lapso);
-        _destino                = getResources().getStringArray(R.array.destino_prestamo);
-        _estudios               = Miscellaneous.GetNivelesEstudio(ctx);
-        _civil                  = Miscellaneous.GetEstadoCiviles(ctx);
-        _tipo_identificacion    = Miscellaneous.GetIdentificacion(ctx);
-        _medios_pago            = Miscellaneous.GetMediosPagoOri(ctx);
-        _parentesco             = Miscellaneous.GetParentesco(ctx, "PARENTESCO");
-        _parentesco_casa        = Miscellaneous.GetParentesco(ctx, "CASA");
-        _tipo_casa              = Miscellaneous.GetViviendaTipos(ctx);
-        _medio_contacto         = Miscellaneous.GetMediosContacto(ctx);
-        _destino_credito        = Miscellaneous.GetDestinosCredito(ctx);
-        _dependientes           = getResources().getStringArray(R.array.dependientes_eco);
-        _riesgo                 = getResources().getStringArray(R.array.clasificacion_riesgo);
-        _confirmacion           = getResources().getStringArray(R.array.confirmacion);
-        _activos                = getResources().getStringArray(R.array.activos);
-        _comportamiento         = getResources().getStringArray(R.array.comportamiento_pago);
+        _plazo = getResources().getStringArray(R.array.intervalo);
+        _frecuencia = getResources().getStringArray(R.array.lapso);
+        _destino = getResources().getStringArray(R.array.destino_prestamo);
+        _estudios = m.GetNivelesEstudio(ctx);
+        _civil = m.GetEstadoCiviles(ctx);
+        _tipo_identificacion = m.GetIdentificacion(ctx);
+        _medios_pago = m.GetMediosPagoOri(ctx);
+        _parentesco = m.GetParentesco(ctx, "PARENTESCO");
+        _parentesco_casa = m.GetParentesco(ctx, "CASA");
+        _tipo_casa = m.GetViviendaTipos(ctx);
+        _medio_contacto = m.GetMediosContacto(ctx);
+        _destino_credito = m.GetDestinosCredito(ctx);
+        _dependientes = getResources().getStringArray(R.array.dependientes_eco);
+        _riesgo = getResources().getStringArray(R.array.clasificacion_riesgo);
+        _confirmacion = getResources().getStringArray(R.array.confirmacion);
+        _activos = getResources().getStringArray(R.array.activos);
+        _comportamiento = getResources().getStringArray(R.array.comportamiento_pago);
 
         setSupportActionBar(TBmain);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //=================================== DATOS CREDITO  =======================================
-        tvPlazo             = findViewById(R.id.tvPlazo);
-        tvFrecuencia        = findViewById(R.id.tvFrecuencia);
-        tvFechaDesembolso   = findViewById(R.id.tvFechaDesembolso);
-        tvDiaDesembolso     = findViewById(R.id.tvDiaDesembolso);
-        tvHoraVisita        = findViewById(R.id.tvHoraVisita);
-        etMontoPrestamo     = findViewById(R.id.etMontoPrestamo);
-        tvCantidadLetra     = findViewById(R.id.tvCantidadLetra);
-        tvDestino           = findViewById(R.id.tvDestino);
-        tvRiesgo            = findViewById(R.id.tvRiesgo);
-        tvCreditoAnterior   = findViewById(R.id.tvCreditoAnterior);
-        tvNumCiclo          = findViewById(R.id.tvNumCiclo);
-        tvComportamiento    = findViewById(R.id.tvComportamientoPago);
-        etObservaciones     = findViewById(R.id.etObservaciones);
+        tvPlazo = findViewById(R.id.tvPlazo);
+        tvFrecuencia = findViewById(R.id.tvFrecuencia);
+        tvFechaDesembolso = findViewById(R.id.tvFechaDesembolso);
+        tvDiaDesembolso = findViewById(R.id.tvDiaDesembolso);
+        tvHoraVisita = findViewById(R.id.tvHoraVisita);
+        etMontoPrestamo = findViewById(R.id.etMontoPrestamo);
+        tvCantidadLetra = findViewById(R.id.tvCantidadLetra);
+        tvDestino = findViewById(R.id.tvDestino);
+        tvRiesgo = findViewById(R.id.tvRiesgo);
+        tvCreditoAnterior = findViewById(R.id.tvCreditoAnterior);
+        tvNumCiclo = findViewById(R.id.tvNumCiclo);
+        tvComportamiento = findViewById(R.id.tvComportamientoPago);
+        etObservaciones = findViewById(R.id.etObservaciones);
         //==========================================================================================
         //=================================  DATOS PERSONALES  =====================================
-        llComentCli          = findViewById(R.id.llComentCli);
-        tvComentAdminCli     = findViewById(R.id.tvComentAdminCli);
-        etNombreCli          = findViewById(R.id.etNombreCli);
-        etApPaternoCli       = findViewById(R.id.etApPaternoCli);
-        etApMaternoCli       = findViewById(R.id.etApMaternoCli);
-        tvFechaNacCli        = findViewById(R.id.tvFechaNacCli);
-        tvEdadCli            = findViewById(R.id.tvEdadCli);
-        tvGeneroCli          = findViewById(R.id.tvGeneroCli);
-        rgGeneroCli          = findViewById(R.id.rgGeneroCli);
-        tvEstadoNacCli       = findViewById(R.id.tvEstadoNacCli);
-        tvRfcCli             = findViewById(R.id.tvRfcCli);
-        etCurpCli            = findViewById(R.id.etCurpCli);
+        llComentCli = findViewById(R.id.llComentCli);
+        tvComentAdminCli = findViewById(R.id.tvComentAdminCli);
+        etNombreCli = findViewById(R.id.etNombreCli);
+        etApPaternoCli = findViewById(R.id.etApPaternoCli);
+        etApMaternoCli = findViewById(R.id.etApMaternoCli);
+        tvFechaNacCli = findViewById(R.id.tvFechaNacCli);
+        tvEdadCli = findViewById(R.id.tvEdadCli);
+        tvGeneroCli = findViewById(R.id.tvGeneroCli);
+        rgGeneroCli = findViewById(R.id.rgGeneroCli);
+        tvEstadoNacCli = findViewById(R.id.tvEstadoNacCli);
+        tvRfcCli = findViewById(R.id.tvRfcCli);
+        etCurpCli = findViewById(R.id.etCurpCli);
         //etCurpIdCli          = findViewById(R.id.etCurpIdCli);
-        tvOcupacionCli       = findViewById(R.id.tvOcupacionCli);
-        tvActividadEcoCli    = findViewById(R.id.tvActividadEcoCli);
+        tvOcupacionCli = findViewById(R.id.tvOcupacionCli);
+        tvActividadEcoCli = findViewById(R.id.tvActividadEcoCli);
         tvTipoIdentificacion = findViewById(R.id.tvTipoIdentificacion);
-        etNumIdentifCli      = findViewById(R.id.etNumIdentifCli);
-        tvEstudiosCli        = findViewById(R.id.tvEstudiosCli);
-        tvEstadoCivilCli     = findViewById(R.id.tvEstadoCivilCli);
-        llBienes             = findViewById(R.id.llBienes);
-        tvBienes             = findViewById(R.id.tvBienes);
-        rgBienes             = findViewById(R.id.rgBienes);
-        tvTipoCasaCli        = findViewById(R.id.tvTipoCasaCli);
-        llCasaFamiliar       = findViewById(R.id.llCasaFamiliar);
-        tvCasaFamiliar       = findViewById(R.id.tvCasaFamiliar);
-        llCasaOtroCli        = findViewById(R.id.llCasaOtro);
-        etOTroTipoCli        = findViewById(R.id.etOtroTipoCli);
-        tvMapaCli            = findViewById(R.id.tvMapaCli);
-        ibMapCli             = findViewById(R.id.ibMapCli);
-        pbLoadCli            = findViewById(R.id.pbLoadCli);
-        mapCli               = findViewById(R.id.mapCli);
-        etCalleCli           = findViewById(R.id.etCalleCli);
-        etNoExtCli           = findViewById(R.id.etNoExtCli);
-        etManzanaCli         = findViewById(R.id.etManzanaCli);
-        etNoIntCli           = findViewById(R.id.etNoIntCli);
-        etLoteCli            = findViewById(R.id.etLoteCli);
-        etCpCli              = findViewById(R.id.etCpCli);
-        tvColoniaCli         = findViewById(R.id.tvColoniaCli);
-        etCiudadCli          = findViewById(R.id.etCiudadCli);
-        tvLocalidadCli       = findViewById(R.id.tvLocalidadCli);
-        tvMunicipioCli       = findViewById(R.id.tvMunicipioCli);
-        tvEstadoCli          = findViewById(R.id.tvEstadoCli);
-        etTelCasaCli         = findViewById(R.id.etTelCasaCli);
-        etCelularCli         = findViewById(R.id.etCelularCli);
-        etTelMensCli         = findViewById(R.id.etTelMensCli);
-        etTelTrabajoCli      = findViewById(R.id.etTelTrabajoCli);
-        etTiempoSitio        = findViewById(R.id.etTiempoSitio);
-        tvDependientes       = findViewById(R.id.tvDependientes);
-        tvEnteroNosotros     = findViewById(R.id.tvEnteroNosotros);
-        tvEstadoCuenta       = findViewById(R.id.tvEstadoCuenta);
-        etEmail              = findViewById(R.id.etEmail);
-        tvFachadaCli         = findViewById(R.id.tvFachadaCli);
-        ibFotoFachCli        = findViewById(R.id.ibFotoFachCli);
-        ivFotoFachCli        = findViewById(R.id.ivFotoFachCli);
-        etReferenciCli       = findViewById(R.id.etReferenciaCli);
-        tvFirmaCli           = findViewById(R.id.tvFirmaCli);
-        ibFirmaCli           = findViewById(R.id.ibFirmaCli);
-        ivFirmaCli           = findViewById(R.id.ivFirmaCli);
+        etNumIdentifCli = findViewById(R.id.etNumIdentifCli);
+        tvEstudiosCli = findViewById(R.id.tvEstudiosCli);
+        tvEstadoCivilCli = findViewById(R.id.tvEstadoCivilCli);
+        llBienes = findViewById(R.id.llBienes);
+        tvBienes = findViewById(R.id.tvBienes);
+        rgBienes = findViewById(R.id.rgBienes);
+        tvTipoCasaCli = findViewById(R.id.tvTipoCasaCli);
+        llCasaFamiliar = findViewById(R.id.llCasaFamiliar);
+        tvCasaFamiliar = findViewById(R.id.tvCasaFamiliar);
+        llCasaOtroCli = findViewById(R.id.llCasaOtro);
+        etOTroTipoCli = findViewById(R.id.etOtroTipoCli);
+        tvMapaCli = findViewById(R.id.tvMapaCli);
+        ibMapCli = findViewById(R.id.ibMapCli);
+        pbLoadCli = findViewById(R.id.pbLoadCli);
+        mapCli = findViewById(R.id.mapCli);
+        etCalleCli = findViewById(R.id.etCalleCli);
+        etNoExtCli = findViewById(R.id.etNoExtCli);
+        etManzanaCli = findViewById(R.id.etManzanaCli);
+        etNoIntCli = findViewById(R.id.etNoIntCli);
+        etLoteCli = findViewById(R.id.etLoteCli);
+        etCpCli = findViewById(R.id.etCpCli);
+        tvColoniaCli = findViewById(R.id.tvColoniaCli);
+        etCiudadCli = findViewById(R.id.etCiudadCli);
+        tvLocalidadCli = findViewById(R.id.tvLocalidadCli);
+        tvMunicipioCli = findViewById(R.id.tvMunicipioCli);
+        tvEstadoCli = findViewById(R.id.tvEstadoCli);
+        etTelCasaCli = findViewById(R.id.etTelCasaCli);
+        etCelularCli = findViewById(R.id.etCelularCli);
+        etTelMensCli = findViewById(R.id.etTelMensCli);
+        etTelTrabajoCli = findViewById(R.id.etTelTrabajoCli);
+        etTiempoSitio = findViewById(R.id.etTiempoSitio);
+        tvDependientes = findViewById(R.id.tvDependientes);
+        tvEnteroNosotros = findViewById(R.id.tvEnteroNosotros);
+        tvEstadoCuenta = findViewById(R.id.tvEstadoCuenta);
+        etEmail = findViewById(R.id.etEmail);
+        tvFachadaCli = findViewById(R.id.tvFachadaCli);
+        ibFotoFachCli = findViewById(R.id.ibFotoFachCli);
+        ivFotoFachCli = findViewById(R.id.ivFotoFachCli);
+        etReferenciCli = findViewById(R.id.etReferenciaCli);
+        tvFirmaCli = findViewById(R.id.tvFirmaCli);
+        ibFirmaCli = findViewById(R.id.ibFirmaCli);
+        ivFirmaCli = findViewById(R.id.ivFirmaCli);
         //==========================================================================================
         //===================================  DATOS CONYUGE  ======================================
-        etNombreCony        = findViewById(R.id.etNombreCony);
-        etApPaternoCony     = findViewById(R.id.etApPaternoCony);
-        etApMaternoCony     = findViewById(R.id.etApMaternoCony);
-        etNacionalidadCony  = findViewById(R.id.etNacionalidadCony);
-        tvOcupacionCony     = findViewById(R.id.tvOcupacionCony);
-        etCalleCony         = findViewById(R.id.etCalleCony);
-        etNoExtCony         = findViewById(R.id.etNoExtCony);
-        etManzanaCony       = findViewById(R.id.etManzanaCony);
-        etNoIntCony         = findViewById(R.id.etNoIntCony);
-        etLoteCony          = findViewById(R.id.etLoteCony);
-        etCpCony            = findViewById(R.id.etCpCony);
-        tvColoniaCony       = findViewById(R.id.tvColoniaCony);
-        etCiudadCony        = findViewById(R.id.etCiudadCony);
-        tvLocalidadCony     = findViewById(R.id.tvLocalidadCony);
-        tvMunicipioCony     = findViewById(R.id.tvMunicipioCony);
-        tvEstadoCony        = findViewById(R.id.tvEstadoCony);
-        etIngMenCony        = findViewById(R.id.etIngMenCony);
-        etGastoMenCony      = findViewById(R.id.etGastoMenCony);
-        etCasaCony          = findViewById(R.id.etCasaCony);
-        etCelularCony       = findViewById(R.id.etCelularCony);
+        etNombreCony = findViewById(R.id.etNombreCony);
+        etApPaternoCony = findViewById(R.id.etApPaternoCony);
+        etApMaternoCony = findViewById(R.id.etApMaternoCony);
+        etNacionalidadCony = findViewById(R.id.etNacionalidadCony);
+        tvOcupacionCony = findViewById(R.id.tvOcupacionCony);
+        etCalleCony = findViewById(R.id.etCalleCony);
+        etNoExtCony = findViewById(R.id.etNoExtCony);
+        etManzanaCony = findViewById(R.id.etManzanaCony);
+        etNoIntCony = findViewById(R.id.etNoIntCony);
+        etLoteCony = findViewById(R.id.etLoteCony);
+        etCpCony = findViewById(R.id.etCpCony);
+        tvColoniaCony = findViewById(R.id.tvColoniaCony);
+        etCiudadCony = findViewById(R.id.etCiudadCony);
+        tvLocalidadCony = findViewById(R.id.tvLocalidadCony);
+        tvMunicipioCony = findViewById(R.id.tvMunicipioCony);
+        tvEstadoCony = findViewById(R.id.tvEstadoCony);
+        etIngMenCony = findViewById(R.id.etIngMenCony);
+        etGastoMenCony = findViewById(R.id.etGastoMenCony);
+        etCasaCony = findViewById(R.id.etCasaCony);
+        etCelularCony = findViewById(R.id.etCelularCony);
         //==========================================================================================
         //=================================  DATOS ECONOMICOS  =====================================
-        etPropiedadesEco    = findViewById(R.id.etPropiedadesEco);
-        etValorAproxEco     = findViewById(R.id.etValorAproxEco);
-        etUbicacionEco      = findViewById(R.id.etUbicacionEco);
-        tvIngresoEco        = findViewById(R.id.tvIngresoEco);
+        etPropiedadesEco = findViewById(R.id.etPropiedadesEco);
+        etValorAproxEco = findViewById(R.id.etValorAproxEco);
+        etUbicacionEco = findViewById(R.id.etUbicacionEco);
+        tvIngresoEco = findViewById(R.id.tvIngresoEco);
         //==========================================================================================
         //===================================  DATOS NEGOCIO  ======================================
-        llComentNeg          = findViewById(R.id.llComentNeg);
-        tvComentAdminNeg     = findViewById(R.id.tvComentAdminNeg);
-        etNombreNeg             = findViewById(R.id.etNombreNeg);
-        tvMapaNeg               = findViewById(R.id.tvMapaNeg);
-        ibMapNeg                = findViewById(R.id.ibMapNeg);
-        pbLoadNeg               = findViewById(R.id.pbLoadNeg);
-        mapNeg                  = findViewById(R.id.mapNeg);
-        etCalleNeg              = findViewById(R.id.etCalleNeg);
-        etNoExtNeg              = findViewById(R.id.etNoExtNeg);
-        etNoIntNeg              = findViewById(R.id.etNoIntNeg);
-        etManzanaNeg            = findViewById(R.id.etManzanaNeg);
-        etLoteNeg               = findViewById(R.id.etLoteNeg);
-        etCpNeg                 = findViewById(R.id.etCpNeg);
-        tvColoniaNeg            = findViewById(R.id.tvColoniaNeg);
-        etCiudadNeg             = findViewById(R.id.etCiudadNeg);
-        tvLocalidadNeg          = findViewById(R.id.tvLocalidadNeg);
-        tvMunicipioNeg          = findViewById(R.id.tvMunicipioNeg);
-        tvActEcoEspNeg          = findViewById(R.id.tvActEcoEspNeg);
-        tvActEconomicaNeg       = findViewById(R.id.tvActEconomicaNeg);
-        tvDestinoNeg            = findViewById(R.id.tvDestinoNeg);
-        etOtroDestinoNeg        = findViewById(R.id.etOtroDestinoNeg);
-        etAntiguedadNeg         = findViewById(R.id.etAntiguedadNeg);
-        etIngMenNeg             = findViewById(R.id.etIngMenNeg);
-        etOtrosIngNeg           = findViewById(R.id.etOtrosIngNeg);
-        etGastosMenNeg          = findViewById(R.id.etGastosMenNeg);
-        etGastosAguaNeg         = findViewById(R.id.etGastosAguaNeg);
-        etGastosLuzNeg          = findViewById(R.id.etGastosLuzNeg);
-        etGastosTelNeg          = findViewById(R.id.etGastosTelNeg);
-        etGastosRentaNeg        = findViewById(R.id.etGastosRentaNeg);
-        etGastosOtrosNeg        = findViewById(R.id.etGastosOtrosNeg);
-        etCapacidadPagoNeg      = findViewById(R.id.etCapacidadPagoNeg);
-        tvMediosPagoNeg         = findViewById(R.id.tvMediosPagoNeg);
-        etOtroMedioPagoNeg      = findViewById(R.id.etOtroMedioPagoNeg);
-        tvMontoMaxNeg           = findViewById(R.id.tvMontoMaxNeg);
-        tvNumOperacionNeg       = findViewById(R.id.tvNumOperacionNeg);
-        llOperacionesEfectivo   = findViewById(R.id.llOperacionesEfectivo);
-        etNumOperacionEfectNeg  = findViewById(R.id.etNumOperacionEfectNeg);
-        tvDiasVentaNeg          = findViewById(R.id.tvDiasVentaNeg);
-        tvFachadaNeg            = findViewById(R.id.tvFachadaNeg);
-        ibFotoFachNeg           = findViewById(R.id.ibFotoFachNeg);
-        ivFotoFachNeg           = findViewById(R.id.ivFotoFachNeg);
-        etReferenciNeg          = findViewById(R.id.etReferenciaNeg);
+        llComentNeg = findViewById(R.id.llComentNeg);
+        tvComentAdminNeg = findViewById(R.id.tvComentAdminNeg);
+        etNombreNeg = findViewById(R.id.etNombreNeg);
+        tvMapaNeg = findViewById(R.id.tvMapaNeg);
+        ibMapNeg = findViewById(R.id.ibMapNeg);
+        pbLoadNeg = findViewById(R.id.pbLoadNeg);
+        mapNeg = findViewById(R.id.mapNeg);
+        etCalleNeg = findViewById(R.id.etCalleNeg);
+        etNoExtNeg = findViewById(R.id.etNoExtNeg);
+        etNoIntNeg = findViewById(R.id.etNoIntNeg);
+        etManzanaNeg = findViewById(R.id.etManzanaNeg);
+        etLoteNeg = findViewById(R.id.etLoteNeg);
+        etCpNeg = findViewById(R.id.etCpNeg);
+        tvColoniaNeg = findViewById(R.id.tvColoniaNeg);
+        etCiudadNeg = findViewById(R.id.etCiudadNeg);
+        tvLocalidadNeg = findViewById(R.id.tvLocalidadNeg);
+        tvMunicipioNeg = findViewById(R.id.tvMunicipioNeg);
+        tvActEcoEspNeg = findViewById(R.id.tvActEcoEspNeg);
+        tvActEconomicaNeg = findViewById(R.id.tvActEconomicaNeg);
+        tvDestinoNeg = findViewById(R.id.tvDestinoNeg);
+        etOtroDestinoNeg = findViewById(R.id.etOtroDestinoNeg);
+        etAntiguedadNeg = findViewById(R.id.etAntiguedadNeg);
+        etIngMenNeg = findViewById(R.id.etIngMenNeg);
+        etOtrosIngNeg = findViewById(R.id.etOtrosIngNeg);
+        etGastosMenNeg = findViewById(R.id.etGastosMenNeg);
+        etGastosAguaNeg = findViewById(R.id.etGastosAguaNeg);
+        etGastosLuzNeg = findViewById(R.id.etGastosLuzNeg);
+        etGastosTelNeg = findViewById(R.id.etGastosTelNeg);
+        etGastosRentaNeg = findViewById(R.id.etGastosRentaNeg);
+        etGastosOtrosNeg = findViewById(R.id.etGastosOtrosNeg);
+        etCapacidadPagoNeg = findViewById(R.id.etCapacidadPagoNeg);
+        tvMediosPagoNeg = findViewById(R.id.tvMediosPagoNeg);
+        etOtroMedioPagoNeg = findViewById(R.id.etOtroMedioPagoNeg);
+        tvMontoMaxNeg = findViewById(R.id.tvMontoMaxNeg);
+        tvNumOperacionNeg = findViewById(R.id.tvNumOperacionNeg);
+        llOperacionesEfectivo = findViewById(R.id.llOperacionesEfectivo);
+        etNumOperacionEfectNeg = findViewById(R.id.etNumOperacionEfectNeg);
+        tvDiasVentaNeg = findViewById(R.id.tvDiasVentaNeg);
+        tvFachadaNeg = findViewById(R.id.tvFachadaNeg);
+        ibFotoFachNeg = findViewById(R.id.ibFotoFachNeg);
+        ivFotoFachNeg = findViewById(R.id.ivFotoFachNeg);
+        etReferenciNeg = findViewById(R.id.etReferenciaNeg);
         //==========================================================================================
         //=====================================  DATOS AVAL  =======================================
-        llComentAval        = findViewById(R.id.llComentAval);
-        tvComentAdminAval   = findViewById(R.id.tvComentAdminAval);
-        etNombreAval        = findViewById(R.id.etNombreAval);
-        etApPaternoAval     = findViewById(R.id.etApPaternoAval);
-        etApMaternoAval     = findViewById(R.id.etApMaternoAval);
-        tvFechaNacAval      = findViewById(R.id.tvFechaNacAval);
-        tvEdadAval          = findViewById(R.id.tvEdadAval);
-        tvGeneroAval        = findViewById(R.id.tvGeneroAval);
-        rgGeneroAval        = findViewById(R.id.rgGeneroAval);
-        tvEstadoNacAval     = findViewById(R.id.tvEstadoNacAval);
-        tvRfcAval           = findViewById(R.id.tvRfcAval);
-        etCurpAval          = findViewById(R.id.etCurpAval);
+        llComentAval = findViewById(R.id.llComentAval);
+        tvComentAdminAval = findViewById(R.id.tvComentAdminAval);
+        etNombreAval = findViewById(R.id.etNombreAval);
+        etApPaternoAval = findViewById(R.id.etApPaternoAval);
+        etApMaternoAval = findViewById(R.id.etApMaternoAval);
+        tvFechaNacAval = findViewById(R.id.tvFechaNacAval);
+        tvEdadAval = findViewById(R.id.tvEdadAval);
+        tvGeneroAval = findViewById(R.id.tvGeneroAval);
+        rgGeneroAval = findViewById(R.id.rgGeneroAval);
+        tvEstadoNacAval = findViewById(R.id.tvEstadoNacAval);
+        tvRfcAval = findViewById(R.id.tvRfcAval);
+        etCurpAval = findViewById(R.id.etCurpAval);
         //etCurpIdAval        = findViewById(R.id.etCurpIdAval);
-        tvParentescoAval    = findViewById(R.id.tvParentescoAval);
+        tvParentescoAval = findViewById(R.id.tvParentescoAval);
         tvTipoIdentificacionAval = findViewById(R.id.tvTipoIdentificacionAval);
-        etNumIdentifAval    = findViewById(R.id.etNumIdentifAval);
-        tvOcupacionAval     = findViewById(R.id.tvOcupacionAval);
-        tvActividadEcoAval  = findViewById(R.id.tvActividadEcoAval);
-        tvMapaAval          = findViewById(R.id.tvMapaAval);
-        ibMapAval           = findViewById(R.id.ibMapAval);
-        pbLoadAval          = findViewById(R.id.pbLoadAval);
-        mapAval             = findViewById(R.id.mapAval);
-        etCalleAval         = findViewById(R.id.etCalleAval);
-        etNoExtAval         = findViewById(R.id.etNoExtAval);
-        etManzanaAval       = findViewById(R.id.etManzanaAval);
-        etNoIntAval         = findViewById(R.id.etNoIntAval);
-        etLoteAval          = findViewById(R.id.etLoteAval);
-        etCpAval            = findViewById(R.id.etCpAval);
-        tvColoniaAval       = findViewById(R.id.tvColoniaAval);
-        etCiudadAval        = findViewById(R.id.etCiudadAval);
-        tvLocalidadAval     = findViewById(R.id.tvLocalidadAval);
-        tvMunicipioAval     = findViewById(R.id.tvMunicipioAval);
-        tvEstadoAval        = findViewById(R.id.tvEstadoAval);
-        tvTipoCasaAval      = findViewById(R.id.tvTipoCasaAval);
-        tvFamiliarAval      = findViewById(R.id.tvFamiliar);
+        etNumIdentifAval = findViewById(R.id.etNumIdentifAval);
+        tvOcupacionAval = findViewById(R.id.tvOcupacionAval);
+        tvActividadEcoAval = findViewById(R.id.tvActividadEcoAval);
+        tvMapaAval = findViewById(R.id.tvMapaAval);
+        ibMapAval = findViewById(R.id.ibMapAval);
+        pbLoadAval = findViewById(R.id.pbLoadAval);
+        mapAval = findViewById(R.id.mapAval);
+        etCalleAval = findViewById(R.id.etCalleAval);
+        etNoExtAval = findViewById(R.id.etNoExtAval);
+        etManzanaAval = findViewById(R.id.etManzanaAval);
+        etNoIntAval = findViewById(R.id.etNoIntAval);
+        etLoteAval = findViewById(R.id.etLoteAval);
+        etCpAval = findViewById(R.id.etCpAval);
+        tvColoniaAval = findViewById(R.id.tvColoniaAval);
+        etCiudadAval = findViewById(R.id.etCiudadAval);
+        tvLocalidadAval = findViewById(R.id.tvLocalidadAval);
+        tvMunicipioAval = findViewById(R.id.tvMunicipioAval);
+        tvEstadoAval = findViewById(R.id.tvEstadoAval);
+        tvTipoCasaAval = findViewById(R.id.tvTipoCasaAval);
+        tvFamiliarAval = findViewById(R.id.tvFamiliar);
         llParentescoFamAval = findViewById(R.id.llParentescoFamAval);
-        llNombreTitular     = findViewById(R.id.llNombreTitular);
+        llNombreTitular = findViewById(R.id.llNombreTitular);
         etNombreTitularAval = findViewById(R.id.etNombreTitularAval);
-        etCaracteristicasAval   = findViewById(R.id.etCaracteristicasAval);
-        tvNombreNegAval         = findViewById(R.id.tvNombreNegAval);
-        rgNegocioAval           = findViewById(R.id.rgNegocioAval);
-        llNombreNegocio         = findViewById(R.id.llNombreNegocio);
+        etCaracteristicasAval = findViewById(R.id.etCaracteristicasAval);
+        tvNombreNegAval = findViewById(R.id.tvNombreNegAval);
+        rgNegocioAval = findViewById(R.id.rgNegocioAval);
+        llNombreNegocio = findViewById(R.id.llNombreNegocio);
         etNombreNegocioAval = findViewById(R.id.etNombreNegocioAval);
-        etAntiguedadAval    = findViewById(R.id.etAntiguedadAval);
-        etIngMenAval        = findViewById(R.id.etIngMenAval);
-        etIngOtrosAval      = findViewById(R.id.etOtrosIngAval);
-        etGastosSemAval     = findViewById(R.id.etGastosSemAval);
-        etGastosAguaAval    = findViewById(R.id.etGastosAguaAval);
-        etGastosLuzAval     = findViewById(R.id.etGastosLuzAval);
-        etGastosTelAval     = findViewById(R.id.etGastosTelAval);
-        etGastosRentaAval   = findViewById(R.id.etGastosRentaAval);
-        etGastosOtrosAval   = findViewById(R.id.etGastosOtrosAval);
-        tvMediosPagoAval    = findViewById(R.id.tvMediosPagoAval);
+        etAntiguedadAval = findViewById(R.id.etAntiguedadAval);
+        etIngMenAval = findViewById(R.id.etIngMenAval);
+        etIngOtrosAval = findViewById(R.id.etOtrosIngAval);
+        etGastosSemAval = findViewById(R.id.etGastosSemAval);
+        etGastosAguaAval = findViewById(R.id.etGastosAguaAval);
+        etGastosLuzAval = findViewById(R.id.etGastosLuzAval);
+        etGastosTelAval = findViewById(R.id.etGastosTelAval);
+        etGastosRentaAval = findViewById(R.id.etGastosRentaAval);
+        etGastosOtrosAval = findViewById(R.id.etGastosOtrosAval);
+        tvMediosPagoAval = findViewById(R.id.tvMediosPagoAval);
         etOtroMedioPagoAval = findViewById(R.id.etOtroMedioPagoAval);
-        tvMontoMaxAval      = findViewById(R.id.tvMontoMaxAval);
+        tvMontoMaxAval = findViewById(R.id.tvMontoMaxAval);
         etCapacidadPagoAval = findViewById(R.id.etCapacidadPagoAval);
-        tvHoraLocAval       = findViewById(R.id.tvHoraLocAval);
+        tvHoraLocAval = findViewById(R.id.tvHoraLocAval);
         tvActivosObservables = findViewById(R.id.tvActivosObservables);
-        etTelCasaAval       = findViewById(R.id.etTelCasaAval);
-        etCelularAval       = findViewById(R.id.etCelularAval);
-        etTelMensAval       = findViewById(R.id.etTelMensAval);
-        etTelTrabajoAval    = findViewById(R.id.etTelTrabajoAval);
-        etEmailAval         = findViewById(R.id.etEmailAval);
-        tvFachadaAval       = findViewById(R.id.tvFachadaAval);
-        ibFotoFachAval      = findViewById(R.id.ibFotoFachAval);
-        ivFotoFachAval      = findViewById(R.id.ivFotoFachAval);
-        etReferenciaAval    = findViewById(R.id.etReferenciaAval);
-        tvFirmaAval         = findViewById(R.id.tvFirmaAval);
-        ibFirmaAval         = findViewById(R.id.ibFirmaAval);
-        ivFirmaAval         = findViewById(R.id.ivFirmaAval);
+        etTelCasaAval = findViewById(R.id.etTelCasaAval);
+        etCelularAval = findViewById(R.id.etCelularAval);
+        etTelMensAval = findViewById(R.id.etTelMensAval);
+        etTelTrabajoAval = findViewById(R.id.etTelTrabajoAval);
+        etEmailAval = findViewById(R.id.etEmailAval);
+        tvFachadaAval = findViewById(R.id.tvFachadaAval);
+        ibFotoFachAval = findViewById(R.id.ibFotoFachAval);
+        ivFotoFachAval = findViewById(R.id.ivFotoFachAval);
+        etReferenciaAval = findViewById(R.id.etReferenciaAval);
+        tvFirmaAval = findViewById(R.id.tvFirmaAval);
+        ibFirmaAval = findViewById(R.id.ibFirmaAval);
+        ivFirmaAval = findViewById(R.id.ivFirmaAval);
         //==========================================================================================
         //==================================  DATOS REFERENCIA  ====================================
-        llComentRef         = findViewById(R.id.llComentRef);
-        tvComentAdminRef    = findViewById(R.id.tvComentAdminRef);
-        etNombreRef         = findViewById(R.id.etNombreRef);
-        etApPaternoRef      = findViewById(R.id.etApPaternoRef);
-        etApMaternoRef      = findViewById(R.id.etApMaternoRef);
-        tvFechaNacRef       = findViewById(R.id.tvFechaNacRef);
-        etCalleRef           = findViewById(R.id.etCalleRef);
-        etNoExtRef           = findViewById(R.id.etNoExtRef);
-        etManzanaRef         = findViewById(R.id.etManzanaRef);
-        etNoIntRef           = findViewById(R.id.etNoIntRef);
-        etLoteRef            = findViewById(R.id.etLoteRef);
-        etCpRef              = findViewById(R.id.etCpRef);
-        tvColoniaRef         = findViewById(R.id.tvColoniaRef);
-        etCiudadRef          = findViewById(R.id.etCiudadRef);
-        tvLocalidadRef       = findViewById(R.id.tvLocalidadRef);
-        tvMunicipioRef       = findViewById(R.id.tvMunicipioRef);
-        tvEstadoRef          = findViewById(R.id.tvEstadoRef);
-        etTelCelRef         = findViewById(R.id.etTelCelRef);
+        llComentRef = findViewById(R.id.llComentRef);
+        tvComentAdminRef = findViewById(R.id.tvComentAdminRef);
+        etNombreRef = findViewById(R.id.etNombreRef);
+        etApPaternoRef = findViewById(R.id.etApPaternoRef);
+        etApMaternoRef = findViewById(R.id.etApMaternoRef);
+        tvFechaNacRef = findViewById(R.id.tvFechaNacRef);
+        etCalleRef = findViewById(R.id.etCalleRef);
+        etNoExtRef = findViewById(R.id.etNoExtRef);
+        etManzanaRef = findViewById(R.id.etManzanaRef);
+        etNoIntRef = findViewById(R.id.etNoIntRef);
+        etLoteRef = findViewById(R.id.etLoteRef);
+        etCpRef = findViewById(R.id.etCpRef);
+        tvColoniaRef = findViewById(R.id.tvColoniaRef);
+        etCiudadRef = findViewById(R.id.etCiudadRef);
+        tvLocalidadRef = findViewById(R.id.tvLocalidadRef);
+        tvMunicipioRef = findViewById(R.id.tvMunicipioRef);
+        tvEstadoRef = findViewById(R.id.tvEstadoRef);
+        etTelCelRef = findViewById(R.id.etTelCelRef);
         //==========================================================================================
         //====================================  CROQUIS   ==========================================
-        llComentCro         = findViewById(R.id.llComentCro);
-        tvComentAdminCro    = findViewById(R.id.tvComentAdminCro);
-        tvCasa              = findViewById(R.id.tvCasa);
-        tvPrincipal         = findViewById(R.id.tvPrincipal);
-        tvTrasera           = findViewById(R.id.tvTrasera);
-        tvLateraUno         = findViewById(R.id.tvLateralUno);
-        tvLateraDos         = findViewById(R.id.tvLateralDos);
-        etReferencia        = findViewById(R.id.etReferencia);
+        llComentCro = findViewById(R.id.llComentCro);
+        tvComentAdminCro = findViewById(R.id.tvComentAdminCro);
+        tvCasa = findViewById(R.id.tvCasa);
+        tvPrincipal = findViewById(R.id.tvPrincipal);
+        tvTrasera = findViewById(R.id.tvTrasera);
+        tvLateraUno = findViewById(R.id.tvLateralUno);
+        tvLateraDos = findViewById(R.id.tvLateralDos);
+        etReferencia = findViewById(R.id.etReferencia);
         //==========================================================================================
         //==================================  DATOS POLITICAS   ====================================
-        tvPropietarioReal       = findViewById(R.id.tvPropietarioReal);
-        rgPropietarioReal       = findViewById(R.id.rgPropietarioReal);
-        tvAnexoPropietario      = findViewById(R.id.tvAnexoPropietario);
-        tvProvedor              = findViewById(R.id.tvProvedor);
-        rgProveedor             = findViewById(R.id.rgProveedor);
-        tvAnexoPreveedor        = findViewById(R.id.tvAnexoPreveedor);
-        tvPoliticamenteExp      = findViewById(R.id.tvPoliticamenteExp);
-        rgPoliticamenteExp      = findViewById(R.id.rgPoliticamenteExp);
+        tvPropietarioReal = findViewById(R.id.tvPropietarioReal);
+        rgPropietarioReal = findViewById(R.id.rgPropietarioReal);
+        tvAnexoPropietario = findViewById(R.id.tvAnexoPropietario);
+        tvProvedor = findViewById(R.id.tvProvedor);
+        rgProveedor = findViewById(R.id.rgProveedor);
+        tvAnexoPreveedor = findViewById(R.id.tvAnexoPreveedor);
+        tvPoliticamenteExp = findViewById(R.id.tvPoliticamenteExp);
+        rgPoliticamenteExp = findViewById(R.id.rgPoliticamenteExp);
         tvAnexoPoliticamenteExp = findViewById(R.id.tvAnexoPoliticamenteExp);
         //==========================================================================================
         //=====================================  DOCUMENTOS  =======================================
-        tvIneFrontal        = findViewById(R.id.tvIneFrontal);
-        ibIneFrontal        = findViewById(R.id.ibIneFrontal);
-        ivIneFrontal        = findViewById(R.id.ivIneFrontal);
-        tvIneReverso        = findViewById(R.id.tvIneReverso);
-        ibIneReverso        = findViewById(R.id.ibIneReverso);
-        ivIneReverso        = findViewById(R.id.ivIneReverso);
-        llFotoCurp          = findViewById(R.id.llFotoCurp);
+        tvIneFrontal = findViewById(R.id.tvIneFrontal);
+        ibIneFrontal = findViewById(R.id.ibIneFrontal);
+        ivIneFrontal = findViewById(R.id.ivIneFrontal);
+        tvIneReverso = findViewById(R.id.tvIneReverso);
+        ibIneReverso = findViewById(R.id.ibIneReverso);
+        ivIneReverso = findViewById(R.id.ivIneReverso);
+        llFotoCurp = findViewById(R.id.llFotoCurp);
         /*tvCurp              = findViewById(R.id.tvCurp);
         ibCurp              = findViewById(R.id.ibCurp);
         ivCurp              = findViewById(R.id.ivCurp);*/
-        tvComprobante       = findViewById(R.id.tvComprobante);
-        ibComprobante       = findViewById(R.id.ibComprobante);
-        ivComprobante       = findViewById(R.id.ivComprobante);
-        tvFirmaAsesor       = findViewById(R.id.tvFirmaAsesor);
-        ibFirmaAsesor       = findViewById(R.id.ibFirmaAsesor);
-        ivFirmaAsesor       = findViewById(R.id.ivFirmaAsesor);
+        tvComprobante = findViewById(R.id.tvComprobante);
+        ibComprobante = findViewById(R.id.ibComprobante);
+        ivComprobante = findViewById(R.id.ivComprobante);
+        tvFirmaAsesor = findViewById(R.id.tvFirmaAsesor);
+        ibFirmaAsesor = findViewById(R.id.ibFirmaAsesor);
+        ivFirmaAsesor = findViewById(R.id.ivFirmaAsesor);
         //=========================================================
         //================ LINEAR LAYOUT  =========================
-        llDatosCredito      = findViewById(R.id.llDatosCredito);
-        llDatosPersonales   = findViewById(R.id.llDatosPersonales);
-        llDatosConyuge      = findViewById(R.id.llDatosConyuge);
-        llDatosEconomicos   = findViewById(R.id.llDatosEconomicos);
-        llDatosNegocio      = findViewById(R.id.llDatosNegocio);
-        llDatosAval         = findViewById(R.id.llDatosAval);
-        llDatosReferencia   = findViewById(R.id.llDatosReferencia);
-        llDatosCroquis      = findViewById(R.id.llDatosCroquis);
-        llDatosPoliticas    = findViewById(R.id.llDatosPoliticas);
-        llDatosDocumentos   = findViewById(R.id.llDatosDocumentos);
+        llDatosCredito = findViewById(R.id.llDatosCredito);
+        llDatosPersonales = findViewById(R.id.llDatosPersonales);
+        llDatosConyuge = findViewById(R.id.llDatosConyuge);
+        llDatosEconomicos = findViewById(R.id.llDatosEconomicos);
+        llDatosNegocio = findViewById(R.id.llDatosNegocio);
+        llDatosAval = findViewById(R.id.llDatosAval);
+        llDatosReferencia = findViewById(R.id.llDatosReferencia);
+        llDatosCroquis = findViewById(R.id.llDatosCroquis);
+        llDatosPoliticas = findViewById(R.id.llDatosPoliticas);
+        llDatosDocumentos = findViewById(R.id.llDatosDocumentos);
 
-        llCredito           = findViewById(R.id.llCredito);
-        llPersonales        = findViewById(R.id.llPersonales);
-        llConyuge           = findViewById(R.id.llConyuge);
-        llPropiedades       = findViewById(R.id.llPropiedades);
-        llEconomicos        = findViewById(R.id.llEconomicos);
-        llNegocio           = findViewById(R.id.llNegocio);
-        llAval              = findViewById(R.id.llAval);
-        llReferencia        = findViewById(R.id.llReferencia);
-        llCroquis           = findViewById(R.id.llCroquis);
-        llPoliticas         = findViewById(R.id.llPoliticas);
-        llDocumentos        = findViewById(R.id.llDocumentos);
+        llCredito = findViewById(R.id.llCredito);
+        llPersonales = findViewById(R.id.llPersonales);
+        llConyuge = findViewById(R.id.llConyuge);
+        llPropiedades = findViewById(R.id.llPropiedades);
+        llEconomicos = findViewById(R.id.llEconomicos);
+        llNegocio = findViewById(R.id.llNegocio);
+        llAval = findViewById(R.id.llAval);
+        llReferencia = findViewById(R.id.llReferencia);
+        llCroquis = findViewById(R.id.llCroquis);
+        llPoliticas = findViewById(R.id.llPoliticas);
+        llDocumentos = findViewById(R.id.llDocumentos);
         //==========================================================================================
 
         //============================== LINEAR LAYOUT  ============================================
@@ -1055,7 +1058,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvHoraVisita.setOnClickListener(tvHoraVisita_OnClick);
         ibFirmaAsesor.setOnClickListener(ibFirmaAsesor_OnClick);
         etMontoPrestamo.addTextChangedListener(new TextWatcher() {
-            private final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
+            private final String PATTERN_MONTO_CREDITO = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
             private Pattern pattern;
             private Matcher matcher;
 
@@ -1066,8 +1069,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -1080,7 +1082,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etMontoPrestamo.getText().length();
+                    inilen = m.GetStr(etMontoPrestamo).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etMontoPrestamo.getSelectionStart();
@@ -1089,13 +1091,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etMontoPrestamo.setText(dfnd.format(n));
                     }
-                    endlen = etMontoPrestamo.getText().length();
+                    endlen = m.GetStr(etMontoPrestamo).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etMontoPrestamo.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etMontoPrestamo).length()) {
                         etMontoPrestamo.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etMontoPrestamo.setSelection(etMontoPrestamo.getText().length() - 1);
+                        etMontoPrestamo.setSelection(m.GetStr(etMontoPrestamo).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1103,24 +1105,22 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     // do nothing?
                 }
 
-                if (s.length()> 0){
+                if (s.length() > 0) {
                     pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(s.toString().replace(",",""));
-                    if(!matcher.matches()) {
+                    matcher = pattern.matcher(s.toString().replace(",", ""));
+                    if (!matcher.matches()) {
                         tvCantidadLetra.setText("");
                         etMontoPrestamo.setError("La cantidad no corresponde a un monto de crédito válido");
-                    }else{
-                        Update("monto_prestamo", TBL_CREDITO_IND_REN, s.toString().trim().replace(",",""));
-                        tvCantidadLetra.setText((Miscellaneous.cantidadLetra(s.toString().replace(",","")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
-                        if (Integer.parseInt(s.toString().replace(",","")) > 30000){
+                    } else {
+                        Update("monto_prestamo", TBL_CREDITO_IND_REN, s.toString().trim().replace(",", ""));
+                        tvCantidadLetra.setText((m.cantidadLetra(s.toString().replace(",", "")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
+                        if (Integer.parseInt(s.toString().replace(",", "")) > 30000) {
                             llPropiedades.setVisibility(View.VISIBLE);
-                        }
-                        else{
+                        } else {
                             llPropiedades.setVisibility(View.GONE);
                         }
                     }
-                }
-                else{
+                } else {
                     Update("monto_prestamo", TBL_CREDITO_IND_REN, "");
                     tvCantidadLetra.setText("");
                 }
@@ -1144,10 +1144,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     Update("observaciones", TBL_CREDITO_IND_REN, e.toString().trim().toUpperCase());
-                }
-                else
+                } else
                     Update("observaciones", TBL_CREDITO_IND_REN, "");
             }
         });
@@ -1166,43 +1165,42 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (s.length()> 0){
+                if (s.length() > 0) {
                     params.put(0, s.toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
+                } else {
                     params.put(0, "");
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1220,43 +1218,42 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (s.length()> 0){
-                    params.put(0, etNombreCli.getText().toString());
+                if (s.length() > 0) {
+                    params.put(0, m.GetStr(etNombreCli));
                     params.put(1, s.toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
-                    params.put(0, etNombreCli.getText().toString());
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
+                } else {
+                    params.put(0, m.GetStr(etNombreCli));
                     params.put(1, "");
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1274,43 +1271,42 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (s.length()> 0){
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
+                if (s.length() > 0) {
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
                     params.put(2, s.toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
+                } else {
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
                     params.put(2, "");
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1330,50 +1326,29 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0) {
-                    if (s.toString().contains("Curp no válida")){
+                    if (s.toString().contains("Curp no válida")) {
                         tvRfcCli.setText("Rfc no válida");
                         Update("rfc", TBL_CLIENTE_IND_REN, "");
                         Update("curp", TBL_CLIENTE_IND_REN, "");
-                    }
-                    else{
+                    } else {
                         Update("curp", TBL_CLIENTE_IND_REN, s.toString().trim().toUpperCase());
                         if (s.toString().trim().length() >= 10) {
-                            tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
-                            Update("rfc", TBL_CLIENTE_IND_REN, tvRfcCli.getText().toString().trim().toUpperCase());
-                        }
-                        else{
+                            tvRfcCli.setText(m.GenerarRFC(s.toString().substring(0, 10), m.GetStr(etNombreCli), m.GetStr(etApPaternoCli), m.GetStr(etApMaternoCli)));
+                            Update("rfc", TBL_CLIENTE_IND_REN, m.GetStr(tvRfcCli));
+                        } else {
                             tvRfcCli.setText("");
-                            Update("rfc", TBL_CLIENTE_IND_REN, tvRfcCli.getText().toString().trim().toUpperCase());
+                            Update("rfc", TBL_CLIENTE_IND_REN, m.GetStr(tvRfcCli));
                         }
 
                     }
-                }
-                else {
+                } else {
                     tvRfcCli.setText("Rfc no válida");
                     Update("rfc", TBL_CLIENTE_IND_REN, "");
                     Update("curp", TBL_CLIENTE_IND_REN, "");
                 }
             }
         });
-        /*etCurpIdCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("curp_digito_veri", TBL_CLIENTE_IND_REN, e.toString());
-                else
-                    Update("curp_digito_veri", TBL_CLIENTE_IND_REN, "");
-            }
-        });*/
         tvOcupacionCli.setOnClickListener(tvOcupacionClie_OnClick);
         tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
         etNumIdentifCli.addTextChangedListener(new TextWatcher() {
@@ -1389,10 +1364,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     Update("no_identificacion", TBL_CLIENTE_IND_REN, e.toString());
-                }
-                else
+                } else
                     Update("no_identificacion", TBL_CLIENTE_IND_REN, "");
             }
         });
@@ -1413,10 +1387,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, e.toString());
-                }
-                else
+                } else
                     Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, "");
             }
         });
@@ -1530,41 +1503,41 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() == 5){
+                if (e.length() == 5) {
                     Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         UpdateDireccion("cp", e.toString(), direccionIdCli, "CLIENTE");
                         row.moveToFirst();
-                        if (row.getCount() == 1){
+                        if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdCli, "CLIENTE");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCli,"CLIENTE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCli,"CLIENTE");
+                            UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
+                            UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
                             tvColoniaCli.setText(row.getString(7));
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
-                        }else {
+                        } else {
                             UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCli,"CLIENTE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCli,"CLIENTE");
+                            UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
+                            UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
                             tvColoniaCli.setText("");
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }
-                    }else {
+                    } else {
                         UpdateDireccion("cp", "", direccionIdCli, "CLIENTE");
                         UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
-                        UpdateDireccion("municipio", "", direccionIdCli,"CLIENTE");
-                        UpdateDireccion("estado", "", direccionIdCli,"CLIENTE");
+                        UpdateDireccion("municipio", "", direccionIdCli, "CLIENTE");
+                        UpdateDireccion("estado", "", direccionIdCli, "CLIENTE");
                         tvColoniaCli.setText(R.string.not_found);
                         tvMunicipioCli.setText(R.string.not_found);
                         tvEstadoCli.setText(R.string.not_found);
                     }
                     row.close();
-                }else {
+                } else {
                     UpdateDireccion("cp", "", direccionIdCli, "CLIENTE");
                     UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
-                    UpdateDireccion("municipio", "", direccionIdCli,"CLIENTE");
-                    UpdateDireccion("estado", "", direccionIdCli,"CLIENTE");
+                    UpdateDireccion("municipio", "", direccionIdCli, "CLIENTE");
+                    UpdateDireccion("estado", "", direccionIdCli, "CLIENTE");
                     tvColoniaCli.setText(R.string.not_found);
                     tvMunicipioCli.setText(R.string.not_found);
                     tvEstadoCli.setText(R.string.not_found);
@@ -1605,17 +1578,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() > 0){
+                if (s.length() > 0) {
                     if (s.length() == 10) {
                         etTelCasaCli.setError(null);
-                        Update("tel_casa", TBL_CLIENTE_IND_REN, etTelCasaCli.getText().toString().trim());
-                    }
-                    else {
+                        Update("tel_casa", TBL_CLIENTE_IND_REN, m.GetStr(etTelCasaCli));
+                    } else {
                         Update("tel_casa", TBL_CLIENTE_IND_REN, "");
                         etTelCasaCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_casa", TBL_CLIENTE_IND_REN, "");
                     etTelCasaCli.setError(null);
                 }
@@ -1634,17 +1605,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etCelularCli.setError(null);
                         Update("tel_celular", TBL_CLIENTE_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("tel_celular", TBL_CLIENTE_IND_REN, "");
                         etCelularCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_celular", TBL_CLIENTE_IND_REN, "");
                     etCelularCli.setError(null);
                 }
@@ -1663,17 +1632,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelMensCli.setError(null);
                         Update("tel_mensajes", TBL_CLIENTE_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("tel_mensajes", TBL_CLIENTE_IND_REN, "");
                         etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_mensajes", TBL_CLIENTE_IND_REN, "");
                     etTelMensCli.setError(null);
                 }
@@ -1692,17 +1659,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelTrabajoCli.setError(null);
                         Update("tel_trabajo", TBL_CLIENTE_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("tel_trabajo", TBL_CLIENTE_IND_REN, "");
                         etTelTrabajoCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_trabajo", TBL_CLIENTE_IND_REN, "");
                     etTelTrabajoCli.setError(null);
                 }
@@ -1721,10 +1686,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER,validator.YEARS})){
+                if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS})) {
                     Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, e.toString());
-                }
-                else {
+                } else {
                     Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, "0");
                 }
             }
@@ -1746,10 +1710,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (!validator.validate(etEmail, new String[]{validator.EMAIL})){
+                if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
                     Update("email", TBL_CLIENTE_IND_REN, e.toString());
-                }
-                else {
+                } else {
                     Update("email", TBL_CLIENTE_IND_REN, "");
                 }
             }
@@ -1827,10 +1790,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     Update("materno", TBL_CONYUGE_IND_REN, e.toString());
-                }
-                else
+                } else
                     Update("materno", TBL_CONYUGE_IND_REN, "");
             }
         });
@@ -1847,10 +1809,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     Update("nacionalidad", TBL_CONYUGE_IND_REN, e.toString());
-                }
-                else
+                } else
                     Update("nacionalidad", TBL_CONYUGE_IND_REN, "");
             }
         });
@@ -1963,19 +1924,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() == 5){
+                if (s.length() == 5) {
                     Cursor row = dBhelper.getDireccionByCP(s.toString());
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         UpdateDireccion("cp", s.toString(), direccionIdCony, "CONYUGE");
                         row.moveToFirst();
-                        if (row.getCount() == 1){
+                        if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdCony, "CONYUGE");
                             UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
                             UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
                             tvColoniaCony.setText(row.getString(7));
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
-                        }else {
+                        } else {
                             UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
                             UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
                             UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
@@ -1983,7 +1944,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }
-                    }else {
+                    } else {
                         UpdateDireccion("cp", "", direccionIdCony, "CONYUGE");
                         UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
                         UpdateDireccion("municipio", "", direccionIdCony, "CONYUGE");
@@ -1993,7 +1954,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         tvEstadoCony.setText(R.string.not_found);
                     }
                     row.close();
-                }else {
+                } else {
                     UpdateDireccion("cp", "", direccionIdCony, "CONYUGE");
                     UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
                     tvColoniaCony.setText(R.string.not_found);
@@ -2031,8 +1992,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2045,7 +2005,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenCony.getText().length();
+                    inilen = m.GetStr(etIngMenCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenCony.getSelectionStart();
@@ -2054,13 +2014,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etIngMenCony.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenCony.getText().length();
+                    endlen = m.GetStr(etIngMenCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenCony).length()) {
                         etIngMenCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenCony.setSelection(etIngMenCony.getText().length() - 1);
+                        etIngMenCony.setSelection(m.GetStr(etIngMenCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2069,7 +2029,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("ing_mensual", TBL_CONYUGE_IND_REN, e.toString().replace(",",""));
+                    Update("ing_mensual", TBL_CONYUGE_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("ing_mensual", TBL_CONYUGE_IND_REN, "");
 
@@ -2084,8 +2044,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2098,7 +2057,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastoMenCony.getText().length();
+                    inilen = m.GetStr(etGastoMenCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastoMenCony.getSelectionStart();
@@ -2107,13 +2066,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastoMenCony.setText(dfnd.format(n));
                     }
-                    endlen = etGastoMenCony.getText().length();
+                    endlen = m.GetStr(etGastoMenCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastoMenCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastoMenCony).length()) {
                         etGastoMenCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastoMenCony.setSelection(etGastoMenCony.getText().length() - 1);
+                        etGastoMenCony.setSelection(m.GetStr(etGastoMenCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2142,17 +2101,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() > 0){
+                if (s.length() > 0) {
                     if (s.length() == 10) {
                         Update("tel_casa", TBL_CONYUGE_IND_REN, s.toString());
                         etCasaCony.setError(null);
-                    }
-                    else {
+                    } else {
                         Update("tel_casa", TBL_CONYUGE_IND_REN, "");
                         etCasaCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_casa", TBL_CONYUGE_IND_REN, "");
                     etCasaCony.setError(null);
                 }
@@ -2171,18 +2128,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() > 0){
+                if (s.length() > 0) {
                     if (s.length() == 10) {
                         etCelularCony.setError(null);
                         Update("tel_celular", TBL_CONYUGE_IND_REN, s.toString());
-                    }
-
-                    else {
+                    } else {
                         Update("tel_celular", TBL_CONYUGE_IND_REN, "");
                         etCelularCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_celular", TBL_CONYUGE_IND_REN, "");
                     etCelularCony.setError(null);
                 }
@@ -2375,30 +2329,30 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() == 5){
+                if (e.length() == 5) {
                     Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         UpdateDireccion("cp", e.toString(), direccionIdNeg, "NEGOCIO");
                         row.moveToFirst();
-                        if (row.getCount() == 1){
+                        if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdNeg, "NEGOCIO");
                             UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
                             tvColoniaNeg.setText(row.getString(7));
                             tvMunicipioNeg.setText(row.getString(4));
-                        }else {
+                        } else {
                             UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                             UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
                             tvColoniaNeg.setText("");
                             tvMunicipioNeg.setText(row.getString(4));
                         }
-                    }else {
+                    } else {
                         UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                         UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
                         tvColoniaNeg.setText(R.string.not_found);
                         tvMunicipioNeg.setText(R.string.not_found);
                     }
                     row.close();
-                }else {
+                } else {
                     UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
                     tvColoniaNeg.setText(R.string.not_found);
@@ -2461,16 +2415,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
-                    if (Integer.parseInt(etAntiguedadNeg.getText().toString().trim()) > 0){
+                if (e.length() > 0) {
+                    if (Integer.parseInt(m.GetStr(etAntiguedadNeg)) > 0) {
                         Update("antiguedad", TBL_NEGOCIO_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("antiguedad", TBL_NEGOCIO_IND_REN, "0");
                         etAntiguedadNeg.setError("No se permiten cantidades iguales a cero");
                     }
-                }
-                else
+                } else
                     Update("antiguedad", TBL_NEGOCIO_IND_REN, "0");
             }
         });
@@ -2482,8 +2434,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2496,7 +2447,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenNeg.getText().length();
+                    inilen = m.GetStr(etIngMenNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenNeg.getSelectionStart();
@@ -2505,13 +2456,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etIngMenNeg.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenNeg.getText().length();
+                    endlen = m.GetStr(etIngMenNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenNeg).length()) {
                         etIngMenNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenNeg.setSelection(etIngMenNeg.getText().length() - 1);
+                        etIngMenNeg.setSelection(m.GetStr(etIngMenNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2520,7 +2471,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("ing_mensual", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("ing_mensual", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("ing_mensual", TBL_NEGOCIO_IND_REN, "");
 
@@ -2537,8 +2488,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2551,7 +2501,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etOtrosIngNeg.getText().length();
+                    inilen = m.GetStr(etOtrosIngNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etOtrosIngNeg.getSelectionStart();
@@ -2560,13 +2510,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etOtrosIngNeg.setText(dfnd.format(n));
                     }
-                    endlen = etOtrosIngNeg.getText().length();
+                    endlen = m.GetStr(etOtrosIngNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etOtrosIngNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etOtrosIngNeg).length()) {
                         etOtrosIngNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etOtrosIngNeg.setSelection(etOtrosIngNeg.getText().length() - 1);
+                        etOtrosIngNeg.setSelection(m.GetStr(etOtrosIngNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2575,7 +2525,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("ing_otros", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("ing_otros", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("ing_otros", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2586,8 +2536,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etGastosMenNeg.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2605,7 +2554,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosMenNeg.getText().length();
+                    inilen = m.GetStr(etGastosMenNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosMenNeg.getSelectionStart();
@@ -2614,13 +2563,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosMenNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosMenNeg.getText().length();
+                    endlen = m.GetStr(etGastosMenNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosMenNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosMenNeg).length()) {
                         etGastosMenNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosMenNeg.setSelection(etGastosMenNeg.getText().length() - 1);
+                        etGastosMenNeg.setSelection(m.GetStr(etGastosMenNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2629,7 +2578,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_semanal", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_semanal", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_semanal", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2645,8 +2594,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2659,7 +2607,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosAguaNeg.getText().length();
+                    inilen = m.GetStr(etGastosAguaNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosAguaNeg.getSelectionStart();
@@ -2668,13 +2616,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosAguaNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosAguaNeg.getText().length();
+                    endlen = m.GetStr(etGastosAguaNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosAguaNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosAguaNeg).length()) {
                         etGastosAguaNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosAguaNeg.setSelection(etGastosAguaNeg.getText().length() - 1);
+                        etGastosAguaNeg.setSelection(m.GetStr(etGastosAguaNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2683,7 +2631,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_agua", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_agua", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_agua", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2699,8 +2647,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2713,7 +2660,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosLuzNeg.getText().length();
+                    inilen = m.GetStr(etGastosLuzNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosLuzNeg.getSelectionStart();
@@ -2722,13 +2669,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosLuzNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosLuzNeg.getText().length();
+                    endlen = m.GetStr(etGastosLuzNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosLuzNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosLuzNeg).length()) {
                         etGastosLuzNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosLuzNeg.setSelection(etGastosLuzNeg.getText().length() - 1);
+                        etGastosLuzNeg.setSelection(m.GetStr(etGastosLuzNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2737,7 +2684,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_luz", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_luz", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_luz", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2753,8 +2700,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2767,7 +2713,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosTelNeg.getText().length();
+                    inilen = m.GetStr(etGastosTelNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosTelNeg.getSelectionStart();
@@ -2776,13 +2722,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosTelNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosTelNeg.getText().length();
+                    endlen = m.GetStr(etGastosTelNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosTelNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosTelNeg).length()) {
                         etGastosTelNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosTelNeg.setSelection(etGastosTelNeg.getText().length() - 1);
+                        etGastosTelNeg.setSelection(m.GetStr(etGastosTelNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2791,7 +2737,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_telefono", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_telefono", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_telefono", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2807,8 +2753,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2821,7 +2766,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosRentaNeg.getText().length();
+                    inilen = m.GetStr(etGastosRentaNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosRentaNeg.getSelectionStart();
@@ -2830,13 +2775,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosRentaNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosRentaNeg.getText().length();
+                    endlen = m.GetStr(etGastosRentaNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosRentaNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosRentaNeg).length()) {
                         etGastosRentaNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosRentaNeg.setSelection(etGastosRentaNeg.getText().length() - 1);
+                        etGastosRentaNeg.setSelection(m.GetStr(etGastosRentaNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2845,7 +2790,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_renta", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_renta", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_renta", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2861,8 +2806,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2875,7 +2819,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosOtrosNeg.getText().length();
+                    inilen = m.GetStr(etGastosOtrosNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosOtrosNeg.getSelectionStart();
@@ -2884,13 +2828,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosOtrosNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosOtrosNeg.getText().length();
+                    endlen = m.GetStr(etGastosOtrosNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosOtrosNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosOtrosNeg).length()) {
                         etGastosOtrosNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosOtrosNeg.setSelection(etGastosOtrosNeg.getText().length() - 1);
+                        etGastosOtrosNeg.setSelection(m.GetStr(etGastosOtrosNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2899,7 +2843,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_otros", TBL_NEGOCIO_IND_REN, e.toString().replace(",",""));
+                    Update("gasto_otros", TBL_NEGOCIO_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("gasto_otros", TBL_NEGOCIO_IND_REN, "");
                 MontoMaximoNeg();
@@ -2930,8 +2874,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etCapacidadPagoNeg.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -2949,7 +2892,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etCapacidadPagoNeg.getText().length();
+                    inilen = m.GetStr(etCapacidadPagoNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCapacidadPagoNeg.getSelectionStart();
@@ -2958,13 +2901,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etCapacidadPagoNeg.setText(dfnd.format(n));
                     }
-                    endlen = etCapacidadPagoNeg.getText().length();
+                    endlen = m.GetStr(etCapacidadPagoNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCapacidadPagoNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCapacidadPagoNeg).length()) {
                         etCapacidadPagoNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoNeg.setSelection(etCapacidadPagoNeg.getText().length() - 1);
+                        etCapacidadPagoNeg.setSelection(m.GetStr(etCapacidadPagoNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2972,14 +2915,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     // do nothing?
                 }
 
-                if (!tvMontoMaxNeg.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")) > 0) {
+                if (!m.GetStr(tvMontoMaxNeg).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",", "")) > 0) {
                     if (e.length() > 0)
                         try {
                             if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")))
+                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",", "")))
                                     Update("capacidad_pago", TBL_NEGOCIO_IND_REN, e.toString().trim().replace(",", ""));
                                 else
-                                    ShowMensajes("EL monto no puede superar a la capacidad de pago","NEGOCIO");
+                                    ShowMensajes("EL monto no puede superar a la capacidad de pago", "NEGOCIO");
 
                         } catch (NumberFormatException exception) {
                             Update("capacidad_pago", TBL_NEGOCIO_IND_REN, "");
@@ -2987,9 +2930,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                     else
                         Update("capacidad_pago", TBL_NEGOCIO_IND_REN, "");
-                }
-                else{
-                    ShowMensajes("Tiene que completar primero los ingresos y gastos del neogocio","NEGOCIO");
+                } else {
+                    ShowMensajes("Tiene que completar primero los ingresos y gastos del neogocio", "NEGOCIO");
                 }
 
                 etCapacidadPagoNeg.addTextChangedListener(this);
@@ -3013,7 +2955,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         if (Integer.parseInt(e.toString()) > 0)
                             Update("num_operacion_efectivo", TBL_NEGOCIO_IND_REN, e.toString().trim().toUpperCase());
 
-                    }catch (NumberFormatException exception){
+                    } catch (NumberFormatException exception) {
                         Update("num_operacion_efectivo", TBL_NEGOCIO_IND_REN, "0");
                     }
 
@@ -3057,45 +2999,44 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (e.length()> 0){
+                if (e.length() > 0) {
                     Update("nombre", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
                     params.put(0, e.toString());
-                    params.put(1, etApPaternoAval.getText().toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoAval));
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
+                } else {
                     Update("nombre", TBL_AVAL_IND_REN, "");
                     params.put(0, "");
-                    params.put(1, etApPaternoAval.getText().toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoAval));
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3113,45 +3054,44 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (e.length()> 0){
+                if (e.length() > 0) {
                     Update("paterno", TBL_AVAL_IND_REN, e.toString().toUpperCase());
-                    params.put(0, etNombreAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
                     params.put(1, e.toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
+                } else {
                     Update("paterno", TBL_AVAL_IND_REN, "");
-                    params.put(0, etNombreAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
                     params.put(1, "");
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3169,45 +3109,44 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 HashMap<Integer, String> params = new HashMap<>();
-                if (e.length()> 0){
+                if (e.length() > 0) {
                     Update("materno", TBL_AVAL_IND_REN, e.toString());
-                    params.put(0, etNombreAval.getText().toString());
-                    params.put(1, etApPaternoAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
+                    params.put(1, m.GetStr(etApPaternoAval));
                     params.put(2, e.toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
-                else{
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
+                } else {
                     Update("materno", TBL_AVAL_IND_REN, "");
-                    params.put(0, etNombreAval.getText().toString());
-                    params.put(1, etApPaternoAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
+                    params.put(1, m.GetStr(etApPaternoAval));
                     params.put(2, "");
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3226,65 +3165,33 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.toString().contains("Curp no válida")) {
                         tvRfcAval.setText("Rfc no válida");
                         Update("rfc", TBL_AVAL_IND_REN, "");
                         Update("curp", TBL_AVAL_IND_REN, "");
-                    }
-                    else {
+                    } else {
                         Update("curp", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                        if (e.toString().length() >= 10){
-                            tvRfcAval.setText(Miscellaneous.GenerarRFC(e.toString().substring(0,10), etNombreAval.getText().toString().trim(), etApPaternoAval.getText().toString().trim(), etApMaternoAval.getText().toString().trim()));
+                        if (e.toString().length() >= 10) {
+                            tvRfcAval.setText(m.GenerarRFC(e.toString().substring(0, 10), m.GetStr(etNombreAval), m.GetStr(etApPaternoAval), m.GetStr(etApMaternoAval)));
 
-                            Update("rfc", TBL_AVAL_IND_REN, tvRfcAval.getText().toString().trim().toUpperCase());
-                        }
-                        else{
+                            Update("rfc", TBL_AVAL_IND_REN, m.GetStr(tvRfcAval));
+                        } else {
                             tvRfcAval.setText("");
 
-                            Update("rfc", TBL_AVAL_IND_REN, tvRfcAval.getText().toString().trim().toUpperCase());
+                            Update("rfc", TBL_AVAL_IND_REN, m.GetStr(tvRfcAval));
                         }
 
-
-                        /*ContentValues cv = new ContentValues();
-                        cv.put("rfc",tvRfcAval.getText().toString().trim().toUpperCase());
-                        cv.put("curp",e.toString().trim().toUpperCase());
-                        db.update(TBL_AVAL_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
                     }
 
-                }
-                else {
+                } else {
                     Update("rfc", TBL_AVAL_IND_REN, "");
                     Update("curp", TBL_AVAL_IND_REN, "");
                     tvRfcAval.setText("Rfc no válida");
                 }
             }
         });
-        /*etCurpIdAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 2){
-                    if (!validator.validate(etCurpIdAval, new String[]{validator.REQUIRED, validator.CURP_ID})) {
-                        if (Miscellaneous.CurpValidador(tvCurpAval.getText() + etCurpIdAval.getText().toString().trim().toUpperCase()))
-                            Update("curp_digito", TBL_AVAL_IND_REN, e.toString());
-                        else
-                            Update("curp_digito", TBL_AVAL_IND_REN, "");
-                    }
-                }
-                else
-                    Update("curp_digito", TBL_AVAL_IND_REN, "");
-            }
-        });*/
         tvParentescoAval.setOnClickListener(tvParentescoAval_OnClick);
         tvTipoIdentificacionAval.setOnClickListener(tvTipoIdentificacionAval_OnClick);
         etNumIdentifAval.addTextChangedListener(new TextWatcher() {
@@ -3378,7 +3285,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if(e.length() > 0)
+                if (e.length() > 0)
                     UpdateDireccion("manzana", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
                 else
                     UpdateDireccion("manzana", "", direccionIdAval, "AVAL");
@@ -3416,19 +3323,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() == 5){
+                if (e.length() == 5) {
                     Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         UpdateDireccion("cp", e.toString(), direccionIdAval, "AVAL");
                         row.moveToFirst();
-                        if (row.getCount() == 1){
+                        if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdAval, "AVAL");
                             UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
                             UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
                             tvColoniaAval.setText(row.getString(7));
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
-                        }else {
+                        } else {
                             UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
                             tvColoniaAval.setText("");
                             UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
@@ -3436,7 +3343,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
                         }
-                    }else {
+                    } else {
                         UpdateDireccion("cp", "", direccionIdAval, "AVAL");
                         UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
                         UpdateDireccion("municipio", "", direccionIdAval, "AVAL");
@@ -3446,7 +3353,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         tvEstadoAval.setText(R.string.not_found);
                     }
                     row.close();
-                }else {
+                } else {
                     UpdateDireccion("cp", "", direccionIdAval, "AVAL");
                     UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
                     UpdateDireccion("municipio", "", direccionIdAval, "AVAL");
@@ -3551,13 +3458,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (Integer.parseInt(e.toString().trim()) > 0)
                         Update("antigueda", TBL_AVAL_IND_REN, e.toString().trim());
                     else
                         Update("antigueda", TBL_AVAL_IND_REN, "0");
-                }
-                else
+                } else
                     Update("antigueda", TBL_AVAL_IND_REN, "0");
             }
         });
@@ -3569,8 +3475,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3583,7 +3488,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenAval.getText().length();
+                    inilen = m.GetStr(etIngMenAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenAval.getSelectionStart();
@@ -3592,13 +3497,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etIngMenAval.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenAval.getText().length();
+                    endlen = m.GetStr(etIngMenAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenAval).length()) {
                         etIngMenAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenAval.setSelection(etIngMenAval.getText().length() - 1);
+                        etIngMenAval.setSelection(m.GetStr(etIngMenAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3607,7 +3512,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("ing_mensual", TBL_AVAL_IND_REN, e.toString().replace(",",""));
+                    Update("ing_mensual", TBL_AVAL_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("ing_mensual", TBL_AVAL_IND_REN, "");
 
@@ -3624,8 +3529,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3638,7 +3542,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngOtrosAval.getText().length();
+                    inilen = m.GetStr(etIngOtrosAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngOtrosAval.getSelectionStart();
@@ -3647,13 +3551,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etIngOtrosAval.setText(dfnd.format(n));
                     }
-                    endlen = etIngOtrosAval.getText().length();
+                    endlen = m.GetStr(etIngOtrosAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngOtrosAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngOtrosAval).length()) {
                         etIngOtrosAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngOtrosAval.setSelection(etIngOtrosAval.getText().length() - 1);
+                        etIngOtrosAval.setSelection(m.GetStr(etIngOtrosAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3662,7 +3566,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("ing_otros", TBL_AVAL_IND_REN, e.toString().replace(",",""));
+                    Update("ing_otros", TBL_AVAL_IND_REN, e.toString().replace(",", ""));
                 else
                     Update("ing_otros", TBL_AVAL_IND_REN, "");
 
@@ -3679,8 +3583,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3693,7 +3596,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosSemAval.getText().length();
+                    inilen = m.GetStr(etGastosSemAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosSemAval.getSelectionStart();
@@ -3702,13 +3605,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosSemAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosSemAval.getText().length();
+                    endlen = m.GetStr(etGastosSemAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosSemAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosSemAval).length()) {
                         etGastosSemAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosSemAval.setSelection(etGastosSemAval.getText().length() - 1);
+                        etGastosSemAval.setSelection(m.GetStr(etGastosSemAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3717,7 +3620,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_semanal", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_semanal", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_semanal", TBL_AVAL_IND_REN, "");
 
@@ -3734,8 +3637,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3748,7 +3650,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosAguaAval.getText().length();
+                    inilen = m.GetStr(etGastosAguaAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosAguaAval.getSelectionStart();
@@ -3757,13 +3659,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosAguaAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosAguaAval.getText().length();
+                    endlen = m.GetStr(etGastosAguaAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosAguaAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosAguaAval).length()) {
                         etGastosAguaAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosAguaAval.setSelection(etGastosAguaAval.getText().length() - 1);
+                        etGastosAguaAval.setSelection(m.GetStr(etGastosAguaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3772,7 +3674,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_agua", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_agua", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_agua", TBL_AVAL_IND_REN, "");
 
@@ -3789,8 +3691,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3803,7 +3704,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosLuzAval.getText().length();
+                    inilen = m.GetStr(etGastosLuzAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosLuzAval.getSelectionStart();
@@ -3812,13 +3713,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosLuzAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosLuzAval.getText().length();
+                    endlen = m.GetStr(etGastosLuzAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosLuzAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosLuzAval).length()) {
                         etGastosLuzAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosLuzAval.setSelection(etGastosLuzAval.getText().length() - 1);
+                        etGastosLuzAval.setSelection(m.GetStr(etGastosLuzAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3827,7 +3728,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_luz", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_luz", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_luz", TBL_AVAL_IND_REN, "");
 
@@ -3844,8 +3745,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3858,7 +3758,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosTelAval.getText().length();
+                    inilen = m.GetStr(etGastosTelAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosTelAval.getSelectionStart();
@@ -3867,13 +3767,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosTelAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosTelAval.getText().length();
+                    endlen = m.GetStr(etGastosTelAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosTelAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosTelAval).length()) {
                         etGastosTelAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosTelAval.setSelection(etGastosTelAval.getText().length() - 1);
+                        etGastosTelAval.setSelection(m.GetStr(etGastosTelAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3882,7 +3782,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_telefono", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_telefono", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_telefono", TBL_AVAL_IND_REN, "");
 
@@ -3899,8 +3799,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3913,7 +3812,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosRentaAval.getText().length();
+                    inilen = m.GetStr(etGastosRentaAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosRentaAval.getSelectionStart();
@@ -3922,13 +3821,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosRentaAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosRentaAval.getText().length();
+                    endlen = m.GetStr(etGastosRentaAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosRentaAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosRentaAval).length()) {
                         etGastosRentaAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosRentaAval.setSelection(etGastosRentaAval.getText().length() - 1);
+                        etGastosRentaAval.setSelection(m.GetStr(etGastosRentaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3937,7 +3836,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_renta", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_renta", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_renta", TBL_AVAL_IND_REN, "");
 
@@ -3954,8 +3853,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -3968,7 +3866,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosOtrosAval.getText().length();
+                    inilen = m.GetStr(etGastosOtrosAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosOtrosAval.getSelectionStart();
@@ -3977,13 +3875,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etGastosOtrosAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosOtrosAval.getText().length();
+                    endlen = m.GetStr(etGastosOtrosAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosOtrosAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosOtrosAval).length()) {
                         etGastosOtrosAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosOtrosAval.setSelection(etGastosOtrosAval.getText().length() - 1);
+                        etGastosOtrosAval.setSelection(m.GetStr(etGastosOtrosAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3992,7 +3890,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
 
                 if (e.length() > 0)
-                    Update("gasto_otros", TBL_AVAL_IND_REN, e.toString().trim().replace(",",""));
+                    Update("gasto_otros", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                 else
                     Update("gasto_otros", TBL_AVAL_IND_REN, "");
 
@@ -4029,8 +3927,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -4043,7 +3940,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                 try {
                     int inilen, endlen;
-                    inilen = etCapacidadPagoAval.getText().length();
+                    inilen = m.GetStr(etCapacidadPagoAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCapacidadPagoAval.getSelectionStart();
@@ -4052,13 +3949,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     } else {
                         etCapacidadPagoAval.setText(dfnd.format(n));
                     }
-                    endlen = etCapacidadPagoAval.getText().length();
+                    endlen = m.GetStr(etCapacidadPagoAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCapacidadPagoAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCapacidadPagoAval).length()) {
                         etCapacidadPagoAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoAval.setSelection(etGastosRentaAval.getText().length() - 1);
+                        etCapacidadPagoAval.setSelection(m.GetStr(etGastosRentaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -4066,14 +3963,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     // do nothing?
                 }
 
-                if (!tvMontoMaxAval.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxAval.getText().toString().trim().replace(",","")) > 0) {
+                if (!m.GetStr(tvMontoMaxAval).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",", "")) > 0) {
                     if (e.length() > 0)
                         try {
-                            if (Double.parseDouble(e.toString()) > 0 )
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxAval.getText().toString().trim().replace(",","")))
+                            if (Double.parseDouble(e.toString()) > 0)
+                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",", "")))
                                     Update("capacidad_pagos", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                                 else
-                                    ShowMensajes("EL monto no puede superar a la capacidad de pago","AVAL");
+                                    ShowMensajes("EL monto no puede superar a la capacidad de pago", "AVAL");
 
                         } catch (NumberFormatException exception) {
                             Update("capacidad_pagos", TBL_AVAL_IND_REN, "");
@@ -4081,9 +3978,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                     else
                         Update("capacidad_pagos", TBL_AVAL_IND_REN, "");
-                }
-                else{
-                    ShowMensajes("Tiene que completar primero los ingresos y gastos del aval","AVAL");
+                } else {
+                    ShowMensajes("Tiene que completar primero los ingresos y gastos del aval", "AVAL");
                 }
 
                 etCapacidadPagoAval.addTextChangedListener(this);
@@ -4104,17 +4000,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelCasaAval.setError(null);
                         Update("tel_casa", TBL_AVAL_IND_REN, e.toString().trim());
-                    }
-                    else {
+                    } else {
                         Update("tel_casa", TBL_AVAL_IND_REN, "");
                         etTelCasaAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_casa", TBL_AVAL_IND_REN, "");
                     etTelCasaAval.setError(null);
                 }
@@ -4133,17 +4027,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etCelularAval.setError(null);
                         Update("tel_celular", TBL_AVAL_IND_REN, e.toString().trim());
-                    }
-                    else {
+                    } else {
                         Update("tel_casa", TBL_AVAL_IND_REN, "");
                         etCelularAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_casa", TBL_AVAL_IND_REN, "");
                     etCelularAval.setError(null);
                 }
@@ -4162,17 +4054,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelMensAval.setError(null);
                         Update("tel_mensajes", TBL_AVAL_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("tel_mensajes", TBL_AVAL_IND_REN, "");
                         etTelMensAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_mensajes", TBL_AVAL_IND_REN, "");
                     etTelMensAval.setError(null);
                 }
@@ -4191,17 +4081,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelTrabajoAval.setError(null);
                         Update("tel_trabajo", TBL_AVAL_IND_REN, e.toString());
-                    }
-                    else {
+                    } else {
                         Update("tel_trabajo", TBL_AVAL_IND_REN, "");
                         etTelTrabajoAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_trabajo", TBL_AVAL_IND_REN, "");
                     etTelTrabajoAval.setError(null);
                 }
@@ -4220,10 +4108,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (!validator.validate(etEmail, new String[]{validator.EMAIL})){
+                if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
                     Update("email", TBL_AVAL_IND_REN, e.toString());
-                }
-                else {
+                } else {
                     Update("email", TBL_AVAL_IND_REN, "");
                 }
             }
@@ -4417,41 +4304,41 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() == 5){
+                if (e.length() == 5) {
                     Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0){
+                    if (row.getCount() > 0) {
                         UpdateDireccion("cp", e.toString(), direccionIdRef, "REFERENCIA");
                         row.moveToFirst();
-                        if (row.getCount() == 1){
+                        if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdRef, "REFERENCIA");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdRef,"REFERENCIA");
-                            UpdateDireccion("estado", row.getString(1), direccionIdRef,"REFERENCIA");
+                            UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
+                            UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
                             tvColoniaRef.setText(row.getString(7));
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
-                        }else {
+                        } else {
                             UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdRef,"REFERENCIA");
-                            UpdateDireccion("estado", row.getString(1), direccionIdRef,"REFERENCIA");
+                            UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
+                            UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
                             tvColoniaRef.setText("");
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
                         }
-                    }else {
+                    } else {
                         UpdateDireccion("cp", "", direccionIdRef, "REFERENCIA");
                         UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
-                        UpdateDireccion("municipio", "", direccionIdRef,"REFERENCIA");
-                        UpdateDireccion("estado", "", direccionIdRef,"REFERENCIA");
+                        UpdateDireccion("municipio", "", direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("estado", "", direccionIdRef, "REFERENCIA");
                         tvColoniaRef.setText(R.string.not_found);
                         tvMunicipioRef.setText(R.string.not_found);
                         tvEstadoRef.setText(R.string.not_found);
                     }
                     row.close();
-                }else {
+                } else {
                     UpdateDireccion("cp", "", direccionIdRef, "REFERENCIA");
                     UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
-                    UpdateDireccion("municipio", "", direccionIdRef,"REFERENCIA");
-                    UpdateDireccion("estado", "", direccionIdRef,"REFERENCIA");
+                    UpdateDireccion("municipio", "", direccionIdRef, "REFERENCIA");
+                    UpdateDireccion("estado", "", direccionIdRef, "REFERENCIA");
                     tvColoniaRef.setText(R.string.not_found);
                     tvMunicipioRef.setText(R.string.not_found);
                     tvEstadoRef.setText(R.string.not_found);
@@ -4492,17 +4379,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (e.length() == 10) {
                         etTelCelRef.setError(null);
                         Update("tel_celular", TBL_REFERENCIA_IND_REN, e.toString().trim());
-                    }
-                    else {
+                    } else {
                         Update("tel_celular", TBL_REFERENCIA_IND_REN, "");
                         etTelCelRef.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                     }
-                }
-                else {
+                } else {
                     Update("tel_celular", TBL_REFERENCIA_IND_REN, "");
                     etTelCelRef.setError(null);
                 }
@@ -4528,9 +4413,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 if (e.length() > 0)
-                    Update("referencias",TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
+                    Update("referencias", TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
                 else
-                    Update("referencias",TBL_CROQUIS_IND_REN, "");
+                    Update("referencias", TBL_CROQUIS_IND_REN, "");
             }
         });
         //================================  ESCANEAR DOCUMENTOS  ===================================
@@ -4547,44 +4432,43 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     HashMap<Integer, String> params = new HashMap<>();
                     if (checkedId == R.id.rbHombre) {
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "Hombre");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND_REN, "0");
                     } else if (checkedId == R.id.rbMujer) {
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "Mujer");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND_REN, "1");
-                    }
-                    else {
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                    } else {
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND_REN, "2");
                     }
                 }
@@ -4614,49 +4498,48 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     tvGeneroAval.setError(null);
                     if (checkedId == R.id.rbHombre) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "Hombre");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
                         Update("genero", TBL_AVAL_IND_REN, "0");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpAval.setText(m.GenerarCurp(params));
                     } else if (checkedId == R.id.rbMujer) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "Mujer");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
 
                         Update("genero", TBL_AVAL_IND_REN, "1");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                    }
-                    else {
+                        etCurpAval.setText(m.GenerarCurp(params));
+                    } else {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
 
                         Update("genero", TBL_AVAL_IND_REN, "2");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpAval.setText(m.GenerarCurp(params));
                     }
                 }
             }
@@ -4753,7 +4636,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent i_firma_asesor = new Intent(ctx, CapturarFirma.class);
-            i_firma_asesor.putExtra(TIPO,"");
+            i_firma_asesor.putExtra(TIPO, "");
             startActivityForResult(i_firma_asesor, REQUEST_CODE_FIRMA_ASESOR);
         }
     };
@@ -4768,7 +4651,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvPlazo.setError(null);
                                 tvPlazo.setText(_plazo[position]);
-                                Update("plazo", TBL_CREDITO_IND_REN, tvPlazo.getText().toString().trim().toUpperCase());
+                                Update("plazo", TBL_CREDITO_IND_REN, m.GetStr(tvPlazo));
                             }
                         });
                 builder.create();
@@ -4787,8 +4670,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFrecuencia.setError(null);
                                 tvFrecuencia.setText(_frecuencia[position]);
-                                Update("periodicidad", TBL_CREDITO_IND_REN, tvFrecuencia.getText().toString().trim().toUpperCase());
-                                switch (position){
+                                Update("periodicidad", TBL_CREDITO_IND_REN, m.GetStr(tvFrecuencia));
+                                switch (position) {
                                     case 0:
                                         tvNumOperacionNeg.setText("4");
                                         Update("num_operacion_mensuales", TBL_NEGOCIO_IND_REN, "4");
@@ -4821,9 +4704,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
                 b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
                 b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(YEAR_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(0,4))));
-                b.putInt(MONTH_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaDesembolso.getText().toString().substring(5,7))-1)));
-                b.putInt(DAY_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(8,10))));
+                b.putInt(YEAR_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.YEAR) : Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(0, 4))));
+                b.putInt(MONTH_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.MONTH) : (Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(5, 7)) - 1)));
+                b.putInt(DAY_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.DAY_OF_MONTH) : Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(8, 10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 13);
                 b.putBoolean(FECHAS_POST, true);
@@ -4843,7 +4726,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDestino.setError(null);
                                 tvDestino.setText(_destino[position]);
-                                Update("destino", TBL_CREDITO_IND_REN, tvDestino.getText().toString().trim().toUpperCase());
+                                Update("destino", TBL_CREDITO_IND_REN, m.GetStr(tvDestino));
                             }
                         });
                 builder.create();
@@ -4862,7 +4745,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvRiesgo.setError(null);
                                 tvRiesgo.setText(_riesgo[position]);
-                                Update("clasificacion_riesgo", TBL_CREDITO_IND_REN, tvRiesgo.getText().toString().trim().toUpperCase());
+                                Update("clasificacion_riesgo", TBL_CREDITO_IND_REN, m.GetStr(tvRiesgo));
                             }
                         });
                 builder.create();
@@ -4881,7 +4764,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvComportamiento.setError(null);
                                 tvComportamiento.setText(_comportamiento[position]);
-                                Update("comportamiento_pago", TBL_CREDITO_IND_REN, tvComportamiento.getText().toString().trim().toUpperCase());
+                                Update("comportamiento_pago", TBL_CREDITO_IND_REN, m.GetStr(tvComportamiento));
                             }
                         });
                 builder.create();
@@ -4896,13 +4779,10 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             if (isEditCli) {
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
-
-                /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
-                b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
-                b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(YEAR_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaNacCli.getText().toString().substring(0,4))));
-                b.putInt(MONTH_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaNacCli.getText().toString().substring(5,7))-1)));
-                b.putInt(DAY_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaNacCli.getText().toString().substring(8,10))));
+                
+                b.putInt(YEAR_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty()) ? myCalendar.get(Calendar.YEAR) : Integer.parseInt(m.GetStr(tvFechaNacCli).substring(0, 4))));
+                b.putInt(MONTH_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty()) ? myCalendar.get(Calendar.MONTH) : (Integer.parseInt(m.GetStr(tvFechaNacCli).substring(5, 7)) - 1)));
+                b.putInt(DAY_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty()) ? myCalendar.get(Calendar.DAY_OF_MONTH) : Integer.parseInt(m.GetStr(tvFechaNacCli).substring(8, 10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 2);
                 b.putBoolean(FECHAS_POST, false);
@@ -4916,7 +4796,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent i_firma_cli = new Intent(ctx, CapturarFirma.class);
-            i_firma_cli.putExtra(TIPO,"CLIENTE");
+            i_firma_cli.putExtra(TIPO, "CLIENTE");
             startActivityForResult(i_firma_cli, REQUEST_CODE_FIRMA_CLI);
         }
     };
@@ -4946,7 +4826,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_estados = new Intent(ctx, Catalogos.class);
-                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_estados.putExtra(CATALOGO, ESTADOS);
                 i_estados.putExtra(REQUEST_CODE, REQUEST_CODE_ESTADO_NAC);
                 startActivityForResult(i_estados, REQUEST_CODE_ESTADO_NAC);
@@ -4959,9 +4839,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIA+"s"));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpCli.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpCli));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CLIE);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CLIE);
             }
@@ -4972,17 +4852,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (isEditCli) {
-                if (!tvMunicipioCli.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCli.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCli).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CLIE);
                     startActivityForResult(i_localidad, REQUEST_CODE_LOCALIDAD_CLIE);
-                }
-                else{
+                } else {
                     final AlertDialog solicitud = Popups.showDialogMessage(ctx, warning,
                             "Seleccione el municipio del cliente", R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -5009,7 +4888,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 tvEstudiosCli.setError(null);
                                 tvEstudiosCli.setText(_estudios[position]);
                                 tvEstudiosCli.requestFocus();
-                                Update("nivel_estudio", TBL_CLIENTE_IND_REN, tvEstudiosCli.getText().toString().trim().toUpperCase());
+                                Update("nivel_estudio", TBL_CLIENTE_IND_REN, m.GetStr(tvEstudiosCli));
                             }
                         });
                 builder.create();
@@ -5038,7 +4917,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                     llConyuge.setVisibility(View.GONE);
                                     llBienes.setVisibility(View.GONE);
                                 }
-                                Update("estado_civil", TBL_CLIENTE_IND_REN, tvEstadoCivilCli.getText().toString().trim().toUpperCase());
+                                Update("estado_civil", TBL_CLIENTE_IND_REN, m.GetStr(tvEstadoCivilCli));
                             }
                         });
                 builder.create();
@@ -5071,7 +4950,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                         llCasaOtroCli.setVisibility(View.GONE);
                                         break;
                                 }
-                                Update("tipo_vivienda", TBL_CLIENTE_IND_REN, tvTipoCasaCli.getText().toString().trim().toUpperCase());
+                                Update("tipo_vivienda", TBL_CLIENTE_IND_REN, m.GetStr(tvTipoCasaCli));
                             }
                         });
                 builder.create();
@@ -5090,7 +4969,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvCasaFamiliar.setError(null);
                                 tvCasaFamiliar.setText(_parentesco[position]);
-                                Update("parentesco", TBL_CLIENTE_IND_REN, tvCasaFamiliar.getText().toString().trim().toUpperCase());
+                                Update("parentesco", TBL_CLIENTE_IND_REN, m.GetStr(tvCasaFamiliar));
                             }
                         });
                 builder.create();
@@ -5109,7 +4988,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDependientes.setError(null);
                                 tvDependientes.setText(_dependientes[position]);
-                                Update("dependientes", TBL_CLIENTE_IND_REN, tvDependientes.getText().toString().trim().toUpperCase());
+                                Update("dependientes", TBL_CLIENTE_IND_REN, m.GetStr(tvDependientes));
                             }
                         });
                 builder.create();
@@ -5128,7 +5007,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvEstadoCuenta.setError(null);
                                 tvEstadoCuenta.setText(_confirmacion[position]);
-                                Update("estado_cuenta", TBL_CLIENTE_IND_REN, tvEstadoCuenta.getText().toString().trim().toUpperCase());
+                                Update("estado_cuenta", TBL_CLIENTE_IND_REN, m.GetStr(tvEstadoCuenta));
                             }
                         });
                 builder.create();
@@ -5147,7 +5026,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvEnteroNosotros.setError(null);
                                 tvEnteroNosotros.setText(_medio_contacto[position]);
-                                Update("medio_contacto", TBL_CLIENTE_IND_REN, tvEnteroNosotros.getText().toString().trim().toUpperCase());
+                                Update("medio_contacto", TBL_CLIENTE_IND_REN, m.GetStr(tvEnteroNosotros));
                             }
                         });
                 builder.create();
@@ -5161,9 +5040,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIA+"s"));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpAval.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpAval));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_AVAL);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_AVAL);
             }
@@ -5174,17 +5053,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (isEditAva) {
-                if (!tvMunicipioAval.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioAval.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioAval).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioAval)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_AVAL);
                     startActivityForResult(i_localidad, REQUEST_CODE_LOCALIDAD_AVAL);
-                }
-                else{
+                } else {
                     final AlertDialog solicitud = Popups.showDialogMessage(ctx, warning,
                             "Seleccione el municipio del cliente", R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -5232,7 +5110,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                         llParentescoFamAval.setVisibility(View.GONE);
                                         break;
                                 }*/
-                                Update("tipo_vivienda", TBL_AVAL_IND_REN, tvTipoCasaAval.getText().toString().trim().toUpperCase());
+                                Update("tipo_vivienda", TBL_AVAL_IND_REN, m.GetStr(tvTipoCasaAval));
                             }
                         });
                 builder.create();
@@ -5251,7 +5129,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvParentescoAval.setError(null);
                                 tvParentescoAval.setText(_parentesco[position]);
-                                Update("parentesco_cliente", TBL_AVAL_IND_REN, tvParentescoAval.getText().toString().trim().toUpperCase());
+                                Update("parentesco_cliente", TBL_AVAL_IND_REN, m.GetStr(tvParentescoAval));
                             }
                         });
                 builder.create();
@@ -5270,7 +5148,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFamiliarAval.setError(null);
                                 tvFamiliarAval.setText(_parentesco_casa[position]);
-                                Update("parentesco", TBL_AVAL_IND_REN, tvFamiliarAval.getText().toString().trim().toUpperCase());
+                                Update("parentesco", TBL_AVAL_IND_REN, m.GetStr(tvFamiliarAval));
                             }
                         });
                 builder.create();
@@ -5301,20 +5179,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 String medios = "";
                                 Collections.sort(selectedItemsMediosPago);
-                                for (int i = 0; i < selectedItemsMediosPago.size(); i++){
-                                    if(i == 0)
+                                for (int i = 0; i < selectedItemsMediosPago.size(); i++) {
+                                    if (i == 0)
                                         medios += _medios_pago[selectedItemsMediosPago.get(i)];
                                     else
-                                        medios += ", "+_medios_pago[selectedItemsMediosPago.get(i)];
+                                        medios += ", " + _medios_pago[selectedItemsMediosPago.get(i)];
                                 }
                                 tvMediosPagoAval.setError(null);
                                 tvMediosPagoAval.setText(medios);
-                                Update("medio_pago", TBL_AVAL_IND_REN, tvMediosPagoAval.getText().toString().trim().toUpperCase());
+                                Update("medio_pago", TBL_AVAL_IND_REN, m.GetStr(tvMediosPagoAval));
 
-                                if (tvMediosPagoAval.getText().toString().trim().toUpperCase().contains("OTROS")){
+                                if (m.GetStr(tvMediosPagoAval).contains("OTROS")) {
                                     etOtroMedioPagoAval.setVisibility(View.VISIBLE);
-                                }
-                                else{
+                                } else {
                                     etOtroMedioPagoAval.setVisibility(View.GONE);
                                 }
                             }
@@ -5351,20 +5228,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 String medios = "";
                                 Collections.sort(selectedItemsActivos);
-                                for (int i = 0; i < selectedItemsActivos.size(); i++){
-                                    if(i == 0)
+                                for (int i = 0; i < selectedItemsActivos.size(); i++) {
+                                    if (i == 0)
                                         medios += _activos[selectedItemsActivos.get(i)];
                                     else
-                                        medios += ", "+_activos[selectedItemsActivos.get(i)];
+                                        medios += ", " + _activos[selectedItemsActivos.get(i)];
                                 }
                                 tvActivosObservables.setError(null);
                                 tvActivosObservables.setText(medios);
-                                Update("activos_observables", TBL_AVAL_IND_REN, tvActivosObservables.getText().toString().trim().toUpperCase());
+                                Update("activos_observables", TBL_AVAL_IND_REN, m.GetStr(tvActivosObservables));
 
-                                if (tvMediosPagoAval.getText().toString().trim().toUpperCase().contains("OTRO")){
+                                if (m.GetStr(tvMediosPagoAval).contains("OTRO")) {
                                     etOtroMedioPagoAval.setVisibility(View.VISIBLE);
-                                }
-                                else{
+                                } else {
                                     etOtroMedioPagoAval.setVisibility(View.GONE);
                                 }
 
@@ -5384,7 +5260,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent i_firma_aval = new Intent(ctx, CapturarFirma.class);
-            i_firma_aval.putExtra(TIPO,"AVAL");
+            i_firma_aval.putExtra(TIPO, "AVAL");
             startActivityForResult(i_firma_aval, REQUEST_CODE_FIRMA_AVAL);
         }
     };
@@ -5403,9 +5279,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIA+"s"));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpNeg.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpNeg));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_NEG);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_NEG);
             }
@@ -5417,7 +5293,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_NEG);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_NEG);
@@ -5429,17 +5305,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (isEditNeg) {
-                if (!tvMunicipioNeg.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioNeg.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_NEG);
                     startActivityForResult(i_localidad, REQUEST_CODE_LOCALIDAD_NEG);
-                }
-                else{
+                } else {
                     final AlertDialog solicitud = Popups.showDialogMessage(ctx, warning,
                             "Seleccione el municipio del cliente", R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -5480,7 +5355,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_CLIE);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_CLIE);
@@ -5498,7 +5373,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvTipoIdentificacion.setError(null);
                                 tvTipoIdentificacion.setText(_tipo_identificacion[position]);
-                                Update("tipo_identificacion", TBL_CLIENTE_IND_REN, tvTipoIdentificacion.getText().toString().trim().toUpperCase());
+                                Update("tipo_identificacion", TBL_CLIENTE_IND_REN, m.GetStr(tvTipoIdentificacion));
                             }
                         });
                 builder.create();
@@ -5517,7 +5392,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvTipoIdentificacionAval.setError(null);
                                 tvTipoIdentificacionAval.setText(_tipo_identificacion[position]);
-                                Update("tipo_identificacion", TBL_AVAL_IND_REN, tvTipoIdentificacionAval.getText().toString().trim().toUpperCase());
+                                Update("tipo_identificacion", TBL_AVAL_IND_REN, m.GetStr(tvTipoIdentificacionAval));
                             }
                         });
                 builder.create();
@@ -5531,7 +5406,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditCon) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_CONY);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_CONY);
@@ -5544,9 +5419,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditCon) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIA+"s"));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpCony.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpCony));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CONY);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CONY);
             }
@@ -5557,17 +5432,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (isEditCon) {
-                if (!tvMunicipioCony.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCony.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCony).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CONY);
                     startActivityForResult(i_localidad, REQUEST_CODE_LOCALIDAD_CONY);
-                }
-                else{
+                } else {
                     final AlertDialog solicitud = Popups.showDialogMessage(ctx, warning,
                             "Seleccione el municipio del cliente", R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -5588,7 +5462,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(SECTORES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(SECTORES));
                 i_ocupaciones.putExtra(CATALOGO, SECTORES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_ACTIVIDAD_NEG);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_ACTIVIDAD_NEG);
@@ -5608,12 +5482,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 tvDestinoNeg.setText(_destino_credito[position]);
                                 Update("destino_credito", TBL_NEGOCIO_IND_REN, _destino_credito[position]);
 
-                                if (position == 0){
+                                if (position == 0) {
                                     etOtroDestinoNeg.setVisibility(View.GONE);
                                     etOtroDestinoNeg.setText("");
                                     Update("otro_destino", TBL_NEGOCIO_IND_REN, "");
-                                }
-                                else{
+                                } else {
                                     etOtroDestinoNeg.setVisibility(View.VISIBLE);
                                 }
                             }
@@ -5646,27 +5519,25 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 String medios = "";
                                 Collections.sort(selectedItemsMediosPago);
-                                for (int i = 0; i < selectedItemsMediosPago.size(); i++){
-                                    if(i == 0)
+                                for (int i = 0; i < selectedItemsMediosPago.size(); i++) {
+                                    if (i == 0)
                                         medios += _medios_pago[selectedItemsMediosPago.get(i)];
                                     else
-                                        medios += ", "+_medios_pago[selectedItemsMediosPago.get(i)];
+                                        medios += ", " + _medios_pago[selectedItemsMediosPago.get(i)];
                                 }
                                 tvMediosPagoNeg.setError(null);
                                 tvMediosPagoNeg.setText(medios);
-                                Update("medio_pago", TBL_NEGOCIO_IND_REN, tvMediosPagoNeg.getText().toString().trim().toUpperCase());
+                                Update("medio_pago", TBL_NEGOCIO_IND_REN, m.GetStr(tvMediosPagoNeg));
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")) {
                                     llOperacionesEfectivo.setVisibility(View.VISIBLE);
-                                }
-                                else{
+                                } else {
                                     llOperacionesEfectivo.setVisibility(View.GONE);
                                 }
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("OTRO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
                                     etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
-                                }
-                                else{
+                                } else {
                                     etOtroMedioPagoNeg.setVisibility(View.GONE);
                                 }
                             }
@@ -5706,9 +5577,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditRef) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIA+"s"));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpRef.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpRef));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_REF);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_REF);
             }
@@ -5719,17 +5590,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (isEditRef) {
-                if (!tvMunicipioRef.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioRef.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioRef).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioRef)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_REF);
                     startActivityForResult(i_localidad, REQUEST_CODE_LOCALIDAD_REF);
-                }
-                else{
+                } else {
                     final AlertDialog solicitud = Popups.showDialogMessage(ctx, warning,
                             "Seleccione el municipio del cliente", R.string.accept, new Popups.DialogMessage() {
                                 @Override
@@ -5756,9 +5626,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
                 b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
                 b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(YEAR_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaNacAval.getText().toString().substring(0,4))));
-                b.putInt(MONTH_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaNacAval.getText().toString().substring(5,7))-1)));
-                b.putInt(DAY_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaNacAval.getText().toString().substring(8,10))));
+                b.putInt(YEAR_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty()) ? myCalendar.get(Calendar.YEAR) : Integer.parseInt(m.GetStr(tvFechaNacAval).substring(0, 4))));
+                b.putInt(MONTH_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty()) ? myCalendar.get(Calendar.MONTH) : (Integer.parseInt(m.GetStr(tvFechaNacAval).substring(5, 7)) - 1)));
+                b.putInt(DAY_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty()) ? myCalendar.get(Calendar.DAY_OF_MONTH) : Integer.parseInt(m.GetStr(tvFechaNacAval).substring(8, 10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 16);
                 b.putBoolean(FECHAS_POST, false);
@@ -5773,7 +5643,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_estados = new Intent(ctx, Catalogos.class);
-                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_estados.putExtra(CATALOGO, ESTADOS);
                 i_estados.putExtra(REQUEST_CODE, REQUEST_CODE_ESTADO_NAC_AVAL);
                 startActivityForResult(i_estados, REQUEST_CODE_ESTADO_NAC_AVAL);
@@ -5786,7 +5656,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_AVAL);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_AVAL);
@@ -5837,11 +5707,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvPrincipal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCro){
+            if (isEditCro) {
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "PRINCIPAL");
-                b.putString(CALLE, tvPrincipal.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvPrincipal));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL RENOVACION");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5851,11 +5721,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvTrasera_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCro){
+            if (isEditCro) {
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "TRASERA");
-                b.putString(CALLE, tvTrasera.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvTrasera));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL RENOVACION");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5865,11 +5735,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLateralUno_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCro){
+            if (isEditCro) {
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL UNO");
-                b.putString(CALLE, tvLateraUno.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraUno));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL RENOVACION");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5879,11 +5749,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLateralDos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCro){
+            if (isEditCro) {
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL DOS");
-                b.putString(CALLE, tvLateraDos.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraDos));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL RENOVACION");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5896,11 +5766,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent scanIntent = new Intent(RenovacionCreditoInd.this, CardIOActivity.class);
-            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
-            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
-            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
-            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
-            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN, true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO, true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE, true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE, true); // capturar img
             startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_FRONTAL);
         }
     };
@@ -5909,11 +5779,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent scanIntent = new Intent(RenovacionCreditoInd.this, CardIOActivity.class);
-            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
-            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
-            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
-            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
-            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN, true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO, true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE, true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE, true); // capturar img
             startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_REVERSO);
         }
     };
@@ -5940,7 +5810,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFotoFachCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCli){
+            if (isEditCli) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
@@ -5967,8 +5837,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -5994,13 +5863,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFirmaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditCli){
+            if (isEditCli) {
                 final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
                         R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent sig = new Intent(ctx, CapturarFirma.class);
-                                sig.putExtra(TIPO,"");
+                                sig.putExtra(TIPO, "");
                                 startActivityForResult(sig, REQUEST_CODE_FIRMA_CLI);
                                 dialog.dismiss();
 
@@ -6020,7 +5889,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFotoFachNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditNeg){
+            if (isEditNeg) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
@@ -6047,8 +5916,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -6074,7 +5942,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFotoFachAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditAva){
+            if (isEditAva) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
@@ -6101,8 +5969,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -6128,13 +5995,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFirmaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditAva){
+            if (isEditAva) {
                 final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
                         R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent sig = new Intent(ctx, CapturarFirma.class);
-                                sig.putExtra(TIPO,"");
+                                sig.putExtra(TIPO, "");
                                 startActivityForResult(sig, REQUEST_CODE_FIRMA_AVAL);
                                 dialog.dismiss();
 
@@ -6154,17 +6021,17 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivIneFrontal_OnClik = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditDoc){
+            if (isEditDoc) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent scanIntent = new Intent(RenovacionCreditoInd.this, CardIOActivity.class);
-                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
-                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
-                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
-                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
-                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN, true); // supmit cuando termine de reconocer el documento
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // esconder teclado
+                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO, true); // cambiar logo de paypal por el de card.io
+                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE, true); // capture img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE, true); // capturar img
                                 startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_FRONTAL);
                                 dialog.dismiss();
 
@@ -6186,8 +6053,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else{
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -6213,17 +6079,17 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivIneReverso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditDoc){
+            if (isEditDoc) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent scanIntent = new Intent(RenovacionCreditoInd.this, CardIOActivity.class);
-                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
-                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
-                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
-                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
-                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN, true); // supmit cuando termine de reconocer el documento
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // esconder teclado
+                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO, true); // cambiar logo de paypal por el de card.io
+                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE, true); // capture img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE, true); // capturar img
                                 startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_REVERSO);
                                 dialog.dismiss();
 
@@ -6245,8 +6111,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else{
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -6326,7 +6191,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivComprobante_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditDoc){
+            if (isEditDoc) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                         R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
@@ -6353,8 +6218,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -6380,13 +6244,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener ivFirmaAsesor_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isEditDoc){
+            if (isEditDoc) {
                 final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
                         R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent sig = new Intent(ctx, CapturarFirma.class);
-                                sig.putExtra(TIPO,"");
+                                sig.putExtra(TIPO, "");
                                 startActivityForResult(sig, REQUEST_CODE_FIRMA_ASESOR);
                                 dialog.dismiss();
 
@@ -6408,12 +6272,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llCredito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown1.getVisibility() == View.VISIBLE && ivUp1.getVisibility() == View.GONE){
+            if (ivDown1.getVisibility() == View.VISIBLE && ivUp1.getVisibility() == View.GONE) {
                 ivDown1.setVisibility(View.GONE);
                 ivUp1.setVisibility(View.VISIBLE);
                 llDatosCredito.setVisibility(View.VISIBLE);
-            }
-            else if (ivDown1.getVisibility() == View.GONE && ivUp1.getVisibility() == View.VISIBLE){
+            } else if (ivDown1.getVisibility() == View.GONE && ivUp1.getVisibility() == View.VISIBLE) {
                 ivDown1.setVisibility(View.VISIBLE);
                 ivUp1.setVisibility(View.GONE);
                 llDatosCredito.setVisibility(View.GONE);
@@ -6424,13 +6287,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llPersonales_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown2.getVisibility() == View.VISIBLE && ivUp2.getVisibility() == View.GONE){
+            if (ivDown2.getVisibility() == View.VISIBLE && ivUp2.getVisibility() == View.GONE) {
                 ivDown2.setVisibility(View.GONE);
                 ivUp2.setVisibility(View.VISIBLE);
                 llDatosPersonales.setVisibility(View.VISIBLE);
                 etNombreCli.requestFocus();
-            }
-            else if (ivDown2.getVisibility() == View.GONE && ivUp2.getVisibility() == View.VISIBLE){
+            } else if (ivDown2.getVisibility() == View.GONE && ivUp2.getVisibility() == View.VISIBLE) {
                 ivDown2.setVisibility(View.VISIBLE);
                 ivUp2.setVisibility(View.GONE);
                 llDatosPersonales.setVisibility(View.GONE);
@@ -6441,13 +6303,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llConyuge_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown3.getVisibility() == View.VISIBLE && ivUp3.getVisibility() == View.GONE){
+            if (ivDown3.getVisibility() == View.VISIBLE && ivUp3.getVisibility() == View.GONE) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
                 etNombreCony.requestFocus();
-            }
-            else if (ivDown3.getVisibility() == View.GONE && ivUp3.getVisibility() == View.VISIBLE){
+            } else if (ivDown3.getVisibility() == View.GONE && ivUp3.getVisibility() == View.VISIBLE) {
                 ivDown3.setVisibility(View.VISIBLE);
                 ivUp3.setVisibility(View.GONE);
                 llDatosConyuge.setVisibility(View.GONE);
@@ -6458,13 +6319,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llEconomicos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown4.getVisibility() == View.VISIBLE && ivUp4.getVisibility() == View.GONE){
+            if (ivDown4.getVisibility() == View.VISIBLE && ivUp4.getVisibility() == View.GONE) {
                 ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
-            }
-            else if (ivDown4.getVisibility() == View.GONE && ivUp4.getVisibility() == View.VISIBLE){
+            } else if (ivDown4.getVisibility() == View.GONE && ivUp4.getVisibility() == View.VISIBLE) {
                 ivDown4.setVisibility(View.VISIBLE);
                 ivUp4.setVisibility(View.GONE);
                 llDatosEconomicos.setVisibility(View.GONE);
@@ -6475,13 +6335,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llNegocio_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown5.getVisibility() == View.VISIBLE && ivUp5.getVisibility() == View.GONE){
+            if (ivDown5.getVisibility() == View.VISIBLE && ivUp5.getVisibility() == View.GONE) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosNegocio.setVisibility(View.VISIBLE);
                 etNombreNeg.requestFocus();
-            }
-            else if (ivDown5.getVisibility() == View.GONE && ivUp5.getVisibility() == View.VISIBLE){
+            } else if (ivDown5.getVisibility() == View.GONE && ivUp5.getVisibility() == View.VISIBLE) {
                 ivDown5.setVisibility(View.VISIBLE);
                 ivUp5.setVisibility(View.GONE);
                 llDatosNegocio.setVisibility(View.GONE);
@@ -6492,13 +6351,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown6.getVisibility() == View.VISIBLE && ivUp6.getVisibility() == View.GONE){
+            if (ivDown6.getVisibility() == View.VISIBLE && ivUp6.getVisibility() == View.GONE) {
                 ivDown6.setVisibility(View.GONE);
                 ivUp6.setVisibility(View.VISIBLE);
                 llDatosAval.setVisibility(View.VISIBLE);
                 etNombreAval.requestFocus();
-            }
-            else if (ivDown6.getVisibility() == View.GONE && ivUp6.getVisibility() == View.VISIBLE){
+            } else if (ivDown6.getVisibility() == View.GONE && ivUp6.getVisibility() == View.VISIBLE) {
                 ivDown6.setVisibility(View.VISIBLE);
                 ivUp6.setVisibility(View.GONE);
                 llDatosAval.setVisibility(View.GONE);
@@ -6509,13 +6367,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llReferencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown7.getVisibility() == View.VISIBLE && ivUp7.getVisibility() == View.GONE){
+            if (ivDown7.getVisibility() == View.VISIBLE && ivUp7.getVisibility() == View.GONE) {
                 ivDown7.setVisibility(View.GONE);
                 ivUp7.setVisibility(View.VISIBLE);
                 llDatosReferencia.setVisibility(View.VISIBLE);
                 etNombreRef.requestFocus();
-            }
-            else if (ivDown7.getVisibility() == View.GONE && ivUp7.getVisibility() == View.VISIBLE){
+            } else if (ivDown7.getVisibility() == View.GONE && ivUp7.getVisibility() == View.VISIBLE) {
                 ivDown7.setVisibility(View.VISIBLE);
                 ivUp7.setVisibility(View.GONE);
                 llDatosReferencia.setVisibility(View.GONE);
@@ -6527,12 +6384,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llCroquis_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown8.getVisibility() == View.VISIBLE && ivUp8.getVisibility() == View.GONE){
+            if (ivDown8.getVisibility() == View.VISIBLE && ivUp8.getVisibility() == View.GONE) {
                 ivDown8.setVisibility(View.GONE);
                 ivUp8.setVisibility(View.VISIBLE);
                 llDatosCroquis.setVisibility(View.VISIBLE);
-            }
-            else if (ivDown8.getVisibility() == View.GONE && ivUp8.getVisibility() == View.VISIBLE){
+            } else if (ivDown8.getVisibility() == View.GONE && ivUp8.getVisibility() == View.VISIBLE) {
                 ivDown8.setVisibility(View.VISIBLE);
                 ivUp8.setVisibility(View.GONE);
                 llDatosCroquis.setVisibility(View.GONE);
@@ -6544,12 +6400,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llPoliticas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown9.getVisibility() == View.VISIBLE && ivUp9.getVisibility() == View.GONE){
+            if (ivDown9.getVisibility() == View.VISIBLE && ivUp9.getVisibility() == View.GONE) {
                 ivDown9.setVisibility(View.GONE);
                 ivUp9.setVisibility(View.VISIBLE);
                 llDatosPoliticas.setVisibility(View.VISIBLE);
-            }
-            else if (ivDown9.getVisibility() == View.GONE && ivUp9.getVisibility() == View.VISIBLE){
+            } else if (ivDown9.getVisibility() == View.GONE && ivUp9.getVisibility() == View.VISIBLE) {
                 ivDown9.setVisibility(View.VISIBLE);
                 ivUp9.setVisibility(View.GONE);
                 llDatosPoliticas.setVisibility(View.GONE);
@@ -6561,12 +6416,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener llDocumentos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown10.getVisibility() == View.VISIBLE && ivUp10.getVisibility() == View.GONE){
+            if (ivDown10.getVisibility() == View.VISIBLE && ivUp10.getVisibility() == View.GONE) {
                 ivDown10.setVisibility(View.GONE);
                 ivUp10.setVisibility(View.VISIBLE);
                 llDatosDocumentos.setVisibility(View.VISIBLE);
-            }
-            else if (ivDown10.getVisibility() == View.GONE && ivUp10.getVisibility() == View.VISIBLE){
+            } else if (ivDown10.getVisibility() == View.GONE && ivUp10.getVisibility() == View.VISIBLE) {
                 ivDown10.setVisibility(View.VISIBLE);
                 ivUp10.setVisibility(View.GONE);
                 llDatosDocumentos.setVisibility(View.GONE);
@@ -6596,22 +6450,20 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                    tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
+                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
-            }
-            else{
-                if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                        Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+            } else {
+                if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() &&
+                        Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) > 30000) {
                     etPropiedadesEco.requestFocus();
                     ivDown4.setVisibility(View.GONE);
                     ivUp4.setVisibility(View.VISIBLE);
                     llDatosEconomicos.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     etNombreNeg.requestFocus();
                     ivDown5.setVisibility(View.GONE);
                     ivUp5.setVisibility(View.VISIBLE);
@@ -6629,14 +6481,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                    Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+            if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() &&
+                    Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) > 30000) {
                 ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
-            }
-            else{
+            } else {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosNegocio.setVisibility(View.VISIBLE);
@@ -6752,14 +6603,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                    tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
+                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
                 etNombreCony.requestFocus();
-            }
-            else{
+            } else {
                 ivDown2.setVisibility(View.GONE);
                 ivUp2.setVisibility(View.VISIBLE);
                 llDatosPersonales.setVisibility(View.VISIBLE);
@@ -6774,22 +6624,20 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                    Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+            if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() &&
+                    Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) > 30000) {
                 ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
-            }
-            else{
-                if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                        tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+            } else {
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
+                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                     ivDown3.setVisibility(View.GONE);
                     ivUp3.setVisibility(View.VISIBLE);
                     llDatosConyuge.setVisibility(View.VISIBLE);
                     etNombreCony.requestFocus();
-                }
-                else{
+                } else {
                     ivDown2.setVisibility(View.GONE);
                     ivUp2.setVisibility(View.VISIBLE);
                     llDatosPersonales.setVisibility(View.VISIBLE);
@@ -6882,7 +6730,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
-    private boolean saveDatosCredito(){
+    private boolean saveDatosCredito() {
         boolean save_credito = false;
         if (!validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvFrecuencia, new String[]{validatorTV.REQUIRED}) &&
@@ -6893,30 +6741,30 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validatorTV.validate(tvDestino, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvComportamiento, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etObservaciones, new String[]{validator.GENERAL})){
+                !validator.validate(etObservaciones, new String[]{validator.GENERAL})) {
             ivError1.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("plazo",tvPlazo.getText().toString().trim().toUpperCase());
-            cv.put("periodicidad",tvFrecuencia.getText().toString().trim().toUpperCase());
-            cv.put("fecha_desembolso",tvFechaDesembolso.getText().toString().trim());
-            cv.put("dia_desembolso",tvDiaDesembolso.getText().toString().trim().toUpperCase());
-            cv.put("hora_visita",tvHoraVisita.getText().toString().trim());
-            cv.put("monto_prestamo",etMontoPrestamo.getText().toString().trim().replace(",",""));
-            cv.put("destino",tvDestino.getText().toString().trim().toUpperCase());
-            cv.put("clasificacion_riesgo", tvRiesgo.getText().toString().trim().toUpperCase());
-            cv.put("clasificacion_riesgo", tvRiesgo.getText().toString().trim().toUpperCase());
-            cv.put("comportamiento_pago", tvComportamiento.getText().toString().trim().toUpperCase());
-            cv.put("observaciones", etObservaciones.getText().toString().trim().toUpperCase());
+            cv.put("plazo", m.GetStr(tvPlazo));
+            cv.put("periodicidad", m.GetStr(tvFrecuencia));
+            cv.put("fecha_desembolso", m.GetStr(tvFechaDesembolso));
+            cv.put("dia_desembolso", m.GetStr(tvDiaDesembolso));
+            cv.put("hora_visita", m.GetStr(tvHoraVisita));
+            cv.put("monto_prestamo", m.GetStr(etMontoPrestamo).replace(",", ""));
+            cv.put("destino", m.GetStr(tvDestino).toUpperCase());
+            cv.put("clasificacion_riesgo", m.GetStr(tvRiesgo));
+            cv.put("clasificacion_riesgo", m.GetStr(tvRiesgo));
+            cv.put("comportamiento_pago", m.GetStr(tvComportamiento));
+            cv.put("observaciones", m.GetStr(etObservaciones));
 
             db.update(TBL_CREDITO_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_credito = true;
-        }
-        else
+        } else
             ivError1.setVisibility(View.VISIBLE);
 
         return save_credito;
     }
-    private boolean saveDatosPersonales(){
+
+    private boolean saveDatosPersonales() {
 
         boolean save_cliente = false;
         ContentValues cv = new ContentValues();
@@ -6924,27 +6772,27 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
+                !validatorTV.validate(tvEdadCli, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})) {
             if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre ||
-                    rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer){
+                    rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer) {
                 tvGeneroCli.setError(null);
                 if (!validatorTV.validate(tvEstadoNacCli, new String[]{validatorTV.REQUIRED}) &&
-                    !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
-                    (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
-                    !tvRfcCli.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpCli.getText().toString().trim().toUpperCase())){
-                        if(!validatorTV.validate(tvOcupacionCli, new String[]{validatorTV.REQUIRED}) &&
+                        !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
+                        (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
+                                !m.GetStr(tvRfcCli).equals("Rfc no válida"))) {
+                    if (m.CurpValidador(m.GetStr(etCurpCli))) {
+                        if (!validatorTV.validate(tvOcupacionCli, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvActividadEcoCli, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvTipoIdentificacion, new String[]{validatorTV.REQUIRED}) &&
                                 !validator.validate(etNumIdentifCli, new String[]{validator.REQUIRED, validator.ALFANUMERICO}) &&
                                 !validatorTV.validate(tvEstudiosCli, new String[]{validatorTV.REQUIRED}) &&
-                                !validatorTV.validate(tvEstadoCivilCli, new String[]{validatorTV.REQUIRED})){
+                                !validatorTV.validate(tvEstadoCivilCli, new String[]{validatorTV.REQUIRED})) {
                             boolean flag_est_civil = false;
-                            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")){
+                            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")) {
                                 if (rgBienes.getCheckedRadioButtonId() == R.id.rbMancomunados ||
                                         rgBienes.getCheckedRadioButtonId() == R.id.rbSeparados) {
                                     tvBienes.setError(null);
-                                    switch (rgBienes.getCheckedRadioButtonId()){
+                                    switch (rgBienes.getCheckedRadioButtonId()) {
                                         case R.id.rbMancomunados:
                                             cv.put("bienes", 1);
                                             break;
@@ -6954,24 +6802,22 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                     }
                                     flag_est_civil = true;
                                 }
-                            }
-                            else {
+                            } else {
                                 flag_est_civil = true;
                                 cv.put("bienes", 0);
                             }
 
-                            if (flag_est_civil){
-                                if (!validatorTV.validate(tvTipoCasaCli, new String[]{validatorTV.REQUIRED})){
+                            if (flag_est_civil) {
+                                if (!validatorTV.validate(tvTipoCasaCli, new String[]{validatorTV.REQUIRED})) {
                                     boolean flag_tipo_casa = false;
-                                    cv.put("tipo_vivienda", tvTipoCasaCli.getText().toString().trim().toUpperCase());
-                                    switch (tvTipoCasaCli.getText().toString().trim().toUpperCase()){
+                                    cv.put("tipo_vivienda", m.GetStr(tvTipoCasaCli));
+                                    switch (m.GetStr(tvTipoCasaCli)) {
                                         case "CASA FAMILIAR":
                                             if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                                                 flag_tipo_casa = true;
-                                                cv.put("parentesco", tvTipoCasaCli.getText().toString().trim().toUpperCase());
+                                                cv.put("parentesco", m.GetStr(tvTipoCasaCli));
                                                 cv.put("otro_tipo_vivienda", "");
-                                            }
-                                            else
+                                            } else
                                                 ivError2.setVisibility(View.VISIBLE);
 
                                             break;
@@ -6979,9 +6825,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                             if (!validator.validate(etOTroTipoCli, new String[]{validator.REQUIRED})) {
                                                 flag_tipo_casa = true;
                                                 cv.put("parentesco", "");
-                                                cv.put("otro_tipo_vivienda", etOTroTipoCli.getText().toString().trim().toUpperCase());
-                                            }
-                                            else
+                                                cv.put("otro_tipo_vivienda", m.GetStr(etOTroTipoCli));
+                                            } else
                                                 ivError2.setVisibility(View.VISIBLE);
                                             break;
                                         default:
@@ -6990,17 +6835,17 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                             cv.put("otro_tipo_vivienda", "");
                                             break;
                                     }
-                                    if (flag_tipo_casa){
-                                        if (latLngUbiCli != null){
+                                    if (flag_tipo_casa) {
+                                        if (latLngUbiCli != null) {
                                             tvMapaCli.setError(null);
                                             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
                                                     !validator.validate(etNoExtCli, new String[]{validator.REQUIRED}) &&
                                                     !validator.validate(etCpCli, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                                                    !Miscellaneous.ValidTextView(tvColoniaCli) &&
+                                                    !m.ValidTextView(tvColoniaCli) &&
                                                     !validator.validate(etCiudadCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                                                     !validatorTV.validate(tvLocalidadCli, new String[]{validatorTV.REQUIRED}) &&
-                                                    !Miscellaneous.ValidTextView(tvMunicipioCli) &&
-                                                    !Miscellaneous.ValidTextView(tvEstadoCli) &&
+                                                    !m.ValidTextView(tvMunicipioCli) &&
+                                                    !m.ValidTextView(tvEstadoCli) &&
                                                     !validator.validate(etTelCasaCli, new String[]{validator.PHONE}) &&
                                                     !validator.validate(etCelularCli, new String[]{validator.REQUIRED, validator.PHONE}) &&
                                                     !validator.validate(etTelMensCli, new String[]{validator.PHONE}) &&
@@ -7009,19 +6854,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                     !validatorTV.validate(tvDependientes, new String[]{validatorTV.REQUIRED}) &&
                                                     !validatorTV.validate(tvEnteroNosotros, new String[]{validatorTV.REQUIRED}) &&
                                                     !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED}) &&
-                                                    !validator.validate(etEmail, new String[]{validator.EMAIL})){
-                                                if (byteFotoFachCli != null){
+                                                    !validator.validate(etEmail, new String[]{validator.EMAIL})) {
+                                                if (byteFotoFachCli != null) {
                                                     tvFachadaCli.setError(null);
-                                                    if (!validator.validate(etReferenciCli, new String[]{validator.REQUIRED})){
-                                                        if (byteFirmaCli != null){
+                                                    if (!validator.validate(etReferenciCli, new String[]{validator.REQUIRED})) {
+                                                        if (byteFirmaCli != null) {
                                                             tvFirmaCli.setError(null);
                                                             ivError2.setVisibility(View.GONE);
-                                                            cv.put("nombre", etNombreCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("paterno", etApPaternoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("fecha_nacimiento", tvFechaNacCli.getText().toString().trim());
-                                                            cv.put("edad", tvEdadCli.getText().toString().trim());
-                                                            switch (rgGeneroCli.getCheckedRadioButtonId()){
+                                                            cv.put("nombre", m.GetStr(etNombreCli));
+                                                            cv.put("paterno", m.GetStr(etApPaternoCli));
+                                                            cv.put("materno", m.GetStr(etApMaternoCli));
+                                                            cv.put("fecha_nacimiento", m.GetStr(tvFechaNacCli));
+                                                            cv.put("edad", m.GetStr(tvEdadCli));
+                                                            switch (rgGeneroCli.getCheckedRadioButtonId()) {
                                                                 case R.id.rbHombre:
                                                                     cv.put("genero", 0);
                                                                     break;
@@ -7029,98 +6874,86 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                                     cv.put("genero", 1);
                                                                     break;
                                                             }
-                                                            cv.put("estado_nacimiento", tvEstadoNacCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("rfc", tvRfcCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("curp", etCurpCli.getText().toString().trim().toUpperCase());
-                                                            //cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
-                                                            cv.put("ocupacion", tvOcupacionCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("actividad_economica", tvActividadEcoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim().toUpperCase());
-                                                            cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim());
-                                                            cv.put("nivel_estudio", tvEstudiosCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado_civil", tvEstadoCivilCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_casa", etTelCasaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_celular", etCelularCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_mensajes", etTelMensCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_trabajo", etTelTrabajoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tiempo_vivir_sitio", Integer.parseInt(etTiempoSitio.getText().toString().trim()));
-                                                            cv.put("dependientes", tvDependientes.getText().toString().trim());
-                                                            cv.put("medio_contacto", tvEnteroNosotros.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado_cuenta", tvEstadoCuenta.getText().toString().trim());
-                                                            cv.put("email", etEmail.getText().toString().trim());
-                                                            cv.put("ref_domiciliaria", etReferenciCli.getText().toString().trim().toUpperCase());
+                                                            cv.put("estado_nacimiento", m.GetStr(tvEstadoNacCli));
+                                                            cv.put("rfc", m.GetStr(tvRfcCli));
+                                                            cv.put("curp", m.GetStr(etCurpCli));
+                                                            cv.put("ocupacion", m.GetStr(tvOcupacionCli));
+                                                            cv.put("actividad_economica", m.GetStr(tvActividadEcoCli));
+                                                            cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacion));
+                                                            cv.put("no_identificacion", m.GetStr(etNumIdentifCli));
+                                                            cv.put("nivel_estudio", m.GetStr(tvEstudiosCli));
+                                                            cv.put("estado_civil", m.GetStr(tvEstadoCivilCli));
+                                                            cv.put("tel_casa", m.GetStr(etTelCasaCli));
+                                                            cv.put("tel_celular", m.GetStr(etCelularCli));
+                                                            cv.put("tel_mensajes", m.GetStr(etTelMensCli));
+                                                            cv.put("tel_trabajo", m.GetStr(etTelTrabajoCli));
+                                                            cv.put("tiempo_vivir_sitio", Integer.parseInt(m.GetStr(etTiempoSitio)));
+                                                            cv.put("dependientes", m.GetStr(tvDependientes));
+                                                            cv.put("medio_contacto", m.GetStr(tvEnteroNosotros));
+                                                            cv.put("estado_cuenta", m.GetStr(tvEstadoCuenta));
+                                                            cv.put("email", m.GetStr(etEmail));
+                                                            cv.put("ref_domiciliaria", m.GetStr(etReferenciCli));
 
                                                             db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                             cv = new ContentValues();
                                                             cv.put("latitud", String.valueOf(latLngUbiCli.latitude));
                                                             cv.put("longitud", String.valueOf(latLngUbiCli.longitude));
-                                                            cv.put("calle", etCalleCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("num_exterior", etNoExtCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("num_interior", etNoIntCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("manzana", etManzanaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("lote", etLoteCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("cp", etCpCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("colonia", tvColoniaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("ciudad", etCiudadCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("municipio", tvMunicipioCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado", tvEstadoCli.getText().toString().trim().toUpperCase());
-                                                            db.update(TBL_DIRECCIONES_REN, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCli, "CLIENTE"});
+                                                            cv.put("calle", m.GetStr(etCalleCli));
+                                                            cv.put("num_exterior", m.GetStr(etNoExtCli));
+                                                            cv.put("num_interior", m.GetStr(etNoIntCli));
+                                                            cv.put("manzana", m.GetStr(etManzanaCli));
+                                                            cv.put("lote", m.GetStr(etLoteCli));
+                                                            cv.put("cp", m.GetStr(etCpCli));
+                                                            cv.put("colonia", m.GetStr(tvColoniaCli));
+                                                            cv.put("ciudad", m.GetStr(etCiudadCli));
+                                                            cv.put("localidad", m.GetStr(tvLocalidadCli));
+                                                            cv.put("municipio", m.GetStr(tvMunicipioCli));
+                                                            cv.put("estado", m.GetStr(tvEstadoCli));
+                                                            db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCli, "CLIENTE"});
                                                             save_cliente = true;
-                                                        }
-                                                        else{
+                                                        } else {
                                                             ivError2.setVisibility(View.VISIBLE);
                                                             tvFirmaCli.setError("");
                                                         }
-                                                    }
-                                                    else
+                                                    } else
                                                         ivError2.setVisibility(View.VISIBLE);
-                                                }
-                                                else{
+                                                } else {
                                                     ivError2.setVisibility(View.VISIBLE);
                                                     tvFachadaCli.setError("");
                                                 }
-                                            }
-                                            else
+                                            } else
                                                 ivError2.setVisibility(View.VISIBLE);
-                                        }
-                                        else{
+                                        } else {
                                             ivError2.setVisibility(View.VISIBLE);
                                             tvMapaCli.setError("");
                                         }
                                     }
-                                }
-                                else
+                                } else
                                     ivError2.setVisibility(View.VISIBLE);
-                            }
-                            else {
+                            } else {
                                 ivError2.setVisibility(View.VISIBLE);
                                 tvBienes.setError("");
                             }
-                        }
-                        else
+                        } else
                             ivError2.setVisibility(View.VISIBLE);
-                    }
-                    else{
+                    } else {
                         ivError2.setVisibility(View.VISIBLE);
                         etCurpCli.setError("Curp no válida");
                     }
-                }
-                else
+                } else
                     ivError2.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 ivError2.setVisibility(View.VISIBLE);
                 tvGeneroCli.setError("");
             }
-        }
-        else
+        } else
             ivError2.setVisibility(View.VISIBLE);
 
         return save_cliente;
     }
-    private boolean saveConyuge(){
+
+    private boolean saveConyuge() {
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
@@ -7130,77 +6963,77 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etNoExtCony, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                !Miscellaneous.ValidTextView(tvColoniaCony) &&
-                !validator.validate(etCiudadCony, new String[]{validator.REQUIRED,  validator.ONLY_TEXT}) &&
+                !m.ValidTextView(tvColoniaCony) &&
+                !validator.validate(etCiudadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvLocalidadCony, new String[]{validatorTV.REQUIRED}) &&
-                !Miscellaneous.ValidTextView(tvMunicipioCony) &&
-                !Miscellaneous.ValidTextView(tvEstadoCony) &&
+                !m.ValidTextView(tvMunicipioCony) &&
+                !m.ValidTextView(tvEstadoCony) &&
                 !validator.validate(etIngMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                 !validator.validate(etGastoMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                 !validator.validate(etCasaCony, new String[]{validator.PHONE}) &&
-                !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.PHONE})){
+                !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.PHONE})) {
             Log.e("Conyuge", "pasa");
             ivError3.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreCony.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("nacionalidad", etNacionalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
-            cv.put("ing_mensual", etIngMenCony.getText().toString().trim().toUpperCase().replace(",",""));
-            cv.put("gasto_mensual", etGastoMenCony.getText().toString().trim().toUpperCase().replace(",",""));
-            cv.put("tel_casa", etCasaCony.getText().toString().trim().toUpperCase());
-            cv.put("tel_celular", etCelularCony.getText().toString().trim());
+            cv.put("nombre", m.GetStr(etNombreCony));
+            cv.put("paterno", m.GetStr(etApPaternoCony));
+            cv.put("materno", m.GetStr(etApMaternoCony));
+            cv.put("nacionalidad", m.GetStr(etNacionalidadCony));
+            cv.put("ocupacion", m.GetStr(tvOcupacionCony));
+            cv.put("ing_mensual", m.GetStr(etIngMenCony).replace(",", ""));
+            cv.put("gasto_mensual", m.GetStr(etGastoMenCony).replace(",", ""));
+            cv.put("tel_casa", m.GetStr(etCasaCony));
+            cv.put("tel_celular", m.GetStr(etCelularCony));
 
             db.update(TBL_CONYUGE_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             cv = new ContentValues();
-            cv.put("calle", etCalleCony.getText().toString().trim().toUpperCase());
-            cv.put("num_exterior", etNoExtCony.getText().toString().trim().toUpperCase());
-            cv.put("num_interior", etNoIntCony.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaCony.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteCony.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpCony.getText().toString().trim().toUpperCase());
-            cv.put("colonia", tvColoniaCony.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadCony.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioCony.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoCony.getText().toString().trim().toUpperCase());
-            db.update(TBL_DIRECCIONES_REN, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCony, "CONYUGE"});
+            cv.put("calle", m.GetStr(etCalleCony));
+            cv.put("num_exterior", m.GetStr(etNoExtCony));
+            cv.put("num_interior", m.GetStr(etNoIntCony));
+            cv.put("manzana", m.GetStr(etManzanaCony));
+            cv.put("lote", m.GetStr(etLoteCony));
+            cv.put("cp", m.GetStr(etCpCony));
+            cv.put("colonia", m.GetStr(tvColoniaCony));
+            cv.put("ciudad", m.GetStr(etCiudadCony));
+            cv.put("localidad", m.GetStr(tvLocalidadCony));
+            cv.put("municipio", m.GetStr(tvMunicipioCony));
+            cv.put("estado", m.GetStr(tvEstadoCony));
+            db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCony, "CONYUGE"});
 
             save_conyuge = true;
-        }
-        else
+        } else
             ivError3.setVisibility(View.VISIBLE);
 
         return save_conyuge;
     }
-    private boolean saveDatosEconomicos(){
+
+    private boolean saveDatosEconomicos() {
         boolean save_economicos = false;
         if (!validator.validate(etPropiedadesEco, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etValorAproxEco, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                 !validator.validate(etUbicacionEco, new String[]{validator.REQUIRED, validator.GENERAL}) &&
-                !validatorTV.validate(tvIngresoEco, new String[]{validatorTV.REQUIRED})){
+                !validatorTV.validate(tvIngresoEco, new String[]{validatorTV.REQUIRED})) {
             ivError4.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("propiedades", etPropiedadesEco.getText().toString().trim().toUpperCase());
-            cv.put("valor_aproximado", etValorAproxEco.getText().toString().trim());
-            cv.put("ubicacion", etUbicacionEco.getText().toString().trim().toUpperCase());
-            cv.put("ingreso", tvIngresoEco.getText().toString().trim().replace(",",""));
+            cv.put("propiedades", m.GetStr(etPropiedadesEco));
+            cv.put("valor_aproximado", m.GetStr(etValorAproxEco));
+            cv.put("ubicacion", m.GetStr(etUbicacionEco));
+            cv.put("ingreso", m.GetStr(tvIngresoEco).replace(",", ""));
 
             db.update(TBL_ECONOMICOS_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             save_economicos = true;
-        }
-        else
+        } else
             ivError4.setVisibility(View.VISIBLE);
 
         return save_economicos;
     }
-    private boolean saveDatosNegocio(){
+
+    private boolean saveDatosNegocio() {
         boolean save_negocio = false;
-        if (!validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})){
-            if (latLngUbiNeg != null){
+        if (!validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
+            if (latLngUbiNeg != null) {
                 tvMapaNeg.setError(null);
                 if (!validator.validate(etCalleNeg, new String[]{validator.REQUIRED}) &&
                         !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED}) &&
@@ -7208,23 +7041,22 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         !validator.validate(etManzanaNeg, new String[]{validator.GENERAL}) &&
                         !validator.validate(etLoteNeg, new String[]{validator.GENERAL}) &&
                         !validator.validate(etCpNeg, new String[]{validator.REQUIRED, validator.CP}) &&
-                        !Miscellaneous.ValidTextView(tvColoniaNeg) &&
+                        !m.ValidTextView(tvColoniaNeg) &&
                         !validator.validate(etCiudadNeg, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                         !validatorTV.validate(tvLocalidadNeg, new String[]{validatorTV.REQUIRED}) &&
-                        !Miscellaneous.ValidTextView(tvMunicipioNeg) &&
+                        !m.ValidTextView(tvMunicipioNeg) &&
                         !validatorTV.validate(tvActEcoEspNeg, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvActEconomicaNeg, new String[]{validatorTV.REQUIRED}) &&
-                        !validatorTV.validate(tvDestinoNeg, new String[]{validatorTV.REQUIRED})){
+                        !validatorTV.validate(tvDestinoNeg, new String[]{validatorTV.REQUIRED})) {
                     boolean otro_destino = false;
-                    if (tvDestinoNeg.getText().toString().trim().toUpperCase().equals("OTRO")){
-                        if (!validator.validate(etOtroDestinoNeg, new String[]{validator.REQUIRED})){
+                    if (m.GetStr(tvDestinoNeg).equals("OTRO")) {
+                        if (!validator.validate(etOtroDestinoNeg, new String[]{validator.REQUIRED})) {
                             otro_destino = true;
                         }
-                    }
-                    else
+                    } else
                         otro_destino = true;
-                    if (otro_destino){
-                        if(!validator.validate(etAntiguedadNeg, new String[]{validator.REQUIRED, validator.YEARS}) &&
+                    if (otro_destino) {
+                        if (!validator.validate(etAntiguedadNeg, new String[]{validator.REQUIRED, validator.YEARS}) &&
                                 !validator.validate(etIngMenNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etOtrosIngNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etGastosMenNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
@@ -7232,157 +7064,153 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 !validator.validate(etGastosLuzNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etGastosTelNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etGastosRentaNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                                !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                                !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
-                                !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})){
-                            boolean otro_medio = false;
-                            if (tvMediosPagoNeg.getText().toString().trim().contains("OTRO")){
-                                if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
-                                    otro_medio = true;
-                            }
-                            else
-                                otro_medio = true;
+                                !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER})) {
+                            if (getGastoMen()) {
+                                if (!validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
+                                        !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})) {
+                                    boolean otro_medio = false;
+                                    if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
+                                        if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                                            otro_medio = true;
+                                    } else
+                                        otro_medio = true;
 
-                            if (otro_medio){
-                                if (!validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
-                                        !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
-                                        (tvMediosPagoNeg.getText().toString().contains("EFECTIVO") && !validator.validate(etNumOperacionEfectNeg, new String[]{validator.REQUIRED, validator.YEARS})) || !tvMediosPagoNeg.getText().toString().contains("EFECTIVO")){
-                                    if(!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})){
-                                        if (byteFotoFachNeg != null) {
-                                            tvFachadaNeg.setError(null);
-                                            if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED, validator.GENERAL})){
-                                                ivError5.setVisibility(View.GONE);
-                                                ContentValues cv = new ContentValues();
-                                                cv.put("nombre", etNombreNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("actividad_economica", tvActEconomicaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("destino_credito", tvDestinoNeg.getText().toString().trim());
-                                                cv.put("otro_destino", etOtroDestinoNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("antiguedad", Integer.parseInt(etAntiguedadNeg.getText().toString().trim()));
-                                                cv.put("ing_mensual", etIngMenNeg.getText().toString().toUpperCase().replace(",",""));
-                                                cv.put("ing_otros", etGastosOtrosNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_semanal", etGastosMenNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_agua", etGastosAguaNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_luz", etGastosLuzNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_telefono", etGastosTelNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_renta", etGastosRentaNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_otros", etGastosOtrosNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("capacidad_pago", etCapacidadPagoNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("medio_pago", tvMediosPagoNeg.getText().toString().trim());
-                                                cv.put("otro_medio_pago", etOtroMedioPagoNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("monto_maximo", tvMontoMaxNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("dias_venta", tvDiasVentaNeg.getText().toString().trim());
-                                                cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
+                                    if (otro_medio) {
+                                        if (!validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO") && !validator.validate(etNumOperacionEfectNeg, new String[]{validator.REQUIRED, validator.YEARS})) || !m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")) {
+                                            if (!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})) {
+                                                if (byteFotoFachNeg != null) {
+                                                    tvFachadaNeg.setError(null);
+                                                    if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
+                                                        ivError5.setVisibility(View.GONE);
+                                                        ContentValues cv = new ContentValues();
+                                                        cv.put("nombre", m.GetStr(etNombreNeg));
+                                                        cv.put("actividad_economica", m.GetStr(tvActEconomicaNeg));
+                                                        cv.put("destino_credito", m.GetStr(tvDestinoNeg));
+                                                        cv.put("otro_destino", m.GetStr(etOtroDestinoNeg));
+                                                        cv.put("antiguedad", Integer.parseInt(m.GetStr(etAntiguedadNeg)));
+                                                        cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",", ""));
+                                                        cv.put("ing_otros", m.GetStr(etGastosOtrosNeg).replace(",", ""));
+                                                        cv.put("gasto_semanal", m.GetStr(etGastosMenNeg).replace(",", ""));
+                                                        cv.put("gasto_agua", m.GetStr(etGastosAguaNeg).replace(",", ""));
+                                                        cv.put("gasto_luz", m.GetStr(etGastosLuzNeg).replace(",", ""));
+                                                        cv.put("gasto_telefono", m.GetStr(etGastosTelNeg).replace(",", ""));
+                                                        cv.put("gasto_renta", m.GetStr(etGastosRentaNeg).replace(",", ""));
+                                                        cv.put("gasto_otros", m.GetStr(etGastosOtrosNeg).replace(",", ""));
+                                                        cv.put("capacidad_pago", m.GetStr(etCapacidadPagoNeg).replace(",", ""));
+                                                        cv.put("medio_pago", m.GetStr(tvMediosPagoNeg));
+                                                        cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoNeg));
+                                                        cv.put("monto_maximo", m.GetStr(tvMontoMaxNeg).replace(",", ""));
+                                                        cv.put("dias_venta", m.GetStr(tvDiasVentaNeg));
+                                                        cv.put("ref_domiciliaria", m.GetStr(etReferenciNeg));
 
-                                                db.update(TBL_NEGOCIO_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                                        db.update(TBL_NEGOCIO_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
-                                                cv = new ContentValues();
-                                                cv.put("calle", etCalleNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("num_exterior", etNoExtNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("num_interior", etNoIntNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("manzana", etManzanaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("lote", etLoteNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("cp", etCpNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("colonia", tvColoniaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("ciudad", etCiudadNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("municipio", tvMunicipioNeg.getText().toString().trim().toUpperCase());
-                                                db.update(TBL_DIRECCIONES_REN, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdNeg, "NEGOCIO"});
+                                                        cv = new ContentValues();
+                                                        cv.put("calle", m.GetStr(etCalleNeg));
+                                                        cv.put("num_exterior", m.GetStr(etNoExtNeg));
+                                                        cv.put("num_interior", m.GetStr(etNoIntNeg));
+                                                        cv.put("manzana", m.GetStr(etManzanaNeg));
+                                                        cv.put("lote", m.GetStr(etLoteNeg));
+                                                        cv.put("cp", m.GetStr(etCpNeg));
+                                                        cv.put("colonia", m.GetStr(tvColoniaNeg));
+                                                        cv.put("ciudad", m.GetStr(etCiudadNeg));
+                                                        cv.put("localidad", m.GetStr(tvLocalidadNeg));
+                                                        cv.put("municipio", m.GetStr(tvMunicipioNeg));
+                                                        db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdNeg, "NEGOCIO"});
 
-                                                save_negocio = true;
-                                            }
-                                            else
+                                                        save_negocio = true;
+                                                    } else
+                                                        ivError5.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    ivError5.setVisibility(View.VISIBLE);
+                                                    tvFachadaNeg.setError("");
+                                                }
+                                            } else
                                                 ivError5.setVisibility(View.VISIBLE);
-                                        }
-                                        else{
+                                        } else
                                             ivError5.setVisibility(View.VISIBLE);
-                                            tvFachadaNeg.setError("");
-                                        }
-                                    }
-                                    else
+                                    } else
                                         ivError5.setVisibility(View.VISIBLE);
-                                }
-                                else
+                                } else
                                     ivError5.setVisibility(View.VISIBLE);
-                            }
-                            else
+                            } else {
+                                etGastosMenNeg.setError("La suma de todos los gastos no puede ser cero (0).");
                                 ivError5.setVisibility(View.VISIBLE);
-                        }
-                        else
+                            }
+                        } else
                             ivError5.setVisibility(View.VISIBLE);
-                    }else
+                    } else
                         ivError5.setVisibility(View.VISIBLE);
-                }
-                else
+                } else
                     ivError5.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 tvMapaNeg.setError("");
                 ivError5.setVisibility(View.VISIBLE);
             }
-        }
-        else
+        } else
             ivError5.setVisibility(View.VISIBLE);
 
         return save_negocio;
     }
-    private boolean saveDatosAval(){
+
+    private boolean saveDatosAval() {
         boolean save_aval = false;
         ContentValues cv = new ContentValues();
         if (!validator.validate(etNombreAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoAval, new String[] {validator.ONLY_TEXT}) &&
+                !validator.validate(etApPaternoAval, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoAval, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacAval, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvEdadAval, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})){
+                !validatorTV.validate(tvEdadAval, new String[]{validatorTV.REQUIRED, validatorTV.ONLY_NUMBER})) {
             if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre ||
                     rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer) {
                 tvGeneroAval.setError(null);
                 if (!validatorTV.validate(tvEstadoNacAval, new String[]{validatorTV.REQUIRED}) &&
                         !validator.validate(etCurpAval, new String[]{validator.REQUIRED, validator.CURP}) &&
-                        (!tvRfcAval.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpAval.getText().toString().trim().toUpperCase())) {
+                        (!m.GetStr(tvRfcAval).equals("Rfc no válida"))) {
+                    if (m.CurpValidador(m.GetStr(etCurpAval))) {
                         etCurpAval.setError(null);
-                        if(!validatorTV.validate(tvParentescoAval, new String[]{validatorTV.REQUIRED}) &&
+                        if (!validatorTV.validate(tvParentescoAval, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvTipoIdentificacionAval, new String[]{validatorTV.REQUIRED}) &&
                                 !validator.validate(etNumIdentifAval, new String[]{validator.REQUIRED, validator.ALFANUMERICO}) &&
                                 !validatorTV.validate(tvOcupacionAval, new String[]{validatorTV.REQUIRED}) &&
-                                !validatorTV.validate(tvActividadEcoAval, new String[]{validatorTV.REQUIRED})){
-                            if (latLngUbiAval != null){
+                                !validatorTV.validate(tvActividadEcoAval, new String[]{validatorTV.REQUIRED})) {
+                            if (latLngUbiAval != null) {
                                 tvMapaAval.setError(null);
                                 if (!validator.validate(etCalleAval, new String[]{validator.REQUIRED}) &&
                                         !validator.validate(etNoExtAval, new String[]{validator.REQUIRED}) &&
                                         !validator.validate(etCpAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                                        !Miscellaneous.ValidTextView(tvColoniaAval) &&
+                                        !m.ValidTextView(tvColoniaAval) &&
                                         !validator.validate(etCiudadAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                                         !validatorTV.validate(tvLocalidadAval, new String[]{validatorTV.REQUIRED}) &&
-                                        !Miscellaneous.ValidTextView(tvMunicipioAval) &&
-                                        !Miscellaneous.ValidTextView(tvEstadoAval) &&
-                                        !validatorTV.validate(tvTipoCasaAval, new String[]{validatorTV.REQUIRED})){
-                                    cv.put("tipo_vivienda", tvTipoCasaAval.getText().toString().trim().toUpperCase());
-                                    boolean flag_tipo_casa =  false;
-                                    if (tvTipoCasaAval.getText().toString().trim().toUpperCase().equals("CASA FAMILIAR") ||
-                                            tvTipoCasaAval.getText().toString().trim().toUpperCase().equals("CASA RENTADA")){
+                                        !m.ValidTextView(tvMunicipioAval) &&
+                                        !m.ValidTextView(tvEstadoAval) &&
+                                        !validatorTV.validate(tvTipoCasaAval, new String[]{validatorTV.REQUIRED})) {
+                                    cv.put("tipo_vivienda", m.GetStr(tvTipoCasaAval));
+                                    boolean flag_tipo_casa = false;
+                                    if (m.GetStr(tvTipoCasaAval).equals("CASA FAMILIAR") ||
+                                            m.GetStr(tvTipoCasaAval).equals("CASA RENTADA")) {
                                         if (!validatorTV.validate(tvFamiliarAval, new String[]{validatorTV.REQUIRED}) &&
-                                                !validator.validate(etNombreTitularAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT})){
-                                            cv.put("nombre_titular", etNombreTitularAval.getText().toString().trim().toUpperCase());
-                                            cv.put("parentesco", tvFamiliarAval.getText().toString().trim().toUpperCase());
+                                                !validator.validate(etNombreTitularAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT})) {
+                                            cv.put("nombre_titular", m.GetStr(etNombreTitularAval));
+                                            cv.put("parentesco", m.GetStr(tvFamiliarAval));
                                             flag_tipo_casa = true;
-                                        }
-                                        else
+                                        } else
                                             ivError6.setVisibility(View.VISIBLE);
-                                    }
-                                    else{
+                                    } else {
                                         cv.put("nombre_titular", "");
                                         cv.put("parentesco", "");
                                         flag_tipo_casa = true;
                                     }
 
-                                    if(flag_tipo_casa){
-                                        if (!validator.validate(etCaracteristicasAval, new String[]{validator.REQUIRED})){
+                                    if (flag_tipo_casa) {
+                                        if (!validator.validate(etCaracteristicasAval, new String[]{validator.REQUIRED})) {
                                             if (rgNegocioAval.getCheckedRadioButtonId() == R.id.rbSiNeg ||
                                                     rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) {
                                                 tvNombreNegAval.setError(null);
 
-                                                if(((rgNegocioAval.getCheckedRadioButtonId() == R.id.rbSiNeg && !validator.validate(etNombreNegocioAval, new String[]{validator.REQUIRED}) && !validator.validate(etAntiguedadAval, new String[]{validator.REQUIRED, validator.YEARS}) ) || rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) &&
+                                                if (((rgNegocioAval.getCheckedRadioButtonId() == R.id.rbSiNeg && !validator.validate(etNombreNegocioAval, new String[]{validator.REQUIRED}) && !validator.validate(etAntiguedadAval, new String[]{validator.REQUIRED, validator.YEARS})) || rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) &&
                                                         !validator.validate(etIngMenAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validator.validate(etIngOtrosAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validator.validate(etGastosSemAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
@@ -7392,7 +7220,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         !validator.validate(etGastosRentaAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validator.validate(etGastosOtrosAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validatorTV.validate(tvMediosPagoAval, new String[]{validatorTV.REQUIRED}) &&
-                                                        (!tvMediosPagoAval.getText().toString().trim().contains("OTRO") ||
+                                                        (!m.GetStr(tvMediosPagoAval).contains("OTRO") ||
                                                                 !validator.validate(etOtroMedioPagoAval, new String[]{validator.REQUIRED})) &&
                                                         !validatorTV.validate(tvMontoMaxAval, new String[]{validatorTV.REQUIRED}) &&
                                                         !validator.validate(etCapacidadPagoAval, new String[]{validator.REQUIRED, validator.MONEY}) &&
@@ -7402,19 +7230,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         !validator.validate(etCelularAval, new String[]{validator.REQUIRED, validator.PHONE}) &&
                                                         !validator.validate(etTelMensAval, new String[]{validator.PHONE}) &&
                                                         !validator.validate(etTelTrabajoAval, new String[]{validator.PHONE}) &&
-                                                        !validator.validate(etEmailAval, new String[]{validator.EMAIL})){
+                                                        !validator.validate(etEmailAval, new String[]{validator.EMAIL})) {
                                                     if (byteFotoFachAval != null) {
                                                         tvFachadaAval.setError(null);
                                                         if (!validator.validate(etReferenciaAval, new String[]{validator.REQUIRED})) {
                                                             if (byteFirmaAval != null) {
                                                                 tvFirmaAval.setError(null);
                                                                 ivError6.setVisibility(View.GONE);
-                                                                cv.put("nombre", etNombreAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("paterno", etApPaternoAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("materno", etApMaternoAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("fecha_nacimiento", tvFechaNacAval.getText().toString().trim());
-                                                                cv.put("edad", tvEdadAval.getText().toString().trim());
-                                                                switch (rgGeneroAval.getCheckedRadioButtonId()){
+                                                                cv.put("nombre", m.GetStr(etNombreAval));
+                                                                cv.put("paterno", m.GetStr(etApPaternoAval));
+                                                                cv.put("materno", m.GetStr(etApMaternoAval));
+                                                                cv.put("fecha_nacimiento", m.GetStr(tvFechaNacAval));
+                                                                cv.put("edad", m.GetStr(tvEdadAval));
+                                                                switch (rgGeneroAval.getCheckedRadioButtonId()) {
                                                                     case R.id.rbHombre:
                                                                         cv.put("genero", 0);
                                                                         break;
@@ -7422,124 +7250,111 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                                         cv.put("genero", 1);
                                                                         break;
                                                                 }
-                                                                cv.put("estado_nacimiento", tvEstadoNacAval.getText().toString().trim());
-                                                                cv.put("rfc", tvRfcAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("curp", etCurpAval.getText().toString().trim().toUpperCase());
-                                                                //cv.put("curp_digito", etCurpIdAval.getText().toString().trim());
-                                                                cv.put("parentesco_cliente", tvParentescoAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("tipo_identificacion", tvTipoIdentificacionAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("no_identificacion", etNumIdentifAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("ocupacion", tvOcupacionAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("actividad_economica", tvActividadEcoAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("caracteristicas_domicilio", etCaracteristicasAval.getText().toString().trim());
-                                                                switch (rgNegocioAval.getCheckedRadioButtonId()){
+                                                                cv.put("estado_nacimiento", m.GetStr(tvEstadoNacAval));
+                                                                cv.put("rfc", m.GetStr(tvRfcAval));
+                                                                cv.put("curp", m.GetStr(etCurpAval));
+                                                                cv.put("parentesco_cliente", m.GetStr(tvParentescoAval));
+                                                                cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacionAval));
+                                                                cv.put("no_identificacion", m.GetStr(etNumIdentifAval));
+                                                                cv.put("ocupacion", m.GetStr(tvOcupacionAval));
+                                                                cv.put("actividad_economica", m.GetStr(tvActividadEcoAval));
+                                                                cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasAval));
+                                                                switch (rgNegocioAval.getCheckedRadioButtonId()) {
                                                                     case R.id.rbSiNeg:
                                                                         cv.put("tiene_negocio", 1);
-                                                                        cv.put("nombre_negocio", etNombreNegocioAval.getText().toString().trim().toUpperCase());
+                                                                        cv.put("nombre_negocio", m.GetStr(etNombreNegocioAval));
                                                                         break;
                                                                     case R.id.rbNoNeg:
                                                                         cv.put("tiene_negocio", 2);
                                                                         break;
                                                                 }
-                                                                cv.put("ing_mensual", etIngMenAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("ing_otros", etIngOtrosAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_semanal", etGastosSemAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_agua", etGastosAguaAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_luz", etGastosLuzAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_telefono", etGastosTelAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_renta", etGastosRentaAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("gasto_otros", etGastosOtrosAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("medio_pago", tvMediosPagoAval.getText().toString().trim());
-                                                                cv.put("otro_medio_pago", etOtroMedioPagoAval.getText().toString().trim());
-                                                                cv.put("monto_maximo", tvMontoMaxAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("capacidad_pagos", etCapacidadPagoAval.getText().toString().trim().replace(",",""));
-                                                                cv.put("horario_localizacion", tvHoraLocAval.getText().toString().trim());
-                                                                cv.put("activos_observables", tvActivosObservables.getText().toString().trim().toUpperCase());
-                                                                cv.put("antigueda", etAntiguedadAval.getText().toString().trim());
-                                                                cv.put("tel_casa", etTelCasaAval.getText().toString().trim());
-                                                                cv.put("tel_celular", etCelularAval.getText().toString().trim());
-                                                                cv.put("tel_mensajes", etTelMensAval.getText().toString().trim());
-                                                                cv.put("tel_trabajo", etTelTrabajoAval.getText().toString().trim());
-                                                                cv.put("email", etEmailAval.getText().toString().trim());
-                                                                cv.put("ref_domiciliaria", etReferenciaAval.getText().toString().trim().toUpperCase());
+                                                                cv.put("ing_mensual", m.GetStr(etIngMenAval).replace(",", ""));
+                                                                cv.put("ing_otros", m.GetStr(etIngOtrosAval).replace(",", ""));
+                                                                cv.put("gasto_semanal", m.GetStr(etGastosSemAval).replace(",", ""));
+                                                                cv.put("gasto_agua", m.GetStr(etGastosAguaAval).trim().replace(",", ""));
+                                                                cv.put("gasto_luz", m.GetStr(etGastosLuzAval).replace(",", ""));
+                                                                cv.put("gasto_telefono", m.GetStr(etGastosTelAval).replace(",", ""));
+                                                                cv.put("gasto_renta", m.GetStr(etGastosRentaAval).replace(",", ""));
+                                                                cv.put("gasto_otros", m.GetStr(etGastosOtrosAval).replace(",", ""));
+                                                                cv.put("medio_pago", m.GetStr(tvMediosPagoAval));
+                                                                cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoAval));
+                                                                cv.put("monto_maximo", m.GetStr(tvMontoMaxAval).replace(",", ""));
+                                                                cv.put("capacidad_pagos", m.GetStr(etCapacidadPagoAval).replace(",", ""));
+                                                                cv.put("horario_localizacion", m.GetStr(tvHoraLocAval));
+                                                                cv.put("activos_observables", m.GetStr(tvActivosObservables));
+                                                                cv.put("antigueda", m.GetStr(etAntiguedadAval));
+                                                                cv.put("tel_casa", m.GetStr(etTelCasaAval));
+                                                                cv.put("tel_celular", m.GetStr(etCelularAval));
+                                                                cv.put("tel_mensajes", m.GetStr(etTelMensAval));
+                                                                cv.put("tel_trabajo", m.GetStr(etTelTrabajoAval));
+                                                                cv.put("email", m.GetStr(etEmailAval));
+                                                                cv.put("ref_domiciliaria", m.GetStr(etReferenciaAval));
 
                                                                 db.update(TBL_AVAL_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                                 cv = new ContentValues();
                                                                 cv.put("latitud", String.valueOf(latLngUbiAval.latitude));
                                                                 cv.put("longitud", String.valueOf(latLngUbiAval.longitude));
-                                                                cv.put("calle", etCalleAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("num_exterior", etNoExtAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("num_interior", etNoIntAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("manzana", etManzanaAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("lote", etLoteAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("cp", etCpAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("colonia", tvColoniaAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("ciudad", etCiudadAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("localidad", tvLocalidadAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("municipio", tvMunicipioAval.getText().toString().trim().toUpperCase());
-                                                                cv.put("estado", tvEstadoAval.getText().toString().trim().toUpperCase());
+                                                                cv.put("calle", m.GetStr(etCalleAval));
+                                                                cv.put("num_exterior", m.GetStr(etNoExtAval));
+                                                                cv.put("num_interior", m.GetStr(etNoIntAval));
+                                                                cv.put("manzana", m.GetStr(etManzanaAval));
+                                                                cv.put("lote", m.GetStr(etLoteAval));
+                                                                cv.put("cp", m.GetStr(etCpAval));
+                                                                cv.put("colonia", m.GetStr(tvColoniaAval));
+                                                                cv.put("ciudad", m.GetStr(etCiudadAval));
+                                                                cv.put("localidad", m.GetStr(tvLocalidadAval));
+                                                                cv.put("municipio", m.GetStr(tvMunicipioAval));
+                                                                cv.put("estado", m.GetStr(tvEstadoAval));
                                                                 db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdAval, "AVAL"});
                                                                 save_aval = true;
-                                                            }
-                                                            else{
+                                                            } else {
                                                                 tvFirmaAval.setError("");
                                                             }
-                                                        }
-                                                        else {
+                                                        } else {
                                                             ivError6.setVisibility(View.VISIBLE);
                                                         }
-                                                    }
-                                                    else{
+                                                    } else {
                                                         tvFachadaAval.setError("");
                                                         ivError6.setVisibility(View.VISIBLE);
                                                     }
-                                                }
-                                                else {
+                                                } else {
                                                     ivError6.setVisibility(View.VISIBLE);
                                                 }
-                                            }
-                                            else{
+                                            } else {
                                                 tvNombreNegAval.setError("");
                                                 ivError6.setVisibility(View.VISIBLE);
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             ivError6.setVisibility(View.VISIBLE);
                                         }
                                     }
-                                }
-                                else {
+                                } else {
                                     ivError6.setVisibility(View.VISIBLE);
                                 }
 
-                            }
-                            else{
+                            } else {
                                 ivError6.setVisibility(View.VISIBLE);
                                 tvMapaAval.setError("");
                             }
-                        }
-                        else
+                        } else
                             ivError6.setVisibility(View.VISIBLE);
-                    }
-                    else{
+                    } else {
                         ivError6.setVisibility(View.VISIBLE);
                         etCurpAval.setError("Curp no válida");
                     }
-                }
-                else
+                } else
                     ivError6.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 ivError6.setVisibility(View.VISIBLE);
                 tvGeneroAval.setError("");
             }
-        }
-        else
+        } else
             ivError6.setVisibility(View.VISIBLE);
 
         return save_aval;
     }
+
     private boolean saveReferencia() {
         boolean save_referencia = false;
         if (!validator.validate(etNombreRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7548,34 +7363,34 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validatorTV.validate(tvFechaNacRef, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etCalleRef, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etCpRef, new String[]{validator.REQUIRED, validator.CP}) &&
-                !Miscellaneous.ValidTextView(tvColoniaRef) &&
+                !m.ValidTextView(tvColoniaRef) &&
                 !validator.validate(etCiudadRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvLocalidadRef, new String[]{validatorTV.REQUIRED}) &&
-                !Miscellaneous.ValidTextView(tvMunicipioRef) &&
-                !Miscellaneous.ValidTextView(tvEstadoRef) &&
+                !m.ValidTextView(tvMunicipioRef) &&
+                !m.ValidTextView(tvEstadoRef) &&
                 !validator.validate(etTelCelRef, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})) {
             ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreRef.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoRef.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoRef.getText().toString().trim().toUpperCase());
-            cv.put("fecha_nacimiento", tvFechaNacRef.getText().toString().trim().toUpperCase());
-            cv.put("tel_celular", etTelCelRef.getText().toString().trim().toUpperCase());
+            cv.put("nombre", m.GetStr(etNombreRef));
+            cv.put("paterno", m.GetStr(etApPaternoRef));
+            cv.put("materno", m.GetStr(etApMaternoRef));
+            cv.put("fecha_nacimiento", m.GetStr(tvFechaNacRef));
+            cv.put("tel_celular", m.GetStr(etTelCelRef));
 
             db.update(TBL_REFERENCIA_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             cv = new ContentValues();
-            cv.put("calle", etCalleRef.getText().toString().trim().toUpperCase());
-            cv.put("num_exterior", etNoExtRef.getText().toString().trim().toUpperCase());
-            cv.put("num_interior", etNoIntRef.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaRef.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteRef.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpRef.getText().toString().trim().toUpperCase());
-            cv.put("colonia", tvColoniaRef.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadRef.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadRef.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioRef.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoRef.getText().toString().trim().toUpperCase());
+            cv.put("calle", m.GetStr(etCalleRef));
+            cv.put("num_exterior", m.GetStr(etNoExtRef));
+            cv.put("num_interior", m.GetStr(etNoIntRef));
+            cv.put("manzana", m.GetStr(etManzanaRef));
+            cv.put("lote", m.GetStr(etLoteRef));
+            cv.put("cp", m.GetStr(etCpRef));
+            cv.put("colonia", m.GetStr(tvColoniaRef));
+            cv.put("ciudad", m.GetStr(etCiudadRef));
+            cv.put("localidad", m.GetStr(tvLocalidadRef));
+            cv.put("municipio", m.GetStr(tvMunicipioRef));
+            cv.put("estado", m.GetStr(tvEstadoRef));
             db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdRef, "REFERENCIA"});
 
             save_referencia = true;
@@ -7584,42 +7399,43 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         return save_referencia;
     }
-    private boolean saveCroquis(){
+
+    private boolean saveCroquis() {
         boolean save_croquis = false;
         if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
+                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})) {
             ivError8.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("calle_principal", tvPrincipal.getText().toString().trim().toUpperCase());
-            cv.put("lateral_uno", tvLateraUno.getText().toString().trim().toUpperCase());
-            cv.put("lateral_dos", tvLateraDos.getText().toString().trim().toUpperCase());
-            cv.put("calle_trasera", tvTrasera.getText().toString().trim().toUpperCase());
-            cv.put("referencias", etReferencia.getText().toString().trim().toUpperCase());
+            cv.put("calle_principal", m.GetStr(tvPrincipal));
+            cv.put("lateral_uno", m.GetStr(tvLateraUno));
+            cv.put("lateral_dos", m.GetStr(tvLateraDos));
+            cv.put("calle_trasera", m.GetStr(tvTrasera));
+            cv.put("referencias", m.GetStr(etReferencia));
 
             db.update(TBL_CROQUIS_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_croquis = true;
-        }
-        else
+        } else
             ivError8.setVisibility(View.VISIBLE);
         return save_croquis;
     }
-    private boolean savePoliticas(){
+
+    private boolean savePoliticas() {
         boolean save_politicas = false;
         if (rgPropietarioReal.getCheckedRadioButtonId() == R.id.rbSiPropietario ||
-                rgPropietarioReal.getCheckedRadioButtonId() == R.id.rbNoPropietario){
+                rgPropietarioReal.getCheckedRadioButtonId() == R.id.rbNoPropietario) {
             tvPropietarioReal.setError(null);
             if (rgProveedor.getCheckedRadioButtonId() == R.id.rbSiProveedor ||
-                    rgProveedor.getCheckedRadioButtonId() == R.id.rbNoProveedor){
+                    rgProveedor.getCheckedRadioButtonId() == R.id.rbNoProveedor) {
                 tvProvedor.setError(null);
                 if (rgPoliticamenteExp.getCheckedRadioButtonId() == R.id.rbSiExpuesta ||
-                        rgPoliticamenteExp.getCheckedRadioButtonId() == R.id.rbNoexpuesta){
+                        rgPoliticamenteExp.getCheckedRadioButtonId() == R.id.rbNoexpuesta) {
                     tvPoliticamenteExp.setError(null);
                     ivError9.setVisibility(View.GONE);
                     ContentValues cv = new ContentValues();
-                    switch (rgPropietarioReal.getCheckedRadioButtonId()){
+                    switch (rgPropietarioReal.getCheckedRadioButtonId()) {
                         case R.id.rbSiPropietario:
                             cv.put("propietario_real", 1);
                             break;
@@ -7628,7 +7444,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             break;
                     }
 
-                    switch (rgProveedor.getCheckedRadioButtonId()){
+                    switch (rgProveedor.getCheckedRadioButtonId()) {
                         case R.id.rbSiProveedor:
                             cv.put("proveedor_recursos", 1);
                             break;
@@ -7637,7 +7453,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             break;
                     }
 
-                    switch (rgPoliticamenteExp.getCheckedRadioButtonId()){
+                    switch (rgPoliticamenteExp.getCheckedRadioButtonId()) {
                         case R.id.rbSiExpuesta:
                             cv.put("persona_politica", 1);
                             break;
@@ -7649,47 +7465,41 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     db.update(TBL_POLITICAS_PLD_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                     save_politicas = true;
-                }
-                else{
+                } else {
                     ivError9.setVisibility(View.VISIBLE);
                     tvPoliticamenteExp.setError("");
                 }
-            }
-            else{
+            } else {
                 ivError9.setVisibility(View.VISIBLE);
                 tvProvedor.setError("");
             }
-        }
-        else{
+        } else {
             ivError9.setVisibility(View.VISIBLE);
             tvPropietarioReal.setError("");
         }
         return save_politicas;
     }
-    private boolean saveDocumentacion(){
+
+    private boolean saveDocumentacion() {
         boolean save_documentacion = false;
-        if (byteIneFrontal != null){
-            if (byteIneReverso != null){
-                if (byteComprobante != null){
+        if (byteIneFrontal != null) {
+            if (byteIneReverso != null) {
+                if (byteComprobante != null) {
                     if (byteFirmaAsesor != null) {
                         save_documentacion = true;
-                    }
-                    else{
+                    } else {
                         ivError10.setVisibility(View.VISIBLE);
                         tvFirmaAsesor.setError("");
                     }
-                }
-                else{
+                } else {
                     ivError10.setVisibility(View.VISIBLE);
                     tvComprobante.setError("");
                 }
-            }
-            else{
+            } else {
                 ivError10.setVisibility(View.VISIBLE);
                 tvIneReverso.setError("");
             }
-        }
-        else{
+        } else {
             ivError10.setVisibility(View.VISIBLE);
             tvIneFrontal.setError("");
         }
@@ -7701,8 +7511,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_enviar_datos, menu);
-        if (!is_edit)
-        {
+        if (!is_edit) {
             for (int i = 0; i < menu.size(); i++)
                 menu.getItem(i).setVisible(is_edit);
         }
@@ -7713,7 +7522,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-
+                finish();
                 break;
             case R.id.enviar:
                 final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
@@ -7721,12 +7530,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
                 credito = saveDatosCredito();
                 cliente = saveDatosPersonales();
-                if (tvEstadoCivilCli.getText().toString().trim().toUpperCase().equals("CASADO(A)") ||
-                        tvEstadoCivilCli.getText().toString().trim().toUpperCase().equals("UNIÓN LIBRE"))
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
+                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE"))
                     conyuge = saveConyuge();
                 else
                     conyuge = true;
-                if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() && Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) >= 30000)
+                if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() && Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) >= 30000)
                     economicos = saveDatosEconomicos();
                 else
                     economicos = true;
@@ -7737,7 +7546,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 politicas = savePoliticas();
                 documentacion = saveDocumentacion();
 
-                if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion){
+                if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
 
                     Update("estatus_completado", TBL_CREDITO_IND_REN, "1");
                     Update("estatus_completado", TBL_CLIENTE_IND_REN, "1");
@@ -7758,19 +7567,18 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
                     ContentValues cv = new ContentValues();
                     cv.put("estatus", 1);
-                    cv.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+                    cv.put("fecha_termino", m.ObtenerFecha("timestamp"));
 
-                    db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+                    db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                     Servicios_Sincronizado ss = new Servicios_Sincronizado();
                     ss.SendRenovacionInd(ctx, false);
                     loading.dismiss();
-                    Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "Termina guardado de solicitud", Toast.LENGTH_SHORT).show();
 
                     finish();
 
-                }
-                else {
+                } else {
                     loading.dismiss();
                     final AlertDialog solicitud;
                     solicitud = Popups.showDialogMessage(this, warning,
@@ -7793,229 +7601,229 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_ESTADO_NAC:
-                if (resultCode == REQUEST_CODE_ESTADO_NAC){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_ESTADO_NAC) {
+                    if (data != null) {
                         tvEstadoNacCli.setError(null);
-                        tvEstadoNacCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        tvEstadoNacCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
 
-                        if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                        if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                             params.put(4, "Hombre");
-                        else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                        else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                             params.put(4, "Mujer");
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
-                            params.put(5,"");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        Update("estado_nacimiento", TBL_CLIENTE_IND_REN, tvEstadoNacCli.getText().toString().trim().toUpperCase());
+                            params.put(5, "");
+                        etCurpCli.setText(m.GenerarCurp(params));
+                        Update("estado_nacimiento", TBL_CLIENTE_IND_REN, m.GetStr(tvEstadoNacCli));
                     }
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CLIE:
-                if (resultCode == REQUEST_CODE_OCUPACION_CLIE){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_OCUPACION_CLIE) {
+                    if (data != null) {
                         tvOcupacionCli.setError(null);
-                        tvOcupacionCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getExtra())+"","",null);
-                        if (row.getCount() > 0){
+                        tvOcupacionCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
+                        if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActividadEcoCli.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_CLIENTE_IND_REN, tvOcupacionCli.getText().toString().trim().toUpperCase());
-                        Update("actividad_economica", TBL_CLIENTE_IND_REN, tvActividadEcoCli.getText().toString().trim().toUpperCase());
+                        Update("ocupacion", TBL_CLIENTE_IND_REN, m.GetStr(tvOcupacionCli));
+                        Update("actividad_economica", TBL_CLIENTE_IND_REN, m.GetStr(tvActividadEcoCli));
                     }
                 }
                 break;
             case REQUEST_CODE_OCUPACION_NEG:
-                if (resultCode == REQUEST_CODE_OCUPACION_NEG){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_OCUPACION_NEG) {
+                    if (data != null) {
                         tvActEcoEspNeg.setError(null);
-                        tvActEcoEspNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getExtra())+"","",null);
-                        if (row.getCount() > 0){
+                        tvActEcoEspNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
+                        if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActEconomicaNeg.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_NEGOCIO_IND_REN, tvActEcoEspNeg.getText().toString().trim().toUpperCase());
-                        Update("actividad_economica", TBL_NEGOCIO_IND_REN, tvActEconomicaNeg.getText().toString().trim().toUpperCase());
+                        Update("ocupacion", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEcoEspNeg));
+                        Update("actividad_economica", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CONY:
-                if (resultCode == REQUEST_CODE_OCUPACION_CONY){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_OCUPACION_CONY) {
+                    if (data != null) {
                         tvOcupacionCony.setError(null);
-                        tvOcupacionCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("ocupacion", TBL_CONYUGE_IND_REN, tvOcupacionCony.getText().toString().trim().toUpperCase());
+                        tvOcupacionCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        Update("ocupacion", TBL_CONYUGE_IND_REN, m.GetStr(tvOcupacionCony));
                     }
                 }
                 break;
             case REQUEST_CODE_ACTIVIDAD_NEG:
-                if (resultCode == REQUEST_CODE_ACTIVIDAD_NEG){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_ACTIVIDAD_NEG) {
+                    if (data != null) {
                         tvActEconomicaNeg.setError(null);
-                        tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("actividad_economica", TBL_NEGOCIO_IND_REN, tvActEconomicaNeg.getText().toString().trim().toUpperCase());
+                        tvActEconomicaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        Update("actividad_economica", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
             case REQUEST_CODE_ESTADO_NAC_AVAL:
-                if (resultCode == REQUEST_CODE_ESTADO_NAC_AVAL){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_ESTADO_NAC_AVAL) {
+                    if (data != null) {
                         tvEstadoNacAval.setError(null);
-                        tvEstadoNacAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        tvEstadoNacAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
 
-                        if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                        if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                             params.put(4, "Hombre");
-                        else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                        else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                             params.put(4, "Mujer");
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
-                            params.put(5,"");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                        Update("estado_nacimiento", TBL_AVAL_IND_REN, tvEstadoNacAval.getText().toString().trim().toUpperCase());
+                            params.put(5, "");
+                        etCurpAval.setText(m.GenerarCurp(params));
+                        Update("estado_nacimiento", TBL_AVAL_IND_REN, m.GetStr(tvEstadoNacAval));
                     }
                 }
                 break;
             case REQUEST_CODE_OCUPACION_AVAL:
-                if (resultCode == REQUEST_CODE_OCUPACION_AVAL){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_OCUPACION_AVAL) {
+                    if (data != null) {
                         tvOcupacionAval.setError(null);
-                        tvOcupacionAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getExtra())+"","",null);
-                        if (row.getCount() > 0){
+                        tvOcupacionAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
+                        if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActividadEcoAval.setError(null);
                             tvActividadEcoAval.setText(row.getString(2));
-                            Update("ocupacion", TBL_AVAL_IND_REN, tvOcupacionAval.getText().toString().trim().toUpperCase());
-                            Update("actividad_economica", TBL_AVAL_IND_REN, tvActividadEcoAval.getText().toString().trim().toUpperCase());
+                            Update("ocupacion", TBL_AVAL_IND_REN, m.GetStr(tvOcupacionAval));
+                            Update("actividad_economica", TBL_AVAL_IND_REN, m.GetStr(tvActividadEcoAval));
                         }
                         row.close();
                     }
                 }
                 break;
             case REQUEST_CODE_COLONIA_CLIE:
-                if (resultCode == REQUEST_CODE_COLONIA_CLIE){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_COLONIA_CLIE) {
+                    if (data != null) {
                         tvColoniaCli.setError(null);
-                        tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaCli.getText().toString().trim().toUpperCase(), direccionIdCli, "CLIENTE");
+                        tvColoniaCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE) {
+                    if (data != null) {
                         tvLocalidadCli.setError(null);
-                        tvLocalidadCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase(), direccionIdCli, "CLIENTE");
+                        tvLocalidadCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CONY:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY) {
+                    if (data != null) {
                         tvLocalidadCony.setError(null);
-                        tvLocalidadCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+                        tvLocalidadCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_NEG:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG) {
+                    if (data != null) {
                         tvLocalidadNeg.setError(null);
-                        tvLocalidadNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
+                        tvLocalidadNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_AVAL:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_AVAL){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_LOCALIDAD_AVAL) {
+                    if (data != null) {
                         tvLocalidadAval.setError(null);
-                        tvLocalidadAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadAval.getText().toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+                        tvLocalidadAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_REF:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_REF){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_LOCALIDAD_REF) {
+                    if (data != null) {
                         tvLocalidadRef.setError(null);
-                        tvLocalidadRef.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadRef.getText().toString().trim().toUpperCase(), direccionIdRef, "REFERENCIA");
+                        tvLocalidadRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
             case REQUEST_CODE_COLONIA_CONY:
-                if (resultCode == REQUEST_CODE_COLONIA_CONY){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_COLONIA_CONY) {
+                    if (data != null) {
                         tvColoniaCony.setError(null);
-                        tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaCony.getText().toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+                        tvColoniaCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
             case REQUEST_CODE_COLONIA_AVAL:
-                if (resultCode == REQUEST_CODE_COLONIA_AVAL){
-                    if (data != null){
-                        tvColoniaAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaAval.getText().toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+                if (resultCode == REQUEST_CODE_COLONIA_AVAL) {
+                    if (data != null) {
+                        tvColoniaAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
             case REQUEST_CODE_COLONIA_NEG:
-                if (resultCode == REQUEST_CODE_COLONIA_NEG){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_COLONIA_NEG) {
+                    if (data != null) {
                         tvColoniaNeg.setError(null);
-                        tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaNeg.getText().toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
+                        tvColoniaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
             case REQUEST_CODE_COLONIA_REF:
-                if (resultCode == REQUEST_CODE_COLONIA_REF){
-                    if (data != null){
+                if (resultCode == REQUEST_CODE_COLONIA_REF) {
+                    if (data != null) {
                         tvColoniaRef.setError(null);
-                        tvColoniaRef.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaRef.getText().toString().trim().toUpperCase(), direccionIdRef, "REFERENCIA");
+                        tvColoniaRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_CLI:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFachadaCli.setError(null);
                         ibFotoFachCli.setVisibility(View.GONE);
                         ivFotoFachCli.setVisibility(View.VISIBLE);
                         byteFotoFachCli = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachCli).centerCrop().into(ivFotoFachCli);
                         try {
-                            Update("foto_fachada", TBL_CLIENTE_IND_REN, Miscellaneous.save(byteFotoFachCli, 1));
+                            Update("foto_fachada", TBL_CLIENTE_IND_REN, m.save(byteFotoFachCli, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8023,15 +7831,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_NEG:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFachadaNeg.setError(null);
                         ibFotoFachNeg.setVisibility(View.GONE);
                         ivFotoFachNeg.setVisibility(View.VISIBLE);
                         byteFotoFachNeg = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachNeg).centerCrop().into(ivFotoFachNeg);
                         try {
-                            Update("foto_fachada", TBL_NEGOCIO_IND_REN, Miscellaneous.save(byteFotoFachNeg, 1));
+                            Update("foto_fachada", TBL_NEGOCIO_IND_REN, m.save(byteFotoFachNeg, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8039,15 +7847,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_AVAL:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFachadaAval.setError(null);
                         ibFotoFachAval.setVisibility(View.GONE);
                         ivFotoFachAval.setVisibility(View.VISIBLE);
                         byteFotoFachAval = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachAval).centerCrop().into(ivFotoFachAval);
                         try {
-                            Update("foto_fachada", TBL_AVAL_IND_REN, Miscellaneous.save(byteFotoFachAval, 1));
+                            Update("foto_fachada", TBL_AVAL_IND_REN, m.save(byteFotoFachAval, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8055,8 +7863,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FIRMA_AVAL:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFirmaAval.setError(null);
                         ibFirmaAval.setVisibility(View.GONE);
                         ivFirmaAval.setVisibility(View.VISIBLE);
@@ -8065,7 +7873,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 .into(ivFirmaAval);
                         byteFirmaAval = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma", TBL_AVAL_IND_REN, Miscellaneous.save(byteFirmaAval, 3));
+                            Update("firma", TBL_AVAL_IND_REN, m.save(byteFirmaAval, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8073,8 +7881,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FIRMA_CLI:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFirmaCli.setError(null);
                         ibFirmaCli.setVisibility(View.GONE);
                         ivFirmaCli.setVisibility(View.VISIBLE);
@@ -8083,7 +7891,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 .into(ivFirmaCli);
                         byteFirmaCli = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma", TBL_CLIENTE_IND_REN, Miscellaneous.save(byteFirmaCli, 3));
+                            Update("firma", TBL_CLIENTE_IND_REN, m.save(byteFirmaCli, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8091,8 +7899,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FIRMA_ASESOR:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvFirmaAsesor.setError(null);
                         ibFirmaAsesor.setVisibility(View.GONE);
                         ivFirmaAsesor.setVisibility(View.VISIBLE);
@@ -8101,7 +7909,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 .into(ivFirmaAsesor);
                         byteFirmaAsesor = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma_asesor", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteFirmaAsesor, 3));
+                            Update("firma_asesor", TBL_DOCUMENTOS_REN, m.save(byteFirmaAsesor, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8109,18 +7917,18 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:
-                if (resultCode == RESULT_SCAN_SUPPRESSED){
-                    if (data != null){
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
                         tvIneFrontal.setError(null);
                         Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byteIneFrontal =  baos.toByteArray();
+                        byteIneFrontal = baos.toByteArray();
                         ibIneFrontal.setVisibility(View.GONE);
                         ivIneFrontal.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
-                            Update("ine_frontal", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteIneFrontal, 4));
+                            Update("ine_frontal", TBL_DOCUMENTOS_REN, m.save(byteIneFrontal, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8128,18 +7936,18 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO:
-                if (resultCode == RESULT_SCAN_SUPPRESSED){
-                    if (data != null){
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
                         tvIneReverso.setError(null);
                         Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byteIneReverso =  baos.toByteArray();
+                        byteIneReverso = baos.toByteArray();
                         ibIneReverso.setVisibility(View.GONE);
                         ivIneReverso.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
-                            Update("ine_reverso", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteIneReverso, 4));
+                            Update("ine_reverso", TBL_DOCUMENTOS_REN, m.save(byteIneReverso, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8147,15 +7955,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         /*tvCurp.setError(null);
                         ibCurp.setVisibility(View.GONE);
                         ivCurp.setVisibility(View.VISIBLE);
                         byteCurp = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);*/
                         /*try {
-                            Update("curp", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteCurp, 4));
+                            Update("curp", TBL_DOCUMENTOS_REN, m.save(byteCurp, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }*/
@@ -8163,15 +7971,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tvComprobante.setError(null);
                         ibComprobante.setVisibility(View.GONE);
                         ivComprobante.setVisibility(View.VISIBLE);
                         byteComprobante = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
-                            Update("comprobante", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteComprobante, 4));
+                            Update("comprobante", TBL_DOCUMENTOS_REN, m.save(byteComprobante, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -8181,99 +7989,106 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
-    public void setDate (String date, String campo){
+    public void setDate(String date, String campo) {
         try {
             Date strDate = sdf.parse(date);
             Calendar cal = Calendar.getInstance();
             cal.setTime(strDate);
-            switch (campo){
+            switch (campo) {
                 case "desembolso":
                     tvFechaDesembolso.setError(null);
                     tvFechaDesembolso.setText(sdf.format(cal.getTime()));
-                    String[] fechaDes = tvFechaDesembolso.getText().toString().split("-");
+                    String[] fechaDes = m.GetStr(tvFechaDesembolso).split("-");
                     Calendar c = Calendar.getInstance();
 
                     c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
-                    int nD=c.get(Calendar.DAY_OF_WEEK);
+                    int nD = c.get(Calendar.DAY_OF_WEEK);
                     String diaDesembolso = "";
-                    switch (nD){
-                        case 1: diaDesembolso = "DOMINGO";
+                    switch (nD) {
+                        case 1:
+                            diaDesembolso = "DOMINGO";
                             break;
-                        case 2: diaDesembolso = "LUNES";
+                        case 2:
+                            diaDesembolso = "LUNES";
                             break;
-                        case 3: diaDesembolso = "MARTES";
+                        case 3:
+                            diaDesembolso = "MARTES";
                             break;
-                        case 4: diaDesembolso = "MIÉRCOLES";
+                        case 4:
+                            diaDesembolso = "MIÉRCOLES";
                             break;
-                        case 5: diaDesembolso = "JUEVES";
+                        case 5:
+                            diaDesembolso = "JUEVES";
                             break;
-                        case 6: diaDesembolso = "VIERNES";
+                        case 6:
+                            diaDesembolso = "VIERNES";
                             break;
-                        case 7: diaDesembolso = "SÁBADO";
+                        case 7:
+                            diaDesembolso = "SÁBADO";
                             break;
                     }
                     tvDiaDesembolso.setText(diaDesembolso);
 
-                    Update("fecha_desembolso", TBL_CREDITO_IND_REN, tvFechaDesembolso.getText().toString().trim());
-                    Update("dia_desembolso", TBL_CREDITO_IND_REN, tvDiaDesembolso.getText().toString().trim());
+                    Update("fecha_desembolso", TBL_CREDITO_IND_REN, m.GetStr(tvFechaDesembolso));
+                    Update("dia_desembolso", TBL_CREDITO_IND_REN, m.GetStr(tvDiaDesembolso));
                     break;
                 case "fechaNacCli":
                     tvFechaNacCli.setError(null);
                     tvFechaNacCli.setText(date);
-                    tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                    tvEdadCli.setText(m.GetEdad(sdf.format(cal.getTime())));
                     HashMap<Integer, String> params = new HashMap<>();
 
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
-                    if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                         params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
                         params.put(4, "Mujer");
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
-                        params.put(5,"");
-                    Update("fecha_nacimiento", TBL_CLIENTE_IND_REN, tvFechaNacCli.getText().toString().trim());
-                    Update("edad", TBL_CLIENTE_IND_REN, tvEdadCli.getText().toString().trim());
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        params.put(5, "");
+                    Update("fecha_nacimiento", TBL_CLIENTE_IND_REN, m.GetStr(tvFechaNacCli));
+                    Update("edad", TBL_CLIENTE_IND_REN, m.GetStr(tvEdadCli));
+                    etCurpCli.setText(m.GenerarCurp(params));
                     break;
                 case "fechaNacAval":
                     tvFechaNacAval.setError(null);
                     tvFechaNacAval.setText(date);
-                    tvEdadAval.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                    tvEdadAval.setText(m.GetEdad(sdf.format(cal.getTime())));
                     HashMap<Integer, String> paramsAval = new HashMap<>();
 
-                    paramsAval.put(0, etNombreAval.getText().toString());
-                    paramsAval.put(1, etApPaternoAval.getText().toString());
-                    paramsAval.put(2, etApMaternoAval.getText().toString());
-                    paramsAval.put(3, tvFechaNacAval.getText().toString());
+                    paramsAval.put(0, m.GetStr(etNombreAval));
+                    paramsAval.put(1, m.GetStr(etApPaternoAval));
+                    paramsAval.put(2, m.GetStr(etApMaternoAval));
+                    paramsAval.put(3, m.GetStr(tvFechaNacAval));
 
-                    if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
+                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
                         paramsAval.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbMujer)
+                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
                         paramsAval.put(4, "Mujer");
                     else
                         paramsAval.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        paramsAval.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        paramsAval.put(5, m.GetStr(tvEstadoNacAval));
                     else
-                        paramsAval.put(5,"");
+                        paramsAval.put(5, "");
 
-                    Update("fecha_nacimiento", TBL_AVAL_IND_REN, tvFechaNacAval.getText().toString().trim());
-                    Update("edad", TBL_AVAL_IND_REN, tvEdadAval.getText().toString().trim());
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(paramsAval));
+                    Update("fecha_nacimiento", TBL_AVAL_IND_REN, m.GetStr(tvFechaNacAval));
+                    Update("edad", TBL_AVAL_IND_REN, m.GetStr(tvEdadAval));
+                    etCurpAval.setText(m.GenerarCurp(paramsAval));
                     break;
                 case "fechaNacRef":
                     tvFechaNacRef.setError(null);
                     tvFechaNacRef.setText(date);
-                    Update("fecha_nacimiento", TBL_REFERENCIA_IND_REN, tvFechaNacRef.getText().toString().trim());
+                    Update("fecha_nacimiento", TBL_REFERENCIA_IND_REN, m.GetStr(tvFechaNacRef));
                     break;
             }
         } catch (ParseException e) {
@@ -8281,13 +8096,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
-    public void setTimer(String timer, String campo){
+    public void setTimer(String timer, String campo) {
         ContentValues cv;
-        switch (campo){
+        switch (campo) {
             case "HoraVisita":
                 tvHoraVisita.setError(null);
                 tvHoraVisita.setText(timer);
-                Update("hora_visita", TBL_CREDITO_IND_REN, tvHoraVisita.getText().toString().trim());
+                Update("hora_visita", TBL_CREDITO_IND_REN, m.GetStr(tvHoraVisita));
                 break;
             case "HoraVisitaAval":
                 tvHoraLocAval.setError(null);
@@ -8298,7 +8113,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     }
 
     //===================== Listener GPS  =======================================================
-    private void ObtenerUbicacion (){
+    private void ObtenerUbicacion() {
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -8308,15 +8123,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             public void onComplete(String latitud, String longitud) {
 
                 ibMapCli.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapCli.setVisibility(View.VISIBLE);
                     UpdateDireccion("latitud", latitud, direccionIdCli, "CLIENTE");
                     UpdateDireccion("longitud", longitud, direccionIdCli, "CLIENTE");
                     Ubicacion(Double.parseDouble(latitud), Double.parseDouble(longitud));
 
-                }
-                else{
-                    latLngUbiCli = new LatLng(0,0);
+                } else {
+                    latLngUbiCli = new LatLng(0, 0);
                     UpdateDireccion("latitud", "", direccionIdCli, "CLIENTE");
                     UpdateDireccion("longitud", "", direccionIdCli, "CLIENTE");
                     pbLoadCli.setVisibility(View.GONE);
@@ -8337,25 +8151,25 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             Log.e("Proveedor", "GPS");
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
                 locationManager.removeUpdates(locationListener);
                 pbLoadCli.setVisibility(View.GONE);
                 ibMapCli.setEnabled(true);
-                latLngUbiCli = new LatLng(0,0);
+                latLngUbiCli = new LatLng(0, 0);
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
-    private void ObtenerUbicacionNeg (){
+
+    private void ObtenerUbicacionNeg() {
         pbLoadNeg.setVisibility(View.VISIBLE);
         ibMapNeg.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -8365,14 +8179,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             public void onComplete(String latitud, String longitud) {
 
                 ibMapNeg.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapNeg.setVisibility(View.VISIBLE);
                     UpdateDireccion("latitud", latitud, direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("longitud", longitud, direccionIdNeg, "NEGOCIO");
                     UbicacionNeg(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                }
-                else{
-                    latLngUbiNeg = new LatLng(0,0);
+                } else {
+                    latLngUbiNeg = new LatLng(0, 0);
                     UpdateDireccion("latitud", "", direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("longitud", "", direccionIdNeg, "NEGOCIO");
                     pbLoadNeg.setVisibility(View.GONE);
@@ -8393,25 +8206,25 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             Log.e("Proveedor", "GPS");
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
                 locationManager.removeUpdates(locationListener);
                 pbLoadNeg.setVisibility(View.GONE);
                 ibMapNeg.setEnabled(true);
-                latLngUbiNeg = new LatLng(0,0);
+                latLngUbiNeg = new LatLng(0, 0);
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
-    private void ObtenerUbicacionAval (){
+
+    private void ObtenerUbicacionAval() {
         pbLoadAval.setVisibility(View.VISIBLE);
         ibMapAval.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -8421,14 +8234,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             public void onComplete(String latitud, String longitud) {
 
                 ibMapAval.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapAval.setVisibility(View.VISIBLE);
                     UpdateDireccion("latitud", latitud, direccionIdAval, "AVAL");
                     UpdateDireccion("longitud", longitud, direccionIdAval, "AVAL");
                     UbicacionAval(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                }
-                else{
-                    latLngUbiAval = new LatLng(0,0);
+                } else {
+                    latLngUbiAval = new LatLng(0, 0);
                     UpdateDireccion("latitud", "", direccionIdAval, "AVAL");
                     UpdateDireccion("longitud", "", direccionIdAval, "AVAL");
                     pbLoadAval.setVisibility(View.GONE);
@@ -8449,26 +8261,25 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             Log.e("Proveedor", "GPS");
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
                 locationManager.removeUpdates(locationListener);
                 pbLoadNeg.setVisibility(View.GONE);
                 ibMapNeg.setEnabled(true);
-                latLngUbiAval = new LatLng(0,0);
+                latLngUbiAval = new LatLng(0, 0);
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
 
-    private void Ubicacion (final double lat, final double lon){
+    private void Ubicacion(final double lat, final double lon) {
         mapCli.onResume();
         try {
             MapsInitializer.initialize(getApplicationContext());
@@ -8490,12 +8301,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 mMapCli.getUiSettings().setAllGesturesEnabled(false);
                 mMapCli.getUiSettings().setMapToolbarEnabled(false);
 
-                addMarker(lat,lon);
+                addMarker(lat, lon);
 
             }
         });
     }
-    private void UbicacionNeg (final double lat, final double lon){
+
+    private void UbicacionNeg(final double lat, final double lon) {
         mapNeg.onResume();
         try {
             MapsInitializer.initialize(getApplicationContext());
@@ -8517,12 +8329,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 mMapNeg.getUiSettings().setAllGesturesEnabled(false);
                 mMapNeg.getUiSettings().setMapToolbarEnabled(false);
 
-                addMarkerNeg(lat,lon);
+                addMarkerNeg(lat, lon);
 
             }
         });
     }
-    private void UbicacionAval (final double lat, final double lon){
+
+    private void UbicacionAval(final double lat, final double lon) {
         mapAval.onResume();
         try {
             MapsInitializer.initialize(getApplicationContext());
@@ -8544,16 +8357,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 mMapAval.getUiSettings().setAllGesturesEnabled(false);
                 mMapAval.getUiSettings().setMapToolbarEnabled(false);
 
-                addMarkerAval(lat,lon);
+                addMarkerAval(lat, lon);
 
             }
         });
     }
 
-    private void addMarker (double lat, double lng){
-        LatLng coordenadas = new LatLng(lat,lng);
+    private void addMarker(double lat, double lng) {
+        LatLng coordenadas = new LatLng(lat, lng);
         latLngUbiCli = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         mMapCli.clear();
         mMapCli.addMarker(new MarkerOptions()
@@ -8565,10 +8378,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         pbLoadCli.setVisibility(View.GONE);
         ibMapCli.setVisibility(View.GONE);
     }
-    private void addMarkerNeg (double lat, double lng){
-        LatLng coordenadas = new LatLng(lat,lng);
+
+    private void addMarkerNeg(double lat, double lng) {
+        LatLng coordenadas = new LatLng(lat, lng);
         latLngUbiNeg = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         mMapNeg.clear();
         mMapNeg.addMarker(new MarkerOptions()
@@ -8580,10 +8394,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         pbLoadNeg.setVisibility(View.GONE);
         ibMapNeg.setVisibility(View.GONE);
     }
-    private void addMarkerAval (double lat, double lng){
-        LatLng coordenadas = new LatLng(lat,lng);
+
+    private void addMarkerAval(double lat, double lng) {
+        LatLng coordenadas = new LatLng(lat, lng);
         latLngUbiAval = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         mMapAval.clear();
         mMapAval.addMarker(new MarkerOptions()
@@ -8596,12 +8411,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         ibMapAval.setVisibility(View.GONE);
     }
 
-    private void CancelUbicacion (){
+    private void CancelUbicacion() {
         locationManager.removeUpdates(locationListener);
     }
     //========================================================================================================
 
-    private void ShowMensajes(String mensaje, String tipo){
+    private void ShowMensajes(String mensaje, String tipo) {
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(this, warning,
                 mensaje, R.string.accept, new Popups.DialogMessage() {
@@ -8616,12 +8431,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         if (tipo.equals("NEGOCIO"))
             etCapacidadPagoNeg.setText("");
-        else if(tipo.equals("AVAL"))
+        else if (tipo.equals("AVAL"))
             etCapacidadPagoAval.setText("");
     }
 
     private void Update(String key, String tabla, String value) {
-        Log.e("update", key+": "+value);
+        Log.e("update", key + ": " + value);
         ContentValues cv = new ContentValues();
         cv.put(key, value);
         db.update(tabla, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
@@ -8629,79 +8444,79 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     }
 
     private void UpdateDireccion(String key, String value, String direccion_id, String tipo) {
-        Log.e("update", key+": "+value);
+        Log.e("update", key + ": " + value);
         ContentValues cv = new ContentValues();
         cv.put(key, value);
         db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccion_id, tipo});
 
     }
 
-    public void setCalle (String calle, String tipo){
-        switch (tipo){
+    public void setCalle(String calle, String tipo) {
+        switch (tipo) {
             case "PRINCIPAL":
                 tvPrincipal.setError(null);
                 tvPrincipal.setText(calle);
-                Update("calle_principal",TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
+                Update("calle_principal", TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
                 break;
             case "TRASERA":
                 tvTrasera.setError(null);
                 tvTrasera.setText(calle);
-                Update("calle_trasera",TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
+                Update("calle_trasera", TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
                 break;
             case "LATERAL UNO":
                 tvLateraUno.setError(null);
                 tvLateraUno.setText(calle);
-                Update("lateral_uno",TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
+                Update("lateral_uno", TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
                 break;
             case "LATERAL DOS":
                 tvLateraDos.setError(null);
                 tvLateraDos.setText(calle);
-                Update("lateral_dos",TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
+                Update("lateral_dos", TBL_CROQUIS_IND_REN, calle.trim().toUpperCase());
                 break;
         }
     }
 
-    private void MontoMaximoNeg (){
-        double ing_mensual = (etIngMenNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngMenNeg.getText().toString().trim().replace(",",""));
-        double ing_otros = (etOtrosIngNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etOtrosIngNeg.getText().toString().trim().replace(",",""));
+    private void MontoMaximoNeg() {
+        double ing_mensual = (m.GetStr(etIngMenNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngMenNeg).replace(",", ""));
+        double ing_otros = (m.GetStr(etOtrosIngNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etOtrosIngNeg).replace(",", ""));
 
-        double gas_mensual = (etGastosMenNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosMenNeg.getText().toString().trim().replace(",",""));
-        double gas_agua = (etGastosAguaNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosAguaNeg.getText().toString().trim().replace(",",""));
-        double gas_luz = (etGastosLuzNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosLuzNeg.getText().toString().trim().replace(",",""));
-        double gas_telefono = (etGastosTelNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosTelNeg.getText().toString().trim().replace(",",""));
-        double gas_renta = (etGastosRentaNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosRentaNeg.getText().toString().trim().replace(",",""));
-        double gas_otro = (etGastosOtrosNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosOtrosNeg.getText().toString().trim().replace(",",""));
+        double gas_mensual = (m.GetStr(etGastosMenNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosMenNeg).replace(",", ""));
+        double gas_agua = (m.GetStr(etGastosAguaNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosAguaNeg).replace(",", ""));
+        double gas_luz = (m.GetStr(etGastosLuzNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosLuzNeg).replace(",", ""));
+        double gas_telefono = (m.GetStr(etGastosTelNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosTelNeg).replace(",", ""));
+        double gas_renta = (m.GetStr(etGastosRentaNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosRentaNeg).replace(",", ""));
+        double gas_otro = (m.GetStr(etGastosOtrosNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosOtrosNeg).replace(",", ""));
 
         double ingreso = ing_mensual + ing_otros;
         double gastos = gas_mensual + gas_agua + gas_luz + gas_telefono + gas_renta + gas_otro;
 
         tvMontoMaxNeg.setText(dfnd.format(ingreso - gastos));
-        Update("monto_maximo", TBL_NEGOCIO_IND_REN, tvMontoMaxNeg.getText().toString().trim().replace(",",""));
+        Update("monto_maximo", TBL_NEGOCIO_IND_REN, m.GetStr(tvMontoMaxNeg).replace(",", ""));
 
         tvIngresoEco.setText(dfnd.format(ingreso));
-        Update("ingreso", TBL_ECONOMICOS_IND_REN, tvIngresoEco.getText().toString().trim().replace(",",""));
+        Update("ingreso", TBL_ECONOMICOS_IND_REN, m.GetStr(tvIngresoEco).replace(",", ""));
 
     }
 
-    private void MontoMaximoAval (){
-        double ing_mensual = (etIngMenAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngMenAval.getText().toString().trim().replace(",",""));
-        double ing_otros = (etIngOtrosAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngOtrosAval.getText().toString().trim().replace(",",""));
+    private void MontoMaximoAval() {
+        double ing_mensual = (m.GetStr(etIngMenAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngMenAval).replace(",", ""));
+        double ing_otros = (m.GetStr(etIngOtrosAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngOtrosAval).replace(",", ""));
 
-        double gas_mensual = (etGastosSemAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosSemAval.getText().toString().trim().replace(",",""));
-        double gas_agua = (etGastosAguaAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosAguaAval.getText().toString().trim().replace(",",""));
-        double gas_luz = (etGastosLuzAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosLuzAval.getText().toString().trim().replace(",",""));
-        double gas_telefono = (etGastosTelAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosTelAval.getText().toString().trim().replace(",",""));
-        double gas_renta = (etGastosRentaAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosRentaAval.getText().toString().trim().replace(",",""));
-        double gas_otro = (etGastosOtrosAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosOtrosAval.getText().toString().trim().replace(",",""));
+        double gas_mensual = (m.GetStr(etGastosSemAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosSemAval).replace(",", ""));
+        double gas_agua = (m.GetStr(etGastosAguaAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosAguaAval).replace(",", ""));
+        double gas_luz = (m.GetStr(etGastosLuzAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosLuzAval).replace(",", ""));
+        double gas_telefono = (m.GetStr(etGastosTelAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosTelAval).replace(",", ""));
+        double gas_renta = (m.GetStr(etGastosRentaAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosRentaAval).replace(",", ""));
+        double gas_otro = (m.GetStr(etGastosOtrosAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etGastosOtrosAval).replace(",", ""));
 
         double ingreso = ing_mensual + ing_otros;
         double gastos = gas_mensual + gas_agua + gas_luz + gas_telefono + gas_renta + gas_otro;
 
         tvMontoMaxAval.setText(dfnd.format(ingreso - gastos));
-        Update("monto_maximo", TBL_AVAL_IND_REN, tvMontoMaxAval.getText().toString().trim().replace(",",""));
+        Update("monto_maximo", TBL_AVAL_IND_REN, m.GetStr(tvMontoMaxAval).replace(",", ""));
     }
 
-    private void showDiasSemana(){
+    private void showDiasSemana() {
         selectedItemsDias = new ArrayList<>();
         new AlertDialog.Builder(RenovacionCreditoInd.this)
                 .setTitle("Días de Venta")
@@ -8720,15 +8535,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         String dias = "";
                         Collections.sort(selectedItemsDias);
-                        for (int i = 0; i < selectedItemsDias.size(); i++){
-                            if(i == 0)
+                        for (int i = 0; i < selectedItemsDias.size(); i++) {
+                            if (i == 0)
                                 dias += _dias_semana[selectedItemsDias.get(i)];
                             else
-                                dias += ", "+_dias_semana[selectedItemsDias.get(i)];
+                                dias += ", " + _dias_semana[selectedItemsDias.get(i)];
                         }
                         tvDiasVentaNeg.setError(null);
                         tvDiasVentaNeg.setText(dias);
-                        Update("dias_venta", TBL_NEGOCIO_IND_REN, tvDiasVentaNeg.getText().toString().trim().toUpperCase());
+                        Update("dias_venta", TBL_NEGOCIO_IND_REN, m.GetStr(tvDiasVentaNeg));
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -8739,7 +8554,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }).show();
     }
 
-    private void initComponents (String idSolicitud) {
+    private void initComponents(String idSolicitud) {
 
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -8769,7 +8584,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etMontoPrestamo.setText(dfnd.format(row.getInt(7)));
         etMontoPrestamo.setEnabled(isEditCre);
         if (!row.getString(7).trim().isEmpty()) {
-            tvCantidadLetra.setText((Miscellaneous.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+            tvCantidadLetra.setText((m.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
             if (row.getInt(7) >= 30000)
                 llPropiedades.setVisibility(View.VISIBLE);
         }
@@ -8787,7 +8602,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //Llenado de datos del cliente
         row = dBhelper.getRecords(TBL_CLIENTE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        if (!row.getString(36).trim().isEmpty()){
+        if (!row.getString(36).trim().isEmpty()) {
             llComentCli.setVisibility(View.VISIBLE);
             tvComentAdminCli.setText(row.getString(36).trim().toUpperCase());
         }
@@ -8901,7 +8716,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(32).isEmpty()) {
             File fachadaFile = new File(ROOT_PATH + "Fachada/" + row.getString(32));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachCli = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+            byteFotoFachCli = m.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachCli);
             ibFotoFachCli.setVisibility(View.GONE);
             ivFotoFachCli.setVisibility(View.VISIBLE);
@@ -8911,7 +8726,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(34).isEmpty()) {
             File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(34));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaCli = Miscellaneous.getBytesUri(ctx, uriFirma, 0);
+            byteFirmaCli = m.getBytesUri(ctx, uriFirma, 0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaCli);
             ibFirmaCli.setVisibility(View.GONE);
             ivFirmaCli.setVisibility(View.VISIBLE);
@@ -8981,7 +8796,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //Llenado de datos del negocio
         row = dBhelper.getRecords(TBL_NEGOCIO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        if (!row.getString(27).trim().isEmpty()){
+        if (!row.getString(27).trim().isEmpty()) {
             llComentNeg.setVisibility(View.VISIBLE);
             tvComentAdminNeg.setText(row.getString(27).trim().toUpperCase());
         }
@@ -9062,7 +8877,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
         }
 
-        if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO"))
+        if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO"))
             llOperacionesEfectivo.setVisibility(View.VISIBLE);
         else
             llOperacionesEfectivo.setVisibility(View.GONE);
@@ -9078,7 +8893,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(24).isEmpty()) {
             File fachadaFile = new File(ROOT_PATH + "Fachada/" + row.getString(24));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachNeg = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+            byteFotoFachNeg = m.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachNeg);
             ibFotoFachNeg.setVisibility(View.GONE);
             ivFotoFachNeg.setVisibility(View.VISIBLE);
@@ -9092,7 +8907,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //Llenado de datos del aval
         row = dBhelper.getRecords(TBL_AVAL_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        if (!row.getString(50).trim().isEmpty()){
+        if (!row.getString(50).trim().isEmpty()) {
             llComentAval.setVisibility(View.VISIBLE);
             tvComentAdminAval.setText(row.getString(50).trim().toUpperCase());
         }
@@ -9231,7 +9046,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(46).isEmpty()) {
             File fachadaFile = new File(ROOT_PATH + "Fachada/" + row.getString(46));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachAval = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+            byteFotoFachAval = m.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachAval);
             ibFotoFachAval.setVisibility(View.GONE);
             ivFotoFachAval.setVisibility(View.VISIBLE);
@@ -9241,7 +9056,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(48).isEmpty()) {
             File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(48));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaAval = Miscellaneous.getBytesUri(ctx, uriFirma, 0);
+            byteFirmaAval = m.getBytesUri(ctx, uriFirma, 0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaAval);
             ibFirmaAval.setVisibility(View.GONE);
             ivFirmaAval.setVisibility(View.VISIBLE);
@@ -9252,7 +9067,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //Llena datos de referencia
         row = dBhelper.getRecords(TBL_REFERENCIA_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        if (!row.getString(9).trim().isEmpty()){
+        if (!row.getString(9).trim().isEmpty()) {
             llComentRef.setVisibility(View.VISIBLE);
             tvComentAdminRef.setText(row.getString(9).trim().toUpperCase());
         }
@@ -9294,7 +9109,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         row = dBhelper.getRecords(TBL_CROQUIS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        if (!row.getString(8).trim().isEmpty()){
+        if (!row.getString(8).trim().isEmpty()) {
             llComentCro.setVisibility(View.VISIBLE);
             tvComentAdminCro.setText(row.getString(8).trim().toUpperCase());
         }
@@ -9346,7 +9161,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(2).isEmpty()) {
             File ineFrontalFile = new File(ROOT_PATH + "Documentos/" + row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
-            byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal, 0);
+            byteIneFrontal = m.getBytesUri(ctx, uriIneFrontal, 0);
             Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
             ibIneFrontal.setVisibility(View.GONE);
             ivIneFrontal.setVisibility(View.VISIBLE);
@@ -9355,7 +9170,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(3).isEmpty()) {
             File ineReversoFile = new File(ROOT_PATH + "Documentos/" + row.getString(3));
             Uri uriIneReverso = Uri.fromFile(ineReversoFile);
-            byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso, 0);
+            byteIneReverso = m.getBytesUri(ctx, uriIneReverso, 0);
             Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
             ibIneReverso.setVisibility(View.GONE);
             ivIneReverso.setVisibility(View.VISIBLE);
@@ -9364,7 +9179,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         /*if (!row.getString(4).isEmpty()){
             File curpFile = new File(ROOT_PATH + "Documentos/"+row.getString(4));
             Uri uriCurp = Uri.fromFile(curpFile);
-            byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
+            byteCurp = m.getBytesUri(ctx, uriCurp,0);
             Glide.with(ctx).load(uriCurp).into(ivCurp);
             ibCurp.setVisibility(View.GONE);
             ivCurp.setVisibility(View.VISIBLE);
@@ -9373,7 +9188,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(5).isEmpty()) {
             File comprobanteFile = new File(ROOT_PATH + "Documentos/" + row.getString(5));
             Uri uriComprobante = Uri.fromFile(comprobanteFile);
-            byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante, 0);
+            byteComprobante = m.getBytesUri(ctx, uriComprobante, 0);
             Glide.with(ctx).load(uriComprobante).into(ivComprobante);
             ibComprobante.setVisibility(View.GONE);
             ivComprobante.setVisibility(View.VISIBLE);
@@ -9382,7 +9197,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         if (!row.getString(7).isEmpty()) {
             File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(7));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaAsesor = Miscellaneous.getBytesUri(ctx, uriFirma, 0);
+            byteFirmaAsesor = m.getBytesUri(ctx, uriFirma, 0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaAsesor);
             ibFirmaAsesor.setVisibility(View.GONE);
             ivFirmaAsesor.setVisibility(View.VISIBLE);
@@ -9505,7 +9320,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
-        if (!isEditAva){
+        if (!isEditAva) {
             etNombreAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApMaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9579,16 +9394,30 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
-        if (!isEditPol){
-            for(int i = 0; i < rgPropietarioReal.getChildCount(); i++){
+        if (!isEditPol) {
+            for (int i = 0; i < rgPropietarioReal.getChildCount(); i++) {
                 ((RadioButton) rgPropietarioReal.getChildAt(i)).setEnabled(false);
             }
-            for(int i = 0; i < rgProveedor.getChildCount(); i++){
+            for (int i = 0; i < rgProveedor.getChildCount(); i++) {
                 ((RadioButton) rgProveedor.getChildAt(i)).setEnabled(false);
             }
-            for(int i = 0; i < rgPoliticamenteExp.getChildCount(); i++){
+            for (int i = 0; i < rgPoliticamenteExp.getChildCount(); i++) {
                 ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(false);
             }
         }
+
+    }
+
+
+    private boolean getGastoMen() {
+
+        double sum = Double.parseDouble(m.GetStr(etGastosMenNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosAguaNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosLuzNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosTelNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosRentaNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosOtrosNeg).replace(",", ""));
+
+        return (sum > 0);
     }
 }

@@ -26,7 +26,6 @@ import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
@@ -101,12 +100,7 @@ public class cvi_detalle_fragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Cursor row;
-
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
+        Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();

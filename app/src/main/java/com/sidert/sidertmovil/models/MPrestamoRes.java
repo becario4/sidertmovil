@@ -55,6 +55,12 @@ public class MPrestamoRes {
     @SerializedName("pagos")
     @Expose
     private List<MPago> pagos = null;
+    @SerializedName("tel_casa")
+    @Expose
+    private String telCasa;
+    @SerializedName("tel_celular")
+    @Expose
+    private String telCelular;
 
     public Integer getId() {
         return id;
@@ -182,5 +188,21 @@ public class MPrestamoRes {
 
     public void setPagos(List<MPago> pagos) {
         this.pagos = pagos;
+    }
+
+    public String getTelCasa() {
+        return telCasa;
+    }
+
+    public void setTelCasa(String telCasa) {
+        this.telCasa = telCasa;
+    }
+
+    public String getTelCelular() {
+        return telCelular;
+    }
+
+    public void setTelCelular(String telCelular) {
+        this.telCelular = telCelular;
     }
 }

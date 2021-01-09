@@ -27,7 +27,8 @@ import com.sidert.sidertmovil.utils.Popups;
 import java.util.Objects;
 
 
-
+/**Vista de geolocalizacion grupal donde visualiza el menu de PRESIDENTE, TESORERO, SECRETARIO, INTEGRANTES
+ * cuenta con un menu bottom */
 public class GeolocalizacionGpo extends AppCompatActivity {
 
     private BottomNavigationView nvMenu;
@@ -46,9 +47,12 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
 
+        /**Obtiene los datos que se pasaron entre clases*/
         b = new Bundle();
         b.putInt(Constants._ID, getIntent().getIntExtra(Constants._ID,0));
         b.putString(Constants.NUM_SOLICITUD, getIntent().getStringExtra(Constants.NUM_SOLICITUD));
+
+        /**Valida que opcion fue seleccionado para mostrar la vista*/
         switch (getIntent().getIntExtra(Constants.MODULO,0)){
             case 1:
                 nvMenu.setSelectedItemId(R.id.nvPresidente);
@@ -65,12 +69,14 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         }
     }
 
+    /**Evento de menu para seleccionar que formulario de geolocalizacion*/
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final Fragment current;
             switch (item.getItemId()) {
                 case R.id.nvPresidente:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de presidente y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
                     if ((current instanceof geo_tesorera_fragment)){
                         if (((geo_tesorera_fragment) current).flag_edit){
@@ -142,6 +148,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         setFragment(NameFragments.GEO_PRESIDENTE, b);
                     break;
                 case R.id.nvTesorera:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de tesorera y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
                     if ((current instanceof geo_presidente_fragment)){
@@ -214,6 +221,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         setFragment(NameFragments.GEO_TESORERA, b);
                     break;
                 case R.id.nvSecretaria:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de secretaria y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
                     if ((current instanceof geo_presidente_fragment)){
@@ -286,6 +294,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
                         setFragment(NameFragments.GEO_SECRETARIA, b);
                     break;
                 case R.id.nvIntegrantes:
+                    /**Manda a lista de integrantes*/
                     setFragment(NameFragments.GEO_MIEMBROS, b);
                     break;
             }
@@ -293,6 +302,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         }
     };
 
+    /**Funcion para hacer las transiciones de fragmentos de las vistas de geolocalizacion*/
     public void setFragment(String fragment, Bundle extras) {
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);
         FragmentManager manager = getSupportFragmentManager();
@@ -362,6 +372,7 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
+    /**Funcion de retroceso para salir de la vista*/
     @Override
     public void onBackPressed() {
         final Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);

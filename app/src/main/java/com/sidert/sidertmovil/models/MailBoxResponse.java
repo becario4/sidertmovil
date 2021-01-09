@@ -10,12 +10,12 @@ public class MailBoxResponse {
     @SerializedName("code")
     @Expose
     private Integer code;
-    @SerializedName("data")
+    @SerializedName("id")
     @Expose
-    private Integer data;
-    @SerializedName("errors")
+    private Integer id;
+    @SerializedName("mensaje")
     @Expose
-    private List<Object> errors = null;
+    private String mensaje;
 
     public Integer getCode() {
         return code;
@@ -25,20 +25,20 @@ public class MailBoxResponse {
         this.code = code;
     }
 
-    public Integer getData() {
-        return data;
+    public Integer getId() {
+        return id;
     }
 
-    public void setData(Integer data) {
-        this.data = data;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public List<Object> getErrors() {
-        return errors;
+    public String getMensaje() {
+        return mensaje;
     }
 
-    public void setErrors(List<Object> errors) {
-        this.errors = errors;
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
 
 }

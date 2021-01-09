@@ -74,6 +74,8 @@ import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 
+/**Clase solo para realizar la recuperacion de cobro en efectivo
+ * solo para AGF (apoyo a gastos funerarios)*/
 public class RecuperacionRecibos extends AppCompatActivity {
 
     private Context ctx;
@@ -161,9 +163,9 @@ public class RecuperacionRecibos extends AppCompatActivity {
         tvMedioPago     = findViewById(R.id.tvMedioPago);
 
         llDuracionPrestamo  = findViewById(R.id.llDuracionPrestamo);
-        llImprimirRecibo = findViewById(R.id.llImprimirRecibo);
+        llImprimirRecibo    = findViewById(R.id.llImprimirRecibo);
         tvImprimirRecibo    = findViewById(R.id.tvImprimirRecibo);
-        ibImprimir            = findViewById(R.id.ibImprimir);
+        ibImprimir          = findViewById(R.id.ibImprimir);
         llFolioRecibo       = findViewById(R.id.llFolioRecibo);
         etFolioRecibo       = findViewById(R.id.etFolioRecibo);
         llFotoGaleria       = findViewById(R.id.llFotoGaleria);
@@ -172,7 +174,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
         ibGaleria           = findViewById(R.id.ibGaleria);
         ivEvidencia         = findViewById(R.id.ivEvidencia);
 
-
+        /**Obtencion de datos que se enviaron entre clases*/
         grupoId      = getIntent().getStringExtra("grupo_id");
         numSolicitud = getIntent().getStringExtra("num_solicitud");
         nombre       = getIntent().getStringExtra("nombre");
@@ -182,6 +184,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
         tipo         = getIntent().getStringExtra("tipo");
         clienteId    = getIntent().getStringExtra("cliente_id");
 
+        /**Valida si no puede gestionar debido a politicas como el monto solicitado
+         * es mayor a $29,000 pesos*/
         if (!getIntent().getBooleanExtra("print_recibo", false)){
             AlertDialog solicitud;
             solicitud = Popups.showDialogMessage(this, warning,
@@ -206,19 +210,24 @@ public class RecuperacionRecibos extends AppCompatActivity {
         if (tipo.equals("AGF"))
             etTipoCobro.setText("APOYO GASTOS FUNERARIOS");
 
+        /**Si la recuperacion es de tipo AGF y el grupo contiene integrantes
+         * se habilitan cirtos campos*/
         if (tipo.equals("AGF") && getIntent().getIntExtra("integrantes",0) > 0){
             llIntegrantes.setVisibility(View.VISIBLE);
             llDuracionPrestamo.setVisibility(View.VISIBLE);
         }
 
+        /**Se colocan datos del prestamo*/
         etNombre.setText(nombre);
         etIntegrantes.setText(String.valueOf(getIntent().getIntExtra("integrantes", 0)));
         etMeses.setText(getIntent().getIntExtra("meses",0)+" MESES");
         etMonto.setText(Miscellaneous.moneyFormat(monto));
 
+        /**Se cargan arreglos como medios de pagos, y de impresion*/
         _medio_pago = getResources().getStringArray(R.array.medio_pago);
         _imprimir = getResources().getStringArray(R.array.imprimir);
 
+        /**Eventos de click para la recuperacion*/
         tvMedioPago.setOnClickListener(tvMedioPago_OnClick);
         tvImprimirRecibo.setOnClickListener(tvImprimirRecibo_OnClick);
 
@@ -230,6 +239,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
         initComponents();
     }
 
+    /**Evento de click para seleccionar el medio de pago*/
     private View.OnClickListener tvMedioPago_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -240,7 +250,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
                             tvMedioPago.setError(null);
                             tvMedioPago.setText(_medio_pago[position]);
                             byteEvidencia = null;
-                            if (Miscellaneous.MedioPago(tvMedioPago) == 6) {
+                            /**En caso de seleccionar medio de pago EFECTIVO se habialitan opcion de impresion*/
+                            if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6) {
                                 llImprimirRecibo.setVisibility(View.VISIBLE);
                                 ibGaleria.setEnabled(false);
                                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
@@ -249,6 +260,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
                                 llFotoGaleria.setVisibility(View.VISIBLE);
                                 ivEvidencia.setVisibility(View.GONE);
                             }
+                            /**Cualquier seleccion diferente a efectivo, oculta las acciones
+                             * para imprimir y solo se muestra captura de evidencia*/
                             else{
                                 llImprimirRecibo.setVisibility(View.GONE);
                                 ibGaleria.setEnabled(true);
@@ -265,6 +278,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar si va a imprimir o captura manual el folio de recibo manual*/
     private View.OnClickListener tvImprimirRecibo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -274,6 +288,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int position) {
                             tvImprimirRecibo.setError(null);
                             tvImprimirRecibo.setText(_imprimir[position]);
+                            /**Define la accion que va hacer dependiendo a lo seleccionado*/
                             SelectImprimirRecibos(position);
                         }
                     });
@@ -282,9 +297,12 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Evento de click para realizar impresiones*/
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            /**Se manda informacion para poder realizar la impresiones
+             * como el monto a cobrar tipo de cobro y datos para realizar consultas*/
             Intent i_formato_recibo = new Intent(ctx, FormatoRecibos.class);
             i_formato_recibo.putExtra("grupo_id", grupoId);
             i_formato_recibo.putExtra("num_solicitud", numSolicitud);
@@ -300,6 +318,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Evento para tomar una fotografia*/
     private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -308,6 +327,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Evento para adjuntar un archivo JPEG desde galeria con la libreria
+     * del recortador de imagen*/
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -316,6 +337,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
                 requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
             } else {
                 int compress = 10;
+                /**Valida si el dispositivo es un samsung comprimirá la imagen al 40%
+                 * de lo contrario lo dejara al 10% de calidad para eso de los redmi*/
                 if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
                     compress = 40;
                 CropImage.activity()
@@ -328,6 +351,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Evento para cuando ya fue carpturada la evidencia y quieren cambiar de imagen siempre y cuando
+     * no este guardada la recuperacion porque entonces solo le permitira visualizar la imagen*/
     private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -388,6 +413,8 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     };
 
+    /**Funcion para estables acciones dependiendo a lo seccionado de impresiones
+     * para saber si va a imprimir o solo va capturar folio manual del recibo*/
     private void SelectImprimirRecibos(int pos){
         switch (pos){
             case 0: // Imprimir Recibos
@@ -404,8 +431,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                     llFolioRecibo.setVisibility(View.GONE);
                 }
                 break;
-            case 1: //No cuenta con bateria la impresora
-                Log.v("aqui pasa", "Select Imprimir recibos");
+            case 1: //No cuenta con bateria la impresora captura folio manual
                 etFolioRecibo.setError(getResources().getString(R.string.campo_requerido));
                 tvImprimirRecibo.setError(null);
                 llFolioRecibo.setVisibility(View.VISIBLE);
@@ -424,19 +450,25 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     }
 
+    /**Funcion para obtener las respuestas de las otras clases como por ejemplo la de la camara
+     * impresiones, o galeria*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case REQUEST_CODE_IMPRESORA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case REQUEST_CODE_IMPRESORA:/**Respuesta a la peticion de la impresora*/
+                if (resultCode == Activity.RESULT_OK){/**Valida que la clase de impresora mando una respuesta*/
+                    if (data != null){/**Valida que la respuesta venga con informacion*/
+                        /**Muestra mensaje dependiendo a lo realizado en la impresion*/
                         Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
+                        /**Valida si se realizo alguna impresion ORIGINAL o COPIA*/
                         if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
 
+                            /**Se busca si existe algun registro con eso datos para saber si se crea el registro en parcial*/
                             String sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ?";
                             Cursor row = db.rawQuery(sql, new String[]{grupoId, numSolicitud, tipo});
 
+                            /**Si no encontro registros se crea un registro en parcial*/
                             if (row.getCount() == 0){
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, grupoId);
@@ -457,10 +489,12 @@ public class RecuperacionRecibos extends AppCompatActivity {
                                 else
                                     params.put(13, "");
 
+                                /**Se obtiene el id del registro insertado*/
                                 idRespuesta = dBhelper.saveRecuperacionRecibos(db, params);
 
                             }
 
+                            /**Se dehabilitan los campos anteriores a la impresion para que no haya modificaciones*/
                             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             tvMedioPago.setEnabled(false);
                             tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -475,26 +509,29 @@ public class RecuperacionRecibos extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_CAMARA_TICKET:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        tipoImagen = "FOTOGRAFIA";
+            case REQUEST_CODE_CAMARA_TICKET:/**Respuesta a la peticion de la fotografia*/
+                if (resultCode == Activity.RESULT_OK){ /**Valida que la clase de impresora mando una respuesta*/
+                    if (data != null){/**Valida que la respuesta venga con informacion*/
+                        tipoImagen = "FOTOGRAFIA";/**Se define el origen de la evidencia*/
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
+                        /**Se almacena la informacion de la respuesta (Fotografia en array de byte) para guardar posteriormente*/
                         byteEvidencia = data.getByteArrayExtra(PICTURE);
+                        /**Se coloca la fotografia en el contenedor del imageView*/
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
                     }
                 }
                 break;
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (data != null){
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Respuesta a la peticion de la fotografia*/
+                if (data != null){/**Valida que la respuesta venga con informacion*/
                     try{
-                        tipoImagen = "GALERIA";
+                        tipoImagen = "GALERIA";/**Se define el origen de la evidencia*/
                         CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                        imageUri = result.getUri();
+                        imageUri = result.getUri();/**Se obtiene la direccion donde esta alojado la iamgen*/
 
+                        /**Convierte el archivo adjunto a un array de bytes*/
                         byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
 
                         ibFoto.setVisibility(View.GONE);
@@ -502,6 +539,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
 
+                        /**Se le coloca la fecha y hora para saber cuando fue adjuntada*/
                         View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
 
                         Bitmap newBitMap = null;
@@ -518,11 +556,14 @@ public class RecuperacionRecibos extends AppCompatActivity {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         newBitMap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
 
+                        /**Se obtiene la nueva imagen con la fecha y hora*/
                         byteEvidencia = baos.toByteArray();
 
+                        /**Se coloca en el contenedor del imageView*/
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                     }catch (Exception e){
+                        /**En caso de adjuntar un archivo con diferente extension al JPEG mostrara un mensaje*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "",
                                 R.string.error_image, R.string.accept, new Popups.DialogMessage() {
                                     @Override
@@ -540,11 +581,14 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     }
 
+    /**Funcion para inicializar los campos en caso de que ya haya un registros en estado parcial o ya este guardado*/
     private void initComponents(){
 
 
         String sql = "";
         Cursor row = null;
+        /**Se establece en que tabla va consultar dependiendo el tipo si es AGF o CC
+         * PD: si no mal recuerdo creo solo es para AGF*/
         if (tipo.equals("AGF")) {
             sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ?";
             row = db.rawQuery(sql, new String[]{grupoId, numSolicitud, tipo});
@@ -556,11 +600,13 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
 
         Log.e("ROW", "asd"+row.getCount());
+        /**Si obtuvo algun registro comenzara a llenar los campos*/
         if (row.getCount() > 0){
             row.moveToFirst();
 
             idRespuesta = row.getLong(0);
             tvMedioPago.setText(row.getString(3));
+            /**Se valida se hizo un cobro en efectivo para mostrar los campos de impresion*/
             if (row.getString(3).equals("EFECTIVO") && row.getString(12).equals("SI")) {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 ibGaleria.setEnabled(false);
@@ -570,7 +616,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 ivEvidencia.setVisibility(View.GONE);
 
-
+                /**Se obtiene el folio impreso de la gestion*/
                 String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND nombre = ?";
                 Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{grupoId, numSolicitud, tipo, nombre});
 
@@ -585,6 +631,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
+                /**Si ya se habia agregado la evidencia se coloca la imagen*/
                 if (!row.getString(4).isEmpty()){
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+row.getString(4));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
@@ -596,6 +643,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                     tvFotoGaleria.setError(null);
                 }
             }
+            /**Si cobro en efectivo pero no imprimio solo registro el folio manual*/
             else if (row.getString(3).equals("EFECTIVO") && row.getString(12).equals("NO")) {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 ibGaleria.setEnabled(false);
@@ -629,6 +677,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                     tvFotoGaleria.setError(null);
                 }
             }
+            /**Cuando gestiono por otro medio de pago diferente a efectivo*/
             else{
                 if (row.getString(4).isEmpty()) {
                     llImprimirRecibo.setVisibility(View.GONE);
@@ -663,9 +712,12 @@ public class RecuperacionRecibos extends AppCompatActivity {
                 ibImprimir.setVisibility(View.GONE);
             }
         }
+        /**Esta funcion del sistema para volver al cargar el menu y validar si requiere
+         * mostrar le menu u ocultarlo porque ya guardado*/
         invalidateOptionsMenu();
     }
 
+    /**Funcion para validar los campos requeridos y guardar el formulario de gestion*/
     private void Guardar (){
         boolean enviarInfo = false;
         if (!validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})){
@@ -674,6 +726,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                 if (!etFolioRecibo.getText().toString().trim().isEmpty()) {
                     if (byteEvidencia != null) {
                         if (idRespuesta > 0) {
+                            /**Solo actualiza porque se guardo el registro cuando imprimieron*/
                             ContentValues cv = new ContentValues();
                             cv.put("tipo_imagen", tipoImagen);
                             try {
@@ -687,6 +740,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                             enviarInfo = true;
                         }
                         else{
+                            /**Registra la gestion porque fue un cobro en efectivo y con folio de recibo manual*/
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, grupoId);
                             params.put(1, numSolicitud);
@@ -713,13 +767,18 @@ public class RecuperacionRecibos extends AppCompatActivity {
                             enviarInfo = true;
                         }
                     }
+                    else
+                        Toast.makeText(ctx, "Falta agregar la evidencia", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(ctx, "Falta el FOLIO el recibo", Toast.LENGTH_SHORT).show();
                 }
             }
+            /**Cuando gestiona por otro medio de pago diferente a efectivo*/
             else{
+                /**Valida que ya capturo la evidencia*/
                 if (byteEvidencia != null){
+                    /**En caso que no hay ningun registro de la gestion se guarda la gestion*/
                     if (idRespuesta == 0) {
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0, grupoId);
@@ -748,6 +807,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
                         enviarInfo = true;
 
                     }
+                    /**En caso de que solo sea actualizar*/
                     else{
                         ContentValues cv = new ContentValues();
                         cv.put("tipo_imagen", tipoImagen);

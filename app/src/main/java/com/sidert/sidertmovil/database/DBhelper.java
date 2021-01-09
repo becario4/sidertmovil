@@ -17,84 +17,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CANCELACIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CODIGOS_OXXO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PLAZOS_PRESTAMOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REPORTE_SESIONES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_RESUMENES_GESTION;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SOPORTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
-import static com.sidert.sidertmovil.utils.Constants.TICKETS;
+import static com.sidert.sidertmovil.utils.Constants.*;
 
 public class DBhelper extends SQLiteOpenHelper {
 
@@ -194,8 +117,29 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_REN);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_REN);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_REN);
-
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO);
+
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_AUTO);
+
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_AUTO);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_AUTO);
 
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_IDENTIFICACIONES_TIPO);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS_CIVILES);
@@ -213,6 +157,10 @@ public class DBhelper extends SQLiteOpenHelper {
 
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_AGF_CC);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_RECIBOS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONSULTA_CC);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_CC);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_CC);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_CLIENTE);
 
 
         Log.v("CreacionTablas", "se crearon tablas");
@@ -416,6 +364,12 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_T); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_VE_T); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
         try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
@@ -605,12 +559,64 @@ public class DBhelper extends SQLiteOpenHelper {
         try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_REN);}
         catch (Exception e){Log.e("Tablas","Catch tabla TBL_DOCUMENTOS_INTEGRANTE_REN");}
 
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_SOLICITUDES_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CREDITO_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_AVAL_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND_REN"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES_REN"); }
+
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla BL_DATOS_CREDITO_GPO_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_INTEGRANTES_GPO_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_TELEFONOS_INTEGRANTE_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_DOMICILIO_INTEGRANTE_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_INTEGRANTE_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_INTEGRANTE_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_OTROS_DATOS_INTEGRANTE_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO_AUTO"); }
+        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_AUTO);}
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE_AUTO"); }
+
         try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS);}
         catch (Exception e){Log.e("Tablas","Catch tabla TBL_PRESTAMOS");}
         try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_AGF_CC);}
         catch (Exception e){Log.e("Tablas","Catch tabla TBL_RECIBOS_AGF_CC");}
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_RECIBOS); }
         catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla RECUPERACION_RECIBOS"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONSULTA_CC); }
+        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_CONSULTA_CC"); }
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_CC); }
+        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_RECIBOS_CC"); }
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_CC); }
+        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_RECUPERACION_CC"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_CLIENTE); }
+        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_TELEFONOS_CLIENTE"); }
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_CARTERA_IND); }
         catch (Exception e) { Log.e("ADD ATRASO IND", "ya contiene la columna"); }
@@ -645,6 +651,12 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_PRESTAMOS); }
         catch (Exception e) { Log.e("MONTO_PRESTAMO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO); }
+        catch (Exception e) { Log.e("MONTO_AUTORIZADO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO_GPO); }
+        catch (Exception e) { Log.e("MONTO_AUTORIZADO_GPO", "ya contiene la columna"); }
 
     }
 
@@ -771,6 +783,24 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public void saveTelefonosCli(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = "INSERT INTO " + TBL_TELEFONOS_CLIENTE + "(" +
+                "id_prestamo, " +
+                "tel_casa, " +
+                "tel_celular) VALUES(?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //1  ID_PRESTAMO
+        pInsert.bindString(2, params.get(1));                   //2  TEL_CASA
+        pInsert.bindString(3, params.get(2));                   //3  TEL_CELULAR
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     public void saveRecibosAgfCc(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
 
@@ -839,6 +869,82 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public void saveRecibosCC(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = "INSERT INTO " + TBL_RECIBOS_CC + "(" +
+                "tipo_credito, " +
+                "nombre_uno, " +
+                "curp, " +
+                "nombre_dos, " +
+                "total_integrantes, " +
+                "monto, " +
+                "tipo_impresion, " +
+                "folio, " +
+                "fecha_impresion, " +
+                "fecha_envio, " +
+                "estatus) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //1  TIPO CREDITO
+        pInsert.bindString(2, params.get(1));                   //2  NOMBRE UNO
+        pInsert.bindString(3, params.get(2));                   //3  CURP
+        pInsert.bindString(4, params.get(3));                   //4  NOMBRE DOS
+        pInsert.bindLong(5, Long.parseLong(params.get(4)));     //5  TOTAL INTEGRANTES
+        pInsert.bindString(6, params.get(5));                   //6  MONTO
+        pInsert.bindString(7, params.get(6));                   //7  TIPO IMPRESION
+        pInsert.bindString(8, params.get(7));                   //8  FOLIO
+        pInsert.bindString(9, params.get(8));                   //9  FECHS IMPRESION
+        pInsert.bindString(10, params.get(9));                  //10 FECHA ENVIO
+        pInsert.bindLong(11, Long.parseLong(params.get(10)));   //11 ESTATUS
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public Long saveRecuperacionCC(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = "INSERT INTO " + TBL_RECUPERACION_RECIBOS_CC + "(" +
+                "tipo_credito, " +
+                "nombre_uno, " +
+                "curp, " +
+                "nombre_dos, " +
+                "integrantes, " +
+                "monto, " +
+                "medio_pago, " +
+                "imprimir_recibo, " +
+                "folio, "+
+                "evidencia, " +
+                "tipo_imagen, " +
+                "fecha_termino, " +
+                "fecha_envio, " +
+                "estatus) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));     //1  TIPO CREDITO
+        pInsert.bindString(2, params.get(1));                   //2  NOMBRE UNO
+        pInsert.bindString(3, params.get(2));                   //3  CURP
+        pInsert.bindString(4, params.get(3));                   //4  NOMBRE DOS
+        pInsert.bindLong(5, Long.parseLong(params.get(4)));     //5  INTEGRANTES
+        pInsert.bindString(6, params.get(5));                   //6  MONTO
+        pInsert.bindString(7, params.get(6));                   //7  MEDIO PAGO
+        pInsert.bindString(8, params.get(7));                   //8  IMPRIMIR RECIBO
+        pInsert.bindLong(9, Long.parseLong(params.get(8)));     //9  FOLIO
+        pInsert.bindString(10, params.get(9));                  //10 EVIDENCIA
+        pInsert.bindString(11, params.get(10));                 //11 TIPO IMAGEN
+        pInsert.bindString(12, params.get(11));                 //12 FECHA TERMINO
+        pInsert.bindString(13, params.get(12));                 //13 FECHA ENVIO
+        pInsert.bindLong(14, Long.parseLong(params.get(13)));   //14 ESTATUS
+
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+        return id;
+    }
+
     public long saveRecuperacionRecibos(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
 
@@ -872,6 +978,72 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(12, params.get(11));                 //12 IMPRIMIR RECIBO
         pInsert.bindString(13, params.get(12));                 //13 FOLIO MANUAL
         pInsert.bindString(14, params.get(13));                 //14 CLIENTE ID
+
+        long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+        return id;
+    }
+
+    public long saveConsultaCC(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = "INSERT INTO " + TBL_CONSULTA_CC + "(" +
+                "producto_credito," +
+                "monto_solicitado,"+
+                "primer_nombre,"+
+                "segundo_nombre," +
+                "ap_paterno,"+
+                "ap_materno,"+
+                "fecha_nac,"+
+                "genero,"+
+                "estado_nac,"+
+                "curp,"+
+                "rfc,"+
+                "calle,"+
+                "cp,"+
+                "colonia,"+
+                "municipio,"+
+                "ciudad,"+
+                "estado,"+
+                "fecha_termino,"+
+                "fecha_envio,"+
+                "estatus,"+
+                "saldo_actual,"+
+                "saldo_vencido,"+
+                "peor_pago,"+
+                "creditos_abiertos,"+
+                "credito_cerrados,"+
+                "errores) VALUES(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));                   //1  PRODUCTO
+        pInsert.bindString(2, params.get(1));                   //2  MONTO_SOLICITADO
+        pInsert.bindString(3, params.get(2));                   //3  PRIMER_NOMBRE
+        pInsert.bindString(4, params.get(3));                   //4  SEGUNDO_NOMBRE
+        pInsert.bindString(5, params.get(4));                   //5  AP_PATERNO
+        pInsert.bindString(6, params.get(5));                   //6  AP_MATERNO
+        pInsert.bindString(7, params.get(6));                   //7  FECHA_NAC
+        pInsert.bindString(8, params.get(7));                   //8  GENERO
+        pInsert.bindString(9, params.get(8));                   //9  ESTADO_NAC
+        pInsert.bindString(10, params.get(9));                  //10 CURP
+        pInsert.bindString(11, params.get(10));                 //11 RFC
+        pInsert.bindString(12, params.get(11));                 //12 CALLE
+        pInsert.bindString(13, params.get(12));                 //13 CP
+        pInsert.bindString(14, params.get(13));                 //14 COLONIA
+        pInsert.bindString(15, params.get(14));                 //15 MUNICIPIO
+        pInsert.bindString(16, params.get(15));                 //16 CIUDAD
+        pInsert.bindString(17, params.get(16));                 //17 CIUDAD
+        pInsert.bindString(18, params.get(17));                 //18 FECHA_TERMINO
+        pInsert.bindString(19, params.get(18));                 //19 FECHA_ENVIO
+        pInsert.bindLong(20, Long.parseLong(params.get(19)));   //20 ESTATUS
+        pInsert.bindString(21, params.get(20));                 //15 SALDO_ACTUAL
+        pInsert.bindString(22, params.get(21));                 //16 SALDO_VENCIDO
+        pInsert.bindString(23, params.get(22));                 //17 PEOR_PAGO
+        pInsert.bindString(24, params.get(23));                 //18 CREDITOS_ABIERTOS
+        pInsert.bindString(25, params.get(24));                 //19 CREDITOS_CERRADOS
+        pInsert.bindString(26, params.get(25));                 //20 ERRORES
 
         long id = pInsert.executeInsert();
 
@@ -996,9 +1168,17 @@ public class DBhelper extends SQLiteOpenHelper {
     public Long saveDirecciones(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
 
-        String tbl = (tipo == 1)?TBL_DIRECCIONES:TBL_DIRECCIONES_REN;
+        String tbl = TBL_DIRECCIONES;
+        switch (tipo){
+            case 2:
+                tbl = TBL_DIRECCIONES_REN;
+                break;
+            case 3:
+                tbl = TBL_DIRECCIONES_AUTO;
+                break;
+        }
 
-        String sql = "INSERT INTO " + tbl + "(" +
+        String sql = "INSERT INTO " + tbl + " (" +
                 "tipo_direccion, " +
                 "latitud, " +
                 "longitud, " +
@@ -1124,11 +1304,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveReimpresionVigente(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_REIMPRESION_VIGENTE;
-        else
-            tbl = TBL_REIMPRESION_VIGENTE_T;
+        String tbl = TBL_REIMPRESION_VIGENTE_T;
 
         String sql = "INSERT INTO " + tbl + "(" +
                 "num_prestamo_id_gestion, " +
@@ -1141,7 +1317,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "create_at, " +
                 "sent_at, " +
                 "estatus, " +
-                "num_prestamo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "num_prestamo, " +
+                "celular) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //1  NUM_PRESTAMO_ID_GESTION
         pInsert.bindString(2, params.get(1));                   //2  TIPO_IMPRESION
@@ -1154,6 +1331,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(9, params.get(8));                   //9  FECHA_ENVIO
         pInsert.bindLong(10, Integer.parseInt(params.get(9)));  //10 ESTATUS
         pInsert.bindString(11, params.get(10));                 //11 NUM PRESTAMO
+        pInsert.bindString(12, params.get(11));                 //11 CELULAR
 
         pInsert.execute();
 
@@ -1238,11 +1416,7 @@ public class DBhelper extends SQLiteOpenHelper {
     }
 
     public void saveImpresiones(SQLiteDatabase db, HashMap<Integer, String> params) {
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_IMPRESIONES_VIGENTE;
-        else
-            tbl = TBL_IMPRESIONES_VIGENTE_T;
+        String tbl = TBL_IMPRESIONES_VIGENTE_T;
         db.beginTransaction();
         String sql = "INSERT INTO " + tbl + "(" +
                 "num_prestamo_id_gestion, " +
@@ -1254,7 +1428,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "create_at, " +
                 "sent_at, " +
                 "estatus, " +
-                "num_prestamo) VALUES(?,?,?,?,?,?,?,?,?,?)";
+                "num_prestamo, " +
+                "celular) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //NUM PRESTAMO + ID_GESTION    1
         pInsert.bindString(2, params.get(1));                   //ASESOR ID                    2
@@ -1266,6 +1441,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(8, params.get(7));                   //FECHA ENVIO                  8
         pInsert.bindLong(9, Integer.parseInt(params.get(8)));   //ESTATUS                      9
         pInsert.bindString(10, params.get(9));                  //NUM PRESTAMO                 10
+        pInsert.bindString(11, params.get(10));                 //CELULAR                      11
 
         pInsert.execute();
 
@@ -1274,11 +1450,7 @@ public class DBhelper extends SQLiteOpenHelper {
     }
 
     public void saveImpresionesVencida(SQLiteDatabase db, HashMap<Integer, String> params) {
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_IMPRESIONES_VENCIDA;
-        else
-            tbl = TBL_IMPRESIONES_VENCIDA_T;
+        String tbl = TBL_IMPRESIONES_VENCIDA_T;
         db.beginTransaction();
         String sql = "INSERT INTO " + tbl + "(" +
                 "num_prestamo_id_gestion, " +
@@ -1290,7 +1462,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "create_at, " +
                 "sent_at, " +
                 "estatus, " +
-                "num_prestamo) VALUES(?,?,?,?,?,?,?,?,?,?)";
+                "num_prestamo, " +
+                "celular) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //NUM PRESTAMO + ID_GESTION    1
         pInsert.bindString(2, params.get(1));                   //ASESOR ID                    2
@@ -1302,6 +1475,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(8, params.get(7));                   //FECHA ENVIO                  8
         pInsert.bindLong(9, Integer.parseInt(params.get(8)));   //ESTATUS                      9
         pInsert.bindString(10, params.get(9));                  //NUM PRESTAMO                 10
+        pInsert.bindString(11, params.get(10));                 //CELULAR                      11
 
         pInsert.execute();
 
@@ -1412,13 +1586,37 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Long saveSolicitudesAuto(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = "INSERT INTO " + TBL_SOLICITUDES_AUTO + " (" +
+                "solicitud, " +
+                "asesor, " +
+                "tipo_solicitud, " +
+                "id_originacion, " +
+                "nombre, " +
+                "fecha_envio, " +
+                "estatus) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));         //SOLICITUD INDIVIDUAL | GRUPAL
+        pInsert.bindString(2, params.get(1));         //NOMBRE ASESOR
+        pInsert.bindString(3, params.get(2));         //TIPO_SOLICITUD RENOVACION | ORIGINACIOM
+        pInsert.bindLong(4, Long.parseLong(params.get(3)));  //ID ORIGINACION
+        pInsert.bindString(5, params.get(4));                //NOMBRE CLIENTE
+        pInsert.bindString(6, params.get(5));                //FECHA GUARDADO
+        pInsert.bindLong(7, Long.parseLong(params.get(6))); //ESTATUS
+        Long id = pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        Log.e("Registra", "Solicitud");
+        return id;
+    }
+
     public Long saveArqueoCaja(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_ARQUEO_CAJA;
-        else
-            tbl = TBL_ARQUEO_CAJA_T;
+        String tbl = TBL_ARQUEO_CAJA_T;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_gestion, " +
@@ -1532,10 +1730,62 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registro", "Credito Ind");
     }
 
+    public void saveDatosCreditoAuto(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String sql = "INSERT INTO " + TBL_CREDITO_IND_AUTO + " (" +
+                "id_solicitud, " +
+                "plazo, " +
+                "periodicidad, " +
+                "fecha_desembolso, " +
+                "dia_desembolso, " +
+                "hora_visita, " +
+                "monto_prestamo, " +
+                "ciclo, " +
+                "credito_anterior, " +
+                "comportamiento_pago, " +
+                "num_cliente, " +
+                "observaciones, " +
+                "destino, " +
+                "clasificacion_riesgo, " +
+                "estatus_completado, " +
+                "monto_autorizado) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(4, params.get(3));
+        pInsert.bindString(5, params.get(4));
+        pInsert.bindString(6, params.get(5));
+        pInsert.bindString(7, params.get(6));
+        pInsert.bindString(8, params.get(7));
+        pInsert.bindString(9, params.get(8));
+        pInsert.bindString(10, params.get(9));
+        pInsert.bindString(11, params.get(10));
+        pInsert.bindString(12, params.get(11));
+        pInsert.bindString(13, params.get(12));
+        pInsert.bindString(14, params.get(13));
+        pInsert.bindLong(15, Long.parseLong(params.get(14)));
+        pInsert.bindString(16, params.get(15));
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        Log.e("Registro", "Credito Ind");
+    }
+
     public Long saveDatosPersonales (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
 
-        String tbl = (tipo == 1)?TBL_CLIENTE_IND:TBL_CLIENTE_IND_REN;
+        String tbl = TBL_CLIENTE_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_CLIENTE_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_CLIENTE_IND_AUTO;
+                break;
+        }
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " + "nombre, " + "paterno, " + "materno, " +
@@ -1598,7 +1848,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosConyuge(SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CONYUGE_IND:TBL_CONYUGE_IND_REN;
+        String tbl = TBL_CONYUGE_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_CONYUGE_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_CONYUGE_IND_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre, " +
@@ -1662,8 +1920,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosEconomicos(SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-
-        String tbl = (tipo == 1)?TBL_ECONOMICOS_IND:TBL_ECONOMICOS_IND_REN;
+        String tbl = TBL_ECONOMICOS_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_ECONOMICOS_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_ECONOMICOS_IND_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "propiedades, " +
@@ -1688,7 +1953,16 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosNegocio (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_NEGOCIO_IND:TBL_NEGOCIO_IND_REN;
+        String tbl = TBL_NEGOCIO_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_NEGOCIO_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_NEGOCIO_IND_AUTO;
+                break;
+        }
+
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " + "nombre, " + "direccion_id, " + "ocupacion, " + "actividad_economica, " +
                 "destino_credito, " + "otro_destino, " + "antiguedad, "  + "ing_mensual, " + "ing_otros, " +
@@ -1735,7 +2009,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosAval (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_AVAL_IND:TBL_AVAL_IND_REN;
+        String tbl = TBL_AVAL_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_AVAL_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_AVAL_IND_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre, " +
@@ -1850,7 +2132,16 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveReferencia (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_REFERENCIA_IND:TBL_REFERENCIA_IND_REN;
+        String tbl = TBL_REFERENCIA_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_REFERENCIA_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_REFERENCIA_IND_AUTO;
+                break;
+        }
+
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre, " +
@@ -1881,7 +2172,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveCroquisInd (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CROQUIS_IND:TBL_CROQUIS_IND_REN;
+        String tbl = TBL_CROQUIS_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_CROQUIS_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_CROQUIS_IND_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "calle_principal, " +
@@ -1910,7 +2209,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveCroquisGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CROQUIS_GPO:TBL_CROQUIS_GPO_REN;
+        String tbl = TBL_CROQUIS_GPO;
+        switch (tipo){
+            case 2:
+                tbl = TBL_CROQUIS_GPO_REN;
+                break;
+            case 3:
+                tbl = TBL_CROQUIS_GPO_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "calle_principal, " +
@@ -1937,7 +2244,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void savePoliticasInd (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_POLITICAS_PLD_IND:TBL_POLITICAS_PLD_IND_REN;
+        String tbl = TBL_POLITICAS_PLD_IND;
+        switch (tipo){
+            case 2:
+                tbl = TBL_POLITICAS_PLD_IND_REN;
+                break;
+            case 3:
+                tbl = TBL_POLITICAS_PLD_IND_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "propietario_real, " +
@@ -1960,7 +2275,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void savePoliticasIntegrante (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_POLITICAS_PLD_INTEGRANTE:TBL_POLITICAS_PLD_INTEGRANTE_REN;
+        String tbl = TBL_POLITICAS_PLD_INTEGRANTE;
+        switch (tipo){
+            case 2:
+                tbl = TBL_POLITICAS_PLD_INTEGRANTE_REN;
+                break;
+            case 3:
+                tbl = TBL_POLITICAS_PLD_INTEGRANTE_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "propietario_real, " +
@@ -2009,9 +2332,10 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveDatosCreditoGpoRen(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveDatosCreditoGpoRen(SQLiteDatabase db, HashMap<Integer, String> params, Integer tipo){
         db.beginTransaction();
-        String sql = "INSERT INTO " + TBL_CREDITO_GPO_REN + " (" +
+        String tbl = (tipo == 1)?TBL_CREDITO_GPO_REN:TBL_CREDITO_GPO_AUTO;
+        String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre_grupo, " +
                 "plazo, " +
@@ -2045,7 +2369,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Long saveIntegrantesGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_INTEGRANTES_GPO:TBL_INTEGRANTES_GPO_REN;
+        String tbl = TBL_INTEGRANTES_GPO;
+        switch (tipo){
+            case 2:
+                tbl = TBL_INTEGRANTES_GPO_REN;
+                break;
+            case 3:
+                tbl = TBL_INTEGRANTES_GPO_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_credito, " +
                 "cargo, " +
@@ -2166,7 +2498,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosTelefonicos (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_TELEFONOS_INTEGRANTE:TBL_TELEFONOS_INTEGRANTE_REN;
+        String tbl = TBL_TELEFONOS_INTEGRANTE;
+        switch (tipo){
+            case 2:
+                tbl = TBL_TELEFONOS_INTEGRANTE_REN;
+                break;
+            case 3:
+                tbl = TBL_TELEFONOS_INTEGRANTE_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "tel_casa, " +
@@ -2192,7 +2532,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosDomicilio (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_DOMICILIO_INTEGRANTE:TBL_DOMICILIO_INTEGRANTE_REN;
+        String tbl = TBL_DOMICILIO_INTEGRANTE;
+        switch (tipo){
+            case 2:
+                tbl = TBL_DOMICILIO_INTEGRANTE_REN;
+                break;
+            case 3:
+                tbl = TBL_DOMICILIO_INTEGRANTE_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "latitud, " +
@@ -2240,6 +2588,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(19, params.get(18));
         pInsert.bindString(20, params.get(19));
         pInsert.bindLong(21, Long.parseLong(params.get(20)));
+        pInsert.bindString(22, params.get(21));
 
         pInsert.executeInsert();
 
@@ -2249,7 +2598,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosNegocioGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_NEGOCIO_INTEGRANTE:TBL_NEGOCIO_INTEGRANTE_REN;
+        String tbl = TBL_NEGOCIO_INTEGRANTE;
+        switch (tipo){
+            case 2:
+                tbl = TBL_NEGOCIO_INTEGRANTE_REN;
+                break;
+            case 3:
+                tbl = TBL_NEGOCIO_INTEGRANTE_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "nombre, " +
@@ -2331,7 +2688,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public void saveDatosConyugeGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CONYUGE_INTEGRANTE:TBL_CONYUGE_INTEGRANTE_REN;
+        String tbl = TBL_CONYUGE_INTEGRANTE;
+        switch (tipo){
+            case 2:
+                tbl = TBL_CONYUGE_INTEGRANTE_REN;
+                break;
+            case 3:
+                tbl = TBL_CONYUGE_INTEGRANTE_AUTO;
+                break;
+        }
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "nombre, " +
@@ -2390,6 +2755,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public void saveDatosOtrosGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
         db.beginTransaction();
         String tbl = (tipo == 1)?TBL_OTROS_DATOS_INTEGRANTE:TBL_OTROS_DATOS_INTEGRANTE_REN;
+
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "clasificacion_riesgo, " +
@@ -2414,6 +2780,43 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindLong(8, Long.parseLong(params.get(7)));
         pInsert.bindString(9, params.get(8));
         pInsert.bindLong(10, Long.parseLong(params.get(9)));
+
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveDatosOtrosGpoAuto (SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+        String tbl = TBL_OTROS_DATOS_INTEGRANTE_AUTO;
+
+        String sql = "INSERT INTO " + tbl + " (" +
+                "id_integrante, " +
+                "clasificacion_riesgo, " +
+                "medio_contacto, " +
+                "email, " +
+                "estado_cuenta, " +
+                "estatus_integrante, " +
+                "monto_solicitado, " +
+                "casa_reunion, " +
+                "firma, " +
+                "estatus_completado, " +
+                "monto_autorizado) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindLong(1, Long.parseLong(params.get(0)));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(4, params.get(3));
+        pInsert.bindString(5, params.get(4));
+        pInsert.bindLong(6, Long.parseLong(params.get(5)));
+        pInsert.bindString(7, params.get(6));
+        pInsert.bindLong(8, Long.parseLong(params.get(7)));
+        pInsert.bindString(9, params.get(8));
+        pInsert.bindLong(10, Long.parseLong(params.get(9)));
+        pInsert.bindString(11, params.get(10));
 
         pInsert.executeInsert();
 
@@ -2796,11 +3199,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Long saveRespuestasGpo(SQLiteDatabase db, HashMap<Integer, String> params){
         db.beginTransaction();
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_RESPUESTAS_GPO;
-        else
-            tbl =  TBL_RESPUESTAS_GPO_T;
+        String tbl =  TBL_RESPUESTAS_GPO_T;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_prestamo, " +
@@ -3088,11 +3487,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Long saveMiembros(SQLiteDatabase db, HashMap<Integer, String> params){
         db.beginTransaction();
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_MIEMBROS_GPO;
-        else
-            tbl = TBL_MIEMBROS_GPO_T;
+        String tbl = TBL_MIEMBROS_GPO_T;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_prestamo, " +
@@ -3138,11 +3533,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public Long saveMiembrosPagos(SQLiteDatabase db, HashMap<Integer, String> params){
         db.beginTransaction();
-        String tbl;
-        if (ENVIROMENT)
-            tbl = TBL_MIEMBROS_PAGOS;
-        else
-            tbl = TBL_MIEMBROS_PAGOS_T;
+        String tbl = TBL_MIEMBROS_PAGOS_T;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +

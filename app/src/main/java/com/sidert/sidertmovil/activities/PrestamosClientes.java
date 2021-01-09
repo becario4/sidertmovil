@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.sidert.sidertmovil.utils.Constants.CLAVE;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
@@ -63,6 +61,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_PRESTAMO;
 
+/**Clase para ver los prestamos que tiene el cliente/grupo*/
 public class PrestamosClientes extends AppCompatActivity {
 
     private Context ctx;
@@ -77,8 +76,8 @@ public class PrestamosClientes extends AppCompatActivity {
     private int tipo;
     private SessionManager session;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    private Calendar fi;
-    private Calendar ff;
+    //private Calendar fi;
+    //private Calendar ff;
 
 
     @Override
@@ -106,7 +105,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
         id_carteta = Integer.parseInt(getIntent().getStringExtra(ID_CARTERA));
 
-        Calendar c = Calendar.getInstance();
+        /*Calendar c = Calendar.getInstance();
 
         c.set(Integer.parseInt(Miscellaneous.ObtenerFecha(FECHA.toLowerCase()).substring(0,4)),
                 Integer.parseInt(Miscellaneous.ObtenerFecha(FECHA.toLowerCase()).substring(5,7))-1,
@@ -117,24 +116,22 @@ public class PrestamosClientes extends AppCompatActivity {
         ff = Calendar.getInstance();
 
         fi.add(Calendar.DAY_OF_YEAR, -(nD -2));
-        ff.add(Calendar.DAY_OF_YEAR, ((7-nD)+1));
-
-        Log.e("FechaIni", sdf.format(fi.getTime()));
-        Log.e("FechaFin", sdf.format(ff.getTime()));
+        ff.add(Calendar.DAY_OF_YEAR, ((7-nD)+1));*/
 
     }
 
+    /**Funcion para obtener los prestamos inviduales*/
     private void GetPrestamosInd (String id_cliente){
-        //String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+        /**Se prepara la consulta para obtener los prestamos individuales (Vigente, Cobranza, Vencida) se
+         * hace un join con la tabla de TBL_CARTERA_IND_T solo para obtener el nombre del cliente*/
         String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_IND_T + " AS p INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?";
 
-        //Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = c.id_cartera WHERE p.id_cliente = ?", "", new String[]{id_cliente});
         Cursor row = db.rawQuery(sql, new String[]{id_cliente});
         row.moveToFirst();
         ArrayList<MPrestamo> mPrestamos = new ArrayList<>();
         if (row.getCount() > 0) {
             row.moveToFirst();
-
+            /**Se recorre los prestamos obtenidos de acorde a la consulta*/
             for (int i = 0; i < row.getCount(); i++) {
                 MPrestamo item = new MPrestamo();
                 item.setNombre(row.getString(0));               //NOMBRE
@@ -144,11 +141,13 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setMontoRestante(row.getString(8));        //MONTO TOTAL
                 item.setMontoAmortiz(row.getString(9));         //MONTO AMORTIZACION
                 item.setIdPrestamo(row.getString(4));           //NUM PRESTAMO
-                item.setEstatus(row.getString(14));             //PAGADA
-                item.setTipo(1);                                  //TIPO PRESTAMO
-                item.setTipoPrestamo(row.getString(13));        //TIPO CARTERA
+                item.setEstatus(row.getString(14));             //PAGADA (1 = PAGADA, 0 = RECUPERACION)
+                item.setTipo(1);                                  //TIPO PRESTAMO  1 = individual
+                item.setTipoPrestamo(row.getString(13));        //TIPO CARTERA (VIGENTE, COBRANZA, VENCIDA)
                 item.setNumAmortiz(row.getString(11));          //NUM AMORTIZACION
 
+                /**Se obtiene la suma del total - total_pagado de las amortizaciones para obtener el saldoCorte (Saldo Movil)
+                 * lo que se ha recuperado con la aplicacion, este monto puede ser menor o igual a saldo omega*/
                 Cursor rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
 
                 if (rowSaldoCorte.getCount() > 0){
@@ -157,6 +156,7 @@ public class PrestamosClientes extends AppCompatActivity {
                 }
                 rowSaldoCorte.close();
 
+                /**Se obtiene la suma de los pagos ya capturados en omega para obtener el saldoOmega lo que ha pagado el cliente*/
                 Cursor rowSaldoOmega = dBhelper.customSelect(TBL_PAGOS_T + " AS p", " SUM(monto) AS totalOmega", " WHERE id_prestamo = ?", "",new String[]{row.getString(2)} );
                 if (rowSaldoOmega.getCount() > 0){
                     rowSaldoOmega.moveToFirst();
@@ -168,14 +168,18 @@ public class PrestamosClientes extends AppCompatActivity {
             }
         }
 
+        /**Coloca los prestamos obtener al adaptor para ser visualizados con el recycler*/
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
             @Override
             public void PrestamoClick(MPrestamo item) {
+                /**Evento al dar tap sobre el prestamo para Comenzar a Recuperar(gestionar)*/
                 Intent intent_order;
+                /**Se valida el tipo de prestamo para saber que vista va a lanzar*/
                 if (item.getTipoPrestamo().equals("VENCIDA"))
                     intent_order = new Intent(ctx, VencidaIndividual.class);
                 else
                     intent_order = new Intent(ctx, RecuperacionIndividual.class);
+                /**Se manda variables entre las clases para poder relacionar las gestiones*/
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
                 startActivity(intent_order);
@@ -183,6 +187,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void GestionadasClick(MPrestamo item) {
+                /**Evento al dar tap en Gestionadas para visualizar las gestiones realizadas*/
                 Intent intent_order = new Intent(ctx, Gestionadas.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 if (item.getTipoPrestamo().equals("VENCIDA")) {
@@ -200,6 +205,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void CodigoOxxoClick(MPrestamo item) {
+                /**Evento al dar tap en Codigos Oxxo para visualizar y generar codigos codigos oxxo por amortizacion*/
                 String sql = "SELECT p.num_prestamo, a.fecha, a.total,c.nombre, c.clave FROM "+ TBL_AMORTIZACIONES_T +" AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T+" AS c ON p.id_cliente = c.id_cartera WHERE a.id_prestamo = ? AND a.numero = ?";
                 Cursor row = db.rawQuery(sql, new String[]{item.getId(), item.getNumAmortiz()});
                 if (row.getCount() > 0){
@@ -220,16 +226,19 @@ public class PrestamosClientes extends AppCompatActivity {
         rvPrestamos.setAdapter(adatper);
     }
 
+    /**Funcion para obtener los prestamos grupales*/
     private void GetPrestamosGpo (final String id_grupo){
-        //String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_GPO_T + " AS p INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ? AND pagada = 0 AND substr(p.fecha_actualizado,1,4)||substr(p.fecha_actualizado,6,2)||substr(p.fecha_actualizado,9,2) BETWEEN '"+sdf.format(fi.getTime()).replace("-","")+"' AND '"+sdf.format(ff.getTime()).replace("-","")+"'";
+
+        /**Se prepara la consulta para obtener los prestamos grupales (Vigente, Cobranza, Vencida) se
+         * hace un join con la tabla de TBL_CARTERA_GPO_T solo para obtener el nombre del grupo*/
         String sql = "SELECT c.nombre, p.* FROM " + TBL_PRESTAMOS_GPO_T + " AS p INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ?";
         Cursor row = db.rawQuery(sql, new String[]{id_grupo});
-        //Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "c.nombre, p.*", " INNER JOIN "+TBL_CARTERA_GPO_T+" AS c ON p.id_grupo = c.id_cartera WHERE p.id_grupo = ?", "", new String[]{id_grupo});
+
         row.moveToFirst();
         ArrayList<MPrestamo> mPrestamos = new ArrayList<>();
         if (row.getCount() > 0) {
             row.moveToFirst();
-
+            /**Se recorre los prestamos obtenidos de acorde a la consulta*/
             for (int i = 0; i < row.getCount(); i++) {
                 MPrestamo item = new MPrestamo();
                 item.setId(row.getString(2));
@@ -244,6 +253,8 @@ public class PrestamosClientes extends AppCompatActivity {
                 item.setTipo(2);
                 item.setNumAmortiz(row.getString(11));
 
+                /**Se obtiene la suma del total - total_pagado de las amortizaciones para obtener el saldoCorte (Saldo Movil)
+                 * lo que se ha recuperado con la aplicacion, este monto puede ser menor o igual a saldo omega*/
                 Cursor rowSaldoCorte = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{row.getString(2)});
 
                 if (rowSaldoCorte.getCount() > 0){
@@ -253,6 +264,7 @@ public class PrestamosClientes extends AppCompatActivity {
                 rowSaldoCorte.close();
                 item.setTipo(2);
 
+                /**Se obtiene la suma de los pagos ya capturados en omega para obtener el saldoOmega lo que ha pagado el grupo*/
                 Cursor rowSaldoOmega = dBhelper.customSelect(TBL_PAGOS_T + " AS p", " SUM(monto) AS totalOmega", " WHERE id_prestamo = ?", "",new String[]{row.getString(2)} );
                 if (rowSaldoOmega.getCount() > 0){
                     rowSaldoOmega.moveToFirst();
@@ -265,15 +277,18 @@ public class PrestamosClientes extends AppCompatActivity {
             }
         }
 
+        /**Coloca los prestamos obtener al adaptor para ser visualizados con el recycler*/
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
             @Override
             public void PrestamoClick(MPrestamo item) {
+                /**Evento al dar tap sobre el prestamo para Comenzar a Recuperar(gestionar)*/
                 Intent intent_order;
-
+                /**Se valida el tipo de prestamo para saber que vista va a lanzar*/
                 if (item.getTipoPrestamo().equals("VENCIDA"))
                     intent_order = new Intent(ctx, VencidaGrupal.class);
                 else
                     intent_order = new Intent(ctx, RecuperacionGrupal.class);
+                /**Se manda variables entre las clases para poder relacionar las gestiones*/
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
                 intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
                 startActivity(intent_order);
@@ -281,6 +296,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void GestionadasClick(MPrestamo item) {
+                /**Evento al dar tap en Gestionadas para visualizar las gestiones realizadas*/
                 Intent intent_order = new Intent(ctx, Gestionadas.class);
                 intent_order.putExtra(ID_PRESTAMO, item.getId());
 
@@ -299,7 +315,7 @@ public class PrestamosClientes extends AppCompatActivity {
 
             @Override
             public void CodigoOxxoClick(MPrestamo item) {
-
+                /**Evento al dar tap en Codigos Oxxo para visualizar y generar codigos codigos oxxo por amortizacion*/
                 String sql = "SELECT p.num_prestamo, a.fecha, a.total,m.nombre, m.clave FROM "+ TBL_AMORTIZACIONES_T +" AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON p.id_prestamo = m.id_prestamo WHERE a.id_prestamo = ? AND m.tipo_integrante = 'TESORERO' AND a.numero = ?";
 
                 Cursor row = db.rawQuery(sql, new String[]{item.getId(), item.getNumAmortiz()});
@@ -318,47 +334,22 @@ public class PrestamosClientes extends AppCompatActivity {
                     startActivity(i_codigos);
                 }
 
-                //GenerarCodigo(item, fechaAmortiz, montoAmortiz, clave, nombreTesorera);
             }
         });
         rvPrestamos.setAdapter(adatper);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_actualizar, menu);
-        menu.getItem(0).setVisible(false);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.actualizar:
-                Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                if (NetworkStatus.haveNetworkConnection(ctx))
-                    ss.GetPrestamo(ctx, id_carteta, tipo);
-                else{
-                    final AlertDialog error_network = Popups.showDialogMessage(ctx, Constants.not_network,
-                            R.string.not_network, R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    error_network.show();
-                }
+            case android.R.id.home:/**Menu de retroceso en el toolbar <-*/
+                finish();/**Crerrar actividad de prestamos*/
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**Funcion para definir que prestamos va a obtener de acuerdo al tipo de cartera INDIVIDUAl, GRUPAL */
     @Override
     protected void onResume() {
         super.onResume();

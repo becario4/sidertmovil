@@ -20,16 +20,16 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomWatcherTotal;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 
+/**Clase para realizar un arqueo de caja para los clientes que pagaron en efectivo y pagos mayores a $10,000*/
 public class ArqueoDeCaja extends AppCompatActivity {
 
     private DBhelper dBhelper;
@@ -52,6 +52,8 @@ public class ArqueoDeCaja extends AppCompatActivity {
     private EditText etTotal;
 
     private String id_gestion;
+    
+    private Miscellaneous m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class ArqueoDeCaja extends AppCompatActivity {
         Context ctx = getApplicationContext();
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
+        
+        m = new Miscellaneous();
 
         Toolbar tbMain = findViewById(R.id.tbMain);
 
@@ -88,6 +92,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getResources().getString(R.string.arqueo_caja));
 
+        /**Se crea un array de objetos de tipo EditText para evento de listener*/
         EditText[] etArr = new EditText[] {
                 etBmil,
                 etBquinientos,
@@ -111,9 +116,12 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
         id_gestion = getIntent().getStringExtra(ID_GESTION);
 
+        /**Coloca el nombre del grupo y el pago realizado */
         etNombreGrupo.setText(getIntent().getStringExtra(Constants.NOMBRE_GRUPO));
         etPagoRealizado.setText(String.valueOf(pagoRealizado));
 
+        /**Evento al momento de ingresar valores a los edittext para hacer la suma de los billetes y/o monedas ingresadas
+         * de manera automatica*/
         etBmil.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etBquinientos.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etBdocientos.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
@@ -127,12 +135,10 @@ public class ArqueoDeCaja extends AppCompatActivity {
         etCcincuenta.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etCveinte.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
         etCdiez.addTextChangedListener(new CustomWatcherTotal(pagoRealizado,etArr));
+        /**-------------------------------------------------------------------------------*/
 
-        Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{id_gestion});
-        else
-            row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+        /**Si ya se habia guardado un arque de caja se busca para obtener los valores ya registrados*/
+        Cursor row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -155,13 +161,15 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
     }
 
+    /**Funcion para guardar los datos de arqueo de caja*/
     private void guardarArqueCaja (){
         final Intent i_save_caja = new Intent();
         final AlertDialog dialog_confirm = Popups.showDialogConfirm(ArqueoDeCaja.this, Constants.question,
                 R.string.guardar_cambios, R.string.save, new Popups.DialogMessage() {
             @Override
             public void OnClickListener(AlertDialog dialog) {
-                if (Double.parseDouble(etPagoRealizado.getText().toString()) >= Double.parseDouble(etTotal.getText().toString())) {
+                /**Valida si el total de arqueo de caja es igual al monto registrado en la gestion se guarda*/
+                if (Double.parseDouble(m.GetStr(etPagoRealizado)) >= Double.parseDouble(m.GetStr(etTotal))) {
                     boolean b = ArqueoCaja();
                     i_save_caja.putExtra(Constants.SAVE, b);
                     setResult(RESULT_OK, i_save_caja);
@@ -170,6 +178,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
                 }
                 else {
                     dialog.dismiss();
+                    /**Muestra mensaje de que no coinciden los montos*/
                     AlertDialog dlg = Popups.showDialogMessage(ArqueoDeCaja.this, "default", R.string.mess_arqueo_caja, R.string.accept, new Popups.DialogMessage() {
                         @Override
                         public void OnClickListener(AlertDialog dialog) {
@@ -195,50 +204,44 @@ public class ArqueoDeCaja extends AppCompatActivity {
         dialog_confirm.show();
     }
 
+    /**Funcion para Guardar los datos de arqueo de caja o actualizar por si ya se habia registrado*/
     private boolean ArqueoCaja(){
-        Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_ARQUEO_CAJA, " WHERE id_gestion = ?", "", new String[]{id_gestion});
-        else
-            row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
+        Cursor row = dBhelper.getRecords(TBL_ARQUEO_CAJA_T, " WHERE id_gestion = ?", "", new String[]{id_gestion});
 
         if (row.getCount() > 0){ //Actualiza
             ContentValues cv = new ContentValues();
-            cv.put("mil", etBmil.getText().toString().trim());
-            cv.put("quinientos", etBquinientos.getText().toString().trim());
-            cv.put("doscientos", etBdocientos.getText().toString().trim());
-            cv.put("cien", etBcien.getText().toString().trim());
-            cv.put("cincuenta", etBcincuenta.getText().toString().trim());
-            cv.put("veinte", etBveinte.getText().toString().trim());
-            cv.put("diez", etPdiez.getText().toString().trim());
-            cv.put("cinco", etPcinco.getText().toString().trim());
-            cv.put("dos", etPdos.getText().toString().trim());
-            cv.put("peso", etPuno.getText().toString().trim());
-            cv.put("c_cincuenta", etCcincuenta.getText().toString().trim());
-            cv.put("c_veinte", etCveinte.getText().toString().trim());
-            cv.put("c_diez", etCdiez.getText().toString().trim());
+            cv.put("mil", m.GetStr(etBmil));
+            cv.put("quinientos", m.GetStr(etBquinientos));
+            cv.put("doscientos", m.GetStr(etBdocientos));
+            cv.put("cien", m.GetStr(etBcien));
+            cv.put("cincuenta", m.GetStr(etBcincuenta));
+            cv.put("veinte", m.GetStr(etBveinte));
+            cv.put("diez", m.GetStr(etPdiez));
+            cv.put("cinco", m.GetStr(etPcinco));
+            cv.put("dos", m.GetStr(etPdos));
+            cv.put("peso", m.GetStr(etPuno));
+            cv.put("c_cincuenta", m.GetStr(etCcincuenta));
+            cv.put("c_veinte", m.GetStr(etCveinte));
+            cv.put("c_diez", m.GetStr(etCdiez));
 
-            if (ENVIROMENT)
-                db.update(TBL_ARQUEO_CAJA, cv, "id_gestion = ?", new String[]{id_gestion});
-            else
-                db.update(TBL_ARQUEO_CAJA_T, cv, "id_gestion = ?", new String[]{id_gestion});
+            db.update(TBL_ARQUEO_CAJA_T, cv, "id_gestion = ?", new String[]{id_gestion});
         }
         else{ //Registra
             HashMap<Integer, String> params = new HashMap<>();
             params.put(0, id_gestion);
-            params.put(1, etBmil.getText().toString().trim());
-            params.put(2, etBquinientos.getText().toString().trim());
-            params.put(3, etBdocientos.getText().toString().trim());
-            params.put(4, etBcien.getText().toString().trim());
-            params.put(5, etBcincuenta.getText().toString().trim());
-            params.put(6, etBveinte.getText().toString().trim());
-            params.put(7, etPdiez.getText().toString().trim());
-            params.put(8, etPcinco.getText().toString().trim());
-            params.put(9, etPdos.getText().toString().trim());
-            params.put(10, etPuno.getText().toString().trim());
-            params.put(11, etCcincuenta.getText().toString().trim());
-            params.put(12, etCveinte.getText().toString().trim());
-            params.put(13, etCdiez.getText().toString().trim());
+            params.put(1, m.GetStr(etBmil));
+            params.put(2, m.GetStr(etBquinientos));
+            params.put(3, m.GetStr(etBdocientos));
+            params.put(4, m.GetStr(etBcien));
+            params.put(5, m.GetStr(etBcincuenta));
+            params.put(6, m.GetStr(etBveinte));
+            params.put(7, m.GetStr(etPdiez));
+            params.put(8, m.GetStr(etPcinco));
+            params.put(9, m.GetStr(etPdos));
+            params.put(10, m.GetStr(etPuno));
+            params.put(11, m.GetStr(etCcincuenta));
+            params.put(12, m.GetStr(etCveinte));
+            params.put(13, m.GetStr(etCdiez));
 
             dBhelper.saveArqueoCaja(db, params);
         }
@@ -255,14 +258,16 @@ public class ArqueoDeCaja extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Menu de retroceso del toolbar <- */
                 finish();
                 break;
             case R.id.save:
-                if (!etTotal.getText().toString().isEmpty()){
+                /**Valida que el total sea diferente de vacio para continuar con la validacion de montos*/
+                if (!m.GetStr(etTotal).isEmpty()){
                     guardarArqueCaja();
                 }
                 else {
+                    /**Si no ha ingresado ninguna cantidad de billetes y/o monedas*/
                     final AlertDialog dialog_error = Popups.showDialogMessage(ArqueoDeCaja.this,
                             Constants.money, R.string.error_guardar_arqueo,
                             R.string.accept, new Popups.DialogMessage() {

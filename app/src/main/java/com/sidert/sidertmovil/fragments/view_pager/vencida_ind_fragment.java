@@ -252,6 +252,8 @@ public class vencida_ind_fragment extends Fragment {
 
     private String fechaIni = "";
 
+    private Miscellaneous m;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_vencida_ind, container, false);
@@ -259,7 +261,7 @@ public class vencida_ind_fragment extends Fragment {
         ctx = getContext();
         dBhelper        = new DBhelper(ctx);
         db              = dBhelper.getWritableDatabase();
-
+        m = new Miscellaneous();
         parent                = (VencidaIndividual) getActivity();
         assert parent != null;
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -333,7 +335,7 @@ public class vencida_ind_fragment extends Fragment {
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         df = new DecimalFormat("#,###.##", symbols);
-        df.setDecimalSeparatorAlwaysShown(false);
+        df.setDecimalSeparatorAlwaysShown(true);
 
         dfnd = new DecimalFormat("#,###", symbols);
         dfnd.setDecimalSeparatorAlwaysShown(false);
@@ -555,7 +557,7 @@ public class vencida_ind_fragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (Miscellaneous.MedioPago(tvMedioPago) == 6){
+                if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){
                     if (s.length() > 0){
                         Update("folio", s.toString());
                     }
@@ -604,7 +606,7 @@ public class vencida_ind_fragment extends Fragment {
                     row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
-                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                        String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                         fechaIni = fechaInicio;
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0,parent.id_prestamo);
@@ -655,7 +657,7 @@ public class vencida_ind_fragment extends Fragment {
                     }
                     else{
                         if (row.getInt(26) > 0){
-                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                            String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -738,7 +740,7 @@ public class vencida_ind_fragment extends Fragment {
                     row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
                     row.moveToLast();
                     if (row.getCount() == 0){
-                        String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                        String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                         HashMap<Integer, String> params = new HashMap<>();
                         params.put(0,parent.id_prestamo);
                         parent.latitud = "0";
@@ -783,7 +785,7 @@ public class vencida_ind_fragment extends Fragment {
                     }
                     else{
                         if (row.getInt(26) > 0){
-                            String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                            String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             parent.latitud = "0";
@@ -946,7 +948,7 @@ public class vencida_ind_fragment extends Fragment {
                             row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{parent.id_prestamo});
                             row.moveToLast();
                             if (row.getCount() == 0) {
-                                String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                                String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                                 fechaIni = fechaInicio;
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, parent.id_prestamo);
@@ -988,7 +990,7 @@ public class vencida_ind_fragment extends Fragment {
                                 parent.id_respuesta = String.valueOf(id);
                             } else {
                                 if (row.getInt(26) > 0) {
-                                    String fechaInicio = Miscellaneous.ObtenerFecha(TIMESTAMP);
+                                    String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, parent.id_prestamo);
                                     params.put(1, "");
@@ -1100,7 +1102,7 @@ public class vencida_ind_fragment extends Fragment {
 
                             tvMedioPago.setError(null);
                             tvMedioPago.setText(_medio_pago[position]);
-                            if (Miscellaneous.MedioPago(tvMedioPago) == 6 && medio_pago_anterio >= 0) {
+                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6 && medio_pago_anterio >= 0) {
                                 Update("evidencia", "");
                                 Update("tipo_imagen", "");
                                 byteEvidencia = null;
@@ -1112,7 +1114,7 @@ public class vencida_ind_fragment extends Fragment {
                                 llFotoGaleria.setVisibility(View.VISIBLE);
                                 ivEvidencia.setVisibility(View.GONE);
                             }
-                            else if(Miscellaneous.MedioPago(tvMedioPago) >= 0 && medio_pago_anterio == 6){
+                            else if(m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && medio_pago_anterio == 6){
                                 byteEvidencia = null;
                                 Update("evidencia", "");
                                 Update("tipo_imagen", "");
@@ -1125,7 +1127,7 @@ public class vencida_ind_fragment extends Fragment {
                             }
                             medio_pago_anterio = position;
                             Update("medio_pago", _medio_pago[position]);
-                            SelectMedioPago(Miscellaneous.MedioPago(tvMedioPago));
+                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
                         }
                     });
             builder.create();
@@ -1165,7 +1167,7 @@ public class vencida_ind_fragment extends Fragment {
                             Update("pagara_requerido", _confirmacion[position]);
                             switch (position) {
                                 case 0:
-                                    if (Miscellaneous.MedioPago(tvMedioPago) == 6)
+                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(parent.monto_requerido))));
                                     else
                                         etPagoRealizado.setText(parent.monto_requerido);
@@ -1179,7 +1181,7 @@ public class vencida_ind_fragment extends Fragment {
                                     }
                                     break;
                                 case 1:
-                                    if (Miscellaneous.MedioPago(tvMedioPago) == 6)
+                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(parent.monto_requerido))));
                                     else
                                         etPagoRealizado.setText(parent.monto_requerido);
@@ -1668,7 +1670,7 @@ public class vencida_ind_fragment extends Fragment {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 tvImprimirRecibo.setText(_imprimir[1]);
                 tvImprimirRecibo.setEnabled(false);
-                SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
+                SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
                 break;
@@ -1852,13 +1854,13 @@ public class vencida_ind_fragment extends Fragment {
 
                 if (!row.getString(4).isEmpty()){ //CONTACTO
                     tvContacto.setText(row.getString(4));
-                    switch (Miscellaneous.ContactoCliente(tvContacto)) {
+                    switch (m.GetIdContacto(m.GetStr(tvContacto))) {
                         case 0: //SI CONTACTO
-                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
+                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
 
                             if (!row.getString(6).isEmpty()){//ACTUALIZAR TELEFONO
                                 tvActualizarTelefono.setText(row.getString(6));
-                                if (Miscellaneous.ActualizarTelefono(tvActualizarTelefono) == 0){
+                                if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0){
                                     if (!row.getString(7).isEmpty()){//NUEVO TELEFONO
                                         etActualizarTelefono.setText(row.getString(7));
                                         etActualizarTelefono.setError(null);
@@ -1869,12 +1871,12 @@ public class vencida_ind_fragment extends Fragment {
 
                             if (!row.getString(8).isEmpty()){//RESULTADO PAGO
                                 tvResultadoGestion.setText(row.getString(8));
-                                SelectResultadoGestion(Miscellaneous.ResultadoGestion(tvResultadoGestion));
-                                switch (Miscellaneous.ResultadoGestion(tvResultadoGestion)){
+                                SelectResultadoGestion(m.GetIdPago(m.GetStr(tvResultadoGestion)));
+                                switch (m.GetIdPago(m.GetStr(tvResultadoGestion))){
                                     case 1: //No Pago
                                         tvMotivoNoPago.setText(row.getString(9));
-                                        SelectMotivoNoPago(Miscellaneous.MotivoNoPago(tvMotivoNoPago));
-                                        switch (Miscellaneous.MotivoNoPago(tvMotivoNoPago)){
+                                        SelectMotivoNoPago(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)));
+                                        switch (m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago))){
                                             case 1:
                                                 tvFechaDefuncion.setText(row.getString(10));
                                                 break;
@@ -1896,16 +1898,16 @@ public class vencida_ind_fragment extends Fragment {
                                             Glide.with(ctx).load(uriFachada).into(ivFachada);
                                             ibFachada.setVisibility(View.GONE);
                                             ivFachada.setVisibility(View.VISIBLE);
-                                            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
+                                            byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
                                             tvFachada.setError(null);
                                         }
 
                                         tvGerente.setVisibility(View.VISIBLE);
                                         if (!row.getString(21).isEmpty()){//ESTA GERENTE
                                             tvGerente.setText(row.getString(21));
-                                            SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+                                            SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
 
-                                            if (Miscellaneous.Gerente(tvGerente) == 0){
+                                            if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
 
                                                 if (!row.getString(22).isEmpty()){//FIRMA
                                                     File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
@@ -1913,7 +1915,7 @@ public class vencida_ind_fragment extends Fragment {
                                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                     ibFirma.setVisibility(View.GONE);
                                                     ivFirma.setVisibility(View.VISIBLE);
-                                                    byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                                    byteFirma = m.getBytesUri(ctx, uriFirma, 1);
                                                     tvFirma.setError(null);
                                                 }
                                             }
@@ -1922,12 +1924,12 @@ public class vencida_ind_fragment extends Fragment {
                                     case 0: // Si Pago
                                         if (!row.getString(13).isEmpty()){//MEDIO PAGO
                                             tvMedioPago.setText(row.getString(13));
-                                            medio_pago_anterio = Miscellaneous.MedioPago(tvMedioPago);
-                                            SelectMedioPago(Miscellaneous.MedioPago(tvMedioPago));
+                                            medio_pago_anterio = m.GetMedioPagoId(m.GetStr(tvMedioPago));
+                                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
                                             if (!row.getString(15).isEmpty()){//PAGARA REQUERIDO
 
                                                 tvPagaraRequerido.setText(row.getString(15));
-                                                SelectPagoRequerido(Miscellaneous.PagoRequerido(tvPagaraRequerido));
+                                                SelectPagoRequerido(m.PagoRequerido(tvPagaraRequerido));
                                                 etPagoRealizado.setText(row.getString(16));
                                             }
 
@@ -1936,13 +1938,13 @@ public class vencida_ind_fragment extends Fragment {
                                                 tvFechaDeposito.setError(null);
                                             }
 
-                                            if (Miscellaneous.MedioPago(tvMedioPago) == 6){ //EFECTIVO
+                                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){ //EFECTIVO
                                                 if (!row.getString(17).isEmpty()){//IMPRIMIRA RECIBOS
                                                     tvImprimirRecibo.setText(row.getString(17));
-                                                    SelectImprimirRecibos(Miscellaneous.Impresion(tvImprimirRecibo));
+                                                    SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
                                                     etFolioRecibo.setEnabled(true);
 
-                                                    if (Miscellaneous.Impresion(tvImprimirRecibo) == 0){ //SI IMPRIMIRA RECIBOS
+                                                    if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0){ //SI IMPRIMIRA RECIBOS
 
                                                         if (!row.getString(18).isEmpty()){//FOLIO
                                                             etPagoRealizado.setEnabled(false);
@@ -1978,7 +1980,7 @@ public class vencida_ind_fragment extends Fragment {
                                                     }
                                                 }
                                             }
-                                            else if (Miscellaneous.MedioPago(tvMedioPago) == 7){
+                                            else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7){
                                                 ibImprimir.setVisibility(View.GONE);
                                                 llFolioRecibo.setVisibility(View.VISIBLE);
                                                 etFolioRecibo.setText(row.getString(18));
@@ -1992,22 +1994,22 @@ public class vencida_ind_fragment extends Fragment {
                                                 ibFoto.setVisibility(View.GONE);
                                                 ibGaleria.setVisibility(View.GONE);
                                                 ivEvidencia.setVisibility(View.VISIBLE);
-                                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
+                                                byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
                                                 tvFotoGaleria.setError(null);
                                             }
 
                                             if (!row.getString(21).isEmpty()){//ESTA GERENTE
                                                 tvGerente.setText(row.getString(21));
 
-                                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
-                                                if (Miscellaneous.Gerente(tvGerente) == 0){//SI ESTA GERENTE
+                                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){//SI ESTA GERENTE
                                                     if (!row.getString(22).isEmpty()){//FIRMA
                                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
                                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                         ibFirma.setVisibility(View.GONE);
                                                         ivFirma.setVisibility(View.VISIBLE);
-                                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
                                                         tvFirma.setError(null);
                                                     }
                                                 }
@@ -2018,7 +2020,7 @@ public class vencida_ind_fragment extends Fragment {
                             }
                             break;
                         case 1: //NO CONTACTO
-                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
+                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
                             if (!row.getString(5).isEmpty()){//COMENTARIO
                                 etComentario.setText(row.getString(5));
                                 etComentario.setVisibility(View.VISIBLE);
@@ -2031,30 +2033,30 @@ public class vencida_ind_fragment extends Fragment {
                                 Glide.with(ctx).load(uriFachada).into(ivFachada);
                                 ibFachada.setVisibility(View.GONE);
                                 ivFachada.setVisibility(View.VISIBLE);
-                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
+                                byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
                                 tvFachada.setError(null);
                             }
 
                             tvGerente.setVisibility(View.VISIBLE);
                             if (!row.getString(21).isEmpty()){//ESTA GERENTE
                                 tvGerente.setText(row.getString(21));
-                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
+                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
 
-                                if (Miscellaneous.Gerente(tvGerente) == 0){
+                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
                                     if (!row.getString(22).isEmpty()){
                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
                                         ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
                                         tvFirma.setError(null);
                                     }
                                 }
                             }
                             break;
                         case 2:
-                            SelectContactoCliente(Miscellaneous.ContactoCliente(tvContacto));
+                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
 
                             if (!row.getString(5).isEmpty()){//COMENTARIO
                                 etComentario.setText(row.getString(5));
@@ -2065,15 +2067,15 @@ public class vencida_ind_fragment extends Fragment {
                             tvGerente.setVisibility(View.VISIBLE);
                             if (!row.getString(21).isEmpty()){//ESTA GERENTE
                                 tvGerente.setText(row.getString(21));
-                                SelectEstaGerente(Miscellaneous.Gerente(tvGerente));
-                                if (Miscellaneous.Gerente(tvGerente) == 0){
+                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
                                     if (!row.getString(22).isEmpty()){
                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(22));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
                                         ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
+                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
                                         tvFirma.setError(null);
                                     }
                                 }
@@ -2110,7 +2112,7 @@ public class vencida_ind_fragment extends Fragment {
                         byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
 
                         try {
-                            Update("firma", Miscellaneous.save(byteFirma, 3));
+                            Update("firma", m.save(byteFirma, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -2127,7 +2129,7 @@ public class vencida_ind_fragment extends Fragment {
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
 
                         try {
-                            Update("evidencia", Miscellaneous.save(byteEvidencia, 1));
+                            Update("evidencia", m.save(byteEvidencia, 1));
                             Update("tipo_imagen", "FACHADA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2158,7 +2160,7 @@ public class vencida_ind_fragment extends Fragment {
                     try {
                         imageUri = data.getData();
 
-                        byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+                        byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
 
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -2186,7 +2188,7 @@ public class vencida_ind_fragment extends Fragment {
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                         try {
-                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                            Update("evidencia", m.save(byteEvidencia, 2));
                             Update("tipo_imagen", "GALERIA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2212,7 +2214,7 @@ public class vencida_ind_fragment extends Fragment {
                             CropImage.ActivityResult result = CropImage.getActivityResult(data);
                             imageUri = result.getUri();
 
-                            byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+                            byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
 
                             ibFoto.setVisibility(View.GONE);
                             ibGaleria.setVisibility(View.GONE);
@@ -2240,7 +2242,7 @@ public class vencida_ind_fragment extends Fragment {
                             Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                             try {
-                                Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                                Update("evidencia", m.save(byteEvidencia, 2));
                                 Update("tipo_imagen", "GALERIA");
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -2269,7 +2271,7 @@ public class vencida_ind_fragment extends Fragment {
                         byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
                         try {
-                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
+                            Update("evidencia", m.save(byteEvidencia, 2));
                             Update("tipo_imagen", "FOTOGRAFIA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2329,7 +2331,7 @@ public class vencida_ind_fragment extends Fragment {
                             cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
                             cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
                         }
-                        cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
+                        cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
                         cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
                         cv.put("estatus", "1");
 
@@ -2357,7 +2359,7 @@ public class vencida_ind_fragment extends Fragment {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
                                         abono = abono - pendiente;
                                     }
@@ -2365,7 +2367,7 @@ public class vencida_ind_fragment extends Fragment {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
                                         abono = 0.0;
                                     }
@@ -2374,7 +2376,7 @@ public class vencida_ind_fragment extends Fragment {
                                         cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
-                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
 
                                     }
@@ -2440,7 +2442,6 @@ public class vencida_ind_fragment extends Fragment {
     private void GuardarGestion(){
         Validator validator = new Validator();
         ValidatorTextView validatorTV = new ValidatorTextView();
-        Miscellaneous m = new Miscellaneous();
         Bundle b = new Bundle();
 
         b.putString(NOMBRE, parent.nombre);
@@ -2453,19 +2454,19 @@ public class vencida_ind_fragment extends Fragment {
                 b.putDouble(LATITUD, 0);
                 b.putDouble(LONGITUD, 0);
             }
-            if (m.ContactoCliente(tvContacto) == 0) { //Si Contacto cliente
+            if (m.GetIdContacto(m.GetStr(tvContacto)) == 0) { //Si Contacto cliente
                 b.putString(CONTACTO, tvContacto.getText().toString());
                 if (!tvActualizarTelefono.getText().toString().isEmpty()){
-                    if ((m.ActualizarTelefono(tvActualizarTelefono) == 0 && !validator.validate(etActualizarTelefono, new String[]{validator.REQUIRED, validator.PHONE})) || m.ActualizarTelefono(tvActualizarTelefono) == 1){
-                        if (m.ActualizarTelefono(tvActualizarTelefono) == 0){
+                    if ((m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0 && !validator.validate(etActualizarTelefono, new String[]{validator.REQUIRED, validator.PHONE})) || m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 1){
+                        if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0){
                             b.putString(ACTUALIZAR_TELEFONO, "SI");
                             b.putString(NUEVO_TELEFONO, etActualizarTelefono.getText().toString().trim());
                         }else {
                             b.putString(ACTUALIZAR_TELEFONO, "NO");
                         }
-                        if (m.ResultadoGestion(tvResultadoGestion) == 0){ // Si pago
+                        if (m.GetIdPago(m.GetStr(tvResultadoGestion)) == 0){ // Si pago
                             b.putString(RESULTADO_PAGO, "PAGO");
-                            if (m.MedioPago(tvMedioPago) >= 0 && m.MedioPago(tvMedioPago) < 6 || m.MedioPago(tvMedioPago) == 7 || m.MedioPago(tvMedioPago) == 8 ){ // Medio de pago Bancos y Oxxo
+                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && m.GetMedioPagoId(m.GetStr(tvMedioPago)) < 6 || m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7 || m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 8 ){ // Medio de pago Bancos y Oxxo
                                 b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
                                 if (!tvFechaDeposito.getText().toString().trim().isEmpty()){ //Fecha de deposito capturada
                                     b.putString(FECHA_DEPOSITO, tvFechaDeposito.getText().toString().trim());
@@ -2476,8 +2477,8 @@ public class vencida_ind_fragment extends Fragment {
                                             b.putDouble(MONTO_REQUERIDO, Double.parseDouble(parent.monto_requerido));
                                             b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim().replace(",",""));
                                             //-------------------------------------------------------
-                                            if (m.MedioPago(tvMedioPago) == 7) {
-                                                if (m.Impresion(tvImprimirRecibo) == 1) { //No imprimirá recibos
+                                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7) {
+                                                if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 1) { //No imprimirá recibos
                                                     if (!etFolioRecibo.getText().toString().trim().isEmpty()) {
                                                         b.putString(IMPRESORA, tvImprimirRecibo.getText().toString());
                                                         b.putString(FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
@@ -2489,7 +2490,7 @@ public class vencida_ind_fragment extends Fragment {
 
                                             //----------------------------------------------------
                                             if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
-                                                if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                     if (byteFirma != null) { //Capturó una firma
                                                         b.putByteArray(EVIDENCIA, byteEvidencia);
                                                         b.putString(GERENTE, "SI");
@@ -2497,7 +2498,7 @@ public class vencida_ind_fragment extends Fragment {
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha capturado la firma
                                                         Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
                                                     b.putString(GERENTE, "NO");
                                                     b.putBoolean(TERMINADO, true);
@@ -2518,7 +2519,7 @@ public class vencida_ind_fragment extends Fragment {
                                     Toast.makeText(ctx, "No ha seleccionado la fecha de deposito", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            else if (m.MedioPago(tvMedioPago) == 6){ //Efectivo
+                            else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){ //Efectivo
                                 b.putString(MEDIO_PAGO, tvMedioPago.getText().toString());
                                 if (!tvPagaraRequerido.getText().toString().trim().isEmpty()){ //Selecionó que pagará requerido o no requerido
                                     b.putString(PAGO_REQUERIDO, "SI");
@@ -2526,20 +2527,20 @@ public class vencida_ind_fragment extends Fragment {
                                         b.putDouble(SALDO_CORTE, parent.saldo_corte);
                                         b.putDouble(MONTO_REQUERIDO, Double.parseDouble(parent.monto_requerido));
                                         b.putString(PAGO_REALIZADO, etPagoRealizado.getText().toString().trim().replace(",",""));
-                                        if (m.Impresion(tvImprimirRecibo) == 0){ //Si imprimirá recibos
+                                        if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0){ //Si imprimirá recibos
                                             if (!etFolioRecibo.getText().toString().trim().isEmpty()){
                                                 b.putString(IMPRESORA, "SI");
                                                 b.putString(FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
                                                 if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
-                                                    if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                         if (byteFirma != null) { //Capturó una firma
                                                             b.putString(GERENTE, "SI");
                                                             b.putByteArray(FIRMA, byteFirma);
                                                             b.putBoolean(TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                    } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                         b.putString(GERENTE, "NO");
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
@@ -2551,20 +2552,20 @@ public class vencida_ind_fragment extends Fragment {
                                             else //No ha impreso ningun ticket
                                                 Toast.makeText(ctx,"No ha realizado nignuna impresión", Toast.LENGTH_SHORT).show();
                                         }
-                                        else if (m.Impresion(tvImprimirRecibo) == 1){ //No imprimirá recibos
+                                        else if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 1){ //No imprimirá recibos
                                             if (!etFolioRecibo.getText().toString().trim().isEmpty()){
                                                 b.putString(IMPRESORA, "NO CUENTA CON BATERIA");
                                                 b.putString(FOLIO_TICKET, etFolioRecibo.getText().toString().trim());
                                                 if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
-                                                    if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                         if (byteFirma != null) { //Capturó una firma
                                                             b.putString(GERENTE, "SI");
                                                             b.putByteArray(FIRMA, byteFirma);
                                                             b.putBoolean(TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                                    } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                         b.putString(GERENTE, "NO");
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
@@ -2588,22 +2589,22 @@ public class vencida_ind_fragment extends Fragment {
                             else //No ha seleccionado algun medio de pago
                                 Toast.makeText(ctx, "No ha seleccionado un medio de pago", Toast.LENGTH_SHORT).show();
                         }// ================ TERMINA PAGO  ==================================
-                        else if (m.ResultadoGestion(tvResultadoGestion) == 1){ //No pago
+                        else if (m.GetIdPago(m.GetStr(tvResultadoGestion)) == 1){ //No pago
                             b.putString(RESULTADO_PAGO, "NO PAGO");
-                            if (m.MotivoNoPago(tvMotivoNoPago) == 0 || m.MotivoNoPago(tvMotivoNoPago) == 2){ //Motivo de no pago Negacion u Otra
+                            if (m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 0 || m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 2){ //Motivo de no pago Negacion u Otra
                                 b.putString(MOTIVO_NO_PAGO,tvMotivoNoPago.getText().toString());
                                 if (!etComentario.getText().toString().trim().isEmpty()){ //El campo comentario es diferente de vacio
                                     b.putString(COMENTARIO, etComentario.getText().toString());
                                     if (byteEvidencia != null){
                                         b.putByteArray(EVIDENCIA, byteEvidencia);
-                                        if (m.Gerente(tvGerente) == 0) { //Selecciono que si está el gerente
+                                        if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                             if (byteFirma != null) { //Capturó una firma
                                                 b.putString(GERENTE, "SI");
                                                 b.putByteArray(FIRMA, byteFirma);
                                                 b.putBoolean(TERMINADO, true);
                                             } else //No ha capturado la firma
                                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                        } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el Gerente
+                                        } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                             b.putString(GERENTE, "NO");
                                             b.putBoolean(TERMINADO, true);
                                         } else //No ha seleccionado si está el gerente
@@ -2615,7 +2616,7 @@ public class vencida_ind_fragment extends Fragment {
                                 else // No ha ingresado alguno comentario
                                     Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
                             }
-                            else if(m.MotivoNoPago(tvMotivoNoPago) == 1) { //Motivo de no pago fue Fallecimiento
+                            else if(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 1) { //Motivo de no pago fue Fallecimiento
                                 b.getString(RESULTADO_PAGO, "NO PAGO");
                                 b.putString(MOTIVO_NO_PAGO,tvMotivoNoPago.getText().toString());
                                 if (!tvFechaDefuncion.getText().toString().trim().isEmpty()){ //El campo Fecha es diferente de vacio
@@ -2624,14 +2625,14 @@ public class vencida_ind_fragment extends Fragment {
                                         b.putString(COMENTARIO, etComentario.getText().toString());
                                         if (byteEvidencia != null){ //Capturo una fotografia de fachada
                                             b.putByteArray(EVIDENCIA, byteEvidencia);
-                                            if (m.Gerente(tvGerente) == 0) { //Si está el gerente
+                                            if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Si está el gerente
                                                 if (byteFirma != null) { //Capturó un firma
                                                     b.putString(GERENTE, "SI");
                                                     b.putByteArray(FIRMA, byteFirma);
                                                     b.putBoolean(TERMINADO, true);
                                                 } else //No ha Capturado un Firma
                                                     Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                            } else if (m.Gerente(tvGerente) == 1) { //No está el gerente
+                                            } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No está el gerente
                                                 b.putString(GERENTE, "NO");
                                                 b.putBoolean(TERMINADO, true);
                                             } else //No ha seleccionado si está el gerente
@@ -2646,7 +2647,7 @@ public class vencida_ind_fragment extends Fragment {
                                 else //No ha seleccionado la fecha de defuncion
                                     Toast.makeText(ctx, "No ha seleccionado la fecha de defunción", Toast.LENGTH_SHORT).show();
                             }
-                            else if(m.MotivoNoPago(tvMotivoNoPago) == 3){
+                            else if(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 3){
                                 b.getString(RESULTADO_PAGO, "NO PAGO");
                                 b.putString(MOTIVO_NO_PAGO,tvMotivoNoPago.getText().toString());
                                 if (!tvFechaPromesaPago.getText().toString().trim().isEmpty()){ //El campo Fecha de promesa de pago
@@ -2657,14 +2658,14 @@ public class vencida_ind_fragment extends Fragment {
                                             b.putString(COMENTARIO, etComentario.getText().toString());
                                             if (byteEvidencia != null) { //Capturo una fotografia de fachada
                                                 b.putByteArray(EVIDENCIA, byteEvidencia);
-                                                if (m.Gerente(tvGerente) == 0) { //Si está el gerente
+                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Si está el gerente
                                                     if (byteFirma != null) { //Capturó un firma
                                                         b.putString(GERENTE, "SI");
                                                         b.putByteArray(FIRMA, byteFirma);
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha Capturado un Firma
                                                         Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                } else if (m.Gerente(tvGerente) == 1) { //No está el gerente
+                                                } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No está el gerente
                                                     b.putString(GERENTE, "NO");
                                                     b.putBoolean(TERMINADO, true);
                                                 } else //No ha seleccionado si está el gerente
@@ -2691,20 +2692,20 @@ public class vencida_ind_fragment extends Fragment {
                 else //No ha seleccionado si va actualizar el telefono
                     Toast.makeText(ctx, "No ha seleccionado si va actualizar el teléfono", Toast.LENGTH_SHORT).show();
             }
-            else if(m.ContactoCliente(tvContacto) == 1) { //No contactó al cliente
+            else if(m.GetIdContacto(m.GetStr(tvContacto)) == 1) { //No contactó al cliente
                 b.putString(CONTACTO, "NO");
                 if (!etComentario.getText().toString().trim().isEmpty()) { //El campo comentario es diferente de vacio
                     b.putString(COMENTARIO, etComentario.getText().toString());
                     if (byteEvidencia != null) { //Ha capturado una fotografia de la fachada
                         b.putByteArray(EVIDENCIA, byteEvidencia);
-                        if (m.Gerente(tvGerente) == 0) { // Seleccionó que está el gerente
+                        if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { // Seleccionó que está el gerente
                             if (byteFirma != null) { // Ha capturado un firma
                                 b.putString(GERENTE, "SI");
                                 b.putByteArray(FIRMA, byteFirma);
                                 b.putBoolean(TERMINADO, true);
                             } else //No ha capturado un firma
                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (m.Gerente(tvGerente) == 1) { //No se encuentra el gerente
+                        } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el gerente
                             b.putString(GERENTE, "NO");
                             b.putBoolean(TERMINADO, true);
                         } else //No ha seleccionado si está el gerente
@@ -2714,18 +2715,18 @@ public class vencida_ind_fragment extends Fragment {
                 } else //No ha ingresado algun comentario
                     Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
             }
-            else if(m.ContactoCliente(tvContacto) == 2) { //Seleccionó Aclaración
+            else if(m.GetIdContacto(m.GetStr(tvContacto)) == 2) { //Seleccionó Aclaración
                 b.putString(CONTACTO, "ACLARACION");
                 if (!etComentario.getText().toString().trim().isEmpty()) { // Ingresó algun comentario
                     b.putString(COMENTARIO, etComentario.getText().toString());
-                    if (m.Gerente(tvGerente) == 0) { //Seleccionó que está el gerente
+                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Seleccionó que está el gerente
                         if (byteFirma != null) { //Ha capturado una firma
                             b.putString(GERENTE, "SI");
                             b.putByteArray(FIRMA, byteFirma);
                             b.putBoolean(TERMINADO, true);
                         } else //No ha capturado una firma
                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                    } else if (m.Gerente(tvGerente) == 1) { //Seleccionó que no está el gerente
+                    } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //Seleccionó que no está el gerente
                         b.putString(GERENTE, "NO");
                         b.putBoolean(TERMINADO, true);
                     } else //No ha confirmado si está el gerente

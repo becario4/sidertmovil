@@ -65,6 +65,7 @@
             android:orientation="horizontal"
             android:layout_gravity="bottom">
             <TextView
+                android:id="@+id/tvVersionAppAmbiente"
                 android:gravity="right"
                 android:text="@string/app_version"
                 android:textColor="@android:color/black"

@@ -160,23 +160,23 @@ public class CirculoCredito extends AppCompatActivity {
                 setupBadge();
                 String where = "";
                 if (!session.getFiltrosCCAGF().get(0).isEmpty()){
-                    where = " AND (nombre_grupo LIKE '%"+session.getFiltrosCCAGF().get(0)+"%' OR nombre_cliente LIKE '%"+session.getFiltrosCCAGF().get(0)+"%')";
+                    where = " AND (p.nombre_grupo LIKE '%"+session.getFiltrosCCAGF().get(0)+"%' OR p.nombre_cliente LIKE '%"+session.getFiltrosCCAGF().get(0)+"%')";
                 }
 
                 if (session.getFiltrosCCAGF().get(1).equals("1") && session.getFiltrosCCAGF().get(2).equals("1")){
                     where += " AND (grupo_id = 1 OR grupo_id > 1)";
                 }
                 else if (session.getFiltrosCCAGF().get(2).equals("1")){
-                    where += " AND grupo_id = 1";
+                    where += " AND p.grupo_id = 1";
                 }
                 else if (session.getFiltrosCCAGF().get(1).equals("1")){
-                    where += " AND grupo_id > 1";
+                    where += " AND p.grupo_id > 1";
                 }
 
                 if (where.length() > 0)
-                    getPrestamos(" WHERE" + where.substring(4));
+                    getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
                 else
-                    getPrestamos("");
+                    getPrestamos(" WHERE rr._id is null");
 
             }
         });
@@ -308,8 +308,10 @@ public class CirculoCredito extends AppCompatActivity {
     }
 
     private void getPrestamos( String where){
+        Log.e("WHERE", where+ " asd");
         rvClientesCC.setAdapter(null);
-        String sql = "SELECT * FROM " + TBL_PRESTAMOS + where;
+        String sql = "SELECT p.* FROM " + TBL_PRESTAMOS + " AS p " +
+                "LEFT JOIN " + TBL_RECUPERACION_RECIBOS + " AS rr ON rr.grupo_id = p.grupo_id AND rr.num_solicitud = p.num_solicitud" + where;
         Log.e("SqlCC", sql);
         final Cursor row = db.rawQuery(sql, null);
         Log.e("SqlCC", "Count "+ row.getCount());
@@ -337,7 +339,7 @@ public class CirculoCredito extends AppCompatActivity {
             adapter_prestamos_agf adapter = new adapter_prestamos_agf(ctx, prestamos, new adapter_prestamos_agf.Event() {
                 @Override
                 public void AgfOnClick(HashMap<Integer, String> item) {
-                    Toast.makeText(ctx, item.get(11), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ctx, item.get(11), Toast.LENGTH_SHORT).show();
                     String nombre = "";
                     String nombreFirma = "";
                     int edad = 0;
@@ -356,7 +358,9 @@ public class CirculoCredito extends AppCompatActivity {
 
                         //totalIntegrantes = edades.length;
 
+                        Log.e("TotalIntegrantes", "Total: "+edades.length);
                         for (int i = 0; i < edades.length; i++){
+                            Log.e("EdadGpo", edades[i]);
                             if (Integer.parseInt(edades[i]) < 80){
                                 Log.e("XXXXXXX",montos[i]+"   "+(Long.parseLong(montos[i]) <= 29000));
                                 if (Long.parseLong(montos[i]) <= 29000)
@@ -414,6 +418,10 @@ public class CirculoCredito extends AppCompatActivity {
                         monto = String.valueOf((meses * seguroAGF));
                     }
 
+
+                    Log.e("Integrantes", "XXXXX: "+totalIntegrantes);
+                    Log.e("Monto", "XXXXX: "+monto);
+
                     if ((Long.parseLong(item.get(1)) == 1 && edad < 80) || Long.parseLong(item.get(1)) > 1) {
                         Intent i_formato_recibo = new Intent(ctx, RecuperacionRecibos.class);
                         i_formato_recibo.putExtra("item", item);
@@ -428,44 +436,12 @@ public class CirculoCredito extends AppCompatActivity {
                         i_formato_recibo.putExtra("res_impresion", 0);
                         i_formato_recibo.putExtra("is_reeimpresion", false);
                         i_formato_recibo.putExtra("print_recibo", printRecibo);
+                        i_formato_recibo.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(i_formato_recibo);
                     }
                     else{
                         Toast.makeText(ctx, "No se hace cobro de apoyo a gastos funerarios", Toast.LENGTH_SHORT).show();
                     }
-                }
-
-                @Override
-                public void CcOnClick(HashMap<Integer, String> item) {
-
-                    if (Long.parseLong(item.get(1)) > 1) {
-                        Intent i_formato_recibo = new Intent(ctx, IntegrantesCC.class);
-
-                        i_formato_recibo.putExtra("nombre_gpo", item.get(0));
-                        i_formato_recibo.putExtra("integrantes", item.get(8));
-                        i_formato_recibo.putExtra("cliente_id", item.get(2));
-                        i_formato_recibo.putExtra("grupo_id", item.get(1));
-                        i_formato_recibo.putExtra("num_solicitud", item.get(3));
-                        i_formato_recibo.putExtra("tipo", "CC");
-                        startActivity(i_formato_recibo);
-                    }
-                    else{
-                        Intent i_formato_recibo = new Intent(ctx, RecuperacionRecibos.class);
-                        i_formato_recibo.putExtra("item", item);
-                        i_formato_recibo.putExtra("integrantes", 0);
-                        i_formato_recibo.putExtra("grupo_id", item.get(1));
-                        i_formato_recibo.putExtra("num_solicitud", item.get(3));
-                        i_formato_recibo.putExtra("cliente_id", item.get(2));
-                        i_formato_recibo.putExtra("nombre", item.get(8).substring(1));
-                        i_formato_recibo.putExtra("nombre_firma", item.get(8));
-                        i_formato_recibo.putExtra("monto", "17.5");
-                        i_formato_recibo.putExtra("tipo", "CC");
-                        i_formato_recibo.putExtra("meses", 0);
-                        i_formato_recibo.putExtra("res_impresion", 0);
-                        i_formato_recibo.putExtra("is_reeimpresion", false);
-                        startActivity(i_formato_recibo);
-                    }
-
                 }
             });
             rvClientesCC.setAdapter(adapter);
@@ -654,7 +630,7 @@ public class CirculoCredito extends AppCompatActivity {
                                         if (!aetNombre.getText().toString().trim().isEmpty()){
                                             filtros.put("nombre_cc_agf",aetNombre.getText().toString().trim());
                                             cont_filtros += 1;
-                                            where = " AND (nombre_grupo LIKE '%"+aetNombre.getText().toString().trim()+"%' OR nombre_cliente LIKE '%"+aetNombre.getText().toString().trim()+"%')";
+                                            where = " AND (p.nombre_grupo LIKE '%"+aetNombre.getText().toString().trim()+"%' OR p.nombre_cliente LIKE '%"+aetNombre.getText().toString().trim()+"%')";
                                         }
                                         else filtros.put("nombre_cc_agf","");
 
@@ -662,19 +638,19 @@ public class CirculoCredito extends AppCompatActivity {
                                             filtros.put("tipo_prestamo_ind_cc_agf","1");
                                             filtros.put("tipo_prestamo_gpo_cc_agf","1");
                                             cont_filtros += 2;
-                                            where += " AND (grupo_id = 1 OR grupo_id > 1)";
+                                            where += " AND (p.grupo_id = 1 OR p.grupo_id > 1)";
                                         }
                                         else if (cbInd.isChecked()){
                                             filtros.put("tipo_prestamo_ind_cc_agf","1");
                                             filtros.put("tipo_prestamo_gpo_cc_agf","0");
                                             cont_filtros += 1;
-                                            where += " AND grupo_id = 1";
+                                            where += " AND p.grupo_id = 1";
                                         }
                                         else if (cbGpo.isChecked()){
                                             filtros.put("tipo_prestamo_ind_cc_agf","0");
                                             filtros.put("tipo_prestamo_gpo_cc_agf","1");
                                             cont_filtros += 1;
-                                            where += " AND grupo_id > 1";
+                                            where += " AND p.grupo_id > 1";
                                         }else {
                                             filtros.put("tipo_prestamo_ind_cc_agf","0");
                                             filtros.put("tipo_prestamo_gpo_cc_agf","0");
@@ -685,9 +661,9 @@ public class CirculoCredito extends AppCompatActivity {
                                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                                         Log.e("where",where);
                                         if (where.length() > 4)
-                                            getPrestamos(" WHERE" + where.substring(4));
+                                            getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
                                         else
-                                            getPrestamos("");
+                                            getPrestamos(" WHERE rr._id is null");
                                         break;
                                     case 2:
                                         if (!aetNombreRec.getText().toString().trim().isEmpty()){
@@ -842,7 +818,7 @@ public class CirculoCredito extends AppCompatActivity {
                                         session.setFiltrosCCAGF(filtros);
 
                                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                        getPrestamos("");
+                                        getPrestamos(" WHERE rr._id is null");
 
                                         aetNombre.setAdapter(adapterNombre);
                                         break;
@@ -923,9 +899,9 @@ public class CirculoCredito extends AppCompatActivity {
                 if (!session.getFiltrosCCAGF().get(0).isEmpty())
                     aetNombre.setText(session.getFiltrosCCAGF().get(0));
                 if (session.getFiltrosCCAGF().get(1).equals("1"))
-                    cbInd.setChecked(true);
-                if (session.getFiltrosCCAGF().get(2).equals("1"))
                     cbGpo.setChecked(true);
+                if (session.getFiltrosCCAGF().get(2).equals("1"))
+                    cbInd.setChecked(true);
                 break;
             case 2:
                 aetNombreRec   = filtros_dg.getHolderView().findViewById(R.id.aetNombreRecibo);
@@ -1008,6 +984,7 @@ public class CirculoCredito extends AppCompatActivity {
                 }
                 break;
             default: //1
+                Log.e("TVFILTRO", String.valueOf(tvContFiltros != null));
                 if (tvContFiltros != null) {
                     tvContFiltros.setText(String.valueOf(session.getFiltrosCCAGF().get(3)));
                     tvContFiltros.setVisibility(View.VISIBLE);
@@ -1032,6 +1009,8 @@ public class CirculoCredito extends AppCompatActivity {
                 onOptionsItemSelected(menuItem);
             }
         });
+
+        setupBadge();
         return true;
     }
 
@@ -1061,22 +1040,22 @@ public class CirculoCredito extends AppCompatActivity {
         Log.e("TipoSeccion", String.valueOf(tipoSeccion));
         String where = "";
         if (!session.getFiltrosCCAGF().get(0).isEmpty())
-            where = " AND nombre_grupo LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%' OR nombre_cliente LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%'";
+            where = " AND p.nombre_grupo LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%' OR p.nombre_cliente LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%'";
 
         if (session.getFiltrosCCAGF().get(1).equals("1") && session.getFiltrosCCAGF().get(2).equals("1")){
-            where += " AND (grupo_id = 1 OR grupo_id > 1)";
+            where += " AND (p.grupo_id = 1 OR p.grupo_id > 1)";
         }
         else if (session.getFiltrosCCAGF().get(2).equals("1")){
-            where += " AND grupo_id = 1";
+            where += " AND p.grupo_id = 1";
         }
         else if (session.getFiltrosCCAGF().get(1).equals("1")){
-            where += " AND grupo_id > 1";
+            where += " AND p.grupo_id > 1";
         }
 
         if (where.length() > 4)
-            getPrestamos(" WHERE" + where.substring(4));
+            getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
         else
-            getPrestamos("");
+            getPrestamos(" WHERE rr._id is null");
 
     }
 }

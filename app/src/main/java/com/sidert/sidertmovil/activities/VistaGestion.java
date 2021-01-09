@@ -158,6 +158,8 @@ public class VistaGestion extends AppCompatActivity {
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+    
+    private Miscellaneous m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +167,8 @@ public class VistaGestion extends AppCompatActivity {
         setContentView(R.layout.activity_vista_gestion);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx = this;
+        
+        m = new Miscellaneous();
 
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
@@ -258,7 +262,7 @@ public class VistaGestion extends AppCompatActivity {
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
 
-                if ((Miscellaneous.MedioPago(etMedioPago) >= 0 && Miscellaneous.MedioPago(etMedioPago) < 6 || Miscellaneous.MedioPago(etMedioPago) == 7 || Miscellaneous.MedioPago(etMedioPago) == 8)){ //Banco y Oxxo
+                if ((m.GetMedioPagoId(m.GetStr(etMedioPago)) >= 0 && m.GetMedioPagoId(m.GetStr(etMedioPago)) < 6 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 7 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 8)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -286,7 +290,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setText("Comprobante");
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -302,7 +306,7 @@ public class VistaGestion extends AppCompatActivity {
                     }
 
                 }
-                else if (Miscellaneous.MedioPago(etMedioPago) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
+                else if (m.GetMedioPagoId(m.GetStr(etMedioPago)) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setText(datos.getString(MEDIO_PAGO));
                     etMedioPago.setVisibility(View.VISIBLE);
@@ -318,7 +322,7 @@ public class VistaGestion extends AppCompatActivity {
                     etTipoImagen.setText(datos.getString(TIPO_IMAGEN));
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
                     Gerente.setVisibility(View.VISIBLE);
@@ -345,7 +349,7 @@ public class VistaGestion extends AppCompatActivity {
                 etResultadoGestion.setVisibility(View.VISIBLE);
 
                 etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
-                if (Miscellaneous.MotivoNoPago(etMotivoNoPago) == 1){ //Motivo de no pago Fallecimiento
+                if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 1){ //Motivo de no pago Fallecimiento
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -361,7 +365,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
-                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+                    byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -378,7 +382,7 @@ public class VistaGestion extends AppCompatActivity {
                     }
 
                 }
-                else if (Miscellaneous.MotivoNoPago(etMotivoNoPago) ==  0|| Miscellaneous.MotivoNoPago(etMotivoNoPago) == 2){ //Motivo de no pago Negación u Otro
+                else if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) ==  0|| m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 2){ //Motivo de no pago Negación u Otro
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
                     etMotivoNoPago.setVisibility(View.VISIBLE);
@@ -391,7 +395,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
-                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+                    byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -451,7 +455,7 @@ public class VistaGestion extends AppCompatActivity {
             Evidencia.setVisibility(View.VISIBLE);
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
+            byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
 
             Gerente.setVisibility(View.VISIBLE);

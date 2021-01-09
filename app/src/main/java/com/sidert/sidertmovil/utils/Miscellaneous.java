@@ -15,11 +15,16 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.telecom.ConnectionService;
+import android.telephony.SmsManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bitly.Bitly;
+import com.bitly.Error;
+import com.bitly.Response;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ModeloColonia;
@@ -50,6 +55,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -59,8 +65,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
-import static com.sidert.sidertmovil.utils.Constants.DATE;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
 import static com.sidert.sidertmovil.utils.Constants.FECHA;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
@@ -69,7 +73,6 @@ import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DESTINOS_CREDITO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ESTADOS_CIVILES;
@@ -112,19 +115,24 @@ public class Miscellaneous {
         }
     }
 
+    /*Validación de que no sea null ni vacio*/
+    public static Double validDbl(Object str) {
+        if (str == null) {
+            return 0.0;
+        } else {
+            return Double.parseDouble(String.valueOf(str));
+        }
+    }
+
     /*Generar formato de moneda*/
     public static String moneyFormat(String money) {
         String currency;
+        if (money.isEmpty())
+            money = "0";
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
         currency = format.format(Double.parseDouble(money));
 
         return currency;
-    }
-
-    /*Generar a formato double*/
-    public static  double doubleFormat (EditText et){
-        String money = et.getText().toString();
-        return Double.parseDouble(money.replace("$","").replace(",",""));
     }
 
     /*Generar a formato double TextView*/
@@ -362,111 +370,6 @@ public class Miscellaneous {
         return result;
     }
 
-    public static String clvEstado (int pos_estado){
-        String clv_estado = "";
-        switch (pos_estado){
-            case 1:
-                clv_estado = "AS";
-                break;
-            case 2:
-                clv_estado = "BC";
-                break;
-            case 3:
-                clv_estado = "BS";
-                break;
-            case 4:
-                clv_estado = "CC";
-                break;
-            case 5:
-                clv_estado = "CL";
-                break;
-            case 6:
-                clv_estado = "CM";
-                break;
-            case 7:
-                clv_estado = "CS";
-                break;
-            case 8:
-                clv_estado = "CH";
-                break;
-            case 9:
-                clv_estado = "DF";
-                break;
-            case 10:
-                clv_estado = "DG";
-                break;
-            case 11:
-                clv_estado = "GT";
-                break;
-            case 12:
-                clv_estado = "GR";
-                break;
-            case 13:
-                clv_estado = "HG";
-                break;
-            case 14:
-                clv_estado = "JC";
-                break;
-            case 15:
-                clv_estado = "MC";
-                break;
-            case 16:
-                clv_estado = "MN";
-                break;
-            case 17:
-                clv_estado = "MS";
-                break;
-            case 18:
-                clv_estado = "NT";
-                break;
-            case 19:
-                clv_estado = "NL";
-                break;
-            case 20:
-                clv_estado = "OC";
-                break;
-            case 21:
-                clv_estado = "PL";
-                break;
-            case 22:
-                clv_estado = "QT";
-                break;
-            case 23:
-                clv_estado = "QR";
-                break;
-            case 24:
-                clv_estado = "SP";
-                break;
-            case 25:
-                clv_estado = "SL";
-                break;
-            case 26:
-                clv_estado = "SR";
-                break;
-            case 27:
-                clv_estado = "TC";
-                break;
-            case 28:
-                clv_estado = "TS";
-                break;
-            case 29:
-                clv_estado = "TL";
-                break;
-            case 30:
-                clv_estado = "VZ";
-                break;
-            case 31:
-                clv_estado = "YN";
-                break;
-            case 32:
-                clv_estado = "ZS";
-                break;
-
-
-        }
-        return clv_estado;
-    }
-
     public static char segundaConsonante( String sApellido ) {
         char consonante = 'X';
         for(int i=1; i <= sApellido.length()-1; i++){
@@ -489,14 +392,6 @@ public class Miscellaneous {
         return "Basic " + Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP);
     }
 
-    public static String validString (String str){
-        if (str == null || str.isEmpty() || str.equals("null")) {
-            return "";
-        } else {
-            return  str;
-        }
-    }
-
     /* Retorna la dirección de acorde una latitud y longitud */
     public static String ObtenerDireccion (Context ctx, double lat, double lng){
         String address=null;
@@ -516,27 +411,13 @@ public class Miscellaneous {
             Address addr = list.get(0);
 
             address =
-                      validString(addr.getThoroughfare()) + " " +
-                      validString(addr.getSubThoroughfare()) + ", " +
-                      validString(addr.getSubLocality()) + ", " +
-                      validString(addr.getLocality());
+                      validStr(addr.getThoroughfare()) + " " +
+                      validStr(addr.getSubThoroughfare()) + ", " +
+                      validStr(addr.getSubLocality()) + ", " +
+                      validStr(addr.getLocality());
 
         }
         return address;
-    }
-
-    /* Retorna si un servicio está activo o desactivado */
-    public static boolean JobServiceEnable (Context ctx, int id_job, String servicio){
-        boolean flag = false;
-        JobScheduler scheduler = (JobScheduler) ctx.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
-        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
-            if ( jobInfo.getId() == id_job ) {
-                Log.e("Servicio Activo", servicio);
-                flag = true;
-                break ;
-            }
-        }
-        return flag;
     }
 
     /* Obtener la edad de acorde a una fecha seleccionada */
@@ -584,132 +465,6 @@ public class Miscellaneous {
         return compressedByteArray;
     }
 
-    /* Obtención de catálogo de Estados */
-    public static ArrayList<ModeloEstados> GetCatalogoEstado (Context ctx){
-        ArrayList<ModeloEstados> catalogo = new ArrayList<>();
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Cursor row = dBhelper.getRecords(Constants.ESTADOS,""," ORDER BY estado_nombre ASC", null);
-
-        ModeloEstados mEstados = new ModeloEstados();
-        mEstados.setId(0);
-        mEstados.setNombre("SELECCIONE UNA OPCIÓN");
-        mEstados.setPaisId(0);
-        catalogo.add(mEstados);
-
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                mEstados = new ModeloEstados();
-                mEstados.setId(row.getInt(1));
-                mEstados.setNombre(row.getString(2));
-                mEstados.setPaisId(row.getInt(3));
-                catalogo.add(mEstados);
-                row.moveToNext();
-            }
-
-        }
-
-        return catalogo;
-    }
-
-    /* Obtención de catálogo de Municipios */
-    public static ArrayList<ModeloMunicipio> GetCatalogoMunicipios (Context ctx, int estado_id){
-        ArrayList<ModeloMunicipio> catalogo = new ArrayList<>();
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Cursor row = dBhelper.getRecords(Constants.MUNICIPIOS," WHERE estado_id = '" + estado_id + "'"," ORDER BY municipio_nombre ASC", null);
-
-        ModeloMunicipio mMunicipios = new ModeloMunicipio();
-        mMunicipios.setId(0);
-        mMunicipios.setNombre("SELECCIONE UNA OPCIÓN");
-        mMunicipios.setEstadoId(0);
-        catalogo.add(mMunicipios);
-
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                mMunicipios = new ModeloMunicipio();
-                mMunicipios.setId(row.getInt(1));
-                mMunicipios.setNombre(row.getString(2));
-                mMunicipios.setEstadoId(row.getInt(3));
-                catalogo.add(mMunicipios);
-                row.moveToNext();
-            }
-
-        }
-
-        return catalogo;
-    }
-
-    /* Obtención de catálogo de Colonia */
-    public static ArrayList<ModeloColonia> GetCatalogoColonias (Context ctx, int municipio_id){
-        ArrayList<ModeloColonia> catalogo = new ArrayList<>();
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Cursor row = dBhelper.getRecords(Constants.COLONIAS," WHERE municipio_id = '" + municipio_id + "'"," ORDER BY colonia_nombre ASC", null);
-
-        ModeloColonia mColonia = new ModeloColonia();
-        mColonia.setId(0);
-        mColonia.setNombre("SELECCIONE UNA OPCIÓN");
-        mColonia.setMunicipioId(0);
-        catalogo.add(mColonia);
-
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                Log.e("Colonia", row.getString(2));
-                mColonia = new ModeloColonia();
-                mColonia.setId(row.getInt(1));
-                mColonia.setNombre(row.getString(2));
-                mColonia.setCp(row.getInt(3));
-                mColonia.setMunicipioId(row.getInt(4));
-                catalogo.add(mColonia);
-                row.moveToNext();
-            }
-        }
-        else
-            Log.e("Colonias", "Sin registros");
-        return catalogo;
-    }
-
-    /* Obtención de catálogo de Ocupaciones */
-    public static ArrayList<ModeloOcupaciones> GetCatalogoOcupaciones (Context ctx){
-        ArrayList<ModeloOcupaciones> catalogo = new ArrayList<>();
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Cursor row = dBhelper.getRecords(Constants.OCUPACIONES,""," ORDER BY ocupacion_nombre ASC", null);
-
-        ModeloOcupaciones mOcupaciones = new ModeloOcupaciones();
-        mOcupaciones.setId(0);
-        mOcupaciones.setNombre("SELECCIONE UNA OPCIÓN");
-        mOcupaciones.setClave("");
-        mOcupaciones.setNivelRiesgo(0);
-        mOcupaciones.setSectorId(0);
-
-        catalogo.add(mOcupaciones);
-
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                mOcupaciones = new ModeloOcupaciones();
-                mOcupaciones.setId(row.getInt(1));
-                mOcupaciones.setNombre(row.getString(2));
-                mOcupaciones.setClave(row.getString(3));
-                mOcupaciones.setNivelRiesgo(row.getInt(4));
-                mOcupaciones.setSectorId(row.getInt(5));
-                catalogo.add(mOcupaciones);
-                row.moveToNext();
-            }
-        }
-
-        return catalogo;
-    }
-
     public static String Rango(int dias){
         String rango = "";
         if (dias <= 0)
@@ -730,6 +485,32 @@ public class Miscellaneous {
             rango = "Más de 120 Días";
 
         return rango;
+    }
+
+    public static String DiaSemana(String fecha){
+        String[] fechaDes = fecha.split("-");
+        Calendar c = Calendar.getInstance();
+
+        c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
+        int nD=c.get(Calendar.DAY_OF_WEEK);
+        String diaDesembolso = "";
+        switch (nD){
+            case 1: diaDesembolso = "DOMINGO";
+                break;
+            case 2: diaDesembolso = "LUNES";
+                break;
+            case 3: diaDesembolso = "MARTES";
+                break;
+            case 4: diaDesembolso = "MIÉRCOLES";
+                break;
+            case 5: diaDesembolso = "JUEVES";
+                break;
+            case 6: diaDesembolso = "VIERNES";
+                break;
+            case 7: diaDesembolso = "SÁBADO";
+                break;
+        }
+        return diaDesembolso;
     }
 
     /* Para saber si es vocal */
@@ -820,7 +601,7 @@ public class Miscellaneous {
 
         }
 
-        if (datosCorrectos && nombreTexto.length() > 3 && primerApellidoTexto.length() > 3){
+        if (datosCorrectos && nombreTexto.length() > 3 && primerApellidoTexto.length() > 2){
 
             // Convirtiendo textos a Listas
 
@@ -1066,6 +847,35 @@ public class Miscellaneous {
         return cadenaSinAcentos;
     }
 
+    public static String RemoveTildesVocal(String str){
+        String cadenaSinAcentos = str.toUpperCase()
+                .replace("Á", "A")
+                .replace("É", "E")
+                .replace("Í", "I")
+                .replace("Ó", "O")
+                .replace("Ú", "U");
+        return cadenaSinAcentos;
+    }
+
+    public static String GetPlazo (Integer p){
+        String plazo = "";
+        switch (p){
+            case 4:
+                plazo = "4 MESES";
+                break;
+            case 5:
+                plazo = "5 MESES";
+                break;
+            case 6:
+                plazo = "6 MESES";
+                break;
+            case 9:
+                plazo = "9 MESES";
+                break;
+        }
+        return plazo;
+    }
+
     public static Integer GetPlazo (String plazo){
         int no_plazo = 0;
         switch (plazo){
@@ -1099,6 +909,25 @@ public class Miscellaneous {
                 break;
             case "MENSUAL":
                 periodicidad = 30;
+                break;
+        }
+        return periodicidad;
+    }
+
+    public static String GetPeriodicidad (Integer p){
+        String periodicidad = "";
+        switch (p){
+            case 7:
+                periodicidad = "SEMANAL";
+                break;
+            case 14:
+                periodicidad = "CATORCENAL";
+                break;
+            case 15:
+                periodicidad = "QUINCENAL";
+                break;
+            case 30:
+                periodicidad = "MENSUAL";
                 break;
         }
         return periodicidad;
@@ -1669,6 +1498,21 @@ public class Miscellaneous {
         return new GsonBuilder().create().toJson(obj);
     }
 
+    /*Obtiene el texto de los edittext y textview*/
+    public static String GetStr(Object obj){
+        String txt = ((Object)obj).getClass().getSimpleName();
+        if (((Object)obj).getClass().getSimpleName().contains("EditText")){
+            txt = ((EditText)obj).getText().toString().trim().toUpperCase();
+        }
+        else if (((Object)obj).getClass().getSimpleName().contains("TextView")){
+            txt = ((TextView)obj).getText().toString().trim().toUpperCase();
+        }
+        else{
+            txt = ((String)obj).trim().toUpperCase();
+        }
+        return txt;
+    }
+
     public static boolean ValidTextView (TextView tv){
         boolean flag = false;
         if (tv.getText().toString().trim().isEmpty()){
@@ -1685,6 +1529,47 @@ public class Miscellaneous {
             flag = true;
         }
         return flag;
+    }
+
+    public static String GetCodigoEstado(String estado){
+        String codigoEstado = "";
+
+        switch (estado){
+            case "AGUASCALIENTES": codigoEstado="AGS" ; break;
+            case "BAJA CALIFORNIA": codigoEstado="BC" ; break;
+            case "BAJA CALIFORNIA SUR": codigoEstado="BCS" ; break;
+            case "CAMPECHE": codigoEstado="CAMP" ; break;
+            case "CHIAPAS": codigoEstado="CHIS" ; break;
+            case "CHIHUAHUA": codigoEstado="CHIH" ; break;
+            case "CIUDAD DE MEXICO": codigoEstado="CDMX" ; break;
+            case "COAHUILA DE ZARAGOZA": codigoEstado="COAH" ; break;
+            case "COLIMA": codigoEstado="COL" ; break;
+            case "DURANGO": codigoEstado="DGO" ; break;
+            case "GUANAJUATO": codigoEstado="GTO" ; break;
+            case "GUERRERO": codigoEstado="GRO" ; break;
+            case "HIDALGO": codigoEstado="HGO" ; break;
+            case "JALISCO": codigoEstado="JAL" ; break;
+            case "MEXICO": codigoEstado="MEX" ; break;
+            case "MICHOACAN DE OCAMPO": codigoEstado="MICH" ; break;
+            case "MORELOS": codigoEstado="MOR" ; break;
+            case "NAYARIT": codigoEstado="NAY" ; break;
+            case "NUEVO LEON": codigoEstado="NL" ; break;
+            case "OAXACA": codigoEstado="OAX" ; break;
+            case "PUEBLA": codigoEstado="PUE" ; break;
+            case "QUERETARO": codigoEstado="QRO" ; break;
+            case "QUINTANA ROO": codigoEstado="QROO" ; break;
+            case "SAN LUIS POTOSI": codigoEstado="SLP" ; break;
+            case "SINALOA": codigoEstado="SIN" ; break;
+            case "SONORA": codigoEstado="SON" ; break;
+            case "TABASCO": codigoEstado="TAB" ; break;
+            case "TAMAULIPAS": codigoEstado="TAMP" ; break;
+            case "TLAXCALA": codigoEstado="TLAX" ; break;
+            case "VERACRUZ": codigoEstado="VER" ; break;
+            case "YUCATAN": codigoEstado="YUC" ; break;
+            case "ZACATECAS": codigoEstado="ZAC" ; break;
+        }
+
+        return codigoEstado;
     }
 
     public static String GetColonia(Context ctx, int id){
@@ -1865,6 +1750,30 @@ public class Miscellaneous {
         return tipoIdentificacion;
     }
 
+    public static String GetMediosPagoSoli(Context ctx, String ids){
+        String mediosPago = "";
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+        String sql = "SELECT nombre FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE id IN ("+ids+")";
+        Cursor r = db.rawQuery(sql, null);
+        if (r.getCount() > 0){
+            r.moveToFirst();
+            for (int i = 0; i < r.getCount(); i++){
+                if (i == 0)
+                    mediosPago = r.getString(0);
+                else
+                    mediosPago += ","+r.getString(0);
+                r.moveToNext();
+            }
+        }
+        r.close();
+
+        Log.e("----","------------------------------------");
+        Log.e("MEDIOSPAGO",mediosPago+" <-----");
+        Log.e("----","------------------------------------");
+        return mediosPago;
+    }
+
     public static String GetViviendaTipo(Context ctx, int id){
         String viviendaTipo = "";
         DBhelper dBhelper = new DBhelper(ctx);
@@ -1916,174 +1825,6 @@ public class Miscellaneous {
         return medioContacto;
     }
 
-    public static int ContactoCliente(TextView tv){
-        int contacto = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "SI":
-                contacto = 0;
-                break;
-            case "NO":
-                contacto = 1;
-                break;
-            case "ACLARACION":
-                contacto = 2;
-                break;
-        }
-        return contacto;
-    }
-
-    public static int ActualizarTelefono(TextView tv){
-        int actualizar = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "SI":
-                actualizar = 0;
-                break;
-            case "NO":
-                actualizar = 1;
-                break;
-        }
-        return actualizar;
-    }
-
-    public static int ResultadoGestion(TextView tv){
-        int resultado = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "PAGO":
-                resultado = 0;
-                break;
-            case "NO PAGO":
-                resultado = 1;
-                break;
-        }
-        return resultado;
-    }
-
-    public static int PagoRequerido(TextView tv){
-        int requerido = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "SI":
-                requerido = 0;
-                break;
-            case "NO":
-                requerido = 1;
-                break;
-        }
-        return requerido;
-    }
-
-    public static int GetMedioPagoId(String str){
-        int medioPago = -1;
-        switch (str){
-            case "BANAMEX":
-                medioPago = 0;
-                break;
-            case "BANORTE":
-                medioPago = 1;
-                break;
-            case "BANCOMER":
-                medioPago = 2;
-                break;
-            case "TELECOM":
-                medioPago = 3;
-                break;
-            case "BANSEFI":
-                medioPago = 4;
-                break;
-            case "OXXO":
-                medioPago = 5;
-                break;
-            case "EFECTIVO":
-                medioPago = 6;
-                break;
-            case "SIDERT":
-                medioPago = 7;
-                break;
-            case "BANAMEX722":
-                medioPago = 8;
-                break;
-        }
-        return medioPago;
-    }
-
-    public static int MedioPago(TextView tv){
-        int medioPago = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "BANAMEX":
-                medioPago = 0;
-                break;
-            case "BANORTE":
-                medioPago = 1;
-                break;
-            case "BANCOMER":
-                medioPago = 2;
-                break;
-            case "TELECOM":
-                medioPago = 3;
-                break;
-            case "BANSEFI":
-                medioPago = 4;
-                break;
-            case "OXXO":
-                medioPago = 5;
-                break;
-            case "EFECTIVO":
-                medioPago = 6;
-                break;
-            case "SIDERT":
-                medioPago = 7;
-                break;
-            case "BANAMEX722":
-                medioPago = 8;
-                break;
-        }
-        return medioPago;
-    }
-
-    public static int Impresion(TextView tv){
-        int impresion = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "SI":
-                impresion = 0;
-                break;
-            case "NO CUENTA CON BATERIA":
-                impresion = 1;
-                break;
-        }
-        return impresion;
-    }
-
-    public static int Gerente(TextView tv){
-        int gerente = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "SI":
-                gerente = 0;
-                break;
-            case "NO":
-                gerente = 1;
-                break;
-        }
-        return gerente;
-    }
-
-    public static int MotivoNoPago(TextView tv){
-        int motivoNoPago = -1;
-        switch (tv.getText().toString().trim().toUpperCase()){
-            case "NEGACION DE PAGO":
-                motivoNoPago = 0;
-                break;
-            case "FALLECIMIENTO":
-                motivoNoPago = 1;
-                break;
-            case "OTRO":
-                motivoNoPago = 2;
-                break;
-            case "PROMESA DE PAGO":
-                motivoNoPago = 3;
-                break;
-        }
-        return motivoNoPago;
-    }
-
     public static int GetTipoCartera (String str_tipo_cartera){
         int tipo = 0;
         if (str_tipo_cartera.toUpperCase().equals("INDIVIDUAL")){
@@ -2116,8 +1857,8 @@ public class Miscellaneous {
                     json_respuesta.put("resultado_pago", GetIdPago(row.getString(9).trim()));
                     switch (GetIdPago(row.getString(9).trim())){
                         case 0: //PAGO
-                            json_respuesta.put("medio_pago", GetIdMedioPago(row.getString(12).trim()));
-                            switch (GetIdMedioPago(row.getString(12))){
+                            json_respuesta.put("medio_pago", GetMedioPagoId(row.getString(12).trim()));
+                            switch (GetMedioPagoId(row.getString(12))){
                                 case 0://BANAMEX
                                 case 1://BANORTE
                                 case 2://BANCOMER
@@ -2179,11 +1920,7 @@ public class Miscellaneous {
                                         json_respuesta.put("detalle_ficha", GetIdConfirmacion(row.getString(14).trim()));
                                         if (GetIdConfirmacion(row.getString(14)) == 0) {
                                             JSONArray pagos_integrantes = new JSONArray();
-                                            Cursor row_integrantes;
-                                            if (ENVIROMENT)
-                                                row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
-                                            else
-                                                row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
+                                            Cursor row_integrantes = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_gestion = ?", "", new String[]{row.getString(0)});
 
                                             if (row_integrantes.getCount() > 0) {
                                                 row_integrantes.moveToFirst();
@@ -2271,7 +2008,6 @@ public class Miscellaneous {
     }
 
     public static int GetIdTipoPrestamo (String str){
-        Log.e("Tipo::::", str);
         int id = -1;
         switch (str){
             case "VIGENTE":
@@ -2293,6 +2029,55 @@ public class Miscellaneous {
         return id;
     }
 
+    //=============  PAGO REQUERIDO  =================
+    public static int PagoRequerido(TextView tv){
+        int requerido = -1;
+        switch (tv.getText().toString().trim().toUpperCase()){
+            case "SI":
+                requerido = 0;
+                break;
+            case "NO":
+                requerido = 1;
+                break;
+        }
+        return requerido;
+    }
+
+    //=============  ACLARACION  =====================
+    public static int GetIdAclaracion (String str){
+        int id = -1;
+        switch (str){
+            case "GARANTIA":
+                id = 0;
+                break;
+            case "REFINACIAMIENTO":
+                id = 1;
+                break;
+            case "CONDONACION":
+                id = 2;
+                break;
+            case "CAPTURA DE PAGO":
+                id = 3;
+                break;
+        }
+        return id;
+    }
+
+    //============  RESULTADO PAGO  ===================
+    public static int GetIdPago (String str){
+        int id = -1;
+        switch (str){
+            case "PAGO":
+                id = 0;
+                break;
+            case "NO PAGO":
+                id = 1;
+                break;
+        }
+        return id;
+    }
+
+    //============ CONTACTO CLIENTE  ==================
     public static int GetIdContacto (String str){
         int id = -1;
         switch (str){
@@ -2309,32 +2094,7 @@ public class Miscellaneous {
         return id;
     }
 
-    public static int GetIdConfirmacion (String str){
-        int id = -1;
-        switch (str){
-            case "SI":
-                id = 0;
-                break;
-            case "NO":
-                id = 1;
-                break;
-        }
-        return id;
-    }
-
-    public static int GetIdPago (String str){
-        int id = -1;
-        switch (str){
-            case "PAGO":
-                id = 0;
-                break;
-            case "NO PAGO":
-                id = 1;
-                break;
-        }
-        return id;
-    }
-
+    //============ MOTIVO NO PAGO  =====================
     public static int GetIdMotivoNoPago (String str){
         int id = -1;
         switch (str){
@@ -2354,6 +2114,34 @@ public class Miscellaneous {
         return id;
     }
 
+    //============ CONFIRMACION  =======================
+    public static String GetConfirmacion(int id){
+        String confirmacion = "";
+        switch (id){
+            case 0:
+                confirmacion = "SI";
+                break;
+            case 1:
+                confirmacion = "NO";
+                break;
+        }
+        return confirmacion;
+    }
+
+    public static int GetIdConfirmacion (String str){
+        int id = -1;
+        switch (str){
+            case "SI":
+                id = 0;
+                break;
+            case "NO":
+                id = 1;
+                break;
+        }
+        return id;
+    }
+
+    //============  TIPOS DE MEDIOS DE PAGO  ============
     public static String GetMedioPago(int id){
         String medioPago = "";
         switch (id){
@@ -2388,17 +2176,52 @@ public class Miscellaneous {
         return medioPago;
     }
 
-    public static String GetConfirmacion(int id){
-        String confirmacion = "";
-        switch (id){
-            case 0:
-                confirmacion = "SI";
+    public static int GetMedioPagoId(String str){
+        int medioPago = -1;
+        switch (str){
+            case "BANAMEX":
+                medioPago = 0;
                 break;
-            case 1:
-                confirmacion = "NO";
+            case "BANORTE":
+                medioPago = 1;
+                break;
+            case "BANCOMER":
+                medioPago = 2;
+                break;
+            case "TELECOM":
+                medioPago = 3;
+                break;
+            case "BANSEFI":
+                medioPago = 4;
+                break;
+            case "OXXO":
+                medioPago = 5;
+                break;
+            case "EFECTIVO":
+                medioPago = 6;
+                break;
+            case "SIDERT":
+                medioPago = 7;
+                break;
+            case "BANAMEX722":
+                medioPago = 8;
                 break;
         }
-        return confirmacion;
+        return medioPago;
+    }
+
+    //============  IMPRESIONES  ========================
+    public static int GetIdImpresion (String str){
+        int id = -1;
+        switch (str){
+            case "SI":
+                id = 0;
+                break;
+            case "NO CUENTA CON BATERIA":
+                id = 1;
+                break;
+        }
+        return id;
     }
 
     public static String GetImprimirRecibo(int id){
@@ -2414,72 +2237,7 @@ public class Miscellaneous {
         return imprimir;
     }
 
-    public static int GetIdMedioPago (String str){
-        int id = -1;
-        switch (str){
-            case "BANAMEX":
-                id = 0;
-                break;
-            case "BANORTE":
-                id = 1;
-                break;
-            case "BANCOMER":
-                id = 2;
-                break;
-            case "TELECOM":
-                id = 3;
-                break;
-            case "BANSEFI":
-                id = 4;
-                break;
-            case "OXXO":
-                id = 5;
-                break;
-            case "EFECTIVO":
-                id = 6;
-                break;
-            case "SIDERT":
-                id = 7;
-                break;
-            case "BANAMEX722":
-                id = 8;
-                break;
-        }
-        return id;
-    }
-
-    public static int GetIdAclaracion (String str){
-        int id = -1;
-        switch (str){
-            case "GARANTIA":
-                id = 0;
-                break;
-            case "REFINACIAMIENTO":
-                id = 1;
-                break;
-            case "CONDONACION":
-                id = 2;
-                break;
-            case "CAPTURA DE PAGO":
-                id = 3;
-                break;
-        }
-        return id;
-    }
-
-    public static int GetIdImpresion (String str){
-        int id = -1;
-        switch (str){
-            case "SI":
-                id = 0;
-                break;
-            case "NO CUENTA CON BATERIA":
-                id = 1;
-                break;
-        }
-        return id;
-    }
-
+    //============  TIPOS DE IMAGENES  ==================
     public static int GetIdImagen (String str){
         int id = -1;
         switch (str){
@@ -2511,6 +2269,7 @@ public class Miscellaneous {
         }
         return tipo;
     }
+    //===================================================
 
     public static int GetDiasAtraso (String fecha_establecida){
         int dias_atraso = 0;
@@ -2819,6 +2578,17 @@ public class Miscellaneous {
         }
 
         return passEncode;
+    }
+
+    public static void SendMess(String number, String message){
+        try {
+            SmsManager sms = SmsManager.getDefault(); // using android SmsManager
+            sms.sendTextMessage(number, null, message, null, null); // adding number and text
+            Log.e("Mess", "Envia Mensaje");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Mess", "Error al enviar mensaje");
+        }
     }
 
     public static String DecodePassword(String password) {

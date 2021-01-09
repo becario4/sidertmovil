@@ -132,6 +132,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private Calendar myCalendar;
+    
+    private Miscellaneous m;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private Validator validator = new Validator();
@@ -429,15 +431,17 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
         myCalendar = Calendar.getInstance();
+        
+        m = new Miscellaneous();
 
-        _estudios               = Miscellaneous.GetNivelesEstudio(ctx);
-        _civil                  = Miscellaneous.GetEstadoCiviles(ctx);
-        _tipo_identificacion    = Miscellaneous.GetIdentificacion(ctx);
-        _medios_pago            = Miscellaneous.GetMediosPagoOri(ctx);
-        _parentesco             = Miscellaneous.GetParentesco(ctx, "PARENTESCO");
-        _tipo_casa              = Miscellaneous.GetViviendaTipos(ctx);
-        _medio_contacto         = Miscellaneous.GetMediosContacto(ctx);
-        _destino_credito        = Miscellaneous.GetDestinosCredito(ctx);
+        _estudios               = m.GetNivelesEstudio(ctx);
+        _civil                  = m.GetEstadoCiviles(ctx);
+        _tipo_identificacion    = m.GetIdentificacion(ctx);
+        _medios_pago            = m.GetMediosPagoOri(ctx);
+        _parentesco             = m.GetParentesco(ctx, "PARENTESCO");
+        _tipo_casa              = m.GetViviendaTipos(ctx);
+        _medio_contacto         = m.GetMediosContacto(ctx);
+        _destino_credito        = m.GetDestinosCredito(ctx);
         _dependientes           = getResources().getStringArray(R.array.dependientes_eco);
         _riesgo                 = getResources().getStringArray(R.array.clasificacion_riesgo);
         _confirmacion           = getResources().getStringArray(R.array.confirmacion);
@@ -756,12 +760,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     else {
                         Update("curp", TBL_INTEGRANTES_GPO, s.toString().trim().toUpperCase(), "id", id_integrante);
                         if (s.toString().trim().length() >= 10) {
-                            tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
-                            Update("rfc", TBL_INTEGRANTES_GPO, tvRfcCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
+                            tvRfcCli.setText(m.GenerarRFC(s.toString().substring(0, 10), m.GetStr(etNombreCli), m.GetStr(etApPaternoCli), m.GetStr(etApMaternoCli)));
+                            Update("rfc", TBL_INTEGRANTES_GPO, m.GetStr(tvRfcCli), "id", id_integrante);
                         }
                         else{
                             tvRfcCli.setText("");
-                            Update("rfc", TBL_INTEGRANTES_GPO, tvRfcCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
+                            Update("rfc", TBL_INTEGRANTES_GPO, m.GetStr(tvRfcCli), "id", id_integrante);
                         }
                     }
                 }
@@ -772,32 +776,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
             }
         });
-        /*etCurpIdCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 2){
-                    if (!validator.validate(etCurpIdCli, new String[]{validator.REQUIRED, validator.CURP_ID})) {
-                        if (Miscellaneous.CurpValidador(etCurpCli.getText() + etCurpIdCli.getText().toString().trim().toUpperCase()))
-                            Update("curp_digito_veri", TBL_INTEGRANTES_GPO, e.toString(), "id", id_integrante);
-                        else
-                            Update("curp_digito_veri", TBL_INTEGRANTES_GPO, "", "id", id_integrante);
-                    }
-                }
-                else
-                    Update("curp_digito_veri", TBL_INTEGRANTES_GPO, "", "id", id_integrante);
-
-            }
-        });*/
         tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
         etNumIdentifCli.addTextChangedListener(new TextWatcher() {
             @Override
@@ -839,7 +818,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etTelCasaCli.setError(null);
-                        Update("tel_casa", TBL_TELEFONOS_INTEGRANTE, etTelCasaCli.getText().toString().trim(), "id_integrante", id_integrante);
+                        Update("tel_casa", TBL_TELEFONOS_INTEGRANTE, m.GetStr(etTelCasaCli), "id_integrante", id_integrante);
                     }
                     else {
                         etTelCasaCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -868,7 +847,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etCelularCli.setError(null);
-                        Update("tel_celular", TBL_TELEFONOS_INTEGRANTE, etCelularCli.getText().toString().trim(), "id_integrante", id_integrante);
+                        Update("tel_celular", TBL_TELEFONOS_INTEGRANTE, m.GetStr(etCelularCli), "id_integrante", id_integrante);
                     }
                     else {
                         etCelularCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -897,7 +876,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etTelMensCli.setError(null);
-                        Update("tel_mensaje", TBL_TELEFONOS_INTEGRANTE, etTelMensCli.getText().toString().trim(), "id_integrante", id_integrante);
+                        Update("tel_mensaje", TBL_TELEFONOS_INTEGRANTE, m.GetStr(etTelMensCli), "id_integrante", id_integrante);
                     }
                     else {
                         etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -926,7 +905,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etTelMensCli.setError(null);
-                        Update("tel_trabajo", TBL_TELEFONOS_INTEGRANTE, etTeltrabajoCli.getText().toString().trim(), "id_integrante", id_integrante);
+                        Update("tel_trabajo", TBL_TELEFONOS_INTEGRANTE, m.GetStr(etTeltrabajoCli), "id_integrante", id_integrante);
                     }
                     else {
                         etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
@@ -1409,7 +1388,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenNeg.getText().length();
+                    inilen = m.GetStr(etIngMenNeg).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenNeg.getSelectionStart();
@@ -1418,13 +1397,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etIngMenNeg.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenNeg.getText().length();
+                    endlen = m.GetStr(etIngMenNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenNeg).length()) {
                         etIngMenNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenNeg.setSelection(etIngMenNeg.getText().length() - 1);
+                        etIngMenNeg.setSelection(m.GetStr(etIngMenNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1433,7 +1412,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
 
                 if (s.length() > 0)
-                    Update("ing_mensual", TBL_NEGOCIO_INTEGRANTE, s.toString().trim().replace(",",""), "id_integrante", id_integrante);
+                    Update("ing_mensual", TBL_NEGOCIO_INTEGRANTE, s.toString().replace(",",""), "id_integrante", id_integrante);
                 else
                     Update("ing_mensual", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
 
@@ -1464,7 +1443,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etOtrosIngNeg.getText().length();
+                    inilen = m.GetStr(etOtrosIngNeg).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etOtrosIngNeg.getSelectionStart();
@@ -1473,13 +1452,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etOtrosIngNeg.setText(dfnd.format(n));
                     }
-                    endlen = etOtrosIngNeg.getText().length();
+                    endlen = m.GetStr(etOtrosIngNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etOtrosIngNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etOtrosIngNeg).length()) {
                         etOtrosIngNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etOtrosIngNeg.setSelection(etOtrosIngNeg.getText().length() - 1);
+                        etOtrosIngNeg.setSelection(m.GetStr(etOtrosIngNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1518,7 +1497,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosSemNeg.getText().length();
+                    inilen = m.GetStr(etGastosSemNeg).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosSemNeg.getSelectionStart();
@@ -1527,13 +1506,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etGastosSemNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosSemNeg.getText().length();
+                    endlen = m.GetStr(etGastosSemNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosSemNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosSemNeg).length()) {
                         etGastosSemNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosSemNeg.setSelection(etGastosSemNeg.getText().length() - 1);
+                        etGastosSemNeg.setSelection(m.GetStr(etGastosSemNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1573,7 +1552,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etCapacidadPagoNeg.getText().length();
+                    inilen = m.GetStr(etCapacidadPagoNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCapacidadPagoNeg.getSelectionStart();
@@ -1582,13 +1561,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etCapacidadPagoNeg.setText(dfnd.format(n));
                     }
-                    endlen = etCapacidadPagoNeg.getText().length();
+                    endlen = m.GetStr(etCapacidadPagoNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCapacidadPagoNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCapacidadPagoNeg).length()) {
                         etCapacidadPagoNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoNeg.setSelection(etCapacidadPagoNeg.getText().length() - 1);
+                        etCapacidadPagoNeg.setSelection(m.GetStr(etCapacidadPagoNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1596,11 +1575,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     // do nothing?
                 }
 
-                if (!tvMontoMaxNeg.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")) > 0) {
+                if (!m.GetStr(tvMontoMaxNeg).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")) > 0) {
                     if (e.length() > 0)
                         try {
                             if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")))
+                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")))
                                     Update("capacidad_pago", TBL_NEGOCIO_INTEGRANTE, e.toString().trim().replace(",",""), "id_integrante", id_integrante);
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago","NEGOCIO");
@@ -1986,7 +1965,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngresoCony.getText().length();
+                    inilen = m.GetStr(etIngresoCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngresoCony.getSelectionStart();
@@ -1995,13 +1974,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etIngresoCony.setText(dfnd.format(n));
                     }
-                    endlen = etIngresoCony.getText().length();
+                    endlen = m.GetStr(etIngresoCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngresoCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngresoCony).length()) {
                         etIngresoCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngresoCony.setSelection(etIngresoCony.getText().length() - 1);
+                        etIngresoCony.setSelection(m.GetStr(etIngresoCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2039,7 +2018,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastoCony.getText().length();
+                    inilen = m.GetStr(etGastoCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastoCony.getSelectionStart();
@@ -2048,13 +2027,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etGastoCony.setText(dfnd.format(n));
                     }
-                    endlen = etGastoCony.getText().length();
+                    endlen = m.GetStr(etGastoCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastoCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastoCony).length()) {
                         etGastoCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastoCony.setSelection(etGastoCony.getText().length() - 1);
+                        etGastoCony.setSelection(m.GetStr(etGastoCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2176,7 +2155,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 try {
                     int inilen, endlen;
-                    inilen = etCredSolicitado.getText().length();
+                    inilen = m.GetStr(etCredSolicitado).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCredSolicitado.getSelectionStart();
@@ -2185,13 +2164,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     } else {
                         etCredSolicitado.setText(dfnd.format(n));
                     }
-                    endlen = etCredSolicitado.getText().length();
+                    endlen = m.GetStr(etCredSolicitado).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCredSolicitado.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCredSolicitado).length()) {
                         etCredSolicitado.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCredSolicitado.setSelection(etCredSolicitado.getText().length() - 1);
+                        etCredSolicitado.setSelection(m.GetStr(etCredSolicitado).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2208,7 +2187,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         Update("monto_solicitado", TBL_OTROS_DATOS_INTEGRANTE, "", "id_integrante", id_integrante);
                     }else{
                         Update("monto_solicitado", TBL_OTROS_DATOS_INTEGRANTE, s.toString().trim().replace(",",""), "id_integrante", id_integrante);
-                        tvCantidadLetra.setText((Miscellaneous.cantidadLetra(s.toString().replace(",","")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
+                        tvCantidadLetra.setText((m.cantidadLetra(s.toString().replace(",","")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
                     }
                 }
                 else{
@@ -2287,49 +2266,49 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 HashMap<Integer, String> params = new HashMap<>();
                 if (checkedId == R.id.rbHombre){
 
-                    params.put(0, etNombreCli.getText().toString().trim().toUpperCase());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
                     params.put(4, "Hombre");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
 
                     Update("genero", TBL_INTEGRANTES_GPO, "0", "id", id_integrante);
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
                 else if(checkedId == R.id.rbMujer){
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
                     params.put(4, "Mujer");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
 
                     Update("genero", TBL_INTEGRANTES_GPO, "1", "id", id_integrante);
 
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
                 else {
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
                     params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
 
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -2606,9 +2585,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
 
-                b.putInt(Constants.YEAR_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaNacCli.getText().toString().substring(0,4))));
-                b.putInt(Constants.MONTH_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaNacCli.getText().toString().substring(5,7))-1)));
-                b.putInt(Constants.DAY_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaNacCli.getText().toString().substring(8,10))));
+                b.putInt(Constants.YEAR_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(m.GetStr(tvFechaNacCli).substring(0,4))));
+                b.putInt(Constants.MONTH_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(m.GetStr(tvFechaNacCli).substring(5,7))-1)));
+                b.putInt(Constants.DAY_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(m.GetStr(tvFechaNacCli).substring(8,10))));
                 b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(Constants.IDENTIFIER, 4);
                 b.putBoolean(Constants.FECHAS_POST, false);
@@ -2622,7 +2601,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_estados = new Intent(ctx, Catalogos.class);
-                i_estados.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
+                i_estados.putExtra(Constants.TITULO, m.ucFirst(Constants.ESTADOS));
                 i_estados.putExtra(Constants.CATALOGO, Constants.ESTADOS);
                 i_estados.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_ESTADO_NAC);
                 startActivityForResult(i_estados, Constants.REQUEST_CODE_ESTADO_NAC);
@@ -2671,7 +2650,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
+                i_ocupaciones.putExtra(Constants.TITULO, m.ucFirst(Constants.OCUPACIONES));
                 i_ocupaciones.putExtra(Constants.CATALOGO, Constants.OCUPACIONES);
                 i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CLIE);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_OCUPACION_CLIE);
@@ -2723,9 +2702,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst("Colonias"));
+                i_colonia.putExtra(Constants.TITULO, m.ucFirst("Colonias"));
                 i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpCli.getText().toString().trim());
+                i_colonia.putExtra(Constants.EXTRA, m.GetStr(etCpCli));
                 i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_CLIE);
                 startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_CLIE);
             }
@@ -2736,11 +2715,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         @Override
         public void onClick(View v) {
             if (is_edit) {
-                if (!tvMunicipioCli.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCli.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCli).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CLIE);
@@ -2824,7 +2803,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDependientes.setError(null);
                                 tvDependientes.setText(_dependientes[position]);
-                                Update("dependientes", TBL_DOMICILIO_INTEGRANTE, tvDependientes.getText().toString().trim().toUpperCase(),"id_integrante", id_integrante);
+                                Update("dependientes", TBL_DOMICILIO_INTEGRANTE, m.GetStr(tvDependientes),"id_integrante", id_integrante);
                             }
                         });
                 builder.create();
@@ -2859,9 +2838,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(Constants.TITULO, Miscellaneous.ucFirst("Colonias"));
+                i_colonia.putExtra(Constants.TITULO, m.ucFirst("Colonias"));
                 i_colonia.putExtra(Constants.CATALOGO, Constants.COLONIAS);
-                i_colonia.putExtra(Constants.EXTRA, etCpNeg.getText().toString().trim());
+                i_colonia.putExtra(Constants.EXTRA, m.GetStr(etCpNeg));
                 i_colonia.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_COLONIA_NEG);
                 startActivityForResult(i_colonia, Constants.REQUEST_CODE_COLONIA_NEG);
             }
@@ -2872,11 +2851,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         @Override
         public void onClick(View v) {
             if (is_edit) {
-                if (!tvMunicipioNeg.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioNeg.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_NEG);
@@ -2956,16 +2935,16 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 }
                                 tvMediosPagoNeg.setError(null);
                                 tvMediosPagoNeg.setText(medios);
-                                Update("medios_pago", TBL_NEGOCIO_INTEGRANTE, tvMediosPagoNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                                Update("medios_pago", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvMediosPagoNeg), "id_integrante", id_integrante);
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")){
                                     llOperacionesEfectivo.setVisibility(View.VISIBLE);
                                 }
                                 else{
                                     llOperacionesEfectivo.setVisibility(View.GONE);
                                 }
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("OTRO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("OTRO")){
                                     etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
                                 }
                                 else{
@@ -2988,7 +2967,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_NEG);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_NEG);
@@ -3011,7 +2990,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_ocupaciones = new Intent(ctx, Catalogos.class);
-                i_ocupaciones.putExtra(Constants.TITULO, Miscellaneous.ucFirst(Constants.OCUPACIONES));
+                i_ocupaciones.putExtra(Constants.TITULO, m.ucFirst(Constants.OCUPACIONES));
                 i_ocupaciones.putExtra(Constants.CATALOGO, Constants.OCUPACIONES);
                 i_ocupaciones.putExtra(Constants.REQUEST_CODE, Constants.REQUEST_CODE_OCUPACION_CONY);
                 startActivityForResult(i_ocupaciones, Constants.REQUEST_CODE_OCUPACION_CONY);
@@ -3024,9 +3003,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         public void onClick(View v) {
             if (is_edit) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst("Colonias"));
+                i_colonia.putExtra(TITULO, m.ucFirst("Colonias"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpCony.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpCony));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CONY);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CONY);
             }
@@ -3037,11 +3016,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         @Override
         public void onClick(View v) {
             if (is_edit) {
-                if (!tvMunicipioCony.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCony.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCony).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CONY);
@@ -3074,7 +3053,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             public void onClick(DialogInterface dialog, int position) {
                                 tvRiesgo.setError(null);
                                 tvRiesgo.setText(_riesgo[position]);
-                                Update("clasificacion_riesgo", TBL_OTROS_DATOS_INTEGRANTE, tvRiesgo.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                                Update("clasificacion_riesgo", TBL_OTROS_DATOS_INTEGRANTE, m.GetStr(tvRiesgo), "id_integrante", id_integrante);
                             }
                         });
                 builder.create();
@@ -3111,7 +3090,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             public void onClick(DialogInterface dialog, int position) {
                                 tvEstadoCuenta.setError(null);
                                 tvEstadoCuenta.setText(_confirmacion[position]);
-                                Update("estado_cuenta", TBL_OTROS_DATOS_INTEGRANTE, tvEstadoCuenta.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                                Update("estado_cuenta", TBL_OTROS_DATOS_INTEGRANTE, m.GetStr(tvEstadoCuenta), "id_integrante", id_integrante);
                             }
                         });
                 builder.create();
@@ -3141,7 +3120,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "PRINCIPAL");
-                b.putString(CALLE, tvPrincipal.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvPrincipal));
                 b.putString(TIPO_SOLICITUD, "GRUPAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -3155,7 +3134,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "TRASERA");
-                b.putString(CALLE, tvTrasera.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvTrasera));
                 b.putString(TIPO_SOLICITUD, "GRUPAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -3169,7 +3148,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL UNO");
-                b.putString(CALLE, tvLateraUno.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraUno));
                 b.putString(TIPO_SOLICITUD, "GRUPAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -3183,7 +3162,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL DOS");
-                b.putString(CALLE, tvLateraDos.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraDos));
                 b.putString(TIPO_SOLICITUD, "GRUPAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -3657,8 +3636,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp4.setVisibility(View.GONE);
             llDatosNegocio.setVisibility(View.GONE);
 
-            if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-            tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -3792,8 +3770,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
 
-            if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-            tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -3864,13 +3841,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             if (campo.equals("fechaNacCli")) {
                 tvFechaNacCli.setError(null);
                 tvFechaNacCli.setText(date);
-                tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                tvEdadCli.setText(m.GetEdad(sdf.format(cal.getTime())));
                 HashMap<Integer, String> params = new HashMap<>();
 
-                params.put(0, etNombreCli.getText().toString());
-                params.put(1, etApPaternoCli.getText().toString());
-                params.put(2, etApMaternoCli.getText().toString());
-                params.put(3, tvFechaNacCli.getText().toString());
+                params.put(0, m.GetStr(etNombreCli));
+                params.put(1, m.GetStr(etApPaternoCli));
+                params.put(2, m.GetStr(etApMaternoCli));
+                params.put(3, m.GetStr(tvFechaNacCli));
 
                 if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                     params.put(4, "Hombre");
@@ -3879,14 +3856,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 else
                     params.put(4, "");
 
-                if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                    params.put(5, tvEstadoNacCli.getText().toString().trim());
+                if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, m.GetStr(tvEstadoNacCli));
                 else
                     params.put(5, "");
 
-                Update("fecha_nacimiento", TBL_INTEGRANTES_GPO, tvFechaNacCli.getText().toString().trim(), "id", id_integrante);
-                Update("edad", TBL_INTEGRANTES_GPO, tvEdadCli.getText().toString().trim(), "id", id_integrante);
-                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                Update("fecha_nacimiento", TBL_INTEGRANTES_GPO, m.GetStr(tvFechaNacCli), "id", id_integrante);
+                Update("edad", TBL_INTEGRANTES_GPO, m.GetStr(tvEdadCli), "id", id_integrante);
+                etCurpCli.setText(m.GenerarCurp(params));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -3895,16 +3872,16 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     }
 
     private void MontoMaximoNeg (){
-        double ing_mensual = (etIngMenNeg.getText().toString().trim().replace(",","").isEmpty())?0:Integer.parseInt(etIngMenNeg.getText().toString().trim().replace(",",""));
-        double ing_otros = (etOtrosIngNeg.getText().toString().trim().replace(",","").isEmpty())?0:Integer.parseInt(etOtrosIngNeg.getText().toString().trim().replace(",",""));
+        double ing_mensual = (m.GetStr(etIngMenNeg).replace(",","").isEmpty())?0:Integer.parseInt(m.GetStr(etIngMenNeg).replace(",",""));
+        double ing_otros = (m.GetStr(etOtrosIngNeg).replace(",","").isEmpty())?0:Integer.parseInt(m.GetStr(etOtrosIngNeg).replace(",",""));
 
-        double gas_semanal = (etGastosSemNeg.getText().toString().trim().replace(",","").isEmpty())?0:Integer.parseInt(etGastosSemNeg.getText().toString().trim().replace(",",""));
+        double gas_semanal = (m.GetStr(etGastosSemNeg).replace(",","").isEmpty())?0:Integer.parseInt(m.GetStr(etGastosSemNeg).replace(",",""));
 
         double ingreso = ing_mensual + ing_otros;
         double gastos = gas_semanal;
 
         tvMontoMaxNeg.setText(dfnd.format(ingreso - gastos));
-        Update("monto_maximo", TBL_NEGOCIO_INTEGRANTE, tvMontoMaxNeg.getText().toString().trim().replace(",",""), "id_integrante", id_integrante);
+        Update("monto_maximo", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvMontoMaxNeg).replace(",",""), "id_integrante", id_integrante);
     }
 
     private void openRegistroIntegrante(String id_credito) {
@@ -4274,7 +4251,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(19).isEmpty()){
             File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(19));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachCli = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachCli = m.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachCli);
             ibFotoFachCli.setVisibility(View.GONE);
             ivFotoFachCli.setVisibility(View.VISIBLE);
@@ -4331,7 +4308,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
         }
 
-        if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO"))
+        if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO"))
             llOperacionesEfectivo.setVisibility(View.VISIBLE);
         else
             llOperacionesEfectivo.setVisibility(View.GONE);
@@ -4342,7 +4319,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(30).isEmpty()){
             File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(30));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachNeg = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachNeg = m.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachNeg);
             ibFotoFachNeg.setVisibility(View.GONE);
             ivFotoFachNeg.setVisibility(View.VISIBLE);
@@ -4407,7 +4384,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(7).trim().isEmpty())
             etCredSolicitado.setText(dfnd.format(row.getInt(7))); etCredSolicitado.setEnabled(is_edit);
         if (!row.getString(7).trim().isEmpty())
-            tvCantidadLetra.setText((Miscellaneous.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
+            tvCantidadLetra.setText((m.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
 
         if (row.getInt(8) == 1) {
             cbCasaReuniones.setChecked(true);
@@ -4423,7 +4400,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(9).isEmpty()){
             File firmaFile = new File(Constants.ROOT_PATH + "Firma/"+row.getString(9));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaCli = Miscellaneous.getBytesUri(ctx, uriFirma,0);
+            byteFirmaCli = m.getBytesUri(ctx, uriFirma,0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaCli);
             ibFirmaCli.setVisibility(View.GONE);
             ivFirmaCli.setVisibility(View.VISIBLE);
@@ -4437,7 +4414,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         tvLateraUno.setText(row.getString(3).trim().toUpperCase());
         tvLateraDos.setText(row.getString(4).trim().toUpperCase());
         tvTrasera.setText(row.getString(5).trim().toUpperCase());
-        etReferencia.setText(row.getString(6)); etReferencia.setEnabled(is_edit);
+        etReferencia.setText(row.getString(6));
         row.close(); //Cierra datos del croquis
 
         //Politicas
@@ -4478,7 +4455,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(2).isEmpty()){
             File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
-            byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal,0);
+            byteIneFrontal = m.getBytesUri(ctx, uriIneFrontal,0);
             Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
             ibIneFrontal.setVisibility(View.GONE);
             ivIneFrontal.setVisibility(View.VISIBLE);
@@ -4487,7 +4464,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(3).isEmpty()){
             File ineReversoFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(3));
             Uri uriIneReverso = Uri.fromFile(ineReversoFile);
-            byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso,0);
+            byteIneReverso = m.getBytesUri(ctx, uriIneReverso,0);
             Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
             ibIneReverso.setVisibility(View.GONE);
             ivIneReverso.setVisibility(View.VISIBLE);
@@ -4496,7 +4473,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(4).isEmpty()){
             File curpFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(4));
             Uri uriCurp = Uri.fromFile(curpFile);
-            byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
+            byteCurp = m.getBytesUri(ctx, uriCurp,0);
             Glide.with(ctx).load(uriCurp).into(ivCurp);
             ibCurp.setVisibility(View.GONE);
             ivCurp.setVisibility(View.VISIBLE);
@@ -4505,7 +4482,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (!row.getString(5).isEmpty()){
             File comprobanteFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(5));
             Uri uriComprobante = Uri.fromFile(comprobanteFile);
-            byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante,0);
+            byteComprobante = m.getBytesUri(ctx, uriComprobante,0);
             Glide.with(ctx).load(uriComprobante).into(ivComprobante);
             ibComprobante.setVisibility(View.GONE);
             ivComprobante.setVisibility(View.VISIBLE);
@@ -4634,15 +4611,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (!validatorTV.validate(tvEstadoNacCli, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
                 (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
-                !tvRfcCli.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpCli.getText().toString().trim().toUpperCase())){
+                !m.GetStr(tvRfcCli).equals("Rfc no válida"))){
+                    if (m.CurpValidador(m.GetStr(etCurpCli))){
                         if (!validatorTV.validate(tvTipoIdentificacion, new String[]{validatorTV.REQUIRED}) &&
                         !validator.validate(etNumIdentifCli, new String[]{validator.REQUIRED}) &&
                         !validatorTV.validate(tvEstudiosCli, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvOcupacionCli, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvEstadoCivilCli, new String[]{validatorTV.REQUIRED})){
                             boolean flag_est_civil = false;
-                            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")){
+                            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")){
                                 if (rgBienes.getCheckedRadioButtonId() == R.id.rbMancomunados ||
                                 rgBienes.getCheckedRadioButtonId() == R.id.rbSeparados) {
                                     tvBienes.setError(null);
@@ -4664,8 +4641,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                             if (flag_est_civil){
                                 ivError1.setVisibility(View.GONE);
-                                cv.put("fecha_nacimiento", tvFechaNacCli.getText().toString());
-                                cv.put("edad", Integer.parseInt(tvEdadCli.getText().toString()));
+                                cv.put("fecha_nacimiento", m.GetStr(tvFechaNacCli));
+                                cv.put("edad", Integer.parseInt(m.GetStr(tvEdadCli)));
                                 switch (rgGeneroCli.getCheckedRadioButtonId()){
                                     case R.id.rbHombre:
                                         cv.put("genero", 0);
@@ -4674,14 +4651,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                         cv.put("genero", 1);
                                         break;
                                 }
-                                cv.put("estado_nacimiento", tvEstadoNacCli.getText().toString().trim());
-                                cv.put("rfc", tvRfcCli.getText().toString().trim());
-                                cv.put("curp", etCurpCli.getText().toString().trim());
-                                //cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
-                                cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim());
-                                cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
-                                cv.put("nivel_estudio", tvEstudiosCli.getText().toString());
-                                cv.put("ocupacion", tvOcupacionCli.getText().toString());
+                                cv.put("estado_nacimiento", m.GetStr(tvEstadoNacCli));
+                                cv.put("rfc", m.GetStr(tvRfcCli));
+                                cv.put("curp", m.GetStr(etCurpCli));
+                                cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacion));
+                                cv.put("no_identificacion", m.GetStr(etNumIdentifCli));
+                                cv.put("nivel_estudio", m.GetStr(tvEstudiosCli));
+                                cv.put("ocupacion", m.GetStr(tvOcupacionCli));
 
 
                                 db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
@@ -4723,10 +4699,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         !validator.validate(etTeltrabajoCli, new String[]{validator.PHONE})){
             ivError2.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("tel_casa", etTelCasaCli.getText().toString().trim());
-            cv.put("tel_celular", etCelularCli.getText().toString());
-            cv.put("tel_mensaje", etTelMensCli.getText().toString());
-            cv.put("tel_trabajo", etTeltrabajoCli.getText().toString());
+            cv.put("tel_casa", m.GetStr(etTelCasaCli));
+            cv.put("tel_celular", m.GetStr(etCelularCli));
+            cv.put("tel_mensaje", m.GetStr(etTelMensCli));
+            cv.put("tel_trabajo", m.GetStr(etTeltrabajoCli));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_TELEFONOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4745,20 +4721,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
             !validator.validate(etNoExtCli, new String[]{validator.REQUIRED}) &&
             !validator.validate(etCpCli, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-            !Miscellaneous.ValidTextView(tvColoniaCli) &&
+            !m.ValidTextView(tvColoniaCli) &&
             !validator.validate(etCiudadCli, new String[]{validator.REQUIRED}) &&
             !validatorTV.validate(tvLocalidadCli, new String[]{validatorTV.REQUIRED}) &&
-            !Miscellaneous.ValidTextView(tvMunicipioCli) &&
-            !Miscellaneous.ValidTextView(tvEstadoCli) &&
+            !m.ValidTextView(tvMunicipioCli) &&
+            !m.ValidTextView(tvEstadoCli) &&
             !validatorTV.validate(tvTipoCasaCli, new String[]{validatorTV.REQUIRED}) &&
             !validatorTV.validate(tvDependientes, new String[]{validatorTV.REQUIRED})){
                 boolean flag_tipo_casa = false;
-                cv.put("tipo_vivienda", tvTipoCasaCli.getText().toString().trim().toUpperCase());
-                switch (tvTipoCasaCli.getText().toString().trim().toUpperCase()){
+                cv.put("tipo_vivienda", m.GetStr(tvTipoCasaCli));
+                switch (m.GetStr(tvTipoCasaCli)){
                     case "CASA FAMILIAR":
                         if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                             flag_tipo_casa = true;
-                            cv.put("parentesco", tvCasaFamiliar.getText().toString().trim().toUpperCase());
+                            cv.put("parentesco", m.GetStr(tvCasaFamiliar));
                             cv.put("otro_tipo_vivienda", "");
                         }
 
@@ -4767,7 +4743,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         if (!validator.validate(etOTroTipoCli, new String[]{validator.REQUIRED})) {
                             flag_tipo_casa = true;
                             cv.put("parentesco", "");
-                            cv.put("otro_tipo_vivienda", etOTroTipoCli.getText().toString().trim().toUpperCase());
+                            cv.put("otro_tipo_vivienda", m.GetStr(etOTroTipoCli));
                         }
                         break;
                     default:
@@ -4784,19 +4760,19 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 ivError3.setVisibility(View.GONE);
                                 cv.put("latitud", String.valueOf(latLngUbiCli.latitude));
                                 cv.put("longitud", String.valueOf(latLngUbiCli.longitude));
-                                cv.put("calle", etCalleCli.getText().toString().trim().toUpperCase());
-                                cv.put("no_exterior", etNoExtCli.getText().toString().trim().toUpperCase());
-                                cv.put("no_interior", etNoIntCli.getText().toString().trim().toUpperCase());
-                                cv.put("manzana", etManzanaCli.getText().toString().trim().toUpperCase());
-                                cv.put("lote", etLoteCli.getText().toString().trim().toUpperCase());
-                                cv.put("cp", etCpCli.getText().toString().trim());
-                                cv.put("colonia", tvColoniaCli.getText().toString().trim().toUpperCase());
-                                cv.put("ciudad", etCiudadCli.getText().toString().trim().toUpperCase());
-                                cv.put("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase());
-                                cv.put("municipio", tvMunicipioCli.getText().toString().trim().toUpperCase());
-                                cv.put("estado", tvEstadoCli.getText().toString().trim().toUpperCase());
-                                cv.put("ref_domiciliaria", etReferenciaCli.getText().toString().trim().toUpperCase());
-                                cv.put("dependientes", tvDependientes.getText().toString().trim());
+                                cv.put("calle", m.GetStr(etCalleCli));
+                                cv.put("no_exterior", m.GetStr(etNoExtCli));
+                                cv.put("no_interior", m.GetStr(etNoIntCli));
+                                cv.put("manzana", m.GetStr(etManzanaCli));
+                                cv.put("lote", m.GetStr(etLoteCli));
+                                cv.put("cp", m.GetStr(etCpCli));
+                                cv.put("colonia", m.GetStr(tvColoniaCli));
+                                cv.put("ciudad", m.GetStr(etCiudadCli));
+                                cv.put("localidad", m.GetStr(tvLocalidadCli));
+                                cv.put("municipio", m.GetStr(tvMunicipioCli));
+                                cv.put("estado", m.GetStr(tvEstadoCli));
+                                cv.put("ref_domiciliaria", m.GetStr(etReferenciaCli));
+                                cv.put("dependientes", m.GetStr(tvDependientes));
                                 cv.put("estatus_completado", 1);
 
                                 db.update(TBL_DOMICILIO_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4834,13 +4810,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (!validator.validate(etCalleNeg, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etCpNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                !Miscellaneous.ValidTextView(tvColoniaNeg) &&
+                !m.ValidTextView(tvColoniaNeg) &&
                 !validator.validate(etCiudadNeg, new String[]{validator.REQUIRED}) &&
                 !validatorTV.validate(tvLocalidadNeg, new String[]{validatorTV.REQUIRED}) &&
-                !Miscellaneous.ValidTextView(tvMunicipioNeg) &&
+                !m.ValidTextView(tvMunicipioNeg) &&
                 !validatorTV.validate(tvDestinoNeg, new String[]{validatorTV.REQUIRED})){
                     boolean otro_destino = false;
-                    if (tvDestinoNeg.getText().toString().trim().toUpperCase().equals("OTRO")){
+                    if (m.GetStr(tvDestinoNeg).equals("OTRO")){
                         if (!validator.validate(etOtroDestinoNeg, new String[]{validator.REQUIRED})){
                             otro_destino = true;
                         }
@@ -4853,11 +4829,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     !validator.validate(etAntiguedadNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS}) &&
                     !validator.validate(etIngMenNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                     !validator.validate(etOtrosIngNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                    !validator.validate(etGastosSemNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
+                    !validator.validate(etGastosSemNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.MONEY}) &&
                     !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED}) &&
                     !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})){
                         boolean otro_medio = false;
-                        if (tvMediosPagoNeg.getText().toString().trim().contains("OTRO")){
+                        if (m.GetStr(tvMediosPagoNeg).contains("OTRO")){
                             if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
                                 otro_medio = true;
                         }
@@ -4869,31 +4845,31 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED})){
                                 ivError4.setVisibility(View.GONE);
                                 ContentValues cv = new ContentValues();
-                                cv.put("nombre", etNombreNeg.getText().toString().trim().toUpperCase());
+                                cv.put("nombre", m.GetStr(etNombreNeg));
                                 cv.put("latitud", String.valueOf(latLngUbiNeg.latitude));
                                 cv.put("longitud", String.valueOf(latLngUbiNeg.longitude));
-                                cv.put("calle", etCalleNeg.getText().toString().trim().toUpperCase());
-                                cv.put("no_exterior", etNoExtNeg.getText().toString().trim().toUpperCase());
-                                cv.put("no_interior", etNoIntNeg.getText().toString().trim().toUpperCase());
-                                cv.put("manzana", etManzanaNeg.getText().toString().trim().toUpperCase());
-                                cv.put("lote", etLoteNeg.getText().toString().trim().toUpperCase());
-                                cv.put("cp", etCpNeg.getText().toString().trim());
-                                cv.put("colonia", tvColoniaNeg.getText().toString().toUpperCase());
-                                cv.put("ciudad", etCiudadNeg.getText().toString().trim().toUpperCase());
-                                cv.put("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase());
-                                cv.put("municipio", tvMunicipioNeg.getText().toString().trim().toUpperCase());
-                                cv.put("destino_credito", tvDestinoNeg.getText().toString().trim());
-                                cv.put("otro_destino_credito", etOtroDestinoNeg.getText().toString().trim().toUpperCase());
-                                cv.put("actividad_economica", tvActEconomicaNeg.getText().toString().trim().toUpperCase());
-                                cv.put("antiguedad", etAntiguedadNeg.getText().toString().trim());
-                                cv.put("ing_mensual", etIngMenNeg.getText().toString().trim().replace(",",""));
-                                cv.put("ing_otros", etOtrosIngNeg.getText().toString().trim().replace(",",""));
-                                cv.put("gasto_semanal", etGastosSemNeg.getText().toString().trim().replace(",",""));
-                                cv.put("capacidad_pago", etCapacidadPagoNeg.getText().toString().trim().replace(",",""));
-                                cv.put("monto_maximo", tvMontoMaxNeg.getText().toString().trim().replace(",",""));
-                                cv.put("medios_pago", tvMediosPagoNeg.getText().toString().trim());
-                                cv.put("otro_medio_pago", etOtroMedioPagoNeg.getText().toString().trim().toUpperCase());
-                                cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
+                                cv.put("calle", m.GetStr(etCalleNeg));
+                                cv.put("no_exterior", m.GetStr(etNoExtNeg));
+                                cv.put("no_interior", m.GetStr(etNoIntNeg));
+                                cv.put("manzana", m.GetStr(etManzanaNeg));
+                                cv.put("lote", m.GetStr(etLoteNeg));
+                                cv.put("cp", m.GetStr(etCpNeg));
+                                cv.put("colonia", m.GetStr(tvColoniaNeg));
+                                cv.put("ciudad", m.GetStr(etCiudadNeg));
+                                cv.put("localidad", m.GetStr(tvLocalidadNeg));
+                                cv.put("municipio", m.GetStr(tvMunicipioNeg));
+                                cv.put("destino_credito", m.GetStr(tvDestinoNeg));
+                                cv.put("otro_destino_credito", m.GetStr(etOtroDestinoNeg));
+                                cv.put("actividad_economica", m.GetStr(tvActEconomicaNeg));
+                                cv.put("antiguedad", m.GetStr(etAntiguedadNeg));
+                                cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",",""));
+                                cv.put("ing_otros", m.GetStr(etOtrosIngNeg).replace(",",""));
+                                cv.put("gasto_semanal", m.GetStr(etGastosSemNeg).replace(",",""));
+                                cv.put("capacidad_pago", m.GetStr(etCapacidadPagoNeg).replace(",",""));
+                                cv.put("monto_maximo", m.GetStr(tvMontoMaxNeg).replace(",",""));
+                                cv.put("medios_pago", m.GetStr(tvMediosPagoNeg));
+                                cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoNeg));
+                                cv.put("ref_domiciliaria", m.GetStr(etReferenciNeg));
                                 cv.put("estatus_completado", 1);
 
                                 db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4940,37 +4916,37 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
         !validator.validate(etNoExtCony, new String[]{validator.REQUIRED}) &&
         !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-        !Miscellaneous.ValidTextView(tvColoniaCony) &&
+        !m.ValidTextView(tvColoniaCony) &&
         !validator.validate(etCiudadCony, new String[]{validator.REQUIRED}) &&
         !validatorTV.validate(tvLocalidadCony, new String[]{validatorTV.REQUIRED}) &&
-        !Miscellaneous.ValidTextView(tvMunicipioCony) &&
-        !Miscellaneous.ValidTextView(tvEstadoCony) &&
+        !m.ValidTextView(tvMunicipioCony) &&
+        !m.ValidTextView(tvEstadoCony) &&
         !validator.validate(etIngresoCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
         !validator.validate(etGastoCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
         !validator.validate(etCasaCony, new String[]{validator.ONLY_NUMBER}) &&
         !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})){
             ivError5.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreCony.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
-            cv.put("nacionalidad", etNacionalidad.getText().toString().trim().toUpperCase());
-            cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
-            cv.put("calle", etCalleCony.getText().toString().trim().toUpperCase());
-            cv.put("no_exterior", etNoExtCony.getText().toString().trim().toUpperCase());
-            cv.put("no_interior", etNoIntCony.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaCony.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteCony.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpCony.getText().toString().trim());
-            cv.put("colonia", tvColoniaCony.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadCony.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioCony.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoCony.getText().toString().trim().toUpperCase());
-            cv.put("ingresos_mensual", etIngresoCony.getText().toString().trim().replace(",",""));
-            cv.put("gasto_mensual", etGastoCony.getText().toString().trim().replace(",",""));
-            cv.put("tel_trabajo", etCasaCony.getText().toString().trim());
-            cv.put("tel_celular", etCelularCony.getText().toString().trim());
+            cv.put("nombre", m.GetStr(etNombreCony));
+            cv.put("paterno", m.GetStr(etApPaternoCony));
+            cv.put("materno", m.GetStr(etApMaternoCli));
+            cv.put("nacionalidad", m.GetStr(etNacionalidad));
+            cv.put("ocupacion", m.GetStr(tvOcupacionCony));
+            cv.put("calle", m.GetStr(etCalleCony));
+            cv.put("no_exterior", m.GetStr(etNoExtCony));
+            cv.put("no_interior", m.GetStr(etNoIntCony));
+            cv.put("manzana", m.GetStr(etManzanaCony));
+            cv.put("lote", m.GetStr(etLoteCony));
+            cv.put("cp", m.GetStr(etCpCony));
+            cv.put("colonia", m.GetStr(tvColoniaCony));
+            cv.put("ciudad", m.GetStr(etCiudadCony));
+            cv.put("localidad", m.GetStr(tvLocalidadCony));
+            cv.put("municipio", m.GetStr(tvMunicipioCony));
+            cv.put("estado", m.GetStr(tvEstadoCony));
+            cv.put("ingresos_mensual", m.GetStr(etIngresoCony).replace(",",""));
+            cv.put("gasto_mensual", m.GetStr(etGastoCony).replace(",",""));
+            cv.put("tel_trabajo", m.GetStr(etCasaCony));
+            cv.put("tel_celular", m.GetStr(etCelularCony));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_CONYUGE_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4995,10 +4971,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (byteFirmaCli != null){
                         ivError6.setVisibility(View.GONE);
                         ContentValues cv = new ContentValues();
-                        cv.put("clasificacion_riesgo", tvRiesgo.getText().toString().trim().toUpperCase());
-                        cv.put("medio_contacto", tvMedioContacto.getText().toString().trim().toUpperCase());
-                        cv.put("estado_cuenta", tvEstadoCuenta.getText().toString().trim().toUpperCase());
-                        cv.put("email", etEmail.getText().toString().trim());
+                        cv.put("clasificacion_riesgo", m.GetStr(tvRiesgo));
+                        cv.put("medio_contacto", m.GetStr(tvMedioContacto));
+                        cv.put("estado_cuenta", m.GetStr(tvEstadoCuenta));
+                        cv.put("email", m.GetStr(etEmail));
                         switch (rgEstatus.getCheckedRadioButtonId()){
                             case R.id.rbNuevo:
                                 cv.put("estatus_integrante", 1);
@@ -5010,7 +4986,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 cv.put("estatus_integrante", 3);
                                 break;
                         }
-                        cv.put("monto_solicitado", etCredSolicitado.getText().toString().trim().replace(",",""));
+                        cv.put("monto_solicitado", m.GetStr(etCredSolicitado).replace(",",""));
                         if (cbCasaReuniones.isChecked())
                             cv.put("casa_reunion", 1);
                         else
@@ -5049,11 +5025,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
             ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("calle_principal", tvPrincipal.getText().toString().trim().toUpperCase());
-            cv.put("lateral_uno", tvLateraUno.getText().toString().trim().toUpperCase());
-            cv.put("lateral_dos", tvLateraDos.getText().toString().trim().toUpperCase());
-            cv.put("calle_trasera", tvTrasera.getText().toString().trim().toUpperCase());
-            cv.put("referencias", etReferencia.getText().toString().trim().toUpperCase());
+            cv.put("calle_principal", m.GetStr(tvPrincipal));
+            cv.put("lateral_uno", m.GetStr(tvLateraUno));
+            cv.put("lateral_dos", m.GetStr(tvLateraDos));
+            cv.put("calle_trasera", m.GetStr(tvTrasera));
+            cv.put("referencias", m.GetStr(etReferencia));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_CROQUIS_GPO, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -5185,8 +5161,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 boolean datos_domiclio = saveDatosDomicilio();
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
-                if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-                tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")){
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
                 else
@@ -5258,10 +5233,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         tvEstadoNacCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(Constants.ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
 
                         if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                             params.put(4, "Hombre");
@@ -5270,19 +5245,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
 
-                        Update("estado_nacimiento", TBL_INTEGRANTES_GPO, tvEstadoNacCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
-                        /*cv = new ContentValues();
-                        cv.put("estado_nacimiento",tvEstadoNacCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
-                        else
-                            db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{id_integrante});*/
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        Update("estado_nacimiento", TBL_INTEGRANTES_GPO, m.GetStr(tvEstadoNacCli), "id", id_integrante);
+
+                        etCurpCli.setText(m.GenerarCurp(params));
                     }
                 }
                 break;
@@ -5295,7 +5265,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         byteFotoFachCli = data.getByteArrayExtra(Constants.PICTURE);
                         Glide.with(ctx).load(byteFotoFachCli).centerCrop().into(ivFotoFachCli);
                         try {
-                            Update("foto_fachada", TBL_DOMICILIO_INTEGRANTE, Miscellaneous.save(byteFotoFachCli, 1), "id_integrante", id_integrante);
+                            Update("foto_fachada", TBL_DOMICILIO_INTEGRANTE, m.save(byteFotoFachCli, 1), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5307,7 +5277,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvColoniaCli.setError(null);
                         tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
-                        Update("colonia", TBL_DOMICILIO_INTEGRANTE, tvColoniaCli.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_DOMICILIO_INTEGRANTE, m.GetStr(tvColoniaCli), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5317,7 +5287,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvLocalidadCli.setError(null);
                         tvLocalidadCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("localidad", TBL_DOMICILIO_INTEGRANTE, tvLocalidadCli.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("localidad", TBL_DOMICILIO_INTEGRANTE, m.GetStr(tvLocalidadCli), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5326,7 +5296,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvColoniaCony.setError(null);
                         tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("colonia", TBL_CONYUGE_INTEGRANTE, tvColoniaCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvColoniaCony), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5335,7 +5305,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvLocalidadCony.setError(null);
                         tvLocalidadCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("localidad", TBL_CONYUGE_INTEGRANTE, tvLocalidadCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("localidad", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvLocalidadCony).toUpperCase(), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5344,7 +5314,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvActEconomicaNeg.setError(null);
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
-                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, tvActEconomicaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEconomicaNeg).toUpperCase(), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5354,7 +5324,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvColoniaNeg.setError(null);
                         tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
-                        Update("colonia", TBL_NEGOCIO_INTEGRANTE, tvColoniaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvColoniaNeg), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5364,7 +5334,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvLocalidadNeg.setError(null);
                         tvLocalidadNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("localidad", TBL_NEGOCIO_INTEGRANTE,tvLocalidadNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("localidad", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvLocalidadNeg), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5379,8 +5349,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             tvActEconomicaNeg.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_NEGOCIO_INTEGRANTE, tvActEcoEspNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
-                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, tvActEconomicaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("ocupacion", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEcoEspNeg), "id_integrante", id_integrante);
+                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5393,7 +5363,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         byteFotoFachNeg = data.getByteArrayExtra(Constants.PICTURE);
                         Glide.with(ctx).load(byteFotoFachNeg).centerCrop().into(ivFotoFachNeg);
                         try {
-                            Update("foto_fachada", TBL_NEGOCIO_INTEGRANTE, Miscellaneous.save(byteFotoFachNeg, 1), "id_integrante", id_integrante);
+                            Update("foto_fachada", TBL_NEGOCIO_INTEGRANTE, m.save(byteFotoFachNeg, 1), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5406,7 +5376,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvOcupacionCony.setError(null);
                         tvOcupacionCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
-                        Update("ocupacion", TBL_CONYUGE_INTEGRANTE, tvOcupacionCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("ocupacion", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvOcupacionCony), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5416,7 +5386,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     if (data != null){
                         tvOcupacionCli.setError(null);
                         tvOcupacionCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(Constants.ITEM)).getNombre());
-                        Update("ocupacion", TBL_INTEGRANTES_GPO, tvOcupacionCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
+                        Update("ocupacion", TBL_INTEGRANTES_GPO, m.GetStr(tvOcupacionCli), "id", id_integrante);
                     }
                 }
                 break;
@@ -5431,7 +5401,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 .into(ivFirmaCli);
                         byteFirmaCli = data.getByteArrayExtra(Constants.FIRMA_IMAGE);
                         try {
-                            Update("firma", TBL_OTROS_DATOS_INTEGRANTE, Miscellaneous.save(byteFirmaCli, 3), "id_integrante", id_integrante);
+                            Update("firma", TBL_OTROS_DATOS_INTEGRANTE, m.save(byteFirmaCli, 3), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5450,7 +5420,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         ivIneFrontal.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
-                            Update("ine_frontal", TBL_DOCUMENTOS_INTEGRANTE, Miscellaneous.save(byteIneFrontal, 4), "id_integrante", id_integrante);
+                            Update("ine_frontal", TBL_DOCUMENTOS_INTEGRANTE, m.save(byteIneFrontal, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5470,7 +5440,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         ivIneReverso.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
-                            Update("ine_reverso", TBL_DOCUMENTOS_INTEGRANTE, Miscellaneous.save(byteIneReverso, 4), "id_integrante", id_integrante);
+                            Update("ine_reverso", TBL_DOCUMENTOS_INTEGRANTE, m.save(byteIneReverso, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5487,7 +5457,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         byteCurp = data.getByteArrayExtra(Constants.PICTURE);
                         Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);
                         try {
-                            Update("curp", TBL_DOCUMENTOS_INTEGRANTE, Miscellaneous.save(byteCurp, 4), "id_integrante", id_integrante);
+                            Update("curp", TBL_DOCUMENTOS_INTEGRANTE, m.save(byteCurp, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5504,7 +5474,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         byteComprobante = data.getByteArrayExtra(Constants.PICTURE);
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
-                            Update("comprobante", TBL_DOCUMENTOS_INTEGRANTE, Miscellaneous.save(byteComprobante, 4), "id_integrante", id_integrante);
+                            Update("comprobante", TBL_DOCUMENTOS_INTEGRANTE, m.save(byteComprobante, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -5586,4 +5556,5 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 break;
         }
     }
+
 }

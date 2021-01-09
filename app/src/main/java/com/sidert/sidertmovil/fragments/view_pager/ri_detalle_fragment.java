@@ -39,13 +39,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
@@ -82,6 +78,8 @@ public class ri_detalle_fragment extends Fragment {
     private MAval mAval;
 
     private String tel_aval = "";
+    private String telCasa = "";
+    private String telCelular = "";
 
     private String idPrestamo = "";
 
@@ -134,12 +132,8 @@ public class ri_detalle_fragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Cursor row;
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
+        Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -163,6 +157,7 @@ public class ri_detalle_fragment extends Fragment {
             tel_aval = row.getString(22);
 
         }
+        row.close();
 
         btnCallHome.setOnClickListener(btnCallHome_onClick);
         btnCallCell.setOnClickListener(btnCallCell_onClick);
@@ -174,37 +169,14 @@ public class ri_detalle_fragment extends Fragment {
     private View.OnClickListener btnCallHome_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
-            } else {
-                /*if (!parent.ficha_ri.getCliente().getTelDomicilio().isEmpty()){
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelDomicilio()));
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(ctx, "No cuenta con telefono de domicilio", Toast.LENGTH_SHORT).show();
-                }*/
-
-            }
+            Call(parent.telCliente);
         }
     };
 
     private View.OnClickListener btnCallCell_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
-            } else {
-                /*if (!parent.ficha_ri.getCliente().getTelCelular().isEmpty()) {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelCelular()));
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(ctx, "No cuenta con telefono celular", Toast.LENGTH_SHORT).show();
-                }*/
-            }
+            Call(parent.telCelular);
         }
     };
 
@@ -238,7 +210,6 @@ public class ri_detalle_fragment extends Fragment {
 
 
             }
-
 
             if (imprimir) {
                 MFormatoRecibo ticket = new MFormatoRecibo();

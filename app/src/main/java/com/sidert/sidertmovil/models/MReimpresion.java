@@ -21,6 +21,9 @@ public class MReimpresion implements Serializable {
     private String tipoGestion;
     private String nombreFirma;
     private String claveCliente;
+    private String fechaUltimoPago;
+    private String montoUltimoPago;
+    private String telefono;
 
     public String getIdPrestamo() {
         return idPrestamo;
@@ -156,5 +159,29 @@ public class MReimpresion implements Serializable {
 
     public void setClaveCliente(String claveCliente) {
         this.claveCliente = claveCliente;
+    }
+
+    public String getFechaUltimoPago() {
+        return fechaUltimoPago;
+    }
+
+    public void setFechaUltimoPago(String fechaUltimoPago) {
+        this.fechaUltimoPago = fechaUltimoPago;
+    }
+
+    public String getMontoUltimoPago() {
+        return montoUltimoPago;
+    }
+
+    public void setMontoUltimoPago(String montoUltimoPago) {
+        this.montoUltimoPago = montoUltimoPago;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

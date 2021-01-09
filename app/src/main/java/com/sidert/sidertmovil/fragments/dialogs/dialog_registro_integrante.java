@@ -33,23 +33,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.CONYUGE_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO;
-import static com.sidert.sidertmovil.utils.Constants.DATOS_INTEGRANTES_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.DOCUMENTOS_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.DOMICILIO_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.NEGOCIO_INTEGRANTE_T;
-import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.OTROS_DATOS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TELEFONOS_INTEGRANTE_T;
 
 
 public class dialog_registro_integrante extends DialogFragment {

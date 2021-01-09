@@ -27,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.RECUPERACION_IND;
@@ -41,9 +40,11 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_CLIENTE;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_IND;
 
+/**Clase para visualiar detalle del prestamo grupal, Realizar gestiones o ver tabla de pagos*/
 public class RecuperacionIndividual extends AppCompatActivity {
 
     private Context ctx;
@@ -52,6 +53,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
+    /**Variables globales para ser consultadas en vistas como detalle del prestamo, recuperacion, o reporte de pagos*/
     public String id_prestamo = "";
     public String id_respuesta = "";
     public String monto_amortiz = "";
@@ -66,6 +68,8 @@ public class RecuperacionIndividual extends AppCompatActivity {
     public String tipo_cartera = "";
     public String id_cartera = "";
     public String num_amortizacion = "";
+    public String telCliente = "";
+    public String telCelular = "";
 
     public String latitud = "";
     public String longitud = "";
@@ -99,21 +103,25 @@ public class RecuperacionIndividual extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.order));
 
+        /**Se obtiene los datos que se enviaron entre clases*/
         Bundle data = getIntent().getExtras();
         id_prestamo = data.getString(ID_PRESTAMO);
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
 
+        /**Se busca si hay gestiones en estado parcial*/
         Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_IND_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
 
         row.moveToLast();
         if (row.getCount() > 0){
-            if (row.getInt(25) == 0){
-                id_respuesta = row.getString(0);
+            if (row.getInt(25) == 0){ /**row.getInt(25) es la columna de estatus de gestion*/
+                id_respuesta = row.getString(0);/**Se obtiene el id de respuesta gestion para tenerlo como variable global*/
                 latitud = row.getString(2);
                 longitud = row.getString(3);
             }
         }
+        row.close();
 
+        /**Consulta para obtener los datos del detalle del prestamo*/
         row = dBhelper.customSelect(TBL_PRESTAMOS_IND_T + " AS p", "p.*, a.*, c.nombre, c.clave", " LEFT JOIN "+TBL_AVAL_T+" AS a ON p.id_prestamo = a.id_prestamo INNER JOIN "+TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0) {
@@ -133,16 +141,29 @@ public class RecuperacionIndividual extends AppCompatActivity {
         }
         row.close();
 
+        /**Consulta para obtener el saldo al corte del prestamo y se guarda en variable global*/
         row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
             saldo_corte = row.getDouble(0);
         }
+        row.close();
 
+        /**Consulta para obtener el telefono del cliente y se guarda en variable global*/
+        row = dBhelper.getRecords(TBL_TELEFONOS_CLIENTE, " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            telCliente = row.getString(2);
+            telCelular = row.getString(3);
+        }
+        row.close();
 
         boolean is_recuperacion = false;
 
+        /**Se valida los permisos que tiene el usuario para validar
+         * si podrá realizar gestiones o se bloquera el menu de Recuperacion
+         * para que no pueda entrar*/
         try {
             JSONArray modulos = new JSONArray(session.getUser().get(8));
             for (int i = 0; i < modulos.length(); i++){
@@ -159,10 +180,13 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 }
             }
 
+            /**Si tiene el permiso de editar_cartera se coloca la vista de recuperacion*/
             if (is_recuperacion) {
                 nvMenu.setSelectedItemId(R.id.nvGestion);
             }
             else{
+                /**En caso de no tener el permiso se bloquea el menu de recuperacion y se manda
+                 * a la vista del detalle del prestamo*/
                 menu.getItem(1).setEnabled(false);
                 nvMenu.setSelectedItemId(R.id.nvDatos);
             }
@@ -178,13 +202,14 @@ public class RecuperacionIndividual extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Selecciono el menu de retroceso del toolbar <- */
                 finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**Escuchador del menu para cambiar de vista*/
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -204,6 +229,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
         }
     };
 
+    /**Funcion para realizar las transiciones de las vistas*/
     public void setFragment(String fragment, Bundle extras) {
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);
         FragmentManager manager = getSupportFragmentManager();
@@ -211,7 +237,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
         String tokenFragment = "";
 
         switch (fragment) {
-            case DETALLE_IND:
+            case DETALLE_IND:/**Para cambiar a la vista del Detalle del Prestamo*/
                 if (!(current instanceof ri_detalle_fragment)){
                     ri_detalle_fragment detalle = new ri_detalle_fragment();
                     detalle.setArguments(extras);
@@ -220,7 +246,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
                 } else
                     return;
                 break;
-            case RECUPERACION_IND:
+            case RECUPERACION_IND:/**PAra cambiar a la vista de Recuperacion*/
                 if (!(current instanceof recuperacion_ind_fragment)){
                     recuperacion_ind_fragment recuperacion = new recuperacion_ind_fragment();
                     recuperacion.setArguments(extras);
@@ -230,7 +256,7 @@ public class RecuperacionIndividual extends AppCompatActivity {
                     return;
 
                 break;
-            case REPORTE_PAGOS_IND:
+            case REPORTE_PAGOS_IND:/**PAra cambiar a la vista de reporte de pagos*/
                 if (!(current instanceof ri_pagos_fragment)){
                     ri_pagos_fragment reporte = new ri_pagos_fragment();
                     reporte.setArguments(extras);

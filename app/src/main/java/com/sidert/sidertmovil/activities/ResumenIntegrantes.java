@@ -20,7 +20,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_GESTION;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
@@ -63,11 +62,7 @@ public class ResumenIntegrantes extends AppCompatActivity {
         String id_gestion =  getIntent().getStringExtra(ID_GESTION);
         DBhelper dBhelper = new DBhelper(ctx);
 
-        Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS, " WHERE id_prestamo = ? AND id_gestion = ?", "", new String[]{id_prestamo, id_gestion});
-        else
-            row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_prestamo = ? AND id_gestion = ?", "", new String[]{id_prestamo, id_gestion});
+        Cursor row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_prestamo = ? AND id_gestion = ?", "", new String[]{id_prestamo, id_gestion});
 
         if (row.getCount() > 0){
             row.moveToFirst();

@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -31,13 +32,19 @@ import android.widget.TextView;
 import io.fabric.sdk.android.Fabric;
 import com.crashlytics.android.Crashlytics;
 import com.sidert.sidertmovil.activities.CirculoCredito;
+import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
+import com.sidert.sidertmovil.activities.ConsultadosCC;
+import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.activities.Perfil;
+import com.sidert.sidertmovil.activities.RecuperacionCC;
 import com.sidert.sidertmovil.activities.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
+import com.sidert.sidertmovil.activities.Solicitudes;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.fragments.autorizaciones_cc_fragment;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
@@ -72,6 +79,7 @@ public class Home extends AppCompatActivity{
     private Toolbar TBmain;
     private CustomDrawerLayout mDrawerLayout;
     private NavigationView NVmenu;
+    private TextView tvVersionAppAmbiente;
     private TabLayout mTabLayout;
     private CoordinatorLayout CLcontainer;
     private TextView tvUltimaSincro;
@@ -86,6 +94,7 @@ public class Home extends AppCompatActivity{
         void initTabLayout(TabLayout Tabs);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +108,7 @@ public class Home extends AppCompatActivity{
         TBmain          = findViewById(R.id.TBmain);
         mDrawerLayout   = findViewById(R.id.mDrawerLayout);
         NVmenu          = findViewById(R.id.NVmenu);
+        tvVersionAppAmbiente = findViewById(R.id.tvVersionAppAmbiente);
         mTabLayout      = findViewById(R.id.mTabLayout);
         CLcontainer     = findViewById(R.id.CLcontainer);
         View view       = NVmenu.getHeaderView(0);
@@ -107,9 +117,15 @@ public class Home extends AppCompatActivity{
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
 
-        //menuGeneral = NVmenu.getMenu();
+        /**Se valida si el dominio y el puerto guardado es diferente al de produccion
+         * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
+        if (!session.getDominio().get(0).contains("sidert.ddns.net") || !session.getDominio().get(1).equals("83")) {
+            tvVersionAppAmbiente.setText(getResources().getString(R.string.app_version) + " PRUEBAS");
+            tvVersionAppAmbiente.setTextColor(ContextCompat.getColor(ctx, R.color.red));
+        }
+
         final Bundle data = getIntent().getExtras();
-        if (true){
+        if (true){/** Siempre entra a esta condición , es el menu general de sidert movil */
             initNavigationDrawer();
             setSupportActionBar(TBmain);
             final DrawerLayout.LayoutParams CLparams = (DrawerLayout.LayoutParams) CLcontainer.getLayoutParams();
@@ -127,10 +143,12 @@ public class Home extends AppCompatActivity{
                         DBhelper dBhelper = new DBhelper(ctx);
                         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
+                        /**Se obtiene el log de sincronnizaciones para colocar la fecha y hora de la ultima sincronizacion*/
                         Cursor row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
+                            /**Coloca la fecha y hora de la ultima sincronizacion*/
                             tvUltimaSincro.setText("Última Sincronización: " + row.getString(2));
                             for (int i = 0; i < row.getCount(); i++){
                                 Log.e("Sincronizado"+i, row.getString(2));
@@ -139,7 +157,7 @@ public class Home extends AppCompatActivity{
 
                         }
 
-                        row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
+                        /*row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
                             row.moveToFirst();
@@ -152,7 +170,7 @@ public class Home extends AppCompatActivity{
                                 row.moveToNext();
                             }
 
-                        }
+                        }*/
 
                     }
 
@@ -173,16 +191,25 @@ public class Home extends AppCompatActivity{
             }
 
             menuGeneral = NVmenu.getMenu();
+
+            /**Funcion para validar que secciones del menu tiene permitido ver el usuario*/
             ShowMenuItems();
+
+            /**Coloca el nombre del usuario que inicio sesion en el menu lateral*/
             tvNameUser.setText(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
 
+            /**Coloca la vista de cartera por defecto*/
             setFragment(ORDERS, null);
 
+            /**Evento de click para abrir el menu lateral*/
             NVmenu.setNavigationItemSelectedListener(NVmenu_onClick);
+            /**Evento de click para abrir vista de perfil aun no se ocupa*/
             llProfile.setOnClickListener(LLprofile_OnClick);
+            /**Evento de click para cerrar sesion*/
             ivLogout.setOnClickListener(ivLogout_OnClick);
         }
-        else{
+        else{/** esto era cuando se lanzo por primera vez sidert movil y solo tenia Denuncia PLD pero
+                ya no se ocupa esta vista*/
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             TBmain.setVisibility(View.GONE);
             mTabLayout.setVisibility(View.GONE);
@@ -191,48 +218,73 @@ public class Home extends AppCompatActivity{
 
     }
 
+    /**Listener el menu lateral... Si se agrega otro menu tendrá que colocarse aqui
+     * para que funcione el eventro de la transicion de una vista a otra
+     * */
     private NavigationView.OnNavigationItemSelectedListener NVmenu_onClick = new NavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.nvCartera:
+                case R.id.nvCartera:/**Cuando seleccioan el menu Cartera: Cartera que tiene asignado el asesor/gestor*/
                     setFragment(ORDERS, null);
                     break;
-                case R.id.nvOriginacion:
+                case R.id.nvOriginacion:/**Cuando seleccioan el menu Originación para crear una nueva solicitud Individual o grupal*/
                     Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
                     startActivity(i_solicitud);
                     break;
-                case R.id.nvRenovacion:
+                case R.id.nvRenovacion:/**Cuando seleccioan el menu Renovación para crear un reonvacion individal o grupal*/
                     Intent i_renovacion = new Intent(getApplicationContext(), RenovacionCredito.class);
                     startActivity(i_renovacion);
                     break;
-                case R.id.nvConfiguraciones:
+                case R.id.nvSolicitudes:/**Cuando seleccioan el menu Solicitudes son las que ve el gerentes que ya fueron autorizadas por la admin y solo falta que el autorice*/
+                    Intent i_solicitudes = new Intent(getApplicationContext(), Solicitudes.class);
+                    startActivity(i_solicitudes);
+                    break;
+                case R.id.nvConfiguraciones:/**Cuando seleccionan Configuraciones es para Sincronizado manual (envio/descarga de datos) que quedaron pendiente de envio*/
                     Intent i_config = new Intent(getApplicationContext(), Configuracion.class);
                     startActivity(i_config);
                     break;
-                case R.id.nvImpresiones:
+                case R.id.nvImpresiones:/**Cuando seleccionan Impresion es para ver el log de impresiones realizadas Recuperacion/Cobranza/Vencida*/
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                    //setFragment(NameFragments.AUTORIZAR_CC, null);
                     break;
-                case R.id.nvCC:
-                    Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
+                /*case R.id.nvCC:
+                    //Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+                    Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
+                    startActivity(i_cc);
+                    break;*/
+                case R.id.nvCobroCC:/**Cuando seleccioan Cobro CC es para realizar un cobro en efectivo e impresion de CC*/
+                    //Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+                    Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
                     startActivity(i_cc);
                     break;
-                case R.id.nvRuta:
+                case R.id.nvCobroAGF:/**Cuando seleccioan Cobro AGF es para realizar un cobro en efectivo e impresion de AGF*/
+                    Intent i_agf = new Intent(getApplicationContext(), CirculoCredito.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
+                    //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
+                    startActivity(i_agf);
+                    break;
+                case R.id.nvRuta:/**Cuando seleccioan Ruta es para poder buscar la ruta que ha realizado el asesor por dia*/
                     Intent i_ruta = new Intent(getApplicationContext(), TrackerAsesor.class);
                     startActivity(i_ruta);
                     break;
-                case R.id.nvGeolocalizar:
+                case R.id.nvGeolocalizar:/**Cuando seleccionan Geolocalizar para poder realizar la geolocalizaciones de los clientes*/
                     setFragment(GEOLOCALIZACION, null);
                     break;
-                case R.id.nvLogin:
+                case R.id.nvLogin:/**Cuando seleccionan Sesiones podran visualizar los inicios de sesiones de los asesores por dia*/
                     Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
                     startActivity(i_log_login);
                     break;
-                case R.id.nvMesaAyuda:
+                case R.id.nvMesaAyuda:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
                     setFragment(MESA_AYUDA, null);
                     break;
-                default:
+                default:/**Manda directo a la validacion de inicio de sesion o cartera*/
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
                     finish();
@@ -243,6 +295,7 @@ public class Home extends AppCompatActivity{
         }
     };
 
+    /**Funcion para hacer las trancisiones de vistas solo de los Fragments*/
     public void setFragment(String fragment, Bundle extras) {
         mTabLayout.setVisibility(View.GONE);
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.FLmain);
@@ -250,7 +303,7 @@ public class Home extends AppCompatActivity{
         FragmentTransaction transaction = manager.beginTransaction();
         String tokenFragment = "";
         switch (fragment) {
-            case ORDERS:
+            case ORDERS:/**Fragmento de Cartera*/
                 mTabLayout.setVisibility(View.VISIBLE);
                 if (!(current instanceof orders_fragment)){
                     orders_fragment myAppointments = new orders_fragment();
@@ -260,7 +313,7 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
-            case NameFragments.IMPRESSION_HISTORY:
+            case NameFragments.IMPRESSION_HISTORY:/**Fragmento de Impresiones*/
                 if (!(current instanceof impression_history_fragment)){
                     impression_history_fragment impression_history = new impression_history_fragment();
                     impression_history.setArguments(extras);
@@ -269,7 +322,16 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
-            case MESA_AYUDA:
+            case NameFragments.AUTORIZAR_CC:/**Fragmento de autorizaciones de CC*/
+                if (!(current instanceof autorizaciones_cc_fragment)){
+                    autorizaciones_cc_fragment impression_history = new autorizaciones_cc_fragment();
+                    impression_history.setArguments(extras);
+                    transaction.replace(R.id.FLmain, impression_history, NameFragments.AUTORIZAR_CC);
+                    tokenFragment = NameFragments.AUTORIZAR_CC;
+                } else
+                    return;
+                break;
+            case MESA_AYUDA:/**Fragmento de Mesa de ayuda*/
                 if (!(current instanceof mesa_ayuda_fragment)){
                     mesa_ayuda_fragment mesa_ayuda = new mesa_ayuda_fragment();
                     mesa_ayuda.setArguments(extras);
@@ -278,7 +340,7 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
-            case GEOLOCALIZACION:
+            case GEOLOCALIZACION:/**Fragmento de Geolocalizaciones*/
                 mTabLayout.setVisibility(View.VISIBLE);
                 if (!(current instanceof geolocalizacion_fragment)){
                     geolocalizacion_fragment geolocalizacion = new geolocalizacion_fragment();
@@ -288,7 +350,7 @@ public class Home extends AppCompatActivity{
                 } else
                     return;
                 break;
-            default:
+            default:/**Fragmento de Cartera por default*/
                 if (!(current instanceof orders_fragment)){
                     transaction.replace(R.id.FLmain, new orders_fragment(), ORDERS);
                     tokenFragment = ORDERS;
@@ -357,6 +419,7 @@ public class Home extends AppCompatActivity{
         }
     }
 
+    /**Inicializacion de variables del menu lateral como el nombre d usuario*/
     private void initNavigationDrawer() {
         View view                      = NVmenu.getHeaderView(0);
         final CustomRelativeLayout HV  = view.findViewById(R.id.HV);
@@ -375,6 +438,7 @@ public class Home extends AppCompatActivity{
         });*/
     }
 
+    /**Evento para abrir la vista del perfil del usuario no se está ocupando*/
     private View.OnClickListener LLprofile_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -383,6 +447,7 @@ public class Home extends AppCompatActivity{
         }
     };
 
+    /**Evento que abre un dialogFragment para cerrar sesion*/
     private View.OnClickListener ivLogout_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -394,6 +459,7 @@ public class Home extends AppCompatActivity{
         }
     };
 
+    /**Colocar el un identificador y nombre de usuario en los crash cuando se cierra la app*/
     private void logUserFabric() {
         Crashlytics.setUserIdentifier(session.getUser().get(0));
         Crashlytics.setUserName(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
@@ -408,36 +474,44 @@ public class Home extends AppCompatActivity{
         }
     }
 
+    /**Funcion para validar que menus se van a mostrar de acuerdo a los permisos asignados al usuario*/
     private void ShowMenuItems (){
         try {
             if (session.getUser().get(8) != null) {
+                /**Se obtienen los mudulos asignados guardado en la variable de sesion*/
                 JSONArray jsonModulos = new JSONArray(session.getUser().get(8));
                 for (int i = 0; i < jsonModulos.length(); i++) {
                     JSONObject item = jsonModulos.getJSONObject(i);
                     switch (item.getString("nombre").toLowerCase()) {
-                        case "cartera":
+                        case "cartera":/**Si tiene permiso de cartera*/
                             menuGeneral.getItem(0).setVisible(true);
                             break;
-                        case "geolocalizar":
+                        case "geolocalizar":/**Si tiene permiso de geolocalizar*/
                             menuGeneral.getItem(1).setVisible(true);
                             break;
-                        case "impresion":
+                        case "impresion":/**Si tiene permiso de impresion*/
                             menuGeneral.getItem(2).setVisible(true);
                             break;
-                        case "ruta":
+                        case "ruta":/**Si tiene permiso de ruta*/
                             menuGeneral.getItem(3).setVisible(true);
                             break;
-                        case "circulocredito":
+                        case "recuperacion agf":/**Si tiene permiso de recuperacion agf*/
                             menuGeneral.getItem(4).setVisible(true);
                             break;
-                        case "agf":
+                        case "recuperacion cc":/**Si tiene permiso de recuperacion cc*/
                             menuGeneral.getItem(5).setVisible(true);
                             break;
-                        case "originacion":
+                        case "originacion":/**Si tiene permiso de originacion*/
                             menuGeneral.getItem(6).setVisible(true);
                             break;
-                        case "sesiones":
+                        case "renovacion":/**Si tiene permiso de renovacion*/
                             menuGeneral.getItem(7).setVisible(true);
+                            break;
+                        case "solicitudes":/**Si tiene permiso de solicitudes*/
+                            menuGeneral.getItem(8).setVisible(true);
+                            break;
+                        case "sesiones":/**Si tiene permiso de sesiones*/
+                            menuGeneral.getItem(9).setVisible(true);
                             break;
                     }
                 }

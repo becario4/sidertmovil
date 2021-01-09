@@ -9,11 +9,13 @@ public class RecibosAgfCC implements Serializable {
     private String monto;
     private String tipoRecibo;
     private String folio;
+    private String curp;
     private String tipoImpresion;
     private boolean isReeimpresion;
     private int resImpresion;
     private String grupoId;
     private String numSolicitud;
+    private int totalIntegrantes;
 
     public String getNombre() {
         return nombre;
@@ -57,6 +59,22 @@ public class RecibosAgfCC implements Serializable {
 
     public String getFolio() {
         return folio;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
+    }
+
+    public int getTotalIntegrantes() {
+        return totalIntegrantes;
+    }
+
+    public void setTotalIntegrantes(int totalIntegrantes) {
+        this.totalIntegrantes = totalIntegrantes;
     }
 
     public void setFolio(String folio) {

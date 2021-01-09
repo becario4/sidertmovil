@@ -1,6 +1,8 @@
 package com.sidert.sidertmovil.utils;
 
+import com.sidert.sidertmovil.models.ConsultaCC;
 import com.sidert.sidertmovil.models.LoginResponse;
+import com.sidert.sidertmovil.models.MAutorizarCC;
 import com.sidert.sidertmovil.models.MCartera;
 import com.sidert.sidertmovil.models.MCatalogo;
 import com.sidert.sidertmovil.models.MDeviceToken;
@@ -12,11 +14,13 @@ import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MPrestamosAgfCc;
 import com.sidert.sidertmovil.models.MPrestamosRenovar;
+import com.sidert.sidertmovil.models.MReciboCC;
 import com.sidert.sidertmovil.models.MRenovacion;
 import com.sidert.sidertmovil.models.MRenovacionGrupal;
 import com.sidert.sidertmovil.models.MResAgf;
 import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
+import com.sidert.sidertmovil.models.MResConsultaCC;
 import com.sidert.sidertmovil.models.MResRecibo;
 import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
@@ -30,6 +34,7 @@ import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MSendImpresion;
 import com.sidert.sidertmovil.models.MSendRecibo;
 import com.sidert.sidertmovil.models.MSendSoporte;
+import com.sidert.sidertmovil.models.MSolicitudAutorizar;
 import com.sidert.sidertmovil.models.MSolicitudCancelacion;
 import com.sidert.sidertmovil.models.MSolicitudRechazoGpo;
 import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
@@ -74,6 +79,26 @@ public interface ManagerInterface {
     })
     @POST(WebServicesRoutes.WS_MAILBOX)
     Call<MailBoxResponse> setMailBox(@Body MailBoxPLD obj);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_AUTORIZAR_CC)
+    Call<List<MAutorizarCC>> getAutorizarCC(@Header("Authorization") String auth,
+                                      @Query("fechaInicio") String fechaInicio,
+                                      @Query("fechaFinal") String fechaFinal,
+                                      @Query("sucursal") String sucursal);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_CONSULTA_CC)
+    Call<MResConsultaCC> setConsultaCC(@Header("Authorization") String auth,
+                                       @Body ConsultaCC obj);
+
+
 
     @Headers({
             "Accept: application/json",
@@ -134,6 +159,16 @@ public interface ManagerInterface {
     @GET(WebServicesRoutes.WS_GET_CARTERA)
     Call<List<MCartera>> getCartera(@Query("usuario_id") String usuario_id,
                               @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST(WebServicesRoutes.WS_POST_MONTO_AUTORIZAR)
+    Call<MResponseDefault> postMontoAutorizado(@Query("tipo_solicitud") Long tipoSolicitud,
+                                             @Query("id_solicitud") Long idSolicitud,
+                                             @Query("monto_autorizar") Long montoAutorizar,
+                                             @Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",
@@ -285,9 +320,25 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET(WebServicesRoutes.WS_GET_SOLICITUDES_AUTORIZADAS)
+    Call<MSolicitudAutorizar> getSolicitudesAutorizadas(@Query("estatus") Long estatus,
+                                                        @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @GET(WebServicesRoutes.WS_GET_PRESTAMOS_GPO)
     Call<List<MPrestamoGpoRes>> getPrestamosGpo(@Path("id_grupo") int id_grupo,
                                              @Header("Authorization") String barer_token);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(WebServicesRoutes.WS_GET_ULTIMO_RECIBO_CC)
+    Call<MReciboCC> getUltimoReciboCc(@Query("usuario_id") Long usuarioId,
+                                    @Header("Authorization") String barer_token);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_SAVE_AGF)
@@ -308,6 +359,26 @@ public interface ManagerInterface {
                              @Part("tipo") RequestBody tipo,
                              @Part("fecha_termino") RequestBody fechaTermino,
                              @Part MultipartBody.Part foto);
+
+    @Multipart
+    @POST(WebServicesRoutes.WS_POST_SAVE_CC)
+    Call<MResAgf> guardarCC(@Header("Authorization") String token,
+                             @Part("producto") RequestBody producto,
+                             @Part("cliente_grupo") RequestBody clienteGpo,
+                             @Part("aval_representante") RequestBody avalRepresentante,
+                             @Part("curp") RequestBody curp,
+                             @Part("integrantes") RequestBody integrantes,
+                             @Part("monto") RequestBody monto,
+                             @Part("medio_pago_id") RequestBody medioPagoId,
+                             @Part("nombre_imagen") RequestBody nombreImagen,
+                             @Part("tipo_imagen") RequestBody tipoImagen,
+                             @Part("impreso") RequestBody impreso,
+                             @Part("folio") RequestBody folio,
+                             @Part("tipo_impresion") RequestBody tipoImpresion,
+                             @Part("fecha_impreso") RequestBody fechaImpreso,
+                             @Part("fecha_envio") RequestBody fechaEnvio,
+                             @Part("fecha_termino") RequestBody fechaTermino,
+                             @Part MultipartBody.Part evidencia);
 
     @Multipart
     @POST(WebServicesRoutes.WS_SAVE_GEO)

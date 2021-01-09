@@ -62,6 +62,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
+/**Clase para realizar las geolocalizaciones de integrantes*/
 public class GeoIntegrante extends AppCompatActivity {
 
     private Toolbar tbMain;
@@ -155,8 +156,11 @@ public class GeoIntegrante extends AppCompatActivity {
         mapUbicacion.onCreate(savedInstanceState);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        /**Obtiene los datos que se pasaron entre clases*/
         numSolicitud = getIntent().getStringExtra(NUM_SOLICITUD);
         idIntegrante = getIntent().getStringExtra(ID_INTEGRANTE);
+
+        /**Funcion para saber si existe alguna informacion de geolocalizacion*/
         initComponents();
 
         setSupportActionBar(tbMain);
@@ -164,6 +168,7 @@ public class GeoIntegrante extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Geolocalización");
 
+        /**EVento de click para Ubicacion GPS, Codigos Barras, Fotografia, Guardar informacion*/
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
@@ -171,6 +176,8 @@ public class GeoIntegrante extends AppCompatActivity {
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
 
 
+        /**Evento del pin en el mapa ya sea para volver a capturar la ubicacion o
+         * abrir la ubicacion con google maps en caso de que ya este guardada la geolocalizacion*/
         mapUbicacion.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -228,9 +235,11 @@ public class GeoIntegrante extends AppCompatActivity {
         });
     }
 
+    /**Evento para obtener la ubicacion del GPS*/
     private View.OnClickListener ibUbicacion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            /**Valida si el GPS se encuentra activo*/
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
                 Toast.makeText(ctx, "El GPS se encuentra desactivado", Toast.LENGTH_SHORT).show();
@@ -239,6 +248,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
+    /**Evento de lector de codigo de barras*/
     private View.OnClickListener ibCodigoBarras_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -247,6 +257,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
+    /**Evento de fotografia para evidencia*/
     private View.OnClickListener ibFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -256,6 +267,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
+    /**En caso de que ya fue capturada la fotografia, puede volver a capturar una nueva foto o poder visualizarla*/
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -313,6 +325,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
+    /**Evento para validar los campos para poder guardar*/
     private View.OnClickListener btnGuardar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -562,9 +575,13 @@ public class GeoIntegrante extends AppCompatActivity {
     }
 
     public void ValidarInformacion() {
+        /**Valida si se logro obtener la ubicacion o por lo menos se intento obtenerla*/
         if (latLngUbicacion != null || isUbicacion){
+            /**Valida si ya tomo la fotografia*/
             if (byteFotoFachada != null){
+                /**Si agrego el comentario*/
                 if (!etComentario.getText().toString().trim().isEmpty()){
+                    /**Mensaje de confirmacion para reactificar los datos y poder guardar*/
                     final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
                                 @Override
@@ -595,17 +612,18 @@ public class GeoIntegrante extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                setResult(RESULT_OK);
-                finish();
+            case android.R.id.home:/**Menu de retroceso del toolbar <- */
+                setResult(RESULT_OK); /**Se retorna un valor a la vista anterior*/
+                finish();/**Cierra la vista actual*/
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**Funcion de Back del boton de retroceso del dispositivo*/
     @Override
     public void onBackPressed() {
-        setResult(RESULT_OK);
-        super.onBackPressed();
+        setResult(RESULT_OK); /**Se retorna un valor a la vista anterior*/
+        super.onBackPressed();/**Cierra la vista actual*/
     }
 }

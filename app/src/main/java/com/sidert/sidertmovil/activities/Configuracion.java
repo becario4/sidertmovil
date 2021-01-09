@@ -78,49 +78,81 @@ public class Configuracion extends AppCompatActivity {
 
         session = new SessionManager(ctx);
 
+        /**Evento de click para sincronizar lo que esté pendiente de envio...gestiones, impresiones, cierre de dia....*/
         cvSincronizarFichas.setOnClickListener(cvSincronizarFichas_OnClick);
+        /**Evento de click para descargar las geolocalizaciones ya realizadas*/
         cvFichasGestionadas.setOnClickListener(cvFichasGestionadas_OnClick);
+        /**Evento de click para descargar catalogos no se ocupa pero hay que corregir*/
         cvCatalogos.setOnClickListener(cvCatalogos_OnClick);
+        /**Evento para para descargar el apk que se encuentra en el servidor*/
         cvDownloadApk.setOnClickListener(cvDownloadApk_OnClick);
+        /**Evento para abrir la configuracion de fecha y hora se encuentra oculto este boton*/
         cvFechaHora.setOnClickListener(cvFechaHora_OnClick);
     }
 
+    /**Evento para sincronizar lo que esta pendiente de envio*/
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
             if (NetworkStatus.haveNetworkConnection(ctx)) {
+                /**Deshabilita el boton para no repetir el envio*/
                 cvSincronizarFichas.setEnabled(false);
+                /**Hilo para deshabilitar el boton por 3 segundos y despues habilitarlo*/
                 Handler handler_home = new Handler();
                 handler_home.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        /**Valida si esta la sesion activa*/
                         if (session.getUser().get(6).equals("true")) {
+                            /**Genera un registro para log de sincronizacion*/
                             HashMap<Integer, String> params_sincro = new HashMap<>();
                             params_sincro.put(0, session.getUser().get(0));
                             params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
-
                             dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
 
+                            /**Procesos a enviar que esten en pendiente de envio*/
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                            /**Envia cierres de dia que esten en pendiente de envio*/
                             ss.SaveCierreDia(ctx, true);
+                            /**Envia geolocalizaciones que esten en pendiente de envio*/
                             ss.SaveGeolocalizacion(ctx, true);
+                            /**Envia respuestas de VIGENTE, COBRANZA y VENCIDA de individual y grupal que esten en pendiente de envio*/
                             ss.SaveRespuestaGestion(ctx, true);
+                            /**Envia impresiones que esten en pendiente de envio*/
                             ss.SendImpresionesVi(ctx, true);
+                            /**Envia reimpresiones que esten en pendiente de envio*/
                             ss.SendReimpresionesVi(ctx, true);
+                            /**Envia la ubicacion del asesor que esten en pendiente de envio*/
                             ss.SendTracker(ctx, true);
+                            /**Envia los reportes de mesa de ayuda que esten en pendiente de envio*/
                             ss.GetTickets(ctx, true);
 
+                            /**Esta funciones son de originacion y renovacion*/
+                            /**------------------------------------------------*/
+                            /**Envia la solicitudes que ya fueron autorizadas por el gerente colocando el monto autorizado*/
+                            //ss.MontoAutorizado(ctx, false);
+                            /**Envia las solicitudes de originacion individual*/
                             //ss.SendOriginacionInd (ctx, false);
+                            /**Envia las solicitudes de originacion grupal*/
                             //ss.SendOriginacionGpo(ctx, false);
+                            /**Envia las solicitudes de renovacion individual*/
                             //ss.SendRenovacionInd(ctx, false);
+                            /**Envia las solicitudes de renovacion grupal*/
                             //ss.SendRenovacionGpo(ctx, false);
-
-                            //ss.SendRecibos(ctx, true);
-                            //ss.GetUltimosRecibos(ctx);
-
+                            /**Obtiene las solicitudes de originacion y renovacion individual que fueron rechazadas por la admin*/
                             //ss.GetSolicitudesRechazadasInd(ctx, false);
+                            /**Obtiene las solicitudes de originacion y renovacion grupal que fueron rechazadas por la admin*/
                             //ss.GetSolicitudesRechazadasGpo(ctx, false);
 
+                            /**Envia las consultas Realizadas de circulo de credito*/
+                            //ss.SendConsultaCC(ctx, false);
+                            /**Envia las gestiones de cobros en efectivo de AGF y CC*/
+                            //ss.SendRecibos(ctx, false);
+                            /**Obtiene el ultimo folio de impresiones de AGF y CC*/
+                            //ss.GetUltimosRecibos(ctx);
+
+                            /**Funciones de Cancelancion de gestiones y obtencion de respuesta de cancelacion ya no se ocuparon*/
                             //ss.CancelGestiones(ctx, true);
                             //ss.SendCancelGestiones(ctx, true);
 
@@ -131,6 +163,7 @@ public class Configuracion extends AppCompatActivity {
 
             }
             else{
+                /**No tiene conexion a internet */
                 AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
                         R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                             @Override
@@ -146,6 +179,7 @@ public class Configuracion extends AppCompatActivity {
 
     };
 
+    /**Evento de obtencion de geolocalizaciones contestads*/
     private View.OnClickListener cvFichasGestionadas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -167,6 +201,7 @@ public class Configuracion extends AppCompatActivity {
         }
     };
 
+    /**Evento de actualziacion de catalogos pero algunas funciones tienen detalles no recuerdo cuales*/
     private View.OnClickListener cvCatalogos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -197,6 +232,7 @@ public class Configuracion extends AppCompatActivity {
         }
     };
 
+    /**Evento para descargar el apk abriendo un dialogFragment para validar por contraseña primero*/
     private View.OnClickListener cvDownloadApk_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -208,6 +244,7 @@ public class Configuracion extends AppCompatActivity {
         }
     };
 
+    /**Evento para abrir configuraciones para cambiar fecha y hora, se valida por contraseña*/
     private View.OnClickListener cvFechaHora_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -220,18 +257,23 @@ public class Configuracion extends AppCompatActivity {
     };
 
 
+    /**Funcion para comenzar a descargar el apk*/
     public void DownloadApk(String password){
 
+        /**Valida si tiene conexion a internet*/
         if (NetworkStatus.haveNetworkConnection(ctx)){
 
             final AlertDialog loading = Popups.showLoadingDialog(ctx,R.string.please_wait, R.string.loading_info);
             loading.show();
 
+            /**Interfaz para realizar peticiones*/
             ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_APK, ctx).create(ManagerInterface.class);
 
+            /**Prepara peticion para descargar el apk*/
             Call<MResponseDefault> call = api.downloadApk(password,
                     "Bearer "+ session.getUser().get(7));
 
+            /**Realiza la peticion para descargar el apk*/
             call.enqueue(new Callback<MResponseDefault>() {
                 @Override
                 public void onResponse(Call<MResponseDefault> call, Response<MResponseDefault> response) {
@@ -239,10 +281,12 @@ public class Configuracion extends AppCompatActivity {
                     MResponseDefault res = response.body();
                     switch (response.code()){
                         case 200:
+                            /**Si tiene permitido descargar comienza el proceso para descargar*/
                             Toast.makeText(ctx, "Comienza la descarga", Toast.LENGTH_SHORT).show();
-                            myReceiver.DownloadApk(session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS + WebServicesRoutes.WS_GET_DOWNLOAD_APK);
+                            myReceiver.DownloadApk(session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS + WebServicesRoutes.WS_GET_DOWNLOAD_APK_NEW);
                             break;
                         case 404:
+                            /**No tiene autorizado para descargar apk*/
                             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                             builder.setMessage("No está autorizado para descargar la nueva versión");
                             builder.setPositiveButton("Aceptar", null);
@@ -281,6 +325,7 @@ public class Configuracion extends AppCompatActivity {
         }
     }
 
+    /**Funcion para validar la contraseña y saber si se le da permiso para cambiar fecha y hora no se ocupa esta oculta esta opcion*/
     public void SettingsApp(String password){
         Log.e("Inicia", "valida la constraseña"+password);
         if (NetworkStatus.haveNetworkConnection(ctx)){

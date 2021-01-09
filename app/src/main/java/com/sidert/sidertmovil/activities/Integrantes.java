@@ -19,14 +19,12 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
+
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
-import static com.sidert.sidertmovil.utils.NameFragments.DIALOGIMPRIMIRRECIBOS;
 
+/**Clase donde se puede visualizar los integrantes de un grupo*/
 public class Integrantes extends AppCompatActivity {
 
     private Context ctx;
@@ -59,16 +57,19 @@ public class Integrantes extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         tvNombreGpo.setText(getIntent().getStringExtra(NOMBRE_GRUPO));
+        /**Obtiene los integrantes de acorde al id del prestamo*/
         GetIntegrantes(getIntent().getStringExtra(ID_PRESTAMO));
     }
 
+    /**Funcion para obtener un listado de integrantes de un prestamo*/
     private void GetIntegrantes(String id_prestamo){
-        Cursor row;
 
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_MIEMBROS_GPO, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
+        /**getRecords es una funcion que recibe el
+         * nombre de la tabla,
+         * un condicional pede ser vacio,
+         * un ordenamiento puede ser vacio,
+         * y los valores a buscar*/
+        Cursor row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY tipo_integrante DESC", new String[]{id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -90,6 +91,7 @@ public class Integrantes extends AppCompatActivity {
                 row.moveToNext();
             }
 
+            /**Se pasa el listado de integrantes al adaptador */
             adapter = new adapter_integrantes(ctx, data, new adapter_integrantes.Event() {
                 @Override
                 public void IntegranteOnClick(MIntegrante item) {

@@ -166,6 +166,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private Context ctx;
     private Context context;
 
+    private Miscellaneous m;
+    
     private String[] _dias_semana;
     private String[] _plazo;
     private String[] _frecuencia;
@@ -607,6 +609,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ctx = getApplicationContext();
         context = this;
 
+        m = new Miscellaneous();
+        
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
@@ -622,15 +626,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         _plazo                  = getResources().getStringArray(R.array.intervalo);
         _frecuencia             = getResources().getStringArray(R.array.lapso);
         _destino                = getResources().getStringArray(R.array.destino_prestamo);
-        _estudios               = Miscellaneous.GetNivelesEstudio(ctx);
-        _civil                  = Miscellaneous.GetEstadoCiviles(ctx);
-        _tipo_identificacion    = Miscellaneous.GetIdentificacion(ctx);
-        _medios_pago            = Miscellaneous.GetMediosPagoOri(ctx);
-        _parentesco             = Miscellaneous.GetParentesco(ctx, "PARENTESCO");
-        _parentesco_casa        = Miscellaneous.GetParentesco(ctx, "CASA");
-        _tipo_casa              = Miscellaneous.GetViviendaTipos(ctx);
-        _medio_contacto         = Miscellaneous.GetMediosContacto(ctx);
-        _destino_credito        = Miscellaneous.GetDestinosCredito(ctx);
+        _estudios               = m.GetNivelesEstudio(ctx);
+        _civil                  = m.GetEstadoCiviles(ctx);
+        _tipo_identificacion    = m.GetIdentificacion(ctx);
+        _medios_pago            = m.GetMediosPagoOri(ctx);
+        _parentesco             = m.GetParentesco(ctx, "PARENTESCO");
+        _parentesco_casa        = m.GetParentesco(ctx, "CASA");
+        _tipo_casa              = m.GetViviendaTipos(ctx);
+        _medio_contacto         = m.GetMediosContacto(ctx);
+        _destino_credito        = m.GetDestinosCredito(ctx);
         _dependientes           = getResources().getStringArray(R.array.dependientes_eco);
         _riesgo                 = getResources().getStringArray(R.array.clasificacion_riesgo);
         _confirmacion           = getResources().getStringArray(R.array.confirmacion);
@@ -957,14 +961,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //==========================================================================================
 
-        if (getIntent().getBooleanExtra("is_new",true)) {
-            openRegistroCliente();
-        }
-        else{
-            id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
-            initComponents(getIntent().getStringExtra("id_solicitud"));
-        }
-
         //=================================  FLOATING BUTTON  ======================================
         btnContinuar0 = findViewById(R.id.btnContinuar0);
         btnContinuar1 = findViewById(R.id.btnContinuar1);
@@ -1022,6 +1018,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivError10 = findViewById(R.id.ivError10);
         //=========================================================
 
+        if (getIntent().getBooleanExtra("is_new",true)) {
+            openRegistroCliente();
+        }
+        else{
+            id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
+            initComponents(getIntent().getStringExtra("id_solicitud"));
+        }
+
         //================================= FLOATING BUTTON LISTENER  ==============================
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
         btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
@@ -1076,7 +1080,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etMontoPrestamo.getText().length();
+                    inilen = m.GetStr(etMontoPrestamo).length();
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etMontoPrestamo.getSelectionStart();
@@ -1085,13 +1089,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etMontoPrestamo.setText(dfnd.format(n));
                     }
-                    endlen = etMontoPrestamo.getText().length();
+                    endlen = m.GetStr(etMontoPrestamo).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etMontoPrestamo.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etMontoPrestamo).length()) {
                         etMontoPrestamo.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etMontoPrestamo.setSelection(etMontoPrestamo.getText().length() - 1);
+                        etMontoPrestamo.setSelection(m.GetStr(etMontoPrestamo).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -1107,7 +1111,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etMontoPrestamo.setError("La cantidad no corresponde a un monto de crédito válido");
                     }else{
                         Update("monto_prestamo", TBL_CREDITO_IND, s.toString().trim().replace(",",""));
-                        tvCantidadLetra.setText((Miscellaneous.cantidadLetra(s.toString().replace(",","")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
+                        tvCantidadLetra.setText((m.cantidadLetra(s.toString().replace(",","")).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
                         if (Integer.parseInt(s.toString().replace(",","")) > 30000){
                             llPropiedades.setVisibility(View.VISIBLE);
                         }
@@ -1143,9 +1147,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 HashMap<Integer, String> params = new HashMap<>();
                 if (s.length()> 0){
                     params.put(0, s.toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1154,17 +1158,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
                 else{
                     params.put(0, "");
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1173,11 +1177,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1196,10 +1200,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             public void afterTextChanged(Editable s) {
                 HashMap<Integer, String> params = new HashMap<>();
                 if (s.length()> 0){
-                    params.put(0, etNombreCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
                     params.put(1, s.toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1208,17 +1212,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
                 else{
-                    params.put(0, etNombreCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
                     params.put(1, "");
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1227,11 +1231,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1250,10 +1254,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             public void afterTextChanged(Editable s) {
                 HashMap<Integer, String> params = new HashMap<>();
                 if (s.length()> 0){
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
                     params.put(2, s.toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1262,17 +1266,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
                 else{
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
                     params.put(2, "");
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -1281,11 +1285,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpCli.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -1313,12 +1317,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else{
                         Update("curp", TBL_CLIENTE_IND, s.toString().trim().toUpperCase());
                         if (s.toString().trim().length() >= 10) {
-                            tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), etNombreCli.getText().toString().trim(), etApPaternoCli.getText().toString().trim(), etApMaternoCli.getText().toString().trim()));
-                            Update("rfc", TBL_CLIENTE_IND, tvRfcCli.getText().toString().trim().toUpperCase());
+                            tvRfcCli.setText(m.GenerarRFC(s.toString().substring(0, 10), m.GetStr(etNombreCli), m.GetStr(etApPaternoCli), m.GetStr(etApMaternoCli)));
+                            Update("rfc", TBL_CLIENTE_IND, m.GetStr(tvRfcCli));
                         }
                         else{
                             tvRfcCli.setText("");
-                            Update("rfc", TBL_CLIENTE_IND, tvRfcCli.getText().toString().trim().toUpperCase());
+                            Update("rfc", TBL_CLIENTE_IND, m.GetStr(tvRfcCli));
                         }
 
                     }
@@ -1330,31 +1334,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 }
             }
         });
-        /*etCurpIdCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 2){
-                    if (!validator.validate(etCurpIdCli, new String[]{validator.REQUIRED, validator.CURP_ID})) {
-                        if (Miscellaneous.CurpValidador(tvCurpCli.getText() + etCurpIdCli.getText().toString().trim().toUpperCase()))
-                            Update("curp_digito_veri", TBL_CLIENTE_IND, e.toString());
-                        else
-                            Update("curp_digito_veri", TBL_CLIENTE_IND, "");
-                    }
-                }
-                else
-                    Update("curp_digito_veri", TBL_CLIENTE_IND, "");
-            }
-        });*/
         tvOcupacionCli.setOnClickListener(tvOcupacionClie_OnClick);
         tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
         etNumIdentifCli.addTextChangedListener(new TextWatcher() {
@@ -1589,7 +1569,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (s.length() > 0){
                     if (s.length() == 10) {
                         etTelCasaCli.setError(null);
-                        Update("tel_casa", TBL_CLIENTE_IND, etTelCasaCli.getText().toString().trim());
+                        Update("tel_casa", TBL_CLIENTE_IND, m.GetStr(etTelCasaCli));
                     }
                     else {
                         Update("tel_casa", TBL_CLIENTE_IND, "");
@@ -2026,7 +2006,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenCony.getText().length();
+                    inilen = m.GetStr(etIngMenCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenCony.getSelectionStart();
@@ -2035,13 +2015,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etIngMenCony.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenCony.getText().length();
+                    endlen = m.GetStr(etIngMenCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenCony).length()) {
                         etIngMenCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenCony.setSelection(etIngMenCony.getText().length() - 1);
+                        etIngMenCony.setSelection(m.GetStr(etIngMenCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2079,7 +2059,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastoMenCony.getText().length();
+                    inilen = m.GetStr(etGastoMenCony).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastoMenCony.getSelectionStart();
@@ -2088,13 +2068,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastoMenCony.setText(dfnd.format(n));
                     }
-                    endlen = etGastoMenCony.getText().length();
+                    endlen = m.GetStr(etGastoMenCony).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastoMenCony.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastoMenCony).length()) {
                         etGastoMenCony.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastoMenCony.setSelection(etGastoMenCony.getText().length() - 1);
+                        etGastoMenCony.setSelection(m.GetStr(etGastoMenCony).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2443,7 +2423,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             @Override
             public void afterTextChanged(Editable e) {
                 if (e.length() > 0){
-                    if (Integer.parseInt(etAntiguedadNeg.getText().toString().trim()) > 0){
+                    if (Integer.parseInt(m.GetStr(etAntiguedadNeg)) > 0){
                         Update("antiguedad", TBL_NEGOCIO_IND, e.toString());
                     }
                     else {
@@ -2477,7 +2457,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenNeg.getText().length();
+                    inilen = m.GetStr(etIngMenNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenNeg.getSelectionStart();
@@ -2486,13 +2466,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etIngMenNeg.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenNeg.getText().length();
+                    endlen = m.GetStr(etIngMenNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenNeg).length()) {
                         etIngMenNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenNeg.setSelection(etIngMenNeg.getText().length() - 1);
+                        etIngMenNeg.setSelection(m.GetStr(etIngMenNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2532,7 +2512,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etOtrosIngNeg.getText().length();
+                    inilen = m.GetStr(etOtrosIngNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etOtrosIngNeg.getSelectionStart();
@@ -2541,13 +2521,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etOtrosIngNeg.setText(dfnd.format(n));
                     }
-                    endlen = etOtrosIngNeg.getText().length();
+                    endlen = m.GetStr(etOtrosIngNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etOtrosIngNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etOtrosIngNeg).length()) {
                         etOtrosIngNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etOtrosIngNeg.setSelection(etOtrosIngNeg.getText().length() - 1);
+                        etOtrosIngNeg.setSelection(m.GetStr(etOtrosIngNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2586,7 +2566,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosMenNeg.getText().length();
+                    inilen = m.GetStr(etGastosMenNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosMenNeg.getSelectionStart();
@@ -2595,13 +2575,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosMenNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosMenNeg.getText().length();
+                    endlen = m.GetStr(etGastosMenNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosMenNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosMenNeg).length()) {
                         etGastosMenNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosMenNeg.setSelection(etGastosMenNeg.getText().length() - 1);
+                        etGastosMenNeg.setSelection(m.GetStr(etGastosMenNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2640,7 +2620,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosAguaNeg.getText().length();
+                    inilen = m.GetStr(etGastosAguaNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosAguaNeg.getSelectionStart();
@@ -2649,13 +2629,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosAguaNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosAguaNeg.getText().length();
+                    endlen = m.GetStr(etGastosAguaNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosAguaNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosAguaNeg).length()) {
                         etGastosAguaNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosAguaNeg.setSelection(etGastosAguaNeg.getText().length() - 1);
+                        etGastosAguaNeg.setSelection(m.GetStr(etGastosAguaNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2694,7 +2674,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosLuzNeg.getText().length();
+                    inilen = m.GetStr(etGastosLuzNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosLuzNeg.getSelectionStart();
@@ -2703,13 +2683,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosLuzNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosLuzNeg.getText().length();
+                    endlen = m.GetStr(etGastosLuzNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosLuzNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosLuzNeg).length()) {
                         etGastosLuzNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosLuzNeg.setSelection(etGastosLuzNeg.getText().length() - 1);
+                        etGastosLuzNeg.setSelection(m.GetStr(etGastosLuzNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2748,7 +2728,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosTelNeg.getText().length();
+                    inilen = m.GetStr(etGastosTelNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosTelNeg.getSelectionStart();
@@ -2757,13 +2737,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosTelNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosTelNeg.getText().length();
+                    endlen = m.GetStr(etGastosTelNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosTelNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosTelNeg).length()) {
                         etGastosTelNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosTelNeg.setSelection(etGastosTelNeg.getText().length() - 1);
+                        etGastosTelNeg.setSelection(m.GetStr(etGastosTelNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2802,7 +2782,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosRentaNeg.getText().length();
+                    inilen = m.GetStr(etGastosRentaNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosRentaNeg.getSelectionStart();
@@ -2811,13 +2791,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosRentaNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosRentaNeg.getText().length();
+                    endlen = m.GetStr(etGastosRentaNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosRentaNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosRentaNeg).length()) {
                         etGastosRentaNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosRentaNeg.setSelection(etGastosRentaNeg.getText().length() - 1);
+                        etGastosRentaNeg.setSelection(m.GetStr(etGastosRentaNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2856,7 +2836,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosOtrosNeg.getText().length();
+                    inilen = m.GetStr(etGastosOtrosNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosOtrosNeg.getSelectionStart();
@@ -2865,13 +2845,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosOtrosNeg.setText(dfnd.format(n));
                     }
-                    endlen = etGastosOtrosNeg.getText().length();
+                    endlen = m.GetStr(etGastosOtrosNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosOtrosNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosOtrosNeg).length()) {
                         etGastosOtrosNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosOtrosNeg.setSelection(etGastosOtrosNeg.getText().length() - 1);
+                        etGastosOtrosNeg.setSelection(m.GetStr(etGastosOtrosNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2930,7 +2910,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etCapacidadPagoNeg.getText().length();
+                    inilen = m.GetStr(etCapacidadPagoNeg).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCapacidadPagoNeg.getSelectionStart();
@@ -2939,13 +2919,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etCapacidadPagoNeg.setText(dfnd.format(n));
                     }
-                    endlen = etCapacidadPagoNeg.getText().length();
+                    endlen = m.GetStr(etCapacidadPagoNeg).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCapacidadPagoNeg.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCapacidadPagoNeg).length()) {
                         etCapacidadPagoNeg.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoNeg.setSelection(etCapacidadPagoNeg.getText().length() - 1);
+                        etCapacidadPagoNeg.setSelection(m.GetStr(etCapacidadPagoNeg).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -2953,11 +2933,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     // do nothing?
                 }
 
-                if (!tvMontoMaxNeg.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")) > 0) {
+                if (!m.GetStr(tvMontoMaxNeg).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")) > 0) {
                     if (e.length() > 0)
                         try {
                             if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")))
+                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")))
                                     Update("capacidad_pago", TBL_NEGOCIO_IND, e.toString().trim().replace(",", ""));
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago","NEGOCIO");
@@ -3041,9 +3021,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (e.length()> 0){
                     Update("nombre", TBL_AVAL_IND, e.toString().trim().toUpperCase());
                     params.put(0, e.toString());
-                    params.put(1, etApPaternoAval.getText().toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoAval));
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3052,18 +3032,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
                 else{
                     Update("nombre", TBL_AVAL_IND, "");
                     params.put(0, "");
-                    params.put(1, etApPaternoAval.getText().toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(1, m.GetStr(etApPaternoAval));
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3072,11 +3052,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3096,10 +3076,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 HashMap<Integer, String> params = new HashMap<>();
                 if (e.length()> 0){
                     Update("paterno", TBL_AVAL_IND, e.toString().toUpperCase());
-                    params.put(0, etNombreAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
                     params.put(1, e.toString());
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3108,18 +3088,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
                 else{
                     Update("paterno", TBL_AVAL_IND, "");
-                    params.put(0, etNombreAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
                     params.put(1, "");
-                    params.put(2, etApMaternoAval.getText().toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(2, m.GetStr(etApMaternoAval));
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3128,11 +3108,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3152,10 +3132,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 HashMap<Integer, String> params = new HashMap<>();
                 if (e.length()> 0){
                     Update("materno", TBL_AVAL_IND, e.toString());
-                    params.put(0, etNombreAval.getText().toString());
-                    params.put(1, etApPaternoAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
+                    params.put(1, m.GetStr(etApPaternoAval));
                     params.put(2, e.toString());
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3164,18 +3144,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval).trim());
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
                 else{
                     Update("materno", TBL_AVAL_IND, "");
-                    params.put(0, etNombreAval.getText().toString());
-                    params.put(1, etApPaternoAval.getText().toString());
+                    params.put(0, m.GetStr(etNombreAval));
+                    params.put(1, m.GetStr(etApPaternoAval));
                     params.put(2, "");
-                    params.put(3, tvFechaNacAval.getText().toString());
+                    params.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -3184,11 +3164,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         params.put(5,"");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                    etCurpAval.setText(m.GenerarCurp(params));
                 }
             }
         });
@@ -3216,17 +3196,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else {
                         Update("curp", TBL_AVAL_IND, e.toString().trim().toUpperCase());
                         if (e.toString().length() > 10) {
-                            tvRfcAval.setText(Miscellaneous.GenerarRFC(e.toString().substring(0, 10), etNombreAval.getText().toString().trim().toUpperCase(),etApPaternoAval.getText().toString().trim().toUpperCase(),etApMaternoAval.getText().toString().trim().toUpperCase()));
-                            Update("rfc", TBL_AVAL_IND, tvRfcAval.getText().toString().trim().toUpperCase());
+                            tvRfcAval.setText(m.GenerarRFC(e.toString().substring(0, 10), m.GetStr(etNombreAval), m.GetStr(etApPaternoAval), m.GetStr(etApMaternoAval)));
+                            Update("rfc", TBL_AVAL_IND, m.GetStr(tvRfcAval));
                         }
                         else{
                             tvRfcAval.setText("");
-                            Update("rfc", TBL_AVAL_IND, tvRfcAval.getText().toString().trim().toUpperCase());
+                            Update("rfc", TBL_AVAL_IND, m.GetStr(tvRfcAval));
                         }
-                        /*ContentValues cv = new ContentValues();
-                        cv.put("rfc",tvRfcAval.getText().toString().trim().toUpperCase());
-                        cv.put("curp",e.toString().trim().toUpperCase());
-                        db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});*/
+
                     }
 
                 }
@@ -3237,31 +3214,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 }
             }
         });
-        /*etCurpIdAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 2){
-                    if (!validator.validate(etCurpIdAval, new String[]{validator.REQUIRED, validator.CURP_ID})) {
-                        if (Miscellaneous.CurpValidador(tvCurpAval.getText() + etCurpIdAval.getText().toString().trim().toUpperCase()))
-                            Update("curp_digito", TBL_AVAL_IND, e.toString());
-                        else
-                            Update("curp_digito", TBL_AVAL_IND, "");
-                    }
-                }
-                else
-                    Update("curp_digito", TBL_AVAL_IND, "");
-            }
-        });*/
         tvParentescoAval.setOnClickListener(tvParentescoAval_OnClick);
         tvTipoIdentificacionAval.setOnClickListener(tvTipoIdentificacionAval_OnClick);
         etNumIdentifAval.addTextChangedListener(new TextWatcher() {
@@ -3560,7 +3513,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngMenAval.getText().length();
+                    inilen = m.GetStr(etIngMenAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngMenAval.getSelectionStart();
@@ -3569,13 +3522,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etIngMenAval.setText(dfnd.format(n));
                     }
-                    endlen = etIngMenAval.getText().length();
+                    endlen = m.GetStr(etIngMenAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngMenAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngMenAval).length()) {
                         etIngMenAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngMenAval.setSelection(etIngMenAval.getText().length() - 1);
+                        etIngMenAval.setSelection(m.GetStr(etIngMenAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3615,7 +3568,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etIngOtrosAval.getText().length();
+                    inilen = m.GetStr(etIngOtrosAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etIngOtrosAval.getSelectionStart();
@@ -3624,13 +3577,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etIngOtrosAval.setText(dfnd.format(n));
                     }
-                    endlen = etIngOtrosAval.getText().length();
+                    endlen = m.GetStr(etIngOtrosAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etIngOtrosAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etIngOtrosAval).length()) {
                         etIngOtrosAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etIngOtrosAval.setSelection(etIngOtrosAval.getText().length() - 1);
+                        etIngOtrosAval.setSelection(m.GetStr(etIngOtrosAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3670,7 +3623,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosSemAval.getText().length();
+                    inilen = m.GetStr(etGastosSemAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosSemAval.getSelectionStart();
@@ -3679,13 +3632,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosSemAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosSemAval.getText().length();
+                    endlen = m.GetStr(etGastosSemAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosSemAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosSemAval).length()) {
                         etGastosSemAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosSemAval.setSelection(etGastosSemAval.getText().length() - 1);
+                        etGastosSemAval.setSelection(m.GetStr(etGastosSemAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3725,7 +3678,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosAguaAval.getText().length();
+                    inilen = m.GetStr(etGastosAguaAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosAguaAval.getSelectionStart();
@@ -3734,13 +3687,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosAguaAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosAguaAval.getText().length();
+                    endlen = m.GetStr(etGastosAguaAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosAguaAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosAguaAval).length()) {
                         etGastosAguaAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosAguaAval.setSelection(etGastosAguaAval.getText().length() - 1);
+                        etGastosAguaAval.setSelection(m.GetStr(etGastosAguaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3780,7 +3733,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosLuzAval.getText().length();
+                    inilen = m.GetStr(etGastosLuzAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosLuzAval.getSelectionStart();
@@ -3789,13 +3742,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosLuzAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosLuzAval.getText().length();
+                    endlen = m.GetStr(etGastosLuzAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosLuzAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosLuzAval).length()) {
                         etGastosLuzAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosLuzAval.setSelection(etGastosLuzAval.getText().length() - 1);
+                        etGastosLuzAval.setSelection(m.GetStr(etGastosLuzAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3835,7 +3788,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosTelAval.getText().length();
+                    inilen = m.GetStr(etGastosTelAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosTelAval.getSelectionStart();
@@ -3844,13 +3797,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosTelAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosTelAval.getText().length();
+                    endlen = m.GetStr(etGastosTelAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosTelAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosTelAval).length()) {
                         etGastosTelAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosTelAval.setSelection(etGastosTelAval.getText().length() - 1);
+                        etGastosTelAval.setSelection(m.GetStr(etGastosTelAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3890,7 +3843,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosRentaAval.getText().length();
+                    inilen = m.GetStr(etGastosRentaAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosRentaAval.getSelectionStart();
@@ -3899,13 +3852,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosRentaAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosRentaAval.getText().length();
+                    endlen = m.GetStr(etGastosRentaAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosRentaAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosRentaAval).length()) {
                         etGastosRentaAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosRentaAval.setSelection(etGastosRentaAval.getText().length() - 1);
+                        etGastosRentaAval.setSelection(m.GetStr(etGastosRentaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -3945,7 +3898,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etGastosOtrosAval.getText().length();
+                    inilen = m.GetStr(etGastosOtrosAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etGastosOtrosAval.getSelectionStart();
@@ -3954,13 +3907,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etGastosOtrosAval.setText(dfnd.format(n));
                     }
-                    endlen = etGastosOtrosAval.getText().length();
+                    endlen = m.GetStr(etGastosOtrosAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etGastosOtrosAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etGastosOtrosAval).length()) {
                         etGastosOtrosAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etGastosOtrosAval.setSelection(etGastosOtrosAval.getText().length() - 1);
+                        etGastosOtrosAval.setSelection(m.GetStr(etGastosOtrosAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -4020,7 +3973,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                 try {
                     int inilen, endlen;
-                    inilen = etCapacidadPagoAval.getText().length();
+                    inilen = m.GetStr(etCapacidadPagoAval).length();
                     String v = e.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etCapacidadPagoAval.getSelectionStart();
@@ -4029,13 +3982,13 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     } else {
                         etCapacidadPagoAval.setText(dfnd.format(n));
                     }
-                    endlen = etCapacidadPagoAval.getText().length();
+                    endlen = m.GetStr(etCapacidadPagoAval).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= etCapacidadPagoAval.getText().length()) {
+                    if (sel > 0 && sel <= m.GetStr(etCapacidadPagoAval).length()) {
                         etCapacidadPagoAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoAval.setSelection(etGastosRentaAval.getText().length() - 1);
+                        etCapacidadPagoAval.setSelection(m.GetStr(etGastosRentaAval).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -4043,11 +3996,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     // do nothing?
                 }
 
-                if (!tvMontoMaxAval.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxAval.getText().toString().trim().replace(",","")) > 0) {
+                if (!m.GetStr(tvMontoMaxAval).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",","")) > 0) {
                     if (e.length() > 0)
                         try {
                             if (Double.parseDouble(e.toString()) > 0 )
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxAval.getText().toString().trim().replace(",","")))
+                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",","")))
                                     Update("capacidad_pagos", TBL_AVAL_IND, e.toString().trim().replace(",", ""));
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago","AVAL");
@@ -4524,44 +4477,44 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     HashMap<Integer, String> params = new HashMap<>();
                     if (checkedId == R.id.rbHombre) {
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "Hombre");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND, "0");
                     } else if (checkedId == R.id.rbMujer) {
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "Mujer");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND, "1");
                     }
                     else {
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
                         params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpCli.setText(m.GenerarCurp(params));
                         Update("genero", TBL_CLIENTE_IND, "2");
                     }
                 }
@@ -4591,49 +4544,49 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     tvGeneroAval.setError(null);
                     if (checkedId == R.id.rbHombre) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "Hombre");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
                         Update("genero", TBL_AVAL_IND, "0");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpAval.setText(m.GenerarCurp(params));
                     } else if (checkedId == R.id.rbMujer) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "Mujer");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
 
                         Update("genero", TBL_AVAL_IND, "1");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpAval.setText(m.GenerarCurp(params));
                     }
                     else {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
                         params.put(4, "");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5, "");
 
                         Update("genero", TBL_AVAL_IND, "2");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+                        etCurpAval.setText(m.GenerarCurp(params));
                     }
                 }
             }
@@ -4747,7 +4700,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvPlazo.setError(null);
                                 tvPlazo.setText(_plazo[position]);
-                                Update("plazo", TBL_CREDITO_IND, tvPlazo.getText().toString().trim().toUpperCase());
+                                Update("plazo", TBL_CREDITO_IND, m.GetStr(tvPlazo));
                             }
                         });
                 builder.create();
@@ -4766,7 +4719,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFrecuencia.setError(null);
                                 tvFrecuencia.setText(_frecuencia[position]);
-                                Update("periodicidad", TBL_CREDITO_IND, tvFrecuencia.getText().toString().trim().toUpperCase());
+                                Update("periodicidad", TBL_CREDITO_IND, m.GetStr(tvFrecuencia));
                                 switch (position){
                                     case 0:
                                         tvNumOperacionNeg.setText("4");
@@ -4800,9 +4753,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
                 b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
                 b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(Constants.YEAR_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(0,4))));
-                b.putInt(Constants.MONTH_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaDesembolso.getText().toString().substring(5,7))-1)));
-                b.putInt(Constants.DAY_CURRENT, ((tvFechaDesembolso.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaDesembolso.getText().toString().substring(8,10))));
+                b.putInt(Constants.YEAR_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(0,4))));
+                b.putInt(Constants.MONTH_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(5,7))-1)));
+                b.putInt(Constants.DAY_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(8,10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 1);
                 b.putBoolean(FECHAS_POST, true);
@@ -4822,7 +4775,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDestino.setError(null);
                                 tvDestino.setText(_destino[position]);
-                                Update("destino", TBL_CREDITO_IND, tvDestino.getText().toString().trim().toUpperCase());
+                                Update("destino", TBL_CREDITO_IND, m.GetStr(tvDestino));
                             }
                         });
                 builder.create();
@@ -4841,7 +4794,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvRiesgo.setError(null);
                                 tvRiesgo.setText(_riesgo[position]);
-                                Update("clasificacion_riesgo", TBL_CREDITO_IND, tvRiesgo.getText().toString().trim().toUpperCase());
+                                Update("clasificacion_riesgo", TBL_CREDITO_IND, m.GetStr(tvRiesgo));
                             }
                         });
                 builder.create();
@@ -4860,9 +4813,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
                 b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
                 b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(Constants.YEAR_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaNacCli.getText().toString().substring(0,4))));
-                b.putInt(Constants.MONTH_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaNacCli.getText().toString().substring(5,7))-1)));
-                b.putInt(Constants.DAY_CURRENT, ((tvFechaNacCli.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaNacCli.getText().toString().substring(8,10))));
+                b.putInt(Constants.YEAR_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(m.GetStr(tvFechaNacCli).substring(0,4))));
+                b.putInt(Constants.MONTH_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(m.GetStr(tvFechaNacCli).substring(5,7))-1)));
+                b.putInt(Constants.DAY_CURRENT, ((m.GetStr(tvFechaNacCli).isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(m.GetStr(tvFechaNacCli).substring(8,10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 2);
                 b.putBoolean(FECHAS_POST, false);
@@ -4906,7 +4859,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_estados = new Intent(context, Catalogos.class);
-                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_estados.putExtra(CATALOGO, ESTADOS);
                 i_estados.putExtra(REQUEST_CODE, REQUEST_CODE_ESTADO_NAC);
                 startActivityForResult(i_estados, REQUEST_CODE_ESTADO_NAC);
@@ -4919,9 +4872,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpCli.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpCli));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CLIE);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CLIE);
             }
@@ -4932,11 +4885,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditCli) {
-                if (!tvMunicipioCli.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCli.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCli).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CLIE);
@@ -4969,7 +4922,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 tvEstudiosCli.setError(null);
                                 tvEstudiosCli.setText(_estudios[position]);
                                 tvEstudiosCli.requestFocus();
-                                Update("nivel_estudio", TBL_CLIENTE_IND, tvEstudiosCli.getText().toString().trim().toUpperCase());
+                                Update("nivel_estudio", TBL_CLIENTE_IND, m.GetStr(tvEstudiosCli));
                             }
                         });
                 builder.create();
@@ -4998,7 +4951,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                     llConyuge.setVisibility(View.GONE);
                                     llBienes.setVisibility(View.GONE);
                                 }
-                                Update("estado_civil", TBL_CLIENTE_IND, tvEstadoCivilCli.getText().toString().trim().toUpperCase());
+                                Update("estado_civil", TBL_CLIENTE_IND, m.GetStr(tvEstadoCivilCli));
                             }
                         });
                 builder.create();
@@ -5031,7 +4984,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                         llCasaOtroCli.setVisibility(View.GONE);
                                         break;
                                 }
-                                Update("tipo_vivienda", TBL_CLIENTE_IND, tvTipoCasaCli.getText().toString().trim().toUpperCase());
+                                Update("tipo_vivienda", TBL_CLIENTE_IND, m.GetStr(tvTipoCasaCli));
                             }
                         });
                 builder.create();
@@ -5050,7 +5003,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvCasaFamiliar.setError(null);
                                 tvCasaFamiliar.setText(_parentesco[position]);
-                                Update("parentesco", TBL_CLIENTE_IND, tvCasaFamiliar.getText().toString().trim().toUpperCase());
+                                Update("parentesco", TBL_CLIENTE_IND, m.GetStr(tvCasaFamiliar));
                             }
                         });
                 builder.create();
@@ -5069,7 +5022,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvDependientes.setError(null);
                                 tvDependientes.setText(_dependientes[position]);
-                                Update("dependientes", TBL_CLIENTE_IND, tvDependientes.getText().toString().trim().toUpperCase());
+                                Update("dependientes", TBL_CLIENTE_IND, m.GetStr(tvDependientes));
                             }
                         });
                 builder.create();
@@ -5088,7 +5041,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvEstadoCuenta.setError(null);
                                 tvEstadoCuenta.setText(_confirmacion[position]);
-                                Update("estado_cuenta", TBL_CLIENTE_IND, tvEstadoCuenta.getText().toString().trim().toUpperCase());
+                                Update("estado_cuenta", TBL_CLIENTE_IND, m.GetStr(tvEstadoCuenta));
                             }
                         });
                 builder.create();
@@ -5107,7 +5060,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvEnteroNosotros.setError(null);
                                 tvEnteroNosotros.setText(_medio_contacto[position]);
-                                Update("medio_contacto", TBL_CLIENTE_IND, tvEnteroNosotros.getText().toString().trim().toUpperCase());
+                                Update("medio_contacto", TBL_CLIENTE_IND, m.GetStr(tvEnteroNosotros));
                             }
                         });
                 builder.create();
@@ -5121,9 +5074,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpAval.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpAval));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_AVAL);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_AVAL);
             }
@@ -5134,11 +5087,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditAva) {
-                if (!tvMunicipioAval.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioAval.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioAval).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioAval)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_AVAL);
@@ -5192,7 +5145,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                         llParentescoFamAval.setVisibility(View.GONE);
                                         break;
                                 }*/
-                                Update("tipo_vivienda", TBL_AVAL_IND, tvTipoCasaAval.getText().toString().trim().toUpperCase());
+                                Update("tipo_vivienda", TBL_AVAL_IND, m.GetStr(tvTipoCasaAval));
                             }
                         });
                 builder.create();
@@ -5211,7 +5164,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvParentescoAval.setError(null);
                                 tvParentescoAval.setText(_parentesco[position]);
-                                Update("parentesco_cliente", TBL_AVAL_IND, tvParentescoAval.getText().toString().trim().toUpperCase());
+                                Update("parentesco_cliente", TBL_AVAL_IND, m.GetStr(tvParentescoAval));
                             }
                         });
                 builder.create();
@@ -5230,7 +5183,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFamiliarAval.setError(null);
                                 tvFamiliarAval.setText(_parentesco_casa[position]);
-                                Update("parentesco", TBL_AVAL_IND, tvFamiliarAval.getText().toString().trim().toUpperCase());
+                                Update("parentesco", TBL_AVAL_IND, m.GetStr(tvFamiliarAval));
                             }
                         });
                 builder.create();
@@ -5269,9 +5222,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 tvMediosPagoAval.setError(null);
                                 tvMediosPagoAval.setText(medios);
-                                Update("medio_pago", TBL_AVAL_IND, tvMediosPagoAval.getText().toString().trim().toUpperCase());
+                                Update("medio_pago", TBL_AVAL_IND, m.GetStr(tvMediosPagoAval));
 
-                                if (tvMediosPagoAval.getText().toString().trim().toUpperCase().contains("OTROS")){
+                                if (m.GetStr(tvMediosPagoAval).contains("OTROS")){
                                     etOtroMedioPagoAval.setVisibility(View.VISIBLE);
                                 }
                                 else{
@@ -5319,9 +5272,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 tvActivosObservables.setError(null);
                                 tvActivosObservables.setText(medios);
-                                Update("activos_observables", TBL_AVAL_IND, tvActivosObservables.getText().toString().trim().toUpperCase());
+                                Update("activos_observables", TBL_AVAL_IND, m.GetStr(tvActivosObservables));
 
-                                if (tvMediosPagoAval.getText().toString().trim().toUpperCase().contains("OTRO")){
+                                if (m.GetStr(tvMediosPagoAval).contains("OTRO")){
                                     etOtroMedioPagoAval.setVisibility(View.VISIBLE);
                                 }
                                 else{
@@ -5363,9 +5316,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIAS));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIAS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpNeg.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpNeg));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_NEG);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_NEG);
             }
@@ -5377,7 +5330,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_NEG);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_NEG);
@@ -5389,11 +5342,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditNeg) {
-                if (!tvMunicipioNeg.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioNeg.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_NEG);
@@ -5440,7 +5393,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditCli) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_CLIE);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_CLIE);
@@ -5458,7 +5411,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvTipoIdentificacion.setError(null);
                                 tvTipoIdentificacion.setText(_tipo_identificacion[position]);
-                                Update("tipo_identificacion", TBL_CLIENTE_IND, tvTipoIdentificacion.getText().toString().trim().toUpperCase());
+                                Update("tipo_identificacion", TBL_CLIENTE_IND, m.GetStr(tvTipoIdentificacion));
                             }
                         });
                 builder.create();
@@ -5477,7 +5430,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             public void onClick(DialogInterface dialog, int position) {
                                 tvTipoIdentificacionAval.setError(null);
                                 tvTipoIdentificacionAval.setText(_tipo_identificacion[position]);
-                                Update("tipo_identificacion", TBL_AVAL_IND, tvTipoIdentificacionAval.getText().toString().trim().toUpperCase());
+                                Update("tipo_identificacion", TBL_AVAL_IND, m.GetStr(tvTipoIdentificacionAval));
                             }
                         });
                 builder.create();
@@ -5491,7 +5444,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditCon) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_CONY);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_CONY);
@@ -5504,9 +5457,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditCon) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpCony.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpCony));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_CONY);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_CONY);
             }
@@ -5517,11 +5470,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditCon) {
-                if (!tvMunicipioCony.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCony.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioCony).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_CONY);
@@ -5548,7 +5501,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditNeg) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(SECTORES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(SECTORES));
                 i_ocupaciones.putExtra(CATALOGO, SECTORES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_ACTIVIDAD_NEG);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_ACTIVIDAD_NEG);
@@ -5614,16 +5567,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 }
                                 tvMediosPagoNeg.setError(null);
                                 tvMediosPagoNeg.setText(medios);
-                                Update("medio_pago", TBL_NEGOCIO_IND, tvMediosPagoNeg.getText().toString().trim().toUpperCase());
+                                Update("medio_pago", TBL_NEGOCIO_IND, m.GetStr(tvMediosPagoNeg));
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")){
                                     llOperacionesEfectivo.setVisibility(View.VISIBLE);
                                 }
                                 else{
                                     llOperacionesEfectivo.setVisibility(View.GONE);
                                 }
 
-                                if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("OTRO")){
+                                if (m.GetStr(tvMediosPagoNeg).contains("OTRO")){
                                     etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
                                 }
                                 else{
@@ -5666,9 +5619,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditRef) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
-                i_colonia.putExtra(TITULO, Miscellaneous.ucFirst(COLONIAS));
+                i_colonia.putExtra(TITULO, m.ucFirst(COLONIAS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
-                i_colonia.putExtra(EXTRA, etCpRef.getText().toString().trim());
+                i_colonia.putExtra(EXTRA, m.GetStr(etCpRef));
                 i_colonia.putExtra(REQUEST_CODE, REQUEST_CODE_COLONIA_REF);
                 startActivityForResult(i_colonia, REQUEST_CODE_COLONIA_REF);
             }
@@ -5679,11 +5632,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditRef) {
-                if (!tvMunicipioRef.getText().toString().trim().isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioRef.getText().toString().trim().toUpperCase()});
+                if (!m.GetStr(tvMunicipioRef).isEmpty()) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioRef)});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
-                    i_localidad.putExtra(TITULO, Miscellaneous.ucFirst(LOCALIDADES));
+                    i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
                     i_localidad.putExtra(CATALOGO, LOCALIDADES);
                     i_localidad.putExtra(EXTRA, row.getString(1));
                     i_localidad.putExtra(REQUEST_CODE, REQUEST_CODE_LOCALIDAD_REF);
@@ -5716,9 +5669,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
                 b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
                 b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
-                b.putInt(Constants.YEAR_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(tvFechaNacAval.getText().toString().substring(0,4))));
-                b.putInt(Constants.MONTH_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(tvFechaNacAval.getText().toString().substring(5,7))-1)));
-                b.putInt(Constants.DAY_CURRENT, ((tvFechaNacAval.getText().toString().isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(tvFechaNacAval.getText().toString().substring(8,10))));
+                b.putInt(Constants.YEAR_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty())?myCalendar.get(Calendar.YEAR):Integer.parseInt(m.GetStr(tvFechaNacAval).substring(0,4))));
+                b.putInt(Constants.MONTH_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty())?myCalendar.get(Calendar.MONTH):(Integer.parseInt(m.GetStr(tvFechaNacAval).substring(5,7))-1)));
+                b.putInt(Constants.DAY_CURRENT, ((m.GetStr(tvFechaNacAval).isEmpty())?myCalendar.get(Calendar.DAY_OF_MONTH):Integer.parseInt(m.GetStr(tvFechaNacAval).substring(8,10))));
                 b.putString(DATE_CURRENT, sdf.format(myCalendar.getTime()));
                 b.putInt(IDENTIFIER, 3);
                 b.putBoolean(FECHAS_POST, false);
@@ -5733,7 +5686,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_estados = new Intent(context, Catalogos.class);
-                i_estados.putExtra(TITULO, Miscellaneous.ucFirst(ESTADOS));
+                i_estados.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_estados.putExtra(CATALOGO, ESTADOS);
                 i_estados.putExtra(REQUEST_CODE, REQUEST_CODE_ESTADO_NAC_AVAL);
                 startActivityForResult(i_estados, REQUEST_CODE_ESTADO_NAC_AVAL);
@@ -5746,7 +5699,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         public void onClick(View v) {
             if (isEditAva) {
                 Intent i_ocupaciones = new Intent(context, Catalogos.class);
-                i_ocupaciones.putExtra(TITULO, Miscellaneous.ucFirst(OCUPACIONES));
+                i_ocupaciones.putExtra(TITULO, m.ucFirst(OCUPACIONES));
                 i_ocupaciones.putExtra(CATALOGO, OCUPACIONES);
                 i_ocupaciones.putExtra(REQUEST_CODE, REQUEST_CODE_OCUPACION_AVAL);
                 startActivityForResult(i_ocupaciones, REQUEST_CODE_OCUPACION_AVAL);
@@ -5801,7 +5754,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "PRINCIPAL");
-                b.putString(CALLE, tvPrincipal.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvPrincipal));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5815,7 +5768,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "TRASERA");
-                b.putString(CALLE, tvTrasera.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvTrasera));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5829,7 +5782,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL UNO");
-                b.putString(CALLE, tvLateraUno.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraUno));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -5843,7 +5796,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 dialog_input_calle dlgInput = new dialog_input_calle();
                 Bundle b = new Bundle();
                 b.putString(TIPO, "LATERAL DOS");
-                b.putString(CALLE, tvLateraDos.getText().toString().trim().toUpperCase());
+                b.putString(CALLE, m.GetStr(tvLateraDos));
                 b.putString(TIPO_SOLICITUD, "INDIVIDUAL");
                 dlgInput.setArguments(b);
                 dlgInput.show(getSupportFragmentManager(), NameFragments.DIALOGINPUTCALLE);
@@ -6555,16 +6508,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")||
+                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
             }
             else{
-                if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                    Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+                if (!m.GetStr(etMontoPrestamo).replace(",","").isEmpty() &&
+                    Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",","")) > 30000) {
                     etPropiedadesEco.requestFocus();
                     ivDown4.setVisibility(View.GONE);
                     ivUp4.setVisibility(View.VISIBLE);
@@ -6588,8 +6541,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+            if (!m.GetStr(etMontoPrestamo).replace(",","").isEmpty() &&
+                Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",","")) > 30000) {
                 ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosEconomicos.setVisibility(View.VISIBLE);
@@ -6711,8 +6664,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")||
+                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -6733,16 +6686,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() &&
-                Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) > 30000) {
+            if (!m.GetStr(etMontoPrestamo).replace(",","").isEmpty() &&
+                Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",","")) > 30000) {
                 ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
             }
             else{
-                if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                    tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")||
+                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                     ivDown3.setVisibility(View.GONE);
                     ivUp3.setVisibility(View.VISIBLE);
                     llDatosConyuge.setVisibility(View.VISIBLE);
@@ -6854,10 +6807,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvEstadoNacCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, m.GetStr(etNombreCli));
+                        params.put(1, m.GetStr(etApPaternoCli));
+                        params.put(2, m.GetStr(etApMaternoCli));
+                        params.put(3, m.GetStr(tvFechaNacCli));
 
                         if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                             params.put(4, "Hombre");
@@ -6866,12 +6819,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacCli));
                         else
                             params.put(5,"");
-                        etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                        Update("estado_nacimiento", TBL_CLIENTE_IND, tvEstadoNacCli.getText().toString().trim().toUpperCase());
+                        etCurpCli.setText(m.GenerarCurp(params));
+                        Update("estado_nacimiento", TBL_CLIENTE_IND, m.GetStr(tvEstadoNacCli));
                     }
                 }
                 break;
@@ -6886,8 +6839,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvActividadEcoCli.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_CLIENTE_IND, tvOcupacionCli.getText().toString().trim().toUpperCase());
-                        Update("actividad_economica", TBL_CLIENTE_IND, tvActividadEcoCli.getText().toString().trim().toUpperCase());
+                        Update("ocupacion", TBL_CLIENTE_IND, m.GetStr(tvOcupacionCli));
+                        Update("actividad_economica", TBL_CLIENTE_IND, m.GetStr(tvActividadEcoCli));
                     }
                 }
                 break;
@@ -6902,8 +6855,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvActEconomicaNeg.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_NEGOCIO_IND, tvActEcoEspNeg.getText().toString().trim().toUpperCase());
-                        Update("actividad_economica", TBL_NEGOCIO_IND, tvActEconomicaNeg.getText().toString().trim().toUpperCase());
+                        Update("ocupacion", TBL_NEGOCIO_IND, m.GetStr(tvActEcoEspNeg));
+                        Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
@@ -6912,7 +6865,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvOcupacionCony.setError(null);
                         tvOcupacionCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("ocupacion", TBL_CONYUGE_IND, tvOcupacionCony.getText().toString().trim().toUpperCase());
+                        Update("ocupacion", TBL_CONYUGE_IND, m.GetStr(tvOcupacionCony));
                     }
                 }
                 break;
@@ -6921,7 +6874,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvActEconomicaNeg.setError(null);
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("actividad_economica", TBL_NEGOCIO_IND, tvActEconomicaNeg.getText().toString().trim().toUpperCase());
+                        Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
@@ -6932,10 +6885,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvEstadoNacAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreAval.getText().toString());
-                        params.put(1, etApPaternoAval.getText().toString());
-                        params.put(2, etApMaternoAval.getText().toString());
-                        params.put(3, tvFechaNacAval.getText().toString());
+                        params.put(0, m.GetStr(etNombreAval));
+                        params.put(1, m.GetStr(etApPaternoAval));
+                        params.put(2, m.GetStr(etApMaternoAval));
+                        params.put(3, m.GetStr(tvFechaNacAval));
 
                         if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                             params.put(4, "Hombre");
@@ -6944,12 +6897,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacAval.getText().toString().trim());
+                        if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                            params.put(5, m.GetStr(tvEstadoNacAval));
                         else
                             params.put(5,"");
-                        etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                        Update("estado_nacimiento", TBL_AVAL_IND, tvEstadoNacAval.getText().toString().trim().toUpperCase());
+                        etCurpAval.setText(m.GenerarCurp(params));
+                        Update("estado_nacimiento", TBL_AVAL_IND, m.GetStr(tvEstadoNacAval));
                     }
                 }
                 break;
@@ -6963,8 +6916,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             row.moveToFirst();
                             tvActividadEcoAval.setError(null);
                             tvActividadEcoAval.setText(row.getString(2));
-                            Update("ocupacion", TBL_AVAL_IND, tvOcupacionAval.getText().toString().trim().toUpperCase());
-                            Update("actividad_economica", TBL_AVAL_IND, tvActividadEcoAval.getText().toString().trim().toUpperCase());
+                            Update("ocupacion", TBL_AVAL_IND, m.GetStr(tvOcupacionAval));
+                            Update("actividad_economica", TBL_AVAL_IND, m.GetStr(tvActividadEcoAval));
                         }
                         row.close();
                     }
@@ -6975,7 +6928,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvColoniaCli.setError(null);
                         tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaCli.getText().toString().trim().toUpperCase(), direccionIdCli, "CLIENTE");
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
@@ -6984,7 +6937,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvLocalidadCli.setError(null);
                         tvLocalidadCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase(), direccionIdCli, "CLIENTE");
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
@@ -6993,7 +6946,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvLocalidadCony.setError(null);
                         tvLocalidadCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
@@ -7002,7 +6955,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvLocalidadNeg.setError(null);
                         tvLocalidadNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
@@ -7011,7 +6964,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvLocalidadAval.setError(null);
                         tvLocalidadAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadAval.getText().toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
@@ -7020,7 +6973,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvLocalidadRef.setError(null);
                         tvLocalidadRef.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("localidad", tvLocalidadRef.getText().toString().trim().toUpperCase(), direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("localidad", m.GetStr(tvLocalidadRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
@@ -7029,7 +6982,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvColoniaCony.setError(null);
                         tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaCony.getText().toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
@@ -7037,7 +6990,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (resultCode == REQUEST_CODE_COLONIA_AVAL){
                     if (data != null){
                         tvColoniaAval.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaAval.getText().toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
@@ -7046,7 +6999,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvColoniaNeg.setError(null);
                         tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaNeg.getText().toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
@@ -7055,7 +7008,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (data != null){
                         tvColoniaRef.setError(null);
                         tvColoniaRef.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        UpdateDireccion("colonia", tvColoniaRef.getText().toString().trim().toUpperCase(), direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("colonia", m.GetStr(tvColoniaRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
@@ -7068,7 +7021,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteFotoFachCli = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachCli).centerCrop().into(ivFotoFachCli);
                         try {
-                            Update("foto_fachada", TBL_CLIENTE_IND, Miscellaneous.save(byteFotoFachCli, 1));
+                            Update("foto_fachada", TBL_CLIENTE_IND, m.save(byteFotoFachCli, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7084,7 +7037,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteFotoFachNeg = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachNeg).centerCrop().into(ivFotoFachNeg);
                         try {
-                            Update("foto_fachada", TBL_NEGOCIO_IND, Miscellaneous.save(byteFotoFachNeg, 1));
+                            Update("foto_fachada", TBL_NEGOCIO_IND, m.save(byteFotoFachNeg, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7100,7 +7053,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteFotoFachAval = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteFotoFachAval).centerCrop().into(ivFotoFachAval);
                         try {
-                            Update("foto_fachada", TBL_AVAL_IND, Miscellaneous.save(byteFotoFachAval, 1));
+                            Update("foto_fachada", TBL_AVAL_IND, m.save(byteFotoFachAval, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7118,7 +7071,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 .into(ivFirmaAval);
                         byteFirmaAval = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma", TBL_AVAL_IND, Miscellaneous.save(byteFirmaAval, 3));
+                            Update("firma", TBL_AVAL_IND, m.save(byteFirmaAval, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7136,7 +7089,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 .into(ivFirmaCli);
                         byteFirmaCli = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma", TBL_CLIENTE_IND, Miscellaneous.save(byteFirmaCli, 3));
+                            Update("firma", TBL_CLIENTE_IND, m.save(byteFirmaCli, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7154,7 +7107,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 .into(ivFirmaAsesor);
                         byteFirmaAsesor = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
-                            Update("firma_asesor", TBL_DOCUMENTOS, Miscellaneous.save(byteFirmaAsesor, 3));
+                            Update("firma_asesor", TBL_DOCUMENTOS, m.save(byteFirmaAsesor, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7173,7 +7126,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         ivIneFrontal.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
-                            Update("ine_frontal", TBL_DOCUMENTOS, Miscellaneous.save(byteIneFrontal, 4));
+                            Update("ine_frontal", TBL_DOCUMENTOS, m.save(byteIneFrontal, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7192,7 +7145,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         ivIneReverso.setVisibility(View.VISIBLE);
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
-                            Update("ine_reverso", TBL_DOCUMENTOS, Miscellaneous.save(byteIneReverso, 4));
+                            Update("ine_reverso", TBL_DOCUMENTOS, m.save(byteIneReverso, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7208,7 +7161,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteCurp = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);
                         try {
-                            Update("curp", TBL_DOCUMENTOS, Miscellaneous.save(byteCurp, 4));
+                            Update("curp", TBL_DOCUMENTOS, m.save(byteCurp, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7224,7 +7177,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         byteComprobante = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
-                            Update("comprobante", TBL_DOCUMENTOS, Miscellaneous.save(byteComprobante, 4));
+                            Update("comprobante", TBL_DOCUMENTOS, m.save(byteComprobante, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7243,7 +7196,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 case "desembolso":
                     tvFechaDesembolso.setError(null);
                     tvFechaDesembolso.setText(sdf.format(cal.getTime()));
-                    String[] fechaDes = tvFechaDesembolso.getText().toString().split("-");
+                    String[] fechaDes = m.GetStr(tvFechaDesembolso).split("-");
                     Calendar c = Calendar.getInstance();
 
                     c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
@@ -7267,19 +7220,19 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     }
                     tvDiaDesembolso.setText(diaDesembolso);
 
-                    Update("fecha_desembolso", TBL_CREDITO_IND, tvFechaDesembolso.getText().toString().trim());
-                    Update("dia_desembolso", TBL_CREDITO_IND, tvDiaDesembolso.getText().toString().trim());
+                    Update("fecha_desembolso", TBL_CREDITO_IND, m.GetStr(tvFechaDesembolso));
+                    Update("dia_desembolso", TBL_CREDITO_IND, m.GetStr(tvDiaDesembolso));
                     break;
                 case "fechaNacCli":
                     tvFechaNacCli.setError(null);
                     tvFechaNacCli.setText(date);
-                    tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                    tvEdadCli.setText(m.GetEdad(sdf.format(cal.getTime())));
                     HashMap<Integer, String> params = new HashMap<>();
 
-                    params.put(0, etNombreCli.getText().toString());
-                    params.put(1, etApPaternoCli.getText().toString());
-                    params.put(2, etApMaternoCli.getText().toString());
-                    params.put(3, tvFechaNacCli.getText().toString());
+                    params.put(0, m.GetStr(etNombreCli));
+                    params.put(1, m.GetStr(etApPaternoCli));
+                    params.put(2, m.GetStr(etApMaternoCli));
+                    params.put(3, m.GetStr(tvFechaNacCli));
 
                     if (rgGeneroCli.getCheckedRadioButtonId()==R.id.rbHombre)
                         params.put(4, "Hombre");
@@ -7288,24 +7241,24 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         params.put(4, "");
 
-                    if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                        params.put(5, tvEstadoNacCli.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacCli).isEmpty())
+                        params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5,"");
-                    Update("fecha_nacimiento", TBL_CLIENTE_IND, tvFechaNacCli.getText().toString().trim());
-                    Update("edad", TBL_CLIENTE_IND, tvEdadCli.getText().toString().trim());
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+                    Update("fecha_nacimiento", TBL_CLIENTE_IND, m.GetStr(tvFechaNacCli));
+                    Update("edad", TBL_CLIENTE_IND, m.GetStr(tvEdadCli));
+                    etCurpCli.setText(m.GenerarCurp(params));
                     break;
                 case "fechaNacAval":
                     tvFechaNacAval.setError(null);
                     tvFechaNacAval.setText(date);
-                    tvEdadAval.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
+                    tvEdadAval.setText(m.GetEdad(sdf.format(cal.getTime())));
                     HashMap<Integer, String> paramsAval = new HashMap<>();
 
-                    paramsAval.put(0, etNombreAval.getText().toString());
-                    paramsAval.put(1, etApPaternoAval.getText().toString());
-                    paramsAval.put(2, etApMaternoAval.getText().toString());
-                    paramsAval.put(3, tvFechaNacAval.getText().toString());
+                    paramsAval.put(0, m.GetStr(etNombreAval));
+                    paramsAval.put(1, m.GetStr(etApPaternoAval));
+                    paramsAval.put(2, m.GetStr(etApMaternoAval));
+                    paramsAval.put(3, m.GetStr(tvFechaNacAval));
 
                     if (rgGeneroAval.getCheckedRadioButtonId()==R.id.rbHombre)
                         paramsAval.put(4, "Hombre");
@@ -7314,19 +7267,19 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     else
                         paramsAval.put(4, "");
 
-                    if (!tvEstadoNacAval.getText().toString().trim().isEmpty())
-                        paramsAval.put(5, tvEstadoNacAval.getText().toString().trim());
+                    if (!m.GetStr(tvEstadoNacAval).isEmpty())
+                        paramsAval.put(5, m.GetStr(tvEstadoNacAval));
                     else
                         paramsAval.put(5,"");
 
-                    Update("fecha_nacimiento", TBL_AVAL_IND, tvFechaNacAval.getText().toString().trim());
-                    Update("edad", TBL_AVAL_IND, tvEdadAval.getText().toString().trim());
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(paramsAval));
+                    Update("fecha_nacimiento", TBL_AVAL_IND, m.GetStr(tvFechaNacAval));
+                    Update("edad", TBL_AVAL_IND, m.GetStr(tvEdadAval));
+                    etCurpAval.setText(m.GenerarCurp(paramsAval));
                     break;
                 case "fechaNacRef":
                     tvFechaNacRef.setError(null);
                     tvFechaNacRef.setText(date);
-                    Update("fecha_nacimiento", TBL_REFERENCIA_IND, tvFechaNacRef.getText().toString().trim());
+                    Update("fecha_nacimiento", TBL_REFERENCIA_IND, m.GetStr(tvFechaNacRef));
                     break;
             }
         } catch (ParseException e) {
@@ -7340,7 +7293,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             case "HoraVisita":
                 tvHoraVisita.setError(null);
                 tvHoraVisita.setText(timer);
-                Update("hora_visita", TBL_CREDITO_IND, tvHoraVisita.getText().toString().trim());
+                Update("hora_visita", TBL_CREDITO_IND, m.GetStr(tvHoraVisita));
                 break;
             case "HoraVisitaAval":
                 tvHoraLocAval.setError(null);
@@ -7351,43 +7304,43 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
 
     private void MontoMaximoNeg (){
-        double ing_mensual = (etIngMenNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngMenNeg.getText().toString().trim().replace(",",""));
-        double ing_otros = (etOtrosIngNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etOtrosIngNeg.getText().toString().trim().replace(",",""));
+        double ing_mensual = (m.GetStr(etIngMenNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etIngMenNeg).replace(",",""));
+        double ing_otros = (m.GetStr(etOtrosIngNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etOtrosIngNeg).replace(",",""));
 
-        double gas_mensual = (etGastosMenNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosMenNeg.getText().toString().trim().replace(",",""));
-        double gas_agua = (etGastosAguaNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosAguaNeg.getText().toString().trim().replace(",",""));
-        double gas_luz = (etGastosLuzNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosLuzNeg.getText().toString().trim().replace(",",""));
-        double gas_telefono = (etGastosTelNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosTelNeg.getText().toString().trim().replace(",",""));
-        double gas_renta = (etGastosRentaNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosRentaNeg.getText().toString().trim().replace(",",""));
-        double gas_otro = (etGastosOtrosNeg.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosOtrosNeg.getText().toString().trim().replace(",",""));
+        double gas_mensual = (m.GetStr(etGastosMenNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosMenNeg).replace(",",""));
+        double gas_agua = (m.GetStr(etGastosAguaNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosAguaNeg).replace(",",""));
+        double gas_luz = (m.GetStr(etGastosLuzNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosLuzNeg).replace(",",""));
+        double gas_telefono = (m.GetStr(etGastosTelNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosTelNeg).replace(",",""));
+        double gas_renta = (m.GetStr(etGastosRentaNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosRentaNeg).replace(",",""));
+        double gas_otro = (m.GetStr(etGastosOtrosNeg).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosOtrosNeg).replace(",",""));
 
         double ingreso = ing_mensual + ing_otros;
         double gastos = gas_mensual + gas_agua + gas_luz + gas_telefono + gas_renta + gas_otro;
 
         tvMontoMaxNeg.setText(dfnd.format(ingreso - gastos));
-        Update("monto_maximo", TBL_NEGOCIO_IND, tvMontoMaxNeg.getText().toString().trim().replace(",",""));
+        Update("monto_maximo", TBL_NEGOCIO_IND, m.GetStr(tvMontoMaxNeg).replace(",",""));
 
         tvIngresoEco.setText(dfnd.format(ingreso));
-        Update("ingreso", TBL_ECONOMICOS_IND, tvIngresoEco.getText().toString().trim().replace(",",""));
+        Update("ingreso", TBL_ECONOMICOS_IND, m.GetStr(tvIngresoEco).replace(",",""));
 
     }
 
     private void MontoMaximoAval (){
-        double ing_mensual = (etIngMenAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngMenAval.getText().toString().trim().replace(",",""));
-        double ing_otros = (etIngOtrosAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etIngOtrosAval.getText().toString().trim().replace(",",""));
+        double ing_mensual = (m.GetStr(etIngMenAval).isEmpty())?0:Integer.parseInt(m.GetStr(etIngMenAval).replace(",",""));
+        double ing_otros = (m.GetStr(etIngOtrosAval).isEmpty())?0:Integer.parseInt(m.GetStr(etIngOtrosAval).replace(",",""));
 
-        double gas_mensual = (etGastosSemAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosSemAval.getText().toString().trim().replace(",",""));
-        double gas_agua = (etGastosAguaAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosAguaAval.getText().toString().trim().replace(",",""));
-        double gas_luz = (etGastosLuzAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosLuzAval.getText().toString().trim().replace(",",""));
-        double gas_telefono = (etGastosTelAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosTelAval.getText().toString().trim().replace(",",""));
-        double gas_renta = (etGastosRentaAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosRentaAval.getText().toString().trim().replace(",",""));
-        double gas_otro = (etGastosOtrosAval.getText().toString().trim().isEmpty())?0:Integer.parseInt(etGastosOtrosAval.getText().toString().trim().replace(",",""));
+        double gas_mensual = (m.GetStr(etGastosSemAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosSemAval).replace(",",""));
+        double gas_agua = (m.GetStr(etGastosAguaAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosAguaAval).replace(",",""));
+        double gas_luz = (m.GetStr(etGastosLuzAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosLuzAval).replace(",",""));
+        double gas_telefono = (m.GetStr(etGastosTelAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosTelAval).replace(",",""));
+        double gas_renta = (m.GetStr(etGastosRentaAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosRentaAval).replace(",",""));
+        double gas_otro = (m.GetStr(etGastosOtrosAval).isEmpty())?0:Integer.parseInt(m.GetStr(etGastosOtrosAval).replace(",",""));
 
         double ingreso = ing_mensual + ing_otros;
         double gastos = gas_mensual + gas_agua + gas_luz + gas_telefono + gas_renta + gas_otro;
 
         tvMontoMaxAval.setText(dfnd.format(ingreso - gastos));
-        Update("monto_maximo", TBL_AVAL_IND, tvMontoMaxAval.getText().toString().trim().replace(",",""));
+        Update("monto_maximo", TBL_AVAL_IND, m.GetStr(tvMontoMaxAval).replace(",",""));
     }
 
     private void showDiasSemana(){
@@ -7417,7 +7370,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         }
                         tvDiasVentaNeg.setError(null);
                         tvDiasVentaNeg.setText(dias);
-                        Update("dias_venta", TBL_NEGOCIO_IND, tvDiasVentaNeg.getText().toString().trim().toUpperCase());
+                        Update("dias_venta", TBL_NEGOCIO_IND, m.GetStr(tvDiasVentaNeg));
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -7440,14 +7393,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED})){
             ivError1.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("plazo",tvPlazo.getText().toString().trim().toUpperCase());
-            cv.put("periodicidad",tvFrecuencia.getText().toString().trim().toUpperCase());
-            cv.put("fecha_desembolso",tvFechaDesembolso.getText().toString().trim());
-            cv.put("dia_desembolso",tvDiaDesembolso.getText().toString().trim().toUpperCase());
-            cv.put("hora_visita",tvHoraVisita.getText().toString().trim());
-            cv.put("monto_prestamo",etMontoPrestamo.getText().toString().trim().replace(",",""));
-            cv.put("destino",tvDestino.getText().toString().trim().toUpperCase());
-            cv.put("clasificacion_riesgo", tvRiesgo.getText().toString().trim().toUpperCase());
+            cv.put("plazo",m.GetStr(tvPlazo));
+            cv.put("periodicidad",m.GetStr(tvFrecuencia));
+            cv.put("fecha_desembolso",m.GetStr(tvFechaDesembolso));
+            cv.put("dia_desembolso",m.GetStr(tvDiaDesembolso));
+            cv.put("hora_visita",m.GetStr(tvHoraVisita));
+            cv.put("monto_prestamo",m.GetStr(etMontoPrestamo).replace(",",""));
+            cv.put("destino",m.GetStr(tvDestino));
+            cv.put("clasificacion_riesgo", m.GetStr(tvRiesgo));
 
             db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_credito = true;
@@ -7472,8 +7425,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (!validatorTV.validate(tvEstadoNacCli, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
                 (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
-                !tvRfcCli.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpCli.getText().toString().trim().toUpperCase())){
+                !m.GetStr(tvRfcCli).equals("Rfc no válida"))){
+                    if (m.CurpValidador(m.GetStr(etCurpCli))){
                         if(!validatorTV.validate(tvOcupacionCli, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvActividadEcoCli, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvTipoIdentificacion, new String[]{validatorTV.REQUIRED}) &&
@@ -7481,7 +7434,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         !validatorTV.validate(tvEstudiosCli, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvEstadoCivilCli, new String[]{validatorTV.REQUIRED})){
                             boolean flag_est_civil = false;
-                            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")){
+                            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)")){
                                 if (rgBienes.getCheckedRadioButtonId() == R.id.rbMancomunados ||
                                         rgBienes.getCheckedRadioButtonId() == R.id.rbSeparados) {
                                     tvBienes.setError(null);
@@ -7504,12 +7457,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             if (flag_est_civil){
                                 if (!validatorTV.validate(tvTipoCasaCli, new String[]{validatorTV.REQUIRED})){
                                     boolean flag_tipo_casa = false;
-                                    cv.put("tipo_vivienda", tvTipoCasaCli.getText().toString().trim().toUpperCase());
-                                    switch (tvTipoCasaCli.getText().toString().trim().toUpperCase()){
+                                    cv.put("tipo_vivienda", m.GetStr(tvTipoCasaCli));
+                                    switch (m.GetStr(tvTipoCasaCli)){
                                         case "CASA FAMILIAR":
                                             if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                                                 flag_tipo_casa = true;
-                                                cv.put("parentesco", tvTipoCasaCli.getText().toString().trim().toUpperCase());
+                                                cv.put("parentesco", m.GetStr(tvTipoCasaCli));
                                                 cv.put("otro_tipo_vivienda", "");
                                             }
                                             else
@@ -7520,7 +7473,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                             if (!validator.validate(etOTroTipoCli, new String[]{validator.REQUIRED})) {
                                                 flag_tipo_casa = true;
                                                 cv.put("parentesco", "");
-                                                cv.put("otro_tipo_vivienda", etOTroTipoCli.getText().toString().trim().toUpperCase());
+                                                cv.put("otro_tipo_vivienda", m.GetStr(etOTroTipoCli));
                                             }
                                             else
                                                 ivError2.setVisibility(View.VISIBLE);
@@ -7537,11 +7490,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
                                                     !validator.validate(etNoExtCli, new String[]{validator.REQUIRED}) &&
                                                     !validator.validate(etCpCli, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                                                    !Miscellaneous.ValidTextView(tvColoniaCli) &&
+                                                    !m.ValidTextView(tvColoniaCli) &&
                                                     !validator.validate(etCiudadCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                                                     !validatorTV.validate(tvLocalidadCli, new String[]{validatorTV.REQUIRED}) &&
-                                                    !Miscellaneous.ValidTextView(tvMunicipioCli) &&
-                                                    !Miscellaneous.ValidTextView(tvEstadoCli) &&
+                                                    !m.ValidTextView(tvMunicipioCli) &&
+                                                    !m.ValidTextView(tvEstadoCli) &&
                                                     !validator.validate(etTelCasaCli, new String[]{validator.PHONE}) &&
                                                     !validator.validate(etCelularCli, new String[]{validator.REQUIRED, validator.PHONE}) &&
                                                     !validator.validate(etTelMensCli, new String[]{validator.PHONE}) &&
@@ -7557,11 +7510,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                         if (byteFirmaCli != null){
                                                             tvFirmaCli.setError(null);
                                                             ivError2.setVisibility(View.GONE);
-                                                            cv.put("nombre", etNombreCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("paterno", etApPaternoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("fecha_nacimiento", tvFechaNacCli.getText().toString().trim());
-                                                            cv.put("edad", tvEdadCli.getText().toString().trim());
+                                                            cv.put("nombre", m.GetStr(etNombreCli));
+                                                            cv.put("paterno", m.GetStr(etApPaternoCli));
+                                                            cv.put("materno", m.GetStr(etApMaternoCli));
+                                                            cv.put("fecha_nacimiento", m.GetStr(tvFechaNacCli));
+                                                            cv.put("edad", m.GetStr(tvEdadCli));
                                                             switch (rgGeneroCli.getCheckedRadioButtonId()){
                                                                 case R.id.rbHombre:
                                                                     cv.put("genero", 0);
@@ -7570,43 +7523,42 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                                     cv.put("genero", 1);
                                                                     break;
                                                             }
-                                                            cv.put("estado_nacimiento", tvEstadoNacCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("rfc", tvRfcCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("curp", etCurpCli.getText().toString().trim().toUpperCase());
-                                                            //cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
-                                                            cv.put("ocupacion", tvOcupacionCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("actividad_economica", tvActividadEcoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim().toUpperCase());
-                                                            cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim());
-                                                            cv.put("nivel_estudio", tvEstudiosCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado_civil", tvEstadoCivilCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_casa", etTelCasaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_celular", etCelularCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_mensajes", etTelMensCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tel_trabajo", etTelTrabajoCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("tiempo_vivir_sitio", Integer.parseInt(etTiempoSitio.getText().toString().trim()));
-                                                            cv.put("dependientes", tvDependientes.getText().toString().trim());
-                                                            cv.put("medio_contacto", tvEnteroNosotros.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado_cuenta", tvEstadoCuenta.getText().toString().trim());
-                                                            cv.put("email", etEmail.getText().toString().trim());
-                                                            cv.put("ref_domiciliaria", etReferenciCli.getText().toString().trim().toUpperCase());
+                                                            cv.put("estado_nacimiento", m.GetStr(tvEstadoNacCli));
+                                                            cv.put("rfc", m.GetStr(tvRfcCli));
+                                                            cv.put("curp", m.GetStr(etCurpCli));
+                                                            cv.put("ocupacion", m.GetStr(tvOcupacionCli));
+                                                            cv.put("actividad_economica", m.GetStr(tvActividadEcoCli));
+                                                            cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacion));
+                                                            cv.put("no_identificacion", m.GetStr(etNumIdentifCli));
+                                                            cv.put("nivel_estudio", m.GetStr(tvEstudiosCli));
+                                                            cv.put("estado_civil", m.GetStr(tvEstadoCivilCli));
+                                                            cv.put("tel_casa", m.GetStr(etTelCasaCli));
+                                                            cv.put("tel_celular", m.GetStr(etCelularCli));
+                                                            cv.put("tel_mensajes", m.GetStr(etTelMensCli));
+                                                            cv.put("tel_trabajo", m.GetStr(etTelTrabajoCli));
+                                                            cv.put("tiempo_vivir_sitio", Integer.parseInt(m.GetStr(etTiempoSitio)));
+                                                            cv.put("dependientes", m.GetStr(tvDependientes));
+                                                            cv.put("medio_contacto", m.GetStr(tvEnteroNosotros));
+                                                            cv.put("estado_cuenta", m.GetStr(tvEstadoCuenta));
+                                                            cv.put("email", m.GetStr(etEmail));
+                                                            cv.put("ref_domiciliaria", m.GetStr(etReferenciCli));
 
                                                             db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                             cv = new ContentValues();
                                                             cv.put("latitud", String.valueOf(latLngUbiCli.latitude));
                                                             cv.put("longitud", String.valueOf(latLngUbiCli.longitude));
-                                                            cv.put("calle", etCalleCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("num_exterior", etNoExtCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("num_interior", etNoIntCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("manzana", etManzanaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("lote", etLoteCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("cp", etCpCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("colonia", tvColoniaCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("ciudad", etCiudadCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("municipio", tvMunicipioCli.getText().toString().trim().toUpperCase());
-                                                            cv.put("estado", tvEstadoCli.getText().toString().trim().toUpperCase());
+                                                            cv.put("calle", m.GetStr(etCalleCli));
+                                                            cv.put("num_exterior", m.GetStr(etNoExtCli));
+                                                            cv.put("num_interior", m.GetStr(etNoIntCli));
+                                                            cv.put("manzana", m.GetStr(etManzanaCli));
+                                                            cv.put("lote", m.GetStr(etLoteCli));
+                                                            cv.put("cp", m.GetStr(etCpCli));
+                                                            cv.put("colonia", m.GetStr(tvColoniaCli));
+                                                            cv.put("ciudad", m.GetStr(etCiudadCli));
+                                                            cv.put("localidad", m.GetStr(tvLocalidadCli));
+                                                            cv.put("municipio", m.GetStr(tvMunicipioCli));
+                                                            cv.put("estado", m.GetStr(tvEstadoCli));
                                                             db.update(TBL_DIRECCIONES, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCli, "CLIENTE"});
                                                             save_cliente = true;
                                                         }
@@ -7671,11 +7623,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
         !validator.validate(etNoExtCony, new String[]{validator.REQUIRED}) &&
         !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-        !Miscellaneous.ValidTextView(tvColoniaCony) &&
+        !m.ValidTextView(tvColoniaCony) &&
         !validator.validate(etCiudadCony, new String[]{validator.REQUIRED,  validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvLocalidadCony, new String[]{validatorTV.REQUIRED}) &&
-        !Miscellaneous.ValidTextView(tvMunicipioCony) &&
-        !Miscellaneous.ValidTextView(tvEstadoCony) &&
+        !m.ValidTextView(tvMunicipioCony) &&
+        !m.ValidTextView(tvEstadoCony) &&
         !validator.validate(etIngMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
         !validator.validate(etGastoMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
         !validator.validate(etCasaCony, new String[]{validator.PHONE}) &&
@@ -7683,30 +7635,30 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             Log.e("Conyuge", "pasa");
             ivError3.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreCony.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("nacionalidad", etNacionalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
-            cv.put("ing_mensual", etIngMenCony.getText().toString().trim().toUpperCase().replace(",",""));
-            cv.put("gasto_mensual", etGastoMenCony.getText().toString().trim().toUpperCase().replace(",",""));
-            cv.put("tel_casa", etCasaCony.getText().toString().trim().toUpperCase());
-            cv.put("tel_celular", etCelularCony.getText().toString().trim());
+            cv.put("nombre", m.GetStr(etNombreCony));
+            cv.put("paterno", m.GetStr(etApPaternoCony));
+            cv.put("materno", m.GetStr(etApMaternoCony));
+            cv.put("nacionalidad", m.GetStr(etNacionalidadCony));
+            cv.put("ocupacion", m.GetStr(tvOcupacionCony));
+            cv.put("ing_mensual", m.GetStr(etIngMenCony).replace(",",""));
+            cv.put("gasto_mensual", m.GetStr(etGastoMenCony).toUpperCase().replace(",",""));
+            cv.put("tel_casa", m.GetStr(etCasaCony));
+            cv.put("tel_celular", m.GetStr(etCelularCony));
 
             db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             cv = new ContentValues();
-            cv.put("calle", etCalleCony.getText().toString().trim().toUpperCase());
-            cv.put("num_exterior", etNoExtCony.getText().toString().trim().toUpperCase());
-            cv.put("num_interior", etNoIntCony.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaCony.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteCony.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpCony.getText().toString().trim().toUpperCase());
-            cv.put("colonia", tvColoniaCony.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadCony.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioCony.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoCony.getText().toString().trim().toUpperCase());
+            cv.put("calle", m.GetStr(etCalleCony));
+            cv.put("num_exterior", m.GetStr(etNoExtCony));
+            cv.put("num_interior", m.GetStr(etNoIntCony));
+            cv.put("manzana", m.GetStr(etManzanaCony));
+            cv.put("lote", m.GetStr(etLoteCony));
+            cv.put("cp", m.GetStr(etCpCony));
+            cv.put("colonia", m.GetStr(tvColoniaCony));
+            cv.put("ciudad", m.GetStr(etCiudadCony));
+            cv.put("localidad", m.GetStr(tvLocalidadCony));
+            cv.put("municipio", m.GetStr(tvMunicipioCony));
+            cv.put("estado", m.GetStr(tvEstadoCony));
             db.update(TBL_DIRECCIONES, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCony, "CONYUGE"});
 
             save_conyuge = true;
@@ -7724,10 +7676,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validatorTV.validate(tvIngresoEco, new String[]{validatorTV.REQUIRED})){
             ivError4.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("propiedades", etPropiedadesEco.getText().toString().trim().toUpperCase());
-            cv.put("valor_aproximado", etValorAproxEco.getText().toString().trim());
-            cv.put("ubicacion", etUbicacionEco.getText().toString().trim().toUpperCase());
-            cv.put("ingreso", tvIngresoEco.getText().toString().trim().replace(",",""));
+            cv.put("propiedades", m.GetStr(etPropiedadesEco));
+            cv.put("valor_aproximado", m.GetStr(etValorAproxEco));
+            cv.put("ubicacion", m.GetStr(etUbicacionEco));
+            cv.put("ingreso", m.GetStr(tvIngresoEco).replace(",",""));
             cv.put("estatus_completado",1);
 
             db.update(TBL_ECONOMICOS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
@@ -7750,15 +7702,15 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     !validator.validate(etManzanaNeg, new String[]{validator.GENERAL}) &&
                     !validator.validate(etLoteNeg, new String[]{validator.GENERAL}) &&
                     !validator.validate(etCpNeg, new String[]{validator.REQUIRED, validator.CP}) &&
-                    !Miscellaneous.ValidTextView(tvColoniaNeg) &&
+                    !m.ValidTextView(tvColoniaNeg) &&
                     !validator.validate(etCiudadNeg, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                     !validatorTV.validate(tvLocalidadNeg, new String[]{validatorTV.REQUIRED}) &&
-                    !Miscellaneous.ValidTextView(tvMunicipioNeg) &&
+                    !m.ValidTextView(tvMunicipioNeg) &&
                     !validatorTV.validate(tvActEcoEspNeg, new String[]{validatorTV.REQUIRED}) &&
                     !validatorTV.validate(tvActEconomicaNeg, new String[]{validatorTV.REQUIRED}) &&
                     !validatorTV.validate(tvDestinoNeg, new String[]{validatorTV.REQUIRED})){
                     boolean otro_destino = false;
-                    if (tvDestinoNeg.getText().toString().trim().toUpperCase().equals("OTRO")){
+                    if (m.GetStr(tvDestinoNeg).equals("OTRO")){
                         if (!validator.validate(etOtroDestinoNeg, new String[]{validator.REQUIRED})){
                             otro_destino = true;
                         }
@@ -7774,83 +7726,85 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                            !validator.validate(etGastosLuzNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                            !validator.validate(etGastosTelNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                            !validator.validate(etGastosRentaNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                           !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                           !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
-                           !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})){
-                            boolean otro_medio = false;
-                            if (tvMediosPagoNeg.getText().toString().trim().contains("OTRO")){
-                                if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
-                                    otro_medio = true;
-                            }
-                            else
-                                otro_medio = true;
+                           !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER})){
+                            if (getGastoMen()) {
+                                if (!validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
+                                        !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})) {
+                                    boolean otro_medio = false;
+                                    if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
+                                        if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                                            otro_medio = true;
+                                    } else
+                                        otro_medio = true;
 
-                            if (otro_medio){
-                                if (!validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
-                                    !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
-                                    (tvMediosPagoNeg.getText().toString().contains("EFECTIVO") && !validator.validate(etNumOperacionEfectNeg, new String[]{validator.REQUIRED, validator.YEARS})) || !tvMediosPagoNeg.getText().toString().contains("EFECTIVO")){
-                                    if(!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})){
-                                        if (byteFotoFachNeg != null) {
-                                            tvFachadaNeg.setError(null);
-                                            if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED, validator.GENERAL})){
-                                                ivError5.setVisibility(View.GONE);
-                                                ContentValues cv = new ContentValues();
-                                                cv.put("nombre", etNombreNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("actividad_economica", tvActEconomicaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("destino_credito", tvDestinoNeg.getText().toString().trim());
-                                                cv.put("otro_destino", etOtroDestinoNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("antiguedad", Integer.parseInt(etAntiguedadNeg.getText().toString().trim()));
-                                                cv.put("ing_mensual", etIngMenNeg.getText().toString().toUpperCase().replace(",",""));
-                                                cv.put("ing_otros", etGastosOtrosNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_semanal", etGastosMenNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_agua", etGastosAguaNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_luz", etGastosLuzNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_telefono", etGastosTelNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_renta", etGastosRentaNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("gasto_otros", etGastosOtrosNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("capacidad_pago", etCapacidadPagoNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("medio_pago", tvMediosPagoNeg.getText().toString().trim());
-                                                cv.put("otro_medio_pago", etOtroMedioPagoNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("monto_maximo", tvMontoMaxNeg.getText().toString().trim().replace(",",""));
-                                                cv.put("dias_venta", tvDiasVentaNeg.getText().toString().trim());
-                                                cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
+                                    if (otro_medio) {
+                                        if (!validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO") && !validator.validate(etNumOperacionEfectNeg, new String[]{validator.REQUIRED, validator.YEARS})) || !m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")) {
+                                            if (!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})) {
+                                                if (byteFotoFachNeg != null) {
+                                                    tvFachadaNeg.setError(null);
+                                                    if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
+                                                        ivError5.setVisibility(View.GONE);
+                                                        ContentValues cv = new ContentValues();
+                                                        cv.put("nombre", m.GetStr(etNombreNeg));
+                                                        cv.put("actividad_economica", m.GetStr(tvActEconomicaNeg));
+                                                        cv.put("destino_credito", m.GetStr(tvDestinoNeg));
+                                                        cv.put("otro_destino", m.GetStr(etOtroDestinoNeg));
+                                                        cv.put("antiguedad", Integer.parseInt(m.GetStr(etAntiguedadNeg)));
+                                                        cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",", ""));
+                                                        cv.put("ing_otros", m.GetStr(etGastosOtrosNeg).replace(",", ""));
+                                                        cv.put("gasto_semanal", m.GetStr(etGastosMenNeg).replace(",", ""));
+                                                        cv.put("gasto_agua", m.GetStr(etGastosAguaNeg).replace(",", ""));
+                                                        cv.put("gasto_luz", m.GetStr(etGastosLuzNeg).replace(",", ""));
+                                                        cv.put("gasto_telefono", m.GetStr(etGastosTelNeg).replace(",", ""));
+                                                        cv.put("gasto_renta", m.GetStr(etGastosRentaNeg).replace(",", ""));
+                                                        cv.put("gasto_otros", m.GetStr(etGastosOtrosNeg).replace(",", ""));
+                                                        cv.put("capacidad_pago", m.GetStr(etCapacidadPagoNeg).replace(",", ""));
+                                                        cv.put("medio_pago", m.GetStr(tvMediosPagoNeg));
+                                                        cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoNeg));
+                                                        cv.put("monto_maximo", m.GetStr(tvMontoMaxNeg).replace(",", ""));
+                                                        cv.put("dias_venta", m.GetStr(tvDiasVentaNeg));
+                                                        cv.put("ref_domiciliaria", m.GetStr(etReferenciNeg));
 
-                                                db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                                        db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
-                                                cv = new ContentValues();
-                                                cv.put("calle", etCalleNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("num_exterior", etNoExtNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("num_interior", etNoIntNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("manzana", etManzanaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("lote", etLoteNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("cp", etCpNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("colonia", tvColoniaNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("ciudad", etCiudadNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase());
-                                                cv.put("municipio", tvMunicipioNeg.getText().toString().trim().toUpperCase());
-                                                db.update(TBL_DIRECCIONES, cv,"id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdNeg, "NEGOCIO"});
+                                                        cv = new ContentValues();
+                                                        cv.put("calle", m.GetStr(etCalleNeg));
+                                                        cv.put("num_exterior", m.GetStr(etNoExtNeg));
+                                                        cv.put("num_interior", m.GetStr(etNoIntNeg));
+                                                        cv.put("manzana", m.GetStr(etManzanaNeg));
+                                                        cv.put("lote", m.GetStr(etLoteNeg));
+                                                        cv.put("cp", m.GetStr(etCpNeg));
+                                                        cv.put("colonia", m.GetStr(tvColoniaNeg));
+                                                        cv.put("ciudad", m.GetStr(etCiudadNeg));
+                                                        cv.put("localidad", m.GetStr(tvLocalidadNeg));
+                                                        cv.put("municipio", m.GetStr(tvMunicipioNeg));
+                                                        db.update(TBL_DIRECCIONES, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdNeg, "NEGOCIO"});
 
-                                                save_negocio = true;
-                                            }
-                                            else
+                                                        save_negocio = true;
+                                                    } else
+                                                        ivError5.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    ivError5.setVisibility(View.VISIBLE);
+                                                    tvFachadaNeg.setError("");
+                                                }
+                                            } else
                                                 ivError5.setVisibility(View.VISIBLE);
-                                        }
-                                        else{
+                                        } else
                                             ivError5.setVisibility(View.VISIBLE);
-                                            tvFachadaNeg.setError("");
-                                        }
-                                    }
-                                    else
+                                    } else
                                         ivError5.setVisibility(View.VISIBLE);
-                                }
-                                else
+                                } else
                                     ivError5.setVisibility(View.VISIBLE);
                             }
-                            else
+                            else {
+                                etGastosMenNeg.setError("La suma de todos los gastos no puede ser cero (0).");
                                 ivError5.setVisibility(View.VISIBLE);
-                        }
-                        else
-                            ivError5.setVisibility(View.VISIBLE);
+                            }
+                    }
+                    else
+                        ivError5.setVisibility(View.VISIBLE);
                     }else
                         ivError5.setVisibility(View.VISIBLE);
                 }
@@ -7880,8 +7834,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 tvGeneroAval.setError(null);
                 if (!validatorTV.validate(tvEstadoNacAval, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCurpAval, new String[]{validator.REQUIRED, validator.CURP}) &&
-                (!tvRfcAval.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpAval.getText().toString().trim().toUpperCase())) {
+                (!m.GetStr(tvRfcAval).equals("Rfc no válida"))){
+                    if (m.CurpValidador(m.GetStr(etCurpAval))) {
                         if(!validatorTV.validate(tvParentescoAval, new String[]{validatorTV.REQUIRED}) &&
                         !validatorTV.validate(tvTipoIdentificacionAval, new String[]{validatorTV.REQUIRED}) &&
                         !validator.validate(etNumIdentifAval, new String[]{validator.REQUIRED, validator.ALFANUMERICO}) &&
@@ -7892,20 +7846,20 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 if (!validator.validate(etCalleAval, new String[]{validator.REQUIRED}) &&
                                 !validator.validate(etNoExtAval, new String[]{validator.REQUIRED}) &&
                                 !validator.validate(etCpAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                                !Miscellaneous.ValidTextView(tvColoniaAval) &&
+                                !m.ValidTextView(tvColoniaAval) &&
                                 !validator.validate(etCiudadAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                                 !validatorTV.validate(tvLocalidadAval, new String[]{validatorTV.REQUIRED}) &&
-                                !Miscellaneous.ValidTextView(tvMunicipioAval) &&
-                                !Miscellaneous.ValidTextView(tvEstadoAval) &&
+                                !m.ValidTextView(tvMunicipioAval) &&
+                                !m.ValidTextView(tvEstadoAval) &&
                                 !validatorTV.validate(tvTipoCasaAval, new String[]{validatorTV.REQUIRED})){
-                                    cv.put("tipo_vivienda", tvTipoCasaAval.getText().toString().trim().toUpperCase());
+                                    cv.put("tipo_vivienda", m.GetStr(tvTipoCasaAval));
                                     boolean flag_tipo_casa =  false;
-                                    if (tvTipoCasaAval.getText().toString().trim().toUpperCase().equals("CASA FAMILIAR") ||
-                                        tvTipoCasaAval.getText().toString().trim().toUpperCase().equals("CASA RENTADA")){
+                                    if (m.GetStr(tvTipoCasaAval).equals("CASA FAMILIAR") ||
+                                            m.GetStr(tvTipoCasaAval).equals("CASA RENTADA")){
                                         if (!validatorTV.validate(tvFamiliarAval, new String[]{validatorTV.REQUIRED}) &&
                                             !validator.validate(etNombreTitularAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT})){
-                                            cv.put("nombre_titular", etNombreTitularAval.getText().toString().trim().toUpperCase());
-                                            cv.put("parentesco", tvFamiliarAval.getText().toString().trim().toUpperCase());
+                                            cv.put("nombre_titular", m.GetStr(etNombreTitularAval));
+                                            cv.put("parentesco", m.GetStr(tvFamiliarAval));
                                             flag_tipo_casa = true;
                                         }
                                         else
@@ -7933,7 +7887,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                         !validator.validate(etGastosRentaAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                         !validator.validate(etGastosOtrosAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                         !validatorTV.validate(tvMediosPagoAval, new String[]{validatorTV.REQUIRED}) &&
-                                        (!tvMediosPagoAval.getText().toString().trim().contains("OTRO") ||
+                                        (!m.GetStr(tvMediosPagoAval).contains("OTRO") ||
                                         !validator.validate(etOtroMedioPagoAval, new String[]{validator.REQUIRED})) &&
                                         !validatorTV.validate(tvMontoMaxAval, new String[]{validatorTV.REQUIRED}) &&
                                         !validator.validate(etCapacidadPagoAval, new String[]{validator.REQUIRED, validator.MONEY}) &&
@@ -7950,11 +7904,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                     if (byteFirmaAval != null) {
                                                         tvFirmaAval.setError(null);
                                                         ivError6.setVisibility(View.GONE);
-                                                        cv.put("nombre", etNombreAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("paterno", etApPaternoAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("materno", etApMaternoAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("fecha_nacimiento", tvFechaNacAval.getText().toString().trim());
-                                                        cv.put("edad", tvEdadAval.getText().toString().trim());
+                                                        cv.put("nombre", m.GetStr(etNombreAval));
+                                                        cv.put("paterno", m.GetStr(etApPaternoAval));
+                                                        cv.put("materno", m.GetStr(etApMaternoAval));
+                                                        cv.put("fecha_nacimiento", m.GetStr(tvFechaNacAval));
+                                                        cv.put("edad", m.GetStr(tvEdadAval));
                                                         switch (rgGeneroAval.getCheckedRadioButtonId()){
                                                             case R.id.rbHombre:
                                                                 cv.put("genero", 0);
@@ -7963,63 +7917,62 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                                 cv.put("genero", 1);
                                                                 break;
                                                         }
-                                                        cv.put("estado_nacimiento", tvEstadoNacAval.getText().toString().trim());
-                                                        cv.put("rfc", tvRfcAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("curp", etCurpAval.getText().toString().trim().toUpperCase());
-                                                        //cv.put("curp_digito", etCurpIdAval.getText().toString().trim());
-                                                        cv.put("parentesco_cliente", tvParentescoAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("tipo_identificacion", tvTipoIdentificacionAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("no_identificacion", etNumIdentifAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("ocupacion", tvOcupacionAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("actividad_economica", tvActividadEcoAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("caracteristicas_domicilio", etCaracteristicasAval.getText().toString().trim());
+                                                        cv.put("estado_nacimiento", m.GetStr(tvEstadoNacAval));
+                                                        cv.put("rfc", m.GetStr(tvRfcAval));
+                                                        cv.put("curp", m.GetStr(etCurpAval));
+                                                        cv.put("parentesco_cliente", m.GetStr(tvParentescoAval));
+                                                        cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacionAval));
+                                                        cv.put("no_identificacion", m.GetStr(etNumIdentifAval));
+                                                        cv.put("ocupacion", m.GetStr(tvOcupacionAval));
+                                                        cv.put("actividad_economica", m.GetStr(tvActividadEcoAval));
+                                                        cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasAval));
                                                         switch (rgNegocioAval.getCheckedRadioButtonId()){
                                                             case R.id.rbSiNeg:
                                                                 cv.put("tiene_negocio", 1);
-                                                                cv.put("nombre_negocio", etNombreNegocioAval.getText().toString().trim().toUpperCase());
+                                                                cv.put("nombre_negocio", m.GetStr(etNombreNegocioAval));
                                                                 break;
                                                             case R.id.rbNoNeg:
                                                                 cv.put("tiene_negocio", 2);
                                                                 break;
                                                         }
-                                                        cv.put("ing_mensual", etIngMenAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("ing_otros", etIngOtrosAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_semanal", etGastosSemAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_agua", etGastosAguaAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_luz", etGastosLuzAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_telefono", etGastosTelAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_renta", etGastosRentaAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("gasto_otros", etGastosOtrosAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("medio_pago", tvMediosPagoAval.getText().toString().trim());
-                                                        cv.put("otro_medio_pago", etOtroMedioPagoAval.getText().toString().trim());
-                                                        cv.put("monto_maximo", tvMontoMaxAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("capacidad_pagos", etCapacidadPagoAval.getText().toString().trim().replace(",",""));
-                                                        cv.put("horario_localizacion", tvHoraLocAval.getText().toString().trim());
-                                                        cv.put("activos_observables", tvActivosObservables.getText().toString().trim().toUpperCase());
-                                                        cv.put("antigueda", etAntiguedadAval.getText().toString().trim());
-                                                        cv.put("tel_casa", etTelCasaAval.getText().toString().trim());
-                                                        cv.put("tel_celular", etCelularAval.getText().toString().trim());
-                                                        cv.put("tel_mensajes", etTelMensAval.getText().toString().trim());
-                                                        cv.put("tel_trabajo", etTelTrabajoAval.getText().toString().trim());
-                                                        cv.put("email", etEmailAval.getText().toString().trim());
-                                                        cv.put("ref_domiciliaria", etReferenciaAval.getText().toString().trim().toUpperCase());
+                                                        cv.put("ing_mensual", m.GetStr(etIngMenAval).replace(",",""));
+                                                        cv.put("ing_otros", m.GetStr(etIngOtrosAval).replace(",",""));
+                                                        cv.put("gasto_semanal", m.GetStr(etGastosSemAval).replace(",",""));
+                                                        cv.put("gasto_agua", m.GetStr(etGastosAguaAval).replace(",",""));
+                                                        cv.put("gasto_luz", m.GetStr(etGastosLuzAval).replace(",",""));
+                                                        cv.put("gasto_telefono", m.GetStr(etGastosTelAval).replace(",",""));
+                                                        cv.put("gasto_renta", m.GetStr(etGastosRentaAval).replace(",",""));
+                                                        cv.put("gasto_otros", m.GetStr(etGastosOtrosAval).replace(",",""));
+                                                        cv.put("medio_pago", m.GetStr(tvMediosPagoAval));
+                                                        cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoAval));
+                                                        cv.put("monto_maximo", m.GetStr(tvMontoMaxAval).replace(",",""));
+                                                        cv.put("capacidad_pagos", m.GetStr(etCapacidadPagoAval).replace(",",""));
+                                                        cv.put("horario_localizacion", m.GetStr(tvHoraLocAval));
+                                                        cv.put("activos_observables", m.GetStr(tvActivosObservables));
+                                                        cv.put("antigueda", m.GetStr(etAntiguedadAval));
+                                                        cv.put("tel_casa", m.GetStr(etTelCasaAval));
+                                                        cv.put("tel_celular", m.GetStr(etCelularAval));
+                                                        cv.put("tel_mensajes", m.GetStr(etTelMensAval));
+                                                        cv.put("tel_trabajo", m.GetStr(etTelTrabajoAval));
+                                                        cv.put("email", m.GetStr(etEmailAval));
+                                                        cv.put("ref_domiciliaria", m.GetStr(etReferenciaAval));
 
                                                         db.update(TBL_AVAL_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                                                         cv = new ContentValues();
                                                         cv.put("latitud", String.valueOf(latLngUbiAval.latitude));
                                                         cv.put("longitud", String.valueOf(latLngUbiAval.longitude));
-                                                        cv.put("calle", etCalleAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("num_exterior", etNoExtAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("num_interior", etNoIntAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("manzana", etManzanaAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("lote", etLoteAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("cp", etCpAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("colonia", tvColoniaAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("ciudad", etCiudadAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("localidad", tvLocalidadAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("municipio", tvMunicipioAval.getText().toString().trim().toUpperCase());
-                                                        cv.put("estado", tvEstadoAval.getText().toString().trim().toUpperCase());
+                                                        cv.put("calle", m.GetStr(etCalleAval));
+                                                        cv.put("num_exterior", m.GetStr(etNoExtAval));
+                                                        cv.put("num_interior", m.GetStr(etNoIntAval));
+                                                        cv.put("manzana", m.GetStr(etManzanaAval));
+                                                        cv.put("lote", m.GetStr(etLoteAval));
+                                                        cv.put("cp", m.GetStr(etCpAval));
+                                                        cv.put("colonia", m.GetStr(tvColoniaAval));
+                                                        cv.put("ciudad", m.GetStr(etCiudadAval));
+                                                        cv.put("localidad", m.GetStr(tvLocalidadAval));
+                                                        cv.put("municipio", m.GetStr(tvMunicipioAval));
+                                                        cv.put("estado", m.GetStr(tvEstadoAval));
                                                         db.update(TBL_DIRECCIONES, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdAval, "AVAL"});
                                                         save_aval = true;
                                                     }
@@ -8089,34 +8042,34 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validatorTV.validate(tvFechaNacRef, new String[]{validator.REQUIRED}) &&
         !validator.validate(etCalleRef, new String[]{validator.REQUIRED}) &&
         !validator.validate(etCpRef, new String[]{validator.REQUIRED, validator.CP}) &&
-        !Miscellaneous.ValidTextView(tvColoniaRef) &&
+        !m.ValidTextView(tvColoniaRef) &&
         !validator.validate(etCiudadRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvLocalidadRef, new String[]{validatorTV.REQUIRED}) &&
-        !Miscellaneous.ValidTextView(tvMunicipioRef) &&
-        !Miscellaneous.ValidTextView(tvEstadoRef) &&
+        !m.ValidTextView(tvMunicipioRef) &&
+        !m.ValidTextView(tvEstadoRef) &&
         !validator.validate(etTelCelRef, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})) {
             ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreRef.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoRef.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoRef.getText().toString().trim().toUpperCase());
-            cv.put("fecha_nacimiento", tvFechaNacRef.getText().toString().trim().toUpperCase());
-            cv.put("tel_celular", etTelCelRef.getText().toString().trim().toUpperCase());
+            cv.put("nombre", m.GetStr(etNombreRef));
+            cv.put("paterno", m.GetStr(etApPaternoRef));
+            cv.put("materno", m.GetStr(etApMaternoRef));
+            cv.put("fecha_nacimiento", m.GetStr(tvFechaNacRef));
+            cv.put("tel_celular", m.GetStr(etTelCelRef));
 
             db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             cv = new ContentValues();
-            cv.put("calle", etCalleRef.getText().toString().trim().toUpperCase());
-            cv.put("num_exterior", etNoExtRef.getText().toString().trim().toUpperCase());
-            cv.put("num_interior", etNoIntRef.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaRef.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteRef.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpRef.getText().toString().trim().toUpperCase());
-            cv.put("colonia", tvColoniaRef.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadRef.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadRef.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioRef.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoRef.getText().toString().trim().toUpperCase());
+            cv.put("calle", m.GetStr(etCalleRef));
+            cv.put("num_exterior", m.GetStr(etNoExtRef));
+            cv.put("num_interior", m.GetStr(etNoIntRef));
+            cv.put("manzana", m.GetStr(etManzanaRef));
+            cv.put("lote", m.GetStr(etLoteRef));
+            cv.put("cp", m.GetStr(etCpRef));
+            cv.put("colonia", m.GetStr(tvColoniaRef));
+            cv.put("ciudad", m.GetStr(etCiudadRef));
+            cv.put("localidad", m.GetStr(tvLocalidadRef));
+            cv.put("municipio", m.GetStr(tvMunicipioRef));
+            cv.put("estado", m.GetStr(tvEstadoRef));
             db.update(TBL_DIRECCIONES, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdRef, "REFERENCIA"});
 
             save_referencia = true;
@@ -8134,11 +8087,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
             ivError8.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("calle_principal", tvPrincipal.getText().toString().trim().toUpperCase());
-            cv.put("lateral_uno", tvLateraUno.getText().toString().trim().toUpperCase());
-            cv.put("lateral_dos", tvLateraDos.getText().toString().trim().toUpperCase());
-            cv.put("calle_trasera", tvTrasera.getText().toString().trim().toUpperCase());
-            cv.put("referencias", etReferencia.getText().toString().trim().toUpperCase());
+            cv.put("calle_principal", m.GetStr(tvPrincipal));
+            cv.put("lateral_uno", m.GetStr(tvLateraUno));
+            cv.put("lateral_dos", m.GetStr(tvLateraDos));
+            cv.put("calle_trasera", m.GetStr(tvTrasera));
+            cv.put("referencias", m.GetStr(etReferencia));
 
             db.update(TBL_CROQUIS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_croquis = true;
@@ -8571,12 +8524,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
                 credito = saveDatosCredito();
                 cliente = saveDatosPersonales();
-                if (tvEstadoCivilCli.getText().toString().trim().toUpperCase().equals("CASADO(A)") ||
-                    tvEstadoCivilCli.getText().toString().trim().toUpperCase().equals("UNIÓN LIBRE"))
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE"))
                     conyuge = saveConyuge();
                 else
                     conyuge = true;
-                if (!etMontoPrestamo.getText().toString().trim().replace(",","").isEmpty() && Integer.parseInt(etMontoPrestamo.getText().toString().trim().replace(",","")) >= 30000)
+                if (!m.GetStr(etMontoPrestamo).replace(",","").isEmpty() && Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",","")) >= 30000)
                     economicos = saveDatosEconomicos();
                 else
                     economicos = true;
@@ -8609,7 +8561,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
                    ContentValues cv = new ContentValues();
                    cv.put("estatus", 1);
-                   cv.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+                   cv.put("fecha_termino", m.ObtenerFecha("timestamp"));
 
                    db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
 
@@ -8720,7 +8672,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(7).trim().isEmpty())
             etMontoPrestamo.setText(dfnd.format(row.getInt(7))); etMontoPrestamo.setEnabled(isEditCre);
         if (!row.getString(7).trim().isEmpty()) {
-            tvCantidadLetra.setText((Miscellaneous.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+            tvCantidadLetra.setText((m.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
             if (row.getInt(7) >= 30000)
                 llPropiedades.setVisibility(View.VISIBLE);
         }
@@ -8844,7 +8796,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(32).isEmpty()){
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(32));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachCli = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachCli = m.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachCli);
             ibFotoFachCli.setVisibility(View.GONE);
             ivFotoFachCli.setVisibility(View.VISIBLE);
@@ -8853,7 +8805,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(34).isEmpty()){
             File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(34));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaCli = Miscellaneous.getBytesUri(ctx, uriFirma,0);
+            byteFirmaCli = m.getBytesUri(ctx, uriFirma,0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaCli);
             ibFirmaCli.setVisibility(View.GONE);
             ivFirmaCli.setVisibility(View.VISIBLE);
@@ -8966,7 +8918,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etOtroMedioPagoNeg.setVisibility(View.VISIBLE);
         }
 
-        if (tvMediosPagoNeg.getText().toString().trim().toUpperCase().contains("EFECTIVO"))
+        if (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO"))
             llOperacionesEfectivo.setVisibility(View.VISIBLE);
         else
             llOperacionesEfectivo.setVisibility(View.GONE);
@@ -8980,7 +8932,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(24).isEmpty()){
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(24));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachNeg = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachNeg = m.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachNeg);
             ibFotoFachNeg.setVisibility(View.GONE);
             ivFotoFachNeg.setVisibility(View.VISIBLE);
@@ -9104,7 +9056,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(46).isEmpty()){
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(46));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachAval = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachAval = m.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachAval);
             ibFotoFachAval.setVisibility(View.GONE);
             ivFotoFachAval.setVisibility(View.VISIBLE);
@@ -9113,7 +9065,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(48).isEmpty()){
             File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(48));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaAval = Miscellaneous.getBytesUri(ctx, uriFirma,0);
+            byteFirmaAval = m.getBytesUri(ctx, uriFirma,0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaAval);
             ibFirmaAval.setVisibility(View.GONE);
             ivFirmaAval.setVisibility(View.VISIBLE);
@@ -9207,7 +9159,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(2).isEmpty()){
             File ineFrontalFile = new File(ROOT_PATH + "Documentos/"+row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
-            byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal,0);
+            byteIneFrontal = m.getBytesUri(ctx, uriIneFrontal,0);
             Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
             ibIneFrontal.setVisibility(View.GONE);
             ivIneFrontal.setVisibility(View.VISIBLE);
@@ -9216,7 +9168,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(3).isEmpty()){
             File ineReversoFile = new File(ROOT_PATH + "Documentos/"+row.getString(3));
             Uri uriIneReverso = Uri.fromFile(ineReversoFile);
-            byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso,0);
+            byteIneReverso = m.getBytesUri(ctx, uriIneReverso,0);
             Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
             ibIneReverso.setVisibility(View.GONE);
             ivIneReverso.setVisibility(View.VISIBLE);
@@ -9225,7 +9177,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(4).isEmpty()){
             File curpFile = new File(ROOT_PATH + "Documentos/"+row.getString(4));
             Uri uriCurp = Uri.fromFile(curpFile);
-            byteCurp = Miscellaneous.getBytesUri(ctx, uriCurp,0);
+            byteCurp = m.getBytesUri(ctx, uriCurp,0);
             Glide.with(ctx).load(uriCurp).into(ivCurp);
             ibCurp.setVisibility(View.GONE);
             ivCurp.setVisibility(View.VISIBLE);
@@ -9234,7 +9186,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(5).isEmpty()){
             File comprobanteFile = new File(ROOT_PATH + "Documentos/"+row.getString(5));
             Uri uriComprobante = Uri.fromFile(comprobanteFile);
-            byteComprobante = Miscellaneous.getBytesUri(ctx, uriComprobante,0);
+            byteComprobante = m.getBytesUri(ctx, uriComprobante,0);
             Glide.with(ctx).load(uriComprobante).into(ivComprobante);
             ibComprobante.setVisibility(View.GONE);
             ivComprobante.setVisibility(View.VISIBLE);
@@ -9243,7 +9195,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (!row.getString(7).isEmpty()){
             File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(7));
             Uri uriFirma = Uri.fromFile(firmaFile);
-            byteFirmaAsesor = Miscellaneous.getBytesUri(ctx, uriFirma,0);
+            byteFirmaAsesor = m.getBytesUri(ctx, uriFirma,0);
             Glide.with(ctx).load(uriFirma).into(ivFirmaAsesor);
             ibFirmaAsesor.setVisibility(View.GONE);
             ivFirmaAsesor.setVisibility(View.VISIBLE);
@@ -9260,6 +9212,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             tvDestino.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvRiesgo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError1.setVisibility(View.VISIBLE);
 
         if (!isEditCli) {
             etNombreCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9302,6 +9256,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etEmail.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etReferenciCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError2.setVisibility(View.VISIBLE);
 
         if (!isEditCon) {
             etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9323,6 +9279,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError3.setVisibility(View.VISIBLE);
 
         if (!isEditEco) {
             etPropiedadesEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9330,6 +9288,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etUbicacionEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvIngresoEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError4.setVisibility(View.VISIBLE);
 
         if (!isEditNeg) {
             etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9364,6 +9324,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             tvDiasVentaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError5.setVisibility(View.VISIBLE);
 
         if (!isEditAva) {
             etNombreAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9417,6 +9379,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etEmailAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etReferenciaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError6.setVisibility(View.VISIBLE);
 
         if (!isEditRef) {
             etNombreRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9434,6 +9398,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             tvLocalidadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etTelCelRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+        else
+            ivError7.setVisibility(View.VISIBLE);
 
         if (!isEditCro)
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9449,6 +9415,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(false);
             }
         }
+        else
+            ivError8.setVisibility(View.VISIBLE);
         //}
     }
 
@@ -9507,4 +9475,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 break;
         }
     }
+
+    private boolean getGastoMen(){
+
+        double sum = Double.parseDouble(m.GetStr(etGastosMenNeg).replace(",",""))
+                + Double.parseDouble(m.GetStr(etGastosAguaNeg).replace(",",""))
+                + Double.parseDouble(m.GetStr(etGastosLuzNeg).replace(",",""))
+                + Double.parseDouble(m.GetStr(etGastosTelNeg).replace(",",""))
+                + Double.parseDouble(m.GetStr(etGastosRentaNeg).replace(",",""))
+                + Double.parseDouble(m.GetStr(etGastosOtrosNeg).replace(",",""));
+
+        return (sum > 0);
+    }
+
 }

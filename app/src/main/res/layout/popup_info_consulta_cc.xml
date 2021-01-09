@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:minWidth="400dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Total Saldo Actual"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Total Saldo Vencido"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvSaldoActual"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginRight="2dp"
+                        android:paddingLeft="10dp"
+                        android:drawableLeft="@drawable/ic_money"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                    <TextView
+                        android:id="@+id/tvSaldoVencido"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="2dp"
+                        android:paddingLeft="10dp"
+                        android:drawableLeft="@drawable/ic_money"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_marginTop="10dp"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal">
+                   <TextView
+                       android:textColor="@android:color/black"
+                       android:text="Monto a Pagar"
+                       android:layout_weight="1"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content" />
+                   <TextView
+                       android:textColor="@android:color/black"
+                       android:text="Peor Pago Actual"
+                       android:layout_weight="1"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content" />
+               </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvMontoPagar"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginRight="2dp"
+                        android:paddingLeft="10dp"
+                        android:drawableLeft="@drawable/ic_money"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                    <TextView
+                        android:id="@+id/tvPeorPago"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="2dp"
+                        android:paddingLeft="10dp"
+                        android:drawableLeft="@drawable/ic_money"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Créditos Abiertos"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Créditos Cerrados"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvCreditosAbiertos"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginRight="2dp"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+
+                    <TextView
+                        android:id="@+id/tvCreditosCerrados"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="2dp"
+                        android:paddingLeft="10dp"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Monto Solicitado"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Monto Autorizado"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvMontoSoli"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:gravity="center_vertical"
+                        android:layout_marginRight="2dp"
+                        android:paddingLeft="10dp"
+                        android:drawableLeft="@drawable/ic_money"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+
+                    <EditText
+                        android:id="@+id/etMontoAutorizado"
+                        android:textSize="17sp"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:paddingLeft="10dp"
+                        android:layout_marginLeft="2dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:drawableStart="@drawable/ic_money"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnGuardar"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn_rounded_blue"
+                    android:textColor="@color/white"
+                    android:text="Guardar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnDescargarPdf"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn_rounded_yellow"
+                    android:textColor="@color/black"
+                    android:text="Descargar PDF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

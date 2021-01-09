@@ -27,7 +27,6 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
@@ -120,12 +119,7 @@ public class rg_detalle_fragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Cursor row;
-
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO + " AS p", "p.*, c.nombre, c.clave, (select count(i._id) from " + TBL_MIEMBROS_GPO + " AS i WHERE id_prestamo = ?) as total_integrantes", " INNER JOIN "+TBL_CARTERA_GPO + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo,parent.id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.clave, (select count(i._id) from " + TBL_MIEMBROS_GPO_T + " AS i WHERE id_prestamo = ?) as total_integrantes", " INNER JOIN "+TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo,parent.id_prestamo});
+        Cursor row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.clave, (select count(i._id) from " + TBL_MIEMBROS_GPO_T + " AS i WHERE id_prestamo = ?) as total_integrantes", " INNER JOIN "+TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{parent.id_prestamo,parent.id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
@@ -143,10 +137,7 @@ public class rg_detalle_fragment extends Fragment {
         }
         row.close();
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_MIEMBROS_GPO, "*", " WHERE tipo_integrante in ('PRESIDENTE', 'TESORERO', 'SECRETARIO') AND id_prestamo = ?", "", new String[]{parent.id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_MIEMBROS_GPO_T, "*", " WHERE tipo_integrante in ('PRESIDENTE', 'TESORERO', 'SECRETARIO') AND id_prestamo = ?", "", new String[]{parent.id_prestamo});
+        row = dBhelper.customSelect(TBL_MIEMBROS_GPO_T, "*", " WHERE tipo_integrante in ('PRESIDENTE', 'TESORERO', 'SECRETARIO') AND id_prestamo = ?", "", new String[]{parent.id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();

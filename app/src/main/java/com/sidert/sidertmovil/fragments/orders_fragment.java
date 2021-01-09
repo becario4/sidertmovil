@@ -19,6 +19,7 @@ import com.sidert.sidertmovil.fragments.view_pager.route_fragment;
 import com.sidert.sidertmovil.utils.CustomViewPager;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
+/**Clase de ViewPager donde se visualizan Cartera, Ruta, Contestadas*/
 public class orders_fragment extends Fragment {
 
     private Home boostrap;
@@ -78,6 +79,12 @@ public class orders_fragment extends Fragment {
         boostrap.setTitle(Miscellaneous.ucFirst(ctx.getString(R.string.orders)));
     }
 
+    /**Aqui se coloca el contador de fichas que se visualizan dependiendo a la vista
+     * index
+     * 0 = Cartera
+     * 1 = Ruta
+     * 2 = Contestadas
+     * y count es el total de fichas que se visualizan*/
     public void SetUpBagde(int index, int count){
         TextView tvBadge = mTabs.getTabAt(index).getCustomView().findViewById(R.id.tvCount);
         tvBadge.setText(String.valueOf(count));

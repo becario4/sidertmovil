@@ -21,7 +21,7 @@
                 android:id="@+id/TBmain"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Circulo de Crédito"
+                app:title="Apoyo Gastos Funerarios"
                 app:titleTextColor="@color/white"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>

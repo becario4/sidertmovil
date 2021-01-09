@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.bitly.Bitly;
+import com.bitly.Error;
+import com.bitly.Response;
 import com.sewoo.jpos.command.ESCPOS;
 import com.sewoo.jpos.printer.ESCPOSPrinter;
 import com.sewoo.jpos.printer.LKPrint;
@@ -16,16 +19,15 @@ import com.sidert.sidertmovil.models.MImpresion;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
 
 public class PrintTicket {
@@ -106,6 +108,19 @@ public class PrintTicket {
                 nombreCampo = "Monto pago realizado: ";
                 linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+
+
+                if (!data.getFechaUltimoPago().isEmpty()) {
+                    //----------------- nuevos campos ----------------
+                    nombreCampo = "Fecha Ultimo Pago: ";
+                    linea = line(nombreCampo, data.getFechaUltimoPago());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+
+                    nombreCampo = "Monto Ultimo Pago: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMontoUltimoPago())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    //------------------------------------------------
+                }
             }
             else{
                 if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
@@ -198,10 +213,13 @@ public class PrintTicket {
                     params.put(7, "");
                     params.put(8, "0");
                     params.put(9, data.getNumeroPrestamo());
+                    params.put(10, data.getTelefono());
 
                     dBhelper.saveImpresiones(db, params);
 
                     linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+1);
+
+                    SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, "1");
                 }
                 else{
                     row.moveToLast();
@@ -219,6 +237,7 @@ public class PrintTicket {
                         params.put(7, "");
                         params.put(8, "0");
                         params.put(9, data.getNumeroPrestamo());
+                        params.put(10, data.getTelefono());
 
                         dBhelper.saveImpresiones(db, params);
 
@@ -240,9 +259,12 @@ public class PrintTicket {
                             params.put(7, "");
                             params.put(8, "0");
                             params.put(9, data.getNumeroPrestamo());
+                            params.put(10, data.getTelefono());
 
                             dBhelper.saveImpresiones(db, params);
                             linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row_folio.getString(0));
+
+                            SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, row_folio.getString(0));
                         }
                         else{
                             HashMap<Integer, String> params = new HashMap<>();
@@ -256,9 +278,12 @@ public class PrintTicket {
                             params.put(7, "");
                             params.put(8, "0");
                             params.put(9, data.getNumeroPrestamo());
+                            params.put(10, data.getTelefono());
 
                             dBhelper.saveImpresiones(db, params);
                             linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+
+                            SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, String.valueOf((row.getInt(3)+1)));
                         }
                     }
                 }
@@ -283,6 +308,7 @@ public class PrintTicket {
                     params.put(7, "");
                     params.put(8, "0");
                     params.put(9, data.getNumeroPrestamo());
+                    params.put(10, "");
 
                     dBhelper.saveImpresionesVencida(db, params);
 
@@ -324,6 +350,7 @@ public class PrintTicket {
                         params.put(7, "");
                         params.put(8, "0");
                         params.put(9, data.getNumeroPrestamo());
+                        params.put(10, "");
 
                         dBhelper.saveImpresionesVencida(db, params);
 
@@ -345,6 +372,7 @@ public class PrintTicket {
                             params.put(7, "");
                             params.put(8, "0");
                             params.put(9, data.getNumeroPrestamo());
+                            params.put(10, "");
 
                             dBhelper.saveImpresionesVencida(db, params);
 
@@ -362,6 +390,7 @@ public class PrintTicket {
                             params.put(7, "");
                             params.put(8, "0");
                             params.put(9, data.getNumeroPrestamo());
+                            params.put(10, "");
 
                             dBhelper.saveImpresionesVencida(db, params);
                             linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + (row.getInt(3) + 1));
@@ -397,6 +426,26 @@ public class PrintTicket {
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea);
             dobleEspacio();
 
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+
+                URL url = null;
+                try {
+                    //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                    url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                posPtr.printQRCode(url.toString(), 300, 4, 0, 100, 1);
+
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Escanea el codigo para ver tu   ");
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "historial de pagos o ingresa al ");
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: "+url.toString());
+
+
+                dobleEspacio();
+            }
+
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "En caso de dudas o aclaraciones ");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comuniquese al 01 800 112 6666");
 
@@ -408,6 +457,29 @@ public class PrintTicket {
         }
         dobleEspacio();
         dobleEspacio();
+
+    }
+
+    private void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio){
+        URL url = null;
+        try {
+            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(prestamoId));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        String clienteGpo = nombre;
+        if (nombre.length() > 17)
+            clienteGpo = nombre.substring(0,15);
+
+        Log.e("Comienza SMS", "Prepara SMS");
+        String numeroCelular = phone; /**Coloca el numero celular del cliente y en caso que el asesor que esta imprimiendo sea el ASESOR de pruebas manda SMS al numero de SOPORTE*/
+
+        if (session.getUser().get(9).equals("134")) /**USUARIO_ID del usuario ASESOR de pruebas*/
+            numeroCelular = "2292641103"; //Telefono para cuando se quieren hacer pruebas
+        String mess = clienteGpo + " pago por $"+monto+" pesos. Folio "+folio+".\n Valida tus pagos: "+url.toString();
+        Log.e("Mensaje", mess);
+        Miscellaneous.SendMess(numeroCelular, mess);
 
     }
 

@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -120,6 +121,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                             if (item_prestamo.getEstatus().equals("1"))
                                 popup.getMenu().getItem(0).setEnabled(false);
 
+                            Log.e("ROLE", session.getUser().get(5));
                             if (session.getUser().get(5).contains("ROLE_SUPER") ||
                                 session.getUser().get(5).contains("ROLE_ANALISTA") ||
                                 session.getUser().get(5).contains("ROLE_DIRECCION") ||

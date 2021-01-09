@@ -27,7 +27,8 @@ import com.sidert.sidertmovil.utils.Popups;
 import java.util.Objects;
 
 
-
+/**Vista de geolocalizacion grupal donde visualiza el menu de CLIENTE, NEGOCIO, AVAL
+ * cuwnta con un menu bottom */
 public class GeolocalizacionInd extends AppCompatActivity {
 
     private BottomNavigationView nvMenu;
@@ -46,9 +47,12 @@ public class GeolocalizacionInd extends AppCompatActivity {
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
 
+        /**Obtiene los datos que se pasaron entre clases*/
          b = new Bundle();
          b.putInt(Constants._ID, getIntent().getIntExtra(Constants._ID,0));
          b.putString(Constants.NUM_SOLICITUD, getIntent().getStringExtra(Constants.NUM_SOLICITUD));
+
+        /**Valida que opcion fue seleccionado para mostrar la vista*/
         switch (getIntent().getIntExtra(Constants.MODULO,0)){
             case 1:
                 nvMenu.setSelectedItemId(R.id.nvCliente);
@@ -65,12 +69,14 @@ public class GeolocalizacionInd extends AppCompatActivity {
         }
     }
 
+    /**Evento de menu para seleccionar que formulario de geolocalizacion*/
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final Fragment current;
             switch (item.getItemId()) {
                 case R.id.nvCliente:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de cliente y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
                     if ((current instanceof geo_negocio_fragment)){
                         if (((geo_negocio_fragment) current).flag_edit){
@@ -140,6 +146,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
 
                     break;
                 case R.id.nvNegocio:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de negocio y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
                     if ((current instanceof geo_cliente_fragment)){
@@ -209,6 +216,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
                         setFragment(NameFragments.GEO_NEGOCIO, b);
                     break;
                 case R.id.nvAval:
+                    /**Valida si estaba en otra vista y quiere cambiar a vista de aval y hay datos pendiente de guardar*/
                     current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
                     if ((current instanceof geo_cliente_fragment)){
@@ -282,6 +290,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
         }
     };
 
+    /**Funcion para hacer las transiciones de fragmentos de las vistas de geolocalizacion*/
     public void setFragment(String fragment, Bundle extras) {
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);
         FragmentManager manager = getSupportFragmentManager();
@@ -346,6 +355,7 @@ public class GeolocalizacionInd extends AppCompatActivity {
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
+    /**Funcion de retroceso para salir de la vista*/
     @Override
     public void onBackPressed() {
         final Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);

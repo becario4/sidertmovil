@@ -11,11 +11,13 @@ import com.sidert.sidertmovil.utils.Constants;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
+/**Clase del lector de barras que se ocupa para originacion*/
 public class LectorCodigoBarras extends Activity implements ZBarScannerView.ResultHandler {
     private ZBarScannerView mScannerView;
     private AlertDialog.Builder builder;
 
     private String code = "";
+
 
     @Override
     public void onCreate(Bundle state) {
@@ -24,6 +26,7 @@ public class LectorCodigoBarras extends Activity implements ZBarScannerView.Resu
         setContentView(mScannerView);                // Set the scanner view as the content view
     }
 
+    /**Abre la camara para comenzar a leer el codigo de barrar*/
     @Override
     public void onResume() {
         super.onResume();
@@ -37,6 +40,8 @@ public class LectorCodigoBarras extends Activity implements ZBarScannerView.Resu
         mScannerView.stopCamera();           // Stop camera on pause
     }
 
+    /**Cuando logra obtener el valor de codigo se valida con el primer codigo para confirmacion
+     * de que si se leyó bien el código y retonar ese codigo*/
     @Override
     public void handleResult(Result rawResult) {
         // Do something with the result here

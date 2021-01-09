@@ -17,17 +17,13 @@ import com.sidert.sidertmovil.models.MReimpresion;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VIGENTE_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REIMPRESION_VIGENTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
-import static com.sidert.sidertmovil.utils.Constants.face_dissatisfied;
 
 public class ReprintTicket {
 
@@ -58,6 +54,7 @@ public class ReprintTicket {
         params.put(8, "");
         params.put(9, "0");
         params.put(10, ticket.getNumeroPrestamo());
+        params.put(11, "");
 
         dBhelper.saveReimpresionVigente(db, params);
 
@@ -127,6 +124,19 @@ public class ReprintTicket {
                 nombreCampo = "Monto pago realizado: ";
                 linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+
+                if (!data.getFechaUltimoPago().isEmpty()) {
+                    //----------------- nuevos campos ----------------
+                    nombreCampo = "Fecha Ultimo Pago: ";
+                    linea = line(nombreCampo, data.getFechaUltimoPago());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+
+                    nombreCampo = "Monto Ultimo Pago: ";
+                    linea = line(nombreCampo, money(String.valueOf(data.getMontoUltimoPago())).trim());
+                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    //------------------------------------------------
+                }
+
             }
             else{
                 if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
@@ -202,10 +212,11 @@ public class ReprintTicket {
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
                     }
                     else {
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "");
+                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
                         dobleEspacio();
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
-                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "NOMBRE Y FIRMA DEL CLIENTE");
+                        posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
+
                     }
                 }
             }
@@ -221,6 +232,25 @@ public class ReprintTicket {
 
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea);
             dobleEspacio();
+
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+
+                URL url = null;
+                try {
+                    //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                    url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                posPtr.printQRCode(url.toString(), 300, 4, 0, 100, 1);
+
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Escanea el codigo para ver tu   ");
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "historial de pagos o ingresa al ");
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: "+url.toString());
+
+                dobleEspacio();
+            }
 
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "En caso de dudas o aclaraciones ");
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comuniquese al 01 800 112 6666");

@@ -7,6 +7,7 @@ import android.webkit.WebView;
 
 import com.sidert.sidertmovil.R;
 
+/**Webview para cargar la pagina de comunicados covid*/
 public class ComunicadoCovid extends AppCompatActivity {
 
     @Override

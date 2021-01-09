@@ -28,13 +28,9 @@ public class ResumenCCAGF extends AppCompatActivity {
     private TextView tvGrupales;
     private TextView tvIndividuales;
     private TextView tvGestionadas;
-    private TextView tvGestionadasAgf;
-    private TextView tvGestionadasCC;
     private TextView tvTotalEnviadas;
     private TextView tvPendientesEnvio;
     private TextView tvParcial;
-    private TextView tvParcialAgf;
-    private TextView tvParcialCc;
     private TextView tvImpresiones;
     private TextView tvImpresionesO;
     private TextView tvImpresionesC;
@@ -61,13 +57,9 @@ public class ResumenCCAGF extends AppCompatActivity {
         tvIndividuales      = findViewById(R.id.tvIndividuales);
         tvGrupales          = findViewById(R.id.tvGrupales);
         tvGestionadas       = findViewById(R.id.tvGestionadas);
-        tvGestionadasAgf    = findViewById(R.id.tvGestionadasAgf);
-        tvGestionadasCC     = findViewById(R.id.tvGestionadasCc);
         tvTotalEnviadas     = findViewById(R.id.tvEnviadas);
         tvPendientesEnvio   = findViewById(R.id.tvPendientes);
         tvParcial           = findViewById(R.id.tvTotalParcial);
-        tvParcialAgf        = findViewById(R.id.tvParcialAgf);
-        tvParcialCc         = findViewById(R.id.tvParcialCc);
         tvImpresiones       = findViewById(R.id.tvImpresiones);
         tvImpresionesO      = findViewById(R.id.tvImpresionesO);
         tvImpresionesC      = findViewById(R.id.tvImpresionesC);
@@ -83,10 +75,9 @@ public class ResumenCCAGF extends AppCompatActivity {
 
     private void getResumen(){
         int prestamos = 0, grupales = 0, individuales = 0;
-        int gestionadas = 0, gestionadasAGF = 0;
-        int gestionadasCC = 0, enviadas = 0;
+        int gestionadas = 0;
+        int enviadas = 0;
         int pendientesEnvio = 0, parcial = 0;
-        int parcialAGF = 0, parcialCC = 0;
         int impresiones = 0, impresionesO = 0, impresionesC = 0, impresionesEnv = 0, impresionesPen = 0;
 
         String sql = "";
@@ -112,16 +103,6 @@ public class ResumenCCAGF extends AppCompatActivity {
         gestionadas = row.getCount();
         row.close();
 
-        sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE estatus IN (?,?) AND tipo = ?";
-        row = db.rawQuery(sql,new String[]{"1","2", "AGF"});
-        gestionadasAGF = row.getCount();
-        row.close();
-
-        sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE estatus IN (?,?) AND tipo = ?";
-        row = db.rawQuery(sql,new String[]{"1","2", "CC"});
-        gestionadasCC = row.getCount();
-        row.close();
-
         sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE estatus = ?";
         row = db.rawQuery(sql,new String[]{"2"});
         enviadas = row.getCount();
@@ -134,15 +115,6 @@ public class ResumenCCAGF extends AppCompatActivity {
 
         row = db.rawQuery(sql,new String[]{"0"});
         parcial = row.getCount();
-        row.close();
-
-        sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE estatus = ? AND tipo = ?";
-        row = db.rawQuery(sql,new String[]{"0", "AGF"});
-        parcialAGF = row.getCount();
-        row.close();
-
-        row = db.rawQuery(sql,new String[]{"0", "CC"});
-        parcialCC = row.getCount();
         row.close();
 
         sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC;
@@ -174,12 +146,8 @@ public class ResumenCCAGF extends AppCompatActivity {
         tvGestionadas.setText("Gestionadas: "+gestionadas);
         tvTotalEnviadas.setText("Enviadas: "+enviadas);
         tvPendientesEnvio.setText("Pendientes: "+pendientesEnvio);
-        tvGestionadasAgf.setText("Gestionadas AGF: "+gestionadasAGF);
-        tvGestionadasCC.setText("Gestionadas CC: "+gestionadasCC);
 
         tvParcial.setText("Parciales: "+parcial);
-        tvParcialAgf.setText("Parciales AGF: "+parcialAGF);
-        tvParcialCc.setText("Parciales CC: "+parcialCC);
         tvImpresiones.setText("Impresiones: "+impresiones);
         tvImpresionesO.setText("Originales: "+impresionesO);
         tvImpresionesC.setText("Copias: "+impresionesC);

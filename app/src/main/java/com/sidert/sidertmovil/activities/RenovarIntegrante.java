@@ -4660,15 +4660,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 if (!validatorTV.validate(tvEstadoNacCli, new String[]{validatorTV.REQUIRED}) &&
                     !validator.validate(etCurpCli, new String[]{validator.REQUIRED, validator.CURP}) &&
                     (!validatorTV.validate(tvRfcCli, new String[]{validatorTV.REQUIRED}) &&
-                    !tvRfcCli.getText().toString().trim().equals("Rfc no válida"))){
-                    if (Miscellaneous.CurpValidador(etCurpCli.getText().toString().trim().toUpperCase())){
+                    !Miscellaneous.GetStr(tvRfcCli).equals("Rfc no válida"))){
+                    if (Miscellaneous.CurpValidador(Miscellaneous.GetStr(etCurpCli))){
                         if (!validatorTV.validate(tvTipoIdentificacion, new String[]{validatorTV.REQUIRED}) &&
                                 !validator.validate(etNumIdentifCli, new String[]{validator.REQUIRED}) &&
                                 !validatorTV.validate(tvEstudiosCli, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvOcupacionCli, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvEstadoCivilCli, new String[]{validatorTV.REQUIRED})){
                             boolean flag_est_civil = false;
-                            if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")){
+                            if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)")){
                                 if (rgBienes.getCheckedRadioButtonId() == R.id.rbMancomunados ||
                                         rgBienes.getCheckedRadioButtonId() == R.id.rbSeparados) {
                                     tvBienes.setError(null);
@@ -4690,8 +4690,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
                             if (flag_est_civil){
                                 ivError1.setVisibility(View.GONE);
-                                cv.put("fecha_nacimiento", tvFechaNacCli.getText().toString());
-                                cv.put("edad", Integer.parseInt(tvEdadCli.getText().toString()));
+                                cv.put("fecha_nacimiento", Miscellaneous.GetStr(tvFechaNacCli));
+                                cv.put("edad", Integer.parseInt(Miscellaneous.GetStr(tvEdadCli)));
                                 switch (rgGeneroCli.getCheckedRadioButtonId()){
                                     case R.id.rbHombre:
                                         cv.put("genero", 0);
@@ -4700,14 +4700,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                         cv.put("genero", 1);
                                         break;
                                 }
-                                cv.put("estado_nacimiento", tvEstadoNacCli.getText().toString().trim());
-                                cv.put("rfc", tvRfcCli.getText().toString().trim());
-                                cv.put("curp", etCurpCli.getText().toString().trim());
-                                //cv.put("curp_digito_veri", etCurpIdCli.getText().toString().trim());
-                                cv.put("tipo_identificacion", tvTipoIdentificacion.getText().toString().trim());
-                                cv.put("no_identificacion", etNumIdentifCli.getText().toString().trim().toUpperCase());
-                                cv.put("nivel_estudio", tvEstudiosCli.getText().toString());
-                                cv.put("ocupacion", tvOcupacionCli.getText().toString());
+                                cv.put("estado_nacimiento", Miscellaneous.GetStr(tvEstadoNacCli));
+                                cv.put("rfc", Miscellaneous.GetStr(tvRfcCli));
+                                cv.put("curp", Miscellaneous.GetStr(etCurpCli));
+                                cv.put("tipo_identificacion", Miscellaneous.GetStr(tvTipoIdentificacion));
+                                cv.put("no_identificacion", Miscellaneous.GetStr(etNumIdentifCli));
+                                cv.put("nivel_estudio", Miscellaneous.GetStr(tvEstudiosCli));
+                                cv.put("ocupacion", Miscellaneous.GetStr(tvOcupacionCli));
 
                                 db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{id_integrante});
 
@@ -4748,10 +4747,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 !validator.validate(etTeltrabajoCli, new String[]{validator.PHONE})){
             ivError2.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("tel_casa", etTelCasaCli.getText().toString().trim());
-            cv.put("tel_celular", etCelularCli.getText().toString());
-            cv.put("tel_mensaje", etTelMensCli.getText().toString());
-            cv.put("tel_trabajo", etTeltrabajoCli.getText().toString());
+            cv.put("tel_casa", Miscellaneous.GetStr(etTelCasaCli));
+            cv.put("tel_celular", Miscellaneous.GetStr(etCelularCli));
+            cv.put("tel_mensaje", Miscellaneous.GetStr(etTelMensCli));
+            cv.put("tel_trabajo", Miscellaneous.GetStr(etTeltrabajoCli));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_TELEFONOS_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4778,12 +4777,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     !validatorTV.validate(tvTipoCasaCli, new String[]{validatorTV.REQUIRED}) &&
                     !validatorTV.validate(tvDependientes, new String[]{validatorTV.REQUIRED})){
                 boolean flag_tipo_casa = false;
-                cv.put("tipo_vivienda", tvTipoCasaCli.getText().toString().trim().toUpperCase());
-                switch (tvTipoCasaCli.getText().toString().trim().toUpperCase()){
+                cv.put("tipo_vivienda", Miscellaneous.GetStr(tvTipoCasaCli));
+                switch (Miscellaneous.GetStr(tvTipoCasaCli)){
                     case "CASA FAMILIAR":
                         if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                             flag_tipo_casa = true;
-                            cv.put("parentesco", tvCasaFamiliar.getText().toString().trim().toUpperCase());
+                            cv.put("parentesco", Miscellaneous.GetStr(tvCasaFamiliar));
                             cv.put("otro_tipo_vivienda", "");
                         }
 
@@ -4792,7 +4791,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         if (!validator.validate(etOTroTipoCli, new String[]{validator.REQUIRED})) {
                             flag_tipo_casa = true;
                             cv.put("parentesco", "");
-                            cv.put("otro_tipo_vivienda", etOTroTipoCli.getText().toString().trim().toUpperCase());
+                            cv.put("otro_tipo_vivienda", Miscellaneous.GetStr(etOTroTipoCli));
                         }
                         break;
                     default:
@@ -4809,19 +4808,19 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                 ivError3.setVisibility(View.GONE);
                                 cv.put("latitud", String.valueOf(latLngUbiCli.latitude));
                                 cv.put("longitud", String.valueOf(latLngUbiCli.longitude));
-                                cv.put("calle", etCalleCli.getText().toString().trim().toUpperCase());
-                                cv.put("no_exterior", etNoExtCli.getText().toString().trim().toUpperCase());
-                                cv.put("no_interior", etNoIntCli.getText().toString().trim().toUpperCase());
-                                cv.put("manzana", etManzanaCli.getText().toString().trim().toUpperCase());
-                                cv.put("lote", etLoteCli.getText().toString().trim().toUpperCase());
-                                cv.put("cp", etCpCli.getText().toString().trim());
-                                cv.put("colonia", tvColoniaCli.getText().toString().trim().toUpperCase());
-                                cv.put("ciudad", etCiudadCli.getText().toString().trim().toUpperCase());
-                                cv.put("localidad", tvLocalidadCli.getText().toString().trim().toUpperCase());
-                                cv.put("municipio", tvMunicipioCli.getText().toString().trim().toUpperCase());
-                                cv.put("estado", tvEstadoCli.getText().toString().trim().toUpperCase());
-                                cv.put("ref_domiciliaria", etReferenciaCli.getText().toString().trim().toUpperCase());
-                                cv.put("dependientes", tvDependientes.getText().toString().trim());
+                                cv.put("calle", Miscellaneous.GetStr(etCalleCli));
+                                cv.put("no_exterior", Miscellaneous.GetStr(etNoExtCli));
+                                cv.put("no_interior", Miscellaneous.GetStr(etNoIntCli));
+                                cv.put("manzana", Miscellaneous.GetStr(etManzanaCli));
+                                cv.put("lote", Miscellaneous.GetStr(etLoteCli));
+                                cv.put("cp", Miscellaneous.GetStr(etCpCli));
+                                cv.put("colonia", Miscellaneous.GetStr(tvColoniaCli));
+                                cv.put("ciudad", Miscellaneous.GetStr(etCiudadCli));
+                                cv.put("localidad", Miscellaneous.GetStr(tvLocalidadCli));
+                                cv.put("municipio", Miscellaneous.GetStr(tvMunicipioCli));
+                                cv.put("estado", Miscellaneous.GetStr(tvEstadoCli));
+                                cv.put("ref_domiciliaria", Miscellaneous.GetStr(etReferenciaCli));
+                                cv.put("dependientes", Miscellaneous.GetStr(tvDependientes));
                                 cv.put("estatus_completado", 1);
 
                                 db.update(TBL_DOMICILIO_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4865,7 +4864,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         !Miscellaneous.ValidTextView(tvMunicipioNeg) &&
                         !validatorTV.validate(tvDestinoNeg, new String[]{validatorTV.REQUIRED})){
                     boolean otro_destino = false;
-                    if (tvDestinoNeg.getText().toString().trim().toUpperCase().equals("OTRO")){
+                    if (Miscellaneous.GetStr(tvDestinoNeg).equals("OTRO")){
                         if (!validator.validate(etOtroDestinoNeg, new String[]{validator.REQUIRED})){
                             otro_destino = true;
                         }
@@ -4878,11 +4877,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                 !validator.validate(etAntiguedadNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS}) &&
                                 !validator.validate(etIngMenNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etOtrosIngNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                                !validator.validate(etGastosSemNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
+                                !validator.validate(etGastosSemNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.MONEY}) &&
                                 !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED}) &&
                                 !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})){
                             boolean otro_medio = false;
-                            if (tvMediosPagoNeg.getText().toString().trim().contains("OTRO")){
+                            if (Miscellaneous.GetStr(tvMediosPagoNeg).contains("OTRO")){
                                 if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
                                     otro_medio = true;
                             }
@@ -4894,31 +4893,31 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                     if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED})){
                                         ivError4.setVisibility(View.GONE);
                                         ContentValues cv = new ContentValues();
-                                        cv.put("nombre", etNombreNeg.getText().toString().trim().toUpperCase());
+                                        cv.put("nombre", Miscellaneous.GetStr(etNombreNeg));
                                         cv.put("latitud", String.valueOf(latLngUbiNeg.latitude));
                                         cv.put("longitud", String.valueOf(latLngUbiNeg.longitude));
-                                        cv.put("calle", etCalleNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("no_exterior", etNoExtNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("no_interior", etNoIntNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("manzana", etManzanaNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("lote", etLoteNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("cp", etCpNeg.getText().toString().trim());
-                                        cv.put("colonia", tvColoniaNeg.getText().toString().toUpperCase());
-                                        cv.put("ciudad", etCiudadNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("localidad", tvLocalidadNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("municipio", tvMunicipioNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("destino_credito", tvDestinoNeg.getText().toString().trim());
-                                        cv.put("otro_destino_credito", etOtroDestinoNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("actividad_economica", tvActEconomicaNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("antiguedad", etAntiguedadNeg.getText().toString().trim());
-                                        cv.put("ing_mensual", etIngMenNeg.getText().toString().trim().replace(",",""));
-                                        cv.put("ing_otros", etOtrosIngNeg.getText().toString().trim().replace(",",""));
-                                        cv.put("gasto_semanal", etGastosSemNeg.getText().toString().trim().replace(",",""));
-                                        cv.put("capacidad_pago", etCapacidadPagoNeg.getText().toString().trim().replace(",",""));
-                                        cv.put("monto_maximo", tvMontoMaxNeg.getText().toString().trim().replace(",",""));
-                                        cv.put("medios_pago", tvMediosPagoNeg.getText().toString().trim());
-                                        cv.put("otro_medio_pago", etOtroMedioPagoNeg.getText().toString().trim().toUpperCase());
-                                        cv.put("ref_domiciliaria", etReferenciNeg.getText().toString().trim().toUpperCase());
+                                        cv.put("calle", Miscellaneous.GetStr(etCalleNeg));
+                                        cv.put("no_exterior", Miscellaneous.GetStr(etNoExtNeg));
+                                        cv.put("no_interior", Miscellaneous.GetStr(etNoIntNeg));
+                                        cv.put("manzana", Miscellaneous.GetStr(etManzanaNeg));
+                                        cv.put("lote", Miscellaneous.GetStr(etLoteNeg));
+                                        cv.put("cp", Miscellaneous.GetStr(etCpNeg));
+                                        cv.put("colonia", Miscellaneous.GetStr(tvColoniaNeg));
+                                        cv.put("ciudad", Miscellaneous.GetStr(etCiudadNeg));
+                                        cv.put("localidad", Miscellaneous.GetStr(tvLocalidadNeg));
+                                        cv.put("municipio", Miscellaneous.GetStr(tvMunicipioNeg));
+                                        cv.put("destino_credito", Miscellaneous.GetStr(tvDestinoNeg));
+                                        cv.put("otro_destino_credito", Miscellaneous.GetStr(etOtroDestinoNeg));
+                                        cv.put("actividad_economica", Miscellaneous.GetStr(tvActEconomicaNeg));
+                                        cv.put("antiguedad", Miscellaneous.GetStr(etAntiguedadNeg));
+                                        cv.put("ing_mensual", Miscellaneous.GetStr(etIngMenNeg).replace(",",""));
+                                        cv.put("ing_otros", Miscellaneous.GetStr(etOtrosIngNeg).replace(",",""));
+                                        cv.put("gasto_semanal", Miscellaneous.GetStr(etGastosSemNeg).replace(",",""));
+                                        cv.put("capacidad_pago", Miscellaneous.GetStr(etCapacidadPagoNeg).replace(",",""));
+                                        cv.put("monto_maximo", Miscellaneous.GetStr(tvMontoMaxNeg).replace(",",""));
+                                        cv.put("medios_pago", Miscellaneous.GetStr(tvMediosPagoNeg));
+                                        cv.put("otro_medio_pago", Miscellaneous.GetStr(etOtroMedioPagoNeg));
+                                        cv.put("ref_domiciliaria", Miscellaneous.GetStr(etReferenciNeg));
                                         cv.put("estatus_completado", 1);
 
                                         db.update(TBL_NEGOCIO_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -4976,26 +4975,26 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})){
             ivError5.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("nombre", etNombreCony.getText().toString().trim().toUpperCase());
-            cv.put("paterno", etApPaternoCony.getText().toString().trim().toUpperCase());
-            cv.put("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
-            cv.put("nacionalidad", etNacionalidad.getText().toString().trim().toUpperCase());
-            cv.put("ocupacion", tvOcupacionCony.getText().toString().trim().toUpperCase());
-            cv.put("calle", etCalleCony.getText().toString().trim().toUpperCase());
-            cv.put("no_exterior", etNoExtCony.getText().toString().trim().toUpperCase());
-            cv.put("no_interior", etNoIntCony.getText().toString().trim().toUpperCase());
-            cv.put("manzana", etManzanaCony.getText().toString().trim().toUpperCase());
-            cv.put("lote", etLoteCony.getText().toString().trim().toUpperCase());
-            cv.put("cp", etCpCony.getText().toString().trim());
-            cv.put("colonia", tvColoniaCony.getText().toString().trim().toUpperCase());
-            cv.put("ciudad", etCiudadCony.getText().toString().trim().toUpperCase());
-            cv.put("localidad", tvLocalidadCony.getText().toString().trim().toUpperCase());
-            cv.put("municipio", tvMunicipioCony.getText().toString().trim().toUpperCase());
-            cv.put("estado", tvEstadoCony.getText().toString().trim().toUpperCase());
-            cv.put("ingresos_mensual", etIngresoCony.getText().toString().trim().replace(",",""));
-            cv.put("gasto_mensual", etGastoCony.getText().toString().trim().replace(",",""));
-            cv.put("tel_trabajo", etCasaCony.getText().toString().trim());
-            cv.put("tel_celular", etCelularCony.getText().toString().trim());
+            cv.put("nombre", Miscellaneous.GetStr(etNombreCony));
+            cv.put("paterno", Miscellaneous.GetStr(etApPaternoCony));
+            cv.put("materno", Miscellaneous.GetStr(etApMaternoCli));
+            cv.put("nacionalidad", Miscellaneous.GetStr(etNacionalidad));
+            cv.put("ocupacion", Miscellaneous.GetStr(tvOcupacionCony));
+            cv.put("calle", Miscellaneous.GetStr(etCalleCony));
+            cv.put("no_exterior", Miscellaneous.GetStr(etNoExtCony));
+            cv.put("no_interior", Miscellaneous.GetStr(etNoIntCony));
+            cv.put("manzana", Miscellaneous.GetStr(etManzanaCony));
+            cv.put("lote", Miscellaneous.GetStr(etLoteCony));
+            cv.put("cp", Miscellaneous.GetStr(etCpCony));
+            cv.put("colonia", Miscellaneous.GetStr(tvColoniaCony));
+            cv.put("ciudad", Miscellaneous.GetStr(etCiudadCony));
+            cv.put("localidad", Miscellaneous.GetStr(tvLocalidadCony));
+            cv.put("municipio", Miscellaneous.GetStr(tvMunicipioCony));
+            cv.put("estado", Miscellaneous.GetStr(tvEstadoCony));
+            cv.put("ingresos_mensual", Miscellaneous.GetStr(etIngresoCony).replace(",",""));
+            cv.put("gasto_mensual", Miscellaneous.GetStr(etGastoCony).replace(",",""));
+            cv.put("tel_trabajo", Miscellaneous.GetStr(etCasaCony));
+            cv.put("tel_celular", Miscellaneous.GetStr(etCelularCony));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -5020,10 +5019,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (byteFirmaCli != null){
                         ivError6.setVisibility(View.GONE);
                         ContentValues cv = new ContentValues();
-                        cv.put("clasificacion_riesgo", tvRiesgo.getText().toString().trim().toUpperCase());
-                        cv.put("medio_contacto", tvMedioContacto.getText().toString().trim().toUpperCase());
-                        cv.put("estado_cuenta", tvEstadoCuenta.getText().toString().trim().toUpperCase());
-                        cv.put("email", etEmail.getText().toString().trim());
+                        cv.put("clasificacion_riesgo", Miscellaneous.GetStr(tvRiesgo));
+                        cv.put("medio_contacto", Miscellaneous.GetStr(tvMedioContacto));
+                        cv.put("estado_cuenta", Miscellaneous.GetStr(tvEstadoCuenta));
+                        cv.put("email", Miscellaneous.GetStr(etEmail));
                         switch (rgEstatus.getCheckedRadioButtonId()){
                             case R.id.rbNuevo:
                                 cv.put("estatus_integrante", 1);
@@ -5035,7 +5034,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                 cv.put("estatus_integrante", 3);
                                 break;
                         }
-                        cv.put("monto_solicitado", etCredSolicitado.getText().toString().trim().replace(",",""));
+                        cv.put("monto_solicitado", Miscellaneous.GetStr(etCredSolicitado).replace(",",""));
                         if (cbCasaReuniones.isChecked())
                             cv.put("casa_reunion", 1);
                         else
@@ -5074,11 +5073,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
             ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
-            cv.put("calle_principal", tvPrincipal.getText().toString().trim().toUpperCase());
-            cv.put("lateral_uno", tvLateraUno.getText().toString().trim().toUpperCase());
-            cv.put("lateral_dos", tvLateraDos.getText().toString().trim().toUpperCase());
-            cv.put("calle_trasera", tvTrasera.getText().toString().trim().toUpperCase());
-            cv.put("referencias", etReferencia.getText().toString().trim().toUpperCase());
+            cv.put("calle_principal", Miscellaneous.GetStr(tvPrincipal));
+            cv.put("lateral_uno", Miscellaneous.GetStr(tvLateraUno));
+            cv.put("lateral_dos", Miscellaneous.GetStr(tvLateraDos));
+            cv.put("calle_trasera", Miscellaneous.GetStr(tvTrasera));
+            cv.put("referencias", Miscellaneous.GetStr(etReferencia));
             cv.put("estatus_completado", 1);
 
             db.update(TBL_CROQUIS_GPO_REN, cv, "id_integrante = ?", new String[]{id_integrante});
@@ -5202,7 +5201,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-
+                finish();
                 break;
             case R.id.save:
                 boolean datos_personales = saveDatosIntegrante();
@@ -5210,8 +5209,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 boolean datos_domiclio = saveDatosDomicilio();
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
-                if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-                        tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")){
+                if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
                 else
@@ -5287,10 +5285,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         tvEstadoNacCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         HashMap<Integer, String> params = new HashMap<>();
 
-                        params.put(0, etNombreCli.getText().toString());
-                        params.put(1, etApPaternoCli.getText().toString());
-                        params.put(2, etApMaternoCli.getText().toString());
-                        params.put(3, tvFechaNacCli.getText().toString());
+                        params.put(0, Miscellaneous.GetStr(etNombreCli));
+                        params.put(1, Miscellaneous.GetStr(etApPaternoCli));
+                        params.put(2, Miscellaneous.GetStr(etApMaternoCli));
+                        params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
                         if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
                             params.put(4, "Hombre");
@@ -5299,18 +5297,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         else
                             params.put(4, "");
 
-                        if (!tvEstadoNacCli.getText().toString().trim().isEmpty())
-                            params.put(5, tvEstadoNacCli.getText().toString().trim());
+                        if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                            params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
                         else
                             params.put(5, "");
 
-                        Update("estado_nacimiento", TBL_INTEGRANTES_GPO_REN, tvEstadoNacCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
-                        /*cv = new ContentValues();
-                        cv.put("estado_nacimiento",tvEstadoNacCli.getText().toString().trim().toUpperCase());
-                        if (ENVIROMENT)
-                            db.update(DATOS_INTEGRANTES_GPO, cv, "id = ?", new String[]{id_integrante});
-                        else
-                            db.update(DATOS_INTEGRANTES_GPO_T, cv, "id = ?", new String[]{id_integrante});*/
+                        Update("estado_nacimiento", TBL_INTEGRANTES_GPO_REN, Miscellaneous.GetStr(tvEstadoNacCli), "id", id_integrante);
+
                         etCurpCli.setText(Miscellaneous.GenerarCurp(params));
                     }
                 }
@@ -5336,7 +5329,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvColoniaCli.setError(null);
                         tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, tvColoniaCli.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCli), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5346,7 +5339,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvLocalidadCli.setError(null);
                         tvLocalidadCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("localidad", TBL_DOMICILIO_INTEGRANTE_REN, tvLocalidadCli.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("localidad", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCli), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5355,7 +5348,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvColoniaCony.setError(null);
                         tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, tvColoniaCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCony), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5364,7 +5357,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvLocalidadCony.setError(null);
                         tvLocalidadCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("localidad", TBL_CONYUGE_INTEGRANTE_REN, tvLocalidadCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("localidad", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCony), "id_integrante", id_integrante);
                     }
                 }
                 break;
@@ -5373,7 +5366,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvActEconomicaNeg.setError(null);
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, tvActEconomicaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
 
                     }
                 }
@@ -5383,7 +5376,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     if (data != null){
                         tvColoniaNeg.setError(null);
                         tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
-                        Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, tvColoniaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaNeg), "id_integrante", id_integrante);
 
                     }
                 }

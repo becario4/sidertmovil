@@ -47,6 +47,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CIERRE_DIA_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 
+/**Clase para gestionar el cierre de dia*/
 public class CierreDeDia extends AppCompatActivity {
 
     private Context ctx;
@@ -98,6 +99,7 @@ public class CierreDeDia extends AppCompatActivity {
 
         Log.e("Cierre", Miscellaneous.ConvertToJson(item));
 
+        /**Coloca los valores para que el asesor sepa a que cliente va a realizar el cierre de dia*/
         tvNumPrestamo.setText(item.getNumPrestamo());
         tvNombre.setText(item.getNombre());
         tvFechaGestion.setText(item.getFecha());
@@ -106,7 +108,9 @@ public class CierreDeDia extends AppCompatActivity {
 
         isEdit = item.getEstatus() <= 0;
 
+        /**Valida si se puede gestionar o ya fue gestionada*/
         if (!isEdit) {
+            /**Cuando ya fue gestionado deshabilita las opciones para que no puede editar*/
             invalidateOptionsMenu();
             etMontoDepositado.setText(item.getMonto());
             etMontoDepositado.setEnabled(false);
@@ -123,12 +127,14 @@ public class CierreDeDia extends AppCompatActivity {
 
         etMontoDepositado.addTextChangedListener(new NumberFormatTextWatcher(etMontoDepositado));
 
+        /**Eventos captrurar la fotografia (evidencia)*/
         ibEvidencia.setOnClickListener(ibEvidencia_OnClick);
         ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
 
 
     }
 
+    /**Evento de Abrir la camara para tomar la fotografia (evidencia)*/
     private View.OnClickListener ibEvidencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -137,6 +143,7 @@ public class CierreDeDia extends AppCompatActivity {
         }
     };
 
+    /**Evento al dar clic en la fotografia para tomar una nueva fotografia o solo para visualizar*/
     private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -193,6 +200,7 @@ public class CierreDeDia extends AppCompatActivity {
         }
     };
 
+    /**Funcion para antes de guardar validar campos esten completados*/
     private void ValidarCampos(){
         Validator validator = new Validator();
         if (!validator.validate(etMontoDepositado, new String[]{validator.REQUIRED, validator.MONEY})){
@@ -213,9 +221,11 @@ public class CierreDeDia extends AppCompatActivity {
         }
     }
 
+    /**Funcion para guardar los datos de gestion de cierre de dia*/
     private void Guardar(){
 
         try {
+            /**Se cargan los datos para actualizar porque el registro ya existe solo se actualiza para los campos vacios*/
             ContentValues cv = new ContentValues();
             cv.put("monto_depositado", etMontoDepositado.getText().toString().trim().replace(",", ""));
             cv.put("evidencia", Miscellaneous.save(byteEvidencia, 5));
@@ -229,7 +239,7 @@ public class CierreDeDia extends AppCompatActivity {
             etMontoDepositado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
             item.setEstatus(1);
-
+            /**Actualiza los datos de la gestion*/
             db.update(TBL_CIERRE_DIA_T, cv, "_id = ?", new String[]{item.getId()});
 
             isEdit = false;
@@ -237,6 +247,7 @@ public class CierreDeDia extends AppCompatActivity {
 
             Toast.makeText(ctx, "Cierre Guardado con éxito", Toast.LENGTH_SHORT).show();
 
+            /**Proceso para enviar los datos de cierre de dia de la gestion guardada*/
             Servicios_Sincronizado ss = new Servicios_Sincronizado();
             ss.SaveCierreDia(ctx, false);
         } catch (IOException e) {
@@ -247,22 +258,23 @@ public class CierreDeDia extends AppCompatActivity {
 
     }
 
+    /**Funcion para definir el tipo de mensaje a mostrar*/
     private void ShowMessage(int tipoMensaje){
         String mensaje = "";
         switch (tipoMensaje){
-            case 1:
+            case 1:/**El monto capturado no es un formato correcto*/
                 mensaje = "Por favor ingrese un monto correcto";
                 break;
-            case 2:
+            case 2:/**No coincide el monto de cierre de dia con lo pagado con el cliente*/
                 mensaje = "El monto depositado no coincide con el pago del cliente, favor de verificar";
                 break;
-            case 3:
+            case 3:/**No ha capturado la fotografia*/
                 mensaje = "No ha capturado la fotografía del recibo de pago";
                 break;
             case 4:
                 mensaje = "Ocurrio un error al guardar los datos";
                 break;
-            case 5:
+            case 5:/**La gestion de recuperacion esta en estado parcial no lo ha guardado*/
                 mensaje = "No ha completado la gestión de esta ficha, favor de guardar primero la gestión para despues contestar el cierre de día";
                 break;
         }
@@ -279,6 +291,8 @@ public class CierreDeDia extends AppCompatActivity {
         success.show();
     }
 
+    /**Funcion que recibe los datos de las otras clases que se utilizan como por ejemplo la camara
+     * que se esta recibiendo la imagen en byteArray*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -305,6 +319,8 @@ public class CierreDeDia extends AppCompatActivity {
 
     }
 
+    /**Se infla el menu dependiendo si no se ha gestionado el cierre de dia
+     * en caso de ya estar guardado se coulta el boton de guardar*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -317,10 +333,10 @@ public class CierreDeDia extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Menu de retroceso en el toolbar <- */
                 finish();
                 break;
-            case R.id.save:
+            case R.id.save:/**Se Guarda los datos de la gestion de cierre*/
                 if (this.item.getEstatusRespuesta() > 0)
                     ValidarCampos();
                 else

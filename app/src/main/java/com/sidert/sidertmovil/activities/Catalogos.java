@@ -30,6 +30,7 @@ import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 
+/**Clase para visualizar catalogos dinamicos se le manda un valor para saber que catalogo mostrar*/
 public class Catalogos extends AppCompatActivity {
 
     public Context ctx;
@@ -73,6 +74,7 @@ public class Catalogos extends AppCompatActivity {
         }
     }
 
+    /**Obtiene el catalogo dependiendo el tipo de catalogo qeu quiere mostrar*/
     private void getCatalogo(String value){
         Cursor row;
         ArrayList<ModeloCatalogoGral> catalogo = new ArrayList<>();
@@ -181,6 +183,7 @@ public class Catalogos extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_busqueda, menu);
         menu.getItem(0).setTitle("Buscar");
+        /**Funcion para buscar algun elemento en tiempo real*/
         SearchManager searchManager = (SearchManager) ctx.getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Buscar . . .");

@@ -49,7 +49,7 @@ public class RenovacionCredito extends AppCompatActivity {
         rvRenovacion.setLayoutManager(new LinearLayoutManager(ctx));
         rvRenovacion.setHasFixedSize(false);
 
-        initComponents();
+        //initComponents();
     }
 
     private void initComponents(){
@@ -113,5 +113,11 @@ public class RenovacionCredito extends AppCompatActivity {
             rvRenovacion.setAdapter(adapter);
             //initSwipe();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initComponents();
     }
 }

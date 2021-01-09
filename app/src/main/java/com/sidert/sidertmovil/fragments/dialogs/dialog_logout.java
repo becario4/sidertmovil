@@ -65,7 +65,7 @@ public class dialog_logout extends DialogFragment {
 
             //WorkManager mWorkManager = WorkManager.getInstance();
             ////mWorkManager.cancelAllWork();
-            Log.e("Servicio Activo", Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "Sincronizado") +" Enable");
+            //Log.e("Servicio Activo", Miscellaneous.JobServiceEnable(ctx, Constants.ID_JOB_SINCRONIZADO, "Sincronizado") +" Enable");
             triggerRebirth();
             getDialog().dismiss();
         }

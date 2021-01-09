@@ -68,6 +68,26 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
+                <View
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/blue_sidert"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+                <LinearLayout
+                    android:layout_marginLeft="20dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Parciales"
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:id="@+id/cbParciales"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
 
             </LinearLayout>
 

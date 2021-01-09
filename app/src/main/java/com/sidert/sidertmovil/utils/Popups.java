@@ -213,6 +213,71 @@ public class Popups {
         return dialog;
     }
 
+    public static AlertDialog showDialogConfirm(Context ctx, String icon, String message,
+                                                int btOk, final DialogMessage btnOkClick,
+                                                int btFail, final DialogMessage btnFailClick) {
+        // LOADING VIEWS
+        View view           = LayoutInflater.from(ctx).inflate(DIALOG_CONFIRM, null);
+        TextView tvMessage  = view.findViewById(R.id.tvMessage);
+        Button btnOk        = view.findViewById(R.id.btnAccept);
+        Button btnFail      = view.findViewById(R.id.btnFail);
+        ImageView ivIcon    = view.findViewById(R.id.ivIcon);
+
+        switch (icon){
+            case Constants.success:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_done)).into(ivIcon);
+                break;
+            case Constants.firma:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_firma_white)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            case Constants.print_off:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_print_off)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_red));
+                break;
+            case Constants.camara:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_cam)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_green));
+                break;
+            default:
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_question)).into(ivIcon);
+                ivIcon.setBackground(ctx.getResources().getDrawable(R.drawable.circle_button_blue));
+                break;
+        }
+        // FILLING VIEWS
+        tvMessage.setText(message);
+
+        btnFail.setVisibility(View.GONE);
+
+
+        final AlertDialog dialog = new AlertDialog.Builder(ctx)
+                .setCancelable(false)
+                .setView(view).create();
+
+
+        btnOk.setText(ctx.getResources().getString(btOk));
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnOkClick.OnClickListener(dialog);
+            }
+        });
+
+
+        if(btFail != 0) {
+            btnFail.setVisibility(View.VISIBLE);
+            btnFail.setText(ctx.getResources().getString(btFail));
+            btnFail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnFailClick.OnClickListener(dialog);
+                }
+            });
+        }
+
+        return dialog;
+    }
+
     public static AlertDialog showDialogConfirmImage(Context ctx, String icon, int message,
                                                 int btOption1, final DialogMessage btnOption1Click,
                                                 int btOption2, final DialogMessage btnOption2Click,

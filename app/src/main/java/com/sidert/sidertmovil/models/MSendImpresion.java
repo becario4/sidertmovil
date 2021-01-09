@@ -40,6 +40,9 @@ public class MSendImpresion implements Serializable {
     @SerializedName("tipoCartera")
     @Expose
     private Integer tipoCartera;
+    @SerializedName("celular")
+    @Expose
+    private String celular;
 
     public String getAsesorid() {
         return asesorid;
@@ -127,5 +130,13 @@ public class MSendImpresion implements Serializable {
 
     public void setTipoCartera(Integer tipoCartera) {
         this.tipoCartera = tipoCartera;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
     }
 }

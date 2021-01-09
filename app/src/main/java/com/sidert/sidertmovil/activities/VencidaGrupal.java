@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.sidert.sidertmovil.utils.Constants.ENVIROMENT;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
@@ -96,10 +95,7 @@ public class VencidaGrupal extends AppCompatActivity {
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
 
         Cursor row;
-        if (ENVIROMENT)
-            row = dBhelper.getRecords(TBL_RESPUESTAS_GPO, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
-        else
-            row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
+        row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
 
         row.moveToLast();
         if (row.getCount() > 0){
@@ -110,10 +106,7 @@ public class VencidaGrupal extends AppCompatActivity {
             }
         }
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO_T  + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+        row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO_T  + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0) {
             row.moveToFirst();
@@ -131,10 +124,7 @@ public class VencidaGrupal extends AppCompatActivity {
         }
         row.close();
 
-        if (ENVIROMENT)
-            row = dBhelper.customSelect(TBL_AMORTIZACIONES + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
-        else
-            row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+        row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0){
             row.moveToFirst();
