@@ -43,6 +43,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE_
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 
+/**Clase para mostrar los datos del credito grupal y de integrantes*/
 public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_renovacion_gpo.OnCompleteListener {
 
     private Context ctx;
@@ -95,24 +96,32 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         tvInfoCredito.setOnClickListener(tvInfoCredito_OnClick);
         fabAgregar.setOnClickListener(fabAgregar_OnClick);
 
+        /**Validacion para saber si tendra que abrir el dialog de datos del credito*/
         if (getIntent().getBooleanExtra("is_new",true)) {
             is_edit = true;
             is_new = true;
             nombre_gpo = getIntent().getStringExtra("nombre");
             id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
+            /**Funcion para abrir un dialogFragment para completar los datos del credito*/
             openInfoOriginacion();
         }
-        else{
+        else{/**En caso de que ya habian guardado los datos del credito*/
             is_new = false;
+            /**Obtiene datos que se mandaron entre clases para variable globañ*/
             id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
 
+            /**Obtiene el id de los datos del credito porque con ese ID se relacionan los integrantes*/
             Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
             row.moveToFirst();
             id_credito = Long.parseLong(row.getString(0));
+            row.close();
+            /**Funcion para obtener los integrantes*/
             initComponents(row.getString(1));
+
         }
     }
 
+    /**Evento para abrir un dialogFragment para mostrar los datos del credito */
     private View.OnClickListener tvInfoCredito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -120,11 +129,14 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     };
 
+    /**Evento para agregar un nuevo integrante*/
     private View.OnClickListener fabAgregar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            /**Se realiza un consulta para obtener el total de integrantes que hay registrados*/
             Cursor row = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "COUNT (cargo)", " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
             row.moveToFirst();
+            /**Si el total de registrados es menor a 40 puede agregar un intengrante mas*/
             if (row.getInt(0) < 40) {
                 Intent i_renovar_integrante = new Intent(ctx, RenovarIntegrante.class);
                 i_renovar_integrante.putExtra("id_credito", String.valueOf(id_credito));
@@ -136,10 +148,12 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     };
 
+    /**Funcion para abrir un dialogFrament para mostrar o editar datos del credito*/
     private void openInfoOriginacion() {
         dialog_renovacion_gpo renovacion_gpo = new dialog_renovacion_gpo();
         renovacion_gpo.setCancelable(false);
         Bundle b = new Bundle();
+        /**Valida si ya no tiene que editar y solo es para visualizar los datos*/
         if (!is_new) {
             b.putBoolean("is_edit", false);
             b.putString("nombre", nombre_gpo);
@@ -152,7 +166,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             b.putString("id_solicitud", String.valueOf(id_solicitud));
             renovacion_gpo.setArguments(b);
         }
-        else {
+        else {/**Datos para saber que tiene que agregar los datos del credito*/
             b.putBoolean("is_edit", true);
             b.putString("nombre", nombre_gpo);
             b.putString("id_solicitud", String.valueOf(id_solicitud));
@@ -161,6 +175,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         renovacion_gpo.show(getSupportFragmentManager(), NameFragments.DIALOGORIGINACIONGPO);
     }
 
+    /**Funcion para obtener datos del credito*/
     private void initComponents(String idSolicitud){
         String sql = "SELECT c.*, s.estatus FROM " + TBL_CREDITO_GPO_REN + " AS c INNER JOIN " + TBL_SOLICITUDES_REN + " AS s ON c.id_solicitud = s.id_solicitud WHERE c.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{idSolicitud});
@@ -175,14 +190,15 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         hora_visita = row.getString(7);
         observaciones = row.getString(9);
 
-        is_edit = row.getInt(12) == 0;
-        if (!is_edit) {
+        is_edit = row.getInt(12) == 0; /**Valida si el estatus del credito esta en estatus parcial*/
+        if (!is_edit) {/**En caso de ya estar  guardado la solicitud se oculta el boton de agregar integrantes y menu*/
             invalidateOptionsMenu();
             fabAgregar.hide();
         }
 
         row.close();
 
+        /**Obtiene los integrantes relacionados con el id del credito*/
         Cursor row_integrantes = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", " ORDER BY nombre ASC", new String[]{String.valueOf(id_credito)});
         if (row_integrantes.getCount() > 0){
             row_integrantes.moveToFirst();
@@ -203,6 +219,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 row_integrantes.moveToNext();
             }
 
+            /**Agrega los integrantes al adaptador*/
             adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
@@ -224,6 +241,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             invalidateOptionsMenu();
     }
 
+    /**Funcion para mostrar u ocultar le menu*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -242,27 +260,34 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.enviar:
+            case R.id.enviar:/**Menu de guardar la solicutud*/
                 Cursor row_credito = null;
-
+                /**Obtiene los integrantes registrados*/
                 row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
 
+                /**Valida que el grupo tenga al menos 8 integrantes */
                 if (row_credito.getCount() > 7){
                     Cursor row_cargo;
 
+                    /**Obtiene el comite del grupo*/
                     row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
 
+                    /**Valida si ya esta registrado el comite*/
                     if (row_cargo.getCount() == 3){
                         Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO_REN + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
 
+                        /**Obtienen cuantos integrantes esten en estatus pendientes y completados*/
                         Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
                         row_total.moveToFirst();
 
+                        /**Valida que no haya integrantes en estatus parcial*/
                         if (row_total.getInt(1) == 0){
+                            /**Muestra un dialog para confirmacion de el guardado de datos*/
                             final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                     R.string.enviar_informacion, R.string.enviar, new Popups.DialogMessage() {
                                         @Override
                                         public void OnClickListener(AlertDialog dialog) {
+                                            /**Actualiza los estatus del credito y solicitud en estatus de terminado*/
                                             ContentValues cv = new ContentValues();
                                             cv.put("estatus_completado", 1);
 
@@ -274,6 +299,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
                                             db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
 
+                                            /**Funcion para enviar los datos de la solicitud al servidor*/
                                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                                             ss.SendRenovacionGpo(ctx,false);
 
@@ -305,6 +331,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         return super.onOptionsItemSelected(item);
     }
 
+    /**Funcion mostrar un mensaje dinamico*/
     private void Mensaje(String mess){
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(ctx, warning,
@@ -325,9 +352,10 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         initComponents(String.valueOf(id_solicitud));
     }
 
+    /**Funcion que recibe los datos del credito del dialogFragment*/
     @Override
     public void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones) {
-        if (plazo != null && periodicidad != null) {
+        if (plazo != null && periodicidad != null) {/**Si el usuario guardo los datos del credito podrá continuar con el registro de integrantes*/
             is_new = false;
 
             this.plazo = plazo;
@@ -339,7 +367,9 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             is_edit = false;
 
         }
-        else if (plazo == null )
+        else if (plazo == null ) {/**En caso de no guardar los datos del credito se cierra la vista*/
             finish();
+        }
     }
+
 }

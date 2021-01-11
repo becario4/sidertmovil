@@ -157,6 +157,7 @@ import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
+/**Clase para guardar los datos de la solicitud de renovacion individual*/
 public class RenovacionCreditoInd extends AppCompatActivity {
 
     private Context ctx;
@@ -194,6 +195,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private String direccionIdCli, direccionIdCony, direccionIdNeg, direccionIdAval, direccionIdRef;
     private boolean is_edit = true;
 
+    /**Botones para avanzar o retroceder en las secciones del formulario*/
     private FloatingActionButton btnContinuar0;
     private FloatingActionButton btnContinuar1;
     private FloatingActionButton btnContinuar2;
@@ -506,6 +508,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private ImageView ivFirmaAsesor;
     public byte[] byteFirmaAsesor;
     //========================================
+    /**ImageView para las fechas de las secciones para saber si el formulario esta visible u oculto*/
     //================= Image View  =====================
     private ImageView ivDown1;
     private ImageView ivDown2;
@@ -529,6 +532,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private ImageView ivUp9;
     private ImageView ivUp10;
     //========================================
+    /**ImageView para saber si en la seccion hay un datos faltante*/
     //================= Image View ERROR  =====================
     private ImageView ivError1;
     private ImageView ivError2;
@@ -541,6 +545,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private ImageView ivError9;
     private ImageView ivError10;
     //===================================================
+    /**Contenedores para mostrar u ocultar las secciones*/
     //===============  LINEAR LAYOUT  ====================
     private LinearLayout llDatosCredito;
     private LinearLayout llDatosPersonales;
@@ -582,6 +587,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     DecimalFormat df = new DecimalFormat("##,###.##", symbols);
     DecimalFormat dfnd = new DecimalFormat("#,###", symbols);
 
+    /**Banderas para saber si ya fueron competadas las secciones para
+     * posteriormente saber cuales fueron rechazadas por la ADMIN*/
     //========== is edit fields
     boolean isEditCre = true;
     boolean isEditCli = true;
@@ -624,6 +631,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         TBmain = findViewById(R.id.TBmain);
 
+        /**Se cargan catalogos de tipo dialog*/
         _plazo = getResources().getStringArray(R.array.intervalo);
         _frecuencia = getResources().getStringArray(R.array.lapso);
         _destino = getResources().getStringArray(R.array.destino_prestamo);
@@ -1029,6 +1037,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //=========================================================
 
         //================================= FLOATING BUTTON LISTENER  ==============================
+        /**Evento click para avanzar o retroceder en las secciones*/
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
         btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
         btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
@@ -1050,8 +1059,10 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         btnRegresar9.setOnClickListener(btnRegresar9_OnClick);
 
         dialog.dismiss();
-        //============================================================================================
+        //==========================================================================================
         //================================  CREDITO LISTENER =======================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del credito para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         tvPlazo.setOnClickListener(tvPlazo_OnClick);
         tvFrecuencia.setOnClickListener(tvFrecuencia_OnClick);
         tvFechaDesembolso.setOnClickListener(tvFechaDesembolso_OnClick);
@@ -1151,6 +1162,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //==============================  PERSONALES LISTENER ======================================
+        /**Evento click y escuchadores(editText o textView) en la seccion de datos personales para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etNombreCli.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1739,6 +1752,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         ibFotoFachCli.setOnClickListener(ibFotoFachCli_OnClick);
         ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
         //==================================  CONYUGE LISTENER  ====================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del conyuge para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etNombreCony.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2143,6 +2158,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //===============================  ECONOMICOS LISTENER  ====================================
+        /**Evento click y escuchadores(editText o textView) en la seccion de datos economicos para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etPropiedadesEco.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2201,6 +2218,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //==================================  NEGOCIO LISTENER  ====================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del negocio para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etNombreNeg.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2360,7 +2379,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
             }
         });
-        tvColoniaNeg.setOnClickListener(etColoniaAct_OnClick);
+        tvColoniaNeg.setOnClickListener(etColoniaNeg_OnClick);
         etCiudadNeg.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2985,6 +3004,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //====================================  AVAL LISTENER  =====================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del aval para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etNombreAval.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -4137,6 +4158,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         });
         ibFirmaAval.setOnClickListener(ibFirmaAval_OnClick);
         //============== REFERENCIA ================================
+        /**Evento click y escuchadores(editText o textView) en la seccion de la referencia para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         etNombreRef.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -4394,6 +4417,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //============== CROQUIS ==================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del croquis para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         tvCasa.setOnClickListener(tvCasa_OnClick);
         tvPrincipal.setOnClickListener(tvPrincipal_OnClick);
         tvTrasera.setOnClickListener(tvTrasera_OnClick);
@@ -4419,6 +4444,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
         //================================  ESCANEAR DOCUMENTOS  ===================================
+        /**Evento click en la seccion de documentos para cambios al momento*/
         ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
         ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         //ibCurp.setOnClickListener(ibCurp_OnClick);
@@ -4620,6 +4646,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         });
 
+        /**Evento de click para capturar fotografias o firmas digitales*/
         ivFotoFachCli.setOnClickListener(ivFotoFachCli_OnClick);
         ivFirmaCli.setOnClickListener(ivFirmaCli_OnClick);
         ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
@@ -4632,6 +4659,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         ivFirmaAval.setOnClickListener(ivFirmaAsesor_OnClick);
     }
 
+    /**Evento para obtener la firma del asesor*/
     private View.OnClickListener ibFirmaAsesor_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4641,16 +4669,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el plazo del prestamo*/
     private View.OnClickListener tvPlazo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCre) {
+            if (isEditCre) {/**Valida si el estatus es para editar*/
+                /**Selector de tipo dialogo para el plazo del prestamo*/
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setTitle(R.string.selected_option)
                         .setItems(R.array.intervalo, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvPlazo.setError(null);
                                 tvPlazo.setText(_plazo[position]);
+                                /**Actualiza la columa del plazo*/
                                 Update("plazo", TBL_CREDITO_IND_REN, m.GetStr(tvPlazo));
                             }
                         });
@@ -4660,17 +4691,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la frecuencia de pago del prestamo*/
     private View.OnClickListener tvFrecuencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCre) {
+            if (isEditCre) {/**Valida el estatus para saber si puede seleccionar el plazo*/
+                /**Selector de tipo dialogo par la frecuencia de pago*/
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setTitle(R.string.selected_option)
                         .setItems(R.array.lapso, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvFrecuencia.setError(null);
                                 tvFrecuencia.setText(_frecuencia[position]);
+                                /**Actualiza en la columna del periodicidad*/
                                 Update("periodicidad", TBL_CREDITO_IND_REN, m.GetStr(tvFrecuencia));
+                                /**Valida la frecuencia de pago para definir el numero de operaciones en efectivo  y actualiza la columna*/
                                 switch (position) {
                                     case 0:
                                         tvNumOperacionNeg.setText("4");
@@ -4694,6 +4729,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la fecha desembolso*/
     private View.OnClickListener tvFechaDesembolso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4701,9 +4737,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
 
-                /*b.putInt(YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
-                b.putInt(MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
-                b.putInt(DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));*/
                 b.putInt(YEAR_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.YEAR) : Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(0, 4))));
                 b.putInt(MONTH_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.MONTH) : (Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(5, 7)) - 1)));
                 b.putInt(DAY_CURRENT, ((m.GetStr(tvFechaDesembolso).isEmpty()) ? myCalendar.get(Calendar.DAY_OF_MONTH) : Integer.parseInt(m.GetStr(tvFechaDesembolso).substring(8, 10))));
@@ -4716,6 +4749,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el destiono del credito*/
     private View.OnClickListener tvDestino_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4735,6 +4769,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el nivel de riesgo*/
     private View.OnClickListener tvRiesgo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4754,6 +4789,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el comportamiento del cliente en sus pagos*/
     private View.OnClickListener tvComportamiento_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -4773,6 +4809,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la fecha de nacimiento pero como es renovacion ya se tiene la fecha y no puede editarla*/
     private View.OnClickListener tvFechaNac_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4792,6 +4829,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar la firma de cliente*/
     private View.OnClickListener ibFirmaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4801,6 +4839,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para obtener la ubicacion del cliente*/
     private View.OnClickListener ibMapCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4812,6 +4851,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar la fotografia de fachada del cliente*/
     private View.OnClickListener ibFotoFachCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4821,6 +4861,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar el estado de nacimiento pero como ya se obtiene el dato no puede cambiar el dato*/
     private View.OnClickListener etEstadoNac_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4834,6 +4875,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la colonia donode vive el cliente*/
     private View.OnClickListener etColonia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4848,6 +4890,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la localidad donde vive el cliente*/
     private View.OnClickListener tvLocalidadCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4877,6 +4920,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el nivel de estudio del cliente*/
     private View.OnClickListener tvEstudiosCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4897,6 +4941,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el estado civil del cliente y definir se se va a mostrar o no el formulario del conyuge*/
     private View.OnClickListener tvEstadoCivilCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4926,6 +4971,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el tipo de casa del cliente*/
     private View.OnClickListener tvTipoCasaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4959,6 +5005,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para selecionar el parentesco con el dueño de la casa*/
     private View.OnClickListener tvCasaFamiliar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4978,6 +5025,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar le # de dependientes del cliente*/
     private View.OnClickListener tvDependientes_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4997,6 +5045,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar si el cliente cuenta con estado de cuenta*/
     private View.OnClickListener tvEstadoCuenta_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5016,6 +5065,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar como se entero de la empresa*/
     private View.OnClickListener tvEnteroNosotros_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5035,6 +5085,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la colonia donde vive el aval*/
     private View.OnClickListener tvColoniaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5049,6 +5100,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar lo localidad donde vive el aval*/
     private View.OnClickListener tvLocalidadAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5078,6 +5130,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**EVento para seleccionar el tipo de casa donde vivie el aval*/
     private View.OnClickListener tvTipoCasaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5119,6 +5172,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el parentesco del aval con el cliente*/
     private View.OnClickListener tvParentescoAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5138,6 +5192,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el parentesco de la casa con el aval*/
     private View.OnClickListener tvFamiliarAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5157,6 +5212,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccioanr los medios de pago que puede realizar el aval*/
     private View.OnClickListener tvMediosPagoAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5206,6 +5262,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar los activos observables del aval*/
     private View.OnClickListener tvActivosObservables_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5256,6 +5313,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capurar la firma del aval*/
     private View.OnClickListener ibFirmaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5265,6 +5323,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar los dias de venta del negocio del cliente*/
     private View.OnClickListener etDiasVenta_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5274,7 +5333,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener etColoniaAct_OnClick = new View.OnClickListener() {
+    /**Evento para seleccionar la colonia del negocio*/
+    private View.OnClickListener etColoniaNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (isEditNeg) {
@@ -5288,6 +5348,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la actividad economica del negocio*/
     private View.OnClickListener tvActEcoEspNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5301,6 +5362,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la localidad del negocio*/
     private View.OnClickListener tvLocalidadNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5330,6 +5392,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para obtener la ubicacion del negocio*/
     private View.OnClickListener ibMapNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5341,6 +5404,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar la fotografia del negocio*/
     private View.OnClickListener ibFotoFachNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5350,6 +5414,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la ocupacion del cliente*/
     private View.OnClickListener tvOcupacionClie_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5363,6 +5428,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el tipo de identificacion del cliente*/
     private View.OnClickListener tvTipoIdentificacion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5382,6 +5448,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar el tipo de identificacion del aval*/
     private View.OnClickListener tvTipoIdentificacionAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5401,6 +5468,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la ocupacion del conyuge*/
     private View.OnClickListener tvOcupacionConyuge_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5414,6 +5482,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar lo colonia del conyuge*/
     private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5428,6 +5497,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la localidad del conyuge*/
     private View.OnClickListener tvLocalidadCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5470,6 +5540,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccioanr el destino del negocio*/
     private View.OnClickListener tvDestinoNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5497,6 +5568,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para selecionar los medios de pago*/
     private View.OnClickListener tvMediosPagoNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5553,6 +5625,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //============ REFERNCIA =================================================================
+    /**Evento para seleccionar la fecha de nacimiento de la referencia*/
     private View.OnClickListener tvFechaNacRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5572,6 +5645,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la colonia de la referencia*/
     private View.OnClickListener tvColoniaRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5586,6 +5660,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la localidad de la referencia*/
     private View.OnClickListener tvLocalidadRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5616,6 +5691,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //============ AVAL =====================
+    /**Evento para seleccionar la fecha de nacimiento del aval*/
     private View.OnClickListener tvFechaNacAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5638,6 +5714,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccioanr el estado de nacimiento del aval*/
     private View.OnClickListener tvEstadoNacAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5651,6 +5728,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la ocupacion del aval*/
     private View.OnClickListener tvOcupacionAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5664,6 +5742,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para seleccionar la hora de localizacion del aval*/
     private View.OnClickListener tvHoraLocAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5677,6 +5756,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para obtener la ubicacion del domicilio del aval*/
     private View.OnClickListener ibMapAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5688,6 +5768,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar la fotografia de la fachada del aval*/
     private View.OnClickListener ibFotoFachAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5698,12 +5779,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //======================  CROQUIS  ================================
+
     private View.OnClickListener tvCasa_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
         }
     };
+    /**Evento para capturar la calle principal de la casa del cliente*/
     private View.OnClickListener tvPrincipal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5718,6 +5801,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para capturar la calle trasera de la casa del cliente*/
     private View.OnClickListener tvTrasera_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5732,6 +5816,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para capturar la calle de la derecha de la casa del cliente*/
     private View.OnClickListener tvLateralUno_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5746,6 +5831,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para capturar la calle de la izquierda de la casa del cliente*/
     private View.OnClickListener tvLateralDos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5762,6 +5848,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //======================  DOCUMENTOS  ==============================
+    /**Evento para capturar la fotografia frontal del INE/IFE*/
     private View.OnClickListener ibIneFrontal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5775,6 +5862,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Evento para capturar la fotografia reverso del INE/IFE*/
     private View.OnClickListener ibIneReverso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5797,6 +5885,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };*/
 
+    /**Evento para capturar la fotografia comprobante del domicilio*/
     private View.OnClickListener ibComprobante_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -5807,6 +5896,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //================== IMAGE VIEW LISTENER  ======================================================
+    /**Evento para volver a capturar o visualizar la fotografia de fachada del cliente*/
     private View.OnClickListener ivFotoFachCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5860,6 +5950,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar la firma del cliente*/
     private View.OnClickListener ivFirmaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5886,6 +5977,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar o visualizar la fotografia de fachada del negocio*/
     private View.OnClickListener ivFotoFachNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5939,6 +6031,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar o visualizar la fotografia de fachada del aval*/
     private View.OnClickListener ivFotoFachAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -5992,6 +6085,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar la firma del aval*/
     private View.OnClickListener ivFirmaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6018,6 +6112,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar o visualizar la fotografia de INE/IFE frontal*/
     private View.OnClickListener ivIneFrontal_OnClik = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6076,6 +6171,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar o visualizar la fotografia de INE/IFE reverso*/
     private View.OnClickListener ivIneReverso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6188,6 +6284,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };*/
+    /**Evento para volver a capturar o visualizar la fotografia del comprobante*/
     private View.OnClickListener ivComprobante_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6241,6 +6338,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             }
         }
     };
+    /**Evento para volver a capturar la firma del asesor*/
     private View.OnClickListener ivFirmaAsesor_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6269,6 +6367,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     // ================== IMAGE VIEW  ===================================
+    /**Eventos de click en los contenedores para mostrar u ocultar las secciones del formulario*/
     private View.OnClickListener llCredito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -6430,7 +6529,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
     //==================================================================
-
+    /**Eventos solo para avanzar de secciones del formulario*/
     //Continuar
     private View.OnClickListener btnContinuar0_OnClick = new View.OnClickListener() {
         @Override
@@ -6574,6 +6673,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Eventos solo para retroceder en secciones del formulario*/
     //Regresar
     private View.OnClickListener btnRegresar1_OnClick = new View.OnClickListener() {
         @Override
@@ -6717,6 +6817,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     };
 
 
+    /**Evento para seleccionar la hora de visita del cliente*/
     private View.OnClickListener tvHoraVisita_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -6730,6 +6831,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     };
 
+    /**Funcion para validar y guardar los datos de la seccion del credito*/
     private boolean saveDatosCredito() {
         boolean save_credito = false;
         if (!validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
@@ -6764,6 +6866,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_credito;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion de datos personales*/
     private boolean saveDatosPersonales() {
 
         boolean save_cliente = false;
@@ -6953,6 +7056,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_cliente;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion del conyuge*/
     private boolean saveConyuge() {
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7008,6 +7112,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_conyuge;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion de datos economicos*/
     private boolean saveDatosEconomicos() {
         boolean save_economicos = false;
         if (!validator.validate(etPropiedadesEco, new String[]{validator.REQUIRED}) &&
@@ -7030,6 +7135,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_economicos;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion del negocio*/
     private boolean saveDatosNegocio() {
         boolean save_negocio = false;
         if (!validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
@@ -7155,6 +7261,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_negocio;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion del aval*/
     private boolean saveDatosAval() {
         boolean save_aval = false;
         ContentValues cv = new ContentValues();
@@ -7355,6 +7462,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_aval;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion de referencia*/
     private boolean saveReferencia() {
         boolean save_referencia = false;
         if (!validator.validate(etNombreRef, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7400,6 +7508,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_referencia;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion del croquis*/
     private boolean saveCroquis() {
         boolean save_croquis = false;
         if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
@@ -7422,6 +7531,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_croquis;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion de politicas PLD*/
     private boolean savePoliticas() {
         boolean save_politicas = false;
         if (rgPropietarioReal.getCheckedRadioButtonId() == R.id.rbSiPropietario ||
@@ -7480,6 +7590,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_politicas;
     }
 
+    /**Funcion para validar y guardar los datos de la seccion de documentos*/
     private boolean saveDocumentacion() {
         boolean save_documentacion = false;
         if (byteIneFrontal != null) {
@@ -7507,6 +7618,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return save_documentacion;
     }
 
+    /**Funcion para mostrar u ocultar el menu*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -7518,15 +7630,17 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return true;
     }
 
+    /**Funcion para las acciones del menu*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**Al seleccionar el menu de retroceso del toolbar <- */
                 finish();
                 break;
-            case R.id.enviar:
+            case R.id.enviar: /**Al seleccionar el menu de guardar datos*/
                 final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
                 loading.show();
+                /**Se crean las banderas para definir si esta fueron guardadas las secciones*/
                 boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
                 credito = saveDatosCredito();
                 cliente = saveDatosPersonales();
@@ -7546,8 +7660,10 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 politicas = savePoliticas();
                 documentacion = saveDocumentacion();
 
+                /**Se valida que todas las banderas del guardado son verdaderas y procede para actualizar el estatus de las secciones a completado*/
                 if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
 
+                    /**Actualiza los estatus a completado de las tablas a completado*/
                     Update("estatus_completado", TBL_CREDITO_IND_REN, "1");
                     Update("estatus_completado", TBL_CLIENTE_IND_REN, "1");
                     Update("estatus_completado", TBL_CONYUGE_IND_REN, "1");
@@ -7565,12 +7681,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     Update("comentario_rechazo", TBL_REFERENCIA_IND_REN, "");
                     Update("comentario_rechazo", TBL_CROQUIS_IND_REN, "");
 
+                    /**Actualiza el estatus a completado y de fecha de termino a la solicitud de renovacion*/
                     ContentValues cv = new ContentValues();
                     cv.put("estatus", 1);
                     cv.put("fecha_termino", m.ObtenerFecha("timestamp"));
 
                     db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
+                    /**Funcion para enviar la solicitud a guardar al servidor*/
                     Servicios_Sincronizado ss = new Servicios_Sincronizado();
                     ss.SendRenovacionInd(ctx, false);
                     loading.dismiss();
@@ -7579,6 +7697,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     finish();
 
                 } else {
+                    /**En caso de que no este completo todo el formulario muestra un mensaje*/
                     loading.dismiss();
                     final AlertDialog solicitud;
                     solicitud = Popups.showDialogMessage(this, warning,
@@ -7598,17 +7717,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**Funcion que recibe todas las respuestas de las acciones de otras vistas como de fotografias, firmas, direcciones...etc*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_ESTADO_NAC:
-                if (resultCode == REQUEST_CODE_ESTADO_NAC) {
-                    if (data != null) {
+            case REQUEST_CODE_ESTADO_NAC:/**obtiene respuesta a la peticion de estado de nacimiento del cliente*/
+                if (resultCode == REQUEST_CODE_ESTADO_NAC) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta tenga informacion*/
                         tvEstadoNacCli.setError(null);
+                        /**Coloca el estado que viene de la respuesta*/
                         tvEstadoNacCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Crea un map con los datos esenciales para generar la CURP*/
                         HashMap<Integer, String> params = new HashMap<>();
-
                         params.put(0, m.GetStr(etNombreCli));
                         params.put(1, m.GetStr(etApPaternoCli));
                         params.put(2, m.GetStr(etApMaternoCli));
@@ -7626,65 +7747,78 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         else
                             params.put(5, "");
                         etCurpCli.setText(m.GenerarCurp(params));
+                        /**Actualiza la columa del estado de nacimiento*/
                         Update("estado_nacimiento", TBL_CLIENTE_IND_REN, m.GetStr(tvEstadoNacCli));
                     }
                 }
                 break;
-            case REQUEST_CODE_OCUPACION_CLIE:
-                if (resultCode == REQUEST_CODE_OCUPACION_CLIE) {
-                    if (data != null) {
+            case REQUEST_CODE_OCUPACION_CLIE:/**Obtiene respuesta a la peticion de ocupacion del cliente*/
+                if (resultCode == REQUEST_CODE_OCUPACION_CLIE) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga informacion*/
                         tvOcupacionCli.setError(null);
+                        /**Coloca la respuesta en el campo de ocupacion*/
                         tvOcupacionCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                       /**Busca el sector dependiendo de la ocupacion*/
                         Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
                         if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActividadEcoCli.setText(row.getString(2));
                         }
                         row.close();
+                        /**Actualiza las columnas de ocupacion y actividad economica*/
                         Update("ocupacion", TBL_CLIENTE_IND_REN, m.GetStr(tvOcupacionCli));
                         Update("actividad_economica", TBL_CLIENTE_IND_REN, m.GetStr(tvActividadEcoCli));
                     }
                 }
                 break;
-            case REQUEST_CODE_OCUPACION_NEG:
-                if (resultCode == REQUEST_CODE_OCUPACION_NEG) {
-                    if (data != null) {
+            case REQUEST_CODE_OCUPACION_NEG:/**Obtiene respuesta a la peticion de ocupacion del negocio*/
+                if (resultCode == REQUEST_CODE_OCUPACION_NEG) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta tenga informacion*/
                         tvActEcoEspNeg.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvActEcoEspNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Obtiene el sector dependiente la respuesta selecciona*/
                         Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
                         if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActEconomicaNeg.setText(row.getString(2));
                         }
                         row.close();
+                        /**Actualiza las columnas de la tabla de TBL_NEGOCIO_IND_REN*/
                         Update("ocupacion", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEcoEspNeg));
                         Update("actividad_economica", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
-            case REQUEST_CODE_OCUPACION_CONY:
-                if (resultCode == REQUEST_CODE_OCUPACION_CONY) {
-                    if (data != null) {
+            case REQUEST_CODE_OCUPACION_CONY:/**Obtiene respuesta a la peticion de ocupacion del conyuge*/
+                if (resultCode == REQUEST_CODE_OCUPACION_CONY) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que ña respuesta tenga informacion*/
                         tvOcupacionCony.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvOcupacionCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de ocupacion del conyuge*/
                         Update("ocupacion", TBL_CONYUGE_IND_REN, m.GetStr(tvOcupacionCony));
                     }
                 }
                 break;
-            case REQUEST_CODE_ACTIVIDAD_NEG:
-                if (resultCode == REQUEST_CODE_ACTIVIDAD_NEG) {
-                    if (data != null) {
+            case REQUEST_CODE_ACTIVIDAD_NEG:/**Obtiene la respuesta a la peticion de la actividad del negocio*/
+                if (resultCode == REQUEST_CODE_ACTIVIDAD_NEG) {/**Valida el codigo de la respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvActEconomicaNeg.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna*/
                         Update("actividad_economica", TBL_NEGOCIO_IND_REN, m.GetStr(tvActEconomicaNeg));
                     }
                 }
                 break;
-            case REQUEST_CODE_ESTADO_NAC_AVAL:
-                if (resultCode == REQUEST_CODE_ESTADO_NAC_AVAL) {
-                    if (data != null) {
+            case REQUEST_CODE_ESTADO_NAC_AVAL:/**Obtiene la respuesta a la peticion del estado de nacimiento del aval*/
+                if (resultCode == REQUEST_CODE_ESTADO_NAC_AVAL) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvEstadoNacAval.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvEstadoNacAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Se crea un map con los campos necesarios para generar la curp del aval*/
                         HashMap<Integer, String> params = new HashMap<>();
 
                         params.put(0, m.GetStr(etNombreAval));
@@ -7704,20 +7838,24 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         else
                             params.put(5, "");
                         etCurpAval.setText(m.GenerarCurp(params));
+                        /**Actualiza la columna del estado de nacimiento del aval*/
                         Update("estado_nacimiento", TBL_AVAL_IND_REN, m.GetStr(tvEstadoNacAval));
                     }
                 }
                 break;
-            case REQUEST_CODE_OCUPACION_AVAL:
-                if (resultCode == REQUEST_CODE_OCUPACION_AVAL) {
-                    if (data != null) {
+            case REQUEST_CODE_OCUPACION_AVAL:/**Obtiene la respuesta a la peticion de la ocupacion del aval*/
+                if (resultCode == REQUEST_CODE_OCUPACION_AVAL) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga informacion*/
                         tvOcupacionAval.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvOcupacionAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Obtiene el sector dependiendo a la ocupacion seleccionada*/
                         Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getExtra()) + "", "", null);
                         if (row.getCount() > 0) {
                             row.moveToFirst();
                             tvActividadEcoAval.setError(null);
                             tvActividadEcoAval.setText(row.getString(2));
+                            /**Actualiza las columnas*/
                             Update("ocupacion", TBL_AVAL_IND_REN, m.GetStr(tvOcupacionAval));
                             Update("actividad_economica", TBL_AVAL_IND_REN, m.GetStr(tvActividadEcoAval));
                         }
@@ -7725,104 +7863,129 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_CLIE:
-                if (resultCode == REQUEST_CODE_COLONIA_CLIE) {
-                    if (data != null) {
+            case REQUEST_CODE_COLONIA_CLIE:/**Obtiene la respuesta a la peticion de la colonia del cliente*/
+                if (resultCode == REQUEST_CODE_COLONIA_CLIE) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvColoniaCli.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvColoniaCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de la colonia de la direccion del cliente*/
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_CLIE:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE) {
-                    if (data != null) {
+            case REQUEST_CODE_LOCALIDAD_CLIE:/**Obtiene respuesta a la peticion de localidad del cliente*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvLocalidadCli.setError(null);
+                        /**Coloca la respuesta en el campo de localidad del cliente*/
                         tvLocalidadCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de la localidad de direccion del cliente*/
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCli), direccionIdCli, "CLIENTE");
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_CONY:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY) {
-                    if (data != null) {
+            case REQUEST_CODE_LOCALIDAD_CONY:/**Obtiene la respuesta a la peticion de la localidad del conyuge*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvLocalidadCony.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvLocalidadCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna*/
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_NEG:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG) {
-                    if (data != null) {
+            case REQUEST_CODE_LOCALIDAD_NEG:/**Obtiene la respuesta a la peticion de la localidad del negocio*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG) {/**Valida la respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvLocalidadNeg.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvLocalidadNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualzia la columna*/
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_AVAL:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_AVAL) {
-                    if (data != null) {
+            case REQUEST_CODE_LOCALIDAD_AVAL:/**Obtiene la respuesta a la peticion de la localidad del aval*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_AVAL) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvLocalidadAval.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvLocalidadAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna localidad de la tabal de direccion de tipo ava*/
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_REF:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_REF) {
-                    if (data != null) {
+            case REQUEST_CODE_LOCALIDAD_REF:/**Obtienen la respuesta a la peticion de la localidad de la referencia*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_REF) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvLocalidadRef.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvLocalidadRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de localidad de direccion de la referencia*/
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_CONY:
-                if (resultCode == REQUEST_CODE_COLONIA_CONY) {
-                    if (data != null) {
+            case REQUEST_CODE_COLONIA_CONY:/**Obtiene respuesta a la peticion de la colonia del conyuge*/
+                if (resultCode == REQUEST_CODE_COLONIA_CONY) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvColoniaCony.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvColoniaCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de la colinia en la tabla de direccion de tipo conyuge*/
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCony), direccionIdCony, "CONYUGE");
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_AVAL:
-                if (resultCode == REQUEST_CODE_COLONIA_AVAL) {
-                    if (data != null) {
+            case REQUEST_CODE_COLONIA_AVAL:/**Obtiene respuesta a la peticion de colonia del aval*/
+                if (resultCode == REQUEST_CODE_COLONIA_AVAL) {/**Valida el codigo de la respuesto */
+                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
+                        tvColoniaAval.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvColoniaAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna de la colonia de la direccion de tipo aval */
                         UpdateDireccion("colonia", m.GetStr(tvColoniaAval), direccionIdAval, "AVAL");
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_NEG:
-                if (resultCode == REQUEST_CODE_COLONIA_NEG) {
-                    if (data != null) {
+            case REQUEST_CODE_COLONIA_NEG:/**Obtiene la respuesta a la peticion de la colonia del negocio*/
+                if (resultCode == REQUEST_CODE_COLONIA_NEG) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
                         tvColoniaNeg.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvColoniaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna */
                         UpdateDireccion("colonia", m.GetStr(tvColoniaNeg), direccionIdNeg, "NEGOCIO");
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_REF:
-                if (resultCode == REQUEST_CODE_COLONIA_REF) {
-                    if (data != null) {
+            case REQUEST_CODE_COLONIA_REF:/**Obtiene la respuesta a la peticion de la colonia de la referencia*/
+                if (resultCode == REQUEST_CODE_COLONIA_REF) {/**valida el codigo de respuesta*/
+                    if (data != null) {/**valida que la respuesta contengo un valor*/
                         tvColoniaRef.setError(null);
+                        /**Coloca la respuesta en el campo*/
                         tvColoniaRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        /**Actualiza la columna en al tabla de direcciones de tipo referencia*/
                         UpdateDireccion("colonia", m.GetStr(tvColoniaRef), direccionIdRef, "REFERENCIA");
                     }
                 }
                 break;
-            case REQUEST_CODE_CAMARA_FACHADA_CLI:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_CAMARA_FACHADA_CLI:/**Obtiene la respuesta a la peticion de la fotografia de la fachada del cliente*/
+                if (resultCode == Activity.RESULT_OK) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
+                        /**Muestra y oculta ciertos campos*/
                         tvFachadaCli.setError(null);
                         ibFotoFachCli.setVisibility(View.GONE);
                         ivFotoFachCli.setVisibility(View.VISIBLE);
+                        /**Guarda la respuesta en una variable*/
                         byteFotoFachCli = data.getByteArrayExtra(PICTURE);
+                        /**Coloca la respuesta(imagen) en el contenedor del ImageView*/
                         Glide.with(ctx).load(byteFotoFachCli).centerCrop().into(ivFotoFachCli);
                         try {
+                            /**Actualiza la columna colocando el nombre de la imagen que se guardo en formato JPG*/
                             Update("foto_fachada", TBL_CLIENTE_IND_REN, m.save(byteFotoFachCli, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -7830,15 +7993,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_CAMARA_FACHADA_NEG:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_CAMARA_FACHADA_NEG:/**Obtiene la respuesta a la peticion de la fotografia a la fachada del negocio*/
+                if (resultCode == Activity.RESULT_OK) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
+                        /**Muestra y oculta algunos campos*/
                         tvFachadaNeg.setError(null);
                         ibFotoFachNeg.setVisibility(View.GONE);
                         ivFotoFachNeg.setVisibility(View.VISIBLE);
+                        /**Guarda la respuesta en una variable*/
                         byteFotoFachNeg = data.getByteArrayExtra(PICTURE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx).load(byteFotoFachNeg).centerCrop().into(ivFotoFachNeg);
                         try {
+                            /**Actualiza la columna colocando el nombre de la imagen que se guardo*/
                             Update("foto_fachada", TBL_NEGOCIO_IND_REN, m.save(byteFotoFachNeg, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -7846,15 +8013,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_CAMARA_FACHADA_AVAL:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_CAMARA_FACHADA_AVAL:/**Obtiene respuesta a la peticion de la fotografia de fachada del aval*/
+                if (resultCode == Activity.RESULT_OK) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
+                        /**Oculta y muestra cierto campos*/
                         tvFachadaAval.setError(null);
                         ibFotoFachAval.setVisibility(View.GONE);
                         ivFotoFachAval.setVisibility(View.VISIBLE);
+                        /**Guarda la respuesta en una variable*/
                         byteFotoFachAval = data.getByteArrayExtra(PICTURE);
+                        /**Coloca la respuesta en el contenedor de ImageView*/
                         Glide.with(ctx).load(byteFotoFachAval).centerCrop().into(ivFotoFachAval);
                         try {
+                            /**Actualiza la columna de foto_fachada colocando el nombre de la imagen que se guardo*/
                             Update("foto_fachada", TBL_AVAL_IND_REN, m.save(byteFotoFachAval, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -7989,6 +8160,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
+    /**Funcion que recibe las fecha de respuesta*/
     public void setDate(String date, String campo) {
         try {
             Date strDate = sdf.parse(date);

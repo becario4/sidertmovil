@@ -41,6 +41,7 @@ import com.sidert.sidertmovil.adapters.adapter_ficha_contestadas;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MFichaContestada;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
@@ -180,7 +181,7 @@ public class answers_fragment extends Fragment{
 
             /**Remueve los datos repetidos en nombre del cliente, colonias, dias de la semana
              * esto se ocupa para filtros*/
-            dataNombre = RemoverRepetidos(nombre);
+            dataNombre = Miscellaneous.RemoverRepetidos(nombre);
 
             adapterNombre = new ArrayAdapter<String>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataNombre);

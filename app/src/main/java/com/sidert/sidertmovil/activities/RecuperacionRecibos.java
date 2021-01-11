@@ -830,6 +830,7 @@ public class RecuperacionRecibos extends AppCompatActivity {
         }
     }
 
+    /**se carga el menu para guardar la gestion pero se valida también si se ocultaria porque ya fue guardado*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
