@@ -15,14 +15,18 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+//import androidx.annotation.Nullable;
+//import android.support.design.widget.FloatingActionButton;
+//import android.support.v4.app.ActivityCompat;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,6 +56,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
@@ -8033,17 +8038,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FIRMA_AVAL:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_FIRMA_AVAL:/**Obtiene respuesta a la peticion de firma del aval*/
+                if (resultCode == Activity.RESULT_OK) {/**Valid el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga un valor*/
+                        /**Muestra y oculta ciertos campos*/
                         tvFirmaAval.setError(null);
                         ibFirmaAval.setVisibility(View.GONE);
                         ivFirmaAval.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx)
                                 .load(data.getByteArrayExtra(FIRMA_IMAGE))
                                 .into(ivFirmaAval);
+                        /**coloca la respuesta en una variable*/
                         byteFirmaAval = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
+                            /**Actualiza la columna y guardando la respuesta (imagen)*/
                             Update("firma", TBL_AVAL_IND_REN, m.save(byteFirmaAval, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8051,17 +8060,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FIRMA_CLI:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_FIRMA_CLI:/**Obtiene la respuesta a la peticion a la firma del cliente*/
+                if (resultCode == Activity.RESULT_OK) {/**Valida el codigo de la respuesta*/
+                    if (data != null) {/**Valida que la respuesta contengo algun valor*/
+                        /**Muestra y oculta ciertos campos*/
                         tvFirmaCli.setError(null);
                         ibFirmaCli.setVisibility(View.GONE);
                         ivFirmaCli.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx)
                                 .load(data.getByteArrayExtra(FIRMA_IMAGE))
                                 .into(ivFirmaCli);
+                        /**Coloca la respuesta en una variable*/
                         byteFirmaCli = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
+                            /**Actualiza la columna y guarda la imagen*/
                             Update("firma", TBL_CLIENTE_IND_REN, m.save(byteFirmaCli, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8069,17 +8082,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FIRMA_ASESOR:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_FIRMA_ASESOR:/**Obtiene la respuesta de la peticion de la firma del asesor*/
+                if (resultCode == Activity.RESULT_OK) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
+                        /**Oculta y muestra ciertos valores*/
                         tvFirmaAsesor.setError(null);
                         ibFirmaAsesor.setVisibility(View.GONE);
                         ivFirmaAsesor.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx)
                                 .load(data.getByteArrayExtra(FIRMA_IMAGE))
                                 .into(ivFirmaAsesor);
+                        /**Coloca la respuesta en una variable*/
                         byteFirmaAsesor = data.getByteArrayExtra(FIRMA_IMAGE);
                         try {
+                            /**Actualiza la columna y guarda la imagen*/
                             Update("firma_asesor", TBL_DOCUMENTOS_REN, m.save(byteFirmaAsesor, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8087,18 +8104,24 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_FRONTAL:
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {
-                    if (data != null) {
+            case REQUEST_CODE_FOTO_INE_FRONTAL:/**Obtiene respuesta a la peticion de la foto del INE frontal*/
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**Valida el codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
+
                         tvIneFrontal.setError(null);
+                        /**Obtiene la imagen capturado*/
                         Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        /**Coloca la respuesta en una variable*/
                         byteIneFrontal = baos.toByteArray();
+                        /**Oculta y muestra ciertos valores*/
                         ibIneFrontal.setVisibility(View.GONE);
                         ivIneFrontal.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
+                            /**Actualiza la columna con el nombre de la imagen que se guardo*/
                             Update("ine_frontal", TBL_DOCUMENTOS_REN, m.save(byteIneFrontal, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8106,18 +8129,23 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_REVERSO:
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {
-                    if (data != null) {
+            case REQUEST_CODE_FOTO_INE_REVERSO:/**Obtiene la respuesta a la peticion de la foto del ine reverso*/
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**Valida la respuesta de codigo*/
+                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
                         tvIneReverso.setError(null);
+                        /**Obtiene la respuesta en un Bitmap*/
                         Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        /**Coloca la respuesta en en una variable*/
                         byteIneReverso = baos.toByteArray();
+                        /**Oculta y muestra ciertos campos*/
                         ibIneReverso.setVisibility(View.GONE);
                         ivIneReverso.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta con el contenedor del ImageView*/
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
+                            /**Actualiza la columna colocando el nombre de la imagen que se guardo*/
                             Update("ine_reverso", TBL_DOCUMENTOS_REN, m.save(byteIneReverso, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8141,15 +8169,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_COMPROBATE:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
+            case REQUEST_CODE_FOTO_COMPROBATE:/**Obtencion de respuesta a la peticion de foto de comprobante*/
+                if (resultCode == Activity.RESULT_OK) {/**Validacion de codigo de respuesta*/
+                    if (data != null) {/**Valida que la respuesta contengo un valor*/
                         tvComprobante.setError(null);
+                        /**Oculta y muestra ciertos campos*/
                         ibComprobante.setVisibility(View.GONE);
                         ivComprobante.setVisibility(View.VISIBLE);
+                        /**Coloca la respuesta en una variable*/
                         byteComprobante = data.getByteArrayExtra(PICTURE);
+                        /**Coloca la respuesta en el contenedor del ImageView*/
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
+                            /**Actualiza la columna con el nombre de la imagen que se guardo*/
                             Update("comprobante", TBL_DOCUMENTOS_REN, m.save(byteComprobante, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -8160,14 +8192,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
-    /**Funcion que recibe las fecha de respuesta*/
+    /**Funcion que recibe como respuesta la fecha selecciona en el calendario*/
     public void setDate(String date, String campo) {
         try {
             Date strDate = sdf.parse(date);
             Calendar cal = Calendar.getInstance();
             cal.setTime(strDate);
             switch (campo) {
-                case "desembolso":
+                case "desembolso":/**Es para el campo de fecha de desembolso**/
                     tvFechaDesembolso.setError(null);
                     tvFechaDesembolso.setText(sdf.format(cal.getTime()));
                     String[] fechaDes = m.GetStr(tvFechaDesembolso).split("-");
@@ -8176,6 +8208,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     c.set(Integer.valueOf(fechaDes[0]), (Integer.valueOf(fechaDes[1]) - 1), Integer.valueOf(fechaDes[2]));
                     int nD = c.get(Calendar.DAY_OF_WEEK);
                     String diaDesembolso = "";
+                    /**Valida la fecha que selecciono en el dia de la semana*/
                     switch (nD) {
                         case 1:
                             diaDesembolso = "DOMINGO";
@@ -8204,10 +8237,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     Update("fecha_desembolso", TBL_CREDITO_IND_REN, m.GetStr(tvFechaDesembolso));
                     Update("dia_desembolso", TBL_CREDITO_IND_REN, m.GetStr(tvDiaDesembolso));
                     break;
-                case "fechaNacCli":
+                case "fechaNacCli":/**Para el campo de fecha de nacimiento del cliente*/
                     tvFechaNacCli.setError(null);
                     tvFechaNacCli.setText(date);
                     tvEdadCli.setText(m.GetEdad(sdf.format(cal.getTime())));
+                    /**Crea un map con los valores necesarios para generar la curp*/
                     HashMap<Integer, String> params = new HashMap<>();
 
                     params.put(0, m.GetStr(etNombreCli));
@@ -8226,14 +8260,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         params.put(5, m.GetStr(tvEstadoNacCli));
                     else
                         params.put(5, "");
+                    /**Actualiza las columnas */
                     Update("fecha_nacimiento", TBL_CLIENTE_IND_REN, m.GetStr(tvFechaNacCli));
                     Update("edad", TBL_CLIENTE_IND_REN, m.GetStr(tvEdadCli));
                     etCurpCli.setText(m.GenerarCurp(params));
                     break;
-                case "fechaNacAval":
+                case "fechaNacAval":/**Para el campo de la fecha de nacimiento del aval*/
                     tvFechaNacAval.setError(null);
                     tvFechaNacAval.setText(date);
                     tvEdadAval.setText(m.GetEdad(sdf.format(cal.getTime())));
+                    /**Crea un map con los valores necesarios para generar la curp*/
                     HashMap<Integer, String> paramsAval = new HashMap<>();
 
                     paramsAval.put(0, m.GetStr(etNombreAval));
@@ -8253,13 +8289,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                     else
                         paramsAval.put(5, "");
 
+                    /**Actualiza las columnas*/
                     Update("fecha_nacimiento", TBL_AVAL_IND_REN, m.GetStr(tvFechaNacAval));
                     Update("edad", TBL_AVAL_IND_REN, m.GetStr(tvEdadAval));
                     etCurpAval.setText(m.GenerarCurp(paramsAval));
                     break;
-                case "fechaNacRef":
+                case "fechaNacRef":/**Para el campo de la fecha de nacimiento de la referencia*/
                     tvFechaNacRef.setError(null);
                     tvFechaNacRef.setText(date);
+                    /**Actualiza la columna*/
                     Update("fecha_nacimiento", TBL_REFERENCIA_IND_REN, m.GetStr(tvFechaNacRef));
                     break;
             }
@@ -8268,15 +8306,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
+    /**Funcion para obtener la respuesta a la peticion de horas de vistas*/
     public void setTimer(String timer, String campo) {
         ContentValues cv;
         switch (campo) {
-            case "HoraVisita":
+            case "HoraVisita":/**Para el campo de hora de vista*/
                 tvHoraVisita.setError(null);
                 tvHoraVisita.setText(timer);
                 Update("hora_visita", TBL_CREDITO_IND_REN, m.GetStr(tvHoraVisita));
                 break;
-            case "HoraVisitaAval":
+            case "HoraVisitaAval":/**Para el campo de la hora de vista del aval*/
                 tvHoraLocAval.setError(null);
                 tvHoraLocAval.setText(timer);
                 Update("horario_localizacion", TBL_AVAL_IND_REN, timer);
@@ -8285,24 +8324,30 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     }
 
     //===================== Listener GPS  =======================================================
+    /**Funcion para obtener la ubicacion del cliente*/
     private void ObtenerUbicacion() {
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         final Handler myHandler = new Handler();
+        /**Interfaz para pbtener la ubicacion*/
         locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
             @Override
             public void onComplete(String latitud, String longitud) {
 
                 ibMapCli.setEnabled(true);
+                /**Valida si obtuvo la ubicacion*/
                 if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapCli.setVisibility(View.VISIBLE);
+                    /**Actualiza las columnas*/
                     UpdateDireccion("latitud", latitud, direccionIdCli, "CLIENTE");
                     UpdateDireccion("longitud", longitud, direccionIdCli, "CLIENTE");
+                    /**Coloca el pin en el mapa*/
                     Ubicacion(Double.parseDouble(latitud), Double.parseDouble(longitud));
 
                 } else {
                     latLngUbiCli = new LatLng(0, 0);
+                    /**Actualiza las columnas con vacio*/
                     UpdateDireccion("latitud", "", direccionIdCli, "CLIENTE");
                     UpdateDireccion("longitud", "", direccionIdCli, "CLIENTE");
                     pbLoadCli.setVisibility(View.GONE);
@@ -8319,7 +8364,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
 
         String provider;
-
+        /**Valida si cuenta con internet para seleccionar el proveedor de red de lo contrario solo ocupara GPS*/
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
@@ -8330,6 +8375,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         locationManager.requestSingleUpdate(provider, locationListener, null);
 
+        /**Se ejecuta el hilo para validar que en un minuto si no encuenta se cancele la peticion a obtecion de ubicacion*/
         myHandler.postDelayed(new Runnable() {
             public void run() {
                 locationManager.removeUpdates(locationListener);
@@ -8341,22 +8387,28 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }, 60000);
     }
 
+    /**Funcion para obtener la ubicacion del cliente*/
     private void ObtenerUbicacionNeg() {
         pbLoadNeg.setVisibility(View.VISIBLE);
         ibMapNeg.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         final Handler myHandler = new Handler();
+        /**Interfaz para obtener la ubicacion actual*/
         locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
             @Override
             public void onComplete(String latitud, String longitud) {
 
                 ibMapNeg.setEnabled(true);
+                /**Valida si obtuvo respuesta de la ubicacion*/
                 if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapNeg.setVisibility(View.VISIBLE);
+                    /**Actualiza las columnas de la ubicacion*/
                     UpdateDireccion("latitud", latitud, direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("longitud", longitud, direccionIdNeg, "NEGOCIO");
+                    /**funcion para colocar el pin en el mapa*/
                     UbicacionNeg(Double.parseDouble(latitud), Double.parseDouble(longitud));
                 } else {
+                    /**En caso de no obtener la ubicacion actualiza columnas con vacio*/
                     latLngUbiNeg = new LatLng(0, 0);
                     UpdateDireccion("latitud", "", direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("longitud", "", direccionIdNeg, "NEGOCIO");
@@ -8374,7 +8426,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
 
         String provider;
-
+        /**Si cuenta con conexion a internet el proveedor de lo contrario seria con el GPS*/
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
@@ -8383,8 +8435,10 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             provider = LocationManager.GPS_PROVIDER;
         }
 
+        /**Solo hará una peticion para obtener la ubicacion*/
         locationManager.requestSingleUpdate(provider, locationListener, null);
 
+        /**Se ejecuta el hilo para cancelar la peticion de ubicacion en caso de no obtener nada en un minuto*/
         myHandler.postDelayed(new Runnable() {
             public void run() {
                 locationManager.removeUpdates(locationListener);
@@ -8588,6 +8642,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     }
     //========================================================================================================
 
+    /**Funcion para mostrar mensajes para la capacidad de pago*/
     private void ShowMensajes(String mensaje, String tipo) {
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(this, warning,
@@ -8607,6 +8662,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etCapacidadPagoAval.setText("");
     }
 
+    /**Funcion para actualizar columnas recibiendo el nombre de la columna, la tabla y el valor*/
     private void Update(String key, String tabla, String value) {
         Log.e("update", key + ": " + value);
         ContentValues cv = new ContentValues();
@@ -8615,6 +8671,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
     }
 
+    /**Funcion para actualizar columnas de direccion recibiendo el nombre de la columna, el valor, el id del registro y el tipo de direccion*/
     private void UpdateDireccion(String key, String value, String direccion_id, String tipo) {
         Log.e("update", key + ": " + value);
         ContentValues cv = new ContentValues();
@@ -8623,6 +8680,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
     }
 
+    /**Funcion para recibir como respuesta el nombre de la calle y la posicion*/
     public void setCalle(String calle, String tipo) {
         switch (tipo) {
             case "PRINCIPAL":
@@ -8648,6 +8706,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
     }
 
+    /**Funcion para obtener el monto maximo que puede  tener el cliente con base a los ingresos y gastos
+     * que es la suma de los ingresos, menos la suma de los gastos*/
     private void MontoMaximoNeg() {
         double ing_mensual = (m.GetStr(etIngMenNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngMenNeg).replace(",", ""));
         double ing_otros = (m.GetStr(etOtrosIngNeg).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etOtrosIngNeg).replace(",", ""));
@@ -8670,6 +8730,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
     }
 
+    /**Funcion para obtener el monto maximo que puede  tener el aval con base a los ingresos y gastos
+     * que es la suma de los ingresos, menos la suma de los gastos*/
     private void MontoMaximoAval() {
         double ing_mensual = (m.GetStr(etIngMenAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngMenAval).replace(",", ""));
         double ing_otros = (m.GetStr(etIngOtrosAval).isEmpty()) ? 0 : Integer.parseInt(m.GetStr(etIngOtrosAval).replace(",", ""));
@@ -8688,6 +8750,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         Update("monto_maximo", TBL_AVAL_IND_REN, m.GetStr(tvMontoMaxAval).replace(",", ""));
     }
 
+    /**Funcion para mostrar un dialog para seleccionar dias de la semana*/
     private void showDiasSemana() {
         selectedItemsDias = new ArrayList<>();
         new AlertDialog.Builder(RenovacionCreditoInd.this)
@@ -8726,16 +8789,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }).show();
     }
 
+    /**Funcion para inicializar componentes o incluso si ya hay datos guardados precargalos*/
     private void initComponents(String idSolicitud) {
 
+        /**Consulta para obtener datos de la solicitud*/
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
 
         Log.e("Rows", row.getColumnCount() + "count");
-        is_edit = row.getInt(11) == 0;
+        is_edit = row.getInt(11) == 0;/**Valida si el estatus esta parcial*/
 
         row.close();
 
+        /**Precarga el menu para validar si se mostrara el menu o se oculta en caso de que ya este guardada la solicitud*/
         if (!is_edit)
             invalidateOptionsMenu();
 
@@ -8743,10 +8809,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         //Update("id_originacion", TBL_SOLICITUDES_REN, "22");
 
+        /**Obtiene los datos del credito*/
         row = dBhelper.getRecords(TBL_CREDITO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        isEditCre = row.getInt(15) == 0;
+        isEditCre = row.getInt(15) == 0;/**Valida que estatus del credito este en parcial*/
         //Llenado del datos del prestamo
+        /**Precarga los datos que hayan sido guardados*/
         tvPlazo.setText(row.getString(2).toUpperCase());
         tvFrecuencia.setText(row.getString(3).toUpperCase());
         tvFechaDesembolso.setText(row.getString(4));
@@ -8771,14 +8839,17 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         row.close(); //Cierra dato del credito
 
+        /***Obtiene los datos personales del cliente*/
         //Llenado de datos del cliente
         row = dBhelper.getRecords(TBL_CLIENTE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
+        /**Valida si hay comentarios de rechazo por parte de la administradora*/
         if (!row.getString(36).trim().isEmpty()) {
             llComentCli.setVisibility(View.VISIBLE);
             tvComentAdminCli.setText(row.getString(36).trim().toUpperCase());
         }
-        isEditCli = row.getInt(37) == 0;
+        isEditCli = row.getInt(37) == 0;/**Valida el estatus del cliente en parcial*/
+        /**Precarga los datos guardado*/
         etNombreCli.setText(row.getString(2));
         etNombreCli.setEnabled(false);
         etApPaternoCli.setText(row.getString(3));
@@ -8815,6 +8886,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etNumIdentifCli.setEnabled(isEditCli);
         tvEstudiosCli.setText(row.getString(16));
         tvEstadoCivilCli.setText(row.getString(17));
+        /**Valida el estado civil del cliente para mostrar u cultar el formulario del conyuge*/
         switch (row.getString(17)) {
             case "CASADO(A)":
                 llConyuge.setVisibility(View.VISIBLE);
@@ -8844,6 +8916,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 etOTroTipoCli.setText(row.getString(21));
                 break;
         }
+        /**Obtiene los datos de la direccion del cliente para precargar los datos guardados*/
         Cursor rowDir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row.getString(22), "CLIENTE"});
         rowDir.moveToFirst();
         direccionIdCli = rowDir.getString(0);
@@ -8905,6 +8978,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
         row.close(); // Cierra datos del cliente
 
+        /**Obtiene los datos del conyuge para precargar los datos
+         * en caso de que no este casado ni en union libre no se mostrara la seccion del conyuge*/
         // Llenado de datos del conyuge
         row = dBhelper.getRecords(TBL_CONYUGE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -8952,6 +9027,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etCelularCony.setEnabled(isEditCon);
         row.close(); //Cierra datos del conyuge
 
+        /**Obtiene los datos economicos para precargarlos, solo cuando el credito es mayor a $29,000
+         * de lo contrario esta seccion se oculta*/
         //Llenado de datos economicos
         row = dBhelper.getRecords(TBL_ECONOMICOS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -8965,6 +9042,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvIngresoEco.setText(row.getString(5));
         row.close(); // Cierra datos economicos
 
+        /**Obtiene los datos del negocio para precarha¿garlos*/
         //Llenado de datos del negocio
         row = dBhelper.getRecords(TBL_NEGOCIO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -8977,6 +9055,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etNombreNeg.setText(row.getString(2));
         etNombreNeg.setEnabled(isEditNeg);
 
+        /**Obtiene los datos de la direccion del negocio para precargarlos*/
         rowDir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row.getString(3), "NEGOCIO"});
         rowDir.moveToFirst();
         direccionIdNeg = rowDir.getString(0);
@@ -9076,6 +9155,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         row.close(); // Cierra los datos del negocio
 
 
+        /**Obtiene los datos del aval para precargarlos*/
         //Llenado de datos del aval
         row = dBhelper.getRecords(TBL_AVAL_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -9112,6 +9192,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvOcupacionAval.setText(row.getString(15));
         tvActividadEcoAval.setText(row.getString(16));
 
+        /**Obtiene los datos de la direccion del aval para precargarlos*/
         rowDir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row.getString(19), "AVAL"});
         rowDir.moveToFirst();
         direccionIdAval = rowDir.getString(0);
@@ -9236,6 +9317,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         row.close(); //Cierra datos del aval
 
 
+        /**Obtiene los datos de la referencia para precargalos*/
         //Llena datos de referencia
         row = dBhelper.getRecords(TBL_REFERENCIA_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -9252,6 +9334,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etApMaternoRef.setEnabled(isEditRef);
         tvFechaNacRef.setText(row.getString(5));
 
+        /**Obtiene los datos de la direccion de la referencia para precargarlos*/
         rowDir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row.getString(6), "REFERENCIA"});
         rowDir.moveToFirst();
 
@@ -9279,6 +9362,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etTelCelRef.setEnabled(isEditRef);
         row.close(); //Cierra datos de referencia
 
+        /**Obtiene los datos del croquis para precargarlos*/
         row = dBhelper.getRecords(TBL_CROQUIS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
         if (!row.getString(8).trim().isEmpty()) {
@@ -9294,6 +9378,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etReferencia.setEnabled(isEditCro);
         row.close(); //Cierra datos del croquis
 
+        /**Obtiene los datos de politicas PLD para precargarlo*/
         row = dBhelper.getRecords(TBL_POLITICAS_PLD_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
         isEditPol = row.getInt(5) == 0;
@@ -9326,6 +9411,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
         row.close(); //Cierra datos de politicas pld
 
+        /**Obtiene los datos de la documentacion para precargarla*/
         //Llena la documentacion
         row = dBhelper.getRecords(TBL_DOCUMENTOS_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
@@ -9376,6 +9462,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
         row.close(); //Cierra datos de los documentos
 
+        /**Valida si la seccion del credito ya fue guardada para bloquear los campos*/
         if (!isEditCre) {
             tvPlazo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_left));
             tvFrecuencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
@@ -9388,6 +9475,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etObservaciones.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion de datos personales ya fue guardada para bloquear los campos*/
         if (!isEditCli) {
             etNombreCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9430,6 +9518,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion del conyuge ya fue guardada para bloquear los campos*/
         if (!isEditCon) {
             etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9451,6 +9540,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion de datos economicos ya fue guardada para bloquear los campos*/
         if (!isEditEco) {
             etPropiedadesEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etValorAproxEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9458,6 +9548,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             tvIngresoEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion del negocio ya fue guardada para bloquear los campos*/
         if (!isEditNeg) {
             etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCalleNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9492,6 +9583,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion del aval ya fue guardada para bloquear los campos*/
         if (!isEditAva) {
             etNombreAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9545,6 +9637,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion de la referencia ya fue guardada para bloquear los campos*/
         if (!isEditRef) {
             etNombreRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9562,10 +9655,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etTelCelRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion del croquis ya fue guardada para bloquear los campos*/
         if (!isEditCro) {
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        /**Valida si la seccion de politicas PLD ya fue guardada para bloquear los campos*/
         if (!isEditPol) {
             for (int i = 0; i < rgPropietarioReal.getChildCount(); i++) {
                 ((RadioButton) rgPropietarioReal.getChildAt(i)).setEnabled(false);

@@ -7,9 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.bitly.Bitly;
+/*import com.bitly.Bitly;
 import com.bitly.Error;
-import com.bitly.Response;
+import com.bitly.Response;*/
 import com.sewoo.jpos.command.ESCPOS;
 import com.sewoo.jpos.printer.ESCPOSPrinter;
 import com.sewoo.jpos.printer.LKPrint;

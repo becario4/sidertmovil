@@ -1,9 +1,11 @@
 package com.sidert.sidertmovil.activities;
 
-import android.support.v7.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sidert.sidertmovil.R;
 

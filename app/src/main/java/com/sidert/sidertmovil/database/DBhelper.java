@@ -370,6 +370,9 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_VE_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_REIMPRESION_T); }
+        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
+
         try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
 
@@ -658,6 +661,10 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO_GPO); }
         catch (Exception e) { Log.e("MONTO_AUTORIZADO_GPO", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_COSTO_CONSULTA); }
+        catch (Exception e) { Log.e("COSTO_CONSULTA", "ya contiene la columna"); }
+
+
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {
@@ -920,7 +927,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "tipo_imagen, " +
                 "fecha_termino, " +
                 "fecha_envio, " +
-                "estatus) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "estatus, " +
+                "costo_consulta) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));     //1  TIPO CREDITO
         pInsert.bindString(2, params.get(1));                   //2  NOMBRE UNO
@@ -936,6 +944,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(12, params.get(11));                 //12 FECHA TERMINO
         pInsert.bindString(13, params.get(12));                 //13 FECHA ENVIO
         pInsert.bindLong(14, Long.parseLong(params.get(13)));   //14 ESTATUS
+        pInsert.bindString(15, params.get(14));                 //15 COSTO_CONSULTA
 
         Long id = pInsert.executeInsert();
 

@@ -61,7 +61,7 @@
                 android:textColor="@drawable/radio_flat_text_selector_rigth" />
 
         </RadioGroup>
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:padding="5dp"
             android:id="@+id/rvLogImp"
             android:layout_width="match_parent"

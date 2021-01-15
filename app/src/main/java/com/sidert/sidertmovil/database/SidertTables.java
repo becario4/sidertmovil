@@ -2031,7 +2031,8 @@ public class SidertTables {
                 "tipo_imagen TEXT," +
                 "fecha_termino TEXT," +
                 "fecha_envio TEXT," +
-                "estatus INTEGER)";
+                "estatus INTEGER," +
+                "costo_consulta TEXT)";
         
         // ================  TABLAS GENERALES  ===================================
 
@@ -2430,6 +2431,10 @@ public class SidertTables {
 
         static final String ADD_MONTO_AUTORIZADO_GPO = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
                 " ADD COLUMN monto_autorizado" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_COSTO_CONSULTA = "ALTER TABLE " + TBL_RECUPERACION_RECIBOS_CC +
+                " ADD COLUMN costo_consulta" +
                 " TEXT DEFAULT ''";
 
 

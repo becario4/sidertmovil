@@ -22,9 +22,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bitly.Bitly;
+/*import com.bitly.Bitly;
 import com.bitly.Error;
-import com.bitly.Response;
+import com.bitly.Response;*/
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ModeloColonia;

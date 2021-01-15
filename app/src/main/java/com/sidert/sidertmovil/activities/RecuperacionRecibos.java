@@ -15,12 +15,14 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -214,8 +216,9 @@ public class RecuperacionRecibos extends AppCompatActivity {
          * se habilitan cirtos campos*/
         if (tipo.equals("AGF") && getIntent().getIntExtra("integrantes",0) > 0){
             llIntegrantes.setVisibility(View.VISIBLE);
-            llDuracionPrestamo.setVisibility(View.VISIBLE);
+
         }
+        llDuracionPrestamo.setVisibility(View.VISIBLE);
 
         /**Se colocan datos del prestamo*/
         etNombre.setText(nombre);

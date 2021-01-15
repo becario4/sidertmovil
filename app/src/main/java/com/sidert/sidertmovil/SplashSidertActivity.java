@@ -6,28 +6,29 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.SmsManager;
+//import android.telephony.SmsManager;
 import android.util.Log;
-import android.widget.Toast;
+//import android.widget.Toast;
 
-import com.bitly.Bitly;
-import com.bitly.Error;
-import com.bitly.Response;
+import androidx.appcompat.app.AppCompatActivity;
+
+
+import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.utils.AES;
+//import com.sidert.sidertmovil.utils.AES;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.utils.WebServicesRoutes;
+//import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+//import java.net.MalformedURLException;
 import java.net.NetworkInterface;
-import java.net.URL;
+//import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +55,8 @@ public class SplashSidertActivity extends AppCompatActivity {
         dBhelper = new DBhelper(this);
         db = dBhelper.getWritableDatabase();
         dBhelper.onUpgrade(db, 1, 2);
+
+        FirebaseApp.initializeApp(this);
 
         setContentView(R.layout.activity_splash_sidert);
         ctx = getApplicationContext();

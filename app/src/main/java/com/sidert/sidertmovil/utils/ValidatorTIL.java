@@ -1,7 +1,9 @@
 package com.sidert.sidertmovil.utils;
 
-import android.support.design.widget.TextInputLayout;
+//import android.support.design.widget.TextInputLayout;
 import android.widget.EditText;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

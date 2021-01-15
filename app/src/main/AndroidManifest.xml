@@ -96,7 +96,7 @@
             android:name=".activities.FormatoRecibos"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.CirculoCredito"
+            android:name=".activities.CobroAGF"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraActivity"
@@ -208,6 +208,10 @@
             android:name="io.fabric.ApiKey"
             android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" />
         -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="true" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -226,7 +230,7 @@
         </service>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.sidert.sidertmovil.downloadapk.MyReceiverApk"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -234,6 +238,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_paths" />
         </provider>
+
+        <!--android:name="android.support.v4.content.FileProvider"-->
 
         <receiver
             android:name=".AlarmaManager.AlarmaTrackerReciver"

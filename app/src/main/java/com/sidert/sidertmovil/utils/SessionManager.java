@@ -435,7 +435,7 @@ public class SessionManager {
         editor.apply();
     }
 
-    // ===================  Count MailBox ==========================================================
+    // ===================  Count Denuncias PLD ==========================================================
     public void setMailBox (String date, String count){
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
         editor = preferences.edit();

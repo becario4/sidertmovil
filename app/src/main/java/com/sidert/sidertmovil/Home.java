@@ -7,19 +7,19 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.support.design.widget.CoordinatorLayout;
+/*import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.app.FragmentTransaction;*/
+import androidx.appcompat.app.AppCompatActivity;
+/*import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -29,15 +29,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import io.fabric.sdk.android.Fabric;
-import com.crashlytics.android.Crashlytics;
-import com.sidert.sidertmovil.activities.CirculoCredito;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+/*import io.fabric.sdk.android.Fabric;
+import com.crashlytics.android.Crashlytics;*/
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.FirebaseApp;
+import com.sidert.sidertmovil.activities.CobroAGF;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
-import com.sidert.sidertmovil.activities.ConsultadosCC;
-import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.activities.Perfil;
-import com.sidert.sidertmovil.activities.RecuperacionCC;
 import com.sidert.sidertmovil.activities.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
@@ -63,16 +72,13 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO;
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.NameFragments.GEOLOCALIZACION;
 import static com.sidert.sidertmovil.utils.NameFragments.MESA_AYUDA;
 import static com.sidert.sidertmovil.utils.NameFragments.ORDERS;
 
 
-public class Home extends AppCompatActivity{
+public class Home extends AppCompatActivity {
 
     private Context ctx;
     private ActionBarDrawerToggle mToggled;
@@ -101,9 +107,10 @@ public class Home extends AppCompatActivity{
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
         session         = new SessionManager(ctx);
+        FirebaseApp.initializeApp(this);
 
-        Fabric.with(this, new Crashlytics());
-        logUserFabric();
+        //Fabric.with(this, new Crashlytics());
+        //logUserFabric();
 
         TBmain          = findViewById(R.id.TBmain);
         mDrawerLayout   = findViewById(R.id.mDrawerLayout);
@@ -257,17 +264,11 @@ public class Home extends AppCompatActivity{
                     startActivity(i_cc);
                     break;*/
                 case R.id.nvCobroCC:/**Cuando seleccioan Cobro CC es para realizar un cobro en efectivo e impresion de CC*/
-                    //Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
-                    //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
                     Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
-                    //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
                     startActivity(i_cc);
                     break;
                 case R.id.nvCobroAGF:/**Cuando seleccioan Cobro AGF es para realizar un cobro en efectivo e impresion de AGF*/
-                    Intent i_agf = new Intent(getApplicationContext(), CirculoCredito.class);
-                    //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
-                    //Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
-                    //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
+                    Intent i_agf = new Intent(getApplicationContext(), CobroAGF.class);
                     startActivity(i_agf);
                     break;
                 case R.id.nvRuta:/**Cuando seleccioan Ruta es para poder buscar la ruta que ha realizado el asesor por dia*/
@@ -460,10 +461,10 @@ public class Home extends AppCompatActivity{
     };
 
     /**Colocar el un identificador y nombre de usuario en los crash cuando se cierra la app*/
-    private void logUserFabric() {
+    /*private void logUserFabric() {
         Crashlytics.setUserIdentifier(session.getUser().get(0));
         Crashlytics.setUserName(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
-    }
+    }*/
 
     @Override
     public void onBackPressed() {

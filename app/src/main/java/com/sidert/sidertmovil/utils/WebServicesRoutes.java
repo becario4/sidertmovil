@@ -35,7 +35,7 @@ public class WebServicesRoutes {
     //public final static String WS_LOGIN_movil               = "token"; //Servicio para inicio de sesion para movil
     public final static String WS_POST_MONTO_AUTORIZAR      = "ActualizarMonto"; //Servicio para autorizar el monto de una solicitud
     public final static String WS_GET_CARTERA               = "carteras"; //Servicio para obtener la cartera
-    public final static String WS_GET_PRESTAMOS_AGF_CC      = "prestamos"; //Servicio para obtener prestamos para AGF y CC
+    public final static String WS_GET_PRESTAMOS_AGF         = "prestamos"; //Servicio para obtener prestamos para AGF
     public final static String WS_GET_SOLICITUDES_AUTORIZADAS = "solicitudesAutorizar"; //Servicio para obtener las solicitudes pre autorizadas por la administradora
     public final static String WS_GET_PRESTAMO_RENOVAR      = "ultimoprestamoind"; //Servicio para obtener datos del cliente para renovacion
     public final static String WS_GET_PRESTAMO_RENOVAR_GPO  = "ultimoprestamogpo"; //Servicio para obtener datos del grupo para renovacion

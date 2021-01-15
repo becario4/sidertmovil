@@ -6,8 +6,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -205,7 +205,7 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(18, "");                                                     //TIPO VIVIENDA
         params.put(19, "");                                                     //PARENTESCO
         params.put(20, "");                                                     //OTRO TIPO VIVIENDA
-        params.put(21, String.valueOf(id_direccion_cli));                           //DIRECCION ID
+        params.put(21, String.valueOf(id_direccion_cli));                       //DIRECCION ID
         params.put(22, "");                                                     //TEL CASA
         params.put(23, "");                                                     //TEL CELULAR
         params.put(24, "");                                                     //TEL MENSAJES

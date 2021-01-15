@@ -13,12 +13,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.annotation.Nullable;
+/*import androidx.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+//import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +28,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
@@ -493,9 +499,9 @@ public class FormatoRecibos extends AppCompatActivity {
                 else
                 {
                     Log.e("PARAMS", ticket.getTipoRecibo() +" : "+ ticket.getCurp());
-                    sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ? AND nombre_dos = ?";
+                    sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ?";
                     try {
-                        row = db.rawQuery(sql, new String[]{String.valueOf(obj.getInt("tipo_credito")), ticket.getCurp(), obj.getString("nombre_dos")});
+                        row = db.rawQuery(sql, new String[]{String.valueOf(obj.getInt("tipo_credito")), ticket.getCurp()});
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -727,8 +733,8 @@ public class FormatoRecibos extends AppCompatActivity {
             }
 
             Log.e("SendResponse", tipoCredito + "  "+ curp);
-            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ? AND nombre_dos = ?";
-            row = db.rawQuery(sql, new String[]{tipoCredito, curp, nombre});
+            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ?";
+            row = db.rawQuery(sql, new String[]{tipoCredito, curp});
             if (row.getCount() > 0){
                 row.moveToFirst();
                 folio = row.getInt(8);

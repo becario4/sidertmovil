@@ -7,10 +7,13 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+/*import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +31,7 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 
 

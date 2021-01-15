@@ -1,8 +1,8 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +35,12 @@ public class adapter_impresiones_cc extends RecyclerView.Adapter<adapter_impresi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HashMap<Integer, String> item = data.get(position);
         holder.tvClienteGpo.setText((Html.fromHtml("<b>"+item.get(1)+"</b> ")));
-        holder.tvAvalRepre.setText((Html.fromHtml("<b>"+item.get(2)+"</b> ")));
+        if (item.get(0).equals("Grupal")) {
+            holder.tvAvalRepre.setText((Html.fromHtml("<b>" + item.get(2) + "</b> ")));
+            holder.tvAvalRepre.setVisibility(View.VISIBLE);
+        }
+        else
+            holder.tvAvalRepre.setVisibility(View.GONE);
         holder.tvRecibo.setText(Html.fromHtml("<b>"+item.get(0)+"</b> "));
         holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+item.get(4)));
         holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.get(5)));

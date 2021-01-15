@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent" android:layout_height="wrap_content">
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbMain"
                 app:title="Consulta Círculo de Crédito"
                 app:titleTextColor="@android:color/white"
@@ -23,9 +23,9 @@
                 android:layout_height="?attr/actionBarSize"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
@@ -387,19 +387,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
 
-                   <!-- <TextView
-                        android:id="@+id/tvRfc"
-                        android:textSize="@dimen/etsize"
-                        android:hint="@string/rfc"
-                        android:gravity="center_vertical"
-                        android:inputType="textCapCharacters"
-                        android:textColor="@drawable/edit_text_selector"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:maxLength="13"
-                        android:background="@drawable/bkg_rounded_edges_blocked"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" /> -->
+                    <!-- <TextView
+                         android:id="@+id/tvRfc"
+                         android:textSize="@dimen/etsize"
+                         android:hint="@string/rfc"
+                         android:gravity="center_vertical"
+                         android:inputType="textCapCharacters"
+                         android:textColor="@drawable/edit_text_selector"
+                         android:paddingLeft="10dp"
+                         android:paddingRight="10dp"
+                         android:maxLength="13"
+                         android:background="@drawable/bkg_rounded_edges_blocked"
+                         android:layout_width="match_parent"
+                         android:layout_height="@dimen/et_height" /> -->
                 </LinearLayout>
 
                 <LinearLayout
@@ -541,17 +541,17 @@
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
-                 <!--   <TextView
-                        android:id="@+id/tvMunicipio"
-                        android:textSize="@dimen/etsize"
-                        android:hint="@string/municipio"
-                        android:gravity="center_vertical"
-                        android:textColor="@drawable/edit_text_selector"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:background="@drawable/bkg_rounded_edges_blocked"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" /> -->
+                    <!--   <TextView
+                           android:id="@+id/tvMunicipio"
+                           android:textSize="@dimen/etsize"
+                           android:hint="@string/municipio"
+                           android:gravity="center_vertical"
+                           android:textColor="@drawable/edit_text_selector"
+                           android:paddingLeft="10dp"
+                           android:paddingRight="10dp"
+                           android:background="@drawable/bkg_rounded_edges_blocked"
+                           android:layout_width="match_parent"
+                           android:layout_height="@dimen/et_height" /> -->
                 </LinearLayout>
 
                 <!--  Ciudad  -->
@@ -611,7 +611,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -318,7 +318,7 @@ public class Constants {
     public final static String CARTERA_VENCIDA_IND      = "CarteraVencidaIndividual";
     public final static String CARTERA_VENCIDA_GPO      = "CarteraVencidaGrupal";
 
-    public final static int LIMIT_COMPLAINTS          = 2;
+    public final static int LIMIT_COMPLAINTS          = 2;//maximo de peticiones de denuncias PLD
 
     public static final String PATH                   = Environment.getExternalStorageDirectory().getAbsolutePath();
     public static final String ROOT_PATH              = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.sidert.sidertmovil/files/Pictures/Files/";

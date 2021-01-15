@@ -15,13 +15,13 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
+/*import androidx.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+//import android.support.v7.widget.CardView;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
@@ -37,6 +37,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+
+import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -116,6 +124,8 @@ public class Login extends AppCompatActivity {
         /**Inicializacion de variables*/
         context = this;
         session = new SessionManager(context);
+
+        FirebaseApp.initializeApp(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -253,7 +263,7 @@ public class Login extends AppCompatActivity {
         /**Valida que tenga cualquier tiene de internet WIFI o DATOS MOVILES*/
         if (NetworkStatus.haveNetworkConnection(context)) {
 
-            /**Venta de loading*/
+            /**Ventana de loading*/
             final AlertDialog loading = Popups.showLoadingDialog(context, R.string.please_wait, R.string.loading_info);
             loading.show();
 
@@ -262,15 +272,15 @@ public class Login extends AppCompatActivity {
 
 
             /**Se le pasan los datos a la interfaz*/
-            Call<LoginResponse> call = api.login(etUser.getText().toString().trim(),
+            Call<LoginResponse> call = api.login(Miscellaneous.GetStr(etUser),
                     session.getMacAddress(),
                     etPassword.getText().toString().trim(),
                     Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));
             /**Este es para cuando se quiere hacer una prueba con otro usuario
              * solo hay que colocarle el usuario y el mac que tiene en BD
              * eso es mas para mi cuando voy a revisar la cartera de algun asesor*/
-            /*Call<LoginResponse> call = api.login("GESTOR600",
-                    Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="),
+            /*Call<LoginResponse> call = api.login("ASESOR181",
+                    Miscellaneous.DecodePassword("YjQ6kTO6czM6gjR6M0Q6ATR="),
                     etPassword.getText().toString().trim(),
                     Miscellaneous.authorization("androidapp", "m1*cR0w4V3-s"));*/
             /**Se realiza la peticion de inciio de sesion*/
@@ -472,6 +482,7 @@ public class Login extends AppCompatActivity {
         int phoneState = checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
         int sms = checkSelfPermission(Manifest.permission.SEND_SMS);
 
+
         if (cameraPermission == PackageManager.PERMISSION_GRANTED &&
                 accessFinePermission == PackageManager.PERMISSION_GRANTED &&
                 accessCoarsePermission == PackageManager.PERMISSION_GRANTED &&
@@ -534,4 +545,5 @@ public class Login extends AppCompatActivity {
                 AlertNoGps();
         }
     }
+
 }

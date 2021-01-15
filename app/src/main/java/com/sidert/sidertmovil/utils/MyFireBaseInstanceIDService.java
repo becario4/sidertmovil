@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.sidert.sidertmovil.models.MDeviceToken;
@@ -44,6 +45,8 @@ public class MyFireBaseInstanceIDService {
                         Log.e("CodeToken", String.valueOf(response.code())+ "adssa");
                         switch (response.code()){
                             case 200:
+                                MResponseDefault m = response.body();
+
                                 //Toast.makeText(ctx, "Registra Token", Toast.LENGTH_SHORT).show();
                                 break;
                         }

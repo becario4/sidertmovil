@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+/*import androidx.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;*/
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,6 +27,12 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
@@ -172,11 +178,11 @@ public class impression_history_fragment extends Fragment {
             row.moveToFirst();
             for (int i = 0; i < row.getCount(); i++){
                 ImpressionsFields item = new ImpressionsFields();
-                item.setNombre(row.getString(11));
+                item.setNombre(row.getString(12));
                 item.setNumPrestamo(row.getString(10));
                 item.setClave(row.getString(6));
                 item.setAsesor(row.getString(2));
-                item.setTipoImpresion(row.getString(12));
+                item.setTipoImpresion(row.getString(13));
                 item.setFolio(row.getString(3));
                 item.setMonto(row.getString(5));
                 item.setImpreso(row.getString(7));

@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbMain"
                 app:title="Resumen de Pagos"
                 app:titleTextColor="@android:color/white"
@@ -22,7 +22,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
         <TextView
             android:id="@+id/tvTotal"
             android:layout_width="match_parent"

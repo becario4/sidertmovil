@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+/*import android.support.design.widget.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+/*import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;*/
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -28,6 +28,12 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
@@ -53,7 +59,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 
-public class CirculoCredito extends AppCompatActivity {
+public class CobroAGF extends AppCompatActivity {
 
     private Context ctx;
 
@@ -174,9 +180,9 @@ public class CirculoCredito extends AppCompatActivity {
                 }
 
                 if (where.length() > 0)
-                    getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
+                    getPrestamos(" WHERE" + where.substring(4) + " AND (rr._id is null or rr.estatus = 0)");
                 else
-                    getPrestamos(" WHERE rr._id is null");
+                    getPrestamos(" WHERE (rr._id is null or rr.estatus = 0)");
 
             }
         });
@@ -310,7 +316,7 @@ public class CirculoCredito extends AppCompatActivity {
     private void getPrestamos( String where){
         Log.e("WHERE", where+ " asd");
         rvClientesCC.setAdapter(null);
-        String sql = "SELECT p.* FROM " + TBL_PRESTAMOS + " AS p " +
+        String sql = "SELECT p.*,COALESCE(rr.estatus, -1) AS estatus FROM " + TBL_PRESTAMOS + " AS p " +
                 "LEFT JOIN " + TBL_RECUPERACION_RECIBOS + " AS rr ON rr.grupo_id = p.grupo_id AND rr.num_solicitud = p.num_solicitud" + where;
         Log.e("SqlCC", sql);
         final Cursor row = db.rawQuery(sql, null);
@@ -332,6 +338,7 @@ public class CirculoCredito extends AppCompatActivity {
                 items.put(9, row.getString(10)); //FECHA NACIMIENTO
                 items.put(10, row.getString(11)); //EDAD
                 items.put(11, row.getString(12)); //MONTOS
+                items.put(12, row.getString(13)); //ESTATUS RECUPERACION
                 prestamos.add(items);
                 row.moveToNext();
             }
@@ -452,11 +459,10 @@ public class CirculoCredito extends AppCompatActivity {
 
     private void getRecibos( String where){
         rvClientesCC.setAdapter(null);
-        String sql = "SELECT r.nombre, r.folio, r.fecha_impresion, r.fecha_envio, r.tipo_recibo, CASE(SELECT COUNT(*) FROM "+TBL_RECIBOS_AGF_CC+" AS r2 WHERE r2.folio = r.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS impresiones FROM "+TBL_PRESTAMOS+" p INNER JOIN "+TBL_RECIBOS_AGF_CC+" r ON p.num_solicitud = r.num_solicitud AND p.grupo_id = r.grupo_id WHERE r.tipo_impresion = (SELECT r3.tipo_impresion FROM "+TBL_RECIBOS_AGF_CC+" AS r3 WHERE r3.folio = r.folio ORDER BY r3.tipo_impresion DESC LIMIT 1) "+where+" ORDER BY r.fecha_impresion DESC";
+        String sql = "SELECT r.nombre, r.folio, r.fecha_impresion, r.fecha_envio, r.tipo_recibo, CASE(SELECT COUNT(*) FROM "+TBL_RECIBOS_AGF_CC+" AS r2 WHERE r2.folio = r.folio) WHEN 1 THEN 'O' ELSE 'O|C' END AS impresiones FROM "+TBL_RECIBOS_AGF_CC+" r LEFT JOIN "+TBL_RECIBOS_AGF_CC+" p ON p.num_solicitud = r.num_solicitud AND p.grupo_id = r.grupo_id WHERE r.tipo_impresion = (SELECT r3.tipo_impresion FROM "+TBL_RECIBOS_AGF_CC+" AS r3 WHERE r3.folio = r.folio ORDER BY r3.tipo_impresion DESC LIMIT 1) "+where+" group by r.nombre, r.folio, r.fecha_impresion, r.fecha_envio, r.tipo_recibo ORDER BY r.fecha_impresion DESC";
         //String sql = "SELECT r.nombre, r.folio, r.fecha_impresion, r.fecha_envio, r.tipo_recibo, r.tipo_impresion FROM " + TBL_RECIBOS_AGF_CC + " AS r";
-
         Cursor row = db.rawQuery(sql, null);
-
+        Log.e("CountRecibos", "Total: "+row.getCount());
         if (row.getCount() > 0){
             row.moveToFirst();
 
@@ -661,9 +667,9 @@ public class CirculoCredito extends AppCompatActivity {
                                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                                         Log.e("where",where);
                                         if (where.length() > 4)
-                                            getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
+                                            getPrestamos(" WHERE" + where.substring(4) + " AND (rr._id is null or rr.estatus = 0)");
                                         else
-                                            getPrestamos(" WHERE rr._id is null");
+                                            getPrestamos(" WHERE (rr._id is null or rr.estatus = 0)");
                                         break;
                                     case 2:
                                         if (!aetNombreRec.getText().toString().trim().isEmpty()){
@@ -818,7 +824,7 @@ public class CirculoCredito extends AppCompatActivity {
                                         session.setFiltrosCCAGF(filtros);
 
                                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                        getPrestamos(" WHERE rr._id is null");
+                                        getPrestamos(" WHERE (rr._id is null or rr.estatus = 0)");
 
                                         aetNombre.setAdapter(adapterNombre);
                                         break;
@@ -1038,6 +1044,9 @@ public class CirculoCredito extends AppCompatActivity {
         GetClientesRecibos();
         GetClientesGestiones();
         Log.e("TipoSeccion", String.valueOf(tipoSeccion));
+
+        rbPrestamos.setChecked(true);
+
         String where = "";
         if (!session.getFiltrosCCAGF().get(0).isEmpty())
             where = " AND p.nombre_grupo LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%' OR p.nombre_cliente LIKE '%"+session.getFiltrosCCAGF().get(0).trim()+"%'";
@@ -1053,9 +1062,9 @@ public class CirculoCredito extends AppCompatActivity {
         }
 
         if (where.length() > 4)
-            getPrestamos(" WHERE" + where.substring(4) + " AND rr._id is null");
+            getPrestamos(" WHERE" + where.substring(4) + " AND (rr._id is null or rr.estatus = 0)");
         else
-            getPrestamos(" WHERE rr._id is null");
+            getPrestamos(" WHERE (rr._id is null or rr.estatus = 0)");
 
     }
 }

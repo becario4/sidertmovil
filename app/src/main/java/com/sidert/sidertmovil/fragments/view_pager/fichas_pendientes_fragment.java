@@ -7,13 +7,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.RotateDrawable;
+//import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+/*import androidx.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;*/
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +30,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
@@ -657,6 +663,7 @@ public class fichas_pendientes_fragment extends Fragment {
         super.onResume();
         setupBadge();
         String where = "";
+
         /**Valida si coloco algun nombre en el filtro*/
         if (!session.getFiltrosCartera().get(2).isEmpty())
             where = " AND nombre LIKE '%" + session.getFiltrosCartera().get(2) + "%'";
@@ -671,7 +678,7 @@ public class fichas_pendientes_fragment extends Fragment {
             where += " AND colonia LIKE '%" + session.getFiltrosCartera().get(4) + "%'";
         }
 
-        Log.e("SizeAsesires"," tamaño:" + asesor.size());
+        //Log.e("SizeAsesires"," tamaño:" + asesor.size());
         /**Valida si coloco algun asesor y que el listado de asesores sea mayor que 0*/
         if (!session.getFiltrosCartera().get(5).isEmpty() && Integer.parseInt(session.getFiltrosCartera().get(5)) > 0 && asesor.size() > 0) {
             where += " AND asesor_nombre LIKE '%" + asesor.get(Integer.parseInt(session.getFiltrosCartera().get(5))) + "%'";

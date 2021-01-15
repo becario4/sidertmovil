@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class MPrestamosAgfCc implements Serializable {
+public class MPrestamosAgf implements Serializable {
 
     @SerializedName("nombre_grupo")
     @Expose

@@ -15,11 +15,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
+/*import androidx.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;*/
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -142,7 +148,7 @@ public class PrintSeewoo extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getApplicationContext().getString(R.string.print_title));
 
-        /**Se recibe el objecto que se mando entre clases*/
+        /**Se recibe el objeto que se mando entre clases*/
         item = (MImpresion) getIntent().getSerializableExtra("order");
 
         Log.e("ResImpresion", item.getResultPrint()+" as");

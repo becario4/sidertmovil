@@ -1,9 +1,11 @@
 package com.sidert.sidertmovil.utils;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
+//import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class CustomDrawerLayout extends DrawerLayout {
 

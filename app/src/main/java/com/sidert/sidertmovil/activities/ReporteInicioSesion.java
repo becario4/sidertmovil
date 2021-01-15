@@ -5,15 +5,17 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.support.design.widget.BottomSheetBehavior;
+/*import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.MenuItemCompat;*/
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
+import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -25,6 +27,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_inicio_sesion;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -56,6 +60,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_REPORTE_SESIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES;
 import static com.sidert.sidertmovil.utils.NameFragments.DIALOGDATEPICKER;
 
+/**clase para ver los inicios de sesion de los asesores*/
 public class ReporteInicioSesion extends AppCompatActivity {
 
     private Context ctx;
@@ -116,10 +121,13 @@ public class ReporteInicioSesion extends AppCompatActivity {
         rvLogin.setLayoutManager(new LinearLayoutManager(ctx));
         rvLogin.setHasFixedSize(false);
 
+        /**valida si tiene conexion a internet para consumir el servicio para obtener las sucursales*/
         if (NetworkStatus.haveNetworkConnection(ctx)){
+            /**funcion para obtener las sucursales*/
             GetMisSucursales();
         }
         else{
+            /**En caso de no tener conexion a internet muestra un mensaje y despues cierra la vista*/
             final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
@@ -134,32 +142,45 @@ public class ReporteInicioSesion extends AppCompatActivity {
         }
     }
 
+    /**Funcion que realiza la peticion para obtener a las sucursales que tiene acceso el usuario*/
     private void GetMisSucursales(){
+        /**se crea un dialogo de loading en lo que se espera la respuesta*/
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
+        /**se prepara la interfaz para realizar la peticion*/
         ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
+        /**se prepara el servicio con los parametros*/
         Call<List<MSucursal>> call = api.getMisSucursales(Integer.parseInt(session.getUser().get(9)));
 
+        /**se realiza la peticion al servidor para obtener las sucursales que tiene acceso el usuario*/
         call.enqueue(new Callback<List<MSucursal>>() {
             @Override
             public void onResponse(Call<List<MSucursal>> call, Response<List<MSucursal>> response) {
+                /**valida los codigos de respuesta del servidor*/
                 switch (response.code()){
-                    case 200:
+                    case 200:/**success*/
+                        /**coloca la respuesta en una variable*/
                         List<MSucursal> data = response.body();
+                        /**se crea un array para colocar las sucursales*/
                         sucursales = new String[data.size() + 1];
+                        /**se crea un array para saber cuales sucursales fueron marcadas para los filtros*/
                         checkSucursales = new boolean[data.size()+1];
+                        /**agrega un elemento a los array*/
                         sucursales[0] = " TODOS";
                         checkSucursales[0] = false;
                         fechaSelect = Miscellaneous.ObtenerFecha(FECHA.toLowerCase());
+                        /**se crea map para los parametros para la peticion de obtencion del log de inicio de sesiones*/
                         HashMap<String, String> params = new HashMap<>();
                         params.put("fecha_inicio", fechaSelect);
                         params.put("fecha_fin", fechaSelect);
                         params.put("region", "0");
                         params.put("asesor_gestor", "0");
                         String ids = "";
+                        /**se recorre el listado de las sucursales*/
                         for (int i = 0; i< data.size(); i++){
+                            /**se guardan las sucursales*/
                             HashMap<Integer, String> params_suc = new HashMap<>();
                             params_suc.put(0, String.valueOf(data.get(i).getId()));
                             params_suc.put(1, data.get(i).getNombre());
@@ -176,6 +197,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                         }
                         params.put("sucursal", ids);
                         Log.e("Paramas", params.toString());
+                        /**Despues comenzará a obtener el log de inicio de sesion de los asesores*/
                         GetReporteLogin(params);
                         break;
                     default:
@@ -193,29 +215,40 @@ public class ReporteInicioSesion extends AppCompatActivity {
         });
     }
 
+    /**Funcion para obtener el log de inicio de sesiones*/
     private void GetReporteLogin(final HashMap<String, String> params){
+        /**valida si tiene conexion a internet*/
         if (NetworkStatus.haveNetworkConnection(ctx)){
             final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
             loading.show();
 
+            /**prepara la interfaz para realizar peticiones */
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
+            /**prepara la peticion con los parametros necesarios*/
             Call<List<MLogLogin>> call = api.getLogAsesores(params.get("fecha_inicio"),
                                                             params.get("fecha_fin"),
                                                             params.get("region"),
                                                             params.get("sucursal"),
                                                             params.get("asesor_gestor"));
 
+            /**se realiza la peticion al servidor*/
             call.enqueue(new Callback<List<MLogLogin>>() {
                 @Override
                 public void onResponse(Call<List<MLogLogin>> call, Response<List<MLogLogin>> response) {
+                    /**se valida el codigo de respuesta del servidor*/
                     switch (response.code()){
-                        case 200:
+                        case 200:/**success*/
+                            /**coloca la respuesta(listado de inicio de sesiones) en una variable*/
                             List<MLogLogin> logLogin = response.body();
                             data = new ArrayList<>();
+
                             if (logLogin.size() > 0){
+                                /**recorre el listado de inicio de sesiones*/
                                 for (MLogLogin item : logLogin){
+                                    /**valida que el listado solo sera para usuarios de tipo ASESOR y GESTOR para eliminar a los GERENTES, CORDINADORES, etc*/
                                     if (item.getUsuario().contains("ASESOR") || item.getUsuario().contains("GESTOR")) {
+                                        /**Guarda el log de inicio de sesion de los asesores y gestores*/
                                         HashMap<Integer, String> params_sesion = new HashMap<>();
                                         params_sesion.put(0, String.valueOf(item.getId()));
                                         params_sesion.put(1, item.getSerieId());
@@ -233,8 +266,9 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                         dBhelper.saveReporteSesiones(db, params_sesion);
 
                                     }
-                                }
+                                }/**Fin ciclo for*/
 
+                                /**Consulta para obtener el log de inicio de sesiones de los asesores y gestores*/
                                 String sql = "SELECT * FROM " + TBL_REPORTE_SESIONES + " ORDER BY sucursal, horariologin";
 
                                 Cursor row = db.rawQuery(sql, null);
@@ -244,6 +278,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                 checkAsesores = new boolean[row.getCount()+1];
                                 asesoresGestores[0] = "TODOS";
                                 checkAsesores[0] = false;
+                                /**recorre el resultado de la consulta para agregarlo a una lista*/
                                 for(int i = 0; i < row.getCount(); i++){
                                     asesoresGestores[i+1] = row.getString(3);
                                     checkAsesores[i+1] = false;
@@ -265,6 +300,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                     row.moveToNext();
                                 }
 
+                                /**coloca el listado en el adaptador*/
                                 adatper = new adapter_inicio_sesion(ctx, data);
                                 rvLogin.setAdapter(adatper);
 
@@ -281,6 +317,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
             });
         }
         else{
+            /**en caso de no tener internet mostrara un mensaje*/
             final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
                     R.string.not_network, R.string.accept, new Popups.DialogMessage() {
                         @Override
@@ -294,6 +331,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         }
     }
 
+    /**Funcion para aplicar filtros*/
     private void ShowFiltros(){
         BottomSheetDialog sheetDlgFiltros = new BottomSheetDialog(ctx);
         View parentView         = getLayoutInflater().inflate(R.layout.sheet_dialog_filtros_login,null);
@@ -315,12 +353,14 @@ public class ReporteInicioSesion extends AppCompatActivity {
         bottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,700,getResources().getDisplayMetrics()));
         sheetDlgFiltros.show();
 
+        /**si el usuario contiene estos roles para mostrar un campo de region*/
         if (session.getUser().get(5).contains("ROLE_SUPER") ||
                 session.getUser().get(5).contains("ROLE_ANALISTA") ||
                 session.getUser().get(5).contains("DIRECCION")){
             llRegion.setVisibility(View.VISIBLE);
         }
 
+        /**si el usuario contiene estos roles para mostrar un campo de sucursales*/
         if (session.getUser().get(5).contains("ROLE_SUPER") ||
                 session.getUser().get(5).contains("ROLE_ANALISTA") ||
                 session.getUser().get(5).contains("ROLE_DIRECCION") ||
@@ -328,6 +368,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
             llSucursal.setVisibility(View.VISIBLE);
         }
 
+        /**eventos de click*/
         tvFecha.setOnClickListener(tvFecha_onClick());
         tvRegion.setOnClickListener(tvRegion_onClick());
         tvSucursal.setOnClickListener(tvSucursal_onClick());
@@ -335,6 +376,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         btnBorrarFiltros.setOnClickListener(btnBorrarFiltros_onClick());
     }
 
+    /**evento de click para seleccionar una fecha para busqueda*/
     private View.OnClickListener tvFecha_onClick () {
         return new View.OnClickListener() {
             @Override
@@ -356,6 +398,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         };
     }
 
+    /**evento de click para seleccionar la region*/
     private View.OnClickListener tvRegion_onClick () {
         return new View.OnClickListener() {
             @Override
@@ -367,10 +410,13 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which,
                                                         boolean isChecked) {
+                                        /**Evento cuando seleccionan un elemento de la lista
+                                         * valida cuales elementos fueron seleccionados para crear un string con dichos elementos */
                                         if (isChecked) {
                                             if (which == 0){
                                                 regionesChecked = new ArrayList<>();
 
+                                                /**recorre el listado regiones para agregar cuales fueron seleccionados*/
                                                 for(int i = 0; i < checkRegiones.length; i++){
                                                     checkRegiones[i] = true;
                                                     if (i > 0)
@@ -378,6 +424,8 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                                 }
                                                 nombres_regiones = "";
                                                 String nombres_reg = "";
+                                                /**recorre el listado de regiones seleccionados y crea un string con los ids de regiones separados por comas
+                                                 * y otro string con los nombre de las regiones*/
                                                 for (int i = 0; i < regionesChecked.size(); i++) {
                                                     if (i == 0) {
                                                         nombres_reg = regionesChecked.get(i);
@@ -389,6 +437,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                                     }
 
                                                 }
+                                                /**coloca en el campo el nombre de las regiones que fueron seleccionados*/
                                                 tvRegion.setText(nombres_reg);
                                                 dialog.dismiss();
                                             }
@@ -396,7 +445,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                                 checkRegiones[which] = true;
                                                 regionesChecked.add(regiones[which]);
                                             }
-                                        }
+                                        }/**cuando fue desmarcado un elementos para ser removido del listado de seleccionados*/
                                         else {
                                             if (which == 0){
                                                 nombres_regiones = "";
@@ -434,7 +483,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                             tvRegion.setText(nombres_reg);
                                             tvSucursal.setText("");
                                             tvAsesorGestor.setText("");
-                                        }
+                                        }/**para cuando no hay ningun elemento seleccionado se limpian los valores*/
                                         else{
                                             nombres_regiones = "";
                                             nombres_asesores = "";
@@ -449,6 +498,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
+                                /**Evento para cuando ya establecieron que elementos quieren de array y comenzar a obtener los registro con base a las regiones seleccionadas*/
                                 Log.e("Regioneschecek", String.valueOf(regionesChecked.size()));
                                 if (regionesChecked.size() > 0) {
                                     String nombres_reg = "";
@@ -474,6 +524,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                         }
 
                                         Cursor row;
+                                        /**consulta para obtener las sucursales de las regiones seleccionadas*/
                                         String sql = "SELECT nombre FROM " + TBL_SUCURSALES + " WHERE region_id IN ("+ids_region+")";
                                         row = db.rawQuery(sql, null);
                                         if (row.getCount() > 0){
@@ -489,8 +540,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                         }
                                         row.close();
 
-
-
+                                        /**conulta para obtener el log de sesiones de los asesores del resultado de las sucursales obtenidas*/
                                         sql = "SELECT l.* FROM " + TBL_REPORTE_SESIONES + " AS l INNER JOIN " + TBL_SUCURSALES + " AS s ON l.sucursalid = s.id WHERE s.region_id IN ("+ids_region+") ORDER BY l.sucursal, l.horariologin";
                                         row = db.rawQuery(sql, null);
 
@@ -501,6 +551,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                             checkAsesores = new boolean[row.getCount()+1];
                                             asesoresGestores[0] = "TODOS";
                                             checkAsesores[0] = false;
+                                            /**recorre el resultado de la consulta para agregarlo a un listado y pasarlo al adaptador*/
                                             for(int i = 0; i < row.getCount(); i++){
                                                 asesoresGestores[i+1] = row.getString(3);
                                                 checkAsesores[i+1] = false;
@@ -529,7 +580,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                         tvSucursal.setText("");
                                         tvAsesorGestor.setText("");
                                     }
-                                }
+                                }/**en caso de que no haya seleccionado ninguna region se mostraran todos los registros del log de sesiones sin filtros*/
                                 else{
                                     nombres_regiones = "";
                                     nombres_sucursales = "";
@@ -597,6 +648,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         };
     }
 
+    /**Evento de click para seleccionar las sucursales a filtrar*/
     private View.OnClickListener tvSucursal_onClick () {
         return new View.OnClickListener() {
             @Override
@@ -746,6 +798,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         };
     }
 
+    /**evento click para seleccionar que asesores quiere mostrar en la lista*/
     private View.OnClickListener tvAsesorGestor_onClick () {
         return new View.OnClickListener() {
             @Override
@@ -861,6 +914,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         };
     }
 
+    /**evento de click para borrar los filtros aplicados*/
     private View.OnClickListener btnBorrarFiltros_onClick () {
         return new View.OnClickListener() {
             @Override
@@ -925,6 +979,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         };
     }
 
+    /**funcion para recibir la respuesta(fecha) a la peticion de fecha*/
     public void setDate(String fecha){
         tvFecha.setText(fecha);
         if (!fecha.equals(fechaSelect)) {
@@ -935,6 +990,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
             tvRegion.setText("");
             tvSucursal.setText("");
             tvAsesorGestor.setText("");
+            /**se crea un map con los parametros para realizar la peticion de obtencion de log de sesiones*/
             HashMap<String, String> params = new HashMap<>();
             params.put("fecha_inicio", fechaSelect);
             params.put("fecha_fin", fechaSelect);
@@ -956,13 +1012,16 @@ public class ReporteInicioSesion extends AppCompatActivity {
                 }
                 params.put("sucursal", ids);
                 Log.e("Paramas", params.toString());
+                /**borra el contenido de la tabla de reporte de sesiones para la nueva peticion*/
                 db.delete(TBL_REPORTE_SESIONES, "", null);
+                /**Funcion para realizar la peticion*/
                 GetReporteLogin(params);
             }
         }
 
     }
 
+    /**funcion para mostrar el menu*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -985,12 +1044,13 @@ public class ReporteInicioSesion extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**menu de retroceso toolbar <-*/
+                /**borra el contenido de las tablas sucursales y reporte de sesiones para no guardar esa informacion*/
                 db.delete(TBL_SUCURSALES, "", null);
                 db.delete(TBL_REPORTE_SESIONES,"", null);
                 finish();
                 break;
-            case R.id.nvFiltro:
+            case R.id.nvFiltro:/**menu para mostrar filtros */
                 ShowFiltros();
                 //Toast.makeText(ctx, "Filtro", Toast.LENGTH_SHORT).show();
                 break;
@@ -998,8 +1058,10 @@ public class ReporteInicioSesion extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**funcion de retroceso del bton del dispositivo*/
     @Override
     public void onBackPressed() {
+        /**borra el contenido de las tablas sucursales y reporte de sesiones para no guardar esa informacion*/
         db.delete(TBL_SUCURSALES, "", null);
         db.delete(TBL_REPORTE_SESIONES,"", null);
         super.onBackPressed();

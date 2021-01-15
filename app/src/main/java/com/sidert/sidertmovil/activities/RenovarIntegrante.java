@@ -15,14 +15,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+/*import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;*/
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -54,6 +57,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
@@ -130,6 +134,7 @@ import static com.sidert.sidertmovil.utils.Constants.firma;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
+/**Clase del formulario de integrantes para renovacion grupal*/
 public class RenovarIntegrante extends AppCompatActivity implements dialog_renovar_integrante.OnCompleteListener {
 
     private Context ctx;
@@ -707,17 +712,25 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         llCurp.setVisibility(View.GONE);
 
+        /**Valida si va ser el registro de un integrante nuevo para comenzar con el registro del nombre y el cargo*/
         if (getIntent().getBooleanExtra("is_new",true)) {
+            /**Obtiene los datos que se pasaron entre clases*/
             id_credito = getIntent().getStringExtra("id_credito");
+            /**Funcion para registrar primero el nombre y el cargo del integrante*/
             openRegistroIntegrante(id_credito);
         }
-        else{
+        else{/**En caso de ya estar registrado continuara con el registro de los demas datos*/
+
+            /**Obtiene los datos que se pasaron entre clases*/
             id_credito = getIntent().getStringExtra("id_credito");
             id_integrante = getIntent().getStringExtra("id_integrante");
 
+            /**Funcion para precargar la informacion que ha sido guardada del integrante*/
             initComponents(getIntent().getStringExtra("id_credito"), getIntent().getStringExtra("id_integrante"));
         }
 
+        /**Valida la periodicidad del credito para establecer el numero de operaciones en efectivo
+         * y actualiza la columna*/
         switch (getIntent().getIntExtra("periodicidad", 0)){
             case 7:
                 etNumOperacionNeg.setText("4");
@@ -735,6 +748,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
 
         //============================== LINEAR LAYOUT LISTENER  ==================================
+        /***Evento de click para mostrar u ocultar las secciones*/
         llPersonales.setOnClickListener(llPersonales_OnClick);
         llTelefonicos.setOnClickListener(llTelefonicos_OnClick);
         llDomicilio.setOnClickListener(llDomicilio_OnClick);
@@ -747,6 +761,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //===========================================================================
 
         //==============================  PERSONALES LISTENER ======================================
+        /**Evento de click o ingreso de datos personales del integrante con guardado en automatico*/
         tvFechaNacCli.setOnClickListener(tvFechaNacCli_OnClick);
         tvEstadoNacCli.setOnClickListener(tvEstadoNacCli_OnClick);
         etCurpCli.addTextChangedListener(new TextWatcher() {
@@ -830,6 +845,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvEstadoCivilCli.setOnClickListener(tvEstadoCivilCli_OnClick);
         //===========================================================================
         //==============================  TELEFONICOS LISTENER =====================================
+        /**Evento de ingreso de datos telefonicos del integrante con guardado en automatico*/
         etTelCasaCli.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -948,6 +964,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
         //===========================================================================
         //==============================  DOMICILIO LISTENER =======================================
+        /**Evento de click o ingreso de datos del domicilio del integrante con guardado en automatico*/
         ibMapCli.setOnClickListener(ibMapCli_OnClick);
         etCalleCli.addTextChangedListener(new TextWatcher() {
             @Override
@@ -1169,6 +1186,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
         //===========================================================================
         //==================================  NEGOCIO LISTENER  ====================================
+        /**Evento de click o ingreso de datos del neogocio del integrante con guardado en automatico*/
         etNombreNeg.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -1720,6 +1738,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
         //===========================================================================
         //==================================  CONYUGE LISTENER  ====================================
+        /**Evento de click o ingreso de datos del conyuge del integrante con guardado en automatico*/
         etNombreCony.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2137,6 +2156,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
         //===========================================================================
         //==================================  OTROS LISTENER  ======================================
+        /**Evento de click o ingreso de datos en seccion de otros datos del integrante con guardado en automatico*/
         tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
         tvMedioContacto.setOnClickListener(tvMedioContacto_OnClick);
         tvEstadoCuenta.setOnClickListener(tvEstadoCuenta_OnClick);
@@ -2229,6 +2249,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
         //===========================================================================
         //============== CROQUIS ==================================
+        /**Evento de click del croquis del integrante cuando se seleccione casa de reuniones con guardado en automatico*/
         tvCasa.setOnClickListener(tvCasa_OnClick);
         tv1.setOnClickListener(tvCasa_OnClick);
         tv2.setOnClickListener(tvCasa_OnClick);
@@ -2262,12 +2283,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         });
         //====================================  DOCUMENTOS  ========================================
+        /**Evento de click de datos del neogocio del integrante con guardado en automatico*/
         ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
         ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
         //==========================================================================
-
+        /**Evento de click para retroceder o avanzar en seccionesro*/
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
         btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
         btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
@@ -2390,6 +2412,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
 
         //=============================  POLITICAS LISTENER  =======================================
+        /**Evento de click para capturar la informacion de PLD*/
         rgPropietarioReal.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -2446,6 +2469,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
 
         //=============================  IMAGENES LISTENER  ========================================
+        /**Evento de click para volver a capturar fotografias o firmar*/
         ivFotoFachCli.setOnClickListener(ivFotoFachCli_OnClick);
         ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
         ivFirmaCli.setOnClickListener(ivFirmaCli_OnClick);
@@ -2456,6 +2480,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
+    /**Evento de click a los contenedores de las secciones para mostrar u ocultar la secccion*/
     private View.OnClickListener llPersonales_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2602,6 +2627,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     //==============================================================================================
     //============================ ACTION PERSONALES  ==============================================
+    /**Evento para capturar la fecha de nacimiento del cliente*/
     private View.OnClickListener tvFechaNacCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2620,6 +2646,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**evento de click para capturar el estado de nacimiento del cliente*/
     private View.OnClickListener tvEstadoNacCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2632,6 +2659,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para seleccionar el tipo de identificacion del cliente*/
     private View.OnClickListener tvTipoIdentificacion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2650,6 +2678,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para seleccionar el nivel de estudios del cliente*/
     private View.OnClickListener tvEstudiosCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2669,6 +2698,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para seleccionar la ocupacion del cliente*/
     private View.OnClickListener tvOcupacionCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2681,6 +2711,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para seleccionar el estado civil del cliente para mostrar u ocultar la seccion del conyuge*/
     private View.OnClickListener tvEstadoCivilCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2710,6 +2741,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //============================ ACTION DOMICILIO  ===============================================
+    /**Evento de click para obtener la ubicacion del domicilio del cliente*/
     private View.OnClickListener ibMapCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2721,6 +2753,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**evento para seleccionar la colonia del cliente*/
     private View.OnClickListener etColonia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2735,6 +2768,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la localidad del cliente*/
     private View.OnClickListener tvLocalidadCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2765,6 +2799,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar el tipo de vivienda del cliente*/
     private View.OnClickListener tvTipoCasaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2798,6 +2833,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar el parentesco de la vivienda con el cliente*/
     private View.OnClickListener tvCasaFamiliar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2817,6 +2853,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar el numero de dependientes del cliente*/
     private View.OnClickListener tvDependientes_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2836,6 +2873,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para capturar una fotografia de fachada del cliente*/
     private View.OnClickListener ibFotoFachCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2846,6 +2884,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //============================ ACTION NEGOCIO  =================================================
+    /**Evento de click para obtener la ubicacion del negocio*/
     private View.OnClickListener ibMapNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2857,6 +2896,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la colonia del negocio*/
     private View.OnClickListener tvColoniaNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2871,6 +2911,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la localidad del negocio*/
     private View.OnClickListener tvLocalidadNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2901,6 +2942,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar el destino del credito*/
     private View.OnClickListener tvDestinoNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -2929,6 +2971,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar los medios de pago que puede hacer el cliente*/
     private View.OnClickListener tvMediosPagoNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -2986,6 +3029,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la actividad del negocio*/
     private View.OnClickListener tvActEcoEspNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2999,6 +3043,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para capturar la fotografia de fachada del negocio*/
     private View.OnClickListener ibFotoFachNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3009,6 +3054,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //============================ ACTION CONYUGE  =================================================
+    /**Evento de click para seleccionar la ocupacion del conyuge*/
     private View.OnClickListener tvOcupacionCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3022,6 +3068,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la colonia del conyuge*/
     private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3036,6 +3083,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar la localidad del conyuge*/
     private View.OnClickListener tvLocalidadCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3067,6 +3115,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //============================ ACTION OTROS  ===================================================
+    /**Evento de click para seleccionar el nivel del riesgo*/
     private View.OnClickListener tvRiesgo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3086,6 +3135,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para seleccionar cual fue el medio de contacto*/
     private View.OnClickListener tvMedioContacto_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3104,6 +3154,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para seleccionar si tiene estado de cuenta*/
     private View.OnClickListener tvEstadoCuenta_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3122,6 +3173,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para capturar la firma del cliente*/
     private View.OnClickListener ibFirmaCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3137,6 +3189,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         }
     };
+    /**Evento de click para capturar el nombre de la calle donde vive el cliente*/
     private View.OnClickListener tvPrincipal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -3151,6 +3204,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para capturar el nombre de la calle trasera el cliente*/
     private View.OnClickListener tvTrasera_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -3165,6 +3219,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para capturar el nombre de la calle de la derecha donde vive el cliente*/
     private View.OnClickListener tvLateralUno_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -3179,6 +3234,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+    /**Evento de click para capturar el nombre de la calle de la izquierda donde vive el cliente*/
     private View.OnClickListener tvLateralDos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -3195,6 +3251,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //================================== ACTION DOCUMENTOS =========================================
+    /**Evento para capturar la fotografia del ine/ife de la parte frontal*/
     private View.OnClickListener ibIneFrontal_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3210,6 +3267,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento para capturar la fotografia del ine/ife de la parte reverso*/
     private View.OnClickListener ibIneReverso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3225,6 +3283,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento para capturar la fotografia del curp*/
     private View.OnClickListener ibCurp_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3234,6 +3293,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento para capturar la fotografia del comprobante de domicilio*/
     private View.OnClickListener ibComprobante_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3609,8 +3669,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
-
-
+    /**Evento de click para avanzar entre las secciones*/
     //Continuar
     private View.OnClickListener btnContinuar0_OnClick = new View.OnClickListener() {
         @Override
@@ -3735,6 +3794,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**Evento de click para retroceder entre las secciones*/
     //Regresar
     private View.OnClickListener btnRegresar1_OnClick = new View.OnClickListener() {
         @Override
@@ -3858,18 +3918,21 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    /**funcion para obtener las respuestas de peticiones de capturas de fechas*/
     public void setDate (String date, String campo){
         try {
             Date strDate = sdf.parse(date);
             Calendar cal = Calendar.getInstance();
             cal.setTime(strDate);
             ContentValues cv;
-            if (campo.equals("fechaNacCli")) {
+            if (campo.equals("fechaNacCli")) {/**valida si respuesta es para la peticion de fecha de nacimiento del cliente*/
                 tvFechaNacCli.setError(null);
                 tvFechaNacCli.setText(date);
+                /**coloca la respuesta(fecha) en el campo*/
                 tvEdadCli.setText(Miscellaneous.GetEdad(sdf.format(cal.getTime())));
-                HashMap<Integer, String> params = new HashMap<>();
 
+                /**Crea un map con los campos necesarios para generar la curp*/
+                HashMap<Integer, String> params = new HashMap<>();
                 params.put(0, etNombreCli.getText().toString());
                 params.put(1, etApPaternoCli.getText().toString());
                 params.put(2, etApMaternoCli.getText().toString());
@@ -3897,6 +3960,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     }
 
+    /**Funcion para obtener cual es el monto maximo que tiene el cliente que es la suma de los ingresos menos la suma de los gastos*/
     private void MontoMaximoNeg (){
         double ing_mensual = (etIngMenNeg.getText().toString().trim().replace(",","").isEmpty())?0:Integer.parseInt(etIngMenNeg.getText().toString().trim().replace(",",""));
         double ing_otros = (etOtrosIngNeg.getText().toString().trim().replace(",","").isEmpty())?0:Integer.parseInt(etOtrosIngNeg.getText().toString().trim().replace(",",""));
@@ -3910,6 +3974,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         Update("monto_maximo", TBL_NEGOCIO_INTEGRANTE_REN, tvMontoMaxNeg.getText().toString().trim().replace(",",""), "id_integrante", id_integrante);
     }
 
+    /**funcion para abrir un dialogo para comenzar a crear los registros de las secciones*/
     private void openRegistroIntegrante(String id_credito) {
         dialog_renovar_integrante renovar_integrante = new dialog_renovar_integrante();
         Bundle b = new Bundle();
@@ -3920,6 +3985,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     }
 
     //===================== Listener GPS  =======================================================
+    /**Funciones para obtener la ubicacion*/
     private void ObtenerUbicacion (){
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
@@ -4037,6 +4103,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }, 60000);
     }
 
+    /**Funciones para inicializar los mapas*/
     private void Ubicacion (final double lat, final double lon){
         mapCli.onResume();
         try {
@@ -4092,6 +4159,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         });
     }
 
+    /**Funciones para colocar el pin en el mapa*/
     private void addMarker (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
         latLngUbiCli = coordenadas;
@@ -4127,11 +4195,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         locationManager.removeUpdates(locationListener);
     }
 
+    /**Funcion para precargar los datos ya guardados*/
     private void initComponents (String id_credito, String id_integrante){
         //Cursor row = dBhelper.getIntegranteOri(id_credito, id_integrante);
         //row.moveToFirst();
         Log.e("IdCredito", id_credito);
         Log.e("idIntegrante", id_integrante);
+        /**consulta para obtener los estatus de los registro de las secciones*/
         String sql = "SELECT i.estatus_completado AS eIntegrante, i.estado_civil AS civil, t.estatus_completado AS eTelefono, d.estatus_completado AS eDomiclio, n.estatus_completado AS eNegocio, c.estatus_completado AS eConyuge, o.estatus_completado AS eOtros, doc.estatus_completado AS eDocumentos, p.estatus_completado AS ePoliticas, COALESCE(cro.estatus_completado, 1) AS eCroquis FROM " + TBL_INTEGRANTES_GPO_REN + " AS i "+
                 "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
                 "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
@@ -4147,6 +4217,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         Log.e("Count", row.getCount()+" XDXDXDXDXD");
 
+        /**valida que los estatus de los registros (secciones) esten en estatus completado para bloquear las acciones*/
         if ((row.getInt(0) == 1 || row.getInt(0) == 2 || row.getInt(0) == 3) &&
                 row.getInt(2) == 1 &&
                 row.getInt(3) == 1 &&
@@ -4165,14 +4236,17 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         row.close(); //Cierra datos de estatus de todas las tablas
 
+        /**obtiene los datos ya registrados de los datos personales*/
         row = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id = ? AND id_credito = ?", "", new String[]{id_integrante, id_credito});
         row.moveToFirst();
 
+        /**valida si hay un comentario de la admin porque rechazo la solicitud*/
         if (!row.getString(20).trim().isEmpty()){
             llComentCli.setVisibility(View.VISIBLE);
             tvComentAdminCli.setText(row.getString(20).toUpperCase());
         }
 
+        /**valida el cargo del integrante*/
         switch (row.getInt(2)){
             case 1:
                 tvCargo.setText(getResources().getString(R.string.presidente).toUpperCase());
@@ -4190,6 +4264,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         isNuevo = row.getInt(23) == 1;
 
+        /**Precarga los datos registrado en los campos*/
         etNombreCli.setText(row.getString(3)); etNombreCli.setEnabled(false);
         etApPaternoCli.setText(row.getString(4)); etApPaternoCli.setEnabled(false);
         etApMaternoCli.setText(row.getString(5)); etApMaternoCli.setEnabled(false);
@@ -4229,6 +4304,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvEstudiosCli.setText(row.getString(15));
         tvOcupacionCli.setText(row.getString(16));
         tvEstadoCivilCli.setText(row.getString(17));
+        /**valida el estado civil de cliente para mostrar u ocultar la seccion del conyuge*/
         switch (row.getString(17)){
             case "CASADO(A)":
                 llConyuge.setVisibility(View.VISIBLE);
@@ -4248,16 +4324,19 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         row.close(); //Cierra datos personales del integrante
 
+        /**Obtiene los datos telefonicos del cliente*/
         //Datos telefonicos
         row = dBhelper.getRecords(TBL_TELEFONOS_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
 
+        /**precarga los datos de telefonos guardados*/
         etTelCasaCli.setText(row.getString(2)); etTelCasaCli.setEnabled(is_edit);
         etCelularCli.setText(row.getString(3)); etCelularCli.setEnabled(is_edit);
         etTelMensCli.setText(row.getString(4)); etTelMensCli.setEnabled(is_edit);
         etTeltrabajoCli.setText(row.getString(5)); etTeltrabajoCli.setEnabled(is_edit);
         row.close(); //Cierra datos telefonicos del integrante
 
+        /**obtiene los datos del domicilio del cliente*/
         //Datos domicilio
         row = dBhelper.getRecords(TBL_DOMICILIO_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
@@ -4265,6 +4344,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             mapCli.setVisibility(View.VISIBLE);
             Ubicacion(row.getDouble(2), row.getDouble(3));
         }
+        /**precargar los datos del domicilio del cliente ya guardados*/
         etCalleCli.setText(row.getString(4)); etCalleCli.setEnabled(is_edit);
         etNoExtCli.setText(row.getString(5)); etNoExtCli.setEnabled(is_edit);
         etNoIntCli.setText(row.getString(6)); etNoIntCli.setEnabled(is_edit);
@@ -4308,9 +4388,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etReferenciaCli.setText(row.getString(20)); etReferenciaCli.setEnabled(is_edit);
         row.close(); //Cierra datos del domicilio del integrante
 
+        /**Obtiene los datos del negocio*/
         //Datos Negocio
         row = dBhelper.getRecords(TBL_NEGOCIO_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**precarga los datos del negocio ya guardados*/
         etNombreNeg.setText(row.getString(2)); etNombreNeg.setEnabled(is_edit);
         if (!row.getString(3).isEmpty() && !row.getString(4).isEmpty()){
             mapNeg.setVisibility(View.VISIBLE);
@@ -4375,9 +4457,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etReferenciNeg.setText(row.getString(31)); etReferenciNeg.setEnabled(is_edit);
         row.close(); //Cierra datos del negocio
 
+        /**obtiene los datos del conyuge*/
         //Datos Conyuge
         row = dBhelper.getRecords(TBL_CONYUGE_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**precarga los datos del conyuge ya guardados*/
         etNombreCony.setText(row.getString(2)); etNombreCony.setEnabled(is_edit);
         etApPaternoCony.setText(row.getString(3)); etApPaternoCony.setEnabled(is_edit);
         etApMaternoCony.setText(row.getString(4)); etApMaternoCony.setEnabled(is_edit);
@@ -4411,9 +4495,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etCasaCony.setText(row.getString(21)); etCasaCony.setEnabled(is_edit);
         row.close(); // Cierra datos del conyuge
 
+        /**Obtiene los datos generales*/
         //Datos Otros
         row = dBhelper.getRecords(TBL_OTROS_DATOS_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**Precarga los datos ya guardados*/
         tvRiesgo.setText(row.getString(2));
         tvMedioContacto.setText(row.getString(3));
         tvEstadoCuenta.setText(row.getString(5));
@@ -4434,10 +4520,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         if (!row.getString(7).trim().isEmpty())
             tvCantidadLetra.setText((Miscellaneous.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS ").replace("  ", " "));
 
+        /**valida si es el integrante para la casa de reuniones para habilitar el croquis*/
         if (row.getInt(8) == 1) {
             cbCasaReuniones.setChecked(true);
             llCroquis.setVisibility(View.VISIBLE);
         }
+
+        /**obtiene si hay un integrante para la casa de reuniones para deshabilitar el campo*/
         Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1", "", null);
         row_casa.moveToFirst();
         if (row_casa.getCount() > 0 && row_casa.getInt(0) != Integer.parseInt(id_integrante)){
@@ -4455,9 +4544,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         row.close(); //Cierra otros datos
 
-
+        /**Obtiene los datos del croquis*/
         row = dBhelper.getRecords(TBL_CROQUIS_GPO_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**precarfa los datos ya guardado*/
         tvPrincipal.setText(row.getString(2).trim().toUpperCase());
         tvLateraUno.setText(row.getString(3).trim().toUpperCase());
         tvLateraDos.setText(row.getString(4).trim().toUpperCase());
@@ -4465,9 +4555,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etReferencia.setText(row.getString(6)); etReferencia.setEnabled(is_edit);
         row.close(); //Cierra datos del croquis
 
+        /**obtiene los datos de la politicas pld*/
         //Politicas
         row = dBhelper.getRecords(TBL_POLITICAS_PLD_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**precarga los datos que ya fueron guardados*/
         switch (row.getInt(2)){
             case 1:
                 rgPropietarioReal.check(R.id.rbSiPropietario);
@@ -4497,9 +4589,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         row.close(); //Cierra datos de politicas pld
 
+
+        /**obtiene los nombres de las imagenes de la documentacion*/
         //Documentos
         row = dBhelper.getRecords(TBL_DOCUMENTOS_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
         row.moveToFirst();
+        /**busca las imagenes en la ruta donde se guardan las imagenes*/
         if (!row.getString(2).isEmpty()){
             File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/"+row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
@@ -4540,6 +4635,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         row.close(); //Cierra datos de documentos del integrante
 
 
+        /**Valida si ya esta guardado la solicitud para bloquear todos los campos y eventos*/
         if (!is_edit){
             invalidateOptionsMenu();
 
@@ -4646,6 +4742,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     }
 
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos personales*/
     private boolean saveDatosIntegrante(){
         boolean save_integrante = false;
         ContentValues cv = new ContentValues();
@@ -4739,6 +4836,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         return save_integrante;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos telefonicos*/
     private boolean saveDatosTelefonicos(){
         boolean save_telefonicos = false;
         if (!validator.validate(etTelCasaCli, new String[]{validator.PHONE}) &&
@@ -4761,6 +4859,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ivError2.setVisibility(View.VISIBLE);
         return save_telefonicos;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos del domicilio el cliente*/
     private boolean saveDatosDomicilio(){
         boolean save_domicilio = false;
         ContentValues cv = new ContentValues();
@@ -4850,6 +4949,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         return save_domicilio;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos del negocio*/
     private boolean saveDatosNegocio(){
         boolean save_negocio = false;
         if (!validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})){
@@ -4954,6 +5054,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         return save_negocio;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos del conyuge*/
     private boolean saveConyuge(){
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -5006,6 +5107,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         return save_conyuge;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos generales*/
     private boolean saveDatosOtros(){
         boolean save_otros = false;
         if (!validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
@@ -5064,6 +5166,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         return save_otros;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos del croquis*/
     private boolean saveCroquis(){
         boolean save_croquis = false;
         if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
@@ -5087,6 +5190,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ivError7.setVisibility(View.VISIBLE);
         return save_croquis;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos de politicas pld*/
     private boolean savePoliticas(){
         boolean save_politicas = false;
         if (rgPropietarioReal.getCheckedRadioButtonId() == R.id.rbSiPropietario ||
@@ -5148,6 +5252,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
         return save_politicas;
     }
+    /**Funcion para validar los campos y actualizar la columnas del registro de los datos de documentos*/
     private boolean saveDocumentos(){
         boolean save_documentos = false;
         if (byteIneFrontal != null){
@@ -5185,6 +5290,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         return save_documentos;
     }
 
+    /**funcion para mostrar u ocultar el menu cuando ya fue guardada la solicitud*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -5197,18 +5303,22 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         return true;
     }
 
+    /**funcion para los eventos del menu*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:/**menu de retroceso en toolbar <-*/
                 finish();
                 break;
-            case R.id.save:
+            case R.id.save:/**menu de guardar la solicitud*/
+                /**Funcion para guardar los datos de las secciones y obtener un estatus
+                 * para saber si guardo o no los datos*/
                 boolean datos_personales = saveDatosIntegrante();
                 boolean datos_telefonicos = saveDatosTelefonicos();
                 boolean datos_domiclio = saveDatosDomicilio();
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
+                /**se valida el estado civil del intengrante para saber si va a guardar datos del conyige*/
                 if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
@@ -5216,21 +5326,28 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     datos_conyuge = true;
                 boolean datos_otros = saveDatosOtros();
 
+                /**Se valida si esta seleccionado el check de la casa de reuniones
+                 * para guardar datos del croquis*/
                 boolean datos_croquis = true;
                 if (cbCasaReuniones.isChecked())
                     datos_croquis = saveCroquis();
 
                 boolean datos_politicas = savePoliticas();
                 boolean datos_documentos = saveDocumentos();
+
+                /**Se valida si todos los estatus de las secciones que fueron guardados*/
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
                         datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos){
+                    /**se actualizan los estatus a completado para que despues no pueda hacer modificaciones*/
                     Update("estatus_completado", TBL_INTEGRANTES_GPO_REN, "1", "id", id_integrante);
-
+                    /**limpa la columna de comentario de rechazo para saber que ya completo la solicitud
+                     * para los casos que fueron rechazados*/
                     Update("comentario_rechazo", TBL_INTEGRANTES_GPO_REN, "","id", id_integrante);
 
                     finish();
                 }
                 else{
+                    /**En caso de que alguna seccion no esta completada mostrara un mensaje*/
                     final AlertDialog solicitud;
                     solicitud = Popups.showDialogMessage(this, warning,
                             "Faltan por llenar campos de la solicitud", R.string.accept, new Popups.DialogMessage() {
@@ -5249,8 +5366,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         return super.onOptionsItemSelected(item);
     }
 
+    /**Funcion de respuesta a la peticion de registro de nombre y cargo del integrante*/
     @Override
     public void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo) {
+        /**se valida si se crearon los registros de las secciones(datos personales, domicilio...)*/
         if (id_integrante > 0) {
             Log.e("id_Credito", "cccc"+id_integrante);
             this.id_integrante = String.valueOf(id_integrante);
@@ -5261,6 +5380,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etApPaternoCli.setEnabled(false);
             etApMaternoCli.setText(materno);
             etApMaternoCli.setEnabled(false);
+            /**Consulta para validar si ya hay una casa para reuniones para deshabilitar el checkbox*/
             Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1", "", null);
             row_casa.moveToFirst();
             if (row_casa.getCount() > 0 && row_casa.getInt(0) != id_integrante){
@@ -5269,22 +5389,27 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             isNuevo = true;
             llCurp.setVisibility(View.VISIBLE);
         }
-        else
+        else {
+            /**en caso de que cancelo el registo cierra el formulario de solicitud*/
             finish();
+        }
     }
 
+    /**funcion para recibir las respuestas a las peticiones de captura de fotografias, colonias, localidades, estados etc...*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ContentValues cv;
         switch (requestCode) {
-            case Constants.REQUEST_CODE_ESTADO_NAC:
-                if (resultCode == Constants.REQUEST_CODE_ESTADO_NAC) {
-                    if (data != null) {
+            case Constants.REQUEST_CODE_ESTADO_NAC:/**obtiene las respuesta a la peticion al estado de nacimiento del cliente*/
+                if (resultCode == Constants.REQUEST_CODE_ESTADO_NAC) {/**valida el codigo de respuesta*/
+                    if (data != null) {/**valida que la respuesta contenga un valor*/
                         tvEstadoNacCli.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvEstadoNacCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
-                        HashMap<Integer, String> params = new HashMap<>();
 
+                        /**crea un map con los campos necesarios para generar la curp del cliente*/
+                        HashMap<Integer, String> params = new HashMap<>();
                         params.put(0, Miscellaneous.GetStr(etNombreCli));
                         params.put(1, Miscellaneous.GetStr(etApPaternoCli));
                         params.put(2, Miscellaneous.GetStr(etApMaternoCli));
@@ -5308,15 +5433,18 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_CAMARA_FACHADA_CLI:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case Constants.REQUEST_CODE_CAMARA_FACHADA_CLI:/**obtiene la respuesta a la peticion a la fotografia de fachada del cliente*/
+                if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta tenga informacion*/
                         tvFachadaCli.setError(null);
                         ibFotoFachCli.setVisibility(View.GONE);
                         ivFotoFachCli.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en una variable*/
                         byteFotoFachCli = data.getByteArrayExtra(Constants.PICTURE);
+                        /**coloca la respuesta en el contenedor del imageview*/
                         Glide.with(ctx).load(byteFotoFachCli).centerCrop().into(ivFotoFachCli);
                         try {
+                            /**actualiza la columna con el nombre de la imagen cuando se guarda la foto*/
                             Update("foto_fachada", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.save(byteFotoFachCli, 1), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5324,97 +5452,117 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_COLONIA_CLIE:
-                if (resultCode == Constants.REQUEST_CODE_COLONIA_CLIE){
-                    if (data != null){
+            case Constants.REQUEST_CODE_COLONIA_CLIE:/**obtiene respuesta a la peticion de colonia del cliente*/
+                if (resultCode == Constants.REQUEST_CODE_COLONIA_CLIE){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvColoniaCli.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvColoniaCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCli), "id_integrante", id_integrante);
 
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_CLIE:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE){
-                    if (data != null){
+            case REQUEST_CODE_LOCALIDAD_CLIE:/**obtiene respuesta a la peticion de localidad del cliente*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CLIE){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvLocalidadCli.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvLocalidadCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCli), "id_integrante", id_integrante);
                     }
                 }
                 break;
-            case REQUEST_CODE_COLONIA_CONY:
-                if (resultCode == REQUEST_CODE_COLONIA_CONY){
-                    if (data != null){
+            case REQUEST_CODE_COLONIA_CONY:/**obtiene respuesta a la peticion de colonia del conyuge*/
+                if (resultCode == REQUEST_CODE_COLONIA_CONY){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvColoniaCony.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvColoniaCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCony), "id_integrante", id_integrante);
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_CONY:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY){
-                    if (data != null){
+            case REQUEST_CODE_LOCALIDAD_CONY:/**obtiene respuesta a la peticion de localidad del conyuge*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_CONY){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvLocalidadCony.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvLocalidadCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCony), "id_integrante", id_integrante);
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_ACTIVIDAD_NEG:
-                if (resultCode == Constants.REQUEST_CODE_ACTIVIDAD_NEG){
-                    if (data != null){
+            case Constants.REQUEST_CODE_ACTIVIDAD_NEG:/**obtiene respuesta a la peticion de actividad de negocio*/
+                if (resultCode == Constants.REQUEST_CODE_ACTIVIDAD_NEG){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvActEconomicaNeg.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
 
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_COLONIA_NEG:
-                if (resultCode == Constants.REQUEST_CODE_COLONIA_NEG){
-                    if (data != null){
+            case Constants.REQUEST_CODE_COLONIA_NEG:/**obtiene respuesta a la peticion de colonia del negocio*/
+                if (resultCode == Constants.REQUEST_CODE_COLONIA_NEG){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvColoniaNeg.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvColoniaNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaNeg), "id_integrante", id_integrante);
 
                     }
                 }
                 break;
-            case REQUEST_CODE_LOCALIDAD_NEG:
-                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG){
-                    if (data != null){
+            case REQUEST_CODE_LOCALIDAD_NEG:/**obtiene respuesta a la peticion de localidad del negocio*/
+                if (resultCode == REQUEST_CODE_LOCALIDAD_NEG){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvLocalidadNeg.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvLocalidadNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_NEGOCIO_INTEGRANTE_REN,tvLocalidadNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
                     }
                 }
                 break;
-            case REQUEST_CODE_OCUPACION_NEG:
-                if (resultCode == REQUEST_CODE_OCUPACION_NEG){
-                    if (data != null){
+            case REQUEST_CODE_OCUPACION_NEG:/**obtiene respuesta a la peticion de ocupacion del negocio*/
+                if (resultCode == REQUEST_CODE_OCUPACION_NEG){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvActEcoEspNeg.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvActEcoEspNeg.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**busca el sector dependiendo de la actividad economica seleccionada*/
                         Cursor row = dBhelper.getRecords(SECTORES, " WHERE sector_id = " + (((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getExtra())+"","",null);
                         if (row.getCount() > 0){
                             row.moveToFirst();
                             tvActEconomicaNeg.setText(row.getString(2));
                         }
                         row.close();
-                        Update("ocupacion", TBL_NEGOCIO_INTEGRANTE_REN, tvActEcoEspNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
-                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, tvActEconomicaNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                        /**actualiza las columnas*/
+                        Update("ocupacion", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEcoEspNeg), "id_integrante", id_integrante);
+                        Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_CAMARA_FACHADA_NEG:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case Constants.REQUEST_CODE_CAMARA_FACHADA_NEG:/**Obtiene respuesta a la peticion de fotografia de fachada del negocio*/
+                if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida si la respuesta contiene un valor*/
                         tvFachadaNeg.setError(null);
                         ibFotoFachNeg.setVisibility(View.GONE);
                         ivFotoFachNeg.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en una variable*/
                         byteFotoFachNeg = data.getByteArrayExtra(Constants.PICTURE);
+                        /**coloca la respuesta en el contenedor del imageView*/
                         Glide.with(ctx).load(byteFotoFachNeg).centerCrop().into(ivFotoFachNeg);
                         try {
+                            /**actualiza la columna con el nombre de la imagen que se guardo*/
                             Update("foto_fachada", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.save(byteFotoFachNeg, 1), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5423,36 +5571,43 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_OCUPACION_CONY:
-                if (resultCode == Constants.REQUEST_CODE_OCUPACION_CONY){
-                    if (data != null){
+            case Constants.REQUEST_CODE_OCUPACION_CONY:/**Obtiene respuesta a la peticion de ocupacion del conyuge*/
+                if (resultCode == Constants.REQUEST_CODE_OCUPACION_CONY){/**valida la respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvOcupacionCony.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvOcupacionCony.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("ocupacion", TBL_CONYUGE_INTEGRANTE_REN, tvOcupacionCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
 
                     }
                 }
                 break;
-            case Constants.REQUEST_CODE_OCUPACION_CLIE:
-                if (resultCode == Constants.REQUEST_CODE_OCUPACION_CLIE){
-                    if (data != null){
+            case Constants.REQUEST_CODE_OCUPACION_CLIE:/**Obtiene respuesta a la peticion de ocupacion del cliente*/
+                if (resultCode == Constants.REQUEST_CODE_OCUPACION_CLIE){/**valida la respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvOcupacionCli.setError(null);
+                        /**coloca la respuesta en el campo*/
                         tvOcupacionCli.setText(((ModeloCatalogoGral)data.getSerializableExtra(ITEM)).getNombre());
+                        /**actualiza la columna con la respuesta*/
                         Update("ocupacion", TBL_INTEGRANTES_GPO_REN, tvOcupacionCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
                     }
                 }
                 break;
-            case REQUEST_CODE_FIRMA_CLI:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case REQUEST_CODE_FIRMA_CLI:/**obtiene la respuesta a la peticion de firma del cliente*/
+                if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvFirmaCli.setError(null);
                         ibFirmaCli.setVisibility(View.GONE);
                         ivFirmaCli.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en el contenedor del imageview*/
                         Glide.with(ctx)
                                 .load(data.getByteArrayExtra(Constants.FIRMA_IMAGE))
                                 .into(ivFirmaCli);
+                        /**coloca la respuesta en una variable*/
                         byteFirmaCli = data.getByteArrayExtra(Constants.FIRMA_IMAGE);
                         try {
+                            /**actualiza la columna con el nombre de la imagen que se guardo*/
                             Update("firma", TBL_OTROS_DATOS_INTEGRANTE_REN, Miscellaneous.save(byteFirmaCli, 3), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5460,18 +5615,22 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_FRONTAL:
-                if (resultCode == RESULT_SCAN_SUPPRESSED){
-                    if (data != null){
+            case REQUEST_CODE_FOTO_INE_FRONTAL:/**obtiene la respuesta a la peticion de fotografia del ine frontal*/
+                if (resultCode == RESULT_SCAN_SUPPRESSED){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvIneFrontal.setError(null);
+                        /** se extrae la imagen que se capturo de tipo byte array*/
                         Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        /**coloca la respuesta en una variable*/
                         byteIneFrontal =  baos.toByteArray();
                         ibIneFrontal.setVisibility(View.GONE);
                         ivIneFrontal.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en el contenedor del imageView*/
                         Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
+                            /**actualiza la columna con el nombre que se guardo la imagen*/
                             Update("ine_frontal", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneFrontal, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5480,18 +5639,22 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_REVERSO:
-                if (resultCode == RESULT_SCAN_SUPPRESSED){
-                    if (data != null){
+            case REQUEST_CODE_FOTO_INE_REVERSO:/**obtiene la respuesta a la peticion de fotografia del ine reverso*/
+                if (resultCode == RESULT_SCAN_SUPPRESSED){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvIneReverso.setError(null);
+                        /** se extrae la imagen que se capturo de tipo byte array*/
                         Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        /**coloca la respuesta en una variable*/
                         byteIneReverso =  baos.toByteArray();
                         ibIneReverso.setVisibility(View.GONE);
                         ivIneReverso.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en el contenedor del imageView*/
                         Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
+                            /**actualiza la columna con el nombre que se guardo la imagen*/
                             Update("ine_reverso", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneReverso, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5500,15 +5663,18 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_CURP:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case REQUEST_CODE_FOTO_CURP:/**obtiene respuesta a la peticion de captura de fotografia de la curp*/
+                if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvCurp.setError(null);
                         ibCurp.setVisibility(View.GONE);
                         ivCurp.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en una variable*/
                         byteCurp = data.getByteArrayExtra(Constants.PICTURE);
+                        /**coloca la respuesta en el contenedor del imageView*/
                         Glide.with(ctx).load(byteCurp).centerCrop().into(ivCurp);
                         try {
+                            /**actualiza la columna con el nombre que se guardo la imagen*/
                             Update("curp", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteCurp, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5517,15 +5683,18 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_COMPROBATE:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+            case REQUEST_CODE_FOTO_COMPROBATE:/**obtiene respuesta a la peticion de captura de fotografia de la curp*/
+                if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
+                    if (data != null){/**valida que la respuesta contenga un valor*/
                         tvComprobante.setError(null);
                         ibComprobante.setVisibility(View.GONE);
                         ivComprobante.setVisibility(View.VISIBLE);
+                        /**coloca la respuesta en una variable*/
                         byteComprobante = data.getByteArrayExtra(Constants.PICTURE);
+                        /**coloca la respuesta en el contenedor del imageView*/
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
+                            /**actualiza la columna con el nombre que se guardo la imagen*/
                             Update("comprobante", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteComprobante, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -5536,6 +5705,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     }
 
+    /**funcion para actualizar las columnas de los registros de diferentes tablas*/
     private void Update(String key, String tabla, String value, String param, String id) {
         Log.e("update", key+": "+value);
         ContentValues cv = new ContentValues();
@@ -5544,6 +5714,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     }
 
+    /**funcion del evento click del boton de retroceso del dispositivo*/
     @Override
     public void onBackPressed() {
         if (is_edit) {
@@ -5570,6 +5741,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             finish();
     }
 
+    /**Funcion para mostrar mensajes en un alertDialog*/
     private void ShowMensajes(String mensaje, String tipo){
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(this, warning,
@@ -5588,6 +5760,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     }
 
+    /**Funcion que recibe la respuesta los nombres de las calles del croquis*/
     public void setCalle (String calle, String tipo){
         switch (tipo){
             case "PRINCIPAL":

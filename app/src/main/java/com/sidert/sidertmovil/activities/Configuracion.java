@@ -6,16 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+/*import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.Toolbar;
+/*import android.support.v7.widget.CardView;
+import androidx.appcompat.widget.Toolbar;*/
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -148,7 +153,7 @@ public class Configuracion extends AppCompatActivity {
                             /**Envia las consultas Realizadas de circulo de credito*/
                             //ss.SendConsultaCC(ctx, false);
                             /**Envia las gestiones de cobros en efectivo de AGF y CC*/
-                            //ss.SendRecibos(ctx, false);
+                            ss.SendRecibos(ctx, false);
                             /**Obtiene el ultimo folio de impresiones de AGF y CC*/
                             //ss.GetUltimosRecibos(ctx);
 
@@ -283,6 +288,7 @@ public class Configuracion extends AppCompatActivity {
                         case 200:
                             /**Si tiene permitido descargar comienza el proceso para descargar*/
                             Toast.makeText(ctx, "Comienza la descarga", Toast.LENGTH_SHORT).show();
+                            Log.e("Urlapk", session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS + WebServicesRoutes.WS_GET_DOWNLOAD_APK_NEW);
                             myReceiver.DownloadApk(session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_FICHAS + WebServicesRoutes.WS_GET_DOWNLOAD_APK_NEW);
                             break;
                         case 404:

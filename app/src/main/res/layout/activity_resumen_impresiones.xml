@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,20 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbMain"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:titleTextColor="@color/white"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <!-- Total Impresiones -->
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -50,7 +50,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvImpresiones"
@@ -61,7 +61,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <View
             android:background="@color/blue_sidert"
@@ -69,7 +69,7 @@
             android:layout_height="2dp"/>
 
         <!-- Total Grupo -->
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -94,7 +94,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvGrupales"
@@ -105,9 +105,9 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -132,7 +132,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvGpoOriginal"
@@ -143,9 +143,9 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -170,7 +170,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvGpoCopias"
@@ -181,7 +181,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <View
             android:background="@color/blue_sidert"
@@ -189,7 +189,7 @@
             android:layout_height="2dp"/>
 
         <!-- Total Individual -->
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -201,7 +201,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -214,7 +214,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvIndividuales"
@@ -225,9 +225,9 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -239,7 +239,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -252,7 +252,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvIndOriginal"
@@ -263,9 +263,9 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -277,7 +277,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -290,7 +290,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvIndCopias"
@@ -301,7 +301,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <View
             android:background="@color/blue_sidert"
@@ -309,7 +309,7 @@
             android:layout_height="2dp"/>
 
         <!-- Total Enviadas -->
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -321,7 +321,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -334,7 +334,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvEnviadas"
@@ -345,10 +345,10 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <!-- Total Pendientes Envio -->
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -360,7 +360,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -373,7 +373,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvPendientes"
@@ -384,7 +384,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

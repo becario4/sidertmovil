@@ -1,8 +1,10 @@
 package com.sidert.sidertmovil;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sidert.sidertmovil.activities.Login;
 import com.sidert.sidertmovil.utils.SessionManager;

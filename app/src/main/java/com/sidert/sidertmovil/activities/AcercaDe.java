@@ -1,15 +1,19 @@
 package com.sidert.sidertmovil.activities;
 
-import android.support.v7.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 
 import com.sidert.sidertmovil.R;
 
 import java.util.Objects;
 
+/**Clase para visualizar las politicas de la empresa*/
 public class AcercaDe extends AppCompatActivity {
 
     @Override
@@ -19,7 +23,6 @@ public class AcercaDe extends AppCompatActivity {
 
         TextView tvAboutSIDERT   = findViewById(R.id.tvAboutSIDERT);
         Toolbar tbMain = findViewById(R.id.tbMain);
-
 
         setSupportActionBar(tbMain);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);

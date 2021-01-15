@@ -44,21 +44,12 @@ public class PrintRecibos {
         posPtr = new ESCPOSPrinter();
         date = df.format(Calendar.getInstance().getTime());
         session = new SessionManager(ctx);
-        //PrintCode();
+
         HeadTicket(ctx, ticket);
         BodyTicket(ctx, ticket, object);
         try {
             FooterTicket(ctx, ticket, object);
         } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void PrintCode(){
-        try {
-            posPtr.printQRCode("Alejandro Isaias", 300, 5, 0, 100, 1);
-        } catch (UnsupportedEncodingException e) {
-            Log.e("Error", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -126,8 +117,8 @@ public class PrintRecibos {
                     linea = line("Cliente: ", object.getString("nombre_uno"));
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
 
-                    linea = line("Aval: ", object.getString("nombre_dos"));
-                    posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
+                    //linea = line("Aval: ", object.getString("nombre_dos"));
+                    //posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
                 }
                 else //creditos grupales
                 {
@@ -271,8 +262,8 @@ public class PrintRecibos {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND tipo_credito = ? AND nombre_dos = ?";
-            row = db.rawQuery(sql, new String[]{ticket.getCurp(), String.valueOf(tipoCredito), object.getString("nombre_dos")});
+            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND tipo_credito = ?";
+            row = db.rawQuery(sql, new String[]{ticket.getCurp(), String.valueOf(tipoCredito)});
 
             Log.e("Reimpresion", "count"+ row.getCount());
             if (row.getCount() == 1) {

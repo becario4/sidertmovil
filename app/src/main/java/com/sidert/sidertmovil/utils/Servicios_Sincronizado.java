@@ -6,18 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.IntegrantesGpo;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ConsultaCC;
 import com.sidert.sidertmovil.models.MAmortizacion;
-import com.sidert.sidertmovil.models.MAutorizarCC;
 import com.sidert.sidertmovil.models.MAval;
 import com.sidert.sidertmovil.models.MCierreDia;
 import com.sidert.sidertmovil.models.MGestionCancelada;
@@ -25,7 +22,7 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
-import com.sidert.sidertmovil.models.MPrestamosAgfCc;
+import com.sidert.sidertmovil.models.MPrestamosAgf;
 import com.sidert.sidertmovil.models.MPrestamosRenovar;
 import com.sidert.sidertmovil.models.MReciboCC;
 import com.sidert.sidertmovil.models.MRenovacion;
@@ -41,7 +38,6 @@ import com.sidert.sidertmovil.models.MResUltimoRecibo;
 import com.sidert.sidertmovil.models.MRespGestionadas;
 import com.sidert.sidertmovil.models.MResponseDefault;
 import com.sidert.sidertmovil.models.MResponseTracker;
-import com.sidert.sidertmovil.models.MRespuestaCC;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MRespuestaSolicitud;
 import com.sidert.sidertmovil.models.MSendImpresion;
@@ -52,11 +48,9 @@ import com.sidert.sidertmovil.models.MSolicitudCancelacion;
 import com.sidert.sidertmovil.models.MSolicitudRechazoGpo;
 import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.MTracker;
-import com.sidert.sidertmovil.models.MailBoxResponse;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -1827,18 +1821,18 @@ public class Servicios_Sincronizado {
 
         ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        Call<List<MPrestamosAgfCc>> call = api.getPrestamosAgfCc("Bearer "+ session.getUser().get(7));
+        Call<List<MPrestamosAgf>> call = api.getPrestamosAgf("Bearer "+ session.getUser().get(7));
 
-        call.enqueue(new Callback<List<MPrestamosAgfCc>>() {
+        call.enqueue(new Callback<List<MPrestamosAgf>>() {
             @Override
-            public void onResponse(Call<List<MPrestamosAgfCc>> call, Response<List<MPrestamosAgfCc>> response) {
+            public void onResponse(Call<List<MPrestamosAgf>> call, Response<List<MPrestamosAgf>> response) {
                 Log.e("Code", response.code()+" Prestamos AGF");
                 switch (response.code()){
                     case 200:
-                        List<MPrestamosAgfCc> prestamos = response.body();
+                        List<MPrestamosAgf> prestamos = response.body();
                         if (prestamos != null && prestamos.size() > 0){
                             Log.e("Prestamos", "Tamaño: "+prestamos.size());
-                            for (MPrestamosAgfCc item : prestamos){
+                            for (MPrestamosAgf item : prestamos){
                                 String sql = "";
                                 Cursor row = null;
                                 if (item.getGrupoId() > 1) {
@@ -1875,8 +1869,9 @@ public class Servicios_Sincronizado {
             }
 
             @Override
-            public void onFailure(Call<List<MPrestamosAgfCc>> call, Throwable t) {
-
+            public void onFailure(Call<List<MPrestamosAgf>> call, Throwable t) {
+                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                t.printStackTrace();
             }
         });
     }
@@ -4783,516 +4778,30 @@ public class Servicios_Sincronizado {
                         for (MResUltimoRecibo item : data){
                             String sql = "";
                             Cursor row = null;
-                            if (item.getGrupoId() > 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() != 6) {
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo()});
-                                if (row.getCount() > 0){//Actualiza AGF grupal
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else{ //Regista AGF para grupal
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, Miscellaneous.GetMedioPago(item.getMedioPagoId()));
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "");
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
+
+                            sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ?";
+                            Cursor rowImpresion = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion()});
+                            if (rowImpresion.getCount() == 0) {
+                                HashMap params = new HashMap<>();
+                                params.put(0, String.valueOf(item.getGrupoId()));
+                                params.put(1, String.valueOf(item.getNumSolicitud()));
+                                params.put(2, String.valueOf(item.getMonto()));
+                                String[] folio = item.getFolio().split("-");
+                                params.put(3, folio[2]);
+                                params.put(4, item.getTipo());
+                                params.put(5, item.getTipoImpresion());
+                                params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", " "));
+                                params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", " "));
+                                params.put(8, "1");
+                                params.put(9, item.getNombre());
+                                dBhelper.saveRecibosAgfCc(db, params);
                             }
-                            else if (item.getGrupoId() > 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() == 6 && !item.getFolio().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ''";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO"});
-                                if (row.getCount() > 0){ //actualiza agf grupal efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-
-                                    String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ?";
-                                    Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion()});
-                                    if (rowImpresion.getCount() == 0) {
-                                        HashMap params = new HashMap<>();
-                                        params.put(0, String.valueOf(item.getGrupoId()));
-                                        params.put(1, String.valueOf(item.getNumSolicitud()));
-                                        params.put(2, String.valueOf(item.getMonto()));
-                                        String[] folio = item.getFolio().split("-");
-                                        params.put(3, folio[2]);
-                                        params.put(4, item.getTipo());
-                                        params.put(5, item.getTipoImpresion());
-                                        params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", ""));
-                                        params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                        params.put(8, "1");
-                                        params.put(9, item.getNombre());
-                                        dBhelper.saveRecibosAgfCc(db, params);
-                                    }
-                                    else{
-                                        rowImpresion.moveToFirst();
-                                        cv = new ContentValues();
-                                        cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                        cv.put("estatus", 1);
-                                        db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
-                                    }
-
-                                }
-                                else { //regista agf grupal para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "SI");
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, String.valueOf(item.getMonto()));
-                                    String[] folio = item.getFolio().split("-");
-                                    params.put(3, folio[2]);
-                                    params.put(4, item.getTipo());
-                                    params.put(5, item.getTipoImpresion());
-                                    params.put(6, item.getFechaImpreso().substring(0,19).replace("T",""));
-                                    params.put(7, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(8, "1");
-                                    params.put(9, item.getNombre());
-                                    dBhelper.saveRecibosAgfCc(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() > 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() == 6 && item.getFolio().trim().isEmpty() && !item.getFolioManual().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", item.getFolioManual()});
-                                if (row.getCount() > 0){ //actualiza agf grupal efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else { //regista agf grupal para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "NO");
-                                    params.put(12, String.valueOf(item.getFolioManual()));
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() != 6) {
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo()});
-                                if (row.getCount() > 0){ //actualiza agf individual
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else{//registra agf individual
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, Miscellaneous.GetMedioPago(item.getMedioPagoId()));
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "");
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() == 6 && !item.getFolio().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ''";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO"});
-                                if (row.getCount() > 0){ //actualiza agf individual efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-
-                                    String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ?";
-                                    Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion()});
-                                    if (rowImpresion.getCount() == 0) {
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        params.put(0, String.valueOf(item.getGrupoId()));
-                                        params.put(1, String.valueOf(item.getNumSolicitud()));
-                                        params.put(2, String.valueOf(item.getMonto()));
-                                        String[] folio = item.getFolio().split("-");
-                                        params.put(3, folio[2]);
-                                        params.put(4, item.getTipo());
-                                        params.put(5, item.getTipoImpresion());
-                                        params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", ""));
-                                        params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                        params.put(8, "1");
-                                        params.put(9, item.getNombre());
-                                        dBhelper.saveRecibosAgfCc(db, params);
-                                    }
-                                    else {
-                                        rowImpresion.moveToFirst();
-                                        cv = new ContentValues();
-                                        cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                        cv.put("estatus", 1);
-                                        db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
-                                    }
-                                }
-                                else { //regista agf individual para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "SI");
-                                    params.put(12, "");
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, String.valueOf(item.getMonto()));
-                                    String[] folio = item.getFolio().split("-");
-                                    params.put(3, folio[2]);
-                                    params.put(4, item.getTipo());
-                                    params.put(5, item.getTipoImpresion());
-                                    params.put(6, item.getFechaImpreso().substring(0,19).replace("T",""));
-                                    params.put(7, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(8, "1");
-                                    params.put(9, item.getNombre());
-                                    dBhelper.saveRecibosAgfCc(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("AGF") && item.getMedioPagoId() == 6 && item.getFolio().trim().isEmpty() && !item.getFolioManual().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", item.getFolioManual()});
-                                if (row.getCount() > 0){ //actualiza agf individual efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else { //regista agf individual para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "NO");
-                                    params.put(12, String.valueOf(item.getFolioManual()));
-                                    params.put(13, "");
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
-                            }
-                            // CC
-                            if (item.getGrupoId() > 1 && item.getTipo().equals("CC") && item.getMedioPagoId() != 6) {
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0){//Actualiza AGF grupal
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else{ //Regista AGF para grupal
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, Miscellaneous.GetMedioPago(item.getMedioPagoId()));
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "");
-                                    params.put(12, "");
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() > 1 && item.getTipo().equals("CC") && item.getMedioPagoId() == 6 && !item.getFolio().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = '' AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0) { //actualiza agf grupal efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-
-                                    String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ? AND nombre = ?";
-                                    Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion(), String.valueOf(item.getNombre())});
-                                    if (rowImpresion.getCount() == 0) {
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        params.put(0, String.valueOf(item.getGrupoId()));
-                                        params.put(1, String.valueOf(item.getNumSolicitud()));
-                                        params.put(2, String.valueOf(item.getMonto()));
-                                        String[] folio = item.getFolio().split("-");
-                                        params.put(3, folio[2]);
-                                        params.put(4, item.getTipo());
-                                        params.put(5, item.getTipoImpresion());
-                                        params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", ""));
-                                        params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                        params.put(8, "1");
-                                        params.put(9, item.getNombre());
-                                        dBhelper.saveRecibosAgfCc(db, params);
-                                    }
-                                    else{
-                                        rowImpresion.moveToFirst();
-                                        cv = new ContentValues();
-                                        cv.put("fecha_envio", item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                        cv.put("estatus", 1);
-                                        db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
-                                    }
-                                }
-                                else { //regista agf grupal para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "SI");
-                                    params.put(12, "");
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, String.valueOf(item.getMonto()));
-                                    String[] folio = item.getFolio().split("-");
-                                    params.put(3, folio[2]);
-                                    params.put(4, item.getTipo());
-                                    params.put(5, item.getTipoImpresion());
-                                    params.put(6, item.getFechaImpreso().substring(0,19).replace("T",""));
-                                    params.put(7, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(8, "1");
-                                    params.put(9, item.getNombre());
-                                    dBhelper.saveRecibosAgfCc(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() > 1 && item.getTipo().equals("CC") && item.getMedioPagoId() == 6 && item.getFolio().trim().isEmpty() && !item.getFolioManual().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ? AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", item.getFolioManual(), String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0){ //actualiza agf grupal efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else { //regista agf individual para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "NO");
-                                    params.put(12, String.valueOf(item.getFolioManual()));
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("CC") && item.getMedioPagoId() != 6) {
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0){ //actualiza agf individual
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else{//registra agf individual
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, Miscellaneous.GetMedioPago(item.getMedioPagoId()));
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "");
-                                    params.put(12, "");
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("CC") && item.getMedioPagoId() == 6 && !item.getFolio().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = '' AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0){ //actualiza agf individual efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-
-                                    String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ? AND nombre = ?";
-                                    Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion(), String.valueOf(item.getNombre())});
-                                    if (rowImpresion.getCount() == 0) {
-                                        HashMap<Integer, String> params = new HashMap<>();
-                                        params.put(0, String.valueOf(item.getGrupoId()));
-                                        params.put(1, String.valueOf(item.getNumSolicitud()));
-                                        params.put(2, String.valueOf(item.getMonto()));
-                                        String[] folio = item.getFolio().split("-");
-                                        params.put(3, folio[2]);
-                                        params.put(4, item.getTipo());
-                                        params.put(5, item.getTipoImpresion());
-                                        params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", ""));
-                                        params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", ""));
-                                        params.put(8, "1");
-                                        params.put(9, item.getNombre());
-                                        dBhelper.saveRecibosAgfCc(db, params);
-                                    }
-                                    else{
-                                        rowImpresion.moveToFirst();
-                                        cv = new ContentValues();
-                                        cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                        cv.put("estatus", 1);
-                                        db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
-                                    }
-                                }
-                                else { //regista agf individual para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "SI");
-                                    params.put(12, "");
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-
-                                    Log.e("Nobre", item.getNombre());
-                                    Log.e("FOLIOOO", item.getFolio()+ "Algun folio");
-                                    params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, String.valueOf(item.getMonto()));
-                                    String[] folio = item.getFolio().split("-");
-                                    params.put(3, folio[2]);
-                                    params.put(4, item.getTipo());
-                                    params.put(5, item.getTipoImpresion());
-                                    params.put(6, item.getFechaImpreso().substring(0,19).replace("T",""));
-                                    params.put(7, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(8, "1");
-                                    params.put(9, item.getNombre());
-                                    dBhelper.saveRecibosAgfCc(db, params);
-
-
-                                }
-                            }
-                            else if (item.getGrupoId() == 1 && item.getTipo().equals("CC") && item.getMedioPagoId() == 6 && item.getFolio().trim().isEmpty() && !item.getFolioManual().trim().isEmpty()){
-                                sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo = ? AND medio_pago = ? AND folio_manual = ? AND cliente_id = ?";
-                                row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), "EFECTIVO", item.getFolioManual(), String.valueOf(item.getClienteId())});
-                                if (row.getCount() > 0){ //actualiza agf individual efectivo
-                                    row.moveToFirst();
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    cv.put("estatus", 2);
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-                                }
-                                else { //regista agf individual para efectivo
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, String.valueOf(item.getGrupoId()));
-                                    params.put(1, String.valueOf(item.getNumSolicitud()));
-                                    params.put(2, "EFECTIVO");
-                                    params.put(3, item.getEvidencia());
-                                    params.put(4, (item.getTipoImagen() == 1)?"FOTOGRAFIA":"GALERIA");
-                                    params.put(5, item.getFechaTermino().substring(0,19).replace("T",""));
-                                    params.put(6, item.getFechaEnvio().substring(0,19).replace("T",""));
-                                    params.put(7, item.getTipo());
-                                    params.put(8, item.getNombre());
-                                    params.put(9, "2");
-                                    params.put(10, String.valueOf(item.getMonto()));
-                                    params.put(11, "NO");
-                                    params.put(12, String.valueOf(item.getFolioManual()));
-                                    params.put(13, String.valueOf(item.getClienteId()));
-                                    dBhelper.saveRecuperacionRecibos(db, params);
-                                }
+                            else{
+                                rowImpresion.moveToFirst();
+                                ContentValues cv = new ContentValues();
+                                cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
+                                cv.put("estatus", 1);
+                                db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
                             }
 
                         }
@@ -5387,8 +4896,13 @@ public class Servicios_Sincronizado {
                             params.put(7, folio[2]);
                             params.put(8, item.getFechaImpreso().substring(0,19).replace("T", " "));
                             params.put(9, item.getFechaEnvio().substring(0,19).replace("T", " "));
-                            params.put(10, "0");
+                            params.put(10, "1");
                             dBhelper.saveRecibosCC(db, params);
+                        }
+                        else{
+                            ContentValues cv = new ContentValues();
+                            cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T", " "));
+                            db.update(TBL_RECIBOS_CC, cv, "_id = ?", new String[]{row.getString(0)});
                         }
                         row.close();
                         break;

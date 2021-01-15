@@ -15,8 +15,10 @@ import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
+//import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Miscellaneous;

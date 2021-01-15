@@ -1,9 +1,9 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+//import android.support.v7.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -52,13 +52,17 @@ public class adapter_prestamos_agf extends RecyclerView.Adapter<adapter_prestamo
 
         if (Long.parseLong(item.get(1)) == 1) {
             holder.tvNombre.setText(item.get(8).substring(1));
-
+            if (Integer.parseInt(item.get(12)) == -1)
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipo);
+            else
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_user_yellow)).into(holder.ivTipo);
         }
         else {
             holder.tvNombre.setText(item.get(0));
-
+            if (Integer.parseInt(item.get(12)) == -1)
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipo);
+            else
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_cliente)).into(holder.ivTipo);
         }
 
         holder.bind(item);

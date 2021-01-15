@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.13</string>
+    <string name="app_version">2.4.14</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -544,6 +544,11 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
     <string-array name="imprimir">
         <item>SI</item>                      <!-- 0 -->
         <item>NO CUENTA CON BATERIA</item>   <!-- 1 -->
+    </string-array>
+
+    <string-array name="costo_consulta">
+        <item>$17.50</item>             <!-- 0 -->
+        <item>$22.50</item>             <!-- 1 -->
     </string-array>
 
     <string-array name="resultado_gestion">

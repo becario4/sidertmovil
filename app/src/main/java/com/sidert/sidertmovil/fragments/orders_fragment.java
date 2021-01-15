@@ -3,17 +3,21 @@ package com.sidert.sidertmovil.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
+//import android.support.design.widget.TabLayout;
+//import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.tabs.TabLayout;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.TabsRecentsAdapter;
 import com.sidert.sidertmovil.fragments.view_pager.answers_fragment;
+//import com.sidert.sidertmovil.fragments.view_pager.fichas_pendientes_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.fichas_pendientes_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.route_fragment;
 import com.sidert.sidertmovil.utils.CustomViewPager;

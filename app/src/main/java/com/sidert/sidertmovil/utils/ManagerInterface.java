@@ -12,7 +12,7 @@ import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MPlazos;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
-import com.sidert.sidertmovil.models.MPrestamosAgfCc;
+import com.sidert.sidertmovil.models.MPrestamosAgf;
 import com.sidert.sidertmovil.models.MPrestamosRenovar;
 import com.sidert.sidertmovil.models.MReciboCC;
 import com.sidert.sidertmovil.models.MRenovacion;
@@ -22,7 +22,6 @@ import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResCodigoOxxo;
 import com.sidert.sidertmovil.models.MResConsultaCC;
 import com.sidert.sidertmovil.models.MResRecibo;
-import com.sidert.sidertmovil.models.MResSaveOriginacionInd;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.MResSoporte;
 import com.sidert.sidertmovil.models.MResTicket;
@@ -57,7 +56,6 @@ import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -79,6 +77,8 @@ public interface ManagerInterface {
     })
     @POST(WebServicesRoutes.WS_MAILBOX)
     Call<MailBoxResponse> setMailBox(@Body MailBoxPLD obj);
+
+
 
     @Headers({
             "Accept: application/json",
@@ -313,8 +313,8 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_AGF_CC)
-    Call<List<MPrestamosAgfCc>> getPrestamosAgfCc(@Header("Authorization") String barer_token);
+    @GET(WebServicesRoutes.WS_GET_PRESTAMOS_AGF)
+    Call<List<MPrestamosAgf>> getPrestamosAgf(@Header("Authorization") String barer_token);
 
     @Headers({
             "Accept: application/json",

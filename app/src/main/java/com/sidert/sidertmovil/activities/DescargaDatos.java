@@ -11,12 +11,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+/*import android.support.v4.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
@@ -71,7 +74,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
@@ -157,11 +159,11 @@ public class DescargaDatos extends AppCompatActivity {
           * o prestamos autorizados para autorizar monto*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
         /**Descarga los prestamos autorizados y vigentes para realizar cobros AGF*/
-        //ss.GetPrestamos(ctx, false);
+        ss.GetPrestamos(ctx, false);
         /**Descarga el ultimo folio de AGF*/
-        //ss.GetUltimosRecibos(ctx);
+        ss.GetUltimosRecibos(ctx);
         /**Descarga el ultimo folio de CC*/
-        //ss.GetUltimosRecibosCC(ctx);
+        ss.GetUltimosRecibosCC(ctx);
 
         /**Descarga los prestamos a renovar*/
         //ss.GetPrestamosToRenovar(ctx);
@@ -472,7 +474,7 @@ public class DescargaDatos extends AppCompatActivity {
                                 String where = " WHERE id_cartera = ?";
                                 String order = "";
                                 String[] args =  new String[] {String.valueOf(cartera.get(i).getId())};
-                                /**Se valida el tipo de cartera Individual o gruppal*/
+                                /**Se valida el tipo de cartera Individual o grupal*/
                                 switch (Miscellaneous.GetTipoCartera(cartera.get(i).getCarteraTipo())){
                                     case 1:/**Individual*/
 

@@ -28,25 +28,25 @@
     <item
         android:id="@+id/nvCobroAGF"
         android:icon="@drawable/ic_agf"
-        android:visible="false"
+        android:visible="true"
         android:title="Cobros AGF" />
     <!-- 5 -->
     <item
         android:id="@+id/nvCobroCC"
         android:icon="@drawable/ic_cc_black"
-        android:visible="false"
+        android:visible="true"
         android:title="Cobros CC" />
     <!-- 6 -->
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item

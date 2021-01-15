@@ -1,8 +1,8 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,8 +44,14 @@ public class adapter_gestiones_cc extends RecyclerView.Adapter<adapter_gestiones
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HashMap<Integer, String> item = data.get(position);
+
         holder.tvNombreUno.setText(item.get(2));
-        holder.tvNombreDos.setText(item.get(4));
+        if (Integer.parseInt(item.get(1)) == 2) {
+            holder.tvNombreDos.setText(item.get(4));
+            holder.tvNombreDos.setVisibility(View.VISIBLE);
+        }
+        else
+            holder.tvNombreDos.setVisibility(View.GONE);
 
         if (item.get(5).equals("GESTIONADAS")){
             holder.llComplemento.setVisibility(View.VISIBLE);

@@ -19,11 +19,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
+/*import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;*/
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -902,7 +906,7 @@ public class recuperacion_gpo_fragment extends Fragment {
 
                 String fechaPago = "";
                 String montoPago = "";
-                Cursor rowPago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", " ORDER BY fecha ASC", new String[]{parent.id_prestamo});
+                Cursor rowPago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ?", " ORDER BY fecha DESC limit 1", new String[]{parent.id_prestamo});
                 if (rowPago.getCount() > 0){
                     rowPago.moveToFirst();
 

@@ -15,13 +15,18 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+//import androidx.annotation.Nullable;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -86,6 +91,7 @@ public class RecuperacionCC extends AppCompatActivity {
 
     private TextView tvTipo;
     private RadioGroup rgTipo;
+    private TextView tvCostoConsulta;
     private LinearLayout llClienteGrupo;
     private TextView tvClienteGrupo;
     private EditText etClienteGrupo;
@@ -116,6 +122,7 @@ public class RecuperacionCC extends AppCompatActivity {
 
     public String[] _medio_pago;
     public String[] _imprimir;
+    public String[] _costo_consulta;
 
     private String folio_impreso = "";
 
@@ -147,8 +154,9 @@ public class RecuperacionCC extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_c_c);
 
-        _medio_pago = getResources().getStringArray(R.array.medio_pago);
-        _imprimir = getResources().getStringArray(R.array.imprimir);
+        _medio_pago     = getResources().getStringArray(R.array.medio_pago);
+        _imprimir       = getResources().getStringArray(R.array.imprimir);
+        _costo_consulta = getResources().getStringArray(R.array.costo_consulta);
 
         ctx = this;
 
@@ -163,6 +171,7 @@ public class RecuperacionCC extends AppCompatActivity {
 
         tvTipo          = findViewById(R.id.tvTipo);
         rgTipo          = findViewById(R.id.rgTipo);
+        tvCostoConsulta         = findViewById(R.id.tvCostoConsulta);
         llClienteGrupo          = findViewById(R.id.llClienteGrupo);
         tvClienteGrupo          = findViewById(R.id.tvClienteGrupo);
         etClienteGrupo          = findViewById(R.id.etClienteGrupo);
@@ -209,24 +218,30 @@ public class RecuperacionCC extends AppCompatActivity {
                 tvTipo.setError(null);
                 switch (rbId){
                     case R.id.rbInd:/**si seleccionaron individual*/
+                        etClienteGrupo.setFilters(new InputFilter[] {new InputFilter.LengthFilter(60)});
+                        etClienteGrupo.setText("");
+                        etCurpCliente.setText("");
                         tvClienteGrupo.setText("Nombre de Prospecto de Cliente");
                         etClienteGrupo.setHint("Nombre Completo");
                         tvCurpCliente.setText("Curp del Prospecto");
                         etCurpCliente.setHint("Curp del Prospecto");
 
-                        tvAvalRepresentante.setText("Nombre del Aval");
-                        etAvalRepresentate.setHint("Nombre Completo");
+                        llAvalRepresentante.setVisibility(View.GONE);
                         tvAvalRepresentante.setText("Nombre del Aval");
                         etAvalRepresentate.setHint("Nombre del Aval");
-
-                        etIntegrantes.setText("2");
+                        etIntegrantes.setText("1");
                         llIntegrantes.setVisibility(View.GONE);
                         break;
                     case R.id.rbGpo:/**seleccionaron grupal*/
+                        etClienteGrupo.setFilters(new InputFilter[] {new InputFilter.LengthFilter(30)});
+                        etClienteGrupo.setText("");
+                        etCurpCliente.setText("");
+                        etAvalRepresentate.setText("");
                         tvClienteGrupo.setText("Nombre de Prospecto de Grupo");
                         etClienteGrupo.setHint("Nombre del Grupo");
                         tvCurpCliente.setText("Curp del Representante");
                         etCurpCliente.setHint("Curp del Representante");
+                        llAvalRepresentante.setVisibility(View.VISIBLE);
                         tvAvalRepresentante.setText("Nombre del Representante");
                         etAvalRepresentate.setHint("Nombre Completo");
                         etIntegrantes.setText("");
@@ -235,7 +250,6 @@ public class RecuperacionCC extends AppCompatActivity {
                 }
                 llCurpCliente.setVisibility(View.VISIBLE);
                 llClienteGrupo.setVisibility(View.VISIBLE);
-                llAvalRepresentante.setVisibility(View.VISIBLE);
             }
         });
 
@@ -254,7 +268,10 @@ public class RecuperacionCC extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 if (e.length() > 0){
-                    etMonto.setText(String.valueOf(17.5 * Integer.parseInt(e.toString())));
+                    if (!Miscellaneous.GetStr(tvCostoConsulta).isEmpty()) {
+                        Double costo = Double.parseDouble(Miscellaneous.GetStr(tvCostoConsulta));
+                        etMonto.setText(String.valueOf( costo * Integer.parseInt(e.toString())).replace("$", ""));
+                    }
                 }
                 else{
                     etMonto.setText("0");
@@ -310,6 +327,8 @@ public class RecuperacionCC extends AppCompatActivity {
             }
         });
 
+        /**Evento de click para obtener el costo por consulta*/
+        tvCostoConsulta.setOnClickListener(tvCostoConsulta_OnClick);
         /**Evento de click para obtener el medio de pago*/
         tvMedioPago.setOnClickListener(tvMedioPago_OnClick);
         /**Evento de click para seleccionar si va a imprimir recibo o no*/
@@ -327,6 +346,32 @@ public class RecuperacionCC extends AppCompatActivity {
         initComponents();
     }
 
+    private View.OnClickListener tvCostoConsulta_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle(R.string.selected_option)
+                    .setItems(_costo_consulta, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int position) {
+                            tvCostoConsulta.setError(null);
+                            tvCostoConsulta.setText(_costo_consulta[position].replace("$",""));
+
+                            if (tipoCredito.equals("1")){
+                                etMonto.setText(Miscellaneous.GetStr(tvCostoConsulta).replace("$", ""));
+                            }
+                            else{
+                                if (!Miscellaneous.GetStr(etIntegrantes).isEmpty()){
+                                    double total = Integer.parseInt(Miscellaneous.GetStr(etIntegrantes)) * Double.parseDouble(Miscellaneous.GetStr(tvCostoConsulta).replace("$", ""));
+                                    etMonto.setText(Miscellaneous.moneyFormat(String.valueOf(total)).replace("$", ""));
+                                }
+                            }
+                        }
+                    });
+            builder.create();
+            builder.show();
+        }
+    };
+
     /**Evento de clic para seleccionar el medio de pago pero primero tendrá que llenar los campos anteriores*/
     private View.OnClickListener tvMedioPago_OnClick = new View.OnClickListener() {
         @Override
@@ -343,7 +388,7 @@ public class RecuperacionCC extends AppCompatActivity {
                     if (misc.CurpValidador(misc.GetStr(etCurpCliente)))
                     {
                         /**Valida el campo de aval/representante esten llenos*/
-                        if(!validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))
+                        if(rgTipo.getCheckedRadioButtonId() == R.id.rbInd || (rgTipo.getCheckedRadioButtonId() == R.id.rbGpo && !validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})))
                         {
                             /**Valida que el numero de integrantes sea mayor que 0*/
                             if (!validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS}))
@@ -423,7 +468,8 @@ public class RecuperacionCC extends AppCompatActivity {
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (misc.CurpValidador(misc.GetStr(etCurpCliente))) {
+
+            if (misc.GetStr(etCurpCliente).length() == 18 && misc.CurpValidador(misc.GetStr(etCurpCliente))) {
                 int tipoPrestamo = (rgTipo.getCheckedRadioButtonId() == R.id.rbInd) ? 1 : 2;
 
                 Intent i_formato_recibo = new Intent(ctx, FormatoRecibos.class);
@@ -607,6 +653,9 @@ public class RecuperacionCC extends AppCompatActivity {
                     rgTipo.check(R.id.rbGpo);
 
                 /**Llena los campos faltantes y los deshabilita*/
+
+                tvCostoConsulta.setText(row.getString(15));
+                tvCostoConsulta.setEnabled(false);
                 etClienteGrupo.setText(row.getString(2));
                 etClienteGrupo.setEnabled(false);
                 etClienteGrupo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -772,7 +821,7 @@ public class RecuperacionCC extends AppCompatActivity {
                 !validator.validate(etCurpCliente, new String[]{validator.REQUIRED, validator.CURP}))
             {
                 if (misc.CurpValidador(misc.GetStr(etCurpCliente))){
-                    if (!validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})){
+                    if (rgTipo.getCheckedRadioButtonId() == R.id.rbInd || (rgTipo.getCheckedRadioButtonId() == R.id.rbGpo && !validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))){
                         if (!validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS}))
                         {
                             if (!validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED}))
@@ -817,6 +866,7 @@ public class RecuperacionCC extends AppCompatActivity {
                                                 params.put(11, misc.ObtenerFecha(TIMESTAMP));
                                                 params.put(12, "");
                                                 params.put(13, "1");
+                                                params.put(14, misc.GetStr(tvCostoConsulta));
 
                                                 idRespuesta = dBhelper.saveRecuperacionCC(db, params);
 
@@ -859,6 +909,7 @@ public class RecuperacionCC extends AppCompatActivity {
                                             params.put(11, misc.ObtenerFecha(TIMESTAMP));
                                             params.put(12, "");
                                             params.put(13, "1");
+                                            params.put(14, misc.GetStr(tvCostoConsulta));
 
                                             idRespuesta = dBhelper.saveRecuperacionCC(db, params);
                                             enviarInfo = true;
@@ -937,11 +988,11 @@ public class RecuperacionCC extends AppCompatActivity {
                     if (data != null){
                         Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
                         /**valida si se realizaron impresiones original y/o copia*/
-                        if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
+                        if(data.getIntExtra(RES_PRINT,0) > 0){
 
                             /**Busca si existe un registro de recuperacion con la informacion*/
-                            String sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ? AND nombre_dos = ?";
-                            Cursor row = db.rawQuery(sql, new String[]{(tipoCredito != null)?tipoCredito:"", (curp != null)?curp:"", misc.GetStr(etAvalRepresentate)});
+                            String sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ?";
+                            Cursor row = db.rawQuery(sql, new String[]{(tipoCredito != null)?tipoCredito:"", (curp != null)?curp:""});
 
                             /**En caso de no existir el registro se crea en guardado parcial para que no pueda modificar los valores*/
                             if (row.getCount() == 0){
@@ -960,12 +1011,15 @@ public class RecuperacionCC extends AppCompatActivity {
                                 params.put(11, "");
                                 params.put(12, "");
                                 params.put(13, "0");
+                                params.put(14, misc.GetStr(tvCostoConsulta));
 
                                 idRespuesta = dBhelper.saveRecuperacionCC(db, params);
 
                             }
 
                             /**deshabilita los campos anteriores a la impresion para que no pueda cambiar la informacion*/
+                            tvCostoConsulta.setEnabled(false);
+                            tvCostoConsulta.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             tvMedioPago.setEnabled(false);
                             tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));

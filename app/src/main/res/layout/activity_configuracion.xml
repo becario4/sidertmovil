@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent" android:layout_height="wrap_content">
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbMain"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -23,9 +23,9 @@
                 app:titleTextColor="@color/white"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cvSincronizarFichas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardBackgroundColor="@color/yellow"
@@ -50,7 +50,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_update"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:text="Sincronizar Fichas"
@@ -62,9 +62,9 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cvFechaHora"
             android:visibility="gone"
             android:layout_marginTop="3dp"
@@ -78,7 +78,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardBackgroundColor="@color/yellow"
@@ -90,7 +90,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_icon_timestamp"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:text="Configurar Fecha y Hora"
@@ -102,9 +102,9 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cvFichasGestionadas"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
@@ -117,7 +117,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardBackgroundColor="@color/yellow"
@@ -129,7 +129,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_done_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:text="Obtener Fichas Contestadas"
@@ -141,9 +141,9 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cvCatalogos"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardBackgroundColor="@color/yellow"
@@ -168,7 +168,7 @@
                         android:padding="3dp"
                         android:src="@drawable/ic_sync"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:text="Actualizar Catálogos"
@@ -180,9 +180,9 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cvDownloadApk"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
@@ -195,7 +195,7 @@
                 android:background="@android:color/white"
                 android:padding="12dp"
                 android:gravity="center_vertical">
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardBackgroundColor="@color/yellow"
@@ -208,7 +208,7 @@
                         android:paddingLeft="5dp"
                         android:src="@drawable/ic_device_black"
                         android:layout_marginRight="12dp"/>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:text="Descargar APK"
@@ -220,7 +220,7 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="17sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
