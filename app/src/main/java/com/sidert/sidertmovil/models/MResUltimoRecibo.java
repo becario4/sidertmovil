@@ -65,6 +65,10 @@ public class MResUltimoRecibo implements Serializable {
     @Expose
     private String createdAt;
 
+    @SerializedName("plazo")
+    @Expose
+    private Integer plazo;
+
     public Integer getId() {
         return id;
     }
@@ -217,4 +221,11 @@ public class MResUltimoRecibo implements Serializable {
         this.createdAt = createdAt;
     }
 
+    public Integer getPlazo() {
+        return plazo;
+    }
+
+    public void setPlazo(Integer plazo) {
+        this.plazo = plazo;
+    }
 }

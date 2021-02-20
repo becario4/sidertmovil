@@ -103,9 +103,10 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
 
-        //session.setDominio("http://192.168.100.58:", "8080");
+        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
+        session.setDominio("http://192.168.0.167:", "8083");//LOCALHOST
 
-        //session.setDominio("http://sidert.ddns.net:", "83");
+        //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
@@ -140,10 +141,9 @@ public class SplashSidertActivity extends AppCompatActivity {
         /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
         las secciones de originacion y renovacion de los estados de
         Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
-        /*new RegistrarColonias().execute();
+        new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();*/
-
+        new RegistrarLocalidades().execute();
 
         /**Este proceso era antes de lanzar originacion y renovacion*/
         Handler handler_home=new Handler();

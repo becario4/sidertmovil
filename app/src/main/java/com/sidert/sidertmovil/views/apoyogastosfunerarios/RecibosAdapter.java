@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.adapters;
+package com.sidert.sidertmovil.views.apoyogastosfunerarios;
 
 import android.content.Context;
 //import androidx.annotation.NonNull;
@@ -11,25 +11,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.models.MTicketCC;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.Recibo;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_cc.ViewHolder> {
+public class RecibosAdapter extends RecyclerView.Adapter<RecibosAdapter.ViewHolder> {
 
     private Context ctx;
-    private List<HashMap<Integer, String>> data;
-    /*private Event evento;
+    private List<Recibo> data;
 
-    public interface Event {
-        void ClienteOnClick(MTicketCC item);
-    }*/
-
-    public adapter_clientes_cc(Context ctx, List<HashMap<Integer, String>> data) {
+    public RecibosAdapter(Context ctx, List<Recibo> data) {
         this.ctx = ctx;
         this.data = data;
-        //this.evento = evento;
     }
 
     @NonNull
@@ -41,13 +35,13 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        HashMap<Integer, String> item = data.get(position);
-        holder.tvNombre.setText((Html.fromHtml("<b>"+item.get(0)+"</b> ")));
-        holder.tvRecibo.setText(Html.fromHtml("<b>Recibo:</b> "+item.get(4)));
-        holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+item.get(5)));
-        holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+item.get(1)));
-        holder.tvFechaImpreso.setText(Html.fromHtml("<b>Fecha Impreso:</b> "+item.get(2)));
-        holder.tvFechaEnvio.setText(Html.fromHtml("<b>Fecha Envio:</b> "+item.get(3)));
+        Recibo recibo = data.get(position);
+        holder.tvNombre.setText((Html.fromHtml("<b>"+recibo.getNombre()+"</b> ")));
+        holder.tvRecibo.setText(Html.fromHtml("<b>Recibo:</b> "+recibo.getTipoRecibo()));
+        holder.tvImpresion.setText(Html.fromHtml("<b>Impresión:</b> "+recibo.getImpresiones()));
+        holder.tvFolio.setText(Html.fromHtml("<b>Folio:</b> "+recibo.getFolio()));
+        holder.tvFechaImpreso.setText(Html.fromHtml("<b>Fecha Impreso:</b> "+recibo.getFechaImpresion()));
+        holder.tvFechaEnvio.setText(Html.fromHtml("<b>Fecha Envio:</b> "+recibo.getFechaEnvio()));
 
         //holder.bind(item);
     }
@@ -64,6 +58,7 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
         private TextView tvFolio;
         private TextView tvFechaImpreso;
         private TextView tvFechaEnvio;
+
         public ViewHolder(@NonNull View v) {
             super(v);
             tvNombre        = v.findViewById(R.id.tvNombre);
@@ -73,14 +68,5 @@ public class adapter_clientes_cc extends RecyclerView.Adapter<adapter_clientes_c
             tvFechaImpreso  = v.findViewById(R.id.tvFechaImpreso);
             tvFechaEnvio    = v.findViewById(R.id.tvFechaEnvio);
         }
-
-        /*public void bind (final MTicketCC item){
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    evento.ClienteOnClick(item);
-                }
-            });
-        }*/
     }
 }

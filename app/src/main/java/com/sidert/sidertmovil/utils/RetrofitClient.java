@@ -97,4 +97,24 @@ public class RetrofitClient {
         return retrofit;
     }
 
+    public static Retrofit newInstance(Context ctx) {
+        SessionManager session = new SessionManager(ctx);
+
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .build();
+
+        String base_url = session.getDominio().get(0) + session.getDominio().get(1);
+
+        Log.e("URL", base_url);
+        retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(base_url)
+                .client(okHttpClient)
+                .build();
+
+        return retrofit;
+    }
+
 }

@@ -315,7 +315,7 @@ public class ri_detalle_fragment extends Fragment {
                         Date fechaFinal = dateFormat.parse(fechaDos);
                         int dias = (int) ((fechaFinal.getTime() - fechaInicial.getTime()) / 86400000);
 
-                        int meses = Math.round(dias / 30);
+                        int meses = (int) Math.ceil((double)dias/Double.parseDouble("30.00"));
                         double seguroAGF = 15;
                         for (int i = 0; i < session.getSucursales().length(); i++) {
                             try {

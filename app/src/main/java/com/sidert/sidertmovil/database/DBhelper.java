@@ -664,7 +664,14 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_COSTO_CONSULTA); }
         catch (Exception e) { Log.e("COSTO_CONSULTA", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_PLAZO_AGF_CC); }
+        catch (Exception e) { Log.e("ADD_PLAZO_AGF_CC", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INTEGRANTES_AGF); }
+        catch (Exception e) { Log.e("ADD_TOTAL_INTEGRANTES", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INT_MANUAL_AGF); }
+        catch (Exception e) { Log.e("ADD_TOTAL_INT_MANUAL", "ya contiene la columna"); }
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {
@@ -821,7 +828,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "fecha_impresion, " +
                 "fecha_envio, " +
                 "estatus, " +
-                "nombre) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "nombre, " +
+                "plazo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //1  GRUPO ID
         pInsert.bindString(2, params.get(1));                   //2  NUM SOLICITUD
@@ -833,6 +841,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(8, params.get(7));                   //8  FECHA ENVIO
         pInsert.bindLong(9, Long.parseLong(params.get(8)));     //9  ESTATUS
         pInsert.bindString(10, params.get(9));                  //10  NOMBRE
+        pInsert.bindString(11, params.get(10));                  //11  PLAZO
 
         pInsert.execute();
 
@@ -947,48 +956,6 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(15, params.get(14));                 //15 COSTO_CONSULTA
 
         Long id = pInsert.executeInsert();
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
-        return id;
-    }
-
-    public long saveRecuperacionRecibos(SQLiteDatabase db, HashMap<Integer, String> params) {
-        db.beginTransaction();
-
-        String sql = "INSERT INTO " + TBL_RECUPERACION_RECIBOS + "(" +
-                "grupo_id," +
-                "num_solicitud," +
-                "medio_pago," +
-                "evidencia," +
-                "tipo_imagen," +
-                "fecha_termino," +
-                "fecha_envio," +
-                "tipo," +
-                "nombre," +
-                "estatus," +
-                "monto," +
-                "imprimir_recibo," +
-                "folio_manual," +
-                "cliente_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(0));                   //1  GRUPO ID
-        pInsert.bindString(2, params.get(1));                   //2  NUM SOLICITUD
-        pInsert.bindString(3, params.get(2));                   //3  MEDIO PAGO
-        pInsert.bindString(4, params.get(3));                   //4  EVIDENCIA
-        pInsert.bindString(5, params.get(4));                   //5  TIPO IMAGEN
-        pInsert.bindString(6, params.get(5));                   //6  FECHA_TERMINO
-        pInsert.bindString(7, params.get(6));                   //7  FECHA_ENVIO
-        pInsert.bindString(8, params.get(7));                   //8  TIPO
-        pInsert.bindString(9, params.get(8));                   //9  NOMBRE
-        pInsert.bindLong(10, Long.parseLong(params.get(9)));    //10 ESTATUS
-        pInsert.bindString(11, params.get(10));                 //11 MONTO
-        pInsert.bindString(12, params.get(11));                 //12 IMPRIMIR RECIBO
-        pInsert.bindString(13, params.get(12));                 //13 FOLIO MANUAL
-        pInsert.bindString(14, params.get(13));                 //14 CLIENTE ID
-
-        long id = pInsert.executeInsert();
 
         db.setTransactionSuccessful();
         db.endTransaction();

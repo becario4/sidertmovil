@@ -79,30 +79,6 @@
                         android:layout_height="@dimen/et_height" />
                 </LinearLayout>
 
-                <!--  Total Integrantes  -->
-                <LinearLayout
-                    android:id="@+id/llIntegrantes"
-                    android:visibility="gone"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:textStyle="bold"
-                        android:textColor="@color/blue_sidert"
-                        android:text="Total de integrantes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <EditText
-                        android:id="@+id/etIntegrantes"
-                        android:enabled="false"
-                        android:paddingLeft="10dp"
-                        android:textColor="@drawable/edit_text_selector"
-                        android:background="@drawable/bkg_rounded_edges_blocked"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
-                </LinearLayout>
-
                 <!--  Duracion del prestamo  -->
                 <LinearLayout
                     android:id="@+id/llDuracionPrestamo"
@@ -145,6 +121,88 @@
                         android:paddingLeft="10dp"
                         android:textColor="@drawable/edit_text_selector"
                         android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <!--  Total Integrantes  -->
+                <LinearLayout
+                    android:id="@+id/llIntegrantes"
+                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textStyle="bold"
+                        android:textColor="@color/blue_sidert"
+                        android:text="Total de integrantes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etIntegrantes"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <!-- PREGUNTA NUMERO INTEGRANTES MANUAL -->
+                <LinearLayout
+                    android:id="@+id/llQtNumIntegrantesManual"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
+                    <TextView
+                        android:textStyle="bold"
+                        android:textColor="@color/blue_sidert"
+                        android:text="¿El total de integrantes es correcto?"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="@dimen/labelsize"
+                        android:focusableInTouchMode="false"
+                        android:background="@android:color/white"
+                        style="@android:style/Widget.EditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvNumIntegrantesManual"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:hint="SELECCIONE UN OPCIÓN"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:background="@drawable/et_rounded_edges"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
+                <!--  Total Manual Integrantes MANUAL  -->
+                <LinearLayout
+                    android:id="@+id/llNumIntegrantesManual"
+                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textStyle="bold"
+                        android:textColor="@color/blue_sidert"
+                        android:text="Total correcto de integrantes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etNumIntegrantesManual"
+                        android:enabled="true"
+                        android:paddingLeft="10dp"
+                        android:inputType="number"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
                 </LinearLayout>
@@ -223,7 +281,7 @@
                         android:paddingBottom="3dp"/>
                 </LinearLayout>
 
-                <!-- Folio de recibo -->
+                <!-- Folio de reciboCirculoCredito -->
                 <LinearLayout
                     android:id="@+id/llFolioRecibo"
                     android:visibility="gone"
@@ -239,7 +297,7 @@
                     <EditText
                         android:id="@+id/etFolioRecibo"
                         android:enabled="false"
-                        android:hint="Obtener el folio del recibo impreso"
+                        android:hint="Obtener el folio del reciboCirculoCredito impreso"
                         android:paddingEnd="5dp"
                         android:paddingStart="10dp"
                         android:textColor="@drawable/edit_text_selector"

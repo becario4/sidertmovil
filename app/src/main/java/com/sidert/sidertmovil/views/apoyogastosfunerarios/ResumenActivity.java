@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.activities;
+package com.sidert.sidertmovil.views.apoyogastosfunerarios;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -19,7 +19,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS;
 
 /**clase para ver el resumen de informacion de AGF y CC para ver el total de prestamos, cuantos son individuales, gruaples, enviadas, etc...*/
-public class ResumenCCAGF extends AppCompatActivity {
+public class ResumenActivity extends AppCompatActivity {
 
     private Context ctx;
 

@@ -25,7 +25,10 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_gestiones_cc;
 import com.sidert.sidertmovil.adapters.adapter_impresiones_cc;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCredito;
+import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCreditoDao;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.views.circulocredito.CirculoCreditoActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +100,7 @@ public class CobrosCC extends AppCompatActivity {
             public void onClick(View v) {
                 tipoSeccion = 1;
 
-                getCobros(" WHERE estatus = '0'");
+                getCobros(" WHERE estatus <= '1'");
 
             }
         });
@@ -126,7 +129,8 @@ public class CobrosCC extends AppCompatActivity {
     private View.OnClickListener fbAgregarCC_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+            Intent i_cc = new Intent(getApplicationContext(), CirculoCreditoActivity.class);
+            i_cc.putExtra("circulo_credito", new GestionCirculoCredito());
             startActivity(i_cc);
         }
     };
@@ -135,9 +139,9 @@ public class CobrosCC extends AppCompatActivity {
     private void getCobros( String where){
         rvClientesCC.setAdapter(null);
         String sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS_CC + where;
-        Log.e("SqlCC", sql);
+
         final Cursor row = db.rawQuery(sql, null);
-        Log.e("SqlCC", "Count "+ row.getCount());
+
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<HashMap<Integer, String>> gestiones = new ArrayList<>();
@@ -158,13 +162,18 @@ public class CobrosCC extends AppCompatActivity {
             adapter_cc = new adapter_gestiones_cc(ctx, gestiones, new adapter_gestiones_cc.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+                    GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
+                    GestionCirculoCredito gestionCC = gestionCirculoCreditoDao.findById(Integer.parseInt(item.get(0)));
+                    if(gestionCC == null) gestionCC = new GestionCirculoCredito();
+
+                    Intent i_cc = new Intent(getApplicationContext(), CirculoCreditoActivity.class);
                     i_cc.putExtra("terminado", false);
                     i_cc.putExtra("tipo_credito", item.get(1));
                     i_cc.putExtra("cliente_grupo", item.get(2));
                     i_cc.putExtra("aval_representante", item.get(4));
                     i_cc.putExtra("curp", item.get(3));
                     i_cc.putExtra("id_respuesta", Long.parseLong(item.get(0)));
+                    i_cc.putExtra("circulo_credito", gestionCC);
                     startActivity(i_cc);
                 }
             });
@@ -213,10 +222,10 @@ public class CobrosCC extends AppCompatActivity {
     /**Funcion para obtener las gestiones ya completadas de CC*/
     private void getGestionados( String where){
         rvClientesCC.setAdapter(null);
-        String sql = "SELECT rr.*, COALESCE(r1.folio, '') FROM " + TBL_RECUPERACION_RECIBOS_CC + " AS rr LEFT JOIN "+TBL_RECIBOS_CC+" AS r1 on r1.tipo_credito = rr.tipo_credito AND r1.curp = rr.curp AND r1.nombre_dos = rr.nombre_dos AND r1.tipo_impresion = 'O' WHERE rr.estatus in (1,2) "+where+" ORDER BY rr.fecha_termino DESC";
-        Log.e("sqlGestionadas", sql);
+        String sql = "SELECT rr.*, COALESCE(r1.folio, '') FROM " + TBL_RECUPERACION_RECIBOS_CC + " AS rr LEFT JOIN "+TBL_RECIBOS_CC+" AS r1 on r1.tipo_credito = rr.tipo_credito AND r1.curp = rr.curp AND r1.nombre_dos = rr.nombre_dos AND r1.tipo_impresion = 'O' WHERE rr.estatus in (1,2) "+where+" ORDER BY rr.fecha_termino DESC, rr.fecha_envio DESC";
+
         final Cursor row = db.rawQuery(sql, null);
-        Log.e("CountGestionadas", row.getCount()+ " Total");
+
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<HashMap<Integer, String>> prestamos = new ArrayList<>();
@@ -242,13 +251,18 @@ public class CobrosCC extends AppCompatActivity {
             adapter_gestiones_cc adapter = new adapter_gestiones_cc(ctx, prestamos, new adapter_gestiones_cc.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
+                    GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
+                    GestionCirculoCredito gestionCC = gestionCirculoCreditoDao.findByCurp(item.get(3));
+                    if(gestionCC == null) gestionCC = new GestionCirculoCredito();
+
+                    Intent i_cc = new Intent(getApplicationContext(), CirculoCreditoActivity.class);
                     i_cc.putExtra("terminado", true);
                     i_cc.putExtra("tipo_credito", item.get(1));
                     i_cc.putExtra("cliente_grupo", item.get(2));
                     i_cc.putExtra("aval_representante", item.get(4));
                     i_cc.putExtra("curp", item.get(3));
                     i_cc.putExtra("id_respuesta", Long.parseLong(item.get(0)));
+                    i_cc.putExtra("circulo_credito", gestionCC);
                     startActivity(i_cc);
 
                 }
@@ -275,7 +289,7 @@ public class CobrosCC extends AppCompatActivity {
         super.onResume();
         switch (tipoSeccion){
             case 1:/**Gestiones parciales*/
-                getCobros(" WHERE estatus = '0'");
+                getCobros(" WHERE estatus <= '1'");
                 break;
             case 2:/**Impresiones*/
                 getRecibos("");

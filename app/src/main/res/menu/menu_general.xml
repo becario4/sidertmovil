@@ -28,13 +28,13 @@
     <item
         android:id="@+id/nvCobroAGF"
         android:icon="@drawable/ic_agf"
-        android:visible="true"
+        android:visible="false"
         android:title="Cobros AGF" />
     <!-- 5 -->
     <item
         android:id="@+id/nvCobroCC"
         android:icon="@drawable/ic_cc_black"
-        android:visible="true"
+        android:visible="false"
         android:title="Cobros CC" />
     <!-- 6 -->
     <item
@@ -46,7 +46,7 @@
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item
@@ -73,5 +73,10 @@
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"
         android:icon="@drawable/item_settings" />
+
+    <item
+        android:id="@+id/nvGuiaRapida"
+        android:title="Guía Rápida"
+        android:icon="@drawable/ic_help_outline" />
 
 </menu>

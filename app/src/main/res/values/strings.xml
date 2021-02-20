@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.4.14</string>
+    <string name="app_version">2.5.19</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -98,9 +98,9 @@
     <string name="photo_voucher">Fotografía del comprobante de pago</string>
     <string name="is_manager">¿Está el gerente con usted?</string>
     <string name="imprimir_recibos">¿Imprimir recibos?</string>
-    <string name="payment_receipt_number">Número de recibo de pago</string>
+    <string name="payment_receipt_number">Número de reciboCirculoCredito de pago</string>
     <string name="doesnt_battery">No cuenta con batería</string>
-    <string name="receipt_printing">Impresión de recibo</string>
+    <string name="receipt_printing">Impresión de reciboCirculoCredito</string>
     <string name="comentario">Comentario</string>
     <string name="facade_photo">Fotografía de fachada</string>
     <string name="order">Orden</string>
@@ -154,7 +154,7 @@
     <string name="direccion">Dirección</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="estatus_pago">Estatus del Pago</string>
-    <string name="folio_recibo">Número de recibo de pago</string>
+    <string name="folio_recibo">Número de reciboCirculoCredito de pago</string>
     <string name="edit">Editar</string>
     <string name="save">Guardar</string>
     <string name="no">No</string>
@@ -219,7 +219,7 @@
     <string name="ce_die">Moneda de $0.10:</string>
     <string name="subtotal_monedas">SubTotal Monedas</string>
     <string name="final_arqueo_caja">Final Arqueo de Caja</string>
-    <string name="folio_sidert">Ingrese el folio del recibo</string>
+    <string name="folio_sidert">Ingrese el folio del reciboCirculoCredito</string>
     <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
     <string name="total_billetes_monedas">Total de billetes y monedas</string>
     <string name="valor_pago_realizado">Valores del Pago Realizado</string>
@@ -240,13 +240,13 @@
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
-    <string name="error_image">Favor de adjuntar una IMAGEN del recibo de pago.</string>
+    <string name="error_image">Favor de adjuntar una IMAGEN del reciboCirculoCredito de pago.</string>
     <string name="loading_info">Cargando información, por favor espere . . .</string>
     <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA DE DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
-    <string name="print_original">Solo se ha impreso el recibo original</string>
+    <string name="print_original">Solo se ha impreso el reciboCirculoCredito original</string>
     <string name="mensaje_telefono">Debe contener 10 caracteres numéricos.</string>
-    <string name="print_original_copy">Ya se imprimió el recibo original y la copia</string>
+    <string name="print_original_copy">Ya se imprimió el reciboCirculoCredito original y la copia</string>
     <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su denuncia es totalmente anónima.</string>
     <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
     <string name="error_process_info">Error al procesar la información.</string>
@@ -285,17 +285,100 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
 
     <!-- TODO: Arrays -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="calle">Calle</string>
+
+    <string name="ocupacion">Ocupación</string>
+
+    <string name="nombres">Nombre(s)</string>
+
+    <string name="apellido_paterno">Apellido Paterno</string>
+
+    <string name="apellido_materno">Apellido Materno</string>
+
+    <string name="no_ext">No. Ext</string>
+
+    <string name="manzana">Manz.</string>
+
+    //Deprecated
+    <string name="no_int">No. Int.</string>
+
+    <string name="lote">Lote</string>
+
+    <string name="codigo_postal">Código Postal</string>
+
+    <string name="colonia">Colonia</string>
+
+    <string name="municipio">Municipio</string>
+
+    <string name="estado">Estado</string>
+
+    <string name="ingresos">Ingresos</string>
+
+    <string name="ingreso_mensual">Ingreso Mensual</string>
+
+    <string name="gastos">Gastos</string>
+
+    <string name="gasto_mensual">Gasto Mensual</string>
+
+    <string name="telefonos">Teléfonos</string>
+
+    <string name="telefono_casa">Teléfono Casa</string>
+
+    <string name="telefono_celular">Teléfono Celular</string>
+
+    <string name="clasificacion_riesgo">Clasificación de Riesgo</string>
+
+    <string name="fecha_nacimiento">Fecha Nacimiento</string>
+
+    <string name="genero">Género</string>
+
+    <string name="estado_nacimiento">Estado Nacimiento</string>
+
+    <string name="curp">Curp</string>
+
+    <string name="rfc">Rfc</string>
+
+    <string name="mujer">Mujer</string>
+
+    <string name="hombre">Hombre</string>
+
+    <string name="individual">Individual</string>
+
+    <string name="grupal">Grupal</string>
+
+    <string name="tipo">Tipo</string>
+
+    <string name="integrantes">Integrantes</string>
+
+    <string name="producto_credito">Producto Crédito</string>
+
+    <string name="credito_solicitado">Crédito Solicitado</string>
+
+    <string name="ciudad">Ciudad</string>
+
+    <string name="primer_nombre">Primer Nombre</string>
+
+    <string name="segundo_nombre">Segundo Nombre</string>
+
+    <string name="otro_asunto">Otro Asunto</string>
+
+    <string name="title_activity_pdf_reader">PdfReaderActivity</string>
+
+    <string name="hello_world">Hello Square World!</string>
+
     <string-array name="sexo">
         <item>MUJER</item>
         <item>HOMBRE</item>
     </string-array>
 
+    <!-- TODO: Remove or change this placeholder text -->
     <string-array name="contacto_cliente">
         <item>SI</item>
         <item>NO</item>
         <item>ACLARACION</item>
     </string-array>
-
     <string-array name="banks">
         <item>Banamex</item>
         <item>Banorte</item>
@@ -303,27 +386,23 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Bansefi</item>
         <item>Bancomer</item>
     </string-array>
-
     <string-array name="regiones">
         <item>TODOS</item>
         <item>1.VERACRUZ</item>
         <item>2.PUEBLA</item>
         <item>3.TLAXCALA</item>
     </string-array>
-
     <string-array name="reason_no_pay">
         <item>NEGACION DE PAGO</item>
         <item>FALLECIMIENTO</item>
         <item>OTRO</item>
     </string-array>
-
     <string-array name="motivo_no_pago_cv">
         <item>NEGACION DE PAGO</item>
         <item>FALLECIMIENTO</item>
         <item>OTRO</item>
         <item>PROMESA DE PAGO</item>
     </string-array>
-
     <string-array name="reason_no_pay_cv">
         <item>Seleccione una opción</item>
         <item>Insolvente</item>
@@ -331,15 +410,12 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>Fallecimiento</item>
         <item>Otro</item>
     </string-array>
-
     <string-array name="outdated_information">
         <item>GARANTIA</item>               <!-- 0 -->
         <item>REFINACIAMIENTO</item>        <!-- 1 -->
         <item>CONDONACION</item>            <!-- 2 -->
         <item>CAPTURA DE PAGO</item>        <!-- 3 -->
     </string-array>
-
-    //Deprecated
     <string-array name="method_pay">
         <item>BANAMEX</item>                <!-- 0 -->
         <item>BANORTE</item>                <!-- 1 -->
@@ -351,7 +427,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SIDERT</item>                 <!-- 7 -->
         <item>BANAMEX722</item>             <!-- 8 -->
     </string-array>
-
     <string-array name="medio_pago">
         <item>BANAMEX</item>                <!-- 0 -->
         <item>BANORTE</item>                <!-- 1 -->
@@ -362,30 +437,22 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>EFECTIVO</item>               <!-- 6 -->
         <item>SIDERT</item>                 <!-- 7 -->
     </string-array>
-
     <string-array name="motivo_no_contacto">
         <item>CLIENTE FUGADO</item>
         <item>ILOCALIZABLE</item>
         <item>OTRO</item>
     </string-array>
-
     <string-array name="metodo_pago_cv">
         <item>BANAMEX722</item>
         <item>EFECTIVO</item>
     </string-array>
-
     <string-array name="nivel_estudio"></string-array>
-
     <string-array name="estado_civil">
 
     </string-array>
-
     <string-array name="tipo_identificacion"></string-array>
-
     <string-array name="destino_credito"></string-array>
-
     <string-array name="medios_pago"></string-array>
-
     <string-array name="cargo">
         <item>SELECCIONE UNA OPCIÓN</item> <!--0-->
         <item>PRESIDENTE</item>            <!--1-->
@@ -393,40 +460,31 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SECRETARIO</item>            <!--3-->
         <item>INTEGRANTE</item>            <!--4-->
     </string-array>
-
     <string-array name="entero_nosotros"></string-array>
-
     <string-array name="tipo_casa_cli"></string-array>
-
     <string-array name="clasificacion_riesgo">
         <item>ALTO</item>           <!--0-->
         <item>MEDIO</item>          <!--1-->
         <item>BAJO</item>           <!--2-->
     </string-array>
-
     <string-array name="comportamiento_pago">
         <item>NO RECOMENDABLE</item>  <!--0-->
         <item>REGULAR</item>          <!--1-->
         <item>BUENO</item>            <!--2-->
         <item>EXCELENTE</item>        <!--2-->
     </string-array>
-
     <string-array name="tipo_casa_aval"></string-array>
-
     <string-array name="estatus_ticket">
         <item>ESPERA</item>           <!--1-->
         <item>ABIERTO</item>          <!--2-->
         <item>CERRADO</item>          <!--3-->
     </string-array>
-
     <string-array name="tipo_casa"></string-array>
-
     <string-array name="destino_prestamo">
         <item>AGROPECUARIO</item>          <!--1-->
         <item>COMERCIO</item>              <!--2-->
         <item>SERVICIO</item>              <!--3-->
     </string-array>
-
     <string-array name="activos">
         <item>T.V.</item>                  <!--0-->
         <item>MICROONDAS</item>            <!--1-->
@@ -434,7 +492,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SALA</item>                  <!--3-->
         <item>COMEDOR</item>               <!--4-->
     </string-array>
-
     <string-array name="dias_semana">
         <item>LUNES</item>                 <!--0-->
         <item>MARTES</item>                <!--1-->
@@ -444,31 +501,24 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SABADO</item>                <!--5-->
         <item>DOMINGO</item>               <!--6-->
     </string-array>
-
     <string-array name="parentesco">
 
     </string-array>
-
     <string-array name="parentesco_titular"></string-array>
-
     <string-array name="casa_familiar"></string-array>
-
     <string-array name="casa_familiar_aval"></string-array>
-
     <string-array name="intervalo">
         <item>4 MESES</item>               <!--1-->
         <item>5 MESES</item>               <!--2-->
         <item>6 MESES</item>               <!--3-->
         <item>9 MESES</item>               <!--3-->
     </string-array>
-
     <string-array name="lapso">
         <item>SEMANAL</item>               <!--1-->
         <item>CATORCENAL</item>            <!--2-->
         <item>QUINCENAL</item>             <!--3-->
         <item>MENSUAL</item>               <!--4-->
     </string-array>
-
     <string-array name="dependientes_eco">
         <item>0</item>                     <!--1-->
         <item>1</item>                     <!--2-->
@@ -477,7 +527,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>4</item>                     <!--5-->
         <item>5</item>                     <!--6-->
     </string-array>
-
     <string-array name="puesto">
         <item>Seleccione una opción</item>
         <item>ADMINISTRADORA DE SUCURSAL</item>
@@ -514,7 +563,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>RECEPCIONISTA</item>
         <item>TELECOMUNICACIONES</item>
     </string-array>
-
     <string-array name="asuntos">
         <item>SELECCIONE UNA OPCION</item>                                                                      <!-- 0 -->
         <item>OTRO</item>                                                                                       <!-- 1 -->
@@ -527,7 +575,6 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>SOSPECHA SOBRE EMPLEADO/DIRECTIVO RELACIONADO A ACTOS ILICITOS O FINANCIAMIENTO TERRORISMO</item> <!-- 8 -->
         <item>FUNCIONES/ACTIVIDADES NO CORRESPONDIENTES</item>                                                  <!-- 9 -->
     </string-array>
-
     <string-array name="documentos">
         <item>INE FRONTAL</item>              <!-- 1 -->
         <item>INE REVERSO</item>              <!-- 2 -->
@@ -535,67 +582,26 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>COMPROBANTE DOMICILIO</item>    <!-- 4 -->
         <item>CODIGO BARRAS</item>            <!-- 5 -->
     </string-array>
-
     <string-array name="confirmacion">
         <item>SI</item>              <!-- 0 -->
         <item>NO</item>              <!-- 1 -->
     </string-array>
-
     <string-array name="imprimir">
         <item>SI</item>                      <!-- 0 -->
         <item>NO CUENTA CON BATERIA</item>   <!-- 1 -->
     </string-array>
-
     <string-array name="costo_consulta">
         <item>$17.50</item>             <!-- 0 -->
         <item>$22.50</item>             <!-- 1 -->
     </string-array>
-
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
     <string-array name="resultado_gestion">
         <item>PAGO</item>              <!-- 0 -->
         <item>NO PAGO</item>              <!-- 1 -->
     </string-array>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="calle">Calle</string>
-    <string name="ocupacion">Ocupación</string>
-    <string name="nombres">Nombre(s)</string>
-    <string name="apellido_paterno">Apellido Paterno</string>
-    <string name="apellido_materno">Apellido Materno</string>
-    <string name="no_ext">No. Ext</string>
-    <string name="manzana">Manz.</string>
-    <string name="no_int">No. Int.</string>
-    <string name="lote">Lote</string>
-    <string name="codigo_postal">Código Postal</string>
-    <string name="colonia">Colonia</string>
-    <string name="municipio">Municipio</string>
-    <string name="estado">Estado</string>
-    <string name="ingresos">Ingresos</string>
-    <string name="ingreso_mensual">Ingreso Mensual</string>
-    <string name="gastos">Gastos</string>
-    <string name="gasto_mensual">Gasto Mensual</string>
-    <string name="telefonos">Teléfonos</string>
-    <string name="telefono_casa">Teléfono Casa</string>
-    <string name="telefono_celular">Teléfono Celular</string>
-    <string name="clasificacion_riesgo">Clasificación de Riesgo</string>
-    <string name="fecha_nacimiento">Fecha Nacimiento</string>
-    <string name="genero">Género</string>
-    <string name="estado_nacimiento">Estado Nacimiento</string>
-    <string name="curp">Curp</string>
-    <string name="rfc">Rfc</string>
-    <string name="mujer">Mujer</string>
-    <string name="hombre">Hombre</string>
-    <string name="individual">Individual</string>
-    <string name="grupal">Grupal</string>
-    <string name="tipo">Tipo</string>
-    <string name="integrantes">Integrantes</string>
-    <string name="producto_credito">Producto Crédito</string>
-    <string name="credito_solicitado">Crédito Solicitado</string>
-    <string name="ciudad">Ciudad</string>
-    <string name="primer_nombre">Primer Nombre</string>
-    <string name="segundo_nombre">Segundo Nombre</string>
-    <string name="otro_asunto">Otro Asunto</string>
 
 
 </resources>

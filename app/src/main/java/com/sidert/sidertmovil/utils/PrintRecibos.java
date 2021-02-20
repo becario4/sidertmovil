@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_CC;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
@@ -205,9 +206,11 @@ public class PrintRecibos {
                 params.put(7, "");
                 params.put(8, "0");
                 params.put(9, ticket.getNombre());
+                params.put(10, row.getString(11));
                 dBhelper.saveRecibosAgfCc(db, params);
 
-            } else if (row.getCount() >= 2) {
+            }
+            else if (row.getCount() >= 2) {
                 row.moveToFirst();
                 count_folio = row.getInt(4);
                 params = new HashMap();
@@ -224,9 +227,32 @@ public class PrintRecibos {
                 params.put(7, "");
                 params.put(8, "0");
                 params.put(9, ticket.getNombre());
+                params.put(10, row.getString(11));
                 dBhelper.saveRecibosAgfCc(db, params);
-            } else {
-                String sqlFolio = "SELECT MAX(folio) AS folio FROM " + TBL_RECIBOS_AGF_CC;
+            }
+            else {
+                String sqlPrestamo = "";
+                Cursor rowPrestamo;
+                String plazo = "0";
+
+                if(ticket.getGrupoId().compareTo("1") == 0)
+                {
+                    sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = 1 AND num_solicitud = ? LIMIT 1";
+                    rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getNumSolicitud()});
+                }
+                else {
+                    sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = ? AND num_solicitud = ? LIMIT 1";
+                    rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud()});
+                }
+
+                if (rowPrestamo.getCount() > 0){
+                    rowPrestamo.moveToFirst();
+                    plazo = String.valueOf(Math.ceil((Double.parseDouble(rowPrestamo.getString(0)) * Double.parseDouble(rowPrestamo.getString(1)))/ Double.parseDouble("30")));
+                }
+
+                rowPrestamo.close();
+
+                String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_AGF_CC;
                 Cursor row_folio = db.rawQuery(sqlFolio, null);
                 if (row_folio.getCount() > 0) {
                     row_folio.moveToFirst();
@@ -247,6 +273,7 @@ public class PrintRecibos {
                 params.put(7, "");
                 params.put(8, "0");
                 params.put(9, ticket.getNombre());
+                params.put(10, plazo);
                 dBhelper.saveRecibosAgfCc(db, params);
 
             }
@@ -256,16 +283,17 @@ public class PrintRecibos {
         {
             int tipoCredito = 0;
             String curp = "";
+
             try {
                 tipoCredito = object.getInt("tipo_credito");
                 curp = object.getString("curp");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND tipo_credito = ?";
             row = db.rawQuery(sql, new String[]{ticket.getCurp(), String.valueOf(tipoCredito)});
 
-            Log.e("Reimpresion", "count"+ row.getCount());
             if (row.getCount() == 1) {
                 row.moveToFirst();
                 count_folio = row.getInt(8);
@@ -308,7 +336,7 @@ public class PrintRecibos {
                 dBhelper.saveRecibosCC(db, params);
 
             } else {
-                String sqlFolio = "SELECT MAX(folio) AS folio FROM " + TBL_RECIBOS_CC;
+                String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_CC;
                 Cursor row_folio = db.rawQuery(sqlFolio, null);
                 if (row_folio.getCount() > 0) {
                     row_folio.moveToFirst();

@@ -43,7 +43,7 @@ import com.crashlytics.android.Crashlytics;*/
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-import com.sidert.sidertmovil.activities.CobroAGF;
+import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
@@ -64,6 +64,7 @@ import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -268,7 +269,7 @@ public class Home extends AppCompatActivity {
                     startActivity(i_cc);
                     break;
                 case R.id.nvCobroAGF:/**Cuando seleccioan Cobro AGF es para realizar un cobro en efectivo e impresion de AGF*/
-                    Intent i_agf = new Intent(getApplicationContext(), CobroAGF.class);
+                    Intent i_agf = new Intent(getApplicationContext(), ApoyoGastosFunerariosActivity.class);
                     startActivity(i_agf);
                     break;
                 case R.id.nvRuta:/**Cuando seleccioan Ruta es para poder buscar la ruta que ha realizado el asesor por dia*/
@@ -284,6 +285,10 @@ public class Home extends AppCompatActivity {
                     break;
                 case R.id.nvMesaAyuda:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
                     setFragment(MESA_AYUDA, null);
+                    break;
+                case R.id.nvGuiaRapida:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
+                    Intent help = new Intent(ctx, PdfReaderActivity.class);
+                    startActivity(help);
                     break;
                 default:/**Manda directo a la validacion de inicio de sesion o cartera*/
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);

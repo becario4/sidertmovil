@@ -358,7 +358,8 @@ public interface ManagerInterface {
                              @Part("cliente_id") RequestBody clienteId,
                              @Part("tipo") RequestBody tipo,
                              @Part("fecha_termino") RequestBody fechaTermino,
-                             @Part MultipartBody.Part foto);
+                             @Part MultipartBody.Part foto,
+                             @Part("plazo") RequestBody plazo);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_SAVE_CC)

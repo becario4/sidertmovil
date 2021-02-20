@@ -3,24 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sidert.sidertmovil">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-
-    <uses-feature android:name="android.hardware.camera2.full" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_foreground"
@@ -29,16 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.CobrosCC"></activity>
+        <activity  android:name=".views.pdfreader.PdfReaderActivity"/>
+        <activity android:name=".activities.CobrosCC" />
         <activity android:name=".activities.ConsultadosCC" />
-        <activity android:name=".activities.RecuperacionCC" />
+        <activity android:name=".views.circulocredito.CirculoCreditoActivity" />
         <activity android:name=".activities.ConsultarCC" />
         <activity android:name=".activities.SolicitudIntegrante" />
         <activity android:name=".activities.SolicitudGpo" />
         <activity android:name=".activities.SolicitudInd" />
         <activity android:name=".activities.Solicitudes" />
-        <activity android:name=".activities.ResumenCCAGF" />
-        <activity android:name=".activities.RecuperacionRecibos" />
+        <activity android:name=".views.apoyogastosfunerarios.ResumenActivity" />
+        <activity android:name=".views.apoyogastosfunerarios.ReciboActivity" />
         <activity android:name=".activities.RenovarIntegrante" />
         <activity android:name=".activities.RenovacionCreditoGpo" />
         <activity android:name=".activities.RenovacionCreditoInd" />
@@ -96,7 +79,7 @@
             android:name=".activities.FormatoRecibos"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.CobroAGF"
+            android:name=".views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraActivity"
@@ -203,32 +186,15 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="true" />
         <!--
 <meta-data
             android:name="io.fabric.ApiKey"
             android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" />
         -->
-        <meta-data
-            android:name="firebase_crashlytics_collection_enabled"
-            android:value="true" />
-
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
-
-        <service
-            android:name=".utils.MyFirebaseMessagingService"
-            android:stopWithTask="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name=".utils.MyFireBaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.sidert.sidertmovil.downloadapk.MyReceiverApk"
@@ -239,8 +205,6 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
 
-        <!--android:name="android.support.v4.content.FileProvider"-->
-
         <receiver
             android:name=".AlarmaManager.AlarmaTrackerReciver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
@@ -248,6 +212,46 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".utils.MyFirebaseMessagingService"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".utils.MyFireBaseInstanceIDService"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
+
+    <uses-feature android:name="android.hardware.camera2.full" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
 </manifest>

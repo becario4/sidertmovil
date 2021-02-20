@@ -430,7 +430,7 @@
                     android:paddingBottom="3dp"/>
             </LinearLayout>
 
-            <!-- Folio de recibo -->
+            <!-- Folio de reciboCirculoCredito -->
             <LinearLayout
                 android:id="@+id/llFolioRecibo"
                 android:visibility="gone"
@@ -447,7 +447,7 @@
                 <EditText
                     android:id="@+id/etFolioRecibo"
                     android:enabled="false"
-                    android:hint="obtener el folio del recibo impreso"
+                    android:hint="obtener el folio del reciboCirculoCredito impreso"
                     android:textColor="@drawable/edit_text_selector"
                     android:paddingEnd="5dp"
                     android:paddingStart="10dp"

@@ -62,6 +62,7 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
+import com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,6 +92,7 @@ public class Login extends AppCompatActivity {
     private EditText etUser;
     private EditText etPassword;
     private Button btnLogin;
+    private CardView cvHelp;
     private CardView cvCovid;
     private CardView cvDenunciarPLD;
     private TextView tvAmbiente;
@@ -136,6 +138,7 @@ public class Login extends AppCompatActivity {
         etUser = findViewById(R.id.etUser);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        cvHelp = findViewById(R.id.cvHelp);
         cvCovid = findViewById(R.id.cvInfoCovid);
         cvDenunciarPLD = findViewById(R.id.cvDenciarPLD);
         tvAmbiente = findViewById(R.id.tvAmbiente);
@@ -147,6 +150,8 @@ public class Login extends AppCompatActivity {
         btnLogin.setOnClickListener(btnLogin_OnClick);
         /**Evento click para Denuncia PLD*/
         cvDenunciarPLD.setOnClickListener(cvDenunciarPLD_OnClick);
+        /**Evento click para PDF GUIA RAPIDA*/
+        cvHelp.setOnClickListener(cvHelp_OnClick);
         /**Evento click para Comunicados COVID*/
         cvCovid.setOnClickListener(cvCovid_OnClick);
         /**Evento click para configuracion PD: no se esta ocupando*/
@@ -232,6 +237,15 @@ public class Login extends AppCompatActivity {
         public void onClick(View v) {
             dialog_mailbox complaint = new dialog_mailbox();
             complaint.show(getSupportFragmentManager(), NameFragments.DIALOGMAILBOX);
+        }
+    };
+
+    /**Evento para abrir un vista de PDF GUIA RAPIDA*/
+    private View.OnClickListener cvHelp_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent help = new Intent(context, PdfReaderActivity.class);
+            startActivity(help);
         }
     };
 

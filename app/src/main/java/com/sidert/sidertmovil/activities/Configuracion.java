@@ -136,26 +136,26 @@ public class Configuracion extends AppCompatActivity {
                             /**Esta funciones son de originacion y renovacion*/
                             /**------------------------------------------------*/
                             /**Envia la solicitudes que ya fueron autorizadas por el gerente colocando el monto autorizado*/
-                            //ss.MontoAutorizado(ctx, false);
+                            ss.MontoAutorizado(ctx, false);
                             /**Envia las solicitudes de originacion individual*/
-                            //ss.SendOriginacionInd (ctx, false);
+                            ss.SendOriginacionInd (ctx, false);
                             /**Envia las solicitudes de originacion grupal*/
-                            //ss.SendOriginacionGpo(ctx, false);
+                            ss.SendOriginacionGpo(ctx, false);
                             /**Envia las solicitudes de renovacion individual*/
-                            //ss.SendRenovacionInd(ctx, false);
+                            ss.SendRenovacionInd(ctx, false);
                             /**Envia las solicitudes de renovacion grupal*/
-                            //ss.SendRenovacionGpo(ctx, false);
+                            ss.SendRenovacionGpo(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion individual que fueron rechazadas por la admin*/
-                            //ss.GetSolicitudesRechazadasInd(ctx, false);
+                            ss.GetSolicitudesRechazadasInd(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion grupal que fueron rechazadas por la admin*/
-                            //ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            ss.GetSolicitudesRechazadasGpo(ctx, false);
 
                             /**Envia las consultas Realizadas de circulo de credito*/
                             //ss.SendConsultaCC(ctx, false);
                             /**Envia las gestiones de cobros en efectivo de AGF y CC*/
                             ss.SendRecibos(ctx, false);
                             /**Obtiene el ultimo folio de impresiones de AGF y CC*/
-                            //ss.GetUltimosRecibos(ctx);
+                            ss.GetUltimosRecibos(ctx);
 
                             /**Funciones de Cancelancion de gestiones y obtencion de respuesta de cancelacion ya no se ocuparon*/
                             //ss.CancelGestiones(ctx, true);
@@ -214,11 +214,11 @@ public class Configuracion extends AppCompatActivity {
             if (NetworkStatus.haveNetworkConnection(ctx)){
                 Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
                 catalogos.GetEstados(ctx);
-                /*catalogos.GetMunicipios(ctx);
+                catalogos.GetMunicipios(ctx);
                 catalogos.GetOcupaciones(ctx);
                 catalogos.GetSectores(ctx);
                 catalogos.GetTipoIdentificacion(ctx);
-                catalogos.GetColonias(ctx);*/
+                catalogos.GetColonias(ctx);
                 catalogos.GetCategoriasTickets(ctx);
                 catalogos.GetPlazosPrestamo(ctx);
             }

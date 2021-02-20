@@ -22,7 +22,6 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
-import com.sidert.sidertmovil.models.MPrestamosAgf;
 import com.sidert.sidertmovil.models.MPrestamosRenovar;
 import com.sidert.sidertmovil.models.MReciboCC;
 import com.sidert.sidertmovil.models.MRenovacion;
@@ -30,18 +29,15 @@ import com.sidert.sidertmovil.models.MRenovacionGrupal;
 import com.sidert.sidertmovil.models.MResAgf;
 import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResConsultaCC;
-import com.sidert.sidertmovil.models.MResRecibo;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.MResSoporte;
 import com.sidert.sidertmovil.models.MResTicket;
-import com.sidert.sidertmovil.models.MResUltimoRecibo;
 import com.sidert.sidertmovil.models.MRespGestionadas;
 import com.sidert.sidertmovil.models.MResponseDefault;
 import com.sidert.sidertmovil.models.MResponseTracker;
 import com.sidert.sidertmovil.models.MRespuestaGestion;
 import com.sidert.sidertmovil.models.MRespuestaSolicitud;
 import com.sidert.sidertmovil.models.MSendImpresion;
-import com.sidert.sidertmovil.models.MSendRecibo;
 import com.sidert.sidertmovil.models.MSendSoporte;
 import com.sidert.sidertmovil.models.MSolicitudAutorizar;
 import com.sidert.sidertmovil.models.MSolicitudCancelacion;
@@ -50,6 +46,26 @@ import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ApoyoGastosFunerarios;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ApoyoGastosFunerariosDao;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ApoyoGastosFunerariosResponse;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.Gestion;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.GestionDao;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.PrestamoDao;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.Prestamo;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.Recibo;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ReciboDao;
+import com.sidert.sidertmovil.models.circulocredito.CirculoCredito;
+import com.sidert.sidertmovil.models.circulocredito.CirculoCreditoResponse;
+import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCredito;
+import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCreditoDao;
+import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCredito;
+import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCreditoDao;
+import com.sidert.sidertmovil.services.apoyogastosfunerarios.ApoyoGastosFunerariosService;
+import com.sidert.sidertmovil.services.apoyogastosfunerarios.PrestamoService;
+import com.sidert.sidertmovil.services.apoyogastosfunerarios.ReciboService;
+import com.sidert.sidertmovil.services.circulocredito.CirculoCreditoService;
+import com.sidert.sidertmovil.services.circulocredito.ReciboCirculoCreditoService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1814,54 +1830,54 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void GetPrestamos(Context ctx, boolean flag){
-        final DBhelper dBhelper = new DBhelper(ctx);
-        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+    public void GetPrestamos(Context ctx, boolean flag)
+    {
         SessionManager session = new SessionManager(ctx);
+        PrestamoDao prestamoDao = new PrestamoDao(ctx);
+        ApoyoGastosFunerariosDao agfDao = new ApoyoGastosFunerariosDao(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        PrestamoService prestamoService = new RetrofitClient().newInstance(ctx).create(PrestamoService.class);
+        Call<List<Prestamo>> call = prestamoService.show("Bearer "+ session.getUser().get(7));
 
-        Call<List<MPrestamosAgf>> call = api.getPrestamosAgf("Bearer "+ session.getUser().get(7));
-
-        call.enqueue(new Callback<List<MPrestamosAgf>>() {
+        call.enqueue(new Callback<List<Prestamo>>() {
             @Override
-            public void onResponse(Call<List<MPrestamosAgf>> call, Response<List<MPrestamosAgf>> response) {
-                Log.e("Code", response.code()+" Prestamos AGF");
+            public void onResponse(Call<List<Prestamo>> call, Response<List<Prestamo>> response) {
                 switch (response.code()){
                     case 200:
-                        List<MPrestamosAgf> prestamos = response.body();
+                        List<Prestamo> prestamos = response.body();
+
                         if (prestamos != null && prestamos.size() > 0){
-                            Log.e("Prestamos", "Tamaño: "+prestamos.size());
-                            for (MPrestamosAgf item : prestamos){
-                                String sql = "";
-                                Cursor row = null;
+                            for (Prestamo item : prestamos){
+                                Prestamo prestamoDb = null;
+                                ApoyoGastosFunerarios agf = null;
+
                                 if (item.getGrupoId() > 1) {
-                                    sql = "SELECT * FROM " + TBL_PRESTAMOS + " WHERE grupo_id = ?";
-                                    row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId())});
+                                    prestamoDb = prestamoDao.findByGrupoIdAndNumSolicitud(item.getGrupoId(), item.getNumSolicitud());
                                 }
-                                else {
-                                    sql = "SELECT * FROM " + TBL_PRESTAMOS + " WHERE grupo_id = ? AND cliente_id = ?";
-                                    row = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), item.getClienteId()});
+                                else
+                                {
+                                    prestamoDb = prestamoDao.findByClienteIdAndNumSolicitud(item.getClienteId(), item.getNumSolicitud());
                                 }
-                                if (row.getCount() == 0){
-                                    HashMap<Integer, String> params = new HashMap<>();
-                                    params.put(0, item.getNombreGrupo());
-                                    params.put(1, String.valueOf(item.getGrupoId()));
-                                    params.put(2, String.valueOf(item.getClienteId()));
-                                    params.put(3, String.valueOf(item.getNumSolicitud()));
-                                    params.put(4, String.valueOf(item.getPeriodicidad()));
-                                    params.put(5, String.valueOf(item.getNumPagos()));
-                                    params.put(6, item.getEstadoNacimientoId());
-                                    params.put(7, item.getGenero());
-                                    params.put(8, item.getNombreCliente());
-                                    params.put(9, item.getFechaNacimiento());
-                                    params.put(10, item.getEdad());
-                                    params.put(11, item.getMonto());
 
-                                    dBhelper.savePrestamos(db, params);
+                                if(prestamoDb != null)
+                                {
+                                    if (item.getGrupoId() > 1) {
+                                        agf = agfDao.findByGrupoIdAndNumSolicitud(item.getGrupoId(), item.getNumSolicitud());
+                                    }
+                                    else
+                                    {
+                                        agf = agfDao.findByClienteIdAndNumSolicitud(item.getClienteId(), item.getNumSolicitud());
+                                    }
 
+                                    if(agf == null)
+                                    {
+                                        prestamoDao.update(prestamoDb.getId(), item);
+                                    }
                                 }
-                                row.close();
+                                else
+                                {
+                                    prestamoDao.store(item);
+                                }
                             }
                         }
                         break;
@@ -1869,7 +1885,7 @@ public class Servicios_Sincronizado {
             }
 
             @Override
-            public void onFailure(Call<List<MPrestamosAgf>> call, Throwable t) {
+            public void onFailure(Call<List<Prestamo>> call, Throwable t) {
                 Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
                 t.printStackTrace();
             }
@@ -2789,145 +2805,93 @@ public class Servicios_Sincronizado {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
-        //if (showDG)
-            //loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
-        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        GestionDao gestionDao = new GestionDao(ctx);
+        GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
+        PrestamoDao prestamoDao = new PrestamoDao(ctx);
+        ReciboDao reciboDao = new ReciboDao(ctx);
+        ReciboCirculoCreditoDao reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Gestion> gestiones;
+        List<GestionCirculoCredito> gestionesCirculoCredito;
+        List<Integer> estatus = new ArrayList<Integer>();
 
-        String sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS + " WHERE estatus = ?";
-        Cursor row = db.rawQuery(sql, new String[]{"1"});
+        //SE USA EN AGF Y CIRCULO
+        estatus.add(0);
+        estatus.add(1);
 
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for(int i = 0; i < row.getCount(); i++){
-                String sqlImpresion = "";
-                Cursor rowImpresion;
-                if (row.getString(8).equals("AGF")) {
-                    sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND estatus = 0";
-                    rowImpresion = db.rawQuery(sqlImpresion, new String[]{row.getString(1), row.getString(2), row.getString(8)});
+        gestiones = gestionDao.findAllByEstatus(estatus);
+
+        for(Gestion g : gestiones)
+        {
+            List<Recibo> recibos = null;
+
+            if(g.getGrupoId().equals("1"))
+            {
+                recibos = reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud());
+            }
+            else
+            {
+                recibos = reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud());
+            }
+
+            if(recibos.size() > 0)
+            {
+                for(Recibo r : recibos)
+                {
+                    new GuardarAgf().execute(ctx, g, r);
                 }
-                else{
-                    sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND estatus = 0 AND nombre = ?";
-                    rowImpresion = db.rawQuery(sqlImpresion, new String[]{row.getString(1), row.getString(2), row.getString(8), row.getString(9)});
-                }
-                if (rowImpresion.getCount() > 0){
-                    rowImpresion.moveToFirst();
-                    for(int j = 0; j < rowImpresion.getCount(); j++){
+            }
+            else
+            {
+                Recibo r = new Recibo();
+                Prestamo p = null;
 
-                        new GuardarAgf().execute(
-                                ctx,
-                                row.getString(1),
-                                row.getString(2),
-                                row.getString(9),
-                                row.getString(3),
-                                row.getString(4),
-                                row.getString(5),
-                                rowImpresion.getString(4),
-                                rowImpresion.getString(6),
-                                row.getString(11),
-                                rowImpresion.getString(7),
-                                rowImpresion.getString(0),
-                                row.getString(0),
-                                row.getString(13),
-                                row.getString(14),
-                                row.getString(8),
-                                row.getString(6),
-                                rowImpresion.getString(0));
-                        rowImpresion.moveToNext();
-                    }
+                if(g.getGrupoId().equals("1"))
+                {
+                    p = prestamoDao.findByClienteIdAndNumSolicitud(g.getClienteId(), Integer.parseInt(g.getNumSolicitud()));
                 }
-                else{
-                    new GuardarAgf().execute(
-                            ctx,
-                            row.getString(1),
-                            row.getString(2),
-                            row.getString(9),
-                            row.getString(3),
-                            row.getString(4),
-                            row.getString(5),
-                            "",
-                            "",
-                            row.getString(11),
-                            "",
-                            "",
-                            row.getString(0),
-                            row.getString(13),
-                            row.getString(14),
-                            row.getString(8),
-                            row.getString(6));
+                else
+                {
+                    p = prestamoDao.findByGrupoIdAndNumSolicitud(Integer.parseInt(g.getGrupoId()), Integer.parseInt(g.getNumSolicitud()));
+                }
 
-                }
-                rowImpresion.close();
-                row.moveToNext();
+                r.setPlazo( (p == null)? 0 : p.getPlazo() );
+
+                new GuardarAgf().execute(ctx, g, r);
             }
         }
-        row.close();
 
-        sql = "SELECT * FROM " + TBL_RECUPERACION_RECIBOS_CC + " WHERE estatus = ?";
-        row = db.rawQuery(sql, new String[]{"1"});
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
-                String sqlImpresion = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ? AND estatus = 0";
-                Cursor rowImpresion = db.rawQuery(sqlImpresion, new String[]{row.getString(1), row.getString(3)});
-                if (rowImpresion.getCount() > 0){ //Contiene registros de impresiones
-                    rowImpresion.moveToFirst();
-                    for (int j = 0; j < rowImpresion.getCount(); j++){
-                        new GuardarCC().execute(
-                                ctx,
-                                row.getString(0),//id_recuperacion,
-                                row.getString(1),//producto,
-                                row.getString(2),//cliente_grupo,
-                                row.getString(4),//aval_representante,
-                                row.getString(3),//curp,
-                                (row.getInt(1) == 1)?"0":row.getString(5),//total_intengrantes,
-                                row.getString(6),//monto,
-                                Miscellaneous.GetMedioPagoId(row.getString(7)),//medio_pago,
-                                "true",//impresion,
-                                rowImpresion.getString(8),//folio,
-                                rowImpresion.getString(7),//tipo_impresion,
-                                rowImpresion.getString(9),//fecha_impresion,
-                                row.getString(10),//evidencia,
-                                row.getString(11),//tipo_imagen,
-                                row.getString(12),//fecha_termino,
-                                rowImpresion.getString(0));//id_impresion
-                        rowImpresion.moveToNext();
+        gestionesCirculoCredito = gestionCirculoCreditoDao.findAllByEstatus(estatus);
+
+        for(GestionCirculoCredito gcc : gestionesCirculoCredito)
+        {
+            List<ReciboCirculoCredito> recibosCirculoCredito = reciboCirculoCreditoDao.findAllByCurp(gcc.getCurp());
+
+            if(recibosCirculoCredito.size() > 0)
+            {
+                for(ReciboCirculoCredito rcc : recibosCirculoCredito)
+                {
+
+                    if(gcc.getFolio() == 0)
+                    {
+                        gcc.setFolio(rcc.getFolio());
+                        gestionCirculoCreditoDao.update(gcc.getId(), gcc);
                     }
+
+                    new GuardarCC().execute(ctx, gcc, rcc);
                 }
-                else{//No hay registros de impresiones
-                    String impresion = "";
-                    String folio = "";
-                    if (row.getString(7).equals("EFECTIVO")) {
-                        impresion = "false";
-                        folio = row.getString(9);
-                    }
-                    new GuardarCC().execute(
-                            ctx,
-                            row.getString(0),//id_recuperacion,
-                            (row.getInt(1) == 1)?"CREDITO INDIVIDUAL":"CREDITO GRUPAL",//producto,
-                            row.getString(2),//cliente_grupo,
-                            row.getString(4),//aval_representante,
-                            row.getString(3),//curp,
-                            (row.getInt(1) == 1)?"0":row.getString(5),//total_intengrantes,
-                            row.getString(6),//monto,
-                            Miscellaneous.GetMedioPagoId(row.getString(7)),//medio_pago,
-                            impresion,//impresion,
-                            folio,//folio,
-                            "",//tipo_impresion
-                            "",//fecha_impresion,
-                            row.getString(10),//evidencia,
-                            row.getString(11),//tipo_imagen,
-                            row.getString(12),//fecha_termino,
-                            "");//id_impresion
+            }
+            else
+            {
+                ReciboCirculoCredito rcc = new ReciboCirculoCredito();
+
+                if(gcc.getFolio() > 0 || (gcc.getEvidencia() != null && !gcc.getEvidencia().equals("")))
+                {
+                    new GuardarCC().execute(ctx, gcc, rcc);
                 }
-                rowImpresion.close();
-                row.moveToNext();
             }
         }
-        row.close();
+
         if (showDG)
             loading.dismiss();
 
@@ -4762,155 +4726,202 @@ public class Servicios_Sincronizado {
 
     //Obtiene los recibos creados
     public void GetUltimosRecibos(final Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
-        final SQLiteDatabase db = dBhelper.getWritableDatabase();
         final SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ReciboDao reciboDao = new ReciboDao(ctx);
 
-        Call<List<MResUltimoRecibo>> call = api.getUltimosRecibos(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
-        call.enqueue(new Callback<List<MResUltimoRecibo>>() {
+        ReciboService reciboService = new RetrofitClient().newInstance(ctx).create(ReciboService.class);
+        Call<List<Recibo>> call = reciboService.last(session.getUser().get(9), "Bearer "+ session.getUser().get(7));
+
+        call.enqueue(new Callback<List<Recibo>>() {
             @Override
-            public void onResponse(Call<List<MResUltimoRecibo>> call, Response<List<MResUltimoRecibo>> response) {
-                Log.e("RecibosGet", "asd: "+response.code());
+            public void onResponse(Call<List<Recibo>> call, Response<List<Recibo>> response) {
                 switch (response.code()) {
                     case 200:
-                        List<MResUltimoRecibo> data = response.body();
-                        for (MResUltimoRecibo item : data){
-                            String sql = "";
-                            Cursor row = null;
+                        List<Recibo> data = response.body();
+                        for (Recibo item : data){
+                            Recibo reciboDb = null;
 
-                            sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND tipo_impresion = ?";
-                            Cursor rowImpresion = db.rawQuery(sql, new String[]{String.valueOf(item.getGrupoId()), String.valueOf(item.getNumSolicitud()), item.getTipo(), item.getTipoImpresion()});
-                            if (rowImpresion.getCount() == 0) {
-                                HashMap params = new HashMap<>();
-                                params.put(0, String.valueOf(item.getGrupoId()));
-                                params.put(1, String.valueOf(item.getNumSolicitud()));
-                                params.put(2, String.valueOf(item.getMonto()));
+                            if(item.getFolio() != null)
+                            {
                                 String[] folio = item.getFolio().split("-");
-                                params.put(3, folio[2]);
-                                params.put(4, item.getTipo());
-                                params.put(5, item.getTipoImpresion());
-                                params.put(6, item.getFechaImpreso().substring(0, 19).replace("T", " "));
-                                params.put(7, item.getFechaEnvio().substring(0, 19).replace("T", " "));
-                                params.put(8, "1");
-                                params.put(9, item.getNombre());
-                                dBhelper.saveRecibosAgfCc(db, params);
-                            }
-                            else{
-                                rowImpresion.moveToFirst();
-                                ContentValues cv = new ContentValues();
-                                cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T",""));
-                                cv.put("estatus", 1);
-                                db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{rowImpresion.getString(0)});
+                                item.setFolio(folio[2]);
                             }
 
+                            if(item.getFechaImpresion() != null)
+                            {
+                                item.setFechaImpresion(item.getFechaImpresion().substring(0, 19).replace("T", " "));
+                            }
+
+                            if(item.getFechaEnvio() != null)
+                            {
+                                item.setFechaEnvio(item.getFechaEnvio().substring(0, 19).replace("T", " "));
+                            }
+
+                            item.setEstatus(1);
+
+                            if(item.getGrupoId().equals("1"))
+                            {
+                                reciboDb = reciboDao.findByGrupoIdAndNumSolicitudAndTipoImpresion(item.getGrupoId(), item.getNumSolicitud(), item.getTipoImpresion());
+                            }
+                            else
+                            {
+                                reciboDb = reciboDao.findByNombreAndNumSolicitudAndTipoImpresion(item.getNombre(), item.getNumSolicitud(), item.getTipoImpresion());
+                            }
+
+                            if(reciboDb == null)
+                            {
+                                reciboDao.store(item);
+                            }
+                            else
+                            {
+                                reciboDao.update(reciboDb.getId(), item);
+                            }
                         }
                         break;
                 }
             }
 
             @Override
-            public void onFailure(Call<List<MResUltimoRecibo>> call, Throwable t) {
+            public void onFailure(Call<List<Recibo>> call, Throwable t) {
 
             }
         });
-
-        /*Call<List<MResUltimoRecibo>> call = api.getUltimosRecibos(session.getUser().get(0),"Bearer "+ session.getUser().get(7));
-        call.enqueue(new Callback<List<MResUltimoRecibo>>() {
-            @Override
-            public void onResponse(Call<List<MResUltimoRecibo>> call, Response<List<MResUltimoRecibo>> response) {
-                Log.e("RecibosGet", "asd: "+response.code());
-                switch (response.code()) {
-                    case 200:
-                       List<MResUltimoRecibo> data = response.body();
-                       for (MResUltimoRecibo item : data){
-                           String sql = "SELECT * FROM " + TBL_RECIBOS + " WHERE curp = ? AND tipo_recibo = ? AND tipo_impresion = ? AND folio = ?";
-                           Cursor row = db.rawQuery(sql, new String[]{item.getCurp(), item.getTipoRecibo(), item.getTipoImpresion(), String.valueOf(item.getFolio())});
-                           if (row.getCount() > 0){
-                               row.moveToFirst();
-                               ContentValues cv = new ContentValues();
-                               cv.put("fecha_envio", item.getFechaEnvio());
-                               db.update(TBL_RECIBOS, cv, "_id = ?", new String[]{row.getString(0)});
-
-                           }
-                           else{
-                               HashMap<Integer, String> params = new HashMap<>();
-                               params.put(0, String.valueOf(item.getPrestamoId()));
-                               params.put(1, session.getUser().get(0));
-                               params.put(2, item.getTipoRecibo());
-                               params.put(3, item.getTipoImpresion());
-                               params.put(4, String.valueOf(item.getFolio()));
-                               params.put(5, item.getMonto());
-                               params.put(6, item.getClave());
-                               params.put(7, item.getNombre());
-                               params.put(8, "");
-                               params.put(9, "");
-                               params.put(10, item.getFechaImpreso());
-                               params.put(11, item.getFechaEnvio());
-                               params.put(12, "1");
-                               params.put(13, item.getCurp());
-                               dBhelper.saveRecibos(db, params);
-                           }
-                           row.close();
-                       }
-                       break;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<MResUltimoRecibo>> call, Throwable t) {
-
-            }
-        });*/
     }
 
     //Obtiene el ultimo folio cobrado de circulo de credito
     public void GetUltimosRecibosCC(Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
-        final SQLiteDatabase db = dBhelper.getWritableDatabase();
         final SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ReciboCirculoCreditoDao reciboCCDao = new ReciboCirculoCreditoDao(ctx);
+        GestionCirculoCreditoDao gestionCCDao = new GestionCirculoCreditoDao(ctx);
 
-        Call<MReciboCC> call = api.getUltimoReciboCc(Long.parseLong(session.getUser().get(9)),"Bearer "+ session.getUser().get(7));
+        ReciboCirculoCreditoService reciboCCService = new RetrofitClient().newInstance(ctx).create(ReciboCirculoCreditoService.class);
 
-        call.enqueue(new Callback<MReciboCC>() {
+        Call<List<CirculoCredito>> call = reciboCCService.show("Bearer "+ session.getUser().get(7), Long.parseLong(session.getUser().get(9)));
+
+        call.enqueue(new Callback<List<CirculoCredito>>() {
             @Override
-            public void onResponse(Call<MReciboCC> call, Response<MReciboCC> response) {
-                Log.e("CodeReciboCC", "Code: "+response.code());
+            public void onResponse(Call<List<CirculoCredito>> call, Response<List<CirculoCredito>> response) {
                 switch (response.code()){
                     case 200:
-                        MReciboCC item = response.body();
-                        String[] folio = item.getFolio().split("-");
+                        List<CirculoCredito> items = response.body();
+                        Integer index = 0;
 
-                        String sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND folio = ? AND tipo_impresion = ?";
-                        Cursor row = db.rawQuery(sql, new String[]{item.getCurp(), folio[2], item.getTipoImpresion()});
-                        if (row.getCount() == 0){
-                            HashMap<Integer, String> params = new HashMap();
-                            params.put(0, (item.getProducto().equals("CREDITO INDIVIDUAL"))?"1":"2");
-                            params.put(1, item.getClienteGrupo());
-                            params.put(2, item.getCurp());
-                            params.put(3, item.getAvalRepresentante());
-                            params.put(4, String.valueOf(item.getIntegrantes()));
-                            params.put(5, item.getMonto());
-                            params.put(6, item.getTipoImpresion());
-                            params.put(7, folio[2]);
-                            params.put(8, item.getFechaImpreso().substring(0,19).replace("T", " "));
-                            params.put(9, item.getFechaEnvio().substring(0,19).replace("T", " "));
-                            params.put(10, "1");
-                            dBhelper.saveRecibosCC(db, params);
+                        for(CirculoCredito cc : items)
+                        {
+                            index++;
+
+                            String[] folio = null;
+                            String folioManual = null;
+
+                            if(cc.getFolio() != null && !cc.getFolio().equals(""))
+                            {
+                                folio = cc.getFolio().split("-");
+                            }
+
+                            if(cc.getFolioManual() != null && !cc.getFolioManual().equals(""))
+                            {
+                                folioManual = (String) cc.getFolioManual();
+                            }
+
+                            GestionCirculoCredito gestionCC = gestionCCDao.findByCurp(cc.getCurp());
+
+                            if(gestionCC == null)
+                            {
+                                gestionCC = new GestionCirculoCredito();
+                                gestionCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL"))? 1 : 2);
+                                gestionCC.setNombreUno(cc.getClienteGrupo());
+                                gestionCC.setCurp(cc.getCurp());
+                                gestionCC.setNombreDos(cc.getAvalRepresentante());
+                                gestionCC.setIntegrantes(cc.getIntegrantes());
+                                gestionCC.setMonto(cc.getMonto());
+                                gestionCC.setMedioPago(Miscellaneous.GetMedioPago(cc.getMedioPagoId()));
+
+                                if(folioManual != null)
+                                {
+                                    gestionCC.setImprimirRecibo("NO");
+                                    gestionCC.setFolio(Integer.parseInt(folioManual));
+                                }
+
+                                if(folio != null)
+                                {
+                                    gestionCC.setImprimirRecibo("SI");
+                                    gestionCC.setFolio(Integer.parseInt(folio[2]));
+                                }
+
+                                if(folioManual == null && folio == null){
+                                    gestionCC.setImprimirRecibo("NO");
+                                    gestionCC.setFolio(0);
+                                }
+
+                                gestionCC.setEvidencia("");
+                                gestionCC.setTipoImagen("");
+                                gestionCC.setFechaTermino("");
+                                gestionCC.setFechaEnvio(cc.getFechaEnvio().substring(0,19).replace("T", " "));
+                                gestionCC.setEstatus(2);
+
+                                Double costoConsulta = Double.parseDouble(gestionCC.getMonto());
+
+                                gestionCC.setCostoConsulta("");
+
+                                if(gestionCC.getIntegrantes() != null && gestionCC.getIntegrantes() > 0 && costoConsulta > 0)
+                                {
+                                    costoConsulta = costoConsulta/gestionCC.getIntegrantes();
+
+                                    if(costoConsulta > 20){
+                                        gestionCC.setCostoConsulta("22.50");
+                                    }
+                                    else
+                                    {
+                                        gestionCC.setCostoConsulta("17.50");
+                                    }
+                                }
+
+                                if(gestionCC.getIntegrantes() == 0){
+                                    if(costoConsulta > 20){
+                                        gestionCC.setCostoConsulta("22.50");
+                                    }
+                                    else
+                                    {
+                                        gestionCC.setCostoConsulta("17.50");
+                                    }
+                                }
+
+
+                                gestionCCDao.store(gestionCC);
+                            }
+
+
+                            if( index == items.size())
+                            {
+                                ReciboCirculoCredito reciboCC = reciboCCDao.findByCurpAndTipoImpresion(cc.getCurp(), cc.getTipoImpresion());
+
+                                if(reciboCC == null && folio != null){
+                                    reciboCC = new ReciboCirculoCredito();
+                                    reciboCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL"))? 1 : 2);
+                                    reciboCC.setNombreUno(cc.getClienteGrupo());
+                                    reciboCC.setCurp(cc.getCurp());
+                                    reciboCC.setNombreDos(cc.getAvalRepresentante());
+                                    reciboCC.setTotalIntegrantes(cc.getIntegrantes());
+                                    reciboCC.setMonto(cc.getMonto());
+                                    reciboCC.setTipoImpresion(cc.getTipoImpresion());
+                                    reciboCC.setFolio(Integer.parseInt(folio[2]));
+                                    reciboCC.setFechaImpresion(cc.getFechaImpreso().substring(0,19).replace("T", " "));
+                                    reciboCC.setFechaEnvio(cc.getFechaEnvio().substring(0,19).replace("T", " "));
+                                    reciboCC.setEstatus(1);
+
+                                    reciboCCDao.store(reciboCC);
+                                }
+                            }
                         }
-                        else{
-                            ContentValues cv = new ContentValues();
-                            cv.put("fecha_envio", item.getFechaEnvio().substring(0,19).replace("T", " "));
-                            db.update(TBL_RECIBOS_CC, cv, "_id = ?", new String[]{row.getString(0)});
-                        }
-                        row.close();
+                        break;
+                    default:
+                        Log.e("GetUltimosRecibosCC", String.valueOf(response.code()));
                         break;
                 }
             }
 
             @Override
-            public void onFailure(Call<MReciboCC> call, Throwable t) {
+            public void onFailure(Call<List<CirculoCredito>> call, Throwable t) {
 
             }
         });
@@ -5947,50 +5958,6 @@ public class Servicios_Sincronizado {
                 @Override
                 public void onFailure(Call<List<String>> call, Throwable t) {
                     Log.e("xxxxxx", t.getMessage()+"  xxxxx");
-                }
-            });
-
-            return "";
-        }
-    }
-
-    public class GuardarRecibo extends AsyncTask<Object, Void, String>{
-
-        @Override
-        protected String doInBackground(final Object... params) {
-            Context ctx = (Context) params[0];
-            final MSendRecibo recibo = (MSendRecibo) params[1];
-
-            Log.e("Recibo", Miscellaneous.ConvertToJson(recibo));
-            final String id_recibo = (String) params[2];
-
-            DBhelper dBhelper = new DBhelper(ctx);
-            final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            SessionManager session = new SessionManager(ctx);
-
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_RECIBOS, ctx).create(ManagerInterface.class);
-
-
-            Call<MResRecibo> call = api.guardarRecibo(recibo,
-                    "Bearer "+ session.getUser().get(7));
-
-            call.enqueue(new Callback<MResRecibo>() {
-                @Override
-                public void onResponse(Call<MResRecibo> call, Response<MResRecibo> response) {
-                    Log.e("Recibo", "Code: "+response.code());
-                    switch (response.code()){
-                        case 200:
-                            ContentValues cv = new ContentValues();
-                            cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                            cv.put("estatus", 1);
-                            db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{id_recibo});
-                            break;
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<MResRecibo> call, Throwable t) {
-
                 }
             });
 
@@ -7046,123 +7013,115 @@ public class Servicios_Sincronizado {
 
         @Override
         protected String doInBackground(final Object... params) {
-            Context ctx = (Context) params[0];
-            final String grupoId = (String) params[1];
-            final String numSolicitud = (String) params[2];
-            String nombre = (String) params[3];
-            String medioPagoId = (String) params[4];
-            String evidencia = (String) params[5];
-            String tipoImagen = (String) params[6];
-            String folio = (String) params[7];
-            String tipoImpresion = (String) params[8];
-            String monto = (String) params[9];
-            String fechaImpreso = (String) params[10];
-            final String idImpresion = (String) params[11];
-            final String id = (String) params[12];
-            String folioManual = (String) params[13];
-            String clienteId = (String) params[14];
-            String tipo = (String) params[15];
-            String fechaTermino = (String) params[16];
+            Context ctx     = (Context) params[0];
+            Gestion gestion = (Gestion) params[1];
+            Recibo recibo   = (Recibo) params[2];
+
+            GestionDao gestionDao = new GestionDao(ctx);
+            ReciboDao reciboDao = new ReciboDao(ctx);
 
             SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
-            final SQLiteDatabase db = dBhelper.getWritableDatabase();
-
+            ApoyoGastosFunerariosService agfService = new RetrofitClient().newInstance(ctx).create(ApoyoGastosFunerariosService.class);
 
             MultipartBody.Part foto = null;
-            File image_foto = new File(ROOT_PATH + "Evidencia/"+evidencia);
-            if (image_foto != null) {
-                RequestBody imageEvidencia =
-                        RequestBody.create(
-                                MediaType.parse("image/*"), image_foto);
 
-                foto = MultipartBody.Part.createFormData("foto", image_foto.getName(), imageEvidencia);
+            if(gestion.getEstatus() != null && !gestion.getEvidencia().isEmpty())
+            {
+                File image_foto = new File(ROOT_PATH + "Evidencia/"+ gestion.getEvidencia());
+                if (image_foto != null)
+                {
+                    RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
+                    foto = MultipartBody.Part.createFormData("foto", image_foto.getName(), imageEvidencia);
+                }
             }
 
-            RequestBody grupoIdBody = RequestBody.create(MultipartBody.FORM, grupoId);
-            RequestBody numSolicitudBody = RequestBody.create(MultipartBody.FORM, numSolicitud);
-            RequestBody nombreBody = RequestBody.create(MultipartBody.FORM, nombre);
-            RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(Miscellaneous.GetMedioPagoId(medioPagoId)));
-            RequestBody evidenciaBody = RequestBody.create(MultipartBody.FORM, evidencia);
-            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (tipoImagen.equals("GALERIA")?"2":"1"));
-            RequestBody folioManualBody = RequestBody.create(MultipartBody.FORM, folioManual);
-            RequestBody clienteIdBody = RequestBody.create(MultipartBody.FORM, clienteId);
-            RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, tipo);
-            RequestBody fechaTerminoBody = RequestBody.create(MultipartBody.FORM, fechaTermino);
+            RequestBody grupoIdBody = RequestBody.create(MultipartBody.FORM, gestion.getGrupoId());
+            RequestBody numSolicitudBody = RequestBody.create(MultipartBody.FORM, gestion.getNumSolicitud());
+            RequestBody nombreBody = RequestBody.create(MultipartBody.FORM, gestion.getNombre());
+            RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(Miscellaneous.GetMedioPagoId(gestion.getMedioPago())));
+            RequestBody evidenciaBody = RequestBody.create(MultipartBody.FORM, gestion.getEvidencia());
+            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestion.getTipoImagen().equals("GALERIA")?"2":"1"));
+            RequestBody folioManualBody = RequestBody.create(MultipartBody.FORM, gestion.getFolioManual());
+            RequestBody clienteIdBody = RequestBody.create(MultipartBody.FORM, gestion.getClienteId());
+            RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, gestion.getTipo());
+            RequestBody fechaTerminoBody = RequestBody.create(MultipartBody.FORM, gestion.getFechaTermino());
             RequestBody folioBody;
             RequestBody tipoImpresionBody;
             RequestBody fechaImpresoBody;
-            if (Miscellaneous.GetMedioPagoId(medioPagoId) == 6 &&  folioManual.isEmpty()) {
-                folioBody = RequestBody.create(MultipartBody.FORM, "AGF-" + session.getUser().get(0) + "-" + folio);
-                tipoImpresionBody = RequestBody.create(MultipartBody.FORM, tipoImpresion);
-                fechaImpresoBody = RequestBody.create(MultipartBody.FORM, fechaImpreso);
-            }else{
-                folioBody = RequestBody.create(MultipartBody.FORM, "");
-                tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
-                fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
+
+            folioBody = RequestBody.create(MultipartBody.FORM, "");
+            tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
+            fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
+
+            if (Miscellaneous.GetMedioPagoId(gestion.getMedioPago()) == 6 &&  (gestion.getFolioManual().isEmpty() || gestion.getFolioManual() == null) ) {
+                folioBody = RequestBody.create(MultipartBody.FORM, "AGF-" + session.getUser().get(0) + "-" + recibo.getFolio());
+                tipoImpresionBody = RequestBody.create(MultipartBody.FORM, recibo.getTipoImpresion());
+                fechaImpresoBody = RequestBody.create(MultipartBody.FORM, recibo.getFechaImpresion());
             }
-            RequestBody montoBody = RequestBody.create(MultipartBody.FORM, monto);
+
+            RequestBody montoBody = RequestBody.create(MultipartBody.FORM, gestion.getMonto());
             RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            RequestBody plazoBody = RequestBody.create(MultipartBody.FORM, String.valueOf(recibo.getPlazo()));
+            RequestBody totalIntegrantes = RequestBody.create(MultipartBody.FORM, String.valueOf(gestion.getTotalIntegrantes()));
+            RequestBody totalIntegrantesManual = RequestBody.create(MultipartBody.FORM, String.valueOf(gestion.getTotalIntegrantesManual()));
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            Call<ApoyoGastosFunerariosResponse> call = agfService.store(
+                "Bearer " + session.getUser().get(7),
+                grupoIdBody,
+                numSolicitudBody,
+                nombreBody,
+                medioPagoIdBody,
+                evidenciaBody,
+                tipoImagenBody,
+                folioBody,
+                tipoImpresionBody,
+                montoBody,
+                fechaImpresoBody,
+                fechaEnvioBody,
+                folioManualBody,
+                clienteIdBody,
+                tipoBody,
+                fechaTerminoBody,
+                foto,
+                plazoBody,
+                totalIntegrantes,
+                totalIntegrantesManual
+            );
 
-            Call<MResAgf> call = api.guardarAGF("Bearer "+ session.getUser().get(7),
-                    grupoIdBody,
-                    numSolicitudBody,
-                    nombreBody,
-                    medioPagoIdBody,
-                    evidenciaBody,
-                    tipoImagenBody,
-                    folioBody,
-                    tipoImpresionBody,
-                    montoBody,
-                    fechaImpresoBody,
-                    fechaEnvioBody,
-                    folioManualBody,
-                    clienteIdBody,
-                    tipoBody,
-                    fechaTerminoBody,
-                    foto);
-
-            call.enqueue(new Callback<MResAgf>() {
+            call.enqueue(new Callback<ApoyoGastosFunerariosResponse>() {
                 @Override
-                public void onResponse(Call<MResAgf> call, Response<MResAgf> response) {
-                    Log.e("Respuesta code", response.code()+" codigo");
-
+                public void onResponse(Call<ApoyoGastosFunerariosResponse> call, Response<ApoyoGastosFunerariosResponse> response) {
                     switch (response.code()){
                         case 200:
-                            ContentValues cv = new ContentValues();
-                            if (!idImpresion.trim().isEmpty()){
-                                cv.put("estatus", 1);
-                                cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                db.update(TBL_RECIBOS_AGF_CC, cv, "_id = ?", new String[]{idImpresion});
-
-                                String sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = 'AGF' AND estatus = 0";
-                                Cursor row = db.rawQuery(sql, new String[]{grupoId, numSolicitud});
-                                if (row.getCount() == 0) {
-                                    cv.put("estatus", 2);
-                                    cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                    db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{id});
+                            if(gestion.getEstatus() == 0)
+                            {
+                                if(recibo.getId() != null)
+                                {
+                                    recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    reciboDao.update(recibo.getId(), recibo);
+                                }
+                            }
+                            else{
+                                if(recibo.getId() != null) {
+                                    recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    recibo.setEstatus(1);
+                                    reciboDao.update(recibo.getId(), recibo);
                                 }
 
-                            }else{
-                                cv.put("estatus", 2);
-                                cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{id});
+                                gestion.setEstatus(2);
+                                gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                gestionDao.update(gestion.getId(), gestion);
                             }
 
                             break;
-                        case 500:
-
+                        default:
+                            Log.e("AQUI ", response.message());
                             break;
                     }
-
                 }
-
                 @Override
-                public void onFailure(Call<MResAgf> call, Throwable t) {
-                    Log.e("Error", "failAGF"+t.getMessage());
-
+                public void onFailure(Call<ApoyoGastosFunerariosResponse> call, Throwable t) {
+                    Log.e("Error", "failAGF" + t.getMessage());
                 }
             });
 
@@ -7173,65 +7132,59 @@ public class Servicios_Sincronizado {
     public class GuardarCC extends AsyncTask<Object, Void, String>{
         @Override
         protected String doInBackground(Object... params) {
-
             Context ctx = (Context) params[0];
-            final String idRecuperacion = (String) params[1];
-            final String producto = (String) params[2];
-            String clienteGpo = (String) params[3];
-            String avalRepresentante= (String) params[4];
-            final String curp = (String) params[5];
-            String integrantes = (String) params[6];
-            String monto = (String) params[7];
-            Integer medioPago = (Integer) params[8];
-            String impresion = (String) params[9];
-            String folio = (String) params[10];
-            String tipoImpresion = (String) params[11];
-            String fechaImpresion = (String) params[12];
-            String evidencia = (String) params[13];
-            String tipoImagen = (String) params[14];
-            String fechaTermino = (String) params[15];
-            final String idImpresion = (String) params[16];
-
+            GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
+            GestionCirculoCredito gestionCC = (GestionCirculoCredito) params[1];
+            ReciboCirculoCreditoDao reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
+            ReciboCirculoCredito reciboCC = (ReciboCirculoCredito) params[2];
             SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
-            final SQLiteDatabase db = dBhelper.getWritableDatabase();
+            CirculoCreditoService circuloCreditoService = new RetrofitClient().newInstance(ctx).create(CirculoCreditoService.class);
 
             MultipartBody.Part foto = null;
-            File image_foto = new File(ROOT_PATH + "Evidencia/"+evidencia);
-            if (image_foto != null) {
-                RequestBody imageEvidencia =
-                        RequestBody.create(
-                                MediaType.parse("image/*"), image_foto);
 
-                foto = MultipartBody.Part.createFormData("evidencia", image_foto.getName(), imageEvidencia);
+            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("")){
+                File image_foto = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
+                if (image_foto != null)
+                {
+                    RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
+                    foto = MultipartBody.Part.createFormData("evidencia", image_foto.getName(), imageEvidencia);
+                }
+            }
+            else
+            {
+                MultipartBody.Part.createFormData("evidencia", "");
             }
 
-            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, (producto.equals("1"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
-            RequestBody clienteGpoBody = RequestBody.create(MultipartBody.FORM, clienteGpo);
-            RequestBody avalRepresentanteBody = RequestBody.create(MultipartBody.FORM, avalRepresentante);
-            RequestBody curpBody = RequestBody.create(MultipartBody.FORM, curp);
-            RequestBody integrantesBody = RequestBody.create(MultipartBody.FORM, integrantes);
-            RequestBody montoBody = RequestBody.create(MultipartBody.FORM, monto);
-            RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(medioPago));
-            RequestBody nombreImagenBody = RequestBody.create(MultipartBody.FORM, evidencia);
-            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (tipoImagen.equals("FOTOGRAFIA")?"1":"2"));
-            RequestBody fechaTerminoBody = RequestBody.create(MultipartBody.FORM, fechaTermino);
+            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, (gestionCC.getTipoCredito().equals("1"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
+            RequestBody clienteGpoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreUno());
+            RequestBody avalRepresentanteBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreDos());
+            RequestBody curpBody = RequestBody.create(MultipartBody.FORM, gestionCC.getCurp());
+            RequestBody integrantesBody = RequestBody.create(MultipartBody.FORM, String.valueOf(gestionCC.getIntegrantes()));
+            RequestBody montoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getMonto());
+            RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago())));
+            RequestBody nombreImagenBody = RequestBody.create(MultipartBody.FORM, gestionCC.getEvidencia());
+            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestionCC.getTipoImagen().equals("FOTOGRAFIA")?"1":"2"));
+            RequestBody fechaTerminoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getFechaTermino());
             RequestBody impresionBody;
             RequestBody folioBody;
             RequestBody tipoImpresionBody;
             RequestBody fechaImpresoBody;
-            if (medioPago == 6 &&  !impresion.isEmpty() && impresion.equals("true")) {
-                folioBody = RequestBody.create(MultipartBody.FORM, "CC-" + session.getUser().get(0) + "-" + folio);
-                tipoImpresionBody = RequestBody.create(MultipartBody.FORM, tipoImpresion);
-                fechaImpresoBody = RequestBody.create(MultipartBody.FORM, fechaImpresion);
+
+            if (Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 &&  reciboCC.getId() != null)
+            {
+                folioBody = RequestBody.create(MultipartBody.FORM, "CC-" + session.getUser().get(0) + "-" + reciboCC.getFolio());
+                tipoImpresionBody = RequestBody.create(MultipartBody.FORM, reciboCC.getTipoImpresion());
+                fechaImpresoBody = RequestBody.create(MultipartBody.FORM, reciboCC.getFechaImpresion());
                 impresionBody = RequestBody.create(MultipartBody.FORM, "true");
-            }else if(medioPago == 6 &&  !impresion.isEmpty() && impresion.equals("false")){
-                folioBody = RequestBody.create(MultipartBody.FORM, folio);
+            }
+            else if(Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 &&  reciboCC.getId() == null)
+            {
+                folioBody = RequestBody.create(MultipartBody.FORM, String.valueOf(gestionCC.getFolio()));
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
                 impresionBody = RequestBody.create(MultipartBody.FORM, "false");
             }
-            else{
+            else {
                 folioBody = RequestBody.create(MultipartBody.FORM, "");
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
@@ -7240,55 +7193,62 @@ public class Servicios_Sincronizado {
 
             RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            Call<CirculoCreditoResponse> call = circuloCreditoService.store(
+                "Bearer "+ session.getUser().get(7),
+                productoBody,
+                clienteGpoBody,
+                avalRepresentanteBody,
+                curpBody,
+                integrantesBody,
+                montoBody,
+                medioPagoIdBody,
+                nombreImagenBody,
+                tipoImagenBody,
+                impresionBody,
+                folioBody,
+                tipoImpresionBody,
+                fechaImpresoBody,
+                fechaEnvioBody,
+                fechaTerminoBody,
+                foto
+            );
 
-            Call<MResAgf> call = api.guardarCC("Bearer "+ session.getUser().get(7),
-                    productoBody,
-                    clienteGpoBody,
-                    avalRepresentanteBody,
-                    curpBody,
-                    integrantesBody,
-                    montoBody,
-                    medioPagoIdBody,
-                    nombreImagenBody,
-                    tipoImagenBody,
-                    impresionBody,
-                    folioBody,
-                    tipoImpresionBody,
-                    fechaImpresoBody,
-                    fechaEnvioBody,
-                    fechaTerminoBody,
-                    foto);
-
-            call.enqueue(new Callback<MResAgf>() {
+            call.enqueue(new Callback<CirculoCreditoResponse>() {
                 @Override
-                public void onResponse(Call<MResAgf> call, Response<MResAgf> response) {
-                    Log.e("CodeCCXXXX", "Codigo"+response.code());
-                    ContentValues cv = new ContentValues();
-                    Log.e("IMPRESSSION", String.valueOf(!idImpresion.trim().isEmpty()));
-                    if (!idImpresion.trim().isEmpty()){
-                        cv.put("estatus", 1);
-                        cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                        db.update(TBL_RECIBOS_CC, cv, "_id = ?", new String[]{idImpresion});
-
-                        String sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ? AND _id = ? AND estatus = 1";
-                        Cursor row = db.rawQuery(sql, new String[]{producto, curp, idRecuperacion});
-                        if (row.getCount() == 0) {
-                            cv.put("estatus", 2);
-                            cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                            db.update(TBL_RECUPERACION_RECIBOS_CC, cv, "_id = ?", new String[]{idRecuperacion});
+                public void onResponse(Call<CirculoCreditoResponse> call, Response<CirculoCreditoResponse> response) {
+                    if(response.code() == 200)
+                    {
+                        if(gestionCC.getEstatus() == 0)
+                        {
+                            if(reciboCC.getId() != null)
+                            {
+                                reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
+                            }
                         }
+                        else
+                        {
+                            if(reciboCC.getId() != null)
+                            {
+                                reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                reciboCC.setEstatus(1);
+                                reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
+                            }
 
-                    }else{
-                        cv.put("estatus", 2);
-                        cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                        db.update(TBL_RECUPERACION_RECIBOS_CC, cv, "_id = ?", new String[]{idRecuperacion});
+                            gestionCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            gestionCC.setEstatus(2);
+                            gestionCirculoCreditoDao.update(gestionCC.getId(), gestionCC);
+                        }
+                    }
+                    else
+                    {
+                        Log.e("AQUI ", response.message());
                     }
                 }
 
                 @Override
-                public void onFailure(Call<MResAgf> call, Throwable t) {
-                    Log.e("CodeCCXXXX", "Fail"+t.getMessage());
+                public void onFailure(Call<CirculoCreditoResponse> call, Throwable t) {
+                    Log.e("Error", "Fail CirculoCreditoService" + t.getMessage());
                 }
             });
             return "";

@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.adapters;
+package com.sidert.sidertmovil.views.apoyogastosfunerarios;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -10,17 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.Gestion;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class adapter_gestiones_agf_cc extends RecyclerView.Adapter<adapter_gestiones_agf_cc.ViewHolder> {
+public class GestionesAdapter extends RecyclerView.Adapter<GestionesAdapter.ViewHolder> {
 
     private Context ctx;
-    private List<HashMap<Integer, String>> data;
+    private List<Gestion> data;
 
-    public adapter_gestiones_agf_cc(Context ctx, List<HashMap<Integer, String>> data) {
+    public GestionesAdapter(Context ctx, List<Gestion> data) {
         this.ctx = ctx;
         this.data = data;
     }
@@ -34,18 +35,25 @@ public class adapter_gestiones_agf_cc extends RecyclerView.Adapter<adapter_gesti
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Gestion gestion = data.get(position);
 
-        HashMap<Integer, String> item = data.get(position);
+        holder.tvNombre.setText(gestion.getNombre());
+        holder.tvtipo.setText((Html.fromHtml("<b>Tipo:</b> "+gestion.getTipo())));
+        holder.tvMonto.setText((Html.fromHtml("<b>Monto:</b> "+Miscellaneous.moneyFormat(gestion.getMonto()))));
+        holder.tvMedioPago.setText((Html.fromHtml("<b>Medio Pago:</b> "+gestion.getMedioPago())));
 
-        holder.tvNombre.setText(item.get(0));
-        holder.tvtipo.setText((Html.fromHtml("<b>Tipo:</b> "+item.get(1))));
-        holder.tvMonto.setText((Html.fromHtml("<b>Monto:</b> "+Miscellaneous.moneyFormat(item.get(2)))));
-        holder.tvMedioPago.setText((Html.fromHtml("<b>Medio Pago:</b> "+item.get(3))));
-        holder.tvFolio.setText((Html.fromHtml("<b>Folio</b> "+item.get(4))));
-        holder.tvFechaTermino.setText((Html.fromHtml("<b>Fecha Término: </b> "+item.get(5))));
-        holder.tvFechaEnvio.setText((Html.fromHtml("<b>Fecha Envío</b> "+item.get(6))));
+        if(gestion.getMedioPago().equals("EFECTIVO") && gestion.getImprimirRecibo().equals("NO"))
+        {
+            holder.tvFolio.setText((Html.fromHtml("<b>Folio</b> "+gestion.getFolioManual())));
+        }
+        else{
+            holder.tvFolio.setText((Html.fromHtml("<b>Folio</b> "+gestion.getFolioImpresion())));
+        }
 
-        if (!Miscellaneous.validStr(item.get(4)).isEmpty())
+        holder.tvFechaTermino.setText((Html.fromHtml("<b>Fecha Término: </b> "+gestion.getFechaTermino())));
+        holder.tvFechaEnvio.setText((Html.fromHtml("<b>Fecha Envío</b> "+gestion.getFechaEnvio())));
+
+        if (!Miscellaneous.validStr(holder.tvFolio.getText()).isEmpty())
             holder.tvFolio.setVisibility(View.VISIBLE);
         else
             holder.tvFolio.setVisibility(View.GONE);
@@ -57,7 +65,6 @@ public class adapter_gestiones_agf_cc extends RecyclerView.Adapter<adapter_gesti
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         private TextView tvNombre;
         private TextView tvtipo;
         private TextView tvMonto;

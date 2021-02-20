@@ -136,7 +136,6 @@ public class dialog_imprimir_recibos extends DialogFragment {
 
                 }
                 row.close();
-//303941
                 Log.e("idPrestamo", idPrestamo);
                 sql = "SELECT MIN(DATE(SUBSTR(fecha,7)||'-'||SUBSTR(fecha,4,2)||'-'||SUBSTR(fecha,1,2))) as fIni, MAX(DATE(SUBSTR(fecha,7)||'-'||SUBSTR(fecha,4,2)||'-'||SUBSTR(fecha,1,2))) AS fFin FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? GROUP BY id_prestamo";
                 row = db.rawQuery(sql, new String[]{idPrestamo});
@@ -155,7 +154,7 @@ public class dialog_imprimir_recibos extends DialogFragment {
                         Date fechaFinal = dateFormat.parse(fechaDos);
                         int dias = (int) ((fechaFinal.getTime() - fechaInicial.getTime()) / 86400000);
 
-                        int meses = Math.round(dias / 30);
+                        int meses = (int) Math.ceil((double)(dias) / Double.parseDouble("30"));
                         double seguroAGF = 15;
                         for (int i = 0; i < session.getSucursales().length(); i++) {
                             try {

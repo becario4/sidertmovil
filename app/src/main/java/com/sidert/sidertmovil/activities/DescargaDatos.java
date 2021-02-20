@@ -99,14 +99,16 @@ public class DescargaDatos extends AppCompatActivity {
     private TextView tvRegistradas;
 
     /**Interfaz para descarga de prestamos Individuales*/
-    public interface PrestamoIndCallbacks{
+    public interface PrestamoIndCallbacks {
         void onPrestamoInd(boolean mPrestamosInd);
+
         void onPrestamoIndFailed(Throwable error);
     }
 
     /**Interfaz para descarga de prestamos Grupales*/
-    public interface PrestamoGpoCallbacks{
+    public interface PrestamoGpoCallbacks {
         void onPrestamoGpo(boolean mPrestamosGpo);
+
         void onPrestamoGpoFailed(Throwable error);
     }
 
@@ -136,13 +138,13 @@ public class DescargaDatos extends AppCompatActivity {
         GetUltimasImpresiones();
     }
 
-    private void GetInformacion(){
+    private void GetInformacion() {
         /**Se descargan catalgos que se ocuparan para originacion y renovacion*/
         Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
         sc.GetCategoriasTickets(ctx);
         sc.GetEstados(ctx);
 
-        /*sc.GetSectores(ctx);
+        sc.GetSectores(ctx);
         sc.GetOcupaciones(ctx);
         sc.GetMediosPagoOri(ctx);
         sc.GetNivelesEstudios(ctx);
@@ -153,10 +155,11 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetViviendaTipos(ctx);
         sc.GetMediosContacto(ctx);
         sc.GetDestinosCredito(ctx);
-        sc.GetPlazosPrestamo(ctx);*/
+        sc.GetPlazosPrestamo(ctx);
+
 
         /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
-          * o prestamos autorizados para autorizar monto*/
+         * o prestamos autorizados para autorizar monto*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
         /**Descarga los prestamos autorizados y vigentes para realizar cobros AGF*/
         ss.GetPrestamos(ctx, false);
@@ -166,20 +169,20 @@ public class DescargaDatos extends AppCompatActivity {
         ss.GetUltimosRecibosCC(ctx);
 
         /**Descarga los prestamos a renovar*/
-        //ss.GetPrestamosToRenovar(ctx);
+        ss.GetPrestamosToRenovar(ctx);
         /**Descarga Solicituades Individuales que fueron rechazadas por la admin*/
-        // ss.GetSolicitudesRechazadasInd(ctx, false);
+        ss.GetSolicitudesRechazadasInd(ctx, false);
         /**Descarga Solicituades Grupales que fueron rechazadas por la admin*/
-        //ss.GetSolicitudesRechazadasGpo(ctx, false);
+        ss.GetSolicitudesRechazadasGpo(ctx, false);
         /**Descarga los prestamos que fueron autorizados por la admin solo para
          * autorizar el monto*/
-        //ss.GetPrestamosAutorizados(ctx, false);
+        ss.GetPrestamosAutorizados(ctx, false);
 
     }
 
     /**funcion para Descargar el ultimo folio de vigente y vencida
      * ademas como agregar el nivel de bateria y la ubicacion*/
-    private void GetUltimasImpresiones (){
+    private void GetUltimasImpresiones() {
         /**Interfaz para la peticion de ultimos recibos*/
         final ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
@@ -189,26 +192,29 @@ public class DescargaDatos extends AppCompatActivity {
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         /**Se calcula el nivel de bateria*/
-        final float battery = (level / (float)scale)*100;
-
+        final float battery = (level / (float) scale) * 100;
+        Log.e("ENTRE AQUI", "ANTES DE LOCATION");
         /**Se obtiene la ubicacion del dispositivo*/
         LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+
+        Log.e("ENTRE AQUI", "DESPUES DE LOCATION");
         MyCurrentListener locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
             @Override
             public void onComplete(String latitud, String longitud) {
-
+                Log.e("ENTRE AQUI", latitud);
                 /**En caso de obtener la ubicaion se prepara la peticion con los datos
                  * de nivel de bateria, ubicacion, version de la app el serie id*/
                 Call<List<MImpresionRes>> call;
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
+                    Log.e("ENTRE AQUI", "datos vacios");
                     call = api.getUltimasImpresiones(session.getUser().get(0),
                             String.valueOf(battery),
                             getString(R.string.app_version),
                             latitud,
                             longitud,
-                            "Bearer "+ session.getUser().get(7));
-                }
-                else{
+                            "Bearer " + session.getUser().get(7));
+                } else {
+                    Log.e("ENTRE AQUI", "con datos");
                     /**En caso de no obtener la ubicaion se prepara la peticion con los datos
                      * de version de la app el serie id*/
                     call = api.getUltimasImpresiones(session.getUser().get(0),
@@ -216,7 +222,7 @@ public class DescargaDatos extends AppCompatActivity {
                             getString(R.string.app_version),
                             "",
                             "",
-                            "Bearer "+ session.getUser().get(7));
+                            "Bearer " + session.getUser().get(7));
                 }
 
                 /**Se realiza la peticion para obtener el ultimo recibo de vigente y vencida,
@@ -225,12 +231,12 @@ public class DescargaDatos extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<MImpresionRes>> call, Response<List<MImpresionRes>> response) {
                         /**Lee el codigo de respuesta de peticion*/
-                        switch (response.code()){
+                        switch (response.code()) {
                             case 200:
                                 /**Se obtiene el ultimo folio registrado en DB*/
                                 List<MImpresionRes> impresiones = response.body();
 
-                                for (MImpresionRes item : impresiones){
+                                for (MImpresionRes item : impresiones) {
                                     Cursor row;
                                     /**Obtiene el tipo de impresion(Vigente/Vencida) y el numero de prestamo*/
                                     HashMap<Integer, String> data = Miscellaneous.GetNumPrestamo(item.getExternalId());
@@ -238,21 +244,21 @@ public class DescargaDatos extends AppCompatActivity {
                                     Log.e("TipoCartera", String.valueOf(item.getTipoCartera()));
                                     if (item.getTipoCartera() == -1) {/**Si el tipo Cartera fue Vigente*/
 
-                                        if (data.get(0).equals("Vigente")){
+                                        if (data.get(0).equals("Vigente")) {
                                             /**Se busca esa impresion si ya se tiene guarda en el movil*/
-                                            Log.e("nPre folio tipo_imp",data.get(1) +" "+ String.valueOf(item.getFolio()) +" "+  String.valueOf(item.getTipo()));
+                                            Log.e("nPre folio tipo_imp", data.get(1) + " " + String.valueOf(item.getFolio()) + " " + String.valueOf(item.getTipo()));
                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
                                             /**En caso de existir solo actualizar fecha de envio y estatus*/
-                                            if (row.getCount() > 0){
+                                            if (row.getCount() > 0) {
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
                                                 cv.put("estatus", "1");
-                                               db.update(TBL_IMPRESIONES_VIGENTE_T, cv,
-                                                            "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
-                                                                    data.get(1), item.getFolio(), item.getTipo()});
+                                                db.update(TBL_IMPRESIONES_VIGENTE_T, cv,
+                                                        "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
+                                                                data.get(1), item.getFolio(), item.getTipo()});
 
-                                            }else{
+                                            } else {
                                                 /**En caso de que NO exista registrar la impresion*/
 
                                                 HashMap<Integer, String> params = new HashMap<>();
@@ -278,14 +284,14 @@ public class DescargaDatos extends AppCompatActivity {
                                             row.close();
                                         }
                                         /**En caso de ser una impresion de vencida*/
-                                        else if (data.get(0).equals("Vencida")){
+                                        else if (data.get(0).equals("Vencida")) {
 
                                             /**Buscar si existe esa impresion en la tabla de vencida*/
-                                            Log.e("nPre folio tipo_imp",data.get(1) +" "+ String.valueOf(item.getFolio()) +" "+  String.valueOf(item.getTipo()));
+                                            Log.e("nPre folio tipo_imp", data.get(1) + " " + String.valueOf(item.getFolio()) + " " + String.valueOf(item.getTipo()));
                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
                                             /**En caso de existir esa impresion*/
-                                            if (row.getCount() > 0){
+                                            if (row.getCount() > 0) {
                                                 /**Actualizar la fecha de envio y el estatus de la impresion*/
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -294,7 +300,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                         "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
                                                                 data.get(1), item.getFolio(), item.getTipo()});
 
-                                            }else{
+                                            } else {
                                                 /**En caso de No existir registrar la impresion*/
                                                 HashMap<Integer, String> params = new HashMap<>();
                                                 if (item.getNumPrestamoIdGestion().trim().isEmpty())
@@ -317,18 +323,17 @@ public class DescargaDatos extends AppCompatActivity {
                                             }
                                             row.close();
                                         }
-                                    }
-                                    else{
+                                    } else {
                                         /**Si tipo cartera en vigente o cobranza*/
-                                        if (item.getTipoCartera()  == 0|| item.getTipoCartera() == 1) {//VIGENTE
+                                        if (item.getTipoCartera() == 0 || item.getTipoCartera() == 1) {//VIGENTE
 
                                             /**Busco la impresion en la tabla de vigente*/
                                             Log.e("nPre folio tipo_imp", data.get(1) + " " + String.valueOf(item.getFolio()) + " " + String.valueOf(item.getTipo()));
                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, " WHERE num_prestamo = ? AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), item.getFolio(), item.getTipo()});
 
                                             /**En caso de existir la impresion en la tabla*/
-                                            Log.e("CountRow", String.valueOf(row.getCount())+" asda");
-                                            if (row.getCount() > 0){
+                                            Log.e("CountRow", String.valueOf(row.getCount()) + " asda");
+                                            if (row.getCount() > 0) {
                                                 /**Actualiza fecha de envio y estatus de la impresion*/
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -337,7 +342,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                         "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
                                                                 data.get(1), item.getFolio(), item.getTipo()});
 
-                                            }else{
+                                            } else {
                                                 /**En caso de NO existir registrar la impresion en Vigente*/
                                                 HashMap<Integer, String> params = new HashMap<>();
                                                 if (item.getNumPrestamoIdGestion().trim().isEmpty())
@@ -360,13 +365,13 @@ public class DescargaDatos extends AppCompatActivity {
                                             row.close();
                                         }
                                         /**Si tipo cartera es Vencida*/
-                                        else if (item.getTipoCartera() == 4){//VENCIDA
+                                        else if (item.getTipoCartera() == 4) {//VENCIDA
 
                                             /**Busca la impresion en la tabla de vencida*/
-                                             row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
+                                            row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, " WHERE num_prestamo = ?  AND folio = ? AND tipo_impresion = ?", "", new String[]{data.get(1), String.valueOf(item.getFolio()), String.valueOf(item.getTipo())});
 
-                                             /**En caso de existir en la tabla*/
-                                            if (row.getCount() > 0){
+                                            /**En caso de existir en la tabla*/
+                                            if (row.getCount() > 0) {
                                                 /**Actualiza los campos de fecha de envio y estatus de la impresion*/
                                                 ContentValues cv = new ContentValues();
                                                 cv.put("sent_at", item.getSendedAt());
@@ -375,7 +380,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                         "num_prestamo = ? AND folio = ? AND tipo_impresion = ?", new String[]{
                                                                 data.get(1), item.getFolio(), item.getTipo()});
 
-                                            }else{
+                                            } else {
                                                 /**En caso de NO existir registrar la impresion en la tabla de vencida*/
                                                 HashMap<Integer, String> params = new HashMap<>();
                                                 if (item.getNumPrestamoIdGestion().trim().isEmpty())
@@ -413,7 +418,7 @@ public class DescargaDatos extends AppCompatActivity {
                     public void onFailure(Call<List<MImpresionRes>> call, Throwable t) {
                         /**En caso de fallar la peticion se pasa al siguiente proceso
                          * que es descargar la cartera*/
-                        Log.e("error", t.getMessage()+"asdasd");
+                        Log.e("error", t.getMessage() + "asdasd");
 
                         /**Funcion para obtener ahora la cartera del asesor*/
                         GetCartera();
@@ -426,14 +431,15 @@ public class DescargaDatos extends AppCompatActivity {
         });
 
         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
         }
 
         String provider;
 
         /**Se valida el modelo del dispositivo para saber con que proveedor de GPS va a realizar la peticion*/
         if (Build.MODEL.contains("Redmi")){ /**Si es para REDMI*/
-            //provider = LocationManager.NETWORK_PROVIDER;
-            provider = LocationManager.GPS_PROVIDER;
+            provider = LocationManager.NETWORK_PROVIDER;
+            //provider = LocationManager.GPS_PROVIDER;
         }
         else {/**Si es para SAMSUNG*/
             /**Si tiene conexion a internet*/

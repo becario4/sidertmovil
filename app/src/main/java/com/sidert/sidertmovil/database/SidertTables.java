@@ -1953,7 +1953,8 @@ public class SidertTables {
                 "fecha_impresion TEXT," +
                 "fecha_envio TEXT," +
                 "estatus INTEGER," +
-                "nombre TEXT)";
+                "nombre TEXT," +
+                "plazo INTEGER)";
         
         static final String CREATE_TBL_RECUPERACION_RECIBOS = "CREATE TABLE " + TBL_RECUPERACION_RECIBOS + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1970,7 +1971,9 @@ public class SidertTables {
                 "monto TEXT," +
                 "imprimir_recibo TEXT," +
                 "folio_manual TEXT," +
-                "cliente_id TEXT" +
+                "cliente_id TEXT," +
+                "total_integrantes INTEGER, " +
+                "total_integrantes_manual INTEGER " +
                 ")";
         //================= TABLA DE CONSULTA DE CIRCULO DE CREDITO ================================
         static final String CREATE_TBL_CONSULTA_CC = "CREATE TABLE "+TBL_CONSULTA_CC +" (" +
@@ -2433,9 +2436,21 @@ public class SidertTables {
                 " ADD COLUMN monto_autorizado" +
                 " TEXT DEFAULT ''";
 
+        static final String ADD_TOTAL_INTEGRANTES_AGF = "ALTER TABLE " + TBL_RECUPERACION_RECIBOS +
+                " ADD COLUMN total_integrantes" +
+                " INTEGER DEFAULT NULL";
+
+        static final String ADD_TOTAL_INT_MANUAL_AGF = "ALTER TABLE " + TBL_RECUPERACION_RECIBOS +
+                " ADD COLUMN total_integrantes_manual" +
+                " INTEGER DEFAULT 0";
+
         static final String ADD_COSTO_CONSULTA = "ALTER TABLE " + TBL_RECUPERACION_RECIBOS_CC +
                 " ADD COLUMN costo_consulta" +
                 " TEXT DEFAULT ''";
+
+        static final String ADD_PLAZO_AGF_CC = "ALTER TABLE " + TBL_RECIBOS_AGF_CC +
+                " ADD COLUMN plazo" +
+                " INTEGER DEFAULT 0";
 
 
     }
