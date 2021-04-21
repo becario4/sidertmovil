@@ -46,7 +46,7 @@
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item

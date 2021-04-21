@@ -5,106 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--  Clasificacion de Riesgo  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@color/black"
-            android:text="@string/clasificacion_riesgo"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvRiesgo"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:hint="SELECCIONE UN OPCIÓN"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Como se entero de nosotros  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Como se Enteró de Nosotros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvMedioContacto"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Estado de cuenta  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Estado de cuenta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvEstadoCuenta"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  E-Mail  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Correo Electrónico"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:inputType="textEmailAddress"
-            android:paddingLeft="10dp"
-            android:maxLength="60"
-            android:textColor="@drawable/edit_text_selector"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
     <!--  Estatus  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -273,58 +173,34 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <!--  Casa para reuniones  -->
+    <!--  Clasificacion de Riesgo  -->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:gravity="center_vertical|right"
-            android:textColor="@android:color/black"
-            android:text="Casa para las reuniones"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
-
-        <CheckBox
-            android:id="@+id/cbCasaReuniones"
-            android:layout_gravity="right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <!-- Firma cliente-->
-    <LinearLayout
-        android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <TextView
-            android:id="@+id/tvFirmaCli"
             android:textColor="@color/black"
-            android:text="Firma Cliente"
+            android:text="@string/clasificacion_riesgo"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"
             android:background="@android:color/white"
             style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <ImageButton
-            android:id="@+id/ibFirmaCli"
-            android:src="@drawable/ic_gesture"
-            android:background="@drawable/round_corner_blue"
+        <TextView
+            android:id="@+id/tvRiesgo"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:hint="SELECCIONE UN OPCIÓN"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"/>
-        <ImageView
-            android:id="@+id/ivFirmaCli"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="70dp" />
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <RelativeLayout
@@ -332,18 +208,19 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnRegresar5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
             android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"/>-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnContinuar5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_continuar"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>

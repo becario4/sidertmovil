@@ -49,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -132,12 +133,14 @@ public class CameraVertical extends AppCompatActivity {
 
         @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-            cameraDevice.close();
+            //cameraDevice.close();
+            closeCameraDevice();
         }
 
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int i) {
-            cameraDevice.close();
+            //cameraDevice.close();
+            closeCameraDevice();
             cameraDevice=null;
         }
     };
@@ -209,32 +212,41 @@ public class CameraVertical extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
+                        if(mFoto != null)
+                            Log.e("AQUI", ": "+ mFoto.length);
+                        else
+                            Log.e("AQUI", "NULO");
                         View vCanvas = new CanvasCustom(CameraVertical.this,df.format(Calendar.getInstance().getTime()));
+                        Log.e("AQUI","A");
 
-                        Bitmap newBitMap = null;
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(mFoto, 0, mFoto.length);
-
-                        Bitmap.Config config = bitmap.getConfig();
-
-                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),config);
-                        Canvas canvas = new Canvas(newBitMap);
-                        canvas.drawBitmap(bitmap,0,0, null);
-
-                        vCanvas.draw(canvas);
-
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-                        //mOrientationListener.disable();
-                        //cameraDevice.close();
-                        Intent i = new Intent();
-                        i.putExtra(Constants.PICTURE, baos.toByteArray());
-                        setResult(RESULT_OK, i);
-                        finish();
+                        if(mFoto != null) {
+                            Bitmap newBitMap = null;
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(mFoto, 0, mFoto.length);
+                            Log.e("AQUI", "B");
+                            Bitmap.Config config = bitmap.getConfig();
+                            Log.e("AQUI", "C");
+                            newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                            Canvas canvas = new Canvas(newBitMap);
+                            canvas.drawBitmap(bitmap, 0, 0, null);
+                            Log.e("AQUI", "D");
+                            vCanvas.draw(canvas);
+                            Log.e("AQUI", "E");
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            Log.e("AQUI", "F");
+                            //mOrientationListener.disable();
+                            //cameraDevice.close();
+                            Intent i = new Intent();
+                            i.putExtra(Constants.PICTURE, baos.toByteArray());
+                            setResult(RESULT_OK, i);
+                            Log.e("AQUI", "G");
+                            finish();
+                        }
+                        Log.e("AQUI","H");
                     }catch (Exception e){
-
                         Toast.makeText(ctx, "ha ocurrido un error tome de nuevo la foto", Toast.LENGTH_SHORT).show();
-                        Log.e("Catch Camera", "Cierre de camara");
+                        Log.e("btn guardar error", e.getMessage());
+                        Log.e("btn guardar error", e.toString());
                         openCamera();
                         llPregunta.setVisibility(View.GONE);
                         ibCapture.setVisibility(View.VISIBLE);
@@ -297,6 +309,7 @@ public class CameraVertical extends AppCompatActivity {
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
+                    Log.e("AQUI", "IMAGEN DISPONIBLE");
                     Image image = null;
                     //image = reader.acquireLatestImage();
                     try {
@@ -316,6 +329,7 @@ public class CameraVertical extends AppCompatActivity {
             };
 
             reader.setOnImageAvailableListener(readerListener,mBackgroundHandler);
+
             final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
@@ -324,7 +338,7 @@ public class CameraVertical extends AppCompatActivity {
                     Log.e("Request", request.describeContents()+"sefsf");
                     Log.e("Session", session.toString());
                     //mOrientationListener.disable();
-                    cameraDevice.close();
+                    closeCameraDevice();//cameraDevice.close();
                 }
             };
 
@@ -332,8 +346,11 @@ public class CameraVertical extends AppCompatActivity {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
                     try{
+                        Log.e("AQUI", "CAPTURANDO");
                         cameraCaptureSession.capture(captureBuilder.build(),captureListener,mBackgroundHandler);
                     } catch (CameraAccessException e) {
+                        Log.e("create capture error", String.valueOf(e.getReason()));
+                        Log.e("create capture error", String.valueOf(e.getMessage()));
                         e.printStackTrace();
                     }
                 }
@@ -359,7 +376,8 @@ public class CameraVertical extends AppCompatActivity {
             },3000);
 
         } catch (CameraAccessException e) {
-            Log.e("Error TakeFoto", e.getMessage());
+            Log.e("take picture error", String.valueOf(e.getReason()));
+            Log.e("take picture error", String.valueOf(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -393,6 +411,8 @@ public class CameraVertical extends AppCompatActivity {
                 }
             },null);
         } catch (CameraAccessException e) {
+            Log.e("Camera preview error", String.valueOf(e.getReason()));
+            Log.e("Camera preview error", String.valueOf(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -404,6 +424,8 @@ public class CameraVertical extends AppCompatActivity {
         try{
             cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(),null,mBackgroundHandler);
         } catch (CameraAccessException e) {
+            Log.e("update preview error", String.valueOf(e.getReason()));
+            Log.e("update preview error", String.valueOf(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -432,6 +454,8 @@ public class CameraVertical extends AppCompatActivity {
             manager.openCamera(cameraId,stateCallback,null);
 
         } catch (CameraAccessException e) {
+            Log.e("open camera error", String.valueOf(e.getReason()));
+            Log.e("open camera error", String.valueOf(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -487,7 +511,7 @@ public class CameraVertical extends AppCompatActivity {
     protected void onPause() {
         Log.e("Error", "OnPause");
 
-        cameraDevice.close();
+        closeCameraDevice();//cameraDevice.close();
         stopBackgroundThread();
         super.onPause();
     }
@@ -512,5 +536,13 @@ public class CameraVertical extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @MainThread
+    private void closeCameraDevice() {
+        if (cameraDevice != null) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
     }
 }

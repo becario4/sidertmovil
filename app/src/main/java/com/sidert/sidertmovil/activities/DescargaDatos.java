@@ -144,7 +144,7 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetCategoriasTickets(ctx);
         sc.GetEstados(ctx);
 
-        sc.GetSectores(ctx);
+        /*sc.GetSectores(ctx);
         sc.GetOcupaciones(ctx);
         sc.GetMediosPagoOri(ctx);
         sc.GetNivelesEstudios(ctx);
@@ -155,8 +155,7 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetViviendaTipos(ctx);
         sc.GetMediosContacto(ctx);
         sc.GetDestinosCredito(ctx);
-        sc.GetPlazosPrestamo(ctx);
-
+        sc.GetPlazosPrestamo(ctx);*/
 
         /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
          * o prestamos autorizados para autorizar monto*/
@@ -169,14 +168,14 @@ public class DescargaDatos extends AppCompatActivity {
         ss.GetUltimosRecibosCC(ctx);
 
         /**Descarga los prestamos a renovar*/
-        ss.GetPrestamosToRenovar(ctx);
+        //ss.GetPrestamosToRenovar(ctx);
         /**Descarga Solicituades Individuales que fueron rechazadas por la admin*/
-        ss.GetSolicitudesRechazadasInd(ctx, false);
+        //ss.GetSolicitudesRechazadasInd(ctx, false);
         /**Descarga Solicituades Grupales que fueron rechazadas por la admin*/
-        ss.GetSolicitudesRechazadasGpo(ctx, false);
+        //ss.GetSolicitudesRechazadasGpo(ctx, false);
         /**Descarga los prestamos que fueron autorizados por la admin solo para
          * autorizar el monto*/
-        ss.GetPrestamosAutorizados(ctx, false);
+        //ss.GetPrestamosAutorizados(ctx, false);
 
     }
 
@@ -610,7 +609,7 @@ public class DescargaDatos extends AppCompatActivity {
                             } //Fin Ciclo For
                         }//Fin IF
                         /**Pasa al siguiente proceso que es obtener prestamos*/
-                        GetPrestamos();
+                        GetPrestamos(0, -1);
 
                         break;
                     default:
@@ -640,77 +639,87 @@ public class DescargaDatos extends AppCompatActivity {
     }
 
     /**Funcion para obtener los prestamos de acuerdo a la cartera que tiene registrada en el movil*/
-    public void GetPrestamos (){
+    public void GetPrestamos(int iOffSet, int iTotal){
 
         final Cursor row;
         String query;
+        int iTotalRows;
+
+        if(iTotal < 0)
+        {
+            query = "SELECT * FROM (SELECT id_cartera,'1' AS tipo FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO_T +") AS cartera order by id_cartera, tipo";
+            Cursor rowTotal = db.rawQuery(query, null);
+            iTotalRows = rowTotal.getCount();
+            rowTotal.close();
+
+            tvTotal.setText(String.valueOf(iTotalRows));
+        }
+        else {
+            iTotalRows = iTotal;
+        }
 
         /**Obtiene el listado de cartera registrada tanto individuales y grupales*/
-        query = "SELECT * FROM (SELECT id_cartera,'1' AS tipo FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO_T +") AS cartera ";
-
+        query = "SELECT * FROM (SELECT id_cartera,'1' AS tipo FROM " + TBL_CARTERA_IND_T + " UNION SELECT id_cartera,'2' AS tipo FROM "+TBL_CARTERA_GPO_T +") AS cartera order by id_cartera, tipo limit 1 offset " + iOffSet;
         row = db.rawQuery(query, null);
 
-        tvTotal.setText(String.valueOf(row.getCount()));
-        final int[] totalClientes = {row.getCount()};
-        final int[] clientesActualizados = {0};
-
         /**Si obtiene resultado de cartera*/
-        if (row.getCount() > 0){
-            row.moveToFirst();
+        if(iTotalRows > 0) {
+            if (row.getCount() > 0) {
+                row.moveToFirst();
 
-            /**Recorre el listado de la cartera*/
-            for (int i = 0; i < row.getCount(); i++){
+                /**Recorre el listado de la cartera*/
+                for (int i = 0; i < row.getCount(); i++) {
+                    int iTipoCartera = row.getInt(1);
+                    int iPrestamoId = row.getInt(0);
+                    row.close();
 
-                /**Valida el tipo de cartera Individual|Grupal*/
-                switch (row.getInt(1)){
-                    case 1:/**Individual*/
-                        /**Realiza la consulta del prestamo individual de la cartera*/
-                        GetPrestamoInd(row.getInt(0), new PrestamoIndCallbacks() {
-                            @Override
-                            public void onPrestamoInd(boolean mPrestamosInd) {
-                                if (mPrestamosInd) {
-                                    clientesActualizados[0]++;
-                                    QuitarLoading(totalClientes[0], clientesActualizados[0]);
-                                }
-                            }
-
-                            @Override
-                            public void onPrestamoIndFailed(Throwable error) {
-                                clientesActualizados[0]++;
-                                QuitarLoading(totalClientes[0], clientesActualizados[0]);
-                            }
-                        });
-                        break;
-                    case 2:/**Grupal*/
-                        /**Busca el prestamos grupal de la cartera*/
-                        GetPrestmoGpo(row.getInt(0), new PrestamoGpoCallbacks() {
-                            @Override
-                            public void onPrestamoGpo(boolean mPrestamosGpo) {
-                                if (mPrestamosGpo){
-                                    clientesActualizados[0]++;
-                                    QuitarLoading(totalClientes[0], clientesActualizados[0]);
+                    /**Valida el tipo de cartera Individual|Grupal*/
+                    switch (iTipoCartera) {
+                        case 1:/**Individual*/
+                            /**Realiza la consulta del prestamo individual de la cartera*/
+                            GetPrestamoInd(iPrestamoId, new PrestamoIndCallbacks() {
+                                @Override
+                                public void onPrestamoInd(boolean mPrestamosInd) {
+                                    if (mPrestamosInd) {
+                                        GetPrestamos(iOffSet + 1, iTotalRows);
+                                        QuitarLoading(iTotalRows, iOffSet + 1);
+                                    }
                                 }
 
-                            }
+                                @Override
+                                public void onPrestamoIndFailed(Throwable error) {
+                                    GetPrestamos(iOffSet + 1, iTotalRows);
+                                    QuitarLoading(iTotalRows, iOffSet + 1);
+                                }
+                            });
+                            break;
+                        case 2:/**Grupal*/
+                            /**Busca el prestamos grupal de la cartera*/
+                            GetPrestmoGpo(iPrestamoId, new PrestamoGpoCallbacks() {
+                                @Override
+                                public void onPrestamoGpo(boolean mPrestamosGpo) {
+                                    if (mPrestamosGpo) {
+                                        GetPrestamos(iOffSet + 1, iTotalRows);
+                                        QuitarLoading(iTotalRows, iOffSet + 1);
+                                    }
 
-                            @Override
-                            public void onPrestamoGpoFailed(Throwable error) {
-                                clientesActualizados[0]++;
-                                QuitarLoading(totalClientes[0], clientesActualizados[0]);
+                                }
 
-                            }
-                        });
-                        break;
+                                @Override
+                                public void onPrestamoGpoFailed(Throwable error) {
+                                    GetPrestamos(iOffSet + 1, iTotalRows);
+                                    QuitarLoading(iTotalRows, iOffSet + 1);
+
+                                }
+                            });
+                            break;
+                    }
                 }
-                row.moveToNext();
             }
         }
         else{
-            row.close();
             QuitarLoading(0,0);
         }
-        row.close();
-
     }
 
     /**Funcion para obtener prestamos individuales*/
@@ -1016,7 +1025,9 @@ public class DescargaDatos extends AppCompatActivity {
                     if (prestamoCallbacks != null)
                         prestamoCallbacks.onPrestamoInd(true);
                 }
-
+                else{
+                    Log.e("ERROR AQUI", response.message());
+                }
             }
 
             @Override

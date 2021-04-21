@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.database.DBhelper;
 //import com.sidert.sidertmovil.utils.AES;
+import com.sidert.sidertmovil.models.catalogos.Localidad;
+import com.sidert.sidertmovil.models.catalogos.LocalidadDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.SessionManager;
 //import com.sidert.sidertmovil.utils.WebServicesRoutes;
@@ -141,9 +143,9 @@ public class SplashSidertActivity extends AppCompatActivity {
         /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
         las secciones de originacion y renovacion de los estados de
         Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
-        new RegistrarColonias().execute();
+        /*new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();
+        new RegistrarLocalidades().execute();*/
 
         /**Este proceso era antes de lanzar originacion y renovacion*/
         Handler handler_home=new Handler();
@@ -164,8 +166,11 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            Cursor row = dBhelper.getRecords(LOCALIDADES, "", "", null);
-            if (row.getCount() == 0) {
+            LocalidadDao localidadDao = new LocalidadDao(ctx);
+            List<Localidad> localidades = localidadDao.findAll();
+
+            if(localidades.size() == 0) {
+                Log.e("LOCALIDADES", "INTENTANDO REGISTRAR");
                 try {
                     /**Lee el archivo que se encuentra en la carpeta res/raw/localidades*/
                     InputStream is = getResources().openRawResource(R.raw.localidades);
@@ -174,6 +179,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                     );
                     String line;
                     while ((line = reader.readLine()) != null) {
+                        Log.e("LOCALIDADES", "LEYENDO ARCHIVO");
                         String[] localidad = line.split(",");
 
                         /**Registra las localidades*/
@@ -184,9 +190,10 @@ public class SplashSidertActivity extends AppCompatActivity {
                         dBhelper.saveLocalidades(db, values);
                     }
                 } catch (IOException e) {
-
+                    Log.e("LOCALIDADES", e.getMessage());
                 }
             }
+
             return "Localidades";
         }
 
@@ -197,7 +204,7 @@ public class SplashSidertActivity extends AppCompatActivity {
 
             /**cuando se registren todas las localidades, municipios y colonias
             se validara en la clase MainActivity si requiere login o ya no*/
-            if (localidad && municipio && colonia){
+            //if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {
                     @Override
@@ -208,7 +215,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                         finish();
                     }
                 },3000);
-            }
+            //}
         }
     }
 
@@ -240,6 +247,9 @@ public class SplashSidertActivity extends AppCompatActivity {
 
                 }
             }
+
+            row.close();
+
             return "Municipios";
         }
 
@@ -297,6 +307,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 }
             }
 
+            row.close();
 
             return "Colonias";
         }

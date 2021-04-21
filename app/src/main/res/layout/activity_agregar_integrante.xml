@@ -49,6 +49,62 @@
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true">
 
+                <!--  Datos del credito -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llOtros"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError6"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Crédito"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown6"
+
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp6"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llOtrosDatos"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_otros_datos"/>
+                    </LinearLayout>
+                </LinearLayout>
+
                 <!--  Datos Personales  -->
                 <LinearLayout
                     android:orientation="vertical"
@@ -78,13 +134,13 @@
                             android:layout_height="wrap_content" />
                         <ImageView
                             android:id="@+id/ivDown1"
-                            android:visibility="gone"
                             android:src="@drawable/ic_down"
                             android:layout_marginRight="10dp"
                             android:layout_width="30dp"
                             android:layout_height="30dp" />
                         <ImageView
                             android:id="@+id/ivUp1"
+                            android:visibility="gone"
                             android:layout_marginRight="10dp"
                             android:src="@drawable/ic_up"
                             android:layout_width="30dp"
@@ -92,6 +148,7 @@
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/llDatosPersonales"
+                        android:visibility="gone"
                         android:orientation="vertical"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
@@ -102,178 +159,6 @@
                             android:layout_height="wrap_content"
                             layout="@layout/view_gpo_datos_personales"/>
                     </LinearLayout>
-
-                </LinearLayout>
-
-                <!--  Datos Telefonicos  -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:id="@+id/llTelefonicos"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/ivError2"
-                            android:visibility="gone"
-                            android:layout_marginLeft="10dp"
-                            android:src="@drawable/ic_info_red"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:paddingTop="5dp"
-                            android:paddingLeft="15dp"
-                            android:textSize="16sp"
-                            android:text="Datos Telefónicos"
-                            android:layout_weight="1"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <ImageView
-                            android:id="@+id/ivDown2"
-                            android:src="@drawable/ic_down"
-                            android:layout_marginRight="10dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                        <ImageView
-                            android:id="@+id/ivUp2"
-                            android:visibility="gone"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_up"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/llDatosTelefonicos"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <include
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            layout="@layout/view_gpo_datos_telefonicos"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!--  Datos Domicilio  -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:id="@+id/llDomicilio"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/ivError3"
-                            android:visibility="gone"
-                            android:layout_marginLeft="10dp"
-                            android:src="@drawable/ic_info_red"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:paddingTop="5dp"
-                            android:paddingLeft="15dp"
-                            android:textSize="16sp"
-                            android:text="Datos del Domicilio"
-                            android:layout_weight="1"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <ImageView
-                            android:id="@+id/ivDown3"
-                            android:src="@drawable/ic_down"
-                            android:layout_marginRight="10dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                        <ImageView
-                            android:id="@+id/ivUp3"
-                            android:visibility="gone"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_up"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/llDatosDomicilio"
-                        android:visibility="gone"
-                        android:orientation="vertical"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <include
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            layout="@layout/view_gpo_datos_domicilio"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!--  Datos Negocio  -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:id="@+id/llNegocio"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/ivError4"
-                            android:visibility="gone"
-                            android:layout_marginLeft="10dp"
-                            android:src="@drawable/ic_info_red"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:paddingTop="5dp"
-                            android:paddingLeft="15dp"
-                            android:textSize="16sp"
-                            android:text="Datos del Negocio"
-                            android:layout_weight="1"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <ImageView
-                            android:id="@+id/ivDown4"
-                            android:src="@drawable/ic_down"
-                            android:layout_marginRight="10dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                        <ImageView
-                            android:id="@+id/ivUp4"
-                            android:visibility="gone"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_up"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/llDatosNegocio"
-                        android:visibility="gone"
-                        android:orientation="vertical"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <include
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            layout="@layout/view_gpo_datos_negocio"/>
-                    </LinearLayout>
-
                 </LinearLayout>
 
                 <!--  Datos Conyuge  -->
@@ -334,18 +219,18 @@
 
                 </LinearLayout>
 
-                <!--  Otros Datos  -->
+                <!--  Datos Negocio -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <LinearLayout
-                        android:id="@+id/llOtros"
+                        android:id="@+id/llNegocio"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <ImageView
-                            android:id="@+id/ivError6"
+                            android:id="@+id/ivError4"
                             android:visibility="gone"
                             android:layout_marginLeft="10dp"
                             android:src="@drawable/ic_info_red"
@@ -355,21 +240,20 @@
                             android:paddingTop="5dp"
                             android:paddingLeft="15dp"
                             android:textSize="16sp"
-                            android:text="Otros Datos"
+                            android:text="Datos del Negocio"
                             android:layout_weight="1"
                             android:textStyle="bold"
                             android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                         <ImageView
-                            android:id="@+id/ivDown6"
-
+                            android:id="@+id/ivDown4"
                             android:src="@drawable/ic_down"
                             android:layout_marginRight="10dp"
                             android:layout_width="30dp"
                             android:layout_height="30dp" />
                         <ImageView
-                            android:id="@+id/ivUp6"
+                            android:id="@+id/ivUp4"
                             android:visibility="gone"
                             android:layout_marginRight="10dp"
                             android:src="@drawable/ic_up"
@@ -377,7 +261,7 @@
                             android:layout_height="30dp" />
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/llOtrosDatos"
+                        android:id="@+id/llDatosNegocio"
                         android:visibility="gone"
                         android:orientation="vertical"
                         android:paddingLeft="10dp"
@@ -387,12 +271,124 @@
                         <include
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            layout="@layout/view_gpo_otros_datos"/>
+                            layout="@layout/view_gpo_datos_negocio"/>
                     </LinearLayout>
-
                 </LinearLayout>
 
-                <!-- Croquis del solicitante -->
+                <!--  Datos Telefonicos
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llTelefonicos"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError2"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos Telefónicos"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown2"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp2"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosTelefonicos"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_telefonicos"/>
+                    </LinearLayout>
+
+                </LinearLayout>-->
+
+                <!--  Datos Domicilio
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llDomicilio"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError3"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Domicilio"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown3"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp3"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosDomicilio"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_gpo_datos_domicilio"/>
+                    </LinearLayout>
+                </LinearLayout> -->
+
+                <!-- Croquis del solicitante
                 <LinearLayout
                     android:id="@+id/llCroquis"
                     android:visibility="gone"
@@ -447,8 +443,7 @@
                             android:layout_height="wrap_content"
                             layout="@layout/view_step_croquis_solicitante"/>
                     </LinearLayout>
-
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <!-- Politicas de conocimiento del cliente PLD -->
                 <LinearLayout

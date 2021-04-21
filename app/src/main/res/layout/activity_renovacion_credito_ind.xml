@@ -221,6 +221,63 @@
 
                 </LinearLayout>
 
+                <!-- Datos del negocio -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/llNegocio"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/ivError5"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingTop="5dp"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text="Datos del Negocio o Actividad Económica"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/ivDown5"
+                            android:src="@drawable/ic_down"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <ImageView
+                            android:id="@+id/ivUp5"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/llDatosNegocio"
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            layout="@layout/view_step_datos_negocio"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
                 <!-- Datos económicos -->
                 <LinearLayout
                     android:id="@+id/llPropiedades"
@@ -276,63 +333,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             layout="@layout/view_step_datos_economicos"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Datos del negocio -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:id="@+id/llNegocio"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/ivError5"
-                            android:visibility="gone"
-                            android:layout_marginLeft="10dp"
-                            android:src="@drawable/ic_info_red"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:paddingTop="5dp"
-                            android:paddingLeft="15dp"
-                            android:textSize="16sp"
-                            android:text="Datos del Negocio o Actividad Económica"
-                            android:layout_weight="1"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <ImageView
-                            android:id="@+id/ivDown5"
-                            android:src="@drawable/ic_down"
-                            android:layout_marginRight="10dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                        <ImageView
-                            android:id="@+id/ivUp5"
-                            android:visibility="gone"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_up"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/llDatosNegocio"
-                        android:visibility="gone"
-                        android:orientation="vertical"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <include
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            layout="@layout/view_step_datos_negocio"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -452,7 +452,7 @@
                 </LinearLayout>
 
                 <!-- Croquis del solicitante -->
-                <LinearLayout
+                <!--<LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -506,7 +506,7 @@
                             layout="@layout/view_step_croquis_solicitante"/>
                     </LinearLayout>
 
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <!-- Politicas de conocimiento del cliente PLD -->
                 <LinearLayout

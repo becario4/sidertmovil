@@ -390,8 +390,7 @@ public class ConsultarCC extends AppCompatActivity {
                         !validator.validate(etApMaterno, new String[]{validator.ONLY_TEXT}) &&
                         !validatorTV.validate(tvFechaNac, new String[]{validatorTV.REQUIRED})) {
                         if ( true || rgGenero.getCheckedRadioButtonId() == R.id.rbHombre || rgGenero.getCheckedRadioButtonId() == R.id.rbMujer) {
-                            if (!validatorTV.validate(tvEstadoNac, new String[]{validatorTV.ONLY_TEXT}) &&
-                                true) {
+                            if (!validatorTV.validate(tvEstadoNac, new String[]{validatorTV.ONLY_TEXT})) {
                                 /**estas lineas que estan comentadas hay que descomentarlas y eliminar las 2 lineas que tiene true la 389 y 393*/
                                // !validator.validate(etCurp, new String[]{validator.REQUIRED, validator.CURP})) {
                                 //if (m.CurpValidador(m.GetStr(etCurp))) {

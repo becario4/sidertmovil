@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.5.19</string>
+    <string name="app_version">2.6.2</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -98,9 +98,9 @@
     <string name="photo_voucher">Fotografía del comprobante de pago</string>
     <string name="is_manager">¿Está el gerente con usted?</string>
     <string name="imprimir_recibos">¿Imprimir recibos?</string>
-    <string name="payment_receipt_number">Número de reciboCirculoCredito de pago</string>
+    <string name="payment_receipt_number">Número de recibo de pago</string>
     <string name="doesnt_battery">No cuenta con batería</string>
-    <string name="receipt_printing">Impresión de reciboCirculoCredito</string>
+    <string name="receipt_printing">Impresión de recibo</string>
     <string name="comentario">Comentario</string>
     <string name="facade_photo">Fotografía de fachada</string>
     <string name="order">Orden</string>
@@ -154,7 +154,7 @@
     <string name="direccion">Dirección</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="estatus_pago">Estatus del Pago</string>
-    <string name="folio_recibo">Número de reciboCirculoCredito de pago</string>
+    <string name="folio_recibo">Número de recibo de pago</string>
     <string name="edit">Editar</string>
     <string name="save">Guardar</string>
     <string name="no">No</string>
@@ -219,7 +219,7 @@
     <string name="ce_die">Moneda de $0.10:</string>
     <string name="subtotal_monedas">SubTotal Monedas</string>
     <string name="final_arqueo_caja">Final Arqueo de Caja</string>
-    <string name="folio_sidert">Ingrese el folio del reciboCirculoCredito</string>
+    <string name="folio_sidert">Ingrese el folio del recibo</string>
     <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
     <string name="total_billetes_monedas">Total de billetes y monedas</string>
     <string name="valor_pago_realizado">Valores del Pago Realizado</string>
@@ -240,13 +240,13 @@
     <string name="not_network">Error de conexión, por favor verifique su conexión a internet.</string>
     <string name="overcome_mailbox">Ha superado el límite de envío de denuncias por día.</string>
     <string name="mess_logout">¿Está seguro que desea cerrar sesión?</string>
-    <string name="error_image">Favor de adjuntar una IMAGEN del reciboCirculoCredito de pago.</string>
+    <string name="error_image">Favor de adjuntar una IMAGEN del recibo de pago.</string>
     <string name="loading_info">Cargando información, por favor espere . . .</string>
     <string name="mess_solicitud">EL SUSCRIPTOR DE LA PRESENTE SOLICITUD DE CRÉDITO POR ESTE MEDIO MANIFIESTA BAJO PROTESTA DE DECIR VERDAD QUE ACTÚA POR CUENTA PROPIA Y EN BENEFICIO PROPIO DEL SUSCRITO, Y QUE EN NINGÚN MOMENTO ME ENCUENTRO REPRESENTANDO INTERESES DE TERCERAS PERSONAS, Y QUE EN EL SUPUESTO EN QUE LE SEA CONCEBIDO EL CRÉDITO SOLICITADO EN LA PRESENTE SOLICITUD, LOS FONDOS CORRESPONDIENTES SERÁN UTILIZADOS ÚNICA Y EXCLUSIVAMENTE POR EL SUSCRITO Y EN EL BENEFICIO DE ESTE ÚLTIMO.</string>
     <string name="not_print">No se ha realizado ninguna impresión</string>
-    <string name="print_original">Solo se ha impreso el reciboCirculoCredito original</string>
+    <string name="print_original">Solo se ha impreso el recibo original</string>
     <string name="mensaje_telefono">Debe contener 10 caracteres numéricos.</string>
-    <string name="print_original_copy">Ya se imprimió el reciboCirculoCredito original y la copia</string>
+    <string name="print_original_copy">Ya se imprimió el recibo original y la copia</string>
     <string name="success_mailbox">Gracias por utilizar el servicio de denuncias, su denuncia es totalmente anónima.</string>
     <string name="limit_mailbox">Ha superado el límite de denuncias por día.</string>
     <string name="error_process_info">Error al procesar la información.</string>

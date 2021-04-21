@@ -188,7 +188,7 @@ public class ReciboActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(recibo.getNombre());
 
-        etTipoCobro.setText("CÍRCULO DE CRÉDITO");
+        etTipoCobro.setText("APOYO GASTOS FUNERARIOS");
 
         llDuracionPrestamo.setVisibility(View.VISIBLE);
 
@@ -858,7 +858,7 @@ public class ReciboActivity extends AppCompatActivity {
 
             gestion.setTipoImagen(tipoImagen);
 
-            if(gestion.getEvidencia() != null && !gestion.getEvidencia().equals("") && gestion.getId() != null && estatus > 0){
+            if(gestion.getEvidencia() != null && !gestion.getEvidencia().equals("") && estatus > 0){
                 gestion.setEstatus(1);
                 gestion.setFechaTermino(Miscellaneous.ObtenerFecha(TIMESTAMP));
             }

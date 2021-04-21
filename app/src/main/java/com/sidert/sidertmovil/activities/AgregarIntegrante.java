@@ -119,10 +119,12 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_NEG;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
@@ -135,8 +137,8 @@ import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
 /**Clase para agregar integrantes para solicitudes de originacion/renovacion grupal*/
-public class AgregarIntegrante extends AppCompatActivity implements dialog_registro_integrante.OnCompleteListener {
-
+public class AgregarIntegrante extends AppCompatActivity implements dialog_registro_integrante.OnCompleteListener
+{
     private Context ctx;
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -239,6 +241,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private EditText etCiudadNeg;
     private TextView tvLocalidadNeg;
     private TextView tvMunicipioNeg;
+    private TextView tvEstadoNeg;
     private TextView tvDestinoNeg;
     private EditText etOtroDestinoNeg;
     private TextView tvActEcoEspNeg;
@@ -344,15 +347,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     //=========================================================================
     //===================  LINEAR LAYOUT  =====================================
     private LinearLayout llPersonales;
-    private LinearLayout llTelefonicos;
-    private LinearLayout llDomicilio;
+    //private LinearLayout llTelefonicos;
+    //private LinearLayout llDomicilio;
     private LinearLayout llNegocio;
     private LinearLayout llConyuge;
     private LinearLayout llOtros;
     private LinearLayout llCroquis;
     private LinearLayout llPoliticas;
     private LinearLayout llDocumentos;
-
 
     private LinearLayout llDatosPersonales;
     private LinearLayout llDatosTelefonicos;
@@ -366,52 +368,53 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     //=========================================================================
     //================= Image View ERROR  =====================
     private ImageView ivError1;
-    private ImageView ivError2;
-    private ImageView ivError3;
+    //private ImageView ivError2;
+    //private ImageView ivError3;
     private ImageView ivError4;
     private ImageView ivError5;
     private ImageView ivError6;
-    private ImageView ivError7;
+    //private ImageView ivError7;
     private ImageView ivError8;
     private ImageView ivError9;
     //===================================================
     //===================  IMAGE VIEW  ========================================
     private ImageView ivDown1;
-    private ImageView ivDown2;
-    private ImageView ivDown3;
+    //private ImageView ivDown2;
+    //private ImageView ivDown3;
     private ImageView ivDown4;
     private ImageView ivDown5;
     private ImageView ivDown6;
-    private ImageView ivDown7;
+    //private ImageView ivDown7;
     private ImageView ivDown8;
     private ImageView ivDown9;
 
     private ImageView ivUp1;
-    private ImageView ivUp2;
-    private ImageView ivUp3;
+    //private ImageView ivUp2;
+    //private ImageView ivUp3;
     private ImageView ivUp4;
     private ImageView ivUp5;
     private ImageView ivUp6;
-    private ImageView ivUp7;
+    //private ImageView ivUp7;
     private ImageView ivUp8;
     private ImageView ivUp9;
     //=========================================================================
 
     private FloatingActionButton btnContinuar0;
-    private FloatingActionButton btnContinuar1;
-    private FloatingActionButton btnContinuar2;
+    //private FloatingActionButton btnContinuar1;
+    //private FloatingActionButton btnContinuar2;
     private FloatingActionButton btnContinuar3;
     private FloatingActionButton btnContinuar4;
-    private FloatingActionButton btnContinuar7;
+    //private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
     private FloatingActionButton btnContinuar5;
 
-    private FloatingActionButton btnRegresar1;
-    private FloatingActionButton btnRegresar2;
+    private FloatingActionButton btnRegresar0;
+    //private FloatingActionButton btnRegresar1;
+    //private FloatingActionButton btnRegresar2;
     private FloatingActionButton btnRegresar3;
     private FloatingActionButton btnRegresar4;
-    private FloatingActionButton btnRegresar5;
-    private FloatingActionButton btnRegresar7;
+    //private FloatingActionButton btnRegresar5;
+    //private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar6;
 
@@ -532,6 +535,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         etCiudadNeg             = findViewById(R.id.etCiudadNeg);
         tvLocalidadNeg          = findViewById(R.id.tvLocalidadNeg);
         tvMunicipioNeg          = findViewById(R.id.tvMunicipioNeg);
+        tvEstadoNeg             = findViewById(R.id.tvEstadoNeg);
         tvDestinoNeg            = findViewById(R.id.tvDestinoNeg);
         etOtroDestinoNeg        = findViewById(R.id.etOtroDestinoNeg);
         tvActEcoEspNeg          = findViewById(R.id.tvActEcoEspNeg);
@@ -632,33 +636,33 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
-        ivError2 = findViewById(R.id.ivError2);
-        ivError3 = findViewById(R.id.ivError3);
+        //ivError2 = findViewById(R.id.ivError2);
+        //ivError3 = findViewById(R.id.ivError3);
         ivError4 = findViewById(R.id.ivError4);
         ivError5 = findViewById(R.id.ivError5);
         ivError6 = findViewById(R.id.ivError6);
-        ivError7 = findViewById(R.id.ivError7);
+        //ivError7 = findViewById(R.id.ivError7);
         ivError8 = findViewById(R.id.ivError8);
         ivError9 = findViewById(R.id.ivError9);
         //=========================================================
         //============================ IMAGE VIEW UP|DOWN  =========================================
         ivDown1 = findViewById(R.id.ivDown1);
-        ivDown2 = findViewById(R.id.ivDown2);
-        ivDown3 = findViewById(R.id.ivDown3);
+        //ivDown2 = findViewById(R.id.ivDown2);
+        //ivDown3 = findViewById(R.id.ivDown3);
         ivDown4 = findViewById(R.id.ivDown4);
         ivDown5 = findViewById(R.id.ivDown5);
         ivDown6 = findViewById(R.id.ivDown6);
-        ivDown7 = findViewById(R.id.ivDown7);
+        //ivDown7 = findViewById(R.id.ivDown7);
         ivDown8 = findViewById(R.id.ivDown8);
         ivDown9 = findViewById(R.id.ivDown9);
 
         ivUp1 = findViewById(R.id.ivUp1);
-        ivUp2 = findViewById(R.id.ivUp2);
-        ivUp3 = findViewById(R.id.ivUp3);
+        //ivUp2 = findViewById(R.id.ivUp2);
+        //ivUp3 = findViewById(R.id.ivUp3);
         ivUp4 = findViewById(R.id.ivUp4);
         ivUp5 = findViewById(R.id.ivUp5);
         ivUp6 = findViewById(R.id.ivUp6);
-        ivUp7 = findViewById(R.id.ivUp7);
+        //ivUp7 = findViewById(R.id.ivUp7);
         ivUp8 = findViewById(R.id.ivUp8);
         ivUp9 = findViewById(R.id.ivUp9);
         //=========================================================
@@ -674,8 +678,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llDatosDocumentos   = findViewById(R.id.llDatosDocumentos);
 
         llPersonales    = findViewById(R.id.llPersonales);
-        llTelefonicos   = findViewById(R.id.llTelefonicos);
-        llDomicilio     = findViewById(R.id.llDomicilio);
+        //llTelefonicos   = findViewById(R.id.llTelefonicos);
+        //llDomicilio     = findViewById(R.id.llDomicilio);
         llNegocio       = findViewById(R.id.llNegocio);
         llConyuge       = findViewById(R.id.llConyuge);
         llOtros         = findViewById(R.id.llOtros);
@@ -685,20 +689,21 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //=========================================================
 
         btnContinuar0 = findViewById(R.id.btnContinuar0);
-        btnContinuar1 = findViewById(R.id.btnContinuar1);
-        btnContinuar2 = findViewById(R.id.btnContinuar2);
+        //btnContinuar1 = findViewById(R.id.btnContinuar1);
+        //btnContinuar2 = findViewById(R.id.btnContinuar2);
         btnContinuar3 = findViewById(R.id.btnContinuar3);
         btnContinuar4 = findViewById(R.id.btnContinuar4);
-        btnContinuar7 = findViewById(R.id.btnContinuar7);
+        //btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
         btnContinuar5 = findViewById(R.id.btnContinuar5);
 
-        btnRegresar1 = findViewById(R.id.btnRegresar1);
-        btnRegresar2 = findViewById(R.id.btnRegresar2);
+        btnRegresar0 = findViewById(R.id.btnRegresar0);
+        //btnRegresar1 = findViewById(R.id.btnRegresar1);
+        //btnRegresar2 = findViewById(R.id.btnRegresar2);
         btnRegresar3 = findViewById(R.id.btnRegresar3);
         btnRegresar4 = findViewById(R.id.btnRegresar4);
-        btnRegresar5 = findViewById(R.id.btnRegresar5);
-        btnRegresar7 = findViewById(R.id.btnRegresar7);
+        //btnRegresar5 = findViewById(R.id.btnRegresar5);
+        //btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar6 = findViewById(R.id.btnRegresar6);
 
@@ -706,8 +711,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         mapNeg.onCreate(savedInstanceState);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        etNumOperacionNeg.setEnabled(false);
-        etNumOperacionNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        //etNumOperacionNeg.setEnabled(false);
+        //etNumOperacionNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
         /**Se valida si la peticion es para un integrante nuevo que apenas se va agregar al grupo
          * se abre un dialog para comenzar con el registro del nombre y el cargo en el grupo*/
@@ -725,6 +730,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             /**Funcion para precargar los datos*/
             initComponents(getIntent().getStringExtra("id_credito"), getIntent().getStringExtra("id_integrante"));
         }
+
+        tvRiesgo.setText(_riesgo[2]);
+        Update("clasificacion_riesgo", TBL_OTROS_DATOS_INTEGRANTE, m.GetStr(tvRiesgo), "id_integrante", id_integrante);
+        tvDestinoNeg.setText("RE-INVERSION");
+        tvDestinoNeg.setEnabled(false);
+        Update("destino_credito", TBL_NEGOCIO_INTEGRANTE, _destino_credito[0], "id_integrante", id_integrante);
 
         /**Se valida la periodicidad del credito para definir el numero
          * de operaciones en efectivo puede hacer en el mes*/
@@ -747,8 +758,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //============================== LINEAR LAYOUT LISTENER  ==================================
         /**Evento de clic para los contenedores de las secciones para ocultar o mostrar los formulario*/
         llPersonales.setOnClickListener(llPersonales_OnClick);
-        llTelefonicos.setOnClickListener(llTelefonicos_OnClick);
-        llDomicilio.setOnClickListener(llDomicilio_OnClick);
+        //llTelefonicos.setOnClickListener(llTelefonicos_OnClick);
+        //llDomicilio.setOnClickListener(llDomicilio_OnClick);
         llNegocio.setOnClickListener(llNegocio_OnClick);
         llConyuge.setOnClickListener(llConyuge_OnClick);
         llOtros.setOnClickListener(llOtros_OnClick);
@@ -1304,27 +1315,35 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         if (row.getCount() == 1){
                             Update("colonia", TBL_NEGOCIO_INTEGRANTE, row.getString(7), "id_integrante", id_integrante);
                             Update("municipio", TBL_NEGOCIO_INTEGRANTE, row.getString(4), "id_integrante", id_integrante);
+                            Update("estado", TBL_NEGOCIO_INTEGRANTE, row.getString(1), "id_integrante", id_integrante);
                             tvColoniaNeg.setText(row.getString(7));
                             tvMunicipioNeg.setText(row.getString(4));
+                            tvEstadoNeg.setText(row.getString(1));
                         }else {
                             Update("colonia", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
                             Update("municipio", TBL_NEGOCIO_INTEGRANTE, row.getString(4), "id_integrante", id_integrante);
+                            Update("estado", TBL_NEGOCIO_INTEGRANTE, row.getString(1), "id_integrante", id_integrante);
                             tvColoniaNeg.setText("");
                             tvMunicipioNeg.setText(row.getString(4));
+                            tvEstadoNeg.setText(row.getString(1));
                         }
 
                     }else {
                         Update("colonia", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
                         Update("municipio", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                        Update("estado", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
                         tvColoniaNeg.setText(R.string.not_found);
                         tvMunicipioNeg.setText(R.string.not_found);
+                        tvEstadoNeg.setText(R.string.not_found);
                     }
                     row.close();
                 }else {
                     Update("colonia", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
                     Update("municipio", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                    Update("estado", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
                     tvColoniaNeg.setText(R.string.not_found);
                     tvMunicipioNeg.setText(R.string.not_found);
+                    tvEstadoNeg.setText(R.string.not_found);
                 }
             }
         });
@@ -2278,20 +2297,21 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
         /**Evento de click para los botones de retroceso y avance en las secciones*/
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
-        btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
-        btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
+        //btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
+        //btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
         btnContinuar3.setOnClickListener(btnContinuar3_OnClick);
         btnContinuar4.setOnClickListener(btnContinuar4_OnClick);
         btnContinuar5.setOnClickListener(btnContinuar5_OnClick);
-        btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
+        //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
 
-        btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
-        btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
+        btnRegresar0.setOnClickListener(btnRegresar0_OnClick);
+        //btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
+        //btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
         btnRegresar3.setOnClickListener(btnRegresar3_OnClick);
         btnRegresar4.setOnClickListener(btnRegresar4_OnClick);
-        btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
-        btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
+        //btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
+        //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
 
@@ -2488,7 +2508,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener llTelefonicos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown2.getVisibility() == View.VISIBLE && ivUp2.getVisibility() == View.GONE){
+            /*if (ivDown2.getVisibility() == View.VISIBLE && ivUp2.getVisibility() == View.GONE){
                 ivDown2.setVisibility(View.GONE);
                 ivUp2.setVisibility(View.VISIBLE);
                 llDatosTelefonicos.setVisibility(View.VISIBLE);
@@ -2497,14 +2517,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivDown2.setVisibility(View.VISIBLE);
                 ivUp2.setVisibility(View.GONE);
                 llDatosTelefonicos.setVisibility(View.GONE);
-            }
+            }*/
         }
     };
 
     private View.OnClickListener llDomicilio_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown3.getVisibility() == View.VISIBLE && ivUp3.getVisibility() == View.GONE){
+            /*if (ivDown3.getVisibility() == View.VISIBLE && ivUp3.getVisibility() == View.GONE){
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosDomicilio.setVisibility(View.VISIBLE);
@@ -2513,7 +2533,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivDown3.setVisibility(View.VISIBLE);
                 ivUp3.setVisibility(View.GONE);
                 llDatosDomicilio.setVisibility(View.GONE);
-            }
+            }*/
         }
     };
 
@@ -2568,7 +2588,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener llCroquis_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ivDown7.getVisibility() == View.VISIBLE && ivUp7.getVisibility() == View.GONE){
+            /*if (ivDown7.getVisibility() == View.VISIBLE && ivUp7.getVisibility() == View.GONE){
                 ivDown7.setVisibility(View.GONE);
                 ivUp7.setVisibility(View.VISIBLE);
                 llDatosCroquis.setVisibility(View.VISIBLE);
@@ -2577,7 +2597,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivDown7.setVisibility(View.VISIBLE);
                 ivUp7.setVisibility(View.GONE);
                 llDatosCroquis.setVisibility(View.GONE);
-            }
+            }*/
         }
     };
 
@@ -3666,26 +3686,33 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener btnContinuar0_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown2.setVisibility(View.GONE);
-            ivUp2.setVisibility(View.VISIBLE);
-            llDatosTelefonicos.setVisibility(View.VISIBLE);
-
             ivDown1.setVisibility(View.VISIBLE);
             ivUp1.setVisibility(View.GONE);
             llDatosPersonales.setVisibility(View.GONE);
 
-            etTelCasaCli.requestFocus();
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                ivDown5.setVisibility(View.GONE);
+                ivUp5.setVisibility(View.VISIBLE);
+                llDatosConyuge.setVisibility(View.VISIBLE);
+                etNombreCony.requestFocus();
+            }
+            else{
+                ivDown4.setVisibility(View.GONE);
+                ivUp4.setVisibility(View.VISIBLE);
+                llDatosNegocio.setVisibility(View.VISIBLE);
+                etNombreNeg.requestFocus();
+            }
         }
     };
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown3.setVisibility(View.GONE);
-            ivUp3.setVisibility(View.VISIBLE);
+            //ivDown3.setVisibility(View.GONE);
+            //ivUp3.setVisibility(View.VISIBLE);
             llDatosDomicilio.setVisibility(View.VISIBLE);
 
-            ivDown2.setVisibility(View.VISIBLE);
-            ivUp2.setVisibility(View.GONE);
+            //ivDown2.setVisibility(View.VISIBLE);
+            //ivUp2.setVisibility(View.GONE);
             llDatosTelefonicos.setVisibility(View.GONE);
 
             etCalleCli.requestFocus();
@@ -3699,8 +3726,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             llDatosNegocio.setVisibility(View.VISIBLE);
             etNombreNeg.requestFocus();
 
-            ivDown3.setVisibility(View.VISIBLE);
-            ivUp3.setVisibility(View.GONE);
+            //ivDown3.setVisibility(View.VISIBLE);
+            //ivUp3.setVisibility(View.GONE);
             llDatosDomicilio.setVisibility(View.GONE);
         }
     };
@@ -3711,32 +3738,24 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp4.setVisibility(View.GONE);
             llDatosNegocio.setVisibility(View.GONE);
 
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
-                ivDown5.setVisibility(View.GONE);
-                ivUp5.setVisibility(View.VISIBLE);
-                llDatosConyuge.setVisibility(View.VISIBLE);
-                etNombreCony.requestFocus();
-            }
-            else{
-                ivDown6.setVisibility(View.GONE);
-                ivUp6.setVisibility(View.VISIBLE);
-                llOtrosDatos.setVisibility(View.VISIBLE);
-                etEmail.requestFocus();
-            }
+            ivDown8.setVisibility(View.GONE);
+            ivUp8.setVisibility(View.VISIBLE);
+            llDatosPoliticas.setVisibility(View.VISIBLE);
+            etEmail.requestFocus();
         }
     };
     private View.OnClickListener btnContinuar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown6.setVisibility(View.GONE);
-            ivUp6.setVisibility(View.VISIBLE);
-            llOtrosDatos.setVisibility(View.VISIBLE);
-
             ivDown5.setVisibility(View.VISIBLE);
             ivUp5.setVisibility(View.GONE);
             llDatosConyuge.setVisibility(View.GONE);
 
-            etEmail.requestFocus();
+            ivDown4.setVisibility(View.GONE);
+            ivUp4.setVisibility(View.VISIBLE);
+            llDatosNegocio.setVisibility(View.VISIBLE);
+
+            etNombreNeg.requestFocus();
         }
     };
     private View.OnClickListener btnContinuar5_OnClick = new View.OnClickListener() {
@@ -3745,24 +3764,25 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivDown6.setVisibility(View.VISIBLE);
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
+
+            /*
             if (cbCasaReuniones.isChecked()){
-                ivDown7.setVisibility(View.GONE);
-                ivUp7.setVisibility(View.VISIBLE);
+                //ivDown7.setVisibility(View.GONE);
+                //ivUp7.setVisibility(View.VISIBLE);
                 llDatosCroquis.setVisibility(View.VISIBLE);
-            }
-            else{
-                ivDown8.setVisibility(View.GONE);
-                ivUp8.setVisibility(View.VISIBLE);
-                llDatosPoliticas.setVisibility(View.VISIBLE);
-            }
+            }*/
+
+            ivDown1.setVisibility(View.GONE);
+            ivUp1.setVisibility(View.VISIBLE);
+            llDatosPersonales.setVisibility(View.VISIBLE);
         }
     };
 
     private View.OnClickListener btnContinuar7_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown7.setVisibility(View.VISIBLE);
-            ivUp7.setVisibility(View.GONE);
+            //ivDown7.setVisibility(View.VISIBLE);
+            //ivUp7.setVisibility(View.GONE);
             llDatosCroquis.setVisibility(View.GONE);
 
             ivDown8.setVisibility(View.GONE);
@@ -3787,6 +3807,19 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
     /**Evento de click para retroceder en entre las secciones del formulario*/
     //Regresar
+    private View.OnClickListener btnRegresar0_OnClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            ivDown1.setVisibility(View.VISIBLE);
+            ivUp1.setVisibility(View.GONE);
+            llDatosPersonales.setVisibility(View.GONE);
+
+            ivDown6.setVisibility(View.GONE);
+            ivUp6.setVisibility(View.VISIBLE);
+            llOtrosDatos.setVisibility(View.VISIBLE);
+        }
+    };
+
     private View.OnClickListener btnRegresar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -3794,8 +3827,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp1.setVisibility(View.VISIBLE);
             llDatosPersonales.setVisibility(View.VISIBLE);
 
-            ivDown2.setVisibility(View.VISIBLE);
-            ivUp2.setVisibility(View.GONE);
+            //ivDown2.setVisibility(View.VISIBLE);
+            //ivUp2.setVisibility(View.GONE);
             llDatosTelefonicos.setVisibility(View.GONE);
             //etNombreCli.requestFocus();
         }
@@ -3803,12 +3836,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener btnRegresar2_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown2.setVisibility(View.GONE);
-            ivUp2.setVisibility(View.VISIBLE);
+            //ivDown2.setVisibility(View.GONE);
+            //ivUp2.setVisibility(View.VISIBLE);
             llDatosTelefonicos.setVisibility(View.VISIBLE);
 
-            ivDown3.setVisibility(View.VISIBLE);
-            ivUp3.setVisibility(View.GONE);
+            //ivDown3.setVisibility(View.VISIBLE);
+            //ivUp3.setVisibility(View.GONE);
             llDatosDomicilio.setVisibility(View.GONE);
             etTelCasaCli.requestFocus();
         }
@@ -3816,27 +3849,36 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown3.setVisibility(View.GONE);
-            ivUp3.setVisibility(View.VISIBLE);
-            llDatosDomicilio.setVisibility(View.VISIBLE);
-
             ivDown4.setVisibility(View.VISIBLE);
             ivUp4.setVisibility(View.GONE);
             llDatosNegocio.setVisibility(View.GONE);
-            etCalleCli.requestFocus();
+
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                ivDown5.setVisibility(View.GONE);
+                ivUp5.setVisibility(View.VISIBLE);
+                llDatosConyuge.setVisibility(View.VISIBLE);
+                etNombreCony.requestFocus();
+            }
+            else{
+                ivDown1.setVisibility(View.GONE);
+                ivUp1.setVisibility(View.VISIBLE);
+                llDatosPersonales.setVisibility(View.VISIBLE);
+                etNombreCli.requestFocus();
+            }
         }
     };
     private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown4.setVisibility(View.GONE);
-            ivUp4.setVisibility(View.VISIBLE);
-            llDatosNegocio.setVisibility(View.VISIBLE);
+            ivDown1.setVisibility(View.GONE);
+            ivUp1.setVisibility(View.VISIBLE);
+            llDatosPersonales.setVisibility(View.VISIBLE);
 
             ivDown5.setVisibility(View.VISIBLE);
             ivUp5.setVisibility(View.GONE);
             llDatosConyuge.setVisibility(View.GONE);
-            etNombreNeg.requestFocus();
+
+            etNombreCli.requestFocus();
         }
     };
     private View.OnClickListener btnRegresar5_OnClick = new View.OnClickListener() {
@@ -3846,7 +3888,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
 
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            /*if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -3857,8 +3899,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosNegocio.setVisibility(View.VISIBLE);
                 etNombreNeg.requestFocus();
-            }
-
+            }*/
         }
     };
 
@@ -3869,8 +3910,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp6.setVisibility(View.VISIBLE);
             llOtrosDatos.setVisibility(View.VISIBLE);
 
-            ivDown7.setVisibility(View.VISIBLE);
-            ivUp7.setVisibility(View.GONE);
+            //ivDown7.setVisibility(View.VISIBLE);
+            //ivUp7.setVisibility(View.GONE);
             llDatosCroquis.setVisibility(View.GONE);
         }
     };
@@ -3878,20 +3919,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener btnRegresar8_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (cbCasaReuniones.isChecked()){
-                ivDown7.setVisibility(View.GONE);
-                ivUp7.setVisibility(View.VISIBLE);
-                llDatosCroquis.setVisibility(View.VISIBLE);
-            }
-            else {
-                ivDown6.setVisibility(View.GONE);
-                ivUp6.setVisibility(View.VISIBLE);
-                llOtrosDatos.setVisibility(View.VISIBLE);
-            }
-
             ivDown8.setVisibility(View.VISIBLE);
             ivUp8.setVisibility(View.GONE);
             llDatosPoliticas.setVisibility(View.GONE);
+
+            ivDown4.setVisibility(View.GONE);
+            ivUp4.setVisibility(View.VISIBLE);
+            llDatosNegocio.setVisibility(View.VISIBLE);
         }
     };
 
@@ -4393,7 +4427,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             tvMunicipioNeg.setText(row.getString(14));
         else
             tvMunicipioNeg.setText(R.string.not_found);
-
+        if (!row.getString(15).trim().isEmpty())
+            tvEstadoNeg.setText(row.getString(15));
+        else
+            tvEstadoNeg.setText(R.string.not_found);
         tvDestinoNeg.setText(row.getString(16));
         if (row.getString(16).equals("OTRO")) {
             etOtroDestinoNeg.setText(row.getString(17));
@@ -4768,7 +4805,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             }
 
                             if (flag_est_civil){
-                                ivError1.setVisibility(View.GONE);
+                                //ivError1.setVisibility(View.GONE);
                                 cv.put("fecha_nacimiento", m.GetStr(tvFechaNacCli));
                                 cv.put("edad", Integer.parseInt(m.GetStr(tvEdadCli)));
                                 switch (rgGeneroCli.getCheckedRadioButtonId()){
@@ -4805,16 +4842,18 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         etCurpCli.setError("Curp no válida");
                     }
                 }
-                else
+                else {
                     ivError1.setVisibility(View.VISIBLE);
+                }
             }
             else{
                 ivError1.setVisibility(View.VISIBLE);
                 tvGeneroCli.setError("");
             }
         }
-        else
+        else {
             ivError1.setVisibility(View.VISIBLE);
+        }
 
 
         return save_integrante;
@@ -4823,11 +4862,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos de telefono*/
     private boolean saveDatosTelefonicos(){
         boolean save_telefonicos = false;
+
         if (!validator.validate(etTelCasaCli, new String[]{validator.PHONE}) &&
         !validator.validate(etCelularCli, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE}) &&
         !validator.validate(etTelMensCli, new String[]{validator.PHONE}) &&
-        !validator.validate(etTeltrabajoCli, new String[]{validator.PHONE})){
-            ivError2.setVisibility(View.GONE);
+        !validator.validate(etTeltrabajoCli, new String[]{validator.PHONE}) &&
+        !validator.validate(etEmail, new String[]{validator.EMAIL})
+        ){
+            //ivError2.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("tel_casa", m.GetStr(etTelCasaCli));
             cv.put("tel_celular", m.GetStr(etCelularCli));
@@ -4839,8 +4881,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             save_telefonicos = true;
         }
-        else
-            ivError2.setVisibility(View.VISIBLE);
+        else {
+            //ivError2.setVisibility(View.VISIBLE);
+            ivError1.setVisibility(View.VISIBLE);
+        }
+
         return save_telefonicos;
     }
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del domicilio del cliente*/
@@ -4850,7 +4895,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (latLngUbiCli != null) {
             tvMapaCli.setError(null);
             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
-            !validator.validate(etNoExtCli, new String[]{validator.REQUIRED}) &&
+                (
+                    !validator.validate(etNoExtCli, new String[]{validator.REQUIRED})
+                    || (
+                        !validator.validate(etManzanaCli, new String[]{validator.REQUIRED})
+                        && !validator.validate(etLoteCli, new String[]{validator.REQUIRED})
+                    )
+                ) &&
             !validator.validate(etCpCli, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
             !m.ValidTextView(tvColoniaCli) &&
             !validator.validate(etCiudadCli, new String[]{validator.REQUIRED}) &&
@@ -4887,8 +4938,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (flag_tipo_casa){
                     if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS})){
                         if (byteFotoFachCli != null){
-                            if (!validator.validate(etReferenciaCli, new String[]{validator.REQUIRED})){
-                                ivError3.setVisibility(View.GONE);
+                            //if (!validator.validate(etReferenciaCli, new String[]{validator.REQUIRED})){
+                                //ivError3.setVisibility(View.GONE);
                                 cv.put("latitud", String.valueOf(latLngUbiCli.latitude));
                                 cv.put("longitud", String.valueOf(latLngUbiCli.longitude));
                                 cv.put("calle", m.GetStr(etCalleCli));
@@ -4909,28 +4960,52 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 db.update(TBL_DOMICILIO_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
 
                                 save_domicilio = true;
-                            }
-                            else
-                                ivError3.setVisibility(View.VISIBLE);
+                            /*}
+                            else {
+                                //ivError3.setVisibility(View.VISIBLE);
+                                ivError1.setVisibility(View.VISIBLE);
+                            }*/
                         }
                         else {
                             tvFachadaCli.setError("");
-                            ivError3.setVisibility(View.VISIBLE);
+                            ivError1.setVisibility(View.VISIBLE);
+                            //ivError3.setVisibility(View.VISIBLE);
                         }
                     }
-                    else
-                        ivError3.setVisibility(View.VISIBLE);
+                    else {
+                        ivError1.setVisibility(View.VISIBLE);
+                        //ivError3.setVisibility(View.VISIBLE);
+                    }
                 }
-                else
-                    ivError3.setVisibility(View.VISIBLE);
+                else {
+                    ivError1.setVisibility(View.VISIBLE);
+                    //ivError3.setVisibility(View.VISIBLE);
+                }
             }
-            else
-                ivError3.setVisibility(View.VISIBLE);
+            else{
+                ivError1.setVisibility(View.VISIBLE);
+                //ivError3.setVisibility(View.VISIBLE);
+            }
         }
         else{
-            ivError3.setVisibility(View.VISIBLE);
+            ivError1.setVisibility(View.VISIBLE);
+            //ivError3.setVisibility(View.VISIBLE);
             tvMapaCli.setError("");
         }
+
+        if(
+            !validator.validate(etNoExtCli, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaCli, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteCli, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtCli.setError(null);
+            etManzanaCli.setError(null);
+            etLoteCli.setError(null);
+        }
+
         return save_domicilio;
     }
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del negocio*/
@@ -4940,7 +5015,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             if (latLngUbiNeg != null){
                 tvMapaNeg.setError(null);
                 if (!validator.validate(etCalleNeg, new String[]{validator.REQUIRED}) &&
-                !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED}) &&
+                    (
+                        !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED})
+                        || (
+                            !validator.validate(etManzanaNeg, new String[]{validator.REQUIRED})
+                            && !validator.validate(etLoteNeg, new String[]{validator.REQUIRED})
+                        )
+                    ) &&
                 !validator.validate(etCpNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
                 !m.ValidTextView(tvColoniaNeg) &&
                 !validator.validate(etCiudadNeg, new String[]{validator.REQUIRED}) &&
@@ -5034,10 +5115,26 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             }
         }
         else
+        {
             ivError4.setVisibility(View.VISIBLE);
+        }
+
+        if(
+            !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaNeg, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteNeg, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtNeg.setError(null);
+            etManzanaNeg.setError(null);
+            etLoteNeg.setError(null);
+        }
 
         return save_negocio;
     }
+
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del conyuge*/
     private boolean saveConyuge(){
         boolean save_conyuge = false;
@@ -5047,7 +5144,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         !validator.validate(etNacionalidad, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
         !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
-        !validator.validate(etNoExtCony, new String[]{validator.REQUIRED}) &&
+        (
+            !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
+            )
+        ) &&
         !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
         !m.ValidTextView(tvColoniaCony) &&
         !validator.validate(etCiudadCony, new String[]{validator.REQUIRED}) &&
@@ -5086,8 +5189,22 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
             save_conyuge = true;
         }
-        else
+        else {
             ivError5.setVisibility(View.VISIBLE);
+        }
+
+        if(
+            !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
+            || (
+               !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
+               && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtCony.setError(null);
+            etManzanaCony.setError(null);
+            etLoteCony.setError(null);
+        }
 
         return save_conyuge;
     }
@@ -5096,8 +5213,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         boolean save_otros = false;
         if (!validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
         !validatorTV.validate(tvMedioContacto, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED}) &&
-        !validator.validate(etEmail, new String[]{validator.EMAIL})){
+        !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED})
+        ){
             if (rgEstatus.getCheckedRadioButtonId() == R.id.rbNuevo ||
             rgEstatus.getCheckedRadioButtonId() == R.id.rbRenovado ||
             rgEstatus.getCheckedRadioButtonId() == R.id.rbCambio){
@@ -5158,7 +5275,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
-            ivError7.setVisibility(View.GONE);
+            //ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("calle_principal", m.GetStr(tvPrincipal));
             cv.put("lateral_uno", m.GetStr(tvLateraUno));
@@ -5170,8 +5287,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             db.update(TBL_CROQUIS_GPO, cv, "id_integrante = ?", new String[]{id_integrante});
             save_croquis = true;
         }
-        else
-            ivError7.setVisibility(View.VISIBLE);
+        else {
+            //ivError7.setVisibility(View.VISIBLE);
+            ivError1.setVisibility(View.VISIBLE);
+        }
+
         return save_croquis;
     }
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos de politicas PLD*/
@@ -5302,6 +5422,26 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 boolean datos_domiclio = saveDatosDomicilio();
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
+
+                boolean datos_croquis = true;
+                /**Se valida si esta seleccionado el check de la casa de reuniones
+                 * para guardar datos del croquis*/
+                if (cbCasaReuniones.isChecked())
+                    datos_croquis = saveCroquis();
+
+                if(datos_telefonicos && datos_domiclio && datos_personales)
+                {
+                    if(cbCasaReuniones.isChecked() && datos_croquis)
+                    {
+                        ivError1.setVisibility(View.GONE);
+                    }
+
+                    if(!cbCasaReuniones.isChecked())
+                    {
+                        ivError1.setVisibility(View.GONE);
+                    }
+                }
+
                 /**se valida el estado civil del intengrante para saber si va a guardar datos del conyige*/
                 if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
                     datos_conyuge = saveConyuge();
@@ -5310,12 +5450,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     datos_conyuge = true;
 
                 boolean datos_otros = saveDatosOtros();
-
-                boolean datos_croquis = true;
-                /**Se valida si esta seleccionado el check de la casa de reuniones
-                 * para guardar datos del croquis*/
-                if (cbCasaReuniones.isChecked())
-                    datos_croquis = saveCroquis();
 
                 boolean datos_politicas = savePoliticas();
                 boolean datos_documentos = saveDocumentos();

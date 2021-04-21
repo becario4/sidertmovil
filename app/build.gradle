@@ -26,7 +26,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
-        versionName "2.5.19"
+        versionName "2.6.2"
         //multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -104,6 +104,7 @@ dependencies {
     //implementation project(':scanlibrary')
 
     api files('libs/Sewoo_Android_1092.jar')
+    api files('libs/printerlibs.jar')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'// Libreria para impresión de ticket
     //-----------------------           Fin         ---------------------------------

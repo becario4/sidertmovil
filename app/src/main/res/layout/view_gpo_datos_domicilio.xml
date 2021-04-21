@@ -5,6 +5,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Comentario de rechazo croquis -->
+    <LinearLayout
+        android:id="@+id/llComentCro"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Comentario de Rechazo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvComentAdminCro"
+            android:textSize="17sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked_red"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!-- Ubicacion del domicilio -->
     <LinearLayout
         android:layout_marginTop="15dp"
@@ -338,6 +371,242 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!-- Croquis -->
+    <LinearLayout
+        android:id="@+id/llCroquis"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Croquis"
+                android:focusable="false"
+                android:layout_weight="1"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv3"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/croquis"
+                android:layout_width="200dp"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvLateralUno"
+            android:textColor="@color/black"
+            android:hint="CALLE PARALELA"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:focusable="false"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvTrasera"
+                android:layout_marginRight="50dp"
+                android:rotation="90"
+                android:layout_alignLeft="@+id/tvCTrasera"
+                android:gravity="center|center"
+                android:paddingTop="20dp"
+                android:lines="2"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:hint="CALLE TRASERA"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
+
+            <TextView
+                android:id="@+id/tvPrincipal"
+                android:layout_marginLeft="50dp"
+                android:rotation="90"
+                android:layout_alignRight="@+id/tvFrontal"
+                android:gravity="center|center"
+                android:paddingBottom="20dp"
+                android:lines="2"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:textColor="@color/blue_sidert"
+                android:hint="CALLE PRICIPAL"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
+
+            <TextView
+                android:id="@+id/tvFrontal"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="200dp"/>
+
+            <TextView
+                android:id="@+id/tvCTrasera"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="200dp"/>
+
+            <TextView
+                android:id="@+id/tvCasa"
+                android:text="CASA"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:drawableRight="@drawable/pin_user_blue"
+                android:background="@drawable/croquis"
+                android:layout_width="100dp"
+                android:layout_height="200dp"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvLateralDos"
+            android:textColor="@color/black"
+            android:hint="CALLE PARALELA"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:focusable="false"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv9"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+            <TextView
+                android:id="@+id/tv8"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/croquis"
+                android:layout_width="200dp"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:id="@+id/tv7"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/croquis"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!--  Referencias  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/etReferencia"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textMultiLine|textCapCharacters"
+            android:ems="10"
+            android:maxLength="100"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Fotografía de fachada  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvFachadaCli"
+            android:textColor="@android:color/black"
+            android:text="@string/facade_photo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibFotoFachCli"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/facade_photo"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivFotoFachCli"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <!-- Casa -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -483,49 +752,9 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  Fotografía de fachada  -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvFachadaCli"
-            android:textColor="@android:color/black"
-            android:text="@string/facade_photo"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/ibFotoFachCli"
-                android:layout_width="match_parent"
-                android:contentDescription="@string/facade_photo"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_corner_blue"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_camera_white" />
-            <ImageView
-                android:id="@+id/ivFotoFachCli"
-                android:contentDescription="@string/facade_photo"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-        </LinearLayout>
-    </LinearLayout>
-
     <!--  Referencia domiciliaria  -->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"

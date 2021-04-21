@@ -115,9 +115,10 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
             row.moveToFirst();
             id_credito = Long.parseLong(row.getString(0));
+            String sdato1 = row.getString(1);
             row.close();
             /**Funcion para obtener los integrantes*/
-            initComponents(row.getString(1));
+            initComponents(sdato1);
 
         }
     }
@@ -267,7 +268,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
 
                 /**Valida que el grupo tenga al menos 8 integrantes */
-                if (row_credito.getCount() > 7){
+                if (row_credito.getCount() > 3){
                     Cursor row_cargo;
 
                     /**Obtiene el comite del grupo*/

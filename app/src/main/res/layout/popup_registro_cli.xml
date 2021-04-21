@@ -36,7 +36,7 @@
                         android:id="@+id/etNombre"
                         android:inputType="textCapCharacters"
                         android:paddingLeft="10dp"
-                        android:maxLength="20"
+                        android:maxLength="80"
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
@@ -57,7 +57,7 @@
                         android:id="@+id/etPaterno"
                         android:inputType="textCapCharacters"
                         android:paddingLeft="10dp"
-                        android:maxLength="20"
+                        android:maxLength="80"
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />
@@ -78,7 +78,7 @@
                         android:id="@+id/etMaterno"
                         android:inputType="textCapCharacters"
                         android:paddingLeft="10dp"
-                        android:maxLength="20"
+                        android:maxLength="80"
                         android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/et_height" />

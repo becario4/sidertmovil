@@ -196,7 +196,8 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         <TextView
             android:textColor="@color/black"
             android:text="Destino del Préstamo"
@@ -225,7 +226,8 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         <TextView
             android:textColor="@color/black"
             android:text="@string/clasificacion_riesgo"

@@ -32,7 +32,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_CC;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class PrintRecibos {
-
     private ESCPOSPrinter posPtr;
     private final char ESC = ESCPOS.ESC;
     private final char LF = ESCPOS.LF;

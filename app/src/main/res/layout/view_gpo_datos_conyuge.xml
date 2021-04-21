@@ -21,7 +21,7 @@
             android:id="@+id/etNombreCony"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:id="@+id/etApPaternoCony"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -67,7 +67,7 @@
             android:id="@+id/etApMaternoCony"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:textColor="@drawable/edit_text_selector"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
@@ -95,30 +95,6 @@
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Ocupacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Ocupación"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvOcupacionCony"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:padding="5dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Calle  -->
@@ -424,6 +400,30 @@
             android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Ocupacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ocupación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvOcupacionCony"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:padding="5dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--  Ingresos  -->

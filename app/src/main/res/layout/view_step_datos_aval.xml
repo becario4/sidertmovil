@@ -56,7 +56,7 @@
             android:inputType="textCapCharacters"
             android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -79,7 +79,7 @@
             android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -102,7 +102,7 @@
             android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -316,138 +316,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/et_height" />
         </LinearLayout>
-    </LinearLayout>
-
-    <!-- Parentesco -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Parentesco"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvParentescoAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Tipo de identificacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@color/black"
-            android:text="Tipo de Identificación"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvTipoIdentificacionAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:hint="SELECCIONE UN OPCIÓN"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Numero de identificacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Número de Identificación"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etNumIdentifAval"
-            android:textColor="@drawable/edit_text_selector"
-            android:paddingLeft="10dp"
-            android:maxLength="20"
-            android:inputType="textCapCharacters"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Ocupacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Ocupación"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvOcupacionAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:padding="5dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <!-- Actividad economica -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Actividad Económica"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvActividadEcoAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:background="@drawable/bkg_rounded_edges_blocked"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!-- Ubicacion del Aval -->
@@ -792,6 +660,73 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Referencia domiciliaria  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencia Domiciliaria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/etReferenciaAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textMultiLine|textCapCharacters"
+            android:ems="10"
+            android:maxLength="100"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Fotografía de fachada  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvFachadaAval"
+            android:textColor="@android:color/black"
+            android:text="@string/facade_photo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibFotoFachAval"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/facade_photo"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivFotoFachAval"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <!-- Casa -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -829,7 +764,7 @@
             android:layout_height="wrap_content">
             <TextView
                 android:textColor="@android:color/black"
-                android:text="Parentesco con el Titular"
+                android:text="Parentesco con el titular de la vivienda"
                 android:layout_weight="1"
                 android:focusable="false"
                 android:textSize="@dimen/labelsize"
@@ -853,7 +788,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!--  A nombre de  -->
+    <!--  Nombre del titular  -->
     <LinearLayout
         android:id="@+id/llNombreTitular"
         android:visibility="gone"
@@ -878,7 +813,7 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  Caracteristicas  -->
+    <!--  Caracteristicas del domicilio -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -901,6 +836,161 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!--  Horario de localizacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Horario de Localización"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvHoraLocAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Parentesco -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Parentesco con el solicitante"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvParentescoAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Ocupacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ocupación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvOcupacionAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:padding="5dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Actividad economica -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Actividad Económica"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvActividadEcoAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Tipo de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/black"
+            android:text="Tipo de Identificación"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvTipoIdentificacionAval"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:hint="SELECCIONE UN OPCIÓN"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Numero de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Número de Identificación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNumIdentifAval"
+            android:textColor="@drawable/edit_text_selector"
+            android:paddingLeft="10dp"
+            android:maxLength="20"
+            android:inputType="textCapCharacters"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!-- Tiene negocio -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -947,7 +1037,7 @@
         </RadioGroup>
     </LinearLayout>
 
-    <!-- Datos de negocio del aval -->
+    <!-- Nombre del negocio del aval -->
     <LinearLayout
         android:id="@+id/llNombreNegocio"
         android:visibility="gone"
@@ -1344,6 +1434,7 @@
 
     <!--  Tipo de Moneda  -->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -1425,7 +1516,8 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         <TextView
             android:textColor="@android:color/black"
             android:text="Activos Observables"
@@ -1449,28 +1541,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
 
-    </LinearLayout>
-
-    <!--  Horario de localizacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Horario de Localización"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvHoraLocAval"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!--  Telefono de casa  -->
@@ -1586,73 +1656,6 @@
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Fotografía de fachada  -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvFachadaAval"
-            android:textColor="@android:color/black"
-            android:text="@string/facade_photo"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/ibFotoFachAval"
-                android:layout_width="match_parent"
-                android:contentDescription="@string/facade_photo"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_corner_blue"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_camera_white" />
-            <ImageView
-                android:id="@+id/ivFotoFachAval"
-                android:contentDescription="@string/facade_photo"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!--  Referencia domiciliaria  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Referencia Domiciliaria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <MultiAutoCompleteTextView
-            android:id="@+id/etReferenciaAval"
-            android:textColor="@drawable/edit_text_selector"
-            android:inputType="textMultiLine|textCapCharacters"
-            android:ems="10"
-            android:maxLength="100"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:paddingLeft="10dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="100dp" />
     </LinearLayout>
 
     <!-- Firma Aval-->

@@ -39,6 +39,39 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <!-- Comentario de rechazo croquis -->
+    <LinearLayout
+        android:id="@+id/llComentCro"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Comentario de Rechazo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvComentAdminCro"
+            android:textSize="17sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked_red"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--  Nombre(s)  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -56,7 +89,7 @@
             android:inputType="textCapCharacters"
             android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -79,7 +112,7 @@
             android:inputType="textCapCharacters"
             android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -102,7 +135,7 @@
             android:inputType="textCapCharacters"
             android:textColor="@drawable/edit_text_selector"
             android:paddingLeft="10dp"
-            android:maxLength="45"
+            android:maxLength="80"
             android:background="@drawable/bkg_rounded_edges_blocked"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
@@ -230,7 +263,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Estado de Nacimiento"
+            android:text="Entidad de Nacimiento"
             android:layout_weight="1"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
@@ -297,8 +330,6 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/et_height" />-->
         </LinearLayout>
-
-
     </LinearLayout>
 
     <!--  RFC  -->
@@ -323,315 +354,6 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:background="@drawable/bkg_rounded_edges_blocked"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!--  Ocupacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Ocupación"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvOcupacionCli"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:padding="5dp"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <!-- Actividad economica -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Actividad Económica"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvActividadEcoCli"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:background="@drawable/bkg_rounded_edges_blocked"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Tipo de identificacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@color/black"
-            android:text="Tipo de Identificación"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvTipoIdentificacion"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:hint="SELECCIONE UN OPCIÓN"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Numero de identificacion  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Número de Identificación"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etNumIdentifCli"
-            android:textColor="@drawable/edit_text_selector"
-            android:paddingLeft="10dp"
-            android:maxLength="18"
-            android:inputType="textCapCharacters"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!-- Nivel de estudios -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Nivel de Estudio"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvEstudiosCli"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!-- Estado civil -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Estado Civil"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tvEstadoCivilCli"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-
-        <LinearLayout
-            android:id="@+id/llBienes"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tvBienes"
-                android:textColor="@android:color/black"
-                android:text="Detalle de Estado Civil (Bienes)"
-                android:layout_weight="1"
-                android:focusable="false"
-                android:textSize="@dimen/labelsize"
-                android:focusableInTouchMode="false"
-                android:background="@android:color/white"
-                style="@android:style/Widget.EditText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <RadioGroup
-                android:id="@+id/rgBienes"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:id="@+id/rbMancomunados"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:gravity="center"
-                    android:layout_height="30dp"
-                    android:background="@drawable/radio_flat_selector_left"
-                    android:button="@android:color/transparent"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="3dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="3dp"
-                    android:text="Mancomunados"
-                    android:textColor="@drawable/radio_flat_text_selector_left" />
-                <RadioButton
-                    android:id="@+id/rbSeparados"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/radio_flat_selector_rigth"
-                    android:button="@android:color/transparent"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="3dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="3dp"
-                    android:text="Separados"
-                    android:textColor="@drawable/radio_flat_text_selector_rigth" />
-            </RadioGroup>
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Casa -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Tipo Vivienda"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvTipoCasaCli"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-        <LinearLayout
-            android:id="@+id/llCasaFamiliar"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Casa Familiar"
-                android:layout_weight="1"
-                android:focusable="false"
-                android:textSize="@dimen/labelsize"
-                android:focusableInTouchMode="false"
-                android:background="@android:color/white"
-                style="@android:style/Widget.EditText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tvCasaFamiliar"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:hint="SELECCIONE UNA OPCIÓN"
-                android:background="@drawable/et_rounded_edges"
-                android:drawableRight="@drawable/ic_drop_down"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/et_height" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/llCasaOtro"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:textColor="@android:color/black"
-                android:text="Otro Tipo"
-                android:layout_weight="1"
-                android:focusable="false"
-                android:textSize="@dimen/labelsize"
-                android:focusableInTouchMode="false"
-                android:background="@android:color/white"
-                style="@android:style/Widget.EditText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/etOtroTipoCli"
-                android:textColor="@drawable/edit_text_selector"
-                android:inputType="textCapCharacters"
-                android:paddingLeft="10dp"
-                android:maxLength="45"
-                android:background="@drawable/et_rounded_edges"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/et_height" />
         </LinearLayout>
@@ -1004,6 +726,603 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!-- Croquis -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Croquis"
+            android:focusable="false"
+            android:layout_weight="1"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv3"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/croquis"
+            android:layout_width="200dp"
+            android:layout_height="50dp"/>
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvLateralUno"
+        android:textColor="@color/black"
+        android:hint="CALLE PARALELA"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="@dimen/labelsize"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/white"
+        style="@android:style/Widget.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tvTrasera"
+            android:layout_marginRight="50dp"
+            android:rotation="90"
+            android:layout_alignLeft="@+id/tvCTrasera"
+            android:gravity="center|center"
+            android:paddingTop="20dp"
+            android:lines="2"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:hint="CALLE TRASERA"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:id="@+id/tvPrincipal"
+            android:layout_marginLeft="50dp"
+            android:rotation="90"
+            android:layout_alignRight="@+id/tvFrontal"
+            android:gravity="center|center"
+            android:paddingBottom="20dp"
+            android:lines="2"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:textColor="@color/blue_sidert"
+            android:hint="CALLE PRICIPAL"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:id="@+id/tvFrontal"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:id="@+id/tvCTrasera"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:id="@+id/tvCasa"
+            android:text="CASA"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:drawableRight="@drawable/pin_user_blue"
+            android:background="@drawable/croquis"
+            android:layout_width="100dp"
+            android:layout_height="200dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvLateralDos"
+        android:textColor="@color/black"
+        android:hint="CALLE PARALELA"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="@dimen/labelsize"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/white"
+        style="@android:style/Widget.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv9"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <TextView
+            android:id="@+id/tv8"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/croquis"
+            android:layout_width="200dp"
+            android:layout_height="50dp"/>
+
+        <TextView
+            android:id="@+id/tv7"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/croquis"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+    </RelativeLayout>
+
+    <!-- Referencia -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Referencias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/etReferencia"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="textMultiLine|textCapCharacters"
+            android:ems="10"
+            android:maxLength="100"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Fotografía de fachada  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvFachadaCli"
+            android:textColor="@android:color/black"
+            android:text="@string/facade_photo"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibFotoFachCli"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/facade_photo"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivFotoFachCli"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Casa -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tipo Vivienda"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvTipoCasaCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+        <LinearLayout
+            android:id="@+id/llCasaFamiliar"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Casa Familiar"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvCasaFamiliar"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:hint="SELECCIONE UNA OPCIÓN"
+                android:background="@drawable/et_rounded_edges"
+                android:drawableRight="@drawable/ic_drop_down"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llCasaOtro"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Otro Tipo"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/etOtroTipoCli"
+                android:textColor="@drawable/edit_text_selector"
+                android:inputType="textCapCharacters"
+                android:paddingLeft="10dp"
+                android:maxLength="45"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Tiempo de vivir en el sitio -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Tiempo de Vivir en el Sitio (Años)"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/etTiempoSitio"
+            android:textColor="@drawable/edit_text_selector"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+    </LinearLayout>
+
+    <!-- Estado civil -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Estado Civil"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvEstadoCivilCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+
+        <LinearLayout
+            android:id="@+id/llBienes"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvBienes"
+                android:textColor="@android:color/black"
+                android:text="Detalle de Estado Civil (Bienes)"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:textSize="@dimen/labelsize"
+                android:focusableInTouchMode="false"
+                android:background="@android:color/white"
+                style="@android:style/Widget.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioGroup
+                android:id="@+id/rgBienes"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/rbMancomunados"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_left"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="3dp"
+                    android:text="Mancomunados"
+                    android:textColor="@drawable/radio_flat_text_selector_left" />
+                <RadioButton
+                    android:id="@+id/rbSeparados"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/radio_flat_selector_rigth"
+                    android:button="@android:color/transparent"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="3dp"
+                    android:text="Separados"
+                    android:textColor="@drawable/radio_flat_text_selector_rigth" />
+            </RadioGroup>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Nivel de estudios -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Nivel de Estudio"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvEstudiosCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Ocupacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Ocupación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvOcupacionCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:padding="5dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Actividad economica -->
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Actividad Económica"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvActividadEcoCli"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bkg_rounded_edges_blocked"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Dependientes economicos  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Dependientes Económicos"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvDependientes"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Tipo de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/black"
+            android:text="Tipo de Identificación"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvTipoIdentificacion"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
+    <!--  Numero de identificacion  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Número de Identificación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNumIdentifCli"
+            android:textColor="@drawable/edit_text_selector"
+            android:paddingLeft="10dp"
+            android:maxLength="18"
+            android:inputType="textCapCharacters"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
+    </LinearLayout>
+
     <!--  Telefono de casa  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -1096,7 +1415,7 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!-- Tiempo de vivir en el sitio -->
+    <!--  E-Mail  -->
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
@@ -1104,75 +1423,17 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Tiempo de Vivir en el Sitio (Años)"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
+            android:text="Correo Electrónico"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
         <EditText
-            android:id="@+id/etTiempoSitio"
+            android:id="@+id/etEmail"
             android:textColor="@drawable/edit_text_selector"
-            android:inputType="number"
-            android:maxLength="2"
+            android:inputType="textEmailAddress"
             android:paddingLeft="10dp"
+            android:maxLength="60"
             android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-
-    </LinearLayout>
-
-    <!--  Dependientes economicos  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Dependientes Económicos"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvDependientes"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Como se entero de nosotros  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Como se Enteró de Nosotros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvEnteroNosotros"
-            android:textSize="17sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:hint="SELECCIONE UNA OPCIÓN"
-            android:background="@drawable/et_rounded_edges"
-            android:drawableRight="@drawable/ic_drop_down"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
@@ -1201,72 +1462,9 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
-    <!--  E-Mail  -->
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="Correo Electrónico"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:textColor="@drawable/edit_text_selector"
-            android:inputType="textEmailAddress"
-            android:paddingLeft="10dp"
-            android:maxLength="60"
-            android:background="@drawable/et_rounded_edges"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_height" />
-    </LinearLayout>
-
-    <!--  Fotografía de fachada  -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvFachadaCli"
-            android:textColor="@android:color/black"
-            android:text="@string/facade_photo"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/ibFotoFachCli"
-                android:layout_width="match_parent"
-                android:contentDescription="@string/facade_photo"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_corner_blue"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_camera_white" />
-            <ImageView
-                android:id="@+id/ivFotoFachCli"
-                android:contentDescription="@string/facade_photo"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-        </LinearLayout>
-    </LinearLayout>
-
     <!--  Referencia domiciliaria  -->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -1289,6 +1487,30 @@
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="100dp" />
+    </LinearLayout>
+
+    <!--  Como se entero de nosotros  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Como se Enteró de Nosotros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvEnteroNosotros"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:background="@drawable/et_rounded_edges"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
     <!-- Firma cliente-->

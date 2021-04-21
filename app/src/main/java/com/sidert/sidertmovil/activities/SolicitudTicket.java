@@ -174,6 +174,12 @@ public class SolicitudTicket extends AppCompatActivity {
                     case 4: //detalle con dispositivo
                         llComentario.setVisibility(View.VISIBLE);
                         break;
+                    case 5: //ficha erronea
+                        llNombre.setVisibility(View.VISIBLE);
+                        llClienteGrupoId.setVisibility(View.VISIBLE);
+                        llNumSolicitud.setVisibility(View.VISIBLE);
+                        llComentario.setVisibility(View.VISIBLE);
+                        break;
                 }
             }
 
@@ -311,6 +317,47 @@ public class SolicitudTicket extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, i_res);
                         finish();
                     }
+                    break;
+                case 5:
+                    if (((MSpiner)spFichas.getSelectedItem()).getId() > 0){
+                        if (!validator.validate(etComentario, new String[]{validator.REQUIRED})){
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, String.valueOf(((MTickets)spCategoria.getSelectedItem()).getId()));
+                            params.put(1, String.valueOf(((MSpiner)spFichas.getSelectedItem()).getTipo()));
+                            params.put(2, ((MSpiner)spFichas.getSelectedItem()).getNombre());
+                            if (((MSpiner)spFichas.getSelectedItem()).getTipo() == 2) {
+                                params.put(3, tvCliGpoID.getText().toString().trim());
+                                params.put(4, "0");
+                            }
+                            else {
+                                params.put(3, "0");
+                                params.put(4, tvCliGpoID.getText().toString().trim());
+                            }
+                            params.put(5, tvNumSolicitud.getText().toString().trim());
+                            params.put(6, "");
+                            params.put(7, etComentario.getText().toString().toUpperCase().trim());
+                            params.put(8, "");
+                            params.put(9, "0");
+                            params.put(10, "");
+                            params.put(11, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(12, "");
+                            params.put(13, "PENDIENTE");
+                            params.put(14, "0");
+
+                            Long id = dBhelper.saveSoporte(db, params);
+
+                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                            ss.SendSoporte(ctx, false);
+
+                            Intent i_res = new Intent();
+                            i_res.putExtra(ESTATUS, 1);
+                            i_res.putExtra(ID, id);
+                            setResult(Activity.RESULT_OK, i_res);
+                            finish();
+                        }
+                    }
+                    else
+                        showMensajes("Seleccione el cliente o grupo afectado");
                     break;
             }
 

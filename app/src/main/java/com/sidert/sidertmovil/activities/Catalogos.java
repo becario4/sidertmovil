@@ -55,7 +55,7 @@ public class Catalogos extends AppCompatActivity {
         setContentView(R.layout.activity_catalogos);
         ctx = this;
         Toolbar tbMain = findViewById(R.id.tbMain);
-        mRecycler           = findViewById(R.id.mRecycler);
+        mRecycler = findViewById(R.id.mRecycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(ctx));
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -99,6 +99,7 @@ public class Catalogos extends AppCompatActivity {
                         row.moveToNext();
                     }
                 }
+                row.close();
                 break;
             case OCUPACIONES:
                 row = dBhelper.getRecords(OCUPACIONES,value," ORDER BY ocupacion_nombre ASC", null);
@@ -114,6 +115,7 @@ public class Catalogos extends AppCompatActivity {
                         row.moveToNext();
                     }
                 }
+                row.close();
                 break;
             case Constants.COLONIAS:
                 row = dBhelper.getRecords(Constants.COLONIAS,value," ORDER BY colonia_nombre ASC", null);
@@ -129,6 +131,7 @@ public class Catalogos extends AppCompatActivity {
                         row.moveToNext();
                     }
                 }
+                row.close();
                 break;
             case LOCALIDADES:
                 row = dBhelper.getRecords(LOCALIDADES,value," ORDER BY id_municipio ASC", null);
@@ -144,6 +147,7 @@ public class Catalogos extends AppCompatActivity {
                         row.moveToNext();
                     }
                 }
+                row.close();
                 break;
             case SECTORES:
                 row = dBhelper.getRecords(SECTORES,value," ORDER BY sector_nombre ASC", null);
@@ -159,6 +163,7 @@ public class Catalogos extends AppCompatActivity {
                         row.moveToNext();
                     }
                 }
+                row.close();
                 break;
         }
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- Comentario de rechazo -->
+    <!-- Comentario de rechazo croquis -->
     <LinearLayout
         android:id="@+id/llComentCro"
         android:visibility="gone"
@@ -183,7 +183,7 @@
     </RelativeLayout>
 
     <!--  Referencias  -->
-    <LinearLayout
+   <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"

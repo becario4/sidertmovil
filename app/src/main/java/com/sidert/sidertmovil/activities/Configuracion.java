@@ -138,7 +138,7 @@ public class Configuracion extends AppCompatActivity {
                             /**Envia la solicitudes que ya fueron autorizadas por el gerente colocando el monto autorizado*/
                             ss.MontoAutorizado(ctx, false);
                             /**Envia las solicitudes de originacion individual*/
-                            ss.SendOriginacionInd (ctx, false);
+                            ss.SendOriginacionInd(ctx, false);
                             /**Envia las solicitudes de originacion grupal*/
                             ss.SendOriginacionGpo(ctx, false);
                             /**Envia las solicitudes de renovacion individual*/

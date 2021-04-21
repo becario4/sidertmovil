@@ -144,11 +144,13 @@ import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND_REN;
@@ -208,7 +210,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private FloatingActionButton btnContinuar4;
     private FloatingActionButton btnContinuar5;
     private FloatingActionButton btnContinuar6;
-    private FloatingActionButton btnContinuar7;
+    //private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
 
     private FloatingActionButton btnRegresar1;
@@ -217,7 +219,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private FloatingActionButton btnRegresar4;
     private FloatingActionButton btnRegresar5;
     private FloatingActionButton btnRegresar6;
-    private FloatingActionButton btnRegresar7;
+    //private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar9;
 
@@ -347,6 +349,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private EditText etCiudadNeg;
     private TextView tvLocalidadNeg;
     private TextView tvMunicipioNeg;
+    private TextView tvEstadoNeg;
     private TextView tvActEcoEspNeg;
     private TextView tvActEconomicaNeg;
     private TextView tvDestinoNeg;
@@ -571,7 +574,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private LinearLayout llNegocio;
     private LinearLayout llAval;
     private LinearLayout llReferencia;
-    private LinearLayout llCroquis;
+    //private LinearLayout llCroquis;
     private LinearLayout llPoliticas;
     private LinearLayout llDocumentos;
     //====================================================
@@ -780,6 +783,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etCiudadNeg = findViewById(R.id.etCiudadNeg);
         tvLocalidadNeg = findViewById(R.id.tvLocalidadNeg);
         tvMunicipioNeg = findViewById(R.id.tvMunicipioNeg);
+        tvEstadoNeg = findViewById(R.id.tvEstadoNeg);
         tvActEcoEspNeg = findViewById(R.id.tvActEcoEspNeg);
         tvActEconomicaNeg = findViewById(R.id.tvActEconomicaNeg);
         tvDestinoNeg = findViewById(R.id.tvDestinoNeg);
@@ -957,7 +961,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         llNegocio = findViewById(R.id.llNegocio);
         llAval = findViewById(R.id.llAval);
         llReferencia = findViewById(R.id.llReferencia);
-        llCroquis = findViewById(R.id.llCroquis);
+        //llCroquis = findViewById(R.id.llCroquis);
         llPoliticas = findViewById(R.id.llPoliticas);
         llDocumentos = findViewById(R.id.llDocumentos);
         //==========================================================================================
@@ -970,7 +974,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         llNegocio.setOnClickListener(llNegocio_OnClick);
         llAval.setOnClickListener(llAval_OnClick);
         llReferencia.setOnClickListener(llReferencia_OnClick);
-        llCroquis.setOnClickListener(llCroquis_OnClick);
+        //llCroquis.setOnClickListener(llCroquis_OnClick);
         llPoliticas.setOnClickListener(llPoliticas_OnClick);
         llDocumentos.setOnClickListener(llDocumentos_OnClick);
 
@@ -992,7 +996,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         btnContinuar4 = findViewById(R.id.btnContinuar4);
         btnContinuar5 = findViewById(R.id.btnContinuar5);
         btnContinuar6 = findViewById(R.id.btnContinuar6);
-        btnContinuar7 = findViewById(R.id.btnContinuar7);
+        //btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
 
         btnRegresar1 = findViewById(R.id.btnRegresar1);
@@ -1001,7 +1005,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         btnRegresar4 = findViewById(R.id.btnRegresar4);
         btnRegresar5 = findViewById(R.id.btnRegresar5);
         btnRegresar6 = findViewById(R.id.btnRegresar6);
-        btnRegresar7 = findViewById(R.id.btnRegresar7);
+        //btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar9 = findViewById(R.id.btnRegresar9);
         //==========================================================================================
@@ -1050,7 +1054,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         btnContinuar4.setOnClickListener(btnContinuar4_OnClick);
         btnContinuar5.setOnClickListener(btnContinuar5_OnClick);
         btnContinuar6.setOnClickListener(btnContinuar6_OnClick);
-        btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
+        //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
 
         btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
@@ -1059,7 +1063,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         btnRegresar4.setOnClickListener(btnRegresar4_OnClick);
         btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
         btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
-        btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
+        //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar9.setOnClickListener(btnRegresar9_OnClick);
 
@@ -2361,26 +2365,34 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                         if (row.getCount() == 1) {
                             UpdateDireccion("colonia", row.getString(7), direccionIdNeg, "NEGOCIO");
                             UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
+                            UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
                             tvColoniaNeg.setText(row.getString(7));
                             tvMunicipioNeg.setText(row.getString(4));
+                            tvEstadoNeg.setText(row.getString(1));
                         } else {
                             UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                             UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
+                            UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
                             tvColoniaNeg.setText("");
                             tvMunicipioNeg.setText(row.getString(4));
+                            tvEstadoNeg.setText(row.getString(1));
                         }
                     } else {
                         UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                         UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("estado", "", direccionIdNeg, "NEGOCIO");
                         tvColoniaNeg.setText(R.string.not_found);
                         tvMunicipioNeg.setText(R.string.not_found);
+                        tvEstadoNeg.setText(R.string.not_found);
                     }
                     row.close();
                 } else {
                     UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
+                    UpdateDireccion("estado", "", direccionIdNeg, "NEGOCIO");
                     tvColoniaNeg.setText(R.string.not_found);
                     tvMunicipioNeg.setText(R.string.not_found);
+                    tvEstadoNeg.setText(R.string.not_found);
                 }
             }
         });
@@ -4662,6 +4674,30 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         //ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
         ivFirmaAval.setOnClickListener(ivFirmaAsesor_OnClick);
+
+        tvRiesgo.setText(_riesgo[2]);
+        Update("clasificacion_riesgo", TBL_CREDITO_IND, m.GetStr(tvRiesgo));
+        tvDestinoNeg.setText("RE-INVERSION");
+        Update("destino_credito", TBL_NEGOCIO_IND, _destino_credito[0]);
+
+        tvDestino.setText(_destino[1]);
+        Update("destino", TBL_CREDITO_IND, m.GetStr(tvDestino));
+
+        if(etCpNeg.getText() != null && m.GetStr(etCpNeg).equals("") == false)
+        {
+            Cursor rowDireccion = dBhelper.getDireccionByCP(etCpNeg.getText().toString());
+            if(rowDireccion.getCount() > 0)
+            {
+                rowDireccion.moveToFirst();
+
+                if(rowDireccion.getCount() == 1)
+                {
+                    UpdateDireccion("estado", rowDireccion.getString(1), direccionIdNeg, "NEGOCIO");
+                    tvEstadoNeg.setText(rowDireccion.getString(1));
+                }
+            }
+            rowDireccion.close();
+        }
     }
 
     /**Evento para obtener la firma del asesor*/
@@ -6554,13 +6590,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() &&
                         Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) > 30000) {
                     etPropiedadesEco.requestFocus();
@@ -6644,9 +6680,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnContinuar6_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown8.setVisibility(View.GONE);
-            ivUp8.setVisibility(View.VISIBLE);
-            llDatosCroquis.setVisibility(View.VISIBLE);
+            //ivDown8.setVisibility(View.GONE);
+            //ivUp8.setVisibility(View.VISIBLE);
+            //llDatosCroquis.setVisibility(View.VISIBLE);
+            ivDown9.setVisibility(View.GONE);
+            ivUp9.setVisibility(View.VISIBLE);
+            llDatosPoliticas.setVisibility(View.VISIBLE);
 
             ivDown7.setVisibility(View.VISIBLE);
             ivUp7.setVisibility(View.GONE);
@@ -6798,9 +6837,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener btnRegresar8_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown8.setVisibility(View.GONE);
-            ivUp8.setVisibility(View.VISIBLE);
-            llDatosCroquis.setVisibility(View.VISIBLE);
+            //ivDown8.setVisibility(View.GONE);
+            //ivUp8.setVisibility(View.VISIBLE);
+            //llDatosCroquis.setVisibility(View.VISIBLE);
+
+            ivDown7.setVisibility(View.GONE);
+            ivUp7.setVisibility(View.VISIBLE);
+            llDatosReferencia.setVisibility(View.VISIBLE);
 
             ivDown9.setVisibility(View.VISIBLE);
             ivUp9.setVisibility(View.GONE);
@@ -6965,7 +7008,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                     !validator.validate(etEmail, new String[]{validator.EMAIL})) {
                                                 if (byteFotoFachCli != null) {
                                                     tvFachadaCli.setError(null);
-                                                    if (!validator.validate(etReferenciCli, new String[]{validator.REQUIRED})) {
+                                                    //if (!validator.validate(etReferenciCli, new String[]{validator.REQUIRED})) {
                                                         if (byteFirmaCli != null) {
                                                             tvFirmaCli.setError(null);
                                                             ivError2.setVisibility(View.GONE);
@@ -7024,8 +7067,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                             ivError2.setVisibility(View.VISIBLE);
                                                             tvFirmaCli.setError("");
                                                         }
-                                                    } else
-                                                        ivError2.setVisibility(View.VISIBLE);
+                                                    /*} else
+                                                        ivError2.setVisibility(View.VISIBLE);*/
                                                 } else {
                                                     ivError2.setVisibility(View.VISIBLE);
                                                     tvFachadaCli.setError("");
@@ -7058,6 +7101,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         } else
             ivError2.setVisibility(View.VISIBLE);
 
+        if(
+            !validator.validate(etNoExtCli, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaCli, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteCli, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtCli.setError(null);
+            etManzanaCli.setError(null);
+            etLoteCli.setError(null);
+        }
+
         return save_cliente;
     }
 
@@ -7070,7 +7126,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validator.validate(etNacionalidadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
-                !validator.validate(etNoExtCony, new String[]{validator.REQUIRED}) &&
+                (
+                        !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
+                                || (
+                                !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
+                                        && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
+                        )
+                ) &&
                 !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
                 !m.ValidTextView(tvColoniaCony) &&
                 !validator.validate(etCiudadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7081,6 +7143,10 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validator.validate(etGastoMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                 !validator.validate(etCasaCony, new String[]{validator.PHONE}) &&
                 !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.PHONE})) {
+
+            etNoExtCony.setError(null);
+            etManzanaCony.setError(null);
+            etLoteCony.setError(null);
             Log.e("Conyuge", "pasa");
             ivError3.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
@@ -7113,6 +7179,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             save_conyuge = true;
         } else
             ivError3.setVisibility(View.VISIBLE);
+
+        if(
+            !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtCony.setError(null);
+            etManzanaCony.setError(null);
+            etLoteCony.setError(null);
+        }
 
         return save_conyuge;
     }
@@ -7147,10 +7226,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             if (latLngUbiNeg != null) {
                 tvMapaNeg.setError(null);
                 if (!validator.validate(etCalleNeg, new String[]{validator.REQUIRED}) &&
-                        !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED}) &&
+                        (
+                            !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED})
+                            || (
+                                !validator.validate(etManzanaNeg, new String[]{validator.REQUIRED})
+                                && !validator.validate(etLoteNeg, new String[]{validator.REQUIRED})
+                            )
+                        ) &&
                         !validator.validate(etNoIntNeg, new String[]{validator.GENERAL}) &&
-                        !validator.validate(etManzanaNeg, new String[]{validator.GENERAL}) &&
-                        !validator.validate(etLoteNeg, new String[]{validator.GENERAL}) &&
                         !validator.validate(etCpNeg, new String[]{validator.REQUIRED, validator.CP}) &&
                         !m.ValidTextView(tvColoniaNeg) &&
                         !validator.validate(etCiudadNeg, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7263,6 +7346,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         } else
             ivError5.setVisibility(View.VISIBLE);
 
+        if(
+            !validator.validate(etNoExtNeg, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaNeg, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteNeg, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtNeg.setError(null);
+            etManzanaNeg.setError(null);
+            etLoteNeg.setError(null);
+        }
+
         return save_negocio;
     }
 
@@ -7291,7 +7387,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             if (latLngUbiAval != null) {
                                 tvMapaAval.setError(null);
                                 if (!validator.validate(etCalleAval, new String[]{validator.REQUIRED}) &&
-                                        !validator.validate(etNoExtAval, new String[]{validator.REQUIRED}) &&
+                                        (
+                                            !validator.validate(etNoExtAval, new String[]{validator.REQUIRED})
+                                            || (
+                                                !validator.validate(etManzanaAval, new String[]{validator.REQUIRED})
+                                                && !validator.validate(etLoteAval, new String[]{validator.REQUIRED})
+                                            )
+                                        ) &&
                                         !validator.validate(etCpAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
                                         !m.ValidTextView(tvColoniaAval) &&
                                         !validator.validate(etCiudadAval, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -7337,7 +7439,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         !validatorTV.validate(tvMontoMaxAval, new String[]{validatorTV.REQUIRED}) &&
                                                         !validator.validate(etCapacidadPagoAval, new String[]{validator.REQUIRED, validator.MONEY}) &&
                                                         !validatorTV.validate(tvHoraLocAval, new String[]{validatorTV.REQUIRED}) &&
-                                                        !validatorTV.validate(tvActivosObservables, new String[]{validatorTV.REQUIRED}) &&
+                                                        //!validatorTV.validate(tvActivosObservables, new String[]{validatorTV.REQUIRED}) &&
                                                         !validator.validate(etTelCasaAval, new String[]{validator.PHONE}) &&
                                                         !validator.validate(etCelularAval, new String[]{validator.REQUIRED, validator.PHONE}) &&
                                                         !validator.validate(etTelMensAval, new String[]{validator.PHONE}) &&
@@ -7464,6 +7566,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         } else
             ivError6.setVisibility(View.VISIBLE);
 
+        if(
+            !validator.validate(etNoExtAval, new String[]{validator.REQUIRED})
+            || (
+                !validator.validate(etManzanaAval, new String[]{validator.REQUIRED})
+                && !validator.validate(etLoteAval, new String[]{validator.REQUIRED})
+            )
+        )
+        {
+            etNoExtAval.setError(null);
+            etManzanaAval.setError(null);
+            etLoteAval.setError(null);
+        }
+
         return save_aval;
     }
 
@@ -7521,7 +7636,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
                 !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})) {
-            ivError8.setVisibility(View.GONE);
+            //ivError8.setVisibility(View.GONE);
+            ivError2.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("calle_principal", m.GetStr(tvPrincipal));
             cv.put("lateral_uno", m.GetStr(tvLateraUno));
@@ -7532,7 +7648,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             db.update(TBL_CROQUIS_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_croquis = true;
         } else
-            ivError8.setVisibility(View.VISIBLE);
+            ivError2.setVisibility(View.GONE);
+            //ivError8.setVisibility(View.VISIBLE);
         return save_croquis;
     }
 
@@ -7648,6 +7765,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 /**Se crean las banderas para definir si esta fueron guardadas las secciones*/
                 boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
                 credito = saveDatosCredito();
+                croquis = saveCroquis();
                 cliente = saveDatosPersonales();
                 if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
                         m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE"))
@@ -7661,7 +7779,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 negocio = saveDatosNegocio();
                 aval = saveDatosAval();
                 referencia = saveReferencia();
-                croquis = saveCroquis();
                 politicas = savePoliticas();
                 documentacion = saveDocumentacion();
 
@@ -8886,6 +9003,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etNumIdentifCli.setEnabled(isEditCli);
         tvEstudiosCli.setText(row.getString(16));
         tvEstadoCivilCli.setText(row.getString(17));
+
         /**Valida el estado civil del cliente para mostrar u cultar el formulario del conyuge*/
         switch (row.getString(17)) {
             case "CASADO(A)":
@@ -8893,6 +9011,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 llBienes.setVisibility(View.VISIBLE);
                 switch (row.getInt(18)) {
                     case 1:
+                    case 3:
                         rgBienes.check(R.id.rbMancomunados);
                         break;
                     case 2:
@@ -9080,6 +9199,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etCiudadNeg.setEnabled(isEditNeg);
         tvLocalidadNeg.setText(rowDir.getString(12));
         tvMunicipioNeg.setText(rowDir.getString(13));
+        tvEstadoNeg.setText(rowDir.getString(14));
         rowDir.close(); //Cierra datos de direccion del negocio
         tvActEcoEspNeg.setText(row.getString(4));
         tvActEconomicaNeg.setText(row.getString(5));

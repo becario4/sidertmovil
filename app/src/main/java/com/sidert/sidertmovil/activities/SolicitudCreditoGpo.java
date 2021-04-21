@@ -379,7 +379,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
                 row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ? AND estatus_completado <> 3", "", new String[]{String.valueOf(id_credito)});
 
-                if (row_credito.getCount() > 7){
+                if (row_credito.getCount() > 3){
 
                     Cursor row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4 AND estatus_completado IN (0,1,2)", "", new String[]{String.valueOf(id_credito)});
 

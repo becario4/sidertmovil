@@ -35,6 +35,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import com.lvrenyang.io.BTPrinting;
+import com.lvrenyang.io.Page;
+import com.lvrenyang.io.Pos;
+import com.lvrenyang.io.base.IOCallBack;
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
 import com.sidert.sidertmovil.R;
@@ -46,6 +50,7 @@ import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.PrintRecibos;
+import com.sidert.sidertmovil.utils.Prints;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONException;
@@ -57,6 +62,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
@@ -64,10 +71,10 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_CC;
 import static com.sidert.sidertmovil.utils.Constants.TICKET_CC;
 
 /**Clase donde se ve un preview del recibo de AGF y CC*/
-public class FormatoRecibos extends AppCompatActivity {
+public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
 
     private static final int REQUEST_ENABLE_BT = 2;
-
+    FormatoRecibos mFormatoRecibos;
     private BluetoothPort bluetoothPort;
     private BluetoothAdapter bluetoothAdapter;
     private Vector<BluetoothDevice> remoteDevices;
@@ -123,6 +130,11 @@ public class FormatoRecibos extends AppCompatActivity {
     private int meses = 0;
     private JSONObject obj;
 
+    //IMPRESORA GOOJPRT
+    Page mPage = new Page();
+    Pos mPos = new Pos();
+    BTPrinting mBt = new BTPrinting();
+    ExecutorService es = Executors.newScheduledThreadPool(30);
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -131,7 +143,7 @@ public class FormatoRecibos extends AppCompatActivity {
         setContentView(R.layout.activity_formato_recibos);
 
         ctx = this;
-
+        mFormatoRecibos = this;
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
@@ -277,6 +289,10 @@ public class FormatoRecibos extends AppCompatActivity {
         btnCopia.setOnClickListener(btnCopia_OnClick);
         btnOriginalRe.setOnClickListener(btnOriginalRe_OnClick);
         btnCopiaRe.setOnClickListener(btnCopiaRe_OnClick);
+
+        mPage.Set(mBt);
+        mPos.Set(mBt);
+        mBt.SetCallBack(this);
     }
 
     /**Evento de click para imprimir de tipo original*/
@@ -284,7 +300,16 @@ public class FormatoRecibos extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
-                new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+                if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
+                {
+                    Log.e("IMPRESORA MTP", "ENTRE AQUI");
+                    es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
+                    //es.submit(new TaskPrint(mPage));
+                    es.submit(new TaskPrint(mPos));
+                }
+                else{
+                    new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -325,6 +350,67 @@ public class FormatoRecibos extends AppCompatActivity {
             new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
         }
     };
+
+    @Override
+    public void OnOpen() {
+
+    }
+
+    @Override
+    public void OnOpenFailed() {
+
+    }
+
+    @Override
+    public void OnClose() {
+
+    }
+
+    public class TaskOpen implements Runnable
+    {
+        BTPrinting bt = null;
+        String address = null;
+        Context context = null;
+
+        public TaskOpen(BTPrinting bt, String address, Context context)
+        {
+            this.bt = bt;
+            this.address = address;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            bt.Open(address,context);
+        }
+    }
+
+    public class TaskPrint implements Runnable
+    {
+        //Page page = null;
+        Pos pos = null;
+
+        /*
+        public TaskPrint(Page page)
+        {
+            this.page = page;
+        }*/
+
+        public TaskPrint(Pos pos)
+        {
+            this.pos = pos;
+        }
+
+        @Override
+        public void run() {
+            final int bPrintResult = Prints.PrintTicket(getApplicationContext(), pos, 384, false, false, true, 1, 1, 0, ticket, obj);
+            //final int bPrintResult = Prints.PrintTicket(getApplicationContext(), page, 384, 800);
+            final boolean bIsOpened = pos.GetIO().IsOpened();
+
+            mFormatoRecibos.runOnUiThread(() -> Toast.makeText(ctx.getApplicationContext(), (bPrintResult == 0) ? "SUCCESS" : "ERROR" + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show());
+        }
+    }
 
     // Bluetooth Connection Task.
     /**Tarea asincrona para realizar la impresiones cada vez que se presiona alguna boton
@@ -586,6 +672,7 @@ public class FormatoRecibos extends AppCompatActivity {
     {
         bluetoothPort = BluetoothPort.getInstance();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         if(bluetoothPort.isConnected()){
             Log.e("bluetooth", "Conectado");
             clearBtDevData();
@@ -617,19 +704,97 @@ public class FormatoRecibos extends AppCompatActivity {
             BluetoothDevice pairedDevice;
             for (BluetoothDevice bluetoothDevice : (bluetoothAdapter.getBondedDevices())) {
                 pairedDevice = bluetoothDevice;
-                if (bluetoothPort.isValidAddress(pairedDevice.getAddress())) {
+
+                //if (bluetoothPort.isValidAddress(pairedDevice.getAddress())) {
                     //Log.e("remoteDevices", remoteDevices.toString());
-                    //Log.e("pairedDevice", pairedDevice.toString());
-                    remoteDevices.add(pairedDevice);
-                    adapter.add(pairedDevice.getName() + "\n[" + pairedDevice.getAddress() + "] [Paired]");
-                    address_print = pairedDevice.toString();
-                    Log.e("paired", pairedDevice.toString());
-                    new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(pairedDevice.toString()));
-                }
+                    Log.e("pairedDevice", pairedDevice.toString());
+                    //Log.e("paired", pairedDevice.toString());
+
+                    if(pairedDevice.getName().contains("MTP"))
+                    {
+                        remoteDevices.add(pairedDevice);
+                        adapter.add(pairedDevice.getName() + "\n[" + pairedDevice.getAddress() + "] [Paired]");
+                        address_print = pairedDevice.toString();
+
+                        String sql = "";
+                        Cursor row = null;
+                        /**Valida el tipo de impresion si es AGF en caso contrario busca en CC*/
+                        if (ticket.getTipoRecibo().equals("AGF"))
+                        {
+                            sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND num_solicitud = ? AND tipo_recibo = ? AND nombre = ?";
+                            row = db.rawQuery(sql, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud(), ticket.getTipoRecibo(), ticket.getNombre()});
+                        }
+                        else
+                        {
+                            Log.e("PARAMS", ticket.getTipoRecibo() +" : "+ ticket.getCurp());
+                            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE tipo_credito = ? AND curp = ?";
+                            try {
+                                row = db.rawQuery(sql, new String[]{String.valueOf(obj.getInt("tipo_credito")), ticket.getCurp()});
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        /**Valida cuantas impresiones se han realizado con la informacion actual del objecto*/
+                        Log.e("CountXXX", row.getCount()+" TTTT");
+                        if (row != null && row.getCount() < 3) {/**Si no hay impresiones o son menores a 3 registros mostrara botones de original o copia*/
+                            switch (row.getCount()) {
+                                case 0:/**Cuando no hay ninguna impresion*/
+                                    btnOriginal.setVisibility(View.VISIBLE);
+                                    btnOriginal.setEnabled(true);
+                                    btnOriginal.setBackgroundResource(R.drawable.btn_rounded_blue);
+                                    break;
+                                case 1:/**Cuando ya se realizo una impresion original*/
+                                    btnOriginal.setVisibility(View.GONE);
+                                    btnOriginal.setEnabled(false);
+                                    btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+
+                                    btnCopia.setVisibility(View.VISIBLE);
+                                    btnCopia.setEnabled(true);
+                                    btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
+                                    break;
+                                case 2:/**Cuando ya se imprimio la copia*/
+                                    btnCopia.setVisibility(View.GONE);
+                                    btnOriginal.setVisibility(View.GONE);
+                                    btnCopiaRe.setVisibility(View.VISIBLE);
+                                    btnOriginalRe.setVisibility(View.VISIBLE);
+                                    break;
+                            }
+                        }
+                        /**Cuando hay mas de 2 registros de impresion con la misma informacion del objecto actual mostrara botones de reimpresion*/
+                        else{
+                            btnCopiaRe.setVisibility(View.VISIBLE);
+                            btnOriginalRe.setVisibility(View.VISIBLE);
+                        }
+
+                        try {
+                            bluetoothPort.disconnect();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                    }
+                    else {
+                        if (bluetoothPort.isValidAddress(pairedDevice.getAddress())) {
+                            remoteDevices.add(pairedDevice);
+                            adapter.add(pairedDevice.getName() + "\n[" + pairedDevice.getAddress() + "] [Paired]");
+                            address_print = pairedDevice.toString();
+
+                            new pairBluetoothTask().execute(bluetoothAdapter.getRemoteDevice(pairedDevice.toString()));
+
+                            break;
+                        }
+                    }
+
+                //}
             }
         }catch (Exception e){
             e.printStackTrace();
-            //Log.e("expcion", e.getMessage());
+            Log.e("expcion", e.getMessage());
         }
     }
 
