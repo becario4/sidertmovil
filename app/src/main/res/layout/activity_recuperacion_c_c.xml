@@ -2,422 +2,464 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/CLcontainer"
     android:clipChildren="false"
     android:layout_marginStart="@dimen/paddingcl">
+
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_anchorGravity="center">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbMain"
-                app:title="Recuperar Círculo de Crédito"
-                app:titleTextColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:title="Recuperar Círculo de Crédito"
+                app:titleTextColor="@android:color/white" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <!--  Tipo  -->
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvTipo"
-                        android:textColor="@android:color/black"
-                        android:text="@string/tipo"
-                        android:focusable="true"
-                        android:layout_gravity="center_vertical"
-                        android:textSize="@dimen/tvsize"
-                        android:focusableInTouchMode="false"
-                        android:background="@android:color/white"
                         style="@android:style/Widget.EditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/white"
+                        android:focusable="true"
+                        android:focusableInTouchMode="false"
+                        android:text="@string/tipo"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/tvsize" />
+
                     <RadioGroup
                         android:id="@+id/rgTipo"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
                         <RadioButton
                             android:id="@+id/rbInd"
-                            android:layout_weight="1"
                             android:layout_width="0dp"
-                            android:gravity="center"
                             android:layout_height="30dp"
+                            android:layout_weight="1"
                             android:background="@drawable/radio_flat_selector_left"
                             android:button="@android:color/transparent"
-                            android:textSize="@dimen/tvsize"
+                            android:gravity="center"
                             android:text="@string/individual"
-                            android:textColor="@drawable/radio_flat_text_selector_left" />
+                            android:textColor="@drawable/radio_flat_text_selector_left"
+                            android:textSize="@dimen/tvsize" />
+
                         <RadioButton
                             android:id="@+id/rbGpo"
-                            android:gravity="center"
-                            android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="30dp"
+                            android:layout_weight="1"
                             android:background="@drawable/radio_flat_selector_rigth"
                             android:button="@android:color/transparent"
-                            android:textSize="@dimen/tvsize"
+                            android:gravity="center"
                             android:text="@string/grupal"
-                            android:textColor="@drawable/radio_flat_text_selector_rigth" />
+                            android:textColor="@drawable/radio_flat_text_selector_rigth"
+                            android:textSize="@dimen/tvsize" />
                     </RadioGroup>
                 </LinearLayout>
 
                 <!-- Costo de consulta -->
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
                     <TextView
-                        android:textColor="@color/black"
-                        android:text="Costo de Consulta"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:textSize="@dimen/tvsize"
-                        android:focusableInTouchMode="false"
-                        android:background="@android:color/white"
                         style="@android:style/Widget.EditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:text="Costo de Consulta"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
 
                     <TextView
                         android:id="@+id/tvCostoConsulta"
-                        android:textSize="@dimen/etsize"
-                        android:textColor="@color/black"
-                        android:hint="SELECCIONE UN OPCIÓN"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
                         android:drawableLeft="@drawable/ic_money"
                         android:drawableRight="@drawable/ic_drop_down"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:gravity="center_vertical"
+                        android:hint="SELECCIONE UN OPCIÓN"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!--  Nombre(s)  -->
                 <LinearLayout
                     android:id="@+id/llClienteGrupo"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/tvClienteGrupo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/tvsize"/>
+                        android:textSize="@dimen/tvsize" />
 
                     <EditText
                         android:id="@+id/etClienteGrupo"
-                        android:textSize="@dimen/etsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
                         android:gravity="center_vertical"
                         android:inputType="textCapCharacters"
-                        android:textColor="@drawable/edit_text_selector"
+                        android:maxLength="60"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:maxLength="60"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!--  Curp  -->
                 <LinearLayout
                     android:id="@+id/llCurpCliente"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/tvCurpCliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/tvsize"/>
+                        android:textSize="@dimen/tvsize" />
 
                     <EditText
                         android:id="@+id/etCurpCliente"
-                        android:textSize="@dimen/etsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
                         android:gravity="center_vertical"
                         android:inputType="textCapCharacters"
-                        android:textColor="@drawable/edit_text_selector"
+                        android:maxLength="18"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:maxLength="18"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!--  Nombre 2  -->
                 <LinearLayout
                     android:id="@+id/llAvalRepresentante"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/tvAvalRepresentante"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/tvsize"/>
+                        android:textSize="@dimen/tvsize" />
 
                     <EditText
                         android:id="@+id/etAvalRepresentante"
-                        android:textSize="@dimen/etsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
                         android:gravity="center_vertical"
                         android:inputType="textCapCharacters"
-                        android:textColor="@drawable/edit_text_selector"
+                        android:maxLength="60"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:maxLength="60"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!--  Integrantes  -->
                 <LinearLayout
                     android:id="@+id/llIntegrantes"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/integrantes"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/tvsize"/>
+                        android:textSize="@dimen/tvsize" />
 
                     <EditText
                         android:id="@+id/etIntegrantes"
-                        android:textSize="@dimen/etsize"
-                        android:hint="@string/integrantes"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
                         android:gravity="center_vertical"
+                        android:hint="@string/integrantes"
                         android:inputType="number"
-                        android:textColor="@drawable/edit_text_selector"
+                        android:maxLength="2"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:maxLength="2"
-                        android:background="@drawable/et_rounded_edges"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!--  Monto  -->
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
                     <TextView
-                        android:textColor="@color/black"
-                        android:text="Monto"
-                        android:textSize="@dimen/tvsize"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="Monto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
 
                     <EditText
                         android:id="@+id/etMonto"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:drawableLeft="@drawable/ic_money"
                         android:enabled="false"
-                        android:textSize="@dimen/etsize"
                         android:paddingLeft="10dp"
                         android:textColor="@drawable/edit_text_selector"
-                        android:drawableLeft="@drawable/ic_money"
-                        android:background="@drawable/bkg_rounded_edges_blocked"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!-- Medio de pago -->
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
                     <TextView
-                        android:textColor="@color/black"
-                        android:text="Medio de pago"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:textSize="@dimen/tvsize"
-                        android:focusableInTouchMode="false"
-                        android:background="@android:color/white"
                         style="@android:style/Widget.EditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:text="Medio de pago"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
 
                     <TextView
                         android:id="@+id/tvMedioPago"
-                        android:textSize="@dimen/etsize"
-                        android:textColor="@color/black"
-                        android:hint="SELECCIONE UN OPCIÓN"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="10dp"
-                        android:drawableRight="@drawable/ic_drop_down"
-                        android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:gravity="center_vertical"
+                        android:hint="SELECCIONE UN OPCIÓN"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/etsize" />
                 </LinearLayout>
 
                 <!-- ¿Imprimir recibos?-->
                 <LinearLayout
                     android:id="@+id/llImprimirRecibo"
-                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:visibility="gone">
+
                     <TextView
-                        android:textColor="@color/black"
-                        android:text="@string/imprimir_recibos"
-                        android:focusable="false"
-                        android:textSize="@dimen/tvsize"
-                        android:focusableInTouchMode="false"
-                        android:background="@android:color/white"
                         style="@android:style/Widget.EditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:text="@string/imprimir_recibos"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
 
                     <TextView
                         android:id="@+id/tvImprimirRecibo"
-                        android:textSize="@dimen/tvsize"
-                        android:textColor="@color/black"
-                        android:hint="SELECCIONE UN OPCIÓN"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="10dp"
-                        android:drawableRight="@drawable/ic_drop_down"
-                        android:background="@drawable/et_rounded_edges"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:gravity="center_vertical"
+                        android:hint="SELECCIONE UN OPCIÓN"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
 
                     <ImageButton
                         android:id="@+id/ibImprimir"
-                        android:src="@drawable/ic_print"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="5dp"
                         android:background="@drawable/round_corner_blue"
                         android:paddingTop="3dp"
-                        android:paddingBottom="3dp"/>
+                        android:paddingBottom="3dp"
+                        android:src="@drawable/ic_print"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- Folio de reciboCirculoCredito -->
                 <LinearLayout
                     android:id="@+id/llFolioRecibo"
-                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:visibility="gone">
+
                     <TextView
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/tvsize"
-                        android:text="@string/folio_recibo"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@string/folio_recibo"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
                     <EditText
                         android:id="@+id/etFolioRecibo"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
                         android:enabled="false"
                         android:hint="Obtener el folio del reciboCirculoCredito impreso"
-                        android:paddingEnd="5dp"
                         android:paddingStart="10dp"
-                        android:textColor="@drawable/edit_text_selector"
-                        android:background="@drawable/bkg_rounded_edges_blocked"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/et_height" />
+                        android:paddingEnd="5dp"
+                        android:textColor="@drawable/edit_text_selector" />
                 </LinearLayout>
 
                 <!-- Tomara fotografia o adjuntara desde galeria-->
                 <LinearLayout
                     android:id="@+id/llFotoGaleria"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
                     <TextView
                         android:id="@+id/tvFotoGaleria"
-                        android:textColor="@color/black"
-                        android:text="@string/question_photo_gallery"
-                        android:focusable="false"
-                        android:textSize="@dimen/tvsize"
-                        android:focusableInTouchMode="false"
-                        android:background="@android:color/white"
                         style="@android:style/Widget.EditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:text="@string/question_photo_gallery"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
                         <ImageButton
-                            android:layout_weight="1"
                             android:id="@+id/ibFoto"
-                            android:layout_marginRight="50dp"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginLeft="50dp"
+                            android:layout_marginRight="50dp"
+                            android:layout_weight="1"
                             android:background="@drawable/round_corner_blue"
                             android:paddingTop="3dp"
                             android:paddingBottom="3dp"
                             android:src="@drawable/ic_camera_white" />
+
                         <ImageButton
                             android:id="@+id/ibGaleria"
-                            android:layout_weight="1"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginRight="50dp"
-                            android:layout_marginLeft="50dp"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:padding="15dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="50dp"
+                            android:layout_marginRight="50dp"
+                            android:layout_weight="1"
                             android:background="@drawable/round_corner_blue"
+                            android:padding="15dp"
                             android:src="@drawable/ic_folder_white" />
                     </LinearLayout>
+
                     <ImageView
                         android:id="@+id/ivEvidencia"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp" />
+                        android:layout_height="200dp"
+                        android:visibility="gone" />
                 </LinearLayout>
+                <!--
+                   <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="189dp">
 
-
+                        <Button
+                                android:id="@+id/button"
+                                android:layout_width="317dp"
+                                android:layout_height="70dp"
+                                android:background="@drawable/btn_rounded_blue"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Consultar círculo de crédito"
+                                android:textAlignment="center"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+        -->
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -22,6 +22,7 @@ import androidx.fragment.app.DialogFragment;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
 import com.sidert.sidertmovil.activities.ConsultarCC;
+import com.sidert.sidertmovil.activities.FormularioCC;
 import com.sidert.sidertmovil.activities.GenerarCurp;
 import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
 import com.sidert.sidertmovil.activities.RenovarIntegrante;
@@ -441,7 +442,7 @@ public class dialog_date_picker extends DialogFragment {
                         else if (identifer == 19){
 
                             if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 90) {
-                                ConsultarCC consultarCCActivity = (ConsultarCC) getActivity();
+                                FormularioCC consultarCCActivity = (FormularioCC) getActivity();
                                 consultarCCActivity.setDate(sdf.format(myCalendar.getTime()));
                                 dismiss();
                             }

@@ -182,7 +182,7 @@
                     android:textColor="@color/black"
                     android:textSize="14dp"
                     android:gravity="center"
-                    android:text="El reciboCirculoCredito debe de coincidir con lo entregado"
+                    android:text="El recibo debe de coincidir con lo entregado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

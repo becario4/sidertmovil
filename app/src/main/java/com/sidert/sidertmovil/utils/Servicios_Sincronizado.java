@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -5166,6 +5167,7 @@ public class Servicios_Sincronizado {
     }
 
     public void SendConsultaCC(Context ctx, boolean showDG){
+
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
@@ -5173,61 +5175,146 @@ public class Servicios_Sincronizado {
         if (showDG)
             loading.show();
         //}
-
-        final DBhelper dBhelper = new DBhelper(ctx);
-        final SQLiteDatabase db = dBhelper.getWritableDatabase();
         final SessionManager session = new SessionManager(ctx);
 
-        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? limit 1";
+        Long suc = 0L;
+        Integer usuario = 0;
+        String token = "";
+        try {
+            JSONObject jso = session.getSucursales().getJSONObject(0);
+            suc = jso.getLong("id");
+            usuario=Integer.parseInt(session.getUser().get(9));
+            token=session.getUser().get(7);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ?  order by _id  " ;
         Cursor row = db.rawQuery(sql, new String[]{"0"});
+        Integer iTotalRows = row.getCount();
+        SendByOneCirculo( ctx,0,iTotalRows,db,suc,usuario,token );
+        loading.dismiss();
 
+    }
+
+    private void SendByOneCirculo(Context ctx,Integer iOffSet, Integer iTotalRows,SQLiteDatabase db,Long suc,Integer user, String token) {
+       String id ="";
+        if (iOffSet<=iTotalRows){
+        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  limit 1 ";
+        Cursor row = db.rawQuery(sql, new String[]{"0"});
         if (row.getCount() > 0){
             row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
+                id = row.getString(0);
+                System.out.println("ID: " + id + " OFFSET: " + iOffSet);
                 ConsultaCC cc = new ConsultaCC();
-                Long suc = 0L;
-                try {
-                    JSONObject jso = session.getSucursales().getJSONObject(0);
-                    suc = jso.getLong("id");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 cc.setSucursal(suc);
+                cc.setAsesor_id(user);
+                cc.setUsuarioId(user);
                 cc.setOrigen("MOVIL");
-
                 cc.setApPaterno(row.getString(5));
-
                 if (!row.getString(6).isEmpty()) cc.setApMaterno(row.getString(6));
                 else cc.setApMaterno(" ");
-
                 cc.setPrimerNombre(row.getString(3));
-
-                if (!row.getString(4).isEmpty()) cc.setSegundoNombre(row.getString(4));
-                else cc.setSegundoNombre(" ");
-
+                if (!row.getString(4).isEmpty()) {
+                    cc.setSegundoNombre(row.getString(4));
+                } else {
+                    cc.setSegundoNombre(" ");
+                }
                 cc.setMontoSolicitado(row.getInt(2));
                 cc.setProducto(row.getString(1));
-                cc.setUsuarioId(Integer.parseInt(session.getUser().get(9)));
                 cc.setFechaNac(row.getString(7));
-                if (!row.getString(10).isEmpty())
+                if (!row.getString(10).isEmpty()) {
                     cc.setCurp(row.getString(10));
+                }
                 cc.setRfc(row.getString(11));
                 cc.setNacionalidad("MX");
                 ConsultaCC.DomicilioPeticion dom = new ConsultaCC.DomicilioPeticion();
                 dom.setDireccion(row.getString(12));
-                dom.setColoniaPoblacion(row.getString(14));
-                dom.setDelegacionMunicipio(row.getString(15));
-                dom.setCiudad(row.getString(16));
-                dom.setEstado(Miscellaneous.GetCodigoEstado(row.getString(17)));
-                dom.setCP(row.getString(13));
+                dom.setColoniaPoblacion(row.getString(13));
+                dom.setDelegacionMunicipio(row.getString(14));
+                dom.setCiudad(row.getString(15));
+                dom.setEstado(Miscellaneous.GetCodigoEstado(row.getString(16)));
+                dom.setCP(row.getString(17));
                 cc.setDomPeticion(dom);
                 //Toast.makeText(ctx, "Comienza Consulta", Toast.LENGTH_SHORT).show();
-                new PostConsulta().execute(ctx, row.getString(0), cc);
-                row.moveToNext();
+                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+                Call<MResConsultaCC> call = api.setConsultaCC("Bearer " + token, cc);
+                String finalId = id;
+                call.enqueue(new Callback<MResConsultaCC>() {
+                    @Override
+                    public void onResponse(Call<MResConsultaCC> call, Response<MResConsultaCC> response) {
+                        MResConsultaCC r = response.body();
+                        ContentValues cv = new ContentValues();
+                        switch (response.code()) {
+                            case 200:
+                                if (r.getOk() != null) {
+                                    int credAbierto = 0;
+                                    int credCerrado = 0;
+                                    float saldVencido = 0;
+                                    float saldActual = 0;
+                                    Double peorPago = 0.0;
+                                    for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()) {
+                                        if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty()) {
+                                            credCerrado += 1;
+                                        } else {
+                                            credAbierto += 1;
+
+                                            saldVencido += item.getSaldoVencido();
+
+                                            saldActual += item.getSaldoActual();
+
+                                            if (item.getPeorAtraso() != null) {
+                                                if (item.getPeorAtraso() > peorPago) {
+                                                    peorPago = item.getPeorAtraso();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    cv.put("saldo_actual", String.valueOf(saldActual));
+                                    cv.put("saldo_vencido", String.valueOf(saldVencido));
+                                    cv.put("peor_pago", String.valueOf(peorPago));
+                                    cv.put("creditos_abiertos", String.valueOf(credAbierto));
+                                    cv.put("credito_cerrados", String.valueOf(credCerrado));
+                                    cv.put("preautorizacion", String.valueOf(r.getOk().getPreautorizacion()));
+                                    cv.put("estatus", String.valueOf(response.code()));
+
+                                    db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
+
+                                }
+                                break;
+                            case 202:
+                                if (r.getOk() != null) {
+
+
+                                    cv.put("errores", "" + r.getOk().getErr().getErrores().get(0).getMensaje());
+                                    cv.put("estatus", String.valueOf(response.code()));
+                                    cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                   db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
+                                }
+                                break;
+                        }
+                        SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MResConsultaCC> call, Throwable t) {
+                        Log.e("FALLO", " offset: " + iOffSet);
+                        SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
+                    }
+                });
+
+
             }
+
         }
-        row.close();
-        loading.dismiss();
+            row.close();
+       //
+        }
+
     }
 
     //============================= TAREAS ASINCRONAS  =============================================
@@ -7882,19 +7969,25 @@ public class Servicios_Sincronizado {
 
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
-            Call<MResConsultaCC> call = api.setConsultaCC(
-                                            "Bearer "+ session.getUser().get(7),
-                                            cc);
+
+                Call<MResConsultaCC> call = api.setConsultaCC(
+                        "Bearer " + session.getUser().get(7),
+                        cc);
+
+
+
 
             call.enqueue(new Callback<MResConsultaCC>() {
                 @Override
                 public void onResponse(Call<MResConsultaCC> call, Response<MResConsultaCC> response) {
-                    Log.e("ResCodeCC", "Code: "+response.code());
+                    System.out.println(response.body());
+                    Log.e("response",Miscellaneous.ConvertToJson(response.errorBody()));
+                    Log.e("response",Miscellaneous.ConvertToJson(response.body()));
+                    MResConsultaCC r = response.body();
 
+                    ContentValues cv = new ContentValues();
                     switch (response.code()){
                         case 200:
-                            MResConsultaCC r = response.body();
-                            ContentValues cv = new ContentValues();
                             if (r.getOk() != null) {
                                 int credAbierto = 0;
                                 int credCerrado = 0;
@@ -7903,19 +7996,21 @@ public class Servicios_Sincronizado {
                                 Double peorPago = 0.0;
 
 
-                                for (MResConsultaCC.Credito item : r.getOk().getCreditos()){
-                                    if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty())
+                                for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()){
+                                    if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty()) {
                                         credCerrado += 1;
-                                    else
+                                    }
+                                    else {
                                         credAbierto += 1;
 
-                                    saldVencido += item.getSaldoVencido();
+                                        saldVencido += item.getSaldoVencido();
 
-                                    saldActual += item.getSaldoActual();
+                                        saldActual += item.getSaldoActual();
 
-                                    if (item.getPeorAtraso() != null) {
-                                        if (item.getPeorAtraso() > peorPago) {
-                                            peorPago = item.getPeorAtraso();
+                                        if (item.getPeorAtraso() != null) {
+                                            if (item.getPeorAtraso() > peorPago) {
+                                                peorPago = item.getPeorAtraso();
+                                            }
                                         }
                                     }
                                 }
@@ -7925,13 +8020,21 @@ public class Servicios_Sincronizado {
                                 cv.put("peor_pago", String.valueOf(peorPago));
                                 cv.put("creditos_abiertos", String.valueOf(credAbierto));
                                 cv.put("credito_cerrados", String.valueOf(credCerrado));
-                            }
-                            else
-                                cv.put("errores", r.getError().getErrores().get(0).getMensaje());
+                                cv.put("preautorizacion", String.valueOf(r.getOk().getPreautorizacion()));
+                                cv.put("estatus", String.valueOf(response.code()));
+                                db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{id});
 
-                            cv.put("estatus", 1);
-                            cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                            db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{id});
+                            }
+                            break;
+                        case 202:
+                            if (r.getOk() != null) {
+
+                                System.out.println(Miscellaneous.ConvertToJson(response));
+                                cv.put("errores",""+r.getOk().getErr().getErrores().get(0).getMensaje());
+                                cv.put("estatus", String.valueOf(response.code()));
+                                cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{id});
+                            }
                             break;
                     }
                 }
@@ -7941,6 +8044,9 @@ public class Servicios_Sincronizado {
                    Log.e("Fail", "Consulta CC: "+ t.getMessage());
                 }
             });
+
+
+
 
 
             return "";

@@ -74,6 +74,17 @@ public class ConsultaCC implements Serializable {
     @SerializedName("domicilio")
     @Expose
     private DomicilioPeticion domPeticion;
+    @SerializedName("asesor_id")
+    @Expose
+    private Integer  asesor_id;
+
+    public Integer getAsesor_id() {
+        return asesor_id;
+    }
+
+    public void setAsesor_id(Integer asesor_id) {
+        this.asesor_id = asesor_id;
+    }
 
     public Long getSucursal() {
         return sucursal;

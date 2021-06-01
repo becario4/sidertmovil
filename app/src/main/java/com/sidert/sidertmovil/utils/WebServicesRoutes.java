@@ -26,6 +26,7 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_RECIBOS       = "/api/movil/recibos/"; //Controlador para recibos
     public final static String CONTROLLER_SOPORTE       = "/api/movil/soporte/"; //Controlador para soporte
     public final static String CONTROLLER_APK           = "/api/movil/apk/"; //Controlador para apk
+    public final static String CONTROLLER_CIRCULO       = "/api/circulo/"; //Controlador para soporte
 
 
     //public final static String BASE_URL = DOMAIN + PORT;

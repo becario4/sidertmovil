@@ -41,6 +41,7 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.EligeImpresora;
 import com.sidert.sidertmovil.activities.FormatoRecibos;
 
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.Gestion;
@@ -72,6 +73,7 @@ import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.MESSAGE;
 import static com.sidert.sidertmovil.utils.Constants.PICTURE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CAMARA_TICKET;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_DISPOSITIVO;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_IMPRESORA;
 import static com.sidert.sidertmovil.utils.Constants.RES_PRINT;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
@@ -358,10 +360,7 @@ public class ReciboActivity extends AppCompatActivity {
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            /**Se manda informacion para poder realizar la impresiones
-             * como el monto a cobrar tipo de cobro y datos para realizar consultas*/
             Guardar(0);
-
             Intent i_formato_recibo = new Intent(ctx, FormatoRecibos.class);
             i_formato_recibo.putExtra("grupo_id", recibo.getGrupoId());
             i_formato_recibo.putExtra("num_solicitud", recibo.getNumSolicitud());
@@ -372,6 +371,7 @@ public class ReciboActivity extends AppCompatActivity {
             i_formato_recibo.putExtra("meses", recibo.getPlazo());
             i_formato_recibo.putExtra("res_impresion", 0);
             i_formato_recibo.putExtra("is_reeimpresion", false);
+
             startActivityForResult(i_formato_recibo, REQUEST_CODE_IMPRESORA);
         }
     };
@@ -513,6 +513,7 @@ public class ReciboActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
+
             case REQUEST_CODE_IMPRESORA:/**Respuesta a la peticion de la impresora*/
                 if (resultCode == Activity.RESULT_OK){/**Valida que la clase de impresora mando una respuesta*/
                     if (data != null){

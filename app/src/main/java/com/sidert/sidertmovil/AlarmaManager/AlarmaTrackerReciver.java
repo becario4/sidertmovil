@@ -266,7 +266,7 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                             ss.SendTracker(ctx, false);
                             ss.SaveCierreDia(ctx, false);
                             ss.GetTickets(ctx, false);
-
+                            ss .SendConsultaCC(ctx, false);
                             //ss.MontoAutorizado(ctx, false);
                             //ss.SendOriginacionInd (ctx, false);
                             //ss.SendOriginacionGpo(ctx, false);

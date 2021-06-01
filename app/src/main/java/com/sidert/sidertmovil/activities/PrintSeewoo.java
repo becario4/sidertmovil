@@ -36,6 +36,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lvrenyang.io.BTPrinting;
+import com.lvrenyang.io.Page;
+import com.lvrenyang.io.Pos;
+import com.lvrenyang.io.base.IOCallBack;
 import com.sewoo.port.android.BluetoothPort;
 import com.sewoo.request.android.RequestHandler;
 import com.sidert.sidertmovil.R;
@@ -46,6 +50,7 @@ import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.PrintTicket;
+import com.sidert.sidertmovil.utils.Prints;
 import com.sidert.sidertmovil.utils.ReprintTicket;
 
 import java.io.FileNotFoundException;
@@ -54,6 +59,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IMPRESIONES_VENCIDA;
@@ -68,7 +75,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 
 /**Clase para un preview de la impresion de las gestiones de VIGENTE, COBRANZA, VENCIDA de individual o grupal*/
-public class PrintSeewoo extends AppCompatActivity {
+public class PrintSeewoo extends AppCompatActivity implements IOCallBack {
 
     private static final int REQUEST_ENABLE_BT = 2;
 
@@ -109,6 +116,12 @@ public class PrintSeewoo extends AppCompatActivity {
 
     private MReimpresion mReimpresion;
 
+    //IMPRESORA GOOJPRT
+    PrintSeewoo mFormatoRecibos;
+    Page mPage = new Page();
+    Pos mPos = new Pos();
+    BTPrinting mBt = new BTPrinting();
+    ExecutorService es = Executors.newScheduledThreadPool(30);
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -116,7 +129,7 @@ public class PrintSeewoo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print_seewoo);
         ctx = this;
-
+        mFormatoRecibos = this;
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
 
@@ -277,15 +290,40 @@ public class PrintSeewoo extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
-
                 item.setResultPrint(0);
-                new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+                if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP")) {
+                    es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
+                }
+                else{
+
+                    new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print), "O");
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
     };
 
+    public class TaskOpen implements Runnable
+    {
+        BTPrinting bt = null;
+        String address = null;
+        Context context = null;
+
+        public TaskOpen(BTPrinting bt, String address, Context context)
+        {
+            this.bt = bt;
+            this.address = address;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            bt.Open(address,context);
+            Log.e("CONEXION", "EJECUTA");
+        }
+    }
     /**Evento de click para realizar la impresion copia*/
     private View.OnClickListener btnPrintCopy_OnClick = new View.OnClickListener() {
         @Override
@@ -325,6 +363,46 @@ public class PrintSeewoo extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public void OnOpen() {
+        es.submit(new TaskPrint(mPos));
+    }
+    public class TaskPrint implements Runnable
+    {
+        //Page page = null;
+        Pos pos = null;
+
+        /*
+        public TaskPrint(Page page)
+        {
+            this.page = page;
+        }*/
+
+        public TaskPrint(Pos pos)
+        {
+            this.pos = pos;
+        }
+
+        @Override
+        public void run() {
+            final int bPrintResult = Prints.PrintTicketRyC(getApplicationContext(), pos, 384, true, false, true, 1, 1, 0, item);
+            //final int bPrintResult = Prints.PrintTicket(getApplicationContext(), page, 384, 800);
+            final boolean bIsOpened = pos.GetIO().IsOpened();
+
+            mFormatoRecibos.runOnUiThread(() -> Toast.makeText(ctx.getApplicationContext(), (bPrintResult == 0) ? "SUCCESS" : "ERROR" + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show());
+        }
+    }
+    @Override
+    public void OnOpenFailed() {
+        Toast.makeText(this, "No se pudo Establer la Conexión", Toast.LENGTH_SHORT).show();
+        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
+    }
+
+    @Override
+    public void OnClose() {
+        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
+    }
 
     // Bluetooth Connection Task.
     /**Tarea asincrona para conectar con la impresora y realizar las reimpresiones*/
@@ -677,11 +755,11 @@ public class PrintSeewoo extends AppCompatActivity {
         bluetoothPort = BluetoothPort.getInstance();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothPort.isConnected()){
-            Log.e("bluetooth", "Conectado");
+            Log.e("bluetooth Seewoo", "Conectado");
             clearBtDevData();
             btnPrintCopy.setEnabled(false);
         }else {
-            Log.e("bluetooth", "No Conectado");
+            Log.e("bluetooth Seewoo", "No Conectado");
             btnPrintOriginal.setEnabled(true);
             btnPrintCopy.setEnabled(false);
             clearBtDevData();
