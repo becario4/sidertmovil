@@ -442,7 +442,6 @@ public class PrintTicket {
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "historial de pagos o ingresa al ");
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: "+url.toString());
 
-
                 dobleEspacio();
             }
 

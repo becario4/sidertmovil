@@ -49,6 +49,8 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
         if (prestamo.getGrupoId() == 1) {
             holder.tvNombre.setText(prestamo.getNombreCliente().substring(1));
+            holder.tvFechaDesembolso.setText(prestamo.getFechaEntrega());
+
             if (prestamo.getEstatusRecibo() == -1)
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipo);
             else
@@ -56,6 +58,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
         }
         else {
             holder.tvNombre.setText(prestamo.getNombreGrupo());
+            holder.tvFechaDesembolso.setText(prestamo.getFechaEntrega());
             if (prestamo.getEstatusRecibo() == -1)
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipo);
             else
@@ -73,6 +76,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         private TextView tvNombre;
+        private TextView tvFechaDesembolso;
         private ImageView ivTipo;
 
         public ViewHolder(@NonNull View iv)
@@ -80,6 +84,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
             super(iv);
 
             tvNombre = iv.findViewById(R.id.tvNombre);
+            tvFechaDesembolso = iv.findViewById(R.id.tvFechaDesembolso);
             ivTipo  = iv.findViewById(R.id.ivTipo);
         }
 

@@ -672,6 +672,12 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INT_MANUAL_AGF); }
         catch (Exception e) { Log.e("ADD_TOTAL_INT_MANUAL", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_FECHA_ENTREGA_PRESTAMOS_AV); }
+        catch (Exception e) { Log.e("ADD_FECHA_ENTREGA_PRESTAMOS_AV", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV); }
+        catch (Exception e) { Log.e("ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV", "ya contiene la columna"); }
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {

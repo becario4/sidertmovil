@@ -48,6 +48,7 @@ import com.sidert.sidertmovil.models.apoyogastosfunerarios.GestionDao;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.Prestamo;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.PrestamoDao;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.Recibo;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ReciboDao;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
@@ -65,6 +66,7 @@ import java.io.IOException;
 import java.security.Guard;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
@@ -85,6 +87,7 @@ public class ReciboActivity extends AppCompatActivity {
     private Context ctx;
 
     GestionDao gestionDao;
+    ReciboDao reciboDao;
     PrestamoDao prestamoDao;
 
     private SessionManager session;
@@ -93,6 +96,7 @@ public class ReciboActivity extends AppCompatActivity {
 
     private EditText etTipoCobro;
     private EditText etNombre;
+    private EditText etFechDesembolso;
     private EditText etIntegrantes;
     private EditText etNumIntegrantesManual;
     private EditText etMeses;
@@ -154,6 +158,7 @@ public class ReciboActivity extends AppCompatActivity {
 
         etTipoCobro         = findViewById(R.id.etTipoCobro);
         etNombre            = findViewById(R.id.etNombre);
+        etFechDesembolso    = findViewById(R.id.etFechaDesembolso);
         etIntegrantes       = findViewById(R.id.etIntegrantes);
         etMeses             = findViewById(R.id.etMesesPrestamo);
         etMonto             = findViewById(R.id.etMonto);
@@ -193,6 +198,7 @@ public class ReciboActivity extends AppCompatActivity {
         llDuracionPrestamo.setVisibility(View.VISIBLE);
 
         etNombre.setText(recibo.getNombre());
+        etFechDesembolso.setText(getIntent().getStringExtra("fecha_entrega"));
         etIntegrantes.setText(String.valueOf(recibo.getNumIntegrantes()));
         etNumIntegrantesManual.setText("");
         etMeses.setText(String.valueOf(recibo.getPlazo()) + " MESES");
@@ -200,7 +206,8 @@ public class ReciboActivity extends AppCompatActivity {
 
         /**Se cargan arreglos como medios de pagos, y de impresion*/
         _medio_pago = getResources().getStringArray(R.array.medio_pago);
-        _imprimir = getResources().getStringArray(R.array.imprimir);
+        //_imprimir = getResources().getStringArray(R.array.imprimir);
+        _imprimir = new String[] {"SI"};
         _opcionesImpresionManual = new String[]{"SI", "NO"};
 
         /**Eventos de click para la recuperacion*/
@@ -282,17 +289,22 @@ public class ReciboActivity extends AppCompatActivity {
                                     llImprimirRecibo.setVisibility(View.VISIBLE);
                                     ibGaleria.setEnabled(false);
                                     ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                                    ibFoto.setEnabled(false);
+                                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                                    tvImprimirRecibo.setText("SI");
+                                    SelectImprimirRecibos(0);
                                 }
                                 else{
                                     llImprimirRecibo.setVisibility(View.GONE);
                                     ibGaleria.setEnabled(true);
                                     ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                    ibGaleria.setVisibility(View.VISIBLE);
+                                    ibFoto.setEnabled(true);
+                                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                    ibFoto.setVisibility(View.VISIBLE);
+                                    llFotoGaleria.setVisibility(View.VISIBLE);
+                                    ivEvidencia.setVisibility(View.GONE);
                                 }
-
-                                ibFoto.setVisibility(View.VISIBLE);
-                                ibGaleria.setVisibility(View.VISIBLE);
-                                llFotoGaleria.setVisibility(View.VISIBLE);
-                                ivEvidencia.setVisibility(View.GONE);
                             });
                     builder.create();
                     builder.show();
@@ -341,7 +353,7 @@ public class ReciboActivity extends AppCompatActivity {
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.imprimir, new DialogInterface.OnClickListener() {
+                    .setItems(new String[] {"SI"}, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int position) {
                             tvImprimirRecibo.setError(null);
                             tvImprimirRecibo.setText(_imprimir[position]);
@@ -486,6 +498,11 @@ public class ReciboActivity extends AppCompatActivity {
                 }
                 else {
                     llFolioRecibo.setVisibility(View.GONE);
+
+                    ibGaleria.setEnabled(false);
+                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                    ibFoto.setEnabled(false);
+                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
                 }
                 break;
             case 1: //No cuenta con bateria la impresora captura folio manual
@@ -498,6 +515,20 @@ public class ReciboActivity extends AppCompatActivity {
                 etFolioRecibo.setHint(R.string.folio_sidert);
                 etFolioRecibo.setInputType(InputType.TYPE_CLASS_NUMBER);
                 ibImprimir.setVisibility(View.GONE);
+
+                tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvNumIntegrantesManual.setEnabled(false);
+                etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNumIntegrantesManual.setEnabled(false);
+                tvMedioPago.setEnabled(false);
+                tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                ibGaleria.setVisibility(View.VISIBLE);
+                ibFoto.setEnabled(true);
+                ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                ibFoto.setVisibility(View.VISIBLE);
+                llFotoGaleria.setVisibility(View.VISIBLE);
+                ivEvidencia.setVisibility(View.GONE);
+
                 break;
             default: // Sin seleccionar alguna opción o cualquier valor diferente
                 tvImprimirRecibo.setError("");
@@ -535,6 +566,16 @@ public class ReciboActivity extends AppCompatActivity {
                             etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
                             Guardar(0);
+
+                            if(data.getIntExtra(FOLIO,0) != 0)
+                            {
+                                ibGaleria.setVisibility(View.VISIBLE);
+                                ibFoto.setEnabled(true);
+                                ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                ibFoto.setVisibility(View.VISIBLE);
+                                llFotoGaleria.setVisibility(View.VISIBLE);
+                                ivEvidencia.setVisibility(View.GONE);
+                            }
                         }
                     }
                 }
@@ -552,6 +593,15 @@ public class ReciboActivity extends AppCompatActivity {
                         /**Se coloca la fotografia en el contenedor del imageView*/
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
                         Guardar(0);
+                        if(byteEvidencia != null)
+                        {
+                            tvMedioPago.setEnabled(false);
+                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            tvNumIntegrantesManual.setEnabled(false);
+                            etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etNumIntegrantesManual.setEnabled(false);
+                        }
                     }
                 }
                 break;
@@ -594,6 +644,16 @@ public class ReciboActivity extends AppCompatActivity {
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                         Guardar(0);
+
+                        if(byteEvidencia != null)
+                        {
+                            tvMedioPago.setEnabled(false);
+                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            tvNumIntegrantesManual.setEnabled(false);
+                            etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etNumIntegrantesManual.setEnabled(false);
+                        }
                     }catch (Exception e){
                         /**En caso de adjuntar un archivo con diferente extension al JPEG mostrara un mensaje*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "",
@@ -615,6 +675,7 @@ public class ReciboActivity extends AppCompatActivity {
 
     private void initComponents(){
         gestionDao = new GestionDao(ctx);
+        reciboDao = new ReciboDao(ctx);
         prestamoDao = new PrestamoDao(ctx);
 
         if(recibo.getGrupoId().equals("1"))
@@ -677,6 +738,8 @@ public class ReciboActivity extends AppCompatActivity {
                 etFolioRecibo.setText(recibo.getTipoRecibo() + "-"+session.getUser().get(0)+"-"+ recibo.getFolio());
                 tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvNumIntegrantesManual.setEnabled(false);
+                etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNumIntegrantesManual.setEnabled(false);
                 tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvMedioPago.setEnabled(false);
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -687,6 +750,15 @@ public class ReciboActivity extends AppCompatActivity {
                     etNumIntegrantesManual.setText(String.valueOf(gestion.getTotalIntegrantesManual()));
                     etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                     etNumIntegrantesManual.setEnabled(false);
+                }
+
+                if(recibo.getFolio() != null && !recibo.getFolio().trim().equals(""))
+                {
+                    Log.e("AQUI", "ENTRE Y TENGO FOLIO");
+                    ibFoto.setEnabled(true);
+                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    ivEvidencia.setVisibility(View.GONE);
                 }
 
                 if(!gestion.getEvidencia().isEmpty())
@@ -721,6 +793,10 @@ public class ReciboActivity extends AppCompatActivity {
                 etFolioRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvMedioPago.setEnabled(false);
+                tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvNumIntegrantesManual.setEnabled(false);
+                etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNumIntegrantesManual.setEnabled(false);
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
@@ -761,10 +837,23 @@ public class ReciboActivity extends AppCompatActivity {
                 }
             }
 
+            if(!gestion.getEvidencia().isEmpty()) {
+              tvMedioPago.setEnabled(false);
+              tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+              tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+              tvNumIntegrantesManual.setEnabled(false);
+              etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+              etNumIntegrantesManual.setEnabled(false);
+            }
+
             if(gestion.getEstatus() == 1 || gestion.getEstatus() == 2)
             {
                 tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvMedioPago.setEnabled(false);
+                tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvNumIntegrantesManual.setEnabled(false);
+                etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNumIntegrantesManual.setEnabled(false);
                 ibImprimir.setVisibility(View.GONE);
             }
 
@@ -774,25 +863,80 @@ public class ReciboActivity extends AppCompatActivity {
             }
         }
 
+        if(tvMedioPago.getText().toString().trim().length() == 0)
+        {
+            ibFoto.setVisibility(View.GONE);
+            ibGaleria.setVisibility(View.GONE);
+        }
+
         invalidateOptionsMenu();
     }
 
     private void Guardar (Integer estatus){
         boolean guardar = true;
+        List<Recibo> recibos = null;
 
         if(validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})) {
             Toast.makeText(ctx, "Seleccione el medio de pago!", Toast.LENGTH_SHORT).show();
             guardar = false;
         }
 
-        if(guardar && tvMedioPago.getText().toString().equals("EFECTIVO") && validatorTV.validate(tvImprimirRecibo, new String[]{validatorTV.REQUIRED})) {
-            Toast.makeText(ctx, "Seleccione va a imprimir recibos!", Toast.LENGTH_SHORT).show();
-            guardar = false;
+        //VALIDACIONES DE GUARDADO PARA TODOS LOS MEDIOS DE PAGO MENOS EFECTIVO
+        if(guardar && Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) != 6)
+        {
+            if(byteEvidencia == null)
+            {
+                guardar = false;
+                Toast.makeText(ctx, "Debe tomar una fotografía del pago o adjuntar la imagen desde la galería!", Toast.LENGTH_SHORT).show();
+            }
         }
 
-        if(guardar && etFolioRecibo.getText().toString().trim().isEmpty() && tvMedioPago.getText().toString().equals("EFECTIVO") && tvImprimirRecibo.getText().toString().equals("NO CUENTA CON BATERIA")){
-            guardar = false;
-            Toast.makeText(ctx, "Falta el folio del recibo!", Toast.LENGTH_SHORT).show();
+        //VALIDACIONES DE GUARDADO PARA EFECTIVO CON IMPRESION
+        if(guardar && tvMedioPago.getText().toString().equals("EFECTIVO")) {
+            if(validatorTV.validate(tvImprimirRecibo, new String[]{validatorTV.REQUIRED}))
+            {
+                Toast.makeText(ctx, "Seleccione si va a imprimir recibos!", Toast.LENGTH_SHORT).show();
+                guardar = false;
+            }
+            else
+            {
+                if(tvImprimirRecibo.getText().toString().equals("SI"))
+                {
+                    /*if(etFolioRecibo.getText().toString().trim().length() <= 0)
+                    {
+                        Toast.makeText(ctx, "No ha realizado la impresión del recibo!", Toast.LENGTH_SHORT).show();
+                        guardar = false;
+                    }*/
+                }
+            }
+        }
+
+        //VALIDACIONES DE GUARDADO PARA EFECTIVO SIN IMPRESION
+        if(guardar && tvMedioPago.getText().toString().equals("EFECTIVO")){
+            if(validatorTV.validate(tvImprimirRecibo, new String[]{validatorTV.REQUIRED}))
+            {
+                Toast.makeText(ctx, "Seleccione si va a imprimir recibos!", Toast.LENGTH_SHORT).show();
+                guardar = false;
+            }
+            else
+            {
+                if(tvImprimirRecibo.getText().toString().equals("NO CUENTA CON BATERIA"))
+                {
+                    if(etFolioRecibo.getText().toString().trim().isEmpty())
+                    {
+                        guardar = false;
+                        Toast.makeText(ctx, "Falta el folio del recibo!", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        if(byteEvidencia == null)
+                        {
+                            guardar = false;
+                            Toast.makeText(ctx, "Debe tomar una fotografía del pago o adjuntar la imagen desde la galería!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
         }
 
         if(guardar){
@@ -800,45 +944,53 @@ public class ReciboActivity extends AppCompatActivity {
                 gestion = new Gestion();
                 gestion.setGrupoId(recibo.getGrupoId());
                 gestion.setNumSolicitud(recibo.getNumSolicitud());
-                gestion.setMedioPago(tvMedioPago.getText().toString());
                 gestion.setFechaEnvio("");
                 gestion.setTipo(recibo.getTipoRecibo());
                 gestion.setNombre(recibo.getNombre());
-                gestion.setMonto(recibo.getMonto());
-                gestion.setFolioManual(etFolioRecibo.getText().toString().trim());
                 gestion.setClienteId(clienteId);
+            }
 
-                if(tvMedioPago.getText().toString().equals("EFECTIVO") && tvImprimirRecibo.getText().toString().equals("SI"))
-                {
-                    gestion.setImprimirRecibo("SI");
-                }
-                else{
-                    gestion.setImprimirRecibo("NO");
-                }
+            gestion.setMedioPago(tvMedioPago.getText().toString());
+            gestion.setMonto(recibo.getMonto());
 
-                if(recibo.getGrupoId().equals("1"))
+            if(tvMedioPago.getText().toString().equals("EFECTIVO") && tvImprimirRecibo.getText().toString().equals("SI"))
+            {
+                gestion.setImprimirRecibo("SI");
+                gestion.setFolioManual("");
+                tvMedioPago.setEnabled(false);
+                tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvNumIntegrantesManual.setEnabled(false);
+                etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNumIntegrantesManual.setEnabled(false);
+                tvImprimirRecibo.setEnabled(false);
+                tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            }
+            else{
+                gestion.setFolioManual(etFolioRecibo.getText().toString().trim());
+                gestion.setImprimirRecibo("NO");
+            }
+
+            if(recibo.getGrupoId().equals("1"))
+            {
+                gestion.setTotalIntegrantes(1);
+                gestion.setTotalIntegrantesManual(0);
+            }
+            else
+            {
+                if(tvNumIntegrantesManual.getText().equals("SI"))
                 {
-                    gestion.setTotalIntegrantes(1);
+                    gestion.setTotalIntegrantes(recibo.getNumIntegrantes());
                     gestion.setTotalIntegrantesManual(0);
                 }
                 else
                 {
-                    if(tvNumIntegrantesManual.getText().equals("SI"))
+                    if(prestamo != null)
                     {
-                        gestion.setTotalIntegrantes(recibo.getNumIntegrantes());
-                        gestion.setTotalIntegrantesManual(0);
+                        gestion.setTotalIntegrantes(prestamo.getNumIntegrantes());
                     }
-                    else
-                    {
 
-
-                        if(prestamo != null)
-                        {
-                            gestion.setTotalIntegrantes(prestamo.getNumIntegrantes());
-                        }
-
-                        gestion.setTotalIntegrantesManual(recibo.getNumIntegrantes());
-                    }
+                    gestion.setTotalIntegrantesManual(recibo.getNumIntegrantes());
                 }
             }
 
@@ -846,6 +998,12 @@ public class ReciboActivity extends AppCompatActivity {
             {
                 try {
                     gestion.setEvidencia(Miscellaneous.save(byteEvidencia, 2));
+                    tvMedioPago.setEnabled(false);
+                    tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                    tvNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                    tvNumIntegrantesManual.setEnabled(false);
+                    etNumIntegrantesManual.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                    etNumIntegrantesManual.setEnabled(false);
                 }
                 catch (IOException e) {
                     e.printStackTrace();
@@ -858,7 +1016,24 @@ public class ReciboActivity extends AppCompatActivity {
 
             gestion.setTipoImagen(tipoImagen);
 
-            if(gestion.getEvidencia() != null && !gestion.getEvidencia().equals("") && estatus > 0){
+            if(gestion.getGrupoId().equals("1"))
+            {
+                recibos = reciboDao.findAllByNombreAndNumSolicitud(gestion.getNombre(), gestion.getNumSolicitud());
+            }
+            else
+            {
+                recibos = reciboDao.findAllByGrupoIdAndNumSolicitud(gestion.getGrupoId(), gestion.getNumSolicitud());
+            }
+
+            if(
+                gestion.getEvidencia() != null
+                && !gestion.getEvidencia().equals("") && estatus > 0
+                && (
+                    recibos.size() > 1
+                    || !tvMedioPago.getText().toString().equals("EFECTIVO")
+                )
+            )
+            {
                 gestion.setEstatus(1);
                 gestion.setFechaTermino(Miscellaneous.ObtenerFecha(TIMESTAMP));
             }
@@ -876,20 +1051,27 @@ public class ReciboActivity extends AppCompatActivity {
             {
                 gestionDao.update(gestion.getId(), gestion);
             }
-        }
 
-        if((gestion.getEvidencia() != null && !gestion.getEvidencia().equals("")) || (gestion.getFolioManual() != null && !gestion.getFolioManual().equals(""))){
-            if(gestion.getEstatus() == 1)
-            {
-                Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                ss.SendRecibos(ctx, false);
-                finish();
-            }
-            else{
-                Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                ss.SendRecibos(ctx, false);
+            if((gestion.getEvidencia() != null && !gestion.getEvidencia().equals("")) || (gestion.getFolioManual() != null && !gestion.getFolioManual().equals("")) || (recibo.getFolio() != null && !recibo.getFolio().trim().equals(""))){
+                if(gestion.getEstatus() == 1)
+                {
+                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                    ss.SendRecibos(ctx, false);
+                    finish();
+                }
+                else{
+                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                    ss.SendRecibos(ctx, false);
+                }
             }
         }
+    }
+
+    private void EnableInptus()
+    {
+        //SI SE HA GUARDADO PREVIAMENTE
+
+        //SI ES NUEVO
     }
 
     /**se carga el menu para guardar la gestion pero se valida también si se ocultaria porque ya fue guardado*/

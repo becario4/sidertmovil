@@ -3038,6 +3038,69 @@ public class Servicios_Sincronizado {
 
     }
 
+    public void CloseGestionesApoyoGastosFunerarios(Context ctx)
+    {
+        GestionDao gestionDao = new GestionDao(ctx);
+        PrestamoDao prestamoDao = new PrestamoDao(ctx);
+        ReciboDao reciboDao = new ReciboDao(ctx);
+
+        List<Gestion> gestiones;
+        List<Integer> estatus = new ArrayList<Integer>();
+
+        //SE USA EN AGF
+        estatus.add(0);
+        estatus.add(1);
+
+        gestiones = gestionDao.findAllByEstatusLastWeek(estatus);
+
+        for(Gestion g : gestiones)
+        {
+            if(g.getEstatus() == 0) g.setEstatus(1);
+
+            List<Recibo> recibos = null;
+
+            if(g.getGrupoId().equals("1"))
+            {
+                recibos = reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud());
+            }
+            else
+            {
+                recibos = reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud());
+            }
+
+            if(recibos.size() > 0)
+            {
+                for(Recibo r : recibos)
+                {
+                    new GuardarAgf().execute(ctx, g, r);
+                }
+            }
+            else
+            {
+                Recibo r = new Recibo();
+                Prestamo p = null;
+
+                if(g.getGrupoId().equals("1"))
+                {
+                    p = prestamoDao.findByClienteIdAndNumSolicitud(g.getClienteId(), Integer.parseInt(g.getNumSolicitud()));
+                }
+                else
+                {
+                    p = prestamoDao.findByGrupoIdAndNumSolicitud(Integer.parseInt(g.getGrupoId()), Integer.parseInt(g.getNumSolicitud()));
+                }
+
+                r.setPlazo( (p == null)? 0 : p.getPlazo() );
+
+                new GuardarAgf().execute(ctx, g, r);
+            }
+        }
+    }
+
+    public void CloseGestionesCobroCirculoCredtio(Context ctx)
+    {
+
+    }
+
     public void SendSoporte(Context ctx, boolean showDG){
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
@@ -7214,7 +7277,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part foto = null;
 
-            if(gestion.getEstatus() != null && !gestion.getEvidencia().isEmpty())
+            if(gestion.getEstatus() != null && !gestion.getEvidencia().isEmpty() && gestion.getEvidencia() != null)
             {
                 File image_foto = new File(ROOT_PATH + "Evidencia/"+ gestion.getEvidencia());
                 if (image_foto != null)
@@ -7242,14 +7305,25 @@ public class Servicios_Sincronizado {
             tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
             fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
 
-            if (Miscellaneous.GetMedioPagoId(gestion.getMedioPago()) == 6 &&  (gestion.getFolioManual().isEmpty() || gestion.getFolioManual() == null) ) {
+            if (Miscellaneous.GetMedioPagoId(gestion.getMedioPago()) == 6 &&  (gestion.getFolioManual().isEmpty() || gestion.getFolioManual() == null) && recibo.getTipoImpresion() != null) {
                 folioBody = RequestBody.create(MultipartBody.FORM, "AGF-" + session.getUser().get(0) + "-" + recibo.getFolio());
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, recibo.getTipoImpresion());
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, recibo.getFechaImpresion());
             }
 
             RequestBody montoBody = RequestBody.create(MultipartBody.FORM, gestion.getMonto());
-            RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+            RequestBody fechaEnvioBody;
+
+            if(recibo.getFechaEnvio() != null && !recibo.getFechaEnvio().trim().equals(""))
+            {
+                fechaEnvioBody = RequestBody.create(MultipartBody.FORM, recibo.getFechaEnvio());
+            }
+            else
+            {
+                fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            }
+
             RequestBody plazoBody = RequestBody.create(MultipartBody.FORM, String.valueOf(recibo.getPlazo()));
             RequestBody totalIntegrantes = RequestBody.create(MultipartBody.FORM, String.valueOf(gestion.getTotalIntegrantes()));
             RequestBody totalIntegrantesManual = RequestBody.create(MultipartBody.FORM, String.valueOf(gestion.getTotalIntegrantesManual()));
@@ -7286,19 +7360,39 @@ public class Servicios_Sincronizado {
                             {
                                 if(recibo.getId() != null)
                                 {
-                                    recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    if(recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals(""))
+                                    {
+                                        recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    }
+
                                     reciboDao.update(recibo.getId(), recibo);
                                 }
                             }
                             else{
                                 if(recibo.getId() != null) {
-                                    recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    if(recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals(""))
+                                    {
+                                        recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    }
+
                                     recibo.setEstatus(1);
                                     reciboDao.update(recibo.getId(), recibo);
                                 }
 
                                 gestion.setEstatus(2);
-                                gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                                if(gestion.getFechaEnvio() == null || gestion.getFechaEnvio().trim().equals(""))
+                                {
+                                    //gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    if(recibo.getFechaEnvio() != null)
+                                    {
+                                        gestion.setFechaEnvio(recibo.getFechaEnvio());
+                                    }
+                                    else {
+                                        gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    }
+                                }
+
                                 gestionDao.update(gestion.getId(), gestion);
                             }
 
@@ -7411,7 +7505,11 @@ public class Servicios_Sincronizado {
                         {
                             if(reciboCC.getId() != null)
                             {
-                                reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim() == "")
+                                {
+                                    reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                }
+
                                 reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
                             }
                         }
@@ -7419,12 +7517,20 @@ public class Servicios_Sincronizado {
                         {
                             if(reciboCC.getId() != null)
                             {
-                                reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim() == "")
+                                {
+                                    reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                }
+
                                 reciboCC.setEstatus(1);
                                 reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
                             }
 
-                            gestionCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            if(gestionCC.getFechaEnvio() == null || gestionCC.getFechaEnvio().trim() == "")
+                            {
+                                gestionCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            }
+
                             gestionCC.setEstatus(2);
                             gestionCirculoCreditoDao.update(gestionCC.getId(), gestionCC);
                         }

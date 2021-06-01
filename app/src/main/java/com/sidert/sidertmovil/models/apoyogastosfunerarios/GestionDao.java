@@ -87,6 +87,11 @@ public class GestionDao {
         cv.put("fecha_termino", gestion.getFechaTermino());
         cv.put("fecha_envio", gestion.getFechaEnvio());
         cv.put("estatus", gestion.getEstatus());
+        cv.put("medio_pago", gestion.getMedioPago());
+        cv.put("monto", gestion.getMonto());
+        cv.put("imprimir_recibo", gestion.getImprimirRecibo());
+        cv.put("folio_manual", gestion.getFolioManual());
+        cv.put("total_integrantes", gestion.getTotalIntegrantes());
         cv.put("total_integrantes_manual", gestion.getTotalIntegrantesManual());
 
         db.update(TBL_RECUPERACION_RECIBOS, cv, "_id = ?", new String[]{String.valueOf(id)});
@@ -228,13 +233,69 @@ public class GestionDao {
         return gestiones;
     }
 
+    public List<Gestion> findAllByEstatusLastWeek(List<Integer> estatus)
+    {
+        List<Gestion> gestiones = new ArrayList<>();
+        String where = "WHERE rr.estatus IN (";
+
+        for(int i = 0; i < estatus.size(); i++)
+        {
+            where = where + estatus.get(i);
+
+            if(i < estatus.size() - 1) where = where + ", ";
+        }
+
+        String sql = "SELECT rr.* " +
+                "FROM " + TBL_RECUPERACION_RECIBOS + " AS rr " + where +
+                ") " +
+                "and date('now', '%w') in (0, 6) " +
+                "and rr.fecha_envio <=  date('now')" +
+                "ORDER BY rr.fecha_termino DESC ";
+        Cursor row = db.rawQuery(sql, new String[]{});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                Gestion g = new Gestion();
+                g.setId(row.getInt(0));
+                g.setGrupoId(row.getString(1));
+                g.setNumSolicitud(row.getString(2));
+                g.setMedioPago(row.getString(3));
+                g.setEvidencia(row.getString(4));
+                g.setTipoImagen(row.getString(5));
+                g.setFechaTermino(row.getString(6));
+                g.setFechaEnvio(row.getString(7));
+                g.setTipo(row.getString(8));
+                g.setNombre(row.getString(9));
+                g.setEstatus(row.getInt(10));
+                g.setMonto(row.getString(11));
+                g.setImprimirRecibo(row.getString(12));
+                g.setFolioManual(row.getString(13));
+                g.setClienteId(row.getString(14));
+                g.setTotalIntegrantes(row.getInt(15));
+                g.setTotalIntegrantesManual(row.getInt(16));
+
+                gestiones.add(g);
+
+                row.moveToNext();
+            }
+        }
+
+        row.close();
+
+        return gestiones;
+    }
+
     public List<Gestion> findAllByCustomFilters(String[] filters)
     {
         List<Gestion> gestiones = new ArrayList<>();
 
         String sql = "SELECT rr.*, COALESCE(r.folio, '') AS folioImpresion " +
                 "FROM " + TBL_RECUPERACION_RECIBOS + " AS rr " +
-                "LEFT JOIN " + TBL_RECIBOS_AGF_CC + " AS r ON r.grupo_id = rr.grupo_id AND r.num_solicitud = rr.num_solicitud AND r.tipo_recibo = rr.tipo AND r.tipo_impresion = '0' " +
+                "LEFT JOIN " + TBL_RECIBOS_AGF_CC + " AS r ON r.grupo_id = rr.grupo_id AND r.num_solicitud = rr.num_solicitud AND r.tipo_recibo = rr.tipo AND r.tipo_impresion = 'O' " +
                 "WHERE rr.estatus in (1, 2) " +
                 "AND rr.nombre LIKE '%'||?||'%' " +
                 "AND (rr.estatus = 2 OR ? = '0') " +

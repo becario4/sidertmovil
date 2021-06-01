@@ -2452,6 +2452,12 @@ public class SidertTables {
                 " ADD COLUMN plazo" +
                 " INTEGER DEFAULT 0";
 
+        static final String ADD_FECHA_ENTREGA_PRESTAMOS_AV = "ALTER TABLE " + TBL_PRESTAMOS +
+                " ADD COLUMN fecha_entrega" +
+                " TEXT DEFAULT ''";
 
+        static final String ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV = "ALTER TABLE " + TBL_PRESTAMOS +
+                " ADD COLUMN estatus_prestamo_id" +
+                " INTEGER DEFAULT 3";
     }
 }

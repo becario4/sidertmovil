@@ -511,13 +511,13 @@ public class Home extends AppCompatActivity {
                             menuGeneral.getItem(5).setVisible(true);
                             break;
                         case "originacion":/**Si tiene permiso de originacion*/
-                            menuGeneral.getItem(6).setVisible(true);
+                            //menuGeneral.getItem(6).setVisible(true);
                             break;
                         case "renovacion":/**Si tiene permiso de renovacion*/
-                            menuGeneral.getItem(7).setVisible(true);
+                            //menuGeneral.getItem(7).setVisible(true);
                             break;
                         case "solicitudes":/**Si tiene permiso de solicitudes*/
-                            menuGeneral.getItem(8).setVisible(true);
+                            //menuGeneral.getItem(8).setVisible(true);
                             break;
                         case "sesiones":/**Si tiene permiso de sesiones*/
                             menuGeneral.getItem(9).setVisible(true);

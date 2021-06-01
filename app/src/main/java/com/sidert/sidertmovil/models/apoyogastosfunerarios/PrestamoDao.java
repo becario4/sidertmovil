@@ -49,6 +49,8 @@ public class PrestamoDao {
             prestamo.setFechaNacimiento(row.getString(10));
             prestamo.setEdad(row.getString(11));
             prestamo.setMonto(row.getString(12));
+            prestamo.setFechaEntrega(row.getString(13));
+            prestamo.setEstatusPrestamoId(row.getInt(14));
         }
 
         row.close();
@@ -79,6 +81,8 @@ public class PrestamoDao {
             prestamo.setFechaNacimiento(row.getString(10));
             prestamo.setEdad(row.getString(11));
             prestamo.setMonto(row.getString(12));
+            prestamo.setFechaEntrega(row.getString(13));
+            prestamo.setEstatusPrestamoId(row.getInt(14));
         }
 
         row.close();
@@ -97,7 +101,9 @@ public class PrestamoDao {
                 "AND (r._id is null or r.estatus < 2) " +
                 "AND ((p.nombre_grupo like '%'||?||'%' AND p.grupo_id > 1) OR (p.nombre_cliente LIKE '%'||?||'%' AND p.grupo_id = 1)) " +
                 "AND (p.grupo_id > 1 OR ? = '0') " +
-                "AND (p.grupo_id = 1 OR ? = '0')";
+                "AND (p.grupo_id = 1 OR ? = '0')" +
+                "AND p.fecha_entrega between DATE('now', '-180 day') and DATE('now', '+10 day')" +
+                "AND p.estatus_prestamo_id in (2, 3)";
         Cursor row = db.rawQuery(sql, filters);
 
         if (row.getCount() > 0){
@@ -119,7 +125,9 @@ public class PrestamoDao {
                 p.setFechaNacimiento(row.getString(10));
                 p.setEdad(row.getString(11));
                 p.setMonto(row.getString(12));
-                p.setEstatusRecibo(row.getInt(13));
+                p.setFechaEntrega(row.getString(13));
+                p.setEstatusPrestamoId(row.getInt(14));
+                p.setEstatusRecibo(row.getInt(15));
 
                 prestamos.add(p);
 
@@ -148,9 +156,11 @@ public class PrestamoDao {
             "nombre_cliente, " +
             "fecha_nacimiento, " +
             "edad, " +
-            "monto" +
+            "monto," +
+            "fecha_entrega," +
+            "estatus_prestamo_id" +
         ") " +
-        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         SQLiteStatement pInsert = db.compileStatement(sql);
 
@@ -166,6 +176,8 @@ public class PrestamoDao {
         pInsert.bindString(10, prestamo.getFechaNacimiento());
         pInsert.bindString(11, prestamo.getEdad());
         pInsert.bindString(12, prestamo.getMonto());
+        pInsert.bindString(13, prestamo.getFechaEntrega());
+        pInsert.bindString(14, String.valueOf(prestamo.getEstatusPrestamoId()));
 
         pInsert.execute();
 
@@ -185,6 +197,8 @@ public class PrestamoDao {
         cv.put("fecha_nacimiento", prestamo.getFechaNacimiento());
         cv.put("edad", prestamo.getEdad());
         cv.put("monto", prestamo.getMonto());
+        cv.put("fecha_entrega", prestamo.getFechaEntrega());
+        cv.put("estatus_prestamo_id", prestamo.getEstatusPrestamoId());
 
         db.update(TBL_PRESTAMOS, cv, "_id = ?", new String[]{String.valueOf(id)});
     }
@@ -195,6 +209,8 @@ public class PrestamoDao {
 
         String sql = "SELECT DISTINCT(pivot.nombre) AS nombre FROM (" +
                 "SELECT (CASE WHEN p.grupo_id = 1 THEN substr(p.nombre_cliente, 2) ELSE p.nombre_grupo END) AS nombre FROM " + TBL_PRESTAMOS + " AS p " +
+                "where p.fecha_entrega between DATE('now', '-180 day') and DATE('now', '+10 day')" +
+                "AND p.estatus_prestamo_id in (2, 3) " +
                 ") AS pivot";
         Cursor row = db.rawQuery(sql, new String[]{});
 

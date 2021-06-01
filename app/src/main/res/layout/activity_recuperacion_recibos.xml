@@ -57,6 +57,28 @@
                         android:layout_height="@dimen/et_height" />
                 </LinearLayout>
 
+                <!--  Fecha desembolso  -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textStyle="bold"
+                        android:textColor="@color/blue_sidert"
+                        android:text="Fecha de desembolso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/etFechaDesembolso"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height" />
+                </LinearLayout>
+
                 <!--  Nombre  -->
                 <LinearLayout
                     android:orientation="vertical"

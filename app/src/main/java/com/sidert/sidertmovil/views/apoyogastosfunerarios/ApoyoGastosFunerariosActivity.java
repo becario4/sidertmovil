@@ -155,83 +155,78 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
 
         if(prestamos.size() > 0)
         {
-            PrestamosAdapter adapter = new PrestamosAdapter(ctx, prestamos, new PrestamosAdapter.Event() {
-                @Override
-                public void AgfOnClick(Prestamo prestamo) {
-                    ReciboDao reciboDao = new ReciboDao(ctx);
-                    Recibo recibo;
+            PrestamosAdapter adapter = new PrestamosAdapter(ctx, prestamos, prestamo -> {
+                ReciboDao reciboDao = new ReciboDao(ctx);
+                Recibo recibo;
 
-                    if(prestamo.getGrupoId() == 1)
-                    {
-                        recibo = reciboDao.findByNombreAndNumSolicitudAndTipoImpresion(prestamo.getNombreCliente(0), String.valueOf(prestamo.getNumSolicitud()), "O");
-                    }
-                    else
-                    {
-                        recibo = reciboDao.findByGrupoIdAndNumSolicitudAndTipoImpresion(String.valueOf(prestamo.getGrupoId()), String.valueOf(prestamo.getNumSolicitud()), "O");
-                    }
+                if(prestamo.getGrupoId() == 1)
+                {
+                    recibo = reciboDao.findByNombreAndNumSolicitudAndTipoImpresion(prestamo.getNombreCliente(0), String.valueOf(prestamo.getNumSolicitud()), "O");
+                }
+                else
+                {
+                    recibo = reciboDao.findByGrupoIdAndNumSolicitudAndTipoImpresion(String.valueOf(prestamo.getGrupoId()), String.valueOf(prestamo.getNumSolicitud()), "O");
+                }
 
-                    if(recibo == null)
+                if(recibo == null)
+                {
+                    recibo = new Recibo();
+                    recibo.setGrupoId(String.valueOf(prestamo.getGrupoId()));
+                    recibo.setNumSolicitud(String.valueOf(prestamo.getNumSolicitud()));
+                    recibo.setTipoRecibo("AGF");
+
+                    if(prestamo.getGrupoId() > 1)
                     {
-                        recibo = new Recibo();
-                        recibo.setGrupoId(String.valueOf(prestamo.getGrupoId()));
-                        recibo.setNumSolicitud(String.valueOf(prestamo.getNumSolicitud()));
+                        recibo.setNombre(prestamo.getNombreGrupo());
+                        recibo.setNombreFirma(prestamo.getTesorero());
                         recibo.setNumIntegrantes(prestamo.getNumIntegrantes());
-                        recibo.setTipoRecibo("AGF");
-
-                        if(prestamo.getGrupoId() > 1)
-                        {
-                            recibo.setNombre(prestamo.getNombreGrupo());
-                            recibo.setNombreFirma(prestamo.getTesorero());
-                            recibo.setNumIntegrantes(prestamo.getNumIntegrantes());
-                        }
-                        else {
-                            recibo.setNombre(prestamo.getNombreCliente().substring(1));
-                            recibo.setNombreFirma(prestamo.getNombreCliente().substring(1));
-                            recibo.setNumIntegrantes((Integer.parseInt(prestamo.getEdad()) < 70 && Double.parseDouble(prestamo.getMonto()) <= 29000)?1:0);
-                        }
-
-                        recibo.setPlazo(prestamo.getPlazo());
-                        recibo.setMonto(String.valueOf((recibo.getPlazo() * getCostoUnitario()) * recibo.getNumIntegrantes()));
                     }
-                    else
+                    else {
+                        recibo.setNombre(prestamo.getNombreCliente().substring(1));
+                        recibo.setNombreFirma(prestamo.getNombreCliente().substring(1));
+                        recibo.setNumIntegrantes((Integer.parseInt(prestamo.getEdad()) < 70 && Double.parseDouble(prestamo.getMonto()) <= 29000)?1:0);
+                    }
+
+                    recibo.setPlazo(prestamo.getPlazo());
+                    recibo.setMonto(String.valueOf((recibo.getPlazo() * getCostoUnitario()) * recibo.getNumIntegrantes()));
+                }
+                else
+                {
+                    //SE RECUPERA EL NUMERO ORIGINAL DE INTEGRANTES YA QUE NO SE GUARDA EN EL RECIBO SI SELECCIONAR INTEGRANTES MANUALES
+                    if(prestamo.getGrupoId() > 1)
                     {
-                        //SE RECUPERA EL NUMERO ORIGINAL DE INTEGRANTES YA QUE NO SE GUARDA EN EL RECIBO SI SELECCIONAR INTEGRANTES MANUALES
-                        if(prestamo.getGrupoId() > 1)
-                        {
-                            recibo.setNombreFirma(prestamo.getTesorero());
-                        }
-                        else {
-                            recibo.setNombreFirma(prestamo.getNombreCliente().substring(1));
-                        }
-
-                        recibo.setNumIntegrantes(prestamo.getNumIntegrantes());
-
+                        recibo.setNombreFirma(prestamo.getTesorero());
+                    }
+                    else {
+                        recibo.setNombreFirma(prestamo.getNombreCliente().substring(1));
                     }
 
-                    if(recibo.getNumIntegrantes() > 0)
-                    {
-                        //Log.e("AQUI FOLIO", recibo.getFolio());
-                        Intent intentRecibo = new Intent(ctx, ReciboActivity.class);
-                        intentRecibo.putExtra("recibo", recibo);
-                        intentRecibo.putExtra("res_impresion", 0);
-                        intentRecibo.putExtra("is_reeimpresion", false);
-                        intentRecibo.putExtra("cliente_id", prestamo.getClienteId());
-                        intentRecibo.putExtra("costo_unitario", getCostoUnitario());
-                        intentRecibo.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    recibo.setNumIntegrantes(prestamo.getNumIntegrantes());
+                }
 
-                        startActivity(intentRecibo);
-                    }
-                    else if(Integer.parseInt(prestamo.getEdad()) >= 70)
-                    {
-                        Toast.makeText(ctx, "Esta persona tiene mas de 70 años", Toast.LENGTH_SHORT).show();
-                    }
-                    else if(Double.parseDouble(prestamo.getMonto()) > 29000)
-                    {
-                        Toast.makeText(ctx, "El monto del prestamo es mayor a 29,000", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(ctx, "No se hace cobro de apoyo a gastos funerarios", Toast.LENGTH_SHORT).show();
-                    }
+                if(recibo.getNumIntegrantes() > 0)
+                {
+                    Intent intentRecibo = new Intent(ctx, ReciboActivity.class);
+                    intentRecibo.putExtra("recibo", recibo);
+                    intentRecibo.putExtra("res_impresion", 0);
+                    intentRecibo.putExtra("is_reeimpresion", false);
+                    intentRecibo.putExtra("cliente_id", prestamo.getClienteId());
+                    intentRecibo.putExtra("costo_unitario", getCostoUnitario());
+                    intentRecibo.putExtra("fecha_entrega", prestamo.getFechaEntrega());
+                    intentRecibo.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    startActivity(intentRecibo);
+                }
+                else if(Integer.parseInt(prestamo.getEdad()) >= 70)
+                {
+                    Toast.makeText(ctx, "Esta persona tiene mas de 70 años", Toast.LENGTH_SHORT).show();
+                }
+                else if(Double.parseDouble(prestamo.getMonto()) > 29000)
+                {
+                    Toast.makeText(ctx, "El monto del prestamo es mayor a 29,000", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(ctx, "No se hace cobro de apoyo a gastos funerarios", Toast.LENGTH_SHORT).show();
                 }
             });
 

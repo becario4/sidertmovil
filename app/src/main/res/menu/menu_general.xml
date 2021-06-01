@@ -40,13 +40,13 @@
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item

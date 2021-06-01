@@ -56,6 +56,30 @@ public class Prestamo implements Serializable {
     @Expose
     private String monto;
 
+    @SerializedName("fecha_entrega")
+    @Expose
+    private String fechaEntrega;
+
+    @SerializedName("estatus_prestamo_id")
+    @Expose
+    private Integer estatusPrestamoId;
+
+    public Integer getEstatusPrestamoId() {
+        return estatusPrestamoId;
+    }
+
+    public void setEstatusPrestamoId(Integer estatusPrestamoId) {
+        this.estatusPrestamoId = estatusPrestamoId;
+    }
+
+    public String getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(String fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
     private Integer estatusRecibo;
 
     public Integer getId() {

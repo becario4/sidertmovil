@@ -149,7 +149,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recuperacion_c_c);
 
         _medio_pago     = getResources().getStringArray(R.array.medio_pago);
-        _imprimir       = getResources().getStringArray(R.array.imprimir);
+        //_imprimir       = getResources().getStringArray(R.array.imprimir);
+        _imprimir       = new String[]{"SI"};
         _costo_consulta = getResources().getStringArray(R.array.costo_consulta);
 
         ctx = this;
@@ -393,12 +394,16 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                                                     /**Si selecciona medio de pago EFECTIVO tendra que imprimir recibos y tomar fotografia o adjunto*/
                                                     if (misc.GetMedioPagoId(misc.GetStr(tvMedioPago)) == 6) {
                                                         llImprimirRecibo.setVisibility(View.VISIBLE);
+                                                        ibGaleria.setVisibility(View.VISIBLE);
                                                         ibGaleria.setEnabled(false);
                                                         ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
                                                         ibFoto.setVisibility(View.VISIBLE);
-                                                        ibGaleria.setVisibility(View.VISIBLE);
+                                                        ibFoto.setEnabled(false);
+                                                        ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
                                                         llFotoGaleria.setVisibility(View.VISIBLE);
                                                         ivEvidencia.setVisibility(View.GONE);
+                                                        tvImprimirRecibo.setText("SI");
+                                                        SelectImprimirRecibos(0);
                                                     }
                                                     else{
                                                         /**Medio de pago diferente a efectivo solo tomara una fotografia o adjunto*/
@@ -406,8 +411,10 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                                                         llFolioRecibo.setVisibility(View.GONE);
                                                         ibGaleria.setEnabled(true);
                                                         ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
-                                                        ibFoto.setVisibility(View.VISIBLE);
                                                         ibGaleria.setVisibility(View.VISIBLE);
+                                                        ibFoto.setEnabled(true);
+                                                        ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                                        ibFoto.setVisibility(View.VISIBLE);
                                                         llFotoGaleria.setVisibility(View.VISIBLE);
                                                         ivEvidencia.setVisibility(View.GONE);
                                                     }
@@ -443,7 +450,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             /**Muestra dialogo para saber si va imprimir recibos*/
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.imprimir, (dialog, position) -> {
+                    .setItems(new String[]{"SI"}, (dialog, position) -> {
                         tvImprimirRecibo.setError(null);
                         tvImprimirRecibo.setText(_imprimir[position]);
                         SelectImprimirRecibos(position);
@@ -628,6 +635,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
             tvCostoConsulta.setText(gestionCC.getCostoConsulta());
             tvCostoConsulta.setEnabled(false);
+            tvCostoConsulta.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
             etClienteGrupo.setText(gestionCC.getNombreUno());
             etClienteGrupo.setEnabled(false);
@@ -646,6 +654,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             etIntegrantes.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
             tvMedioPago.setText(gestionCC.getMedioPago());
+            tvMedioPago.setEnabled(false);
+            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
             if (
                 gestionCC.getMedioPago().equals("EFECTIVO")
@@ -677,7 +687,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
-                if(!gestionCC.getEvidencia().isEmpty())
+                if(!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null)
                 {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
@@ -715,7 +725,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
-                if (!gestionCC.getEvidencia().isEmpty())
+                if (!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null)
                 {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
@@ -823,6 +833,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             tvTipo.setError("");
         }
 
+        if(guardar && validatorTV.validate(tvCostoConsulta, new String[]{validatorTV.REQUIRED}))
+        {
+            guardar = false;
+            Toast.makeText(ctx, "Falta seleccionar el costo de la consulta!", Toast.LENGTH_SHORT).show();
+        }
+
         if(guardar && validator.validate(etClienteGrupo, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))
         {
             guardar = false;
@@ -835,7 +851,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             Toast.makeText(ctx, "Ingrese una CURP valida!", Toast.LENGTH_SHORT).show();
         }
 
-        if(!guardar && misc.CurpValidador(misc.GetStr(etCurpCliente)))
+        if(guardar && !misc.CurpValidador(misc.GetStr(etCurpCliente)))
         {
             guardar = false;
             etCurpCliente.setError("No corresponde a una CURP válida!");
@@ -845,7 +861,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         if(
             guardar
             && rgTipo.getCheckedRadioButtonId() == R.id.rbGpo
-            && validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))
+            && validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})
+        )
         {
             guardar = false;
             Toast.makeText(ctx, "No cuenta con un representante!", Toast.LENGTH_SHORT).show();
@@ -863,14 +880,29 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
         if(
             guardar
-            && validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS})
+            && validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
         )
         {
             guardar = false;
-            Toast.makeText(ctx, "No ha seleccionado el medio de pago!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "Falta seleccionar el medio de pago!", Toast.LENGTH_SHORT).show();
         }
 
         if(
+            guardar
+            && !validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
+        )
+        {
+            if(!misc.GetStr(tvMedioPago).equals("EFECTIVO"))
+            {
+                if(byteEvidencia == null)
+                {
+                    guardar = false;
+                    Toast.makeText(ctx, "Debe tomar una fotografía del pago o adjuntar la imagen desde la galería!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        /*if(
             guardar
             && tvMedioPago.getText().toString().equals("EFECTIVO")
             && validatorTV.validate(tvImprimirRecibo, new String[]{validatorTV.REQUIRED})
@@ -878,8 +910,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         {
             guardar = false;
             Toast.makeText(ctx, "Debe imprimir el recibo!", Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
+        /*
         if(
             guardar
             && tvMedioPago.getText().toString().equals("EFECTIVO")
@@ -889,8 +922,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         )
         {
             guardar = false;
-            Toast.makeText(ctx, "Falta el folio del recib!", Toast.LENGTH_SHORT).show();
-        }
+            Toast.makeText(ctx, "Falta el folio del recibo!", Toast.LENGTH_SHORT).show();
+        }*/
 
 
         if(guardar)
@@ -930,7 +963,6 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     gestionCC.setFolio(0);
                 }
 
-
                 gestionCC.setFechaTermino("");
                 gestionCC.setFechaEnvio("");
                 gestionCC.setEstatus(0);
@@ -943,8 +975,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
                 try {
                     gestionCC.setEvidencia(misc.save(byteEvidencia, 2));
-                    gestionCC.setEstatus(1);
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -956,6 +989,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
             if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0)
             {
+                gestionCC.setEstatus(1);
                 gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
             }
 
@@ -967,13 +1001,36 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             {
                 gestionCirculoCreditoDao.update(gestionCC.getId(), gestionCC);
             }
-        }
 
-        if (guardar){
             Servicios_Sincronizado ss = new Servicios_Sincronizado();
             ss.SendRecibos(ctx, false);
 
-            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0){
+            for (int i = 0; i < rgTipo.getChildCount(); i++)
+            {
+                rgTipo.getChildAt(i).setEnabled(false);
+            }
+
+            tvCostoConsulta.setEnabled(false);
+            etClienteGrupo.setEnabled(false);
+            etCurpCliente.setEnabled(false);
+            etAvalRepresentate.setEnabled(false);
+            etIntegrantes.setEnabled(false);
+            tvMedioPago.setEnabled(false);
+            tvImprimirRecibo.setEnabled(false);
+
+            tvCostoConsulta.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etClienteGrupo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etCurpCliente.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etAvalRepresentate.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            etIntegrantes.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+
+
+            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0)
+            {
+                ibFoto.setEnabled(false);
+                ibGaleria.setEnabled(false);
                 finish();
             }
         }
