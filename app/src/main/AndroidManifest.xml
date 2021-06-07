@@ -11,11 +11,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activities.EligeImpresora" />
         <activity  android:name=".views.pdfreader.PdfReaderActivity"/>
         <activity android:name=".activities.CobrosCC" />
         <activity android:name=".activities.ConsultadosCC" />
         <activity android:name=".views.circulocredito.CirculoCreditoActivity" />
         <activity android:name=".activities.ConsultarCC" />
+        <activity android:name=".activities.FormularioCC" />
+
         <activity android:name=".activities.SolicitudIntegrante" />
         <activity android:name=".activities.SolicitudGpo" />
         <activity android:name=".activities.SolicitudInd" />

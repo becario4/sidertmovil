@@ -18,11 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;*/
-import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -46,6 +44,7 @@ import com.crashlytics.android.Crashlytics;*/
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
+import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
@@ -293,6 +292,11 @@ public class Home extends AppCompatActivity {
                     Intent help = new Intent(ctx, PdfReaderActivity.class);
                     startActivity(help);
                     break;
+      /*          case R.id.nvConsultaCC: --Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones
+                    Intent consulta_cc = new Intent(getApplicationContext(), ConsultarCC.class);
+                    startActivity(consulta_cc);
+                    break;
+                    */
                 default:/**Manda directo a la validacion de inicio de sesion o cartera*/
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);

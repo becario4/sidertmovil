@@ -16,6 +16,8 @@ import com.lvrenyang.io.Page;
 import com.lvrenyang.io.Pos;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.MImpresion;
+import com.sidert.sidertmovil.models.MReimpresion;
 import com.sidert.sidertmovil.models.RecibosAgfCC;
 
 import org.json.JSONException;
@@ -59,10 +61,14 @@ public class Prints {
                             pos.POS_S_Align(1);
                             pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
                             pos.POS_S_Align(0);
-                            pos.POS_TextOut("En caso de dudas o aclaraciones\r\n", 4, 0, 0, 0, 0, 0);
-                            pos.POS_TextOut("comunicarse al 01 800 112 6666\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                            pos.POS_TextOut("SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)\r\n", 4, 0, 0, 0, 0, 0);
-
+                            pos.POS_TextOut("En caso de dudas o aclaraciones\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_TextOut("comunicarse al 800 112 6666\r\n\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_TextOut("SERVICIOS INTEGRALES PARA EL\r\nDESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_S_Align(0);
+                            bm = getImageFromAssetsFile(ctx, "line.png");
+                            pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+                            //pos.POS_TextOut("________________________________\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_S_Align(1);
                             if(ticket.getTipoRecibo().equals("CC"))
                             {
                                 pos.POS_TextOut("CIRCULO DE CREDITO\r\n", 4, 0, 0, 0, 0, 0);
@@ -74,24 +80,26 @@ public class Prints {
 
                             if(ticket.isReeimpresion())
                             {
-                                pos.POS_TextOut("\r\n\r\nREIMPRESION\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("\r\nREIMPRESION\r\n", 4, 0, 1, 1, 0, 0x08);
                             }
 
                             if (ticket.getTipoImpresion().equals("O"))
                             {
-                                pos.POS_TextOut("\r\n\r\nORIGINAL\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("\r\nOriginal\r\n\r\n", 4, 0, 0, 0, 0, 0);
                             }
                             else
                             {
-                                pos.POS_TextOut("\r\n\r\nCOPIA\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("\r\nCopia\r\n\r\n", 4, 0, 0, 0, 0, 0);
                             }
-
-                            pos.POS_TextOut("Fecha y hora: " + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
 
                             if(ticket.getTipoRecibo().equals("AGF"))
                             {
-                                pos.POS_TextOut("Recibos de: " + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("Monto del pago      \r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Recibos de:" + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_FeedLine();
+                                pos.POS_S_Align(1);
+                                pos.POS_TextOut("Monto del pago\r\n\r\n", 4, 0, 1, 0, 0, 0);
                             }
                             else
                             {
@@ -112,27 +120,33 @@ public class Prints {
                                     jex.printStackTrace();
                                 }
                             }
-
-                            pos.POS_TextOut("Monto: " + Miscellaneous.moneyFormat(ticket.getMonto()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                            pos.POS_TextOut("      Cantidad  en  letra       ", 4, 0, 0, 0, 0, 0);
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("Monto:" + Miscellaneous.moneyFormat(ticket.getMonto()) + "\r\n", 4, 0, 1, 0, 0, 0);
+                            pos.POS_S_Align(1);
+                            pos.POS_TextOut("\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("Cantidad en letra\r\n", 4, 0, 0x00, 0x00, 0, 0);
 
                             if (ticket.getMonto().contains(".5"))
                             {
-                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + "pesos 50/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 50/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
                             }
                             else
                             {
-                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + "pesos 00/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 00/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
                             }
-
+                            pos.POS_S_Align(0);
                             if (ticket.getTipoImpresion().equals("O")){ //Original
                                 pos.POS_TextOut("Firma Asesor: \r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("________________________________\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
                             }
                             else {
                                 pos.POS_TextOut("Firma Cliente: \r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("________________________________\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
+
                             }
+                            bm = getImageFromAssetsFile(ctx, "linea2.png");
+                            pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+                            pos.POS_TextOut("\r\n"+replaceStr(ticket.getNombreFirma().trim())+"\r\n\r\n", 4, 0, 0, 0, 0, 0);
 
                             String sql =  "";
 
@@ -321,15 +335,17 @@ public class Prints {
 
                             switch (ticket.getTipoRecibo()){
                                 case "CC":
-                                    pos.POS_TextOut("Folio: CC-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Folio:             CC-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
                                     break;
                                 case "AGF":
-                                    pos.POS_TextOut("Folio: AGF-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                    break;
+                                    pos.POS_TextOut("Folio:             AGF-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                   break;
                             }
-
+                            pos.POS_S_Align(1);
                             pos.POS_TextOut("NO  OLVIDES  VERIFICAR  TU  PAGO\r\n", 4, 0, 0, 0, 0, 0);
                             pos.POS_TextOut("El recibo debe de coincidir con lo entregado.\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_FeedLine();
+                            pos.POS_S_Align(0);
                             pos.POS_TextOut("El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial.\r\n\r\n\r\n", 4, 0, 0, 0, 0, 0);
 
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
@@ -359,7 +375,64 @@ public class Prints {
 
         return bPrintResult;
     }
+    public static int PrintTicketRyC(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, MImpresion ticket)
+    {
+        int bPrintResult = -6;
+        byte[] status = new byte[1];
+        SessionManager session = new SessionManager(ctx);
+        DBhelper dBhelper = new DBhelper(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+        Cursor row;
+        HashMap<Integer, String> params;
+        int count_folio = 0;
 
+        if (pos.POS_RTQueryStatus(status, 1, 3000, 2) && ((status[0] & 0x12) == 0x12)) {
+            if ((status[0] & 0x08) == 0) {
+                if(pos.POS_QueryStatus(status, 3000, 2)) {
+                    Bitmap bm = getImageFromAssetsFile(ctx, "logo_impresion.png");
+
+                    for(int i = 0; i < nCount; ++i)
+                    {
+                        if(!pos.GetIO().IsOpened())
+                            break;
+
+                        if(nPrintContent >= 1)
+                        {
+                            pos.POS_FeedLine();
+                            pos.POS_S_Align(1);
+                            if (ticket.getTipoPrestamo().contains("VENCIDA")){
+                                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_cv);
+                            }
+                             else{
+                                bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
+                            }
+                          pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+
+                        }
+                    }
+
+
+
+                    if(bBeeper)
+                        pos.POS_Beep(1, 5);
+                    if(bCutter)
+                        pos.POS_CutPaper();
+                    if(bDrawer)
+                        pos.POS_KickDrawer(0, 100);
+
+                    bPrintResult = pos.POS_TicketSucceed(0, 30000);
+                } else {
+                    bPrintResult = -8;
+                }
+            } else {
+                bPrintResult = -4;
+            }
+        } else {
+            bPrintResult = -7;
+        }
+
+        return bPrintResult;
+    }
     public static int PrintTicket(Context ctx, Page page, int nPrintWidth, int nPrintHeight) {
         int bPrintResult = 1;
 
@@ -507,5 +580,15 @@ public class Prints {
         // to the ImageView, ImageButton or what ever
         return resizedBitmap;
     }
+    private static String replaceStr (String str){
+        String[] value = {"Á", "É", "Í", "Ó", "Ú", "á", "é", "í", "ó", "ú", "Ñ", "ñ"};
+        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u","N", "n"};
+
+        for (int i = 0; i < 12; i++){
+            str = str.replace(value[i],valueReplace[i]);
+        }
+        return str;
+    }
+
 }
 

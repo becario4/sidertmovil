@@ -135,6 +135,7 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
     Pos mPos = new Pos();
     BTPrinting mBt = new BTPrinting();
     ExecutorService es = Executors.newScheduledThreadPool(30);
+// NOMBRE Y DIRECCION IMPRESORA
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -304,8 +305,8 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
                 {
                     Log.e("IMPRESORA MTP", "ENTRE AQUI");
                     es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
-                    //es.submit(new TaskPrint(mPage));
-                    es.submit(new TaskPrint(mPos));
+
+
                 }
                 else{
                     new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
@@ -322,7 +323,15 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
         public void onClick(View v) {
             try {
                 ticket.setTipoImpresion("C");
-                new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
+                if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
+                {
+
+                    es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
+                    //es.submit(new TaskPrint(mPage));
+
+                }else {
+                    new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print), "C");
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -336,7 +345,16 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             ticket.setTipoImpresion("O");
             isReeimpresion = true;
             ticket.setReeimpresion(true);
-            new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+            if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
+            {
+
+                es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
+                //es.submit(new TaskPrint(mPage));
+
+            }else{
+                new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
+            }
+
         }
     };
 
@@ -347,23 +365,32 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             isReeimpresion = true;
             ticket.setReeimpresion(true);
             ticket.setTipoImpresion("C");
-            new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
+            if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
+            {
+                es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
+                //es.submit(new TaskPrint(mPage));
+
+            }else{
+                new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"C");
+            }
+
         }
     };
 
     @Override
     public void OnOpen() {
-
+        es.submit(new TaskPrint(mPos));
     }
 
     @Override
     public void OnOpenFailed() {
-
+        Toast.makeText(this, "No se pudo Establer la Conexión", Toast.LENGTH_SHORT).show();
+        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
     }
 
     @Override
     public void OnClose() {
-
+        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
     }
 
     public class TaskOpen implements Runnable
@@ -404,7 +431,7 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
 
         @Override
         public void run() {
-            final int bPrintResult = Prints.PrintTicket(getApplicationContext(), pos, 384, false, false, true, 1, 1, 0, ticket, obj);
+            final int bPrintResult = Prints.PrintTicket(getApplicationContext(), pos, 384, true, false, true, 1, 1, 0, ticket, obj);
             //final int bPrintResult = Prints.PrintTicket(getApplicationContext(), page, 384, 800);
             final boolean bIsOpened = pos.GetIO().IsOpened();
 
@@ -436,6 +463,7 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
                 /**Se realiza la conexion de la impresora con la direccion mac registrada en el archivo BTprinter
                  * Si no hubo ningun problema de conexion(emparejamiento) se retorna el valor 0 = success
                  * en caso de que no se logre conectar entra al catch y retorna el valor -1 = error*/
+
                 ban = (String) params[1];
                 bluetoothPort.connect((BluetoothDevice)params[0],true);
 
@@ -544,11 +572,13 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             try
             {
 
+
                 bluetoothPort.connect(params[0],true);
 
                 lastConnAddr = params[0].getAddress();
                 retVal = 0;
                 saveSettingFile();
+
             }
             catch (IOException e)
             {

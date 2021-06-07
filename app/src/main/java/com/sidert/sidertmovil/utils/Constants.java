@@ -20,6 +20,7 @@ public class Constants {
     public final static String CONTROLLER_RECIBOS     = "recibos";
     public final static String CONTROLLER_SOPORTE     = "soporte";
     public final static String CONTROLLER_APK         = "apk";
+   
 
 
     // ACTION BAR CONSTANTS
@@ -250,6 +251,7 @@ public class Constants {
 
     //==========================   REQUEST CODE   ==================================================
     public final static int REQUEST_CODE_FIRMA                     = 456;
+    public final static int REQUEST_CODE_DISPOSITIVO                    = 962;
     public final static int REQUEST_CODE_IMPRESORA                 = 963;
     public final static int REQUEST_CODE_INTEGRANTES_GPO           = 951;
     public final static int REQUEST_CODE_RESUMEN_INTEGRANTES_GPO   = 834;

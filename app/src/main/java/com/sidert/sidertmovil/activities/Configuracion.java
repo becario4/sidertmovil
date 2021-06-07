@@ -151,7 +151,7 @@ public class Configuracion extends AppCompatActivity {
                             //ss.GetSolicitudesRechazadasGpo(ctx, false);
 
                             /**Envia las consultas Realizadas de circulo de credito*/
-                            //ss.SendConsultaCC(ctx, false);
+                            ss.SendConsultaCC(ctx, false);
                             /**Envia las gestiones de cobros en efectivo de AGF y CC*/
                             ss.SendRecibos(ctx, false);
                             /**Obtiene el ultimo folio de impresiones de AGF y CC*/
@@ -191,8 +191,12 @@ public class Configuracion extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Servicios_Sincronizado sincronizado = new Servicios_Sincronizado();
-            if (NetworkStatus.haveWifi(ctx))
+            if (NetworkStatus.haveWifi(ctx)){
                 sincronizado.GetGeolocalizacion(ctx, true, true);
+
+            }
+
+
             else{
                 final AlertDialog success = Popups.showDialogMessage(ctx, Constants.not_network,
                         R.string.not_wifi, R.string.accept, new Popups.DialogMessage() {

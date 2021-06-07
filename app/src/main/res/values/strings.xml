@@ -330,7 +330,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
     <string name="clasificacion_riesgo">Clasificación de Riesgo</string>
 
-    <string name="fecha_nacimiento">Fecha Nacimiento</string>
+    <string name="fecha_nacimiento">Fecha De Nacimiento</string>
 
     <string name="genero">Género</string>
 
@@ -352,9 +352,9 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
     <string name="integrantes">Integrantes</string>
 
-    <string name="producto_credito">Producto Crédito</string>
+    <string name="producto_credito">Tipo de Producto</string>
 
-    <string name="credito_solicitado">Crédito Solicitado</string>
+    <string name="credito_solicitado">Monto Solicitado</string>
 
     <string name="ciudad">Ciudad</string>
 
@@ -603,5 +603,18 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>NO PAGO</item>              <!-- 1 -->
     </string-array>
 
-
+    <string name="Rmonto"></string>
+    <string name="RprimerNombre"></string>
+    <string name="RapellidoPaterno"></string>
+    <string name="RapellidoMaterno"></string>
+    <string name="Rcurp"></string>
+    <string name="Rrfc"></string>
+    <string name="Rdireccion"></string>
+    <string name="Rcolonia"></string>
+    <string name="Rmunicipio"></string>
+    <string name="Rciudad"></string>
+    <string name="Restado"></string>
+    <string name="Rcp"></string>
+    <string name="RfechaNacimiento"></string>
+    <string name="labeldispositivo">Dispositivos Detectados:</string>
 </resources>

@@ -3,6 +3,8 @@ package com.sidert.sidertmovil.adapters;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,15 +45,20 @@ public class adapter_consultas_cc extends RecyclerView.Adapter<adapter_consultas
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final HashMap<String, String> item = data.get(position);
-        holder.tvNombre.setText(item.get("nombre"));
-        holder.tvDireccion.setText(item.get("direccion"));
-        holder.tvProducto.setText(item.get("producto"));
 
+
+
+        holder.tvNombre.setText(item.get("nombre"));
+      //  holder.tvDireccion.setText(item.get("direccion"));
+        holder.tvProducto.setText(item.get("producto"));
+        holder.tvPreautorizacion.setText(item.get("preautorizacion"));
         switch (item.get("estatus")){
             case "0":
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_pendiente)).into(holder.ivEstatus);
                 break;
-            case "1":
+            case "200":
+                Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_enviado_yellow)).into(holder.ivEstatus);
+            case "202":
                 Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_enviado_yellow)).into(holder.ivEstatus);
                 break;
         }
@@ -60,6 +67,7 @@ public class adapter_consultas_cc extends RecyclerView.Adapter<adapter_consultas
             @Override
             public void onClick(View view) {
                 evento.OnClick(item);
+
             }
         });
 
@@ -77,14 +85,15 @@ public class adapter_consultas_cc extends RecyclerView.Adapter<adapter_consultas
         private TextView tvNombre;
         private TextView tvDireccion;
         private TextView tvProducto;
-
+        private TextView tvPreautorizacion;
         public ViewHolder(@NonNull View v) {
             super(v);
             ivEstatus = v.findViewById(R.id.ivEstatus);
             tvNombre    = v.findViewById(R.id.tvNombre);
-            tvDireccion = v.findViewById(R.id.tvDireccion);
+       //     tvDireccion = v.findViewById(R.id.tvDireccion);
             tvProducto  = v.findViewById(R.id.tvProducto);
             ivInfo      = v.findViewById(R.id.ivInfo);
+            tvPreautorizacion= v.findViewById(R.id.tvPreautorizacion);
         }
     }
 }

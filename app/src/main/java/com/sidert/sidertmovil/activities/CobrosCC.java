@@ -263,7 +263,7 @@ public class CobrosCC extends AppCompatActivity {
                     i_cc.putExtra("curp", item.get(3));
                     i_cc.putExtra("id_respuesta", Long.parseLong(item.get(0)));
                     i_cc.putExtra("circulo_credito", gestionCC);
-                    startActivity(i_cc);
+                   startActivityForResult(i_cc,RESULT_OK);
 
                 }
             });

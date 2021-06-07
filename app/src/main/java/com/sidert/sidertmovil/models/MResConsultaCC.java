@@ -4,16 +4,16 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MResConsultaCC implements Serializable {
-
+    @SerializedName("error4")
+    @Expose
+    private String error4;
     @SerializedName("ok")
     @Expose
     private Ok ok;
-    @SerializedName("error")
-    @Expose
-    private Error error;
 
     public Ok getOk() {
         return ok;
@@ -23,49 +23,320 @@ public class MResConsultaCC implements Serializable {
         this.ok = ok;
     }
 
-    public Error getError() {
-        return error;
+    public String getError4() {
+        return error4;
     }
 
-    public void setError(Error error) {
-        this.error = error;
+    public void setError4(String error4) {
+        this.error4 = error4;
     }
 
     public class Ok implements Serializable{
-
+        @SerializedName("res")
+        @Expose
+        private Respuesta res;
+        @SerializedName("err")
+        @Expose
+        private Errores err;
+        @SerializedName("id")
+        @Expose
+        private Long id;
+        @SerializedName("sucursal")
+        @Expose
+        private Long sucursal;
+        @SerializedName("usuario_id")
+        @Expose
+        private Long usuario_id;
+        @SerializedName("apellido_paterno")
+        @Expose
+        private String apellido_paterno;
+        @SerializedName("producto")
+        @Expose
+        private String producto;
+        @SerializedName("apellido_materno")
+        @Expose
+        private String apellido_materno;
+        @SerializedName("primer_nombre")
+        @Expose
+        private String primer_nombre;
+        @SerializedName("segundo_nombre")
+        @Expose
+        private String segundo_nombre;
+        @SerializedName("fecha_nacimiento")
+        @Expose
+        private String fecha_nacimiento;
+        @SerializedName("rfc")
+        @Expose
+        private String rfc;
+        @SerializedName("curp")
+        @Expose
+        private String curp;
+        @SerializedName("nacionalidad")
+        @Expose
+        private String nacionalidad;
+        @SerializedName("pdf")
+        @Expose
+        private String pdf;
+        @SerializedName("json")
+        @Expose
+        private String json;
+        @SerializedName("direccion")
+        @Expose
+        private String direccion;
+        @SerializedName("colonia_poblacion")
+        @Expose
+        private String colonia_poblacion;
+        @SerializedName("delegacion_municipio")
+        @Expose
+        private String delegacion_municipio;
+        @SerializedName("ciudad")
+        @Expose
+        private String ciudad;
+        @SerializedName("estado")
+        @Expose
+        private String estado;
+        @SerializedName("cp")
+        @Expose
+        private String cp;
+        @SerializedName("preautorizacion")
+        @Expose
+        private String preautorizacion;
+        @SerializedName("autorizacion")
+        @Expose
+        private String autorizacion;
+        @SerializedName("monto_solicitado")
+        @Expose
+        private Double monto_solicitado;
+        @SerializedName("usuario_autorizado_id")
+        @Expose
+        private Long usuario_autorizado_id;
+        @SerializedName("prospecto")
+        @Expose
+        private String prospecto;
+        @SerializedName("origen")
+        @Expose
+        private String origen;
         @SerializedName("folio")
         @Expose
         private String folio;
-        @SerializedName("folioConsulta")
+        @SerializedName("asesor_id")
         @Expose
-        private String folioConsulta;
-        @SerializedName("folioConsultaOtorgante")
+        private Long  asesor_id;
+        @SerializedName("imagen")
         @Expose
-        private String folioConsultaOtorgante;
-        @SerializedName("claveOtorgante")
+        private String imagen;
+        @SerializedName("bandera_imagen")
         @Expose
-        private String claveOtorgante;
-        @SerializedName("declaracionesConsumidor")
-        @Expose
-        private Object declaracionesConsumidor;
-        @SerializedName("persona")
-        @Expose
-        private Persona persona;
-        @SerializedName("consultas")
-        @Expose
-        private List<Consulta> consultas = null;
-        @SerializedName("creditos")
-        @Expose
-        private List<Credito> creditos = null;
-        @SerializedName("domicilios")
-        @Expose
-        private List<Domicilio> domicilios = null;
-        @SerializedName("empleos")
-        @Expose
-        private List<Empleo> empleos = null;
-        @SerializedName("mensajes")
-        @Expose
-        private List<Mensaje> mensajes = null;
+        private Boolean bandera_imagen;
+
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getSucursal() {
+            return sucursal;
+        }
+
+        public void setSucursal(Long sucursal) {
+            this.sucursal = sucursal;
+        }
+
+        public Long getUsuario_id() {
+            return usuario_id;
+        }
+
+        public void setUsuario_id(Long usuario_id) {
+            this.usuario_id = usuario_id;
+        }
+
+        public String getApellido_paterno() {
+            return apellido_paterno;
+        }
+
+        public void setApellido_paterno(String apellido_paterno) {
+            this.apellido_paterno = apellido_paterno;
+        }
+
+        public String getProducto() {
+            return producto;
+        }
+
+        public void setProducto(String producto) {
+            this.producto = producto;
+        }
+
+        public String getApellido_materno() {
+            return apellido_materno;
+        }
+
+        public void setApellido_materno(String apellido_materno) {
+            this.apellido_materno = apellido_materno;
+        }
+
+        public String getPrimer_nombre() {
+            return primer_nombre;
+        }
+
+        public void setPrimer_nombre(String primer_nombre) {
+            this.primer_nombre = primer_nombre;
+        }
+
+        public String getSegundo_nombre() {
+            return segundo_nombre;
+        }
+
+        public void setSegundo_nombre(String segundo_nombre) {
+            this.segundo_nombre = segundo_nombre;
+        }
+
+        public String getFecha_nacimiento() {
+            return fecha_nacimiento;
+        }
+
+        public void setFecha_nacimiento(String fecha_nacimiento) {
+            this.fecha_nacimiento = fecha_nacimiento;
+        }
+
+        public String getRfc() {
+            return rfc;
+        }
+
+        public void setRfc(String rfc) {
+            this.rfc = rfc;
+        }
+
+        public String getCurp() {
+            return curp;
+        }
+
+        public void setCurp(String curp) {
+            this.curp = curp;
+        }
+
+        public String getNacionalidad() {
+            return nacionalidad;
+        }
+
+        public void setNacionalidad(String nacionalidad) {
+            this.nacionalidad = nacionalidad;
+        }
+
+        public String getPdf() {
+            return pdf;
+        }
+
+        public void setPdf(String pdf) {
+            this.pdf = pdf;
+        }
+
+        public String getJson() {
+            return json;
+        }
+
+        public void setJson(String json) {
+            this.json = json;
+        }
+
+        public String getDireccion() {
+            return direccion;
+        }
+
+        public void setDireccion(String direccion) {
+            this.direccion = direccion;
+        }
+
+        public String getColonia_poblacion() {
+            return colonia_poblacion;
+        }
+
+        public void setColonia_poblacion(String colonia_poblacion) {
+            this.colonia_poblacion = colonia_poblacion;
+        }
+
+        public String getDelegacion_municipio() {
+            return delegacion_municipio;
+        }
+
+        public void setDelegacion_municipio(String delegacion_municipio) {
+            this.delegacion_municipio = delegacion_municipio;
+        }
+
+        public String getCiudad() {
+            return ciudad;
+        }
+
+        public void setCiudad(String ciudad) {
+            this.ciudad = ciudad;
+        }
+
+        public String getEstado() {
+            return estado;
+        }
+
+        public void setEstado(String estado) {
+            this.estado = estado;
+        }
+
+        public String getCp() {
+            return cp;
+        }
+
+        public void setCp(String cp) {
+            this.cp = cp;
+        }
+
+        public String getPreautorizacion() {
+            return preautorizacion;
+        }
+
+        public void setPreautorizacion(String preautorizacion) {
+            this.preautorizacion = preautorizacion;
+        }
+
+        public String getAutorizacion() {
+            return autorizacion;
+        }
+
+        public void setAutorizacion(String autorizacion) {
+            this.autorizacion = autorizacion;
+        }
+
+        public Double getMonto_solicitado() {
+            return monto_solicitado;
+        }
+
+        public void setMonto_solicitado(Double monto_solicitado) {
+            this.monto_solicitado = monto_solicitado;
+        }
+
+        public Long getUsuario_autorizado_id() {
+            return usuario_autorizado_id;
+        }
+
+        public void setUsuario_autorizado_id(Long usuario_autorizado_id) {
+            this.usuario_autorizado_id = usuario_autorizado_id;
+        }
+
+        public String getProspecto() {
+            return prospecto;
+        }
+
+        public void setProspecto(String prospecto) {
+            this.prospecto = prospecto;
+        }
+
+        public String getOrigen() {
+            return origen;
+        }
+
+        public void setOrigen(String origen) {
+            this.origen = origen;
+        }
 
         public String getFolio() {
             return folio;
@@ -75,87 +346,332 @@ public class MResConsultaCC implements Serializable {
             this.folio = folio;
         }
 
-        public String getFolioConsulta() {
-            return folioConsulta;
+        public Long getAsesor_id() {
+            return asesor_id;
         }
 
-        public void setFolioConsulta(String folioConsulta) {
-            this.folioConsulta = folioConsulta;
+        public void setAsesor_id(Long asesor_id) {
+            this.asesor_id = asesor_id;
         }
 
-        public String getFolioConsultaOtorgante() {
-            return folioConsultaOtorgante;
+        public String getImagen() {
+            return imagen;
         }
 
-        public void setFolioConsultaOtorgante(String folioConsultaOtorgante) {
-            this.folioConsultaOtorgante = folioConsultaOtorgante;
+        public void setImagen(String imagen) {
+            this.imagen = imagen;
         }
 
-        public String getClaveOtorgante() {
-            return claveOtorgante;
+        public Boolean getBandera_imagen() {
+            return bandera_imagen;
         }
 
-        public void setClaveOtorgante(String claveOtorgante) {
-            this.claveOtorgante = claveOtorgante;
+        public void setBandera_imagen(Boolean bandera_imagen) {
+            this.bandera_imagen = bandera_imagen;
         }
 
-        public Object getDeclaracionesConsumidor() {
-            return declaracionesConsumidor;
+        public Respuesta getRes() {
+            return res;
         }
 
-        public void setDeclaracionesConsumidor(Object declaracionesConsumidor) {
-            this.declaracionesConsumidor = declaracionesConsumidor;
+        public void setRes(Respuesta res) {
+            this.res = res;
         }
 
-        public Persona getPersona() {
-            return persona;
+        public Errores getErr() {
+            return err;
         }
 
-        public void setPersona(Persona persona) {
-            this.persona = persona;
-        }
-
-        public List<Consulta> getConsultas() {
-            return consultas;
-        }
-
-        public void setConsultas(List<Consulta> consultas) {
-            this.consultas = consultas;
-        }
-
-        public List<Credito> getCreditos() {
-            return creditos;
-        }
-
-        public void setCreditos(List<Credito> creditos) {
-            this.creditos = creditos;
-        }
-
-        public List<Domicilio> getDomicilios() {
-            return domicilios;
-        }
-
-        public void setDomicilios(List<Domicilio> domicilios) {
-            this.domicilios = domicilios;
-        }
-
-        public List<Empleo> getEmpleos() {
-            return empleos;
-        }
-
-        public void setEmpleos(List<Empleo> empleos) {
-            this.empleos = empleos;
-        }
-
-        public List<Mensaje> getMensajes() {
-            return mensajes;
-        }
-
-        public void setMensajes(List<Mensaje> mensajes) {
-            this.mensajes = mensajes;
+        public void setErr(Errores err) {
+            this.err = err;
         }
     }
+    public class Detail {
+        public String errorcode;
+        public String getErrorcode() {
+            return errorcode;
+        }
 
+        public void setErrorcode(String errorcode) {
+            this.errorcode = errorcode;
+        }
+    }
+    public class Fault {
+        public String faultstring;
+        public Detail detail;
+        public Detail getDetail() {
+            return detail;
+        }
+        public void setDetail(Detail detail) {
+            this.detail = detail;
+        }
+        public String getFaultstring() {
+            return faultstring;
+        }
+        public void setFaultstring(String faultstring) {
+            this.faultstring = faultstring;
+        }
+    }
+    public class Errores  implements Serializable{
+        @SerializedName("incidentId")
+        @Expose
+        public String incidentId;
+        @SerializedName("hostName")
+        @Expose
+        public String hostName;
+        @SerializedName("errorCode")
+        @Expose
+        public String errorCode;
+        @SerializedName("description")
+        @Expose
+        public String description;
+        @SerializedName("timeUtc")
+        @Expose
+        public String timeUtc;
+        @SerializedName("clientIp")
+        @Expose
+        public String clientIp;
+        @SerializedName("proxyId")
+        @Expose
+        public String proxyId;
+        @SerializedName("proxyIp")
+        @Expose
+        public String proxyIp;
+        @SerializedName("fault")
+        @Expose
+        public Fault fault=null;
+        @SerializedName("errores")
+        @Expose
+        private List<Error> errores = null;
+
+        public String getHostName() {
+            return hostName;
+        }
+        public void setHostName(String hostName) {
+            this.hostName = hostName;
+        }
+        public String getErrorCode() {
+            return errorCode;
+        }
+        public void setErrorCode(String errorCode) {
+            this.errorCode = errorCode;
+        }
+        public String getDescription() {
+            return description;
+        }
+        public void setDescription(String description) {
+            this.description = description;
+        }
+        public String getTimeUtc() {
+            return timeUtc;
+        }
+
+        public void setTimeUtc(String timeUtc) {
+            this.timeUtc = timeUtc;
+        }
+        public String getClientIp() {
+            return clientIp;
+        }
+        public void setClientIp(String clientIp) {
+            this.clientIp = clientIp;
+        }
+        public String getProxyId() {
+            return proxyId;
+        }
+        public void setProxyId(String proxyId) {
+            this.proxyId = proxyId;
+        }
+        public String getProxyIp() {
+            return proxyIp;
+        }
+
+        public void setProxyIp(String proxyIp) {
+            this.proxyIp = proxyIp;
+        }
+        public String getIncidentId() {
+            return incidentId;
+        }
+        public void setIncidentId(String incidentId) {
+            this.incidentId = incidentId;
+        }
+        public Errores errores(List<Error> errores) {
+            this.errores = errores;
+            return this;
+        }
+
+        public Errores addErroresItem(Error erroresItem) {
+            if (this.errores == null) {
+                    this.errores = new ArrayList<Error>();
+            }
+            this.errores.add(erroresItem);
+            return this;
+        }
+
+        /**
+         * Get errores
+         * @return errores
+         **/
+        // @ApiModelProperty(value = "")
+        public List<Error> getErrores() {
+            return errores;
+        }
+
+        public void setErrores(List<Error> errores) {
+            this.errores = errores;
+        }
+
+
+
+
+
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("class Errores {\n");
+
+            sb.append("    errores: ").append(toIndentedString(errores)).append("\n");
+            sb.append("}");
+            return sb.toString();
+        }
+
+        /**
+         * Convert the given object to string with each line indented by 4 spaces
+         * (except the first line).
+         */
+        private String toIndentedString(java.lang.Object o) {
+            if (o == null) {
+                return "null";
+            }
+            return o.toString().replace("\n", "\n    ");
+        }
+
+    }
+    public class Respuesta implements Serializable{
+
+    @SerializedName("folio")
+    @Expose
+    private String folio;
+    @SerializedName("folioConsulta")
+    @Expose
+    private String folioConsulta;
+    @SerializedName("folioConsultaOtorgante")
+    @Expose
+    private String folioConsultaOtorgante;
+    @SerializedName("claveOtorgante")
+    @Expose
+    private String claveOtorgante;
+    @SerializedName("declaracionesConsumidor")
+    @Expose
+    private Object declaracionesConsumidor;
+    @SerializedName("persona")
+    @Expose
+    private Persona persona;
+    @SerializedName("consultas")
+    @Expose
+    private List<Consulta> consultas = null;
+    @SerializedName("creditos")
+    @Expose
+    private List<Credito> creditos = null;
+    @SerializedName("domicilios")
+    @Expose
+    private List<Domicilio> domicilios = null;
+    @SerializedName("empleos")
+    @Expose
+    private List<Empleo> empleos = null;
+    @SerializedName("mensajes")
+    @Expose
+    private List<Mensaje> mensajes = null;
+
+    public String getFolio() {
+        return folio;
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+
+    public String getFolioConsulta() {
+        return folioConsulta;
+    }
+
+    public void setFolioConsulta(String folioConsulta) {
+        this.folioConsulta = folioConsulta;
+    }
+
+    public String getFolioConsultaOtorgante() {
+        return folioConsultaOtorgante;
+    }
+
+    public void setFolioConsultaOtorgante(String folioConsultaOtorgante) {
+        this.folioConsultaOtorgante = folioConsultaOtorgante;
+    }
+
+    public String getClaveOtorgante() {
+        return claveOtorgante;
+    }
+
+    public void setClaveOtorgante(String claveOtorgante) {
+        this.claveOtorgante = claveOtorgante;
+    }
+
+    public Object getDeclaracionesConsumidor() {
+        return declaracionesConsumidor;
+    }
+
+    public void setDeclaracionesConsumidor(Object declaracionesConsumidor) {
+        this.declaracionesConsumidor = declaracionesConsumidor;
+    }
+
+    public Persona getPersona() {
+        return persona;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
+    public List<Consulta> getConsultas() {
+        return consultas;
+    }
+
+    public void setConsultas(List<Consulta> consultas) {
+        this.consultas = consultas;
+    }
+
+    public List<Credito> getCreditos() {
+        return creditos;
+    }
+
+    public void setCreditos(List<Credito> creditos) {
+        this.creditos = creditos;
+    }
+
+    public List<Domicilio> getDomicilios() {
+        return domicilios;
+    }
+
+    public void setDomicilios(List<Domicilio> domicilios) {
+        this.domicilios = domicilios;
+    }
+
+    public List<Empleo> getEmpleos() {
+        return empleos;
+    }
+
+    public void setEmpleos(List<Empleo> empleos) {
+        this.empleos = empleos;
+    }
+
+    public List<Mensaje> getMensajes() {
+        return mensajes;
+    }
+
+    public void setMensajes(List<Mensaje> mensajes) {
+        this.mensajes = mensajes;
+    }
+
+}
     public class Consulta implements Serializable {
 
         @SerializedName("fechaConsulta")
@@ -281,7 +797,6 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Domicilio implements Serializable{
 
         @SerializedName("cp")
@@ -462,7 +977,6 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Empleo implements Serializable{
 
         @SerializedName("cp")
@@ -654,7 +1168,6 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Mensaje implements Serializable{
 
         @SerializedName("tipoMensaje")
@@ -681,7 +1194,6 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Persona implements Serializable{
 
         @SerializedName("curp")
@@ -719,7 +1231,7 @@ public class MResConsultaCC implements Serializable {
         private String nacionalidad;
         @SerializedName("residencia")
         @Expose
-        private Integer residencia;
+        private String residencia;
         @SerializedName("estadoCivil")
         @Expose
         private String estadoCivil;
@@ -824,11 +1336,11 @@ public class MResConsultaCC implements Serializable {
             this.nacionalidad = nacionalidad;
         }
 
-        public Integer getResidencia() {
+        public String getResidencia() {
             return residencia;
         }
 
-        public void setResidencia(Integer residencia) {
+        public void setResidencia(String residencia) {
             this.residencia = residencia;
         }
 
@@ -873,7 +1385,6 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Errore implements Serializable{
 
         @SerializedName("codigo")
@@ -900,23 +1411,31 @@ public class MResConsultaCC implements Serializable {
         }
 
     }
-
     public class Error implements Serializable{
 
-        @SerializedName("errores")
+        @SerializedName("codigo")
         @Expose
-        private List<Errore> errores = null;
+        private String codigo = null;
+        @SerializedName("mensaje")
+        @Expose
+        private String mensaje = null;
 
-        public List<Errore> getErrores() {
-            return errores;
+        public String getCodigo() {
+            return codigo;
         }
 
-        public void setErrores(List<Errore> errores) {
-            this.errores = errores;
+        public void setCodigo(String codigo) {
+            this.codigo = codigo;
         }
 
+        public String getMensaje() {
+            return mensaje;
+        }
+
+        public void setMensaje(String mensaje) {
+            this.mensaje = mensaje;
+        }
     }
-
     public class Credito implements Serializable{
 
         @SerializedName("can")

@@ -73,10 +73,18 @@
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"
         android:icon="@drawable/item_settings" />
-
+<!--- 12 -->
     <item
         android:id="@+id/nvGuiaRapida"
         android:title="Guía Rápida"
         android:icon="@drawable/ic_help_outline" />
+    <!-- 13 -->
+   <!-- <item
+        android:id="@+id/nvConsultaCC"
+        android:title="Consulta CC"
+        android:visible="true"
+        android:icon="@drawable/ic_cc_black"
 
+      />
+-->
 </menu>

@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,10 +40,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.FormatoRecibos;
+import com.sidert.sidertmovil.activities.FormularioCC;
 import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCreditoDao;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCredito;
@@ -55,6 +58,8 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -143,29 +148,29 @@ public class CirculoCreditoActivity extends AppCompatActivity {
     private ReciboCirculoCredito reciboCirculoCredito;
     private ReciboCirculoCreditoDao reciboCirculoCreditoDao;
 
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_c_c);
-
         _medio_pago     = getResources().getStringArray(R.array.medio_pago);
         //_imprimir       = getResources().getStringArray(R.array.imprimir);
         _imprimir       = new String[]{"SI"};
         _costo_consulta = getResources().getStringArray(R.array.costo_consulta);
-
         ctx = this;
-
         gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
         reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
-
         misc = new Miscellaneous();
-
         session = new SessionManager(ctx);
-
         tbMain = findViewById(R.id.tbMain);
-
         tvTipo          = findViewById(R.id.tvTipo);
         rgTipo          = findViewById(R.id.rgTipo);
+
+
+        //   button =findViewById(R.id.button);
+        //   button.setVisibility(View.GONE);
+        //   button.setOnClickListener(fbAgregarCC_OnClick);
+
         tvCostoConsulta         = findViewById(R.id.tvCostoConsulta);
         llClienteGrupo          = findViewById(R.id.llClienteGrupo);
         tvClienteGrupo          = findViewById(R.id.tvClienteGrupo);
@@ -180,7 +185,6 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         etIntegrantes   = findViewById(R.id.etIntegrantes);
         etMonto         = findViewById(R.id.etMonto);
         tvMedioPago     = findViewById(R.id.tvMedioPago);
-
         llDuracionPrestamo  = findViewById(R.id.llDuracionPrestamo);
         llImprimirRecibo    = findViewById(R.id.llImprimirRecibo);
         tvImprimirRecibo    = findViewById(R.id.tvImprimirRecibo);
@@ -192,7 +196,6 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         ibFoto              = findViewById(R.id.ibFoto);
         ibGaleria           = findViewById(R.id.ibGaleria);
         ivEvidencia         = findViewById(R.id.ivEvidencia);
-
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -202,6 +205,15 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         if(b != null)
         {
             gestionCC = (GestionCirculoCredito) getIntent().getExtras().get("circulo_credito");
+                if(gestionCC!=null){
+                    if(gestionCC.getEstatus()!=null){
+                        if(gestionCC.getEstatus()==2){
+
+                          //  button.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+
         }
 
         /**Evento de radiogroup para mostrar ciertos campos dependiendo la seleccion*/
@@ -330,6 +342,18 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         /**Funcion para inicializar los valores*/
         initComponents();
     }
+    private View.OnClickListener fbAgregarCC_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent formulario_cc = new Intent(getApplicationContext(), FormularioCC.class);
+            formulario_cc.putExtra("circulo_credito", gestionCC);
+
+
+            startActivityForResult  (formulario_cc,0);
+
+
+        }
+    };
 
     private View.OnClickListener tvCostoConsulta_OnClick = new View.OnClickListener() {
         @Override
@@ -623,7 +647,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
     private void initComponents()
     {
-        Log.e("AQUI ", new Gson().toJson(gestionCC));
+
         if(gestionCC.getId() != null)
         {
             for (int i = 0; i < rgTipo.getChildCount(); i++)
@@ -748,7 +772,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     llFotoGaleria.setVisibility(View.VISIBLE);
                     ivEvidencia.setVisibility(View.GONE);
                 }
-                else{
+
+                if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals(""))
+                {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
@@ -953,7 +979,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     gestionCC.setImprimirRecibo("SI");
                 }
 
-                if(estatus >= 0 && gestionCC.getImprimirRecibo().equals("SI"))
+                if(estatus >= 0 && gestionCC.getImprimirRecibo().equals("SI") && !etFolioRecibo.getText().toString().trim().equals(""))
                 {
                     String[] folio = etFolioRecibo.getText().toString().trim().split("-");
                     gestionCC.setFolio(Integer.parseInt(folio[2]));

@@ -84,6 +84,7 @@ public class RetrofitClient {
             case CONTROLLER_DENUNCIAS:
                 base_url = "http://sidert.ddns.net:81/serviciosidert/Api.svc/";
                 break;
+
         }
 
         Log.e("URL", base_url);

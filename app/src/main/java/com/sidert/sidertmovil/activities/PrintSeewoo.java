@@ -677,11 +677,11 @@ public class PrintSeewoo extends AppCompatActivity {
         bluetoothPort = BluetoothPort.getInstance();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothPort.isConnected()){
-            Log.e("bluetooth", "Conectado");
+            Log.e("bluetooth Seewoo", "Conectado");
             clearBtDevData();
             btnPrintCopy.setEnabled(false);
         }else {
-            Log.e("bluetooth", "No Conectado");
+            Log.e("bluetooth Seewoo", "No Conectado");
             btnPrintOriginal.setEnabled(true);
             btnPrintCopy.setEnabled(false);
             clearBtDevData();

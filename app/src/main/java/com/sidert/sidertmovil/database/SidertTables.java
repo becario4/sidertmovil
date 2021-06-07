@@ -1989,20 +1989,21 @@ public class SidertTables {
                 "estado_nac TEXT," +
                 "curp TEXT," +
                 "rfc TEXT," +
-                "calle TEXT," +
-                "cp TEXT," +
+                "direccion TEXT," +
                 "colonia TEXT," +
                 "municipio TEXT," +
                 "ciudad TEXT," +
                 "estado TEXT," +
+                "cp TEXT," +
                 "fecha_termino TEXT," +
                 "fecha_envio TEXT," +
-                "estatus INTEGER,"+
-                "saldo_actual TEXT,"+
-                "saldo_vencido TEXT,"+
-                "peor_pago TEXT,"+
-                "creditos_abiertos TEXT,"+
-                "credito_cerrados TEXT,"+
+                "saldo_actual,"+
+                "saldo_vencido,"+
+                "peor_pago,"+
+                "creditos_abiertos,"+
+                "credito_cerrados,"+
+                "preautorizacion TEXT,"+
+                "estatus TEXT,"+
                 "errores TEXT)";
         
         static final String CREATE_TBL_RECIBOS_CC = "CREATE TABLE " + TBL_RECIBOS_CC + " ( " +

@@ -94,7 +94,7 @@ public interface ManagerInterface {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET(WebServicesRoutes.WS_CONSULTA_CC)
+    @POST(WebServicesRoutes.WS_CONSULTA_CC)
     Call<MResConsultaCC> setConsultaCC(@Header("Authorization") String auth,
                                        @Body ConsultaCC obj);
 

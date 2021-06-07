@@ -971,7 +971,6 @@ public class DBhelper extends SQLiteOpenHelper {
 
     public long saveConsultaCC(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
-
         String sql = "INSERT INTO " + TBL_CONSULTA_CC + "(" +
                 "producto_credito," +
                 "monto_solicitado,"+
@@ -984,21 +983,16 @@ public class DBhelper extends SQLiteOpenHelper {
                 "estado_nac,"+
                 "curp,"+
                 "rfc,"+
-                "calle,"+
-                "cp,"+
+                "direccion,"+
                 "colonia,"+
                 "municipio,"+
                 "ciudad,"+
                 "estado,"+
+                "cp,"+
                 "fecha_termino,"+
                 "fecha_envio,"+
                 "estatus,"+
-                "saldo_actual,"+
-                "saldo_vencido,"+
-                "peor_pago,"+
-                "creditos_abiertos,"+
-                "credito_cerrados,"+
-                "errores) VALUES(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?)";
+                "errores) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //1  PRODUCTO
         pInsert.bindString(2, params.get(1));                   //2  MONTO_SOLICITADO
@@ -1011,21 +1005,17 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(9, params.get(8));                   //9  ESTADO_NAC
         pInsert.bindString(10, params.get(9));                  //10 CURP
         pInsert.bindString(11, params.get(10));                 //11 RFC
-        pInsert.bindString(12, params.get(11));                 //12 CALLE
-        pInsert.bindString(13, params.get(12));                 //13 CP
-        pInsert.bindString(14, params.get(13));                 //14 COLONIA
-        pInsert.bindString(15, params.get(14));                 //15 MUNICIPIO
-        pInsert.bindString(16, params.get(15));                 //16 CIUDAD
-        pInsert.bindString(17, params.get(16));                 //17 CIUDAD
+        pInsert.bindString(12, params.get(11));                 //12 DIRECCION
+        pInsert.bindString(13, params.get(12));                 //13 COLONIA
+        pInsert.bindString(14, params.get(13));                 //14 MUNICIPIO
+        pInsert.bindString(15, params.get(14));                 //15 CIUDAD
+        pInsert.bindString(16, params.get(15));                 //16 ESTADO
+        pInsert.bindString(17, params.get(16));                 //17 CP
+
         pInsert.bindString(18, params.get(17));                 //18 FECHA_TERMINO
         pInsert.bindString(19, params.get(18));                 //19 FECHA_ENVIO
         pInsert.bindLong(20, Long.parseLong(params.get(19)));   //20 ESTATUS
-        pInsert.bindString(21, params.get(20));                 //15 SALDO_ACTUAL
-        pInsert.bindString(22, params.get(21));                 //16 SALDO_VENCIDO
-        pInsert.bindString(23, params.get(22));                 //17 PEOR_PAGO
-        pInsert.bindString(24, params.get(23));                 //18 CREDITOS_ABIERTOS
-        pInsert.bindString(25, params.get(24));                 //19 CREDITOS_CERRADOS
-        pInsert.bindString(26, params.get(25));                 //20 ERRORES
+        pInsert.bindString(21, params.get(20));                 //20 ERRORES
 
         long id = pInsert.executeInsert();
 
