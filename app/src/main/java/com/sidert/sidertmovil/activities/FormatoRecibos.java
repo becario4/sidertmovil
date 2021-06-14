@@ -303,10 +303,17 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             try {
                 if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
                 {
-                    Log.e("IMPRESORA MTP", "ENTRE AQUI");
+                    btnOriginal.setEnabled(false);
+                    btnCopia.setEnabled(false);
+                    btnOriginalRe.setEnabled(false);
+                    btnCopiaRe.setEnabled(false);
+
+                    btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+                    btnCopia.setBackgroundResource(R.drawable.btn_disable);
+                    btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
+                    btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
+
                     es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
-
-
                 }
                 else{
                     new connTask().execute(bluetoothAdapter.getRemoteDevice(address_print),"O");
@@ -322,6 +329,16 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
         @Override
         public void onClick(View v) {
             try {
+                btnOriginal.setEnabled(false);
+                btnCopia.setEnabled(false);
+                btnOriginalRe.setEnabled(false);
+                btnCopiaRe.setEnabled(false);
+
+                btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+                btnCopia.setBackgroundResource(R.drawable.btn_disable);
+                btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
+                btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
+
                 ticket.setTipoImpresion("C");
                 if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
                 {
@@ -345,8 +362,18 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             ticket.setTipoImpresion("O");
             isReeimpresion = true;
             ticket.setReeimpresion(true);
+
             if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
             {
+                btnOriginal.setEnabled(false);
+                btnCopia.setEnabled(false);
+                btnOriginalRe.setEnabled(false);
+                btnCopiaRe.setEnabled(false);
+
+                btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+                btnCopia.setBackgroundResource(R.drawable.btn_disable);
+                btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
+                btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
 
                 es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
                 //es.submit(new TaskPrint(mPage));
@@ -367,6 +394,16 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             ticket.setTipoImpresion("C");
             if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
             {
+                btnOriginal.setEnabled(false);
+                btnCopia.setEnabled(false);
+                btnOriginalRe.setEnabled(false);
+                btnCopiaRe.setEnabled(false);
+
+                btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+                btnCopia.setBackgroundResource(R.drawable.btn_disable);
+                btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
+                btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
+
                 es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
                 //es.submit(new TaskPrint(mPage));
 
@@ -379,18 +416,34 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
 
     @Override
     public void OnOpen() {
-        es.submit(new TaskPrint(mPos));
+        this.runOnUiThread(() -> {
+            es.submit(new TaskPrint(mPos));
+        });
     }
 
     @Override
     public void OnOpenFailed() {
-        Toast.makeText(this, "No se pudo Establer la Conexión", Toast.LENGTH_SHORT).show();
-        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
+        this.runOnUiThread(() -> {
+            btnOriginal.setEnabled(true);
+            btnCopia.setEnabled(true);
+            btnOriginalRe.setEnabled(true);
+            btnCopiaRe.setEnabled(true);
+
+            btnOriginal.setBackgroundResource(R.drawable.btn_rounded_blue);
+            btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
+            btnOriginalRe.setBackgroundResource(R.drawable.btn_rounded_blue);
+            btnCopiaRe.setBackgroundResource(R.drawable.btn_rounded_blue);
+
+            Toast.makeText(this, "No se pudo Establer la Conexión", Toast.LENGTH_SHORT).show();
+            Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
+        });
     }
 
     @Override
     public void OnClose() {
-        Log.e("ERROR","NO SE PUDO ESTABLECER LA CONEXION");
+        this.runOnUiThread(() -> {
+            Log.e("ERROR", "NO SE PUDO ESTABLECER LA CONEXION");
+        });
     }
 
     public class TaskOpen implements Runnable
@@ -409,20 +462,13 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
         @Override
         public void run() {
             // TODO Auto-generated method stub
-            bt.Open(address,context);
+            bt.Open(address, context);
         }
     }
 
     public class TaskPrint implements Runnable
     {
-        //Page page = null;
         Pos pos = null;
-
-        /*
-        public TaskPrint(Page page)
-        {
-            this.page = page;
-        }*/
 
         public TaskPrint(Pos pos)
         {
@@ -431,11 +477,47 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
 
         @Override
         public void run() {
-            final int bPrintResult = Prints.PrintTicket(getApplicationContext(), pos, 384, true, false, true, 1, 1, 0, ticket, obj);
-            //final int bPrintResult = Prints.PrintTicket(getApplicationContext(), page, 384, 800);
-            final boolean bIsOpened = pos.GetIO().IsOpened();
+            Log.e("IMPRESION", String.valueOf(isReeimpresion));
+            Log.e("IMPRESION", ticket.getTipoImpresion());
+            final int bPrintResult;
+            final boolean bIsOpened;
 
-            mFormatoRecibos.runOnUiThread(() -> Toast.makeText(ctx.getApplicationContext(), (bPrintResult == 0) ? "SUCCESS" : "ERROR" + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show());
+            bPrintResult = Prints.PrintTicket(mFormatoRecibos.getApplicationContext(), pos, 384, true, false, true, 1, 1, 0, ticket, obj);
+            //final int bPrintResult = Prints.PrintTicket(getApplicationContext(), page, 384, 800);
+            bIsOpened = pos.GetIO().IsOpened();
+
+            Log.e("IMPRESION", "ANTES DEL HILO");
+
+            mFormatoRecibos.runOnUiThread(
+                () -> {
+                    Log.e("IMPRESION", "ENTRE AL HLO");
+                    Log.e("IMPRESION", String.valueOf(bPrintResult));
+                    if (bPrintResult == 0) {
+                        if (!isReeimpresion) {
+                            /**Si fue una impresion original se oculta el boton de original y se muestra el de la copia*/
+                            if (ticket.getTipoImpresion().equals("O")) {
+                                resImpresion = 1; // El 1 representa que solo se imprimio original
+                                tvTipoImpresion.setText("Copia");
+                                tvTipoFirma.setText("Firma Cliente");
+                                tvNombreFirma.setText(nomFirma);
+                                btnOriginal.setVisibility(View.GONE);
+                                btnCopia.setVisibility(View.VISIBLE);
+                                btnCopia.setBackgroundResource(R.drawable.btn_rounded_blue);
+                                btnCopia.setEnabled(true);
+                            } else {
+                                /**Si fue una impresion copia se oculta el boton de la copia y se muestran botones de reimpresion original y copia*/
+                                resImpresion = 2; //El 2 representa que ya se realizaron impresiones de original y copia
+                                btnCopia.setVisibility(View.GONE);
+                                btnCopiaRe.setVisibility(View.VISIBLE);
+                                btnOriginalRe.setVisibility(View.VISIBLE);
+                                btnCopiaRe.setEnabled(true);
+                                btnOriginalRe.setEnabled(true);
+                            }
+                        }
+                    }
+
+                    Toast.makeText(mFormatoRecibos.getApplicationContext(), (bPrintResult == 0) ? "SUCCESS" : "ERROR" + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show();
+                });
         }
     }
 
@@ -711,6 +793,7 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
             Log.e("bluetooth", "No Conectado");
             btnOriginal.setEnabled(true);
             btnCopia.setEnabled(false);
+
             clearBtDevData();
             if (bluetoothAdapter == null) {
                 // Device does not support Bluetooth

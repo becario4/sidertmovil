@@ -7561,7 +7561,17 @@ public class Servicios_Sincronizado {
                 impresionBody = RequestBody.create(MultipartBody.FORM, "false");
             }
 
-            RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            //RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            RequestBody fechaEnvioBody;
+
+            if(reciboCC.getFechaEnvio() != null && !reciboCC.getFechaEnvio().trim().equals(""))
+            {
+                fechaEnvioBody = RequestBody.create(MultipartBody.FORM, reciboCC.getFechaEnvio());
+            }
+            else
+            {
+                fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
+            }
 
             Call<CirculoCreditoResponse> call = circuloCreditoService.store(
                 "Bearer "+ session.getUser().get(7),
@@ -7592,7 +7602,7 @@ public class Servicios_Sincronizado {
                         {
                             if(reciboCC.getId() != null)
                             {
-                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim() == "")
+                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals(""))
                                 {
                                     reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 }
@@ -7604,7 +7614,7 @@ public class Servicios_Sincronizado {
                         {
                             if(reciboCC.getId() != null)
                             {
-                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim() == "")
+                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals(""))
                                 {
                                     reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 }
@@ -7613,7 +7623,7 @@ public class Servicios_Sincronizado {
                                 reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
                             }
 
-                            if(gestionCC.getFechaEnvio() == null || gestionCC.getFechaEnvio().trim() == "")
+                            if(gestionCC.getFechaEnvio() == null || gestionCC.getFechaEnvio().trim().equals(""))
                             {
                                 gestionCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                             }

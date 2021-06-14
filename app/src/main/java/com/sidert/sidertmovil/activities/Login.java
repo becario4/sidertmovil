@@ -286,6 +286,8 @@ public class Login extends AppCompatActivity {
 
 
             /**Se le pasan los datos a la interfaz*/
+            Log.e("MAC", session.getMacAddress());
+
             Call<LoginResponse> call = api.login(Miscellaneous.GetStr(etUser),
                     session.getMacAddress(),
                     etPassword.getText().toString().trim(),

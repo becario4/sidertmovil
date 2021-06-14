@@ -687,12 +687,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             )
             {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
-                ibGaleria.setEnabled(false);
-                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                ibFoto.setVisibility(View.VISIBLE);
-                ibGaleria.setVisibility(View.VISIBLE);
-                llFotoGaleria.setVisibility(View.VISIBLE);
-                ivEvidencia.setVisibility(View.GONE);
+
 
                 reciboCirculoCredito = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
 
@@ -704,6 +699,13 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 {
                     llFolioRecibo.setVisibility(View.VISIBLE);
                     etFolioRecibo.setText("CC-" + session.getUser().get(0) + "-" + reciboCirculoCredito.getFolio());
+
+                    ibGaleria.setEnabled(false);
+                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                    ibFoto.setVisibility(View.VISIBLE);
+                    ibGaleria.setVisibility(View.VISIBLE);
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    ivEvidencia.setVisibility(View.GONE);
                 }
 
                 tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -844,6 +846,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
     private void Guardar(Integer estatus)
     {
+        ReciboCirculoCredito rcc = null;
+        ReciboCirculoCredito rccc = null;
+
         boolean guardar = true;
 
         Validator validator = new Validator();
@@ -964,7 +969,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 gestionCC.setMonto(misc.GetStr(etMonto).replace(",",""));
                 gestionCC.setMedioPago(misc.GetStr(tvMedioPago));
 
-                ReciboCirculoCredito rcc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
+                rcc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
+                rccc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "C");
 
                 if(rcc == null)
                 {
@@ -994,6 +1000,13 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 gestionCC.setEstatus(0);
                 gestionCC.setCostoConsulta(misc.GetStr(tvCostoConsulta));
             }
+            else
+            {
+                if(tvImprimirRecibo.getText().equals("SI")) {
+                    rcc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
+                    rccc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "C");
+                }
+            }
 
             if(byteEvidencia != null)
             {
@@ -1015,8 +1028,19 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
             if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0)
             {
-                gestionCC.setEstatus(1);
-                gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
+                if(tvImprimirRecibo.getText().equals("SI"))
+                {
+                    if(rcc != null && rccc != null)
+                    {
+                        gestionCC.setEstatus(1);
+                        gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
+                    }
+                }
+                else
+                {
+                    gestionCC.setEstatus(1);
+                    gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
+                }
             }
 
             if(gestionCC.getId() == null)
@@ -1125,6 +1149,16 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                             etIntegrantes.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
                             Guardar(0);
+
+                            if(data.getIntExtra(FOLIO,0) != 0 && byteEvidencia == null)
+                            {
+                                ibGaleria.setVisibility(View.VISIBLE);
+                                ibFoto.setEnabled(true);
+                                ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                ibFoto.setVisibility(View.VISIBLE);
+                                llFotoGaleria.setVisibility(View.VISIBLE);
+                                ivEvidencia.setVisibility(View.GONE);
+                            }
                         }
                     }
                 }
@@ -1143,12 +1177,20 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
 
                         Guardar(0);
+
+                        if(byteEvidencia != null)
+                        {
+                            tvMedioPago.setEnabled(false);
+                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etIntegrantes.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etIntegrantes.setEnabled(false);
+                        }
                     }
                 }
                 break;
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
                 if (data != null){/**Valida que se esté recibiendo el archivo*/
-                    try{
+                    try {
                         /**se establece el origen o procedencia de la imagen en este caso GELERIA*/
                         tipoImagen = "GALERIA";
                         CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -1189,6 +1231,13 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
                         Guardar(0);
 
+                        if(byteEvidencia != null)
+                        {
+                            tvMedioPago.setEnabled(false);
+                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etIntegrantes.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                            etIntegrantes.setEnabled(false);
+                        }
                     }catch (Exception e){
                         /**En caso de que haya adjuntado un archivo  con diferente formato al JPEG*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "",

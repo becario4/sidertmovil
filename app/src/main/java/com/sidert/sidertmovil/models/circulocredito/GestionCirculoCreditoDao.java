@@ -139,8 +139,8 @@ public class GestionCirculoCreditoDao {
 
         String sql = "SELECT rc.* " +
             "FROM " + TBL_RECUPERACION_RECIBOS_CC + " rc " +
-            "WHERE rc.curp = ? " +
-            "and rc.curp <> 'LEFF911008HVZDRR09' "
+            "WHERE rc.curp = ? "
+            //+ "and rc.curp <> 'LEFF911008HVZDRR09' "
         ;
         Cursor row = db.rawQuery(sql, new String[]{curp});
 

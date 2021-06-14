@@ -12,6 +12,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
@@ -32,6 +33,8 @@ public class dialog_contrasena_root extends DialogFragment {
 
     private ImageView ivClose;
 
+    private TextView tvMacAddress;
+
     private SessionManager session;
 
     @Override
@@ -49,10 +52,14 @@ public class dialog_contrasena_root extends DialogFragment {
         etPuerto = v.findViewById(R.id.etPuerto);
         btnGuardar = v.findViewById(R.id.btnGuardar);
 
+        tvMacAddress = v.findViewById(R.id.tvMacAddress);
+
         ivClose = v.findViewById(R.id.ivClose);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        tvMacAddress.setText("MAC:" + session.getMacAddress());
 
         return v;
     }
