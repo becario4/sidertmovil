@@ -45,311 +45,333 @@ public class Prints {
         HashMap<Integer, String> params;
         int count_folio = 0;
 
+        if (pos.POS_RTQueryStatus(status, 1, 3000, 2) && ((status[0] & 0x12) == 0x12)) {
+            if ((status[0] & 0x08) == 0) {
+                if(pos.POS_QueryStatus(status, 3000, 2)) {
+                    Bitmap bm = getImageFromAssetsFile(ctx, "logo_impresion.png");
 
+                    for(int i = 0; i < nCount; ++i)
+                    {
+                        if(!pos.GetIO().IsOpened())
+                            break;
 
-            if (pos.POS_RTQueryStatus(status, 1, 3000, 2) && ((status[0] & 0x12) == 0x12)) {
-                if ((status[0] & 0x08) == 0) {
-                    if (pos.POS_QueryStatus(status, 3000, 2)) {
-                        Bitmap bm = getImageFromAssetsFile(ctx, "logo_impresion.png");
-
-                        for (int i = 0; i < nCount; ++i) {
-                            try {
-
-                                if (!pos.GetIO().IsOpened())
-                                    break;
-
-                                if (nPrintContent >= 1) {
-                                    pos.POS_FeedLine();
-                                    pos.POS_S_Align(1);
-                                    pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_S_Align(0);
-                                    pos.POS_TextOut("En caso de dudas o aclaraciones\r\n", 4, 0, 0x00, 0x00, 0, 0);
-                                    pos.POS_TextOut("comunicarse al 800 112 6666\r\n\r\n", 4, 0, 0x00, 0x00, 0, 0);
-                                    pos.POS_TextOut("SERVICIOS INTEGRALES PARA EL\r\nDESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_S_Align(0);
-                                    bm = getImageFromAssetsFile(ctx, "line.png");
-                                    pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    //pos.POS_TextOut("________________________________\r\n", 4, 0, 0x00, 0x00, 0, 0);
-                                    pos.POS_S_Align(1);
-                                    if (ticket.getTipoRecibo().equals("CC")) {
-                                        pos.POS_TextOut("CIRCULO DE CREDITO\r\n", 4, 0, 0, 0, 0, 0);
-                                    } else if (ticket.getTipoRecibo().equals("AGF")) {
-                                        pos.POS_TextOut("APOYO PARA GASTOS FUNERARIOS\r\n", 4, 0, 0, 0, 0, 0);
-                                    }
-
-                                    if (ticket.isReeimpresion()) {
-                                        pos.POS_TextOut("\r\nREIMPRESION\r\n", 4, 0, 1, 1, 0, 0x08);
-                                    }
-
-                                    if (ticket.getTipoImpresion().equals("O")) {
-                                        pos.POS_TextOut("\r\nOriginal\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                    } else {
-                                        pos.POS_TextOut("\r\nCopia\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                    }
-                                    pos.POS_S_Align(0);
-                                    pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
-
-                                    if (ticket.getTipoRecibo().equals("AGF")) {
-                                        pos.POS_TextOut("Recibos de:" + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
-                                        pos.POS_FeedLine();
-                                        pos.POS_S_Align(1);
-                                        pos.POS_TextOut("Monto del pago\r\n\r\n", 4, 0, 1, 0, 0, 0);
-                                    } else {
-                                        try {
-                                            if (object.getInt("tipo_credito") == 1) {
-                                                pos.POS_TextOut("Cliente: " + object.getString("nombre_uno") + "\r\n", 4, 0, 0, 0, 0, 0);
-                                            } else {
-                                                pos.POS_TextOut("Grupo: " + object.getString("nombre_uno") + "\r\n", 4, 0, 0, 0, 0, 0);
-                                                pos.POS_TextOut("Responsable: " + object.getString("nombre_dos") + "\r\n", 4, 0, 0, 0, 0, 0);
-                                                pos.POS_TextOut("Total Integrantes: " + object.getString("total_integrantes") + "\r\n", 4, 0, 0, 0, 0, 0);
-                                            }
-                                        } catch (JSONException jex) {
-                                            jex.printStackTrace();
-                                        }
-                                    }
-                                    pos.POS_S_Align(0);
-                                    pos.POS_TextOut("Monto:" + Miscellaneous.moneyFormat(ticket.getMonto()) + "\r\n", 4, 0, 1, 0, 0, 0);
-                                    pos.POS_S_Align(1);
-                                    pos.POS_TextOut("\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Cantidad en letra\r\n", 4, 0, 0x00, 0x00, 0, 0);
-
-                                    if (ticket.getMonto().contains(".5")) {
-                                        pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 50/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                    } else {
-                                        pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 00/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                    }
-                                    pos.POS_S_Align(0);
-                                    if (ticket.getTipoImpresion().equals("O")) { //Original
-                                        pos.POS_TextOut("Firma Asesor: \r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                        //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
-                                    } else {
-                                        pos.POS_TextOut("Firma Cliente: \r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                        //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
-
-                                    }
-                                    bm = getImageFromAssetsFile(ctx, "linea2.png");
-                                    pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut("\r\n" + replaceStr(ticket.getNombreFirma().trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-
-                                    String sql = "";
-
-                                    if (ticket.getTipoRecibo().equals("AGF")) {
-                                        sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND tipo_recibo = ? AND num_solicitud = ? AND nombre = ?";
-                                        row = db.rawQuery(sql, new String[]{ticket.getGrupoId(), ticket.getTipoRecibo(), ticket.getNumSolicitud(), ticket.getNombre()});
-
-                                        if (row.getCount() == 1) {
-                                            row.moveToFirst();
-                                            count_folio = row.getInt(4);
-                                            params = new HashMap();
-                                            params.put(0, ticket.getGrupoId());
-                                            params.put(1, ticket.getNumSolicitud());
-                                            params.put(2, ticket.getMonto());
-                                            params.put(3, row.getString(4));
-                                            params.put(4, ticket.getTipoRecibo());
-                                            params.put(5, "C");
-                                            params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                            params.put(7, "");
-                                            params.put(8, "0");
-                                            params.put(9, ticket.getNombre());
-                                            params.put(10, row.getString(11));
-                                            dBhelper.saveRecibosAgfCc(db, params);
-
-                                        } else if (row.getCount() >= 2) {
-                                            row.moveToFirst();
-                                            count_folio = row.getInt(4);
-                                            params = new HashMap();
-                                            params.put(0, ticket.getGrupoId());
-                                            params.put(1, ticket.getNumSolicitud());
-                                            params.put(2, ticket.getMonto());
-                                            params.put(3, row.getString(4));
-                                            params.put(4, ticket.getTipoRecibo());
-                                            if (ticket.isReeimpresion() && ticket.getTipoImpresion().equals("O"))
-                                                params.put(5, "RO");
-                                            else
-                                                params.put(5, "RC");
-                                            params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                            params.put(7, "");
-                                            params.put(8, "0");
-                                            params.put(9, ticket.getNombre());
-                                            params.put(10, row.getString(11));
-                                            dBhelper.saveRecibosAgfCc(db, params);
-                                        } else {
-                                            String sqlPrestamo = "";
-                                            Cursor rowPrestamo;
-                                            String plazo = "0";
-
-                                            if (ticket.getGrupoId().compareTo("1") == 0) {
-                                                sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = 1 AND num_solicitud = ? LIMIT 1";
-                                                rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getNumSolicitud()});
-                                            } else {
-                                                sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = ? AND num_solicitud = ? LIMIT 1";
-                                                rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud()});
-                                            }
-
-                                            if (rowPrestamo.getCount() > 0) {
-                                                rowPrestamo.moveToFirst();
-                                                plazo = String.valueOf(Math.ceil((Double.parseDouble(rowPrestamo.getString(0)) * Double.parseDouble(rowPrestamo.getString(1))) / Double.parseDouble("30")));
-                                            }
-
-                                            rowPrestamo.close();
-
-                                            String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_AGF_CC;
-                                            Cursor row_folio = db.rawQuery(sqlFolio, null);
-                                            if (row_folio.getCount() > 0) {
-                                                row_folio.moveToFirst();
-                                                count_folio = (row_folio.getInt(0) + 1);
-                                            } else {
-                                                count_folio = 1;
-                                            }
-                                            row_folio.close();
-
-                                            params = new HashMap();
-                                            params.put(0, ticket.getGrupoId());
-                                            params.put(1, ticket.getNumSolicitud());
-                                            params.put(2, ticket.getMonto());
-                                            params.put(3, String.valueOf(count_folio));
-                                            params.put(4, ticket.getTipoRecibo());
-                                            params.put(5, "O");
-                                            params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                            params.put(7, "");
-                                            params.put(8, "0");
-                                            params.put(9, ticket.getNombre());
-                                            params.put(10, plazo);
-                                            dBhelper.saveRecibosAgfCc(db, params);
-
-                                        }
-                                        row.close();
-                                    } else {
-                                        try {
-                                            int tipoCredito = 0;
-                                            String curp = "";
-
-                                            try {
-                                                tipoCredito = object.getInt("tipo_credito");
-                                                curp = object.getString("curp");
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-
-                                            sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND tipo_credito = ?";
-                                            row = db.rawQuery(sql, new String[]{ticket.getCurp(), String.valueOf(tipoCredito)});
-
-                                            if (row.getCount() == 1) {
-                                                row.moveToFirst();
-                                                count_folio = row.getInt(8);
-
-                                                params = new HashMap();
-                                                params.put(0, String.valueOf(tipoCredito));
-                                                params.put(1, object.getString("nombre_uno"));
-                                                params.put(2, object.getString("curp"));
-                                                params.put(3, object.getString("nombre_dos"));
-                                                params.put(4, object.getString("total_integrantes"));
-                                                params.put(5, object.getString("monto"));
-                                                params.put(6, "C");
-                                                params.put(7, String.valueOf(count_folio));
-                                                params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                                params.put(9, "");
-                                                params.put(10, "0");
-                                                dBhelper.saveRecibosCC(db, params);
-
-                                            } else if (row.getCount() >= 2) {
-                                                row.moveToFirst();
-
-                                                count_folio = row.getInt(8);
-                                                Log.e("REIMPRESION", "Comienza la reimpresion: " + row.getString(8));
-
-                                                params = new HashMap();
-                                                params.put(0, String.valueOf(tipoCredito));
-                                                params.put(1, object.getString("nombre_uno"));
-                                                params.put(2, object.getString("curp"));
-                                                params.put(3, object.getString("nombre_dos"));
-                                                params.put(4, object.getString("total_integrantes"));
-                                                params.put(5, object.getString("monto"));
-                                                if (ticket.isReeimpresion() && ticket.getTipoImpresion().equals("O"))
-                                                    params.put(6, "RO");
-                                                else
-                                                    params.put(6, "RC");
-                                                params.put(7, row.getString(8));
-                                                params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                                params.put(9, "");
-                                                params.put(10, "0");
-                                                dBhelper.saveRecibosCC(db, params);
-
-                                            } else {
-                                                String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_CC;
-                                                Cursor row_folio = db.rawQuery(sqlFolio, null);
-                                                if (row_folio.getCount() > 0) {
-                                                    row_folio.moveToFirst();
-                                                    count_folio = (row_folio.getInt(0) + 1);
-                                                } else {
-                                                    count_folio = 1;
-                                                }
-                                                row_folio.close();
-
-                                                params = new HashMap();
-                                                params.put(0, String.valueOf(tipoCredito));
-                                                params.put(1, object.getString("nombre_uno"));
-                                                params.put(2, object.getString("curp"));
-                                                params.put(3, object.getString("nombre_dos"));
-                                                params.put(4, object.getString("total_integrantes"));
-                                                params.put(5, object.getString("monto"));
-                                                params.put(6, "O");
-                                                params.put(7, String.valueOf(count_folio));
-                                                params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                                params.put(9, "");
-                                                params.put(10, "0");
-                                                dBhelper.saveRecibosCC(db, params);
-
-                                            }
-                                            row.close();
-                                        } catch (JSONException jex) {
-                                            jex.printStackTrace();
-                                        }
-                                    }
-
-                                    switch (ticket.getTipoRecibo()) {
-                                        case "CC":
-                                            pos.POS_TextOut("Folio:             CC-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                            break;
-                                        case "AGF":
-                                            pos.POS_TextOut("Folio:             AGF-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                            break;
-                                    }
-                                    pos.POS_S_Align(1);
-                                    pos.POS_TextOut("NO  OLVIDES  VERIFICAR  TU  PAGO\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("El recibo debe de coincidir con lo entregado.\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_FeedLine();
-                                    pos.POS_S_Align(0);
-                                    pos.POS_TextOut("El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial.\r\n\r\n\r\n", 4, 0, 0, 0, 0, 0);
-
-                                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                                    ss.SendRecibos(ctx, false);
-                                }
-
-                            }catch (Exception e){
-                                Log.e("IMPRESION", e.getMessage());
+                        if(nPrintContent >= 1)
+                        {
+                            pos.POS_FeedLine();
+                            pos.POS_S_Align(1);
+                            pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("En caso de dudas o aclaraciones\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_TextOut("comunicarse al 800 112 6666\r\n\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_TextOut("SERVICIOS INTEGRALES PARA EL\r\nDESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_S_Align(0);
+                            bm = getImageFromAssetsFile(ctx, "line.png");
+                            pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+                            //pos.POS_TextOut("________________________________\r\n", 4, 0, 0x00, 0x00, 0, 0);
+                            pos.POS_S_Align(1);
+                            if(ticket.getTipoRecibo().equals("CC"))
+                            {
+                                pos.POS_TextOut("CIRCULO DE CREDITO\r\n", 4, 0, 0, 0, 0, 0);
                             }
+                            else if(ticket.getTipoRecibo().equals("AGF"))
+                            {
+                                pos.POS_TextOut("APOYO PARA GASTOS FUNERARIOS\r\n", 4, 0, 0, 0, 0, 0);
+                            }
+
+                            if(ticket.isReeimpresion())
+                            {
+                                pos.POS_TextOut("\r\nREIMPRESION\r\n", 4, 0, 1, 1, 0, 0x08);
+                            }
+
+                            if (ticket.getTipoImpresion().equals("O"))
+                            {
+                                pos.POS_TextOut("\r\nOriginal\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            }
+                            else
+                            {
+                                pos.POS_TextOut("\r\nCopia\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            }
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
+
+                            if(ticket.getTipoRecibo().equals("AGF"))
+                            {
+                                pos.POS_TextOut("Recibos de:" + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_FeedLine();
+                                pos.POS_S_Align(1);
+                                pos.POS_TextOut("Monto del pago\r\n\r\n", 4, 0, 1, 0, 0, 0);
+                            }
+                            else
+                            {
+                                try{
+                                    if (object.getInt("tipo_credito") == 1)
+                                    {
+                                        pos.POS_TextOut("Cliente: " + object.getString("nombre_uno") + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    }
+                                    else
+                                    {
+                                        pos.POS_TextOut("Grupo: " + object.getString("nombre_uno") + "\r\n", 4, 0, 0, 0, 0, 0);
+                                        pos.POS_TextOut("Responsable: " + object.getString("nombre_dos") + "\r\n", 4, 0, 0, 0, 0, 0);
+                                        pos.POS_TextOut("Total Integrantes: " + object.getString("total_integrantes") + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    }
+                                }
+                                catch(JSONException jex)
+                                {
+                                    jex.printStackTrace();
+                                }
+                            }
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("Monto:" + Miscellaneous.moneyFormat(ticket.getMonto()) + "\r\n", 4, 0, 1, 0, 0, 0);
+                            pos.POS_S_Align(1);
+                            pos.POS_TextOut("\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("Cantidad en letra\r\n", 4, 0, 0x00, 0x00, 0, 0);
+
+                            if (ticket.getMonto().contains(".5"))
+                            {
+                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 50/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            }
+                            else
+                            {
+                                pos.POS_TextOut(Miscellaneous.cantidadLetra(ticket.getMonto()) + " pesos 00/100 M.N.  " + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            }
+                            pos.POS_S_Align(0);
+                            if (ticket.getTipoImpresion().equals("O")){ //Original
+                                pos.POS_TextOut("Firma Asesor: \r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
+                            }
+                            else {
+                                pos.POS_TextOut("Firma Cliente: \r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            //    pos.POS_TextOut("________________________________", 4, 0, 0, 0, 0, 0);
+
+                            }
+                            bm = getImageFromAssetsFile(ctx, "linea2.png");
+                            pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
+                            pos.POS_TextOut("\r\n"+replaceStr(ticket.getNombreFirma().trim())+"\r\n\r\n", 4, 0, 0, 0, 0, 0);
+
+                            String sql =  "";
+
+                            if(ticket.getTipoRecibo().equals("AGF"))
+                            {
+                                sql = "SELECT * FROM " + TBL_RECIBOS_AGF_CC + " WHERE grupo_id = ? AND tipo_recibo = ? AND num_solicitud = ? AND nombre = ?";
+                                row = db.rawQuery(sql, new String[]{ticket.getGrupoId(), ticket.getTipoRecibo(), ticket.getNumSolicitud(), ticket.getNombre()});
+
+                                if (row.getCount() == 1) {
+                                    row.moveToFirst();
+                                    count_folio = row.getInt(4);
+                                    params = new HashMap();
+                                    params.put(0, ticket.getGrupoId());
+                                    params.put(1, ticket.getNumSolicitud());
+                                    params.put(2, ticket.getMonto());
+                                    params.put(3, row.getString(4));
+                                    params.put(4, ticket.getTipoRecibo());
+                                    params.put(5, "C");
+                                    params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(7, "");
+                                    params.put(8, "0");
+                                    params.put(9, ticket.getNombre());
+                                    params.put(10, row.getString(11));
+                                    dBhelper.saveRecibosAgfCc(db, params);
+
+                                }
+                                else if (row.getCount() >= 2) {
+                                    row.moveToFirst();
+                                    count_folio = row.getInt(4);
+                                    params = new HashMap();
+                                    params.put(0, ticket.getGrupoId());
+                                    params.put(1, ticket.getNumSolicitud());
+                                    params.put(2, ticket.getMonto());
+                                    params.put(3, row.getString(4));
+                                    params.put(4, ticket.getTipoRecibo());
+                                    if (ticket.isReeimpresion() && ticket.getTipoImpresion().equals("O"))
+                                        params.put(5, "RO");
+                                    else
+                                        params.put(5, "RC");
+                                    params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(7, "");
+                                    params.put(8, "0");
+                                    params.put(9, ticket.getNombre());
+                                    params.put(10, row.getString(11));
+                                    dBhelper.saveRecibosAgfCc(db, params);
+                                }
+                                else {
+                                    String sqlPrestamo = "";
+                                    Cursor rowPrestamo;
+                                    String plazo = "0";
+
+                                    if(ticket.getGrupoId().compareTo("1") == 0)
+                                    {
+                                        sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = 1 AND num_solicitud = ? LIMIT 1";
+                                        rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getNumSolicitud()});
+                                    }
+                                    else {
+                                        sqlPrestamo = "SELECT periodicidad, num_pagos FROM " + TBL_PRESTAMOS + " WHERE grupo_id = ? AND num_solicitud = ? LIMIT 1";
+                                        rowPrestamo = db.rawQuery(sqlPrestamo, new String[]{ticket.getGrupoId(), ticket.getNumSolicitud()});
+                                    }
+
+                                    if (rowPrestamo.getCount() > 0){
+                                        rowPrestamo.moveToFirst();
+                                        plazo = String.valueOf(Math.ceil((Double.parseDouble(rowPrestamo.getString(0)) * Double.parseDouble(rowPrestamo.getString(1)))/ Double.parseDouble("30")));
+                                    }
+
+                                    rowPrestamo.close();
+
+                                    String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_AGF_CC;
+                                    Cursor row_folio = db.rawQuery(sqlFolio, null);
+                                    if (row_folio.getCount() > 0) {
+                                        row_folio.moveToFirst();
+                                        count_folio = (row_folio.getInt(0) + 1);
+                                    } else {
+                                        count_folio = 1;
+                                    }
+                                    row_folio.close();
+
+                                    params = new HashMap();
+                                    params.put(0, ticket.getGrupoId());
+                                    params.put(1, ticket.getNumSolicitud());
+                                    params.put(2, ticket.getMonto());
+                                    params.put(3, String.valueOf(count_folio));
+                                    params.put(4, ticket.getTipoRecibo());
+                                    params.put(5, "O");
+                                    params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                    params.put(7, "");
+                                    params.put(8, "0");
+                                    params.put(9, ticket.getNombre());
+                                    params.put(10, plazo);
+                                    dBhelper.saveRecibosAgfCc(db, params);
+
+                                }
+                                row.close();
+                            }
+                            else
+                            {
+                                try {
+                                    int tipoCredito = 0;
+                                    String curp = "";
+
+                                    try {
+                                        tipoCredito = object.getInt("tipo_credito");
+                                        curp = object.getString("curp");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    sql = "SELECT * FROM " + TBL_RECIBOS_CC + " WHERE curp = ? AND tipo_credito = ?";
+                                    row = db.rawQuery(sql, new String[]{ticket.getCurp(), String.valueOf(tipoCredito)});
+
+                                    if (row.getCount() == 1) {
+                                        row.moveToFirst();
+                                        count_folio = row.getInt(8);
+
+                                        params = new HashMap();
+                                        params.put(0, String.valueOf(tipoCredito));
+                                        params.put(1, object.getString("nombre_uno"));
+                                        params.put(2, object.getString("curp"));
+                                        params.put(3, object.getString("nombre_dos"));
+                                        params.put(4, object.getString("total_integrantes"));
+                                        params.put(5, object.getString("monto"));
+                                        params.put(6, "C");
+                                        params.put(7, String.valueOf(count_folio));
+                                        params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                        params.put(9, "");
+                                        params.put(10, "0");
+                                        dBhelper.saveRecibosCC(db, params);
+
+                                    } else if (row.getCount() >= 2) {
+                                        row.moveToFirst();
+
+                                        count_folio = row.getInt(8);
+                                        Log.e("REIMPRESION", "Comienza la reimpresion: " + row.getString(8));
+
+                                        params = new HashMap();
+                                        params.put(0, String.valueOf(tipoCredito));
+                                        params.put(1, object.getString("nombre_uno"));
+                                        params.put(2, object.getString("curp"));
+                                        params.put(3, object.getString("nombre_dos"));
+                                        params.put(4, object.getString("total_integrantes"));
+                                        params.put(5, object.getString("monto"));
+                                        if (ticket.isReeimpresion() && ticket.getTipoImpresion().equals("O"))
+                                            params.put(6, "RO");
+                                        else
+                                            params.put(6, "RC");
+                                        params.put(7, row.getString(8));
+                                        params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                        params.put(9, "");
+                                        params.put(10, "0");
+                                        dBhelper.saveRecibosCC(db, params);
+
+                                    } else {
+                                        String sqlFolio = "SELECT MAX(cast(folio as int)) AS folio FROM " + TBL_RECIBOS_CC;
+                                        Cursor row_folio = db.rawQuery(sqlFolio, null);
+                                        if (row_folio.getCount() > 0) {
+                                            row_folio.moveToFirst();
+                                            count_folio = (row_folio.getInt(0) + 1);
+                                        } else {
+                                            count_folio = 1;
+                                        }
+                                        row_folio.close();
+
+                                        params = new HashMap();
+                                        params.put(0, String.valueOf(tipoCredito));
+                                        params.put(1, object.getString("nombre_uno"));
+                                        params.put(2, object.getString("curp"));
+                                        params.put(3, object.getString("nombre_dos"));
+                                        params.put(4, object.getString("total_integrantes"));
+                                        params.put(5, object.getString("monto"));
+                                        params.put(6, "O");
+                                        params.put(7, String.valueOf(count_folio));
+                                        params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                        params.put(9, "");
+                                        params.put(10, "0");
+                                        dBhelper.saveRecibosCC(db, params);
+
+                                    }
+                                    row.close();
+                                }
+                                catch(JSONException jex)
+                                {
+                                    jex.printStackTrace();
+                                }
+                            }
+
+                            switch (ticket.getTipoRecibo()){
+                                case "CC":
+                                    pos.POS_TextOut("Folio:             CC-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                    break;
+                                case "AGF":
+                                    pos.POS_TextOut("Folio:             AGF-" + session.getUser().get(0) + "-" + count_folio + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                   break;
+                            }
+                            pos.POS_S_Align(1);
+                            pos.POS_TextOut("NO  OLVIDES  VERIFICAR  TU  PAGO\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("El recibo debe de coincidir con lo entregado.\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_FeedLine();
+                            pos.POS_S_Align(0);
+                            pos.POS_TextOut("El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial.\r\n\r\n\r\n", 4, 0, 0, 0, 0, 0);
+
+                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                            ss.SendRecibos(ctx, false);
                         }
-
-
-                        if (bBeeper)
-                            pos.POS_Beep(1, 5);
-                        if (bCutter)
-                            pos.POS_CutPaper();
-                        if (bDrawer)
-                            pos.POS_KickDrawer(0, 100);
-
-                        bPrintResult = 0;//pos.POS_TicketSucceed(0, 30000);
-                    } else {
-                        bPrintResult = -8;
                     }
+
+
+
+                    if(bBeeper)
+                        pos.POS_Beep(1, 5);
+                    if(bCutter)
+                        pos.POS_CutPaper();
+                    if(bDrawer)
+                        pos.POS_KickDrawer(0, 100);
+
+                    bPrintResult = pos.POS_TicketSucceed(0, 30000);
                 } else {
-                    bPrintResult = -4;
+                    bPrintResult = -8;
                 }
             } else {
-                bPrintResult = -7;
+                bPrintResult = -4;
             }
-
+        } else {
+            bPrintResult = -7;
+        }
 
         return bPrintResult;
     }

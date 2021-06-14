@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -2589,6 +2590,28 @@ public class Miscellaneous {
             e.printStackTrace();
             Log.e("Mess", "Error al enviar mensaje");
         }
+    }
+    public static void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio,SessionManager session){
+        URL url = null;
+        try {
+            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(prestamoId));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        String clienteGpo = nombre;
+        if (nombre.length() > 17)
+            clienteGpo = nombre.substring(0,15);
+
+        Log.e("Comienza SMS", "Prepara SMS");
+        String numeroCelular = phone; /**Coloca el numero celular del cliente y en caso que el asesor que esta imprimiendo sea el ASESOR de pruebas manda SMS al numero de SOPORTE*/
+
+        if (session.getUser().get(9).equals("134")) /**USUARIO_ID del usuario ASESOR de pruebas*/
+            numeroCelular = "2292641103"; //Telefono para cuando se quieren hacer pruebas
+        String mess = clienteGpo + " pago por $"+monto+" pesos. Folio "+folio+".\n Valida tus pagos: "+url.toString();
+        Log.e("Mensaje", mess);
+        Miscellaneous.SendMess(numeroCelular, mess);
+
     }
 
     public static String DecodePassword(String password) {
