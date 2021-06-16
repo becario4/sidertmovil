@@ -51,6 +51,7 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.PrintRecibos;
 import com.sidert.sidertmovil.utils.Prints;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.json.JSONException;
@@ -329,19 +330,18 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
         @Override
         public void onClick(View v) {
             try {
-                btnOriginal.setEnabled(false);
-                btnCopia.setEnabled(false);
-                btnOriginalRe.setEnabled(false);
-                btnCopiaRe.setEnabled(false);
-
-                btnOriginal.setBackgroundResource(R.drawable.btn_disable);
-                btnCopia.setBackgroundResource(R.drawable.btn_disable);
-                btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
-                btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
-
                 ticket.setTipoImpresion("C");
                 if(bluetoothAdapter.getRemoteDevice(address_print).getName().contains("MTP"))
                 {
+                    btnOriginal.setEnabled(false);
+                    btnCopia.setEnabled(false);
+                    btnOriginalRe.setEnabled(false);
+                    btnCopiaRe.setEnabled(false);
+
+                    btnOriginal.setBackgroundResource(R.drawable.btn_disable);
+                    btnCopia.setBackgroundResource(R.drawable.btn_disable);
+                    btnOriginalRe.setBackgroundResource(R.drawable.btn_disable);
+                    btnCopiaRe.setBackgroundResource(R.drawable.btn_disable);
 
                     es.submit(new TaskOpen(mBt, address_print, mFormatoRecibos));
                     //es.submit(new TaskPrint(mPage));
@@ -514,7 +514,17 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
                                 btnOriginalRe.setEnabled(true);
                             }
                         }
+                        else
+                        {
+                            btnCopiaRe.setEnabled(true);
+                            btnOriginalRe.setEnabled(true);
+                            btnOriginalRe.setBackgroundResource(R.drawable.btn_rounded_blue);
+                            btnCopiaRe.setBackgroundResource(R.drawable.btn_rounded_blue);
+                        }
                     }
+
+                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                    ss.SendRecibos(mFormatoRecibos.getApplicationContext(), false);
 
                     Toast.makeText(mFormatoRecibos.getApplicationContext(), (bPrintResult == 0) ? "SUCCESS" : "ERROR" + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show();
                 });

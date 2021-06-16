@@ -66,6 +66,9 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context ctx, Intent intent) {
         Bundle data = intent.getExtras();
+
+        final Handler handler = new Handler();
+
         if (data != null) {
             final DBhelper dBhelper = new DBhelper(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -266,20 +269,25 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                             ss.SendTracker(ctx, false);
                             ss.SaveCierreDia(ctx, false);
                             ss.GetTickets(ctx, false);
-                            ss .SendConsultaCC(ctx, false);
-                            //ss.MontoAutorizado(ctx, false);
-                            //ss.SendOriginacionInd (ctx, false);
-                            //ss.SendOriginacionGpo(ctx, false);
+                            handler.postDelayed(() -> {
+                                ss.SendConsultaCC(ctx, false);
+                                ss.MontoAutorizado(ctx, false);
+                                ss.SendOriginacionInd (ctx, false);
+                                ss.SendOriginacionGpo(ctx, false);
+                            }, 10000);
+
 
                             ss.SendRecibos(ctx, false);
                             ss.GetUltimosRecibos(ctx);
 
-                            //ss.SendConsultaCC(ctx, false);
+                            ss.SendConsultaCC(ctx, false);
 
-                            //ss.SendRenovacionInd(ctx, false);
-                            //ss.SendRenovacionGpo(ctx, false);
-                            //ss.GetSolicitudesRechazadasInd(ctx, false);
-                            //ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            handler.postDelayed(() -> {
+                                ss.SendRenovacionInd(ctx, false);
+                                ss.SendRenovacionGpo(ctx, false);
+                                ss.GetSolicitudesRechazadasInd(ctx, false);
+                                ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            }, 20000);
 
                             //ss.CancelGestiones(ctx, false);
                             //ss.SendCancelGestiones(ctx, false);

@@ -142,12 +142,12 @@ public class SplashSidertActivity extends AppCompatActivity {
         /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
         las secciones de originacion y renovacion de los estados de
         Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
-        /*new RegistrarColonias().execute();
+        new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
-        new RegistrarLocalidades().execute();*/
+        new RegistrarLocalidades().execute();
 
         /**Este proceso era antes de lanzar originacion y renovacion*/
-        Handler handler_home=new Handler();
+        /*Handler handler_home=new Handler();
         handler_home.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -157,7 +157,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 finish();
             }
         },3000);
-
+        */
     }
 
     /**Registra las localidades de los estados de Veracruz, Puebla, Tlaxcala*/

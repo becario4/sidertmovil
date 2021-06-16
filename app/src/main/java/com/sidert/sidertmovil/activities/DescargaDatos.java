@@ -144,7 +144,7 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetCategoriasTickets(ctx);
         sc.GetEstados(ctx);
 
-        /*sc.GetSectores(ctx);
+        sc.GetSectores(ctx);
         sc.GetOcupaciones(ctx);
         sc.GetMediosPagoOri(ctx);
         sc.GetNivelesEstudios(ctx);
@@ -155,7 +155,7 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetViviendaTipos(ctx);
         sc.GetMediosContacto(ctx);
         sc.GetDestinosCredito(ctx);
-        sc.GetPlazosPrestamo(ctx);*/
+        sc.GetPlazosPrestamo(ctx);
 
         /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
          * o prestamos autorizados para autorizar monto*/
@@ -168,14 +168,14 @@ public class DescargaDatos extends AppCompatActivity {
         ss.GetUltimosRecibosCC(ctx);
 
         /**Descarga los prestamos a renovar*/
-        //ss.GetPrestamosToRenovar(ctx);
+        ss.GetPrestamosToRenovar(ctx);
         /**Descarga Solicituades Individuales que fueron rechazadas por la admin*/
-        //ss.GetSolicitudesRechazadasInd(ctx, false);
+        ss.GetSolicitudesRechazadasInd(ctx, false);
         /**Descarga Solicituades Grupales que fueron rechazadas por la admin*/
-        //ss.GetSolicitudesRechazadasGpo(ctx, false);
+        ss.GetSolicitudesRechazadasGpo(ctx, false);
         /**Descarga los prestamos que fueron autorizados por la admin solo para
          * autorizar el monto*/
-        //ss.GetPrestamosAutorizados(ctx, false);
+        ss.GetPrestamosAutorizados(ctx, false);
 
     }
 

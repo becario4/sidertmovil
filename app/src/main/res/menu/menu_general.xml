@@ -40,25 +40,25 @@
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item
         android:id="@+id/nvSolicitudes"
         android:title="Solicitudes"
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/item_orders" />
     <!-- 9 -->
     <item
         android:id="@+id/nvLogin"
         android:title="Sesiones "
-        android:visible="false"
+        android:visible="true"
         android:icon="@drawable/ic_users" />
 
     <!-- 10 -->

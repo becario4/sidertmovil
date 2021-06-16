@@ -321,9 +321,6 @@ public class Prints {
                                     pos.POS_FeedLine();
                                     pos.POS_S_Align(0);
                                     pos.POS_TextOut("El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial.\r\n\r\n\r\n", 4, 0, 0, 0, 0, 0);
-
-                                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                                    ss.SendRecibos(ctx, false);
                                 }
 
                             }catch (Exception e){

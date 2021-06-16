@@ -136,19 +136,19 @@ public class Configuracion extends AppCompatActivity {
                             /**Esta funciones son de originacion y renovacion*/
                             /**------------------------------------------------*/
                             /**Envia la solicitudes que ya fueron autorizadas por el gerente colocando el monto autorizado*/
-                            //ss.MontoAutorizado(ctx, false);
+                            ss.MontoAutorizado(ctx, false);
                             /**Envia las solicitudes de originacion individual*/
-                            //ss.SendOriginacionInd(ctx, false);
+                            ss.SendOriginacionInd(ctx, false);
                             /**Envia las solicitudes de originacion grupal*/
-                            //ss.SendOriginacionGpo(ctx, false);
+                            ss.SendOriginacionGpo(ctx, false);
                             /**Envia las solicitudes de renovacion individual*/
-                            //ss.SendRenovacionInd(ctx, false);
+                            ss.SendRenovacionInd(ctx, false);
                             /**Envia las solicitudes de renovacion grupal*/
-                            //ss.SendRenovacionGpo(ctx, false);
+                            ss.SendRenovacionGpo(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion individual que fueron rechazadas por la admin*/
-                            //ss.GetSolicitudesRechazadasInd(ctx, false);
+                            ss.GetSolicitudesRechazadasInd(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion grupal que fueron rechazadas por la admin*/
-                            //ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            ss.GetSolicitudesRechazadasGpo(ctx, false);
 
                             /**Envia las consultas Realizadas de circulo de credito*/
                             ss.SendConsultaCC(ctx, false);
