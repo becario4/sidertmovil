@@ -95,7 +95,7 @@ dependencies {
 
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
-
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
     //implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
     /*implementation('com.crashlytics.sdk.android:crashlytics:17.3.0@aar') {
         transitive = true

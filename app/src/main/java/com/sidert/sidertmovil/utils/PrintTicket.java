@@ -41,7 +41,6 @@ public class PrintTicket {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private SessionManager session;
-
     public void WriteTicket (Context ctx, MImpresion ticket) {
         posPtr = new ESCPOSPrinter();
         date = df.format(Calendar.getInstance().getTime());
@@ -63,7 +62,6 @@ public class PrintTicket {
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
             if (ticket.getResultPrint() == 0){
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
-
             }else{
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Copia");
             }
@@ -446,7 +444,7 @@ public class PrintTicket {
             }
 
             posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "En caso de dudas o aclaraciones ");
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comuniquese al 01 800 112 6666");
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "comuniquese al 800 112 6666");
 
             Servicios_Sincronizado ss = new Servicios_Sincronizado();
             ss.SendImpresionesVi(ctx, false);
