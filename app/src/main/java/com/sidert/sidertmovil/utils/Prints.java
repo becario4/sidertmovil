@@ -434,7 +434,7 @@ public class Prints {
                             pos.POS_S_Align(0);
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
-                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
                             pos.POS_FeedLine();
                             //BODY
                             if (ticket.getTipoPrestamo().contains("VENCIDA")) {
@@ -527,7 +527,7 @@ public class Prints {
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
                             }
@@ -888,7 +888,7 @@ public class Prints {
                             pos.POS_S_Align(0);
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
-                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("Fecha y hora:" + Miscellaneous.ObtenerFecha("timestamp") + "\r\n", 4, 0, 0, 0, 0, 0);
                             pos.POS_FeedLine();
                             //BODY
                             if (ticket.getTipoPrestamo().contains("VENCIDA")) {
@@ -981,7 +981,7 @@ public class Prints {
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
                             }
