@@ -1,18 +1,24 @@
 package com.sidert.sidertmovil;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 //import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 //import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 //import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 
 import com.google.firebase.FirebaseApp;
@@ -51,6 +57,7 @@ public class SplashSidertActivity extends AppCompatActivity {
     boolean municipio = false;
     boolean localidad = false;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,10 +77,22 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         /**Es para obtener la direccion MAC y guardarlo en variables de sesion*/
         try {
+            TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                Log.e("IMEI", "DENTRO DEL IF");
+                //return;
+            }
+            else
+            {
+                Log.e("IMEI", "fuera del if");
+            }
+
+            Log.e("IMEI", telephonyManager.getImei());
+
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 Log.e("MAC NIF", nif.getName());
-                Log.e("MAC NIF", nif.getHardwareAddress().toString());
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
                 byte[] macBytes = nif.getHardwareAddress();
@@ -98,8 +117,10 @@ public class SplashSidertActivity extends AppCompatActivity {
                 }
 
                 String newMacAddress = mac[0]+":"+mac[1]+":"+mac[2]+":"+mac[3]+":"+mac[4]+":"+mac[5];
+                Log.e("MAC NIF ADDRESS", newMacAddress);
                 /**Se guarda la MacAddress en variable de sesion*/
-                session.setAddress(newMacAddress.toUpperCase());
+                //session.setAddress(newMacAddress.toUpperCase());
+                session.setAddress(telephonyManager.getImei());
             }
         } catch (Exception ex) {
             //handle exception

@@ -102,7 +102,7 @@ public class PrestamoDao {
                 "AND ((p.nombre_grupo like '%'||?||'%' AND p.grupo_id > 1) OR (p.nombre_cliente LIKE '%'||?||'%' AND p.grupo_id = 1)) " +
                 "AND (p.grupo_id > 1 OR ? = '0') " +
                 "AND (p.grupo_id = 1 OR ? = '0')" +
-                "AND p.fecha_entrega between DATE('now', '-180 day') and DATE('now', '+10 day')" +
+                "AND p.fecha_entrega between DATE('now', '-10 day') and DATE('now', '+10 day')" +
                 "AND p.estatus_prestamo_id in (2, 3)";
         Cursor row = db.rawQuery(sql, filters);
 
