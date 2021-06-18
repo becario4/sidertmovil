@@ -12,6 +12,7 @@ import android.os.Handler;
 //import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 //import android.telephony.SmsManager;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 //import android.widget.Toast;
@@ -77,19 +78,6 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         /**Es para obtener la direccion MAC y guardarlo en variables de sesion*/
         try {
-            TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                Log.e("IMEI", "DENTRO DEL IF");
-                //return;
-            }
-            else
-            {
-                Log.e("IMEI", "fuera del if");
-            }
-
-            Log.e("IMEI", telephonyManager.getImei());
-
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 Log.e("MAC NIF", nif.getName());
@@ -120,7 +108,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 Log.e("MAC NIF ADDRESS", newMacAddress);
                 /**Se guarda la MacAddress en variable de sesion*/
                 //session.setAddress(newMacAddress.toUpperCase());
-                session.setAddress(telephonyManager.getImei());
+                session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
             }
         } catch (Exception ex) {
             //handle exception
