@@ -127,6 +127,8 @@ public class Home extends AppCompatActivity {
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
 
+        Log.e("MAC", session.getMacAddress());
+
         /**Se valida si el dominio y el puerto guardado es diferente al de produccion
          * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
         if (!session.getDominio().get(0).contains("sidert.ddns.net") || !session.getDominio().get(1).equals("83")) {

@@ -138,7 +138,15 @@ public class Prints {
                                 }
                                 bm = getImageFromAssetsFile(ctx, "linea2.png");
                                 pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                pos.POS_TextOut("\r\n" + replaceStr(ticket.getNombreFirma().trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+
+                                if(ticket.getTipoImpresion().equals("O"))
+                                {
+                                    pos.POS_TextOut("\r\n" + replaceStr(session.getUser().get(1).trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                }
+                                else
+                                {
+                                    pos.POS_TextOut("\r\n" + replaceStr(ticket.getNombreFirma().trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
+                                }
 
                                 String sql = "";
 
@@ -666,9 +674,9 @@ public class Prints {
                                     row.moveToLast();
                                     Log.e("num_prestamo_id_gesVE", row.getString(4)+"  "+row.getString(1)+" = "+ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
                                     if (row.getString(1).equals(ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion()) &&
-                                            row.getString(4).equals("O")){
+                                            row.getString(4).equals("O")) {
                                         params = new HashMap<>();
-                                        params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                        params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                         params.put(1, ticket.getAsesorId());
                                         params.put(2, row.getString(3));
                                         params.put(3, "C");
@@ -683,17 +691,9 @@ public class Prints {
                                         dBhelper.saveImpresionesVencida(db, params);
 
 
-                                        pos.POS_TextOut("Folio:             CV"+ticket.getAsesorId()+"-"+row.getString(3)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                        pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + row.getString(3) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                     }
-<<<<<<< HEAD
-                                    pos.POS_S_Align(1);
-                                    pos.POS_TextOut("NO  OLVIDES  VERIFICAR  TU  PAGO\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("El recibo debe de coincidir con lo entregado.\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_FeedLine();
-                                    pos.POS_S_Align(0);
-                                    pos.POS_TextOut("El presente se toma con las RESERVAS de la Ley respecto a intereses pactados y los que se generan conforme a lo establecido en el articulo 364 del codigo de Comercio Vigente. El presente pago no es una remision de deuda, implica una novacion de la obligacion inicial.\r\n\r\n\r\n", 4, 0, 0, 0, 0, 0);
-=======
                                     else {
                                         String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VENCIDA_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
                                         Cursor row_folio = db.rawQuery(sql, new String[]{ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion(), "O"});
@@ -755,7 +755,6 @@ public class Prints {
                                         }
                                         row_folio.close();
                                     }
->>>>>>> 6afa1469f2ef1e802696f235145646dcb887e38a
                                 }
                                 row.close();
                                 //-----------------------------------------------------------------------------------------------------------------

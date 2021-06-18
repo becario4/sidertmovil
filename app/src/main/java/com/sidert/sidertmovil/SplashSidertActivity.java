@@ -72,6 +72,8 @@ public class SplashSidertActivity extends AppCompatActivity {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
+                Log.e("MAC NIF", nif.getName());
+                Log.e("MAC NIF", nif.getHardwareAddress().toString());
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
                 byte[] macBytes = nif.getHardwareAddress();
@@ -104,16 +106,8 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
 
         Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
-
-        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        // FRANCICSO
-       // session.setDominio("http://192.168.0.167:", "8083");//LOCALHOST
-        // GERARDO
-
-        session.setDominio(" http://192.168.100.252:", "8080");//LOCALHOST
-
-     //   session.setDominio("http://192.168.0.123:", "8080");//LOCALHOST
-        //    session.setDominio("http://192.168.100.252:", "8080");//LOCALHOST
+        session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
+        //session.setDominio("http://192.168.0.100:", "8080");//LOCALHOST
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/
