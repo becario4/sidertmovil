@@ -78,6 +78,7 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         /**Es para obtener la direccion MAC y guardarlo en variables de sesion*/
         try {
+            Log.e("MODEL", Build.MODEL);
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 Log.e("MAC NIF", nif.getName());
@@ -107,8 +108,15 @@ public class SplashSidertActivity extends AppCompatActivity {
                 String newMacAddress = mac[0]+":"+mac[1]+":"+mac[2]+":"+mac[3]+":"+mac[4]+":"+mac[5];
                 Log.e("MAC NIF ADDRESS", newMacAddress);
                 /**Se guarda la MacAddress en variable de sesion*/
-                //session.setAddress(newMacAddress.toUpperCase());
-                session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+                if(Build.MODEL.trim().equals("SM-A022M"))
+                {
+                    session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+                }
+                else
+                {
+                    session.setAddress(newMacAddress.toUpperCase());
+                }
+
             }
         } catch (Exception ex) {
             //handle exception

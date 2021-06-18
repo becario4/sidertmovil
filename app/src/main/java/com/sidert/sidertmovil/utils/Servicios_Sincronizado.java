@@ -830,7 +830,8 @@ public class Servicios_Sincronizado {
                         json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
                         json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
                         json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
-                        json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));
+                        //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambia con monto maximo
+                        json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));
                         String aux = "";
                         if (!row_soli.getString(18).trim().isEmpty()){
                             String[] medios = row_soli.getString(18).split(",");
@@ -868,7 +869,8 @@ public class Servicios_Sincronizado {
                         if (row_soli.getString(18).contains("OTRO"))
                             json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
 
-                        json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));
+                        //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                        json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
 
                         json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
 
@@ -939,8 +941,10 @@ public class Servicios_Sincronizado {
                         json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
                         json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
                         json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
-                        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));
-                        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                        //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambiar con capacidad de pago
+                        //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
+                        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
 
                         aux = "";
                         if (!row_soli.getString(36).trim().isEmpty()){
@@ -1274,7 +1278,8 @@ public class Servicios_Sincronizado {
                     json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
                     json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
                     json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
-                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));
+                    //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambio con monto maximo
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
                     String aux = "";
                     if (!row_soli.getString(18).trim().isEmpty()){
                         String[] medios = row_soli.getString(18).split(",");
@@ -1312,7 +1317,8 @@ public class Servicios_Sincronizado {
                     if (row_soli.getString(18).contains("OTRO"))
                         json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
 
-                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));
+                    //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
 
                     json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
 
@@ -1383,8 +1389,10 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
                     json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
                     json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
-                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));
-                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                    //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambia con capacidad de pago
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                    //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
 
                     aux = "";
                     if (!row_soli.getString(36).trim().isEmpty()){
@@ -1731,8 +1739,10 @@ public class Servicios_Sincronizado {
                 json_negocio.put(K_INGRESO_MENSUAL, rowIntegrante.getString(74));
                 json_negocio.put(K_INGRESOS_OTROS, rowIntegrante.getString(75));
                 json_negocio.put(K_GASTO_MENSUAL, rowIntegrante.getString(76));
-                json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(77));
-                json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(78));
+                //json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(77));//se intercambia con monto maximo
+                json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(77));
+                //json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(78));//se intercambia con capacidad de pago
+                json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(78));
                 String aux = "";
                 if (!rowIntegrante.getString(79).trim().isEmpty()) {
                     String[] medios = rowIntegrante.getString(79).split(",");
@@ -2154,8 +2164,10 @@ public class Servicios_Sincronizado {
                 json_negocio.put(K_INGRESO_MENSUAL, rowIntegrante.getString(76));
                 json_negocio.put(K_INGRESOS_OTROS, rowIntegrante.getString(77));
                 json_negocio.put(K_GASTO_MENSUAL, rowIntegrante.getString(78));
-                json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(79));
-                json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(80));
+                //json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(79));//se intercambia con monto maximo
+                json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(79));
+                //json_negocio.put(K_MONTO_MAXIMO, rowIntegrante.getString(80));//se intercambia con capacidad de pago
+                json_negocio.put(K_CAPACIDAD_PAGO, rowIntegrante.getString(80));
                 String aux = "";
                 if (!rowIntegrante.getString(81).trim().isEmpty()) {
                     String[] medios = rowIntegrante.getString(81).split(",");

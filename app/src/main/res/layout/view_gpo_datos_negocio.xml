@@ -663,7 +663,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Monto Máximo"
+            android:text="Capacidad de Pago"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"
@@ -693,7 +693,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textColor="@android:color/black"
-            android:text="Capacidad de Pago"
+            android:text="Monto Máximo"
             android:layout_weight="1"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
