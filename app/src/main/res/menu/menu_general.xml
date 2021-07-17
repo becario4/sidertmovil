@@ -52,13 +52,13 @@
     <item
         android:id="@+id/nvSolicitudes"
         android:title="Solicitudes"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 9 -->
     <item
         android:id="@+id/nvLogin"
         android:title="Sesiones "
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/ic_users" />
 
     <!-- 10 -->

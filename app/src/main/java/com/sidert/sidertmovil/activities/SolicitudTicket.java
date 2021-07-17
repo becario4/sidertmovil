@@ -115,10 +115,6 @@ public class SolicitudTicket extends AppCompatActivity {
         if (row.getCount() > 0){
             row.moveToFirst();
             for (int i = 0; i < row.getCount(); i++){
-                Log.e("0", row.getString(0));
-                Log.e("1", row.getString(1));
-                Log.e("2", row.getString(2));
-                Log.e("3", row.getString(3));
                 cat = new MTickets();
                 cat.setNombre(row.getString(2));
                 cat.setId(row.getInt(1));
@@ -174,7 +170,7 @@ public class SolicitudTicket extends AppCompatActivity {
                     case 4: //detalle con dispositivo
                         llComentario.setVisibility(View.VISIBLE);
                         break;
-                    case 5: //ficha erronea
+                    case 11: //ficha erronea
                         llNombre.setVisibility(View.VISIBLE);
                         llClienteGrupoId.setVisibility(View.VISIBLE);
                         llNumSolicitud.setVisibility(View.VISIBLE);
@@ -318,7 +314,7 @@ public class SolicitudTicket extends AppCompatActivity {
                         finish();
                     }
                     break;
-                case 5:
+                case 11:
                     if (((MSpiner)spFichas.getSelectedItem()).getId() > 0){
                         if (!validator.validate(etComentario, new String[]{validator.REQUIRED})){
                             HashMap<Integer, String> params = new HashMap<>();
@@ -334,7 +330,7 @@ public class SolicitudTicket extends AppCompatActivity {
                                 params.put(4, tvCliGpoID.getText().toString().trim());
                             }
                             params.put(5, tvNumSolicitud.getText().toString().trim());
-                            params.put(6, "");
+                            params.put(6, "0");
                             params.put(7, etComentario.getText().toString().toUpperCase().trim());
                             params.put(8, "");
                             params.put(9, "0");

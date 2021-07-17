@@ -674,10 +674,173 @@ public class DBhelper extends SQLiteOpenHelper {
         catch (Exception e) { Log.e("ADD_TOTAL_INT_MANUAL", "ya contiene la columna"); }
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_FECHA_ENTREGA_PRESTAMOS_AV); }
-        catch (Exception e) { Log.e("ADD_FECHA_ENTREGA_PRESTAMOS_AV", "ya contiene la columna"); }
+        catch (Exception e) { Log.e("ADD_FCHA_EGA_PMOS_AV", "ya contiene la columna"); }
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV); }
-        catch (Exception e) { Log.e("ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV", "ya contiene la columna"); }
+        catch (Exception e) { Log.e("ADD_EST_PMO_PRMOS_AV", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES); }
+        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_RENOV); }
+        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR_RENOV", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE); }
+        catch (Exception e) { Log.e("ADD_LATITUD_CLI", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_CLI", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE); }
+        catch (Exception e) { Log.e("ADD_LOCATEDAT_CLI", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_AUTO); }
+        catch (Exception e) { Log.e("ADD_LATITUD_CLI_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_AUTO); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_CLI_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATEDAT_CLI_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_RENOV); }
+        catch (Exception e) { Log.e("ADD_LATITUD_CLIE_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_RENOV); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_CLIE_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_RENOV); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_CLIE_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL); }
+        catch (Exception e) { Log.e("ADD_LATITUD_AVAL", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_AUTO); }
+        catch (Exception e) { Log.e("ADD_LATITUD_AVAL_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_AUTO); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL_AU", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_RENOV); }
+        catch (Exception e) { Log.e("ADD_LATITUD_AVAL_RENOV", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_RENOV); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL_RENOV", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_RENOV); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT); }
+        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_OD_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_REN); }
+        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_REN); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_REN); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_ODINTREN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_REN); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEGINREN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_REN); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_DOMINREN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_AUTO); }
+        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT_AUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_AUTO); }
+        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INTAUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_ODINAUTO", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_DOMINAU", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_AUTO); }
+        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEGINTAU", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_REN); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_AUT); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND_AUT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT); }
+        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT); }
+        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_REN); }
+        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_REN); }
+        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_AUT); }
+        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT_AUT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_AUT); }
+        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT_AUT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT); }
+        catch (Exception e) { Log.e("ADD_TIENE_NEG_NEG_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_REN); }
+        catch (Exception e) { Log.e("ADD_TIENE_N_NEG_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_REN); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_AUT); }
+        catch (Exception e) { Log.e("ADD_TIENE_N_NEG_INT_AUT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_AUT); }
+        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT_AUT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CICLO_INT_GPO_REN); }
+        catch (Exception e) { Log.e("ADD_CICLO_INT_GPO_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_ANT_INT_GPO_REN); }
+        catch (Exception e) { Log.e("ADD_MONTO_ANT_INT_GPO_REN", "ya contiene la columna"); }
+
+
+
+
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {
@@ -2432,8 +2595,11 @@ public class DBhelper extends SQLiteOpenHelper {
                 "estatus_completado, " +
                 "id_solicitud_integrante, " +
                 "is_nuevo, " +
-                "cliente_id) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?)";
+                "cliente_id," +
+                "ciclo," +
+                "monto_prestamo_anterior" +
+                ") " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));
@@ -2460,6 +2626,8 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindLong(22, Long.parseLong(params.get(21)));
         pInsert.bindLong(23, Long.parseLong(params.get(22)));
         pInsert.bindString(24, params.get(23));
+        pInsert.bindLong(25, Integer.parseInt(params.get(24)));
+        pInsert.bindString(26, params.get(25));
 
         long id = pInsert.executeInsert();
 

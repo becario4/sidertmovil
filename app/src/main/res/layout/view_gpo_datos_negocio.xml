@@ -5,6 +5,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--  Confirmar si el cliente tiene negocio -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:id="@+id/tvNegocioIntegrante"
+            android:text="Cuenta con negocio:"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/rgTieneNegocio"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbSiTieneNeg"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Si"
+                android:textColor="@drawable/radio_flat_text_selector_left"
+                />
+            <RadioButton
+                android:id="@+id/rbNoTieneNeg"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="No"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!--  Negocio en domicilio del cliente  -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:gravity="center_vertical|left"
+            android:textColor="@android:color/black"
+            android:text="El establecimiento se encuentra en el domicilio del cliente"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <CheckBox
+            android:id="@+id/cbNegEnDomCli"
+            android:layout_gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--  Nombre del negocio  -->
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -790,7 +859,7 @@
     </LinearLayout>
 
     <!--  Numero de Operaciones Máximas  -->
-    <LinearLayout
+    <!--<LinearLayout
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
@@ -813,6 +882,33 @@
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />-->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Num. de Operaciones Máximas Mensuales"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvNumOperacionNeg"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:lines="1"
+            android:ellipsize="end"
+            android:drawableRight="@drawable/ic_drop_down"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
@@ -832,12 +928,26 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
-        <EditText
+        <!--<EditText
             android:id="@+id/etNumOperacionEfectNeg"
             android:textColor="@drawable/edit_text_selector"
             android:inputType="number"
             android:maxLength="2"
             android:paddingLeft="10dp"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/et_height" />-->
+        <TextView
+            android:id="@+id/etNumOperacionEfectNeg"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:hint="SELECCIONE UNA OPCIÓN"
+            android:lines="1"
+            android:ellipsize="end"
+            android:drawableRight="@drawable/ic_drop_down"
             android:background="@drawable/et_rounded_edges"
             android:layout_weight="1"
             android:layout_width="0dp"

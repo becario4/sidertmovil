@@ -1,8 +1,11 @@
 package com.sidert.sidertmovil.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,14 +54,42 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         }
 
         if (item.containsKey(7)){
-            if (!item.get(7).trim().isEmpty()) {
+            //if (!item.get(7).trim().isEmpty()) {
+                Log.e("AQUI SOLICITUD", item.get(7).trim().toUpperCase());
+                Log.e("AQUI SOLICITUD", String.valueOf((item.get(7).trim().toUpperCase().equals("AUTORIZADO"))));
+
+                String comentario = Miscellaneous.ucFirst(item.get(7));
+
+                if(item.get(7).trim().toUpperCase().equals("AUTORIZADO"))
+                {
+                    holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.green));
+                }
+                else if(item.get(7).trim().toUpperCase().equals("EN REVISIÓN"))
+                {
+                    holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.yellow));
+                }
+                else if(item.get(7).trim().toUpperCase().contains("NO AUTORIZADO"))
+                {
+                    holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.red));
+                }
+                else
+                {
+                    holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.orange));
+                    comentario = "Editar";
+                }
+
                 holder.tvComentario.setVisibility(View.VISIBLE);
-                holder.tvComentario.setText(Miscellaneous.ucFirst(item.get(7)));
-            }
+                holder.tvComentario.setText(comentario);
+            /*}
             else {
                 holder.tvComentario.setVisibility(View.GONE);
                 holder.tvComentario.setText("");
-            }
+            }*/
+        }
+        else
+        {
+            holder.tvComentario.setVisibility(View.GONE);
+            holder.tvComentario.setText("");
         }
 
         if (!item.get(4).trim().isEmpty()){

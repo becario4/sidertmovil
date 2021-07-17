@@ -103,6 +103,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             is_new = true;
             nombre_gpo = getIntent().getStringExtra("nombre");
             id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
+            TBmain.setSubtitle(nombre_gpo);
             /**Funcion para abrir un dialogFragment para completar los datos del credito*/
             openInfoOriginacion();
         }
@@ -116,6 +117,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             row.moveToFirst();
             id_credito = Long.parseLong(row.getString(0));
             String sdato1 = row.getString(1);
+            TBmain.setSubtitle(row.getString(2));
             row.close();
             /**Funcion para obtener los integrantes*/
             initComponents(sdato1);

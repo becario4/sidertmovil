@@ -2278,7 +2278,6 @@ public class Miscellaneous {
 
             Date date1 = new SimpleDateFormat("dd-MM-yyyy").parse(fecha_establecida);
             Date date2 = new SimpleDateFormat("dd-MM-yyy").parse(ObtenerFecha("fecha_atraso"));
-
             dias_atraso = (int) ((date2.getTime()-date1.getTime())/86400000);
 
         } catch (ParseException e) {

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.6.2</string>
+    <string name="app_version">2.6.4</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -518,6 +518,24 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>CATORCENAL</item>            <!--2-->
         <item>QUINCENAL</item>             <!--3-->
         <item>MENSUAL</item>               <!--4-->
+    </string-array>
+    <string-array name="lapso_grupal">
+        <item>SEMANAL</item>               <!--1-->
+        <item>CATORCENAL</item>            <!--2-->
+        <item>QUINCENAL</item>             <!--3-->
+    </string-array>
+    <string-array name="max_pagos_mes">
+        <item>2</item>            <!--1-->
+        <item>3</item>             <!--2-->
+        <item>4</item>             <!--3-->
+        <item>5</item>             <!--4-->
+        <item>6</item>             <!--5-->
+    </string-array>
+    <string-array name="max_pagos_mes_gpo">
+        <item>3</item>             <!--2-->
+        <item>4</item>             <!--3-->
+        <item>5</item>             <!--4-->
+        <item>6</item>             <!--5-->
     </string-array>
     <string-array name="dependientes_eco">
         <item>0</item>                     <!--1-->

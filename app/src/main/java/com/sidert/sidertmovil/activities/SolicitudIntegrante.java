@@ -169,9 +169,9 @@ public class SolicitudIntegrante extends AppCompatActivity {
     private TextView tvMontoMaxNeg;
     private TextView tvMediosPagoNeg;
     private EditText etOtroMedioPagoNeg;
-    private EditText etNumOperacionNeg;
+    private TextView etNumOperacionNeg;
     private LinearLayout llOperacionesEfectivo;
-    private EditText etNumOperacionEfectNeg;
+    private TextView etNumOperacionEfectNeg;
     private TextView tvFachadaNeg;
     private ImageButton ibFotoFachNeg;
     private ImageView ivFotoFachNeg;
@@ -444,9 +444,9 @@ public class SolicitudIntegrante extends AppCompatActivity {
         tvMontoMaxNeg           = findViewById(R.id.tvMontoMaxNeg);
         tvMediosPagoNeg         = findViewById(R.id.tvMediosPagoNeg);
         etOtroMedioPagoNeg      = findViewById(R.id.etOtroMedioPagoNeg);
-        etNumOperacionNeg       = findViewById(R.id.etNumOperacionNeg);
+        //etNumOperacionNeg       = findViewById(R.id.etNumOperacionNeg);//SE CAMBIA A TEXT VIEW
         llOperacionesEfectivo   = findViewById(R.id.llOperacionesEfectivo);
-        etNumOperacionEfectNeg  = findViewById(R.id.etNumOperacionEfectNeg);
+        etNumOperacionEfectNeg  = findViewById(R.id.etNumOperacionEfectNeg);//SE CAMBIA A TEXT VIEW
         tvFachadaNeg            = findViewById(R.id.tvFachadaNeg);
         tvFachadaNeg.setVisibility(View.GONE);
         ibFotoFachNeg           = findViewById(R.id.ibFotoFachNeg);
@@ -1136,6 +1136,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
             }
         });
     }
+
     private void UbicacionNeg (final double lat, final double lon){
         mapNeg.onResume();
         try {

@@ -123,8 +123,8 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
 
         Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
-        session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        //session.setDominio("http://192.168.0.100:", "8080");//LOCALHOST
+        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
+        session.setDominio("http://192.168.0.108:", "8083");//LOCALHOST
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/
@@ -139,6 +139,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             /**Se separa la fecha por segmentos (año - mes - dia)*/
             String[] newFecha = fechaLogin[0].split("-");
             /**Se valida cuantos dias de atraso tiene el ultimo login con la fecha actual*/
+
             int dias = Miscellaneous.GetDiasAtraso(newFecha[2]+"-"+newFecha[1]+"-"+newFecha[0]);
 
             /**Si los dias de atraso es mayor o igual a 1 se cierra sesion colocando en FLAG = false*/
@@ -174,8 +175,8 @@ public class SplashSidertActivity extends AppCompatActivity {
                 startActivity(start);
                 finish();
             }
-        },3000);
-        */
+        },3000);*/
+
     }
 
     /**Registra las localidades de los estados de Veracruz, Puebla, Tlaxcala*/

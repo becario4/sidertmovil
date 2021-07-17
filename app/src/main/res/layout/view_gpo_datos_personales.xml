@@ -1502,6 +1502,81 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <!-- RUEGO Y ENCARGO -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:id="@+id/tvNegocioIntegrante"
+            android:text="El cliente cuenta con firma:"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/rgFirmaRuegoEncargo"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbSiTieneFirma"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_left"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Si"
+                android:textColor="@drawable/radio_flat_text_selector_left"
+                />
+            <RadioButton
+                android:id="@+id/rbNoTieneFirma"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/radio_flat_selector_rigth"
+                android:button="@android:color/transparent"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="No"
+                android:textColor="@drawable/radio_flat_text_selector_rigth" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!-- NOMBRE DE FIRMA EN CARGO -->
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/llNombreFirmaRuegoEncargo"
+        android:visibility="gone"
+        >
+        <TextView
+            android:textColor="@android:color/black"
+            android:text="Firma a Ruego y Encargo:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etNombreFirmaRuegoEncargo"
+            android:inputType="textCapCharacters"
+            android:textColor="@drawable/edit_text_selector"
+            android:paddingLeft="10dp"
+            android:maxLength="100"
+            android:background="@drawable/et_rounded_edges"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_height"
+            android:hint="NOMBRE COMPLETO DE QUIEN FIRMA"/>
+    </LinearLayout>
+
     <!-- Firma cliente-->
     <LinearLayout
         android:layout_marginTop="15dp"
@@ -1512,7 +1587,7 @@
         <TextView
             android:id="@+id/tvFirmaCli"
             android:textColor="@color/black"
-            android:text="Firma Cliente"
+            android:text="Firma Cliente o Integrante"
             android:focusable="false"
             android:textSize="@dimen/labelsize"
             android:focusableInTouchMode="false"

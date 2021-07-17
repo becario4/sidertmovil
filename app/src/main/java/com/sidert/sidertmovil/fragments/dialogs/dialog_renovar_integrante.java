@@ -217,6 +217,8 @@ public class dialog_renovar_integrante extends DialogFragment {
         params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
         params.put(22, "1");                                                    //IS NUEVO
         params.put(23, "");                                                     //CLIENTE ID
+        params.put(24, "0");                                                     //CLIENTE ID
+        params.put(25, "0.00");                                                     //CLIENTE ID
 
         id = dBhelper.saveIntegrantesGpoRen(db, params);
 

@@ -39,6 +39,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_originacion;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.Cliente;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Popups;
 
@@ -165,12 +167,19 @@ public class SolicitudCredito extends AppCompatActivity {
     }
 
     private void initComponents(){
+        ClienteDao clienteDao = new ClienteDao(ctx);
+
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, "", "", null);
 
         if (row.getCount() > 0){
             row.moveToFirst();
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row.getCount(); i++){
+
+                Cliente cliente = null;
+
+                if(row.getString(3).equals("1")) cliente = clienteDao.findByIdSolicitud(row.getInt(0));
+
                 HashMap<Integer, String> item = new HashMap();
                 Log.e("id_solicitud", row.getString(4)+" "+row.getString(0) + " nombre: "+row.getString(5)+ " "+row.getString(11));
                 item.put(0,row.getString(0));           //ID solicitud
@@ -180,6 +189,7 @@ public class SolicitudCredito extends AppCompatActivity {
                 item.put(4, row.getString(7));          //Fecha Termino
                 item.put(5, row.getString(10));         //Fecha Envio
                 item.put(6, row.getString(4));          //id_originacion
+                if(cliente != null) item.put(7, cliente.getComentarioRechazo());//pendiente
 
                 data.add(item);
                 row.moveToNext();

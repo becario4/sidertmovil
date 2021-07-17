@@ -139,6 +139,30 @@ public class MRenovacionGrupal implements Serializable {
         @Expose
         private Negocio negocio;
 
+        @SerializedName("ciclo")
+        @Expose
+        private Integer ciclo;
+
+        @SerializedName("monto_prestamo_anterior")
+        @Expose
+        private String montoPrestamoAnterior;
+
+        public String getMontoPrestamoAnterior() {
+            return montoPrestamoAnterior;
+        }
+
+        public void setMontoPrestamoAnterior(String montoPrestamoAnterior) {
+            this.montoPrestamoAnterior = montoPrestamoAnterior;
+        }
+
+        public Integer getCiclo() {
+            return ciclo;
+        }
+
+        public void setCiclo(Integer ciclo) {
+            this.ciclo = ciclo;
+        }
+
         public Long getClienteId() {
             return clienteId;
         }

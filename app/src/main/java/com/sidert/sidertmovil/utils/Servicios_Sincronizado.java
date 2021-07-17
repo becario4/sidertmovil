@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -24,10 +23,8 @@ import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
 import com.sidert.sidertmovil.models.MPrestamosRenovar;
-import com.sidert.sidertmovil.models.MReciboCC;
 import com.sidert.sidertmovil.models.MRenovacion;
 import com.sidert.sidertmovil.models.MRenovacionGrupal;
-import com.sidert.sidertmovil.models.MResAgf;
 import com.sidert.sidertmovil.models.MResCierreDia;
 import com.sidert.sidertmovil.models.MResConsultaCC;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
@@ -62,11 +59,31 @@ import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCreditoDao;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCreditoDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.SolicitudDetalleEstatusGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.Cliente;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.ApoyoGastosFunerariosService;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.PrestamoService;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.ReciboService;
 import com.sidert.sidertmovil.services.circulocredito.CirculoCreditoService;
 import com.sidert.sidertmovil.services.circulocredito.ReciboCirculoCreditoService;
+import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
+import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -719,6 +736,7 @@ public class Servicios_Sincronizado {
                         json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
                         json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
                         json_solicitante.put(K_ESTADO, row_dir.getString(14));
+                        json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
                         row_dir.close();
                         json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
                         json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
@@ -732,6 +750,12 @@ public class Servicios_Sincronizado {
                         json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
                         json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
                         json_solicitante.put(K_FIRMA, row_soli.getString(34));
+                        json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
+                        json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
+                        json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
+                        json_solicitante.put(K_TIENE_FIRMA, "SI");
+                        json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
+
 
                         json_solicitud.put(K_SOLICITANTE, json_solicitante);
                         String fachadaCli = row_soli.getString(32);
@@ -814,6 +838,7 @@ public class Servicios_Sincronizado {
                         json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
                         json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
                         json_negocio.put(K_ESTADO, row_dir.getString(14));
+                        json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
                         row_dir.close(); //Cierra datos de direccion del negocio
 
                         json_negocio.put(K_OCUPACION, row_soli.getString(4));
@@ -920,6 +945,7 @@ public class Servicios_Sincronizado {
                         json_aval.put(K_LOCALIDAD, row_dir.getString(12));
                         json_aval.put(K_MUNICIPIO,row_dir.getString(13));
                         json_aval.put(K_ESTADO, row_dir.getString(14));
+                        json_aval.put(K_LOCATED_AT, row_dir.getString(15));
                         row_dir.close();
 
                         json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
@@ -994,6 +1020,9 @@ public class Servicios_Sincronizado {
                         String fachadaAval = row_soli.getString(46);
                         json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
                         json_aval.put(K_FIRMA, row_soli.getString(48));
+                        json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
+                        json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
+                        json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
                         String firmaAval = row_soli.getString(48);
 
                         json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
@@ -1167,6 +1196,7 @@ public class Servicios_Sincronizado {
                     json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
                     json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
                     json_solicitante.put(K_ESTADO, row_dir.getString(14));
+                    json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
                     json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
                     json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
@@ -1180,6 +1210,11 @@ public class Servicios_Sincronizado {
                     json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
                     json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
                     json_solicitante.put(K_FIRMA, row_soli.getString(34));
+                    json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
+                    json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
+                    json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
+                    json_solicitante.put(K_TIENE_FIRMA, "SI");
+                    json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
 
                     json_solicitud.put(K_SOLICITANTE, json_solicitante);
                     String fachadaCli = row_soli.getString(32);
@@ -1262,6 +1297,7 @@ public class Servicios_Sincronizado {
                     json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
                     json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
                     json_negocio.put(K_ESTADO, row_dir.getString(14));
+                    json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close(); //Cierra datos de direccion del negocio
 
                     json_negocio.put(K_OCUPACION, row_soli.getString(4));
@@ -1368,6 +1404,7 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_LOCALIDAD, row_dir.getString(12));
                     json_aval.put(K_MUNICIPIO,row_dir.getString(13));
                     json_aval.put(K_ESTADO, row_dir.getString(14));
+                    json_aval.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
 
                     json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
@@ -1442,6 +1479,9 @@ public class Servicios_Sincronizado {
                     String fachadaAval = row_soli.getString(46);
                     json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
                     json_aval.put(K_FIRMA, row_soli.getString(48));
+                    json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
+                    json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
+                    json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
                     String firmaAval = row_soli.getString(48);
 
                     json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
@@ -1580,7 +1620,158 @@ public class Servicios_Sincronizado {
             iTotal = iTotalRegistros;
         }
 
-        String sqlIntegrante = "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.*, p.*, cro.* FROM " + TBL_INTEGRANTES_GPO + " AS i " +
+        String sqlIntegrante = "SELECT " +
+                "i.id," +
+                "i.id_credito," +
+                "i.cargo," +
+                "i.nombre," +
+                "i.paterno," +
+                "i.materno," +
+                "i.fecha_nacimiento," +
+                "i.edad," +
+                "i.genero," +
+                "i.estado_nacimiento," +
+                "i.rfc," +
+                "i.curp," +
+                "i.curp_digito_veri," +
+                "i.tipo_identificacion," +
+                "i.no_identificacion," +
+                "i.nivel_estudio," +
+                "i.ocupacion," +
+                "i.estado_civil," +
+                "i.bienes," +
+                "i.estatus_rechazo," +
+                "i.comentario_rechazo," +
+                "i.estatus_completado," +
+                "i.id_solicitud_integrante," +
+                "t.id_telefonico," +
+                "t.id_integrante," +
+                "t.tel_casa," +
+                "t.tel_celular," +
+                "t.tel_mensaje," +
+                "t.tel_trabajo," +
+                "t.estatus_completado," +
+                "d.id_domicilio," +
+                "d.id_integrante," +
+                "d.latitud," +
+                "d.longitud," +
+                "d.calle," +
+                "d.no_exterior," +
+                "d.no_interior," +
+                "d.manzana," +
+                "d.lote," +
+                "d.cp," +
+                "d.colonia," +
+                "d.ciudad," +
+                "d.localidad," +
+                "d.municipio," +
+                "d.estado," +
+                "d.tipo_vivienda," +
+                "d.parentesco," +
+                "d.otro_tipo_vivienda," +
+                "d.tiempo_vivir_sitio," +
+                "d.foto_fachada," +
+                "d.ref_domiciliaria," +
+                "d.estatus_completado," +
+                "d.dependientes," +
+                "n.id_negocio," +
+                "n.id_integrante," +
+                "n.nombre," +
+                "n.latitud," +
+                "n.longitud," +
+                "n.calle," +
+                "n.no_exterior," +
+                "n.no_interior," +
+                "n.manzana," +
+                "n.lote," +
+                "n.cp," +
+                "n.colonia," +
+                "n.ciudad," +
+                "n.localidad," +
+                "n.municipio," +
+                "n.estado," +
+                "n.destino_credito," +
+                "n.otro_destino_credito," +
+                "n.ocupacion," +
+                "n.actividad_economica," +
+                "n.antiguedad," +
+                "n.ing_mensual," +
+                "n.ing_otros," +
+                "n.gasto_semanal," +
+                "n.capacidad_pago," +
+                "n.monto_maximo," +
+                "n.medios_pago," +
+                "n.otro_medio_pago," +
+                "n.num_ope_mensuales," +
+                "n.num_ope_mensuales_efectivo," +
+                "n.foto_fachada," +
+                "n.ref_domiciliaria," +
+                "n.estatus_rechazo," +
+                "n.comentario_rechazo," +
+                "n.estatus_completado," +
+                "c.id_conyuge," +
+                "c.id_integrante," +
+                "c.nombre," +
+                "c.paterno," +
+                "c.materno," +
+                "c.nacionalidad," +
+                "c.ocupacion," +
+                "c.calle," +
+                "c.no_exterior," +
+                "c.no_interior," +
+                "c.manzana," +
+                "c.lote," +
+                "c.cp," +
+                "c.colonia," +
+                "c.ciudad," +
+                "c.localidad," +
+                "c.municipio," +
+                "c.estado," +
+                "c.ingresos_mensual," +
+                "c.gasto_mensual," +
+                "c.tel_celular," +
+                "c.tel_trabajo," +
+                "c.estatus_completado," +
+                "o.id_otro," +
+                "o.id_integrante," +
+                "o.clasificacion_riesgo," +
+                "o.medio_contacto," +
+                "o.email," +
+                "o.estado_cuenta," +
+                "o.estatus_integrante," +
+                "o.monto_solicitado," +
+                "o.casa_reunion," +
+                "o.firma," +
+                "o.estatus_completado," +
+                "docu.id_documento," +
+                "docu.id_integrante," +
+                "docu.ine_frontal," +
+                "docu.ine_reverso," +
+                "docu.curp," +
+                "docu.comprobante," +
+                "docu.estatus_completado," +
+                "p.id_politica," +
+                "p.id_integrante," +
+                "p.propietario_real," +
+                "p.proveedor_recursos," +
+                "p.persona_politica," +
+                "p.estatus_completado," +
+                "cro.id," +
+                "cro.id_integrante," +
+                "cro.calle_principal," +
+                "cro.lateral_uno," +
+                "cro.lateral_dos," +
+                "cro.calle_trasera," +
+                "cro.referencias," +
+                "cro.estatus_completado," +
+                "d.located_at," +
+                "n.located_at," +
+                "o.latitud," +
+                "o.longitud," +
+                "o.located_at," +
+                "o.tiene_firma," +
+                "o.nombre_quien_firma" +
+            " FROM " + TBL_INTEGRANTES_GPO + " AS i " +
             "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
             "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
             "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE + " AS n ON i.id = n.id_integrante " +
@@ -1591,7 +1782,8 @@ public class Servicios_Sincronizado {
             "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS docu ON i.id = docu.id_integrante " +
             "WHERE i.id_credito = ? AND i.estatus_completado = ? " +
             "order by i.id_credito " +
-            "limit 1 offset " + iIndex
+            "limit 1 "
+            //"limit 1 offset " + iIndex
         ;
 
         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "1"});
@@ -1647,6 +1839,7 @@ public class Servicios_Sincronizado {
                 json_solicitante.put(K_LOCALIDAD, rowIntegrante.getString(42));
                 json_solicitante.put(K_MUNICIPIO, rowIntegrante.getString(43));
                 json_solicitante.put(K_ESTADO, rowIntegrante.getString(44));
+                json_solicitante.put(K_LOCATED_AT, rowIntegrante.getString(143));
 
                 json_solicitante.put(K_TIPO_VIVIENDA, rowIntegrante.getString(45));
                 if (rowIntegrante.getString(45).equals("CASA FAMILIAR"))
@@ -1669,6 +1862,11 @@ public class Servicios_Sincronizado {
                 json_solicitante.put(K_EMAIL, rowIntegrante.getString(115));
                 json_solicitante.put(K_ESTADO_CUENTA, rowIntegrante.getString(116));
                 json_solicitante.put(K_FIRMA, rowIntegrante.getString(120));
+                json_solicitante.put(K_SOL_LATITUD, rowIntegrante.getString(145));
+                json_solicitante.put(K_SOL_LONGITUD, rowIntegrante.getString(146));
+                json_solicitante.put(K_SOL_LOCATED_AT, rowIntegrante.getString(147));
+                json_solicitante.put(K_TIENE_FIRMA, rowIntegrante.getString(148));
+                json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, rowIntegrante.getString(149));
                 String firmaCli = rowIntegrante.getString(120);
                 json_solicitud.put(K_SOLICITANTE, json_solicitante);
 
@@ -1730,6 +1928,7 @@ public class Servicios_Sincronizado {
                 json_negocio.put(K_LOCALIDAD, rowIntegrante.getString(66));
                 json_negocio.put(K_MUNICIPIO, rowIntegrante.getString(67));
                 json_negocio.put(K_ESTADO, rowIntegrante.getString(68));
+                json_negocio.put(K_LOCATED_AT, rowIntegrante.getString(144));
                 json_negocio.put(K_DESTINO_CREDITO, rowIntegrante.getString(69));
                 if (rowIntegrante.getString(69).contains("OTRO"))
                     json_negocio.put(K_OTRO_DESTINO_CREDITO, rowIntegrante.getString(70));
@@ -1999,7 +2198,162 @@ public class Servicios_Sincronizado {
             iTotal = iTotalRegistros;
         }
 
-        String sqlIntegrante = "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.*, p.*, cro.* FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
+        String sqlIntegrante = "SELECT " +
+                "i.id," +
+                "i.id_credito," +
+                "i.cargo," +
+                "i.nombre," +
+                "i.paterno," +
+                "i.materno," +
+                "i.fecha_nacimiento," +
+                "i.edad," +
+                "i.genero," +
+                "i.estado_nacimiento," +
+                "i.rfc," +
+                "i.curp," +
+                "i.curp_digito_veri," +
+                "i.tipo_identificacion," +
+                "i.no_identificacion," +
+                "i.nivel_estudio," +
+                "i.ocupacion," +
+                "i.estado_civil," +
+                "i.bienes," +
+                "i.estatus_rechazo," +
+                "i.comentario_rechazo," +
+                "i.estatus_completado," +
+                "i.id_solicitud_integrante," +
+                "i.is_nuevo," +
+                "i.cliente_id," +
+                "t.id_telefonico," +
+                "t.id_integrante," +
+                "t.tel_casa," +
+                "t.tel_celular," +
+                "t.tel_mensaje," +
+                "t.tel_trabajo," +
+                "t.estatus_completado," +
+                "d.id_domicilio," +
+                "d.id_integrante," +
+                "d.latitud," +
+                "d.longitud," +
+                "d.calle," +
+                "d.no_exterior," +
+                "d.no_interior," +
+                "d.manzana," +
+                "d.lote," +
+                "d.cp," +
+                "d.colonia," +
+                "d.ciudad," +
+                "d.localidad," +
+                "d.municipio," +
+                "d.estado," +
+                "d.tipo_vivienda," +
+                "d.parentesco," +
+                "d.otro_tipo_vivienda," +
+                "d.tiempo_vivir_sitio," +
+                "d.foto_fachada," +
+                "d.ref_domiciliaria," +
+                "d.estatus_completado," +
+                "d.dependientes," +
+                "n.id_negocio," +
+                "n.id_integrante," +
+                "n.nombre," +
+                "n.latitud," +
+                "n.longitud," +
+                "n.calle," +
+                "n.no_exterior," +
+                "n.no_interior," +
+                "n.manzana," +
+                "n.lote," +
+                "n.cp," +
+                "n.colonia," +
+                "n.ciudad," +
+                "n.localidad," +
+                "n.municipio," +
+                "n.estado," +
+                "n.destino_credito," +
+                "n.otro_destino_credito," +
+                "n.ocupacion," +
+                "n.actividad_economica," +
+                "n.antiguedad," +
+                "n.ing_mensual," +
+                "n.ing_otros," +
+                "n.gasto_semanal," +
+                "n.capacidad_pago," +
+                "n.monto_maximo," +
+                "n.medios_pago," +
+                "n.otro_medio_pago," +
+                "n.num_ope_mensuales," +
+                "n.num_ope_mensuales_efectivo," +
+                "n.foto_fachada," +
+                "n.ref_domiciliaria," +
+                "n.estatus_rechazo," +
+                "n.comentario_rechazo," +
+                "n.estatus_completado," +
+                "c.id_conyuge," +
+                "c.id_integrante," +
+                "c.nombre," +
+                "c.paterno," +
+                "c.materno," +
+                "c.nacionalidad," +
+                "c.ocupacion," +
+                "c.calle," +
+                "c.no_exterior," +
+                "c.no_interior," +
+                "c.manzana," +
+                "c.lote," +
+                "c.cp," +
+                "c.colonia," +
+                "c.ciudad," +
+                "c.localidad," +
+                "c.municipio," +
+                "c.estado," +
+                "c.ingresos_mensual," +
+                "c.gasto_mensual," +
+                "c.tel_celular," +
+                "c.tel_trabajo," +
+                "c.estatus_completado," +
+                "o.id_otro," +
+                "o.id_integrante," +
+                "o.clasificacion_riesgo," +
+                "o.medio_contacto," +
+                "o.email," +
+                "o.estado_cuenta," +
+                "o.estatus_integrante," +
+                "o.monto_solicitado," +
+                "o.casa_reunion," +
+                "o.firma," +
+                "o.estatus_completado," +
+                "docu.id_documento," +
+                "docu.id_integrante," +
+                "docu.ine_frontal," +
+                "docu.ine_reverso," +
+                "docu.curp," +
+                "docu.comprobante," +
+                "docu.estatus_completado," +
+                "p.id_politica," +
+                "p.id_integrante," +
+                "p.propietario_real," +
+                "p.proveedor_recursos," +
+                "p.persona_politica," +
+                "p.estatus_completado," +
+                "cro.id," +
+                "cro.id_integrante," +
+                "cro.calle_principal," +
+                "cro.lateral_uno," +
+                "cro.lateral_dos," +
+                "cro.calle_trasera," +
+                "cro.referencias," +
+                "cro.estatus_completado," +
+                "d.located_at," +
+                "n.located_at," +
+                "o.latitud," +
+                "o.longitud," +
+                "o.located_at," +
+                "o.tiene_firma," +
+                "o.nombre_quien_firma," +
+                "o.tiene_firma," +
+                "o.nombre_quien_firma" +
+            " FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
             "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
             "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
             "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS n ON i.id = n.id_integrante " +
@@ -2010,7 +2364,7 @@ public class Servicios_Sincronizado {
             "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
             "WHERE i.id_credito = ? AND i.id_solicitud_integrante = ? AND i.estatus_completado = 1 " +
             "order by i.id_credito " +
-            "limit 1 offset " + iIndex
+            "limit 1"
         ;
 
         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "0"});
@@ -2072,6 +2426,7 @@ public class Servicios_Sincronizado {
                 json_solicitante.put(K_LOCALIDAD, rowIntegrante.getString(44));
                 json_solicitante.put(K_MUNICIPIO, rowIntegrante.getString(45));
                 json_solicitante.put(K_ESTADO, rowIntegrante.getString(46));
+                json_solicitante.put(K_LOCATED_AT, rowIntegrante.getString(143));
 
                 json_solicitante.put(K_TIPO_VIVIENDA, rowIntegrante.getString(47));
                 if (rowIntegrante.getString(47).equals("CASA FAMILIAR"))
@@ -2095,6 +2450,11 @@ public class Servicios_Sincronizado {
                 json_solicitante.put(K_ESTADO_CUENTA, rowIntegrante.getString(118));
                 json_solicitante.put(K_FIRMA, rowIntegrante.getString(122));
                 String firmaCli = rowIntegrante.getString(122);
+                json_solicitante.put(K_SOL_LATITUD, rowIntegrante.getString(145));
+                json_solicitante.put(K_SOL_LONGITUD, rowIntegrante.getString(146));
+                json_solicitante.put(K_SOL_LOCATED_AT, rowIntegrante.getString(147));
+                json_solicitante.put(K_TIENE_FIRMA, rowIntegrante.getString(148));
+                json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, rowIntegrante.getString(149));
                 json_solicitud.put(K_SOLICITANTE, json_solicitante);
 
                 Log.e("solicitante", json_solicitante.toString());
@@ -2155,6 +2515,7 @@ public class Servicios_Sincronizado {
                 json_negocio.put(K_LOCALIDAD, rowIntegrante.getString(68));
                 json_negocio.put(K_MUNICIPIO, rowIntegrante.getString(69));
                 json_negocio.put(K_ESTADO, rowIntegrante.getString(70));
+                json_negocio.put(K_LOCATED_AT, rowIntegrante.getString(144));
                 json_negocio.put(K_DESTINO_CREDITO, rowIntegrante.getString(71));
                 if (rowIntegrante.getString(71).contains("OTRO"))
                     json_negocio.put(K_OTRO_DESTINO_CREDITO, rowIntegrante.getString(72));
@@ -3174,8 +3535,7 @@ public class Servicios_Sincronizado {
         call.enqueue(new Callback<List<MSolicitudRechazoInd>>() {
             @Override
             public void onResponse(Call<List<MSolicitudRechazoInd>> call, Response<List<MSolicitudRechazoInd>> response) {
-                Log.e("CodeGetRechazados", response.code()+" xD");
-                Log.e("Mesage,Rechas",response.message());
+
                 switch (response.code()){
                     case 200:
                         List<MSolicitudRechazoInd> solicitudes = response.body();
@@ -3204,6 +3564,11 @@ public class Servicios_Sincronizado {
                                     if (row.getCount() > 0) {
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoId() == 4) { //Actualiza solicitudes de originacion que fueron rechazadas por error de datos
+
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", "");
+                                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+
                                             if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
                                                 cv = new ContentValues();
                                                 cv.put("estatus", 0);
@@ -3283,7 +3648,7 @@ public class Servicios_Sincronizado {
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
-                                            cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCliente()));
+                                            cv.put("comentario_rechazo", Miscellaneous.validStr("NO AUTORIZADO - " + item.getComentarioAdminCliente()));
                                             db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(8)});
                                         }
                                     }
@@ -3305,6 +3670,7 @@ public class Servicios_Sincronizado {
                                     if (row.getCount() > 0) {
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoId() == 4) {//Actualiza solicitud de originacion que rechazo la adminitradora para correccion de datos
+
                                             if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
                                                 cv = new ContentValues();
                                                 cv.put("estatus", 0);
@@ -3372,13 +3738,17 @@ public class Servicios_Sincronizado {
                                             }
                                         }
                                         else if (item.getSolicitudEstadoId() == 2) { //Solicitud de renovacion rechazada
+                                            Log.e("AQUI RECHAZI IND idsol", row.getString(0));
+                                            Log.e("AQUI RECHAZI IND idcli", row.getString(8));
+
+
                                             cv = new ContentValues();
                                             cv.put("estatus", 3);
                                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
-                                            cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCliente()));
-                                            db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
+                                            cv.put("comentario_rechazo", Miscellaneous.validStr("NO AUTORIZADO - " + item.getComentarioAdminCliente()));
+                                            db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(8)});
                                         }
                                     }
                                 }
@@ -3414,6 +3784,7 @@ public class Servicios_Sincronizado {
                 Log.e("Mesage,Rechas",response.message());
                 switch (response.code()){
                     case 200:
+                        Log.e("AQUI RECHAZADO", response.body().toString());
                         List<MSolicitudRechazoGpo> solicitudes = response.body();
                         if (solicitudes.size() > 0){
                             for (MSolicitudRechazoGpo item : solicitudes){
@@ -3491,26 +3862,45 @@ public class Servicios_Sincronizado {
                                         }
                                         else{ //Es rechazo completo de la solicitud
                                             cv = new ContentValues();
-                                            cv.put("estatus_completado", 3);
+                                            cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
                                             db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 0);
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            cv.put("fecha_termino", "");
+                                            //cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
                                     }
                                 }
                                 else{ //rechazo de solicitud grupal de renovacion
                                     //                 0                        1                   2              3                4              5               6                    7               8                  9
-                                    sql = "SELECT i.id AS id_integrante, tel.id_telefonico, dom.id_domicilio, neg.id_negocio, con.id_conyuge, otr.id_otro, cro.id AS id_croquis, pol.id_politica, doc.id_documento, sol.id_solicitud FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
-                                            "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
-                                            "JOIN " + TBL_SOLICITUDES_REN + " AS sol ON cre.id_solicitud = sol.id_solicitud " +
-                                            "JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS tel ON i.id = tel.id_integrante " +
-                                            "JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS dom ON i.id = doc.id_integrante " +
-                                            "JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS neg ON i.id = neg.id_integrante " +
-                                            "JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS con ON i.id = con.id_integrante " +
-                                            "JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS otr ON i.id = otr.id_integrante " +
-                                            "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
-                                            "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
-                                            "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
-                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
+                                    sql = "SELECT " +
+                                            "i.id AS id_integrante, " +
+                                            "tel.id_telefonico, " +
+                                            "dom.id_domicilio, " +
+                                            "neg.id_negocio, " +
+                                            "con.id_conyuge, " +
+                                            "otr.id_otro, " +
+                                            "cro.id AS id_croquis, " +
+                                            "pol.id_politica, " +
+                                            "doc.id_documento, " +
+                                            "sol.id_solicitud " +
+                                        "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
+                                        "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
+                                        "JOIN " + TBL_SOLICITUDES_REN + " AS sol ON cre.id_solicitud = sol.id_solicitud " +
+                                        "JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS tel ON i.id = tel.id_integrante " +
+                                        "JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS dom ON i.id = doc.id_integrante " +
+                                        "JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS neg ON i.id = neg.id_integrante " +
+                                        "JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS con ON i.id = con.id_integrante " +
+                                        "JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS otr ON i.id = otr.id_integrante " +
+                                        "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
+                                        "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
+                                        "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
+                                        "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
@@ -3564,9 +3954,17 @@ public class Servicios_Sincronizado {
                                         }
                                         else{//Es rechazo de solcitud completo
                                             cv = new ContentValues();
-                                            cv.put("estatus_completado", 3);
+                                            cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
                                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 0);
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            cv.put("fecha_termino", "");
+                                            //cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
 
                                     }
@@ -3577,15 +3975,233 @@ public class Servicios_Sincronizado {
                             }
                         }
                         break;
+                    default:
+                        try {
+                            Log.e("ERROR " + response.code(), response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("ERROR " + response.code(), response.message());
+                        break;
                 }
             }
 
             @Override
             public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t) {
-
+                Log.e("ERROR ", t.getMessage());
+                Log.e("ERROR ", t.getCause().toString());
             }
         });
 
+    }
+
+    public void GetSolicitudesEstatusInd(Context ctx, boolean showDG){
+        SessionManager session = new SessionManager(ctx);
+        SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+        Call<List<SolicitudDetalleEstatusInd>> call = solicitudIndService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
+
+        call.enqueue(new Callback<List<SolicitudDetalleEstatusInd>>() {
+            @Override
+            public void onResponse(Call<List<SolicitudDetalleEstatusInd>> call, Response<List<SolicitudDetalleEstatusInd>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<SolicitudDetalleEstatusInd> solicitudes = response.body();
+
+                        for(SolicitudDetalleEstatusInd se : solicitudes)
+                        {
+                            if(se.getTipoSolicitud() == 1)
+                            {
+                                Log.e("AQUI ORIGINACION IND", String.valueOf(se.getSolicitudEstadoId()));
+                                ClienteDao clienteDao = new ClienteDao(ctx);
+                                SolicitudDao solicitudDao = new SolicitudDao(ctx);
+
+                                Cliente cliente = null;
+                                Solicitud solicitud = solicitudDao.findByIdOriginacion(se.getId());
+
+                                if(solicitud != null) cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                                if(cliente != null)
+                                {
+                                    String comentario = "";
+
+                                    if(se.getSolicitudEstadoId() == 1)
+                                    {
+                                        solicitud.setEstatus(2);
+                                        comentario = "EN REVISIÓN";
+                                    }
+                                    else if(se.getSolicitudEstadoId() == 3)
+                                    {
+                                        solicitud.setEstatus(2);
+                                        comentario = "AUTORIZADO";
+                                    }
+                                    else
+                                    {
+                                        //solicitud.setEstatus(3);
+                                        //comentario = cliente.getComentarioRechazo();
+                                    }
+
+                                    cliente.setComentarioRechazo(comentario);
+                                    clienteDao.updateEstatus(cliente);
+
+                                    solicitudDao.updateEstatus(solicitud);
+                                }
+                            }
+                            else
+                            {
+                                ClienteRenDao clienteDao = new ClienteRenDao(ctx);
+                                SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
+
+                                ClienteRen cliente = null;
+                                SolicitudRen solicitud = solicitudDao.findByIdOriginacion(se.getId());
+
+                                if(solicitud != null) cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                                if(cliente != null)
+                                {
+                                    String comentario = "";
+
+                                    if(se.getSolicitudEstadoId() == 1)
+                                    {
+                                        comentario = "EN REVISIÓN";
+                                        solicitud.setEstatus(2);
+                                    }
+                                    else if(se.getSolicitudEstadoId() == 3)
+                                    {
+                                        comentario = "AUTORIZADO";
+                                        solicitud.setEstatus(2);
+                                    }
+                                    else
+                                    {
+                                        //comentario = cliente.getComentarioRechazo();
+                                        //solicitud.setEstatus(3);
+                                    }
+
+                                    cliente.setComentarioRechazo(comentario);
+                                    clienteDao.updateEstatus(cliente);
+
+                                    solicitudDao.updateEstatus(solicitud);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        Log.e("AQUI ", response.message());
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SolicitudDetalleEstatusInd>> call, Throwable t) {
+                Log.e("Error", "failAGF" + t.getMessage());
+            }
+        });
+    }
+
+    public void GetSolicitudesEstatusGpo(Context ctx, boolean showDG){
+        SessionManager session = new SessionManager(ctx);
+        SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+        Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
+
+        call.enqueue(new Callback<List<SolicitudDetalleEstatusGpo>>() {
+            @Override
+            public void onResponse(Call<List<SolicitudDetalleEstatusGpo>> call, Response<List<SolicitudDetalleEstatusGpo>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<SolicitudDetalleEstatusGpo> solicitudes = response.body();
+
+                        for(SolicitudDetalleEstatusGpo se : solicitudes)
+                        {
+                            if(se.getTipoSolicitud() == 1)
+                            {
+                                CreditoGpoDao creditoDao = new CreditoGpoDao(ctx);
+                                IntegranteGpoDao integranteDao = new IntegranteGpoDao(ctx);
+                                SolicitudDao solicitudDao = new SolicitudDao(ctx);
+
+                                CreditoGpo credito = null;
+                                IntegranteGpo integrante = null;
+                                Solicitud solicitud = null;
+
+                                integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
+
+                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
+                                if(credito != null) solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+
+                                if(solicitud != null)
+                                {
+                                    String comentario = "";
+
+                                    if(se.getSolicitudEstadoIdIntegrante() == 1)
+                                    {
+                                        comentario = "EN REVISIÓN";
+                                    }
+                                    else if (se.getSolicitudEstadoIdIntegrante() == 3)
+                                    {
+                                        comentario = "AUTORIZADO";
+                                    }
+                                    else
+                                    {
+                                        //comentario = se.getComentarioAdmin();
+                                    }
+
+                                    integrante.setComentarioRechazo(comentario);
+                                    integranteDao.updateEstatus(integrante);
+
+                                    solicitud.setIdOriginacion(se.getId());
+                                    solicitudDao.updateEstatus(solicitud);
+                                }
+                            }
+                            else
+                            {
+                                CreditoGpoRenDao creditoDao = new CreditoGpoRenDao(ctx);
+                                IntegranteGpoRenDao integranteDao = new IntegranteGpoRenDao(ctx);
+                                SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
+
+                                CreditoGpoRen credito = null;
+                                IntegranteGpoRen integrante = null;
+                                SolicitudRen solicitud = null;
+
+                                integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
+
+                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
+                                if(credito != null) solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+
+                                if(solicitud != null)
+                                {
+                                    String comentario = "";
+
+                                    if(se.getSolicitudEstadoIdIntegrante() == 1)
+                                    {
+                                        comentario = "EN REVISIÓN";
+                                    }
+                                    else if (se.getSolicitudEstadoIdIntegrante() == 3)
+                                    {
+                                        comentario = "AUTORIZADO";
+                                    }
+                                    else
+                                    {
+                                        //comentario = se.getComentarioAdmin();
+                                    }
+
+                                    integrante.setComentarioRechazo(comentario);
+                                    integranteDao.updateEstatus(integrante);
+
+                                    solicitud.setIdOriginacion(se.getId());
+                                    solicitudDao.updateEstatus(solicitud);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        Log.e("AQUI ", response.message());
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SolicitudDetalleEstatusGpo>> call, Throwable t) {
+                Log.e("Error", "failAGF" + t.getMessage());
+            }
+        });
     }
 
     public void GetPrestamosAutorizados(final Context ctx, boolean showDG){
@@ -5807,6 +6423,14 @@ public class Servicios_Sincronizado {
                             db.update(TBL_PRESTAMOS_TO_RENOVAR, cv, "prestamo_id = ? AND cliente_id = ?", new String[]{prestamoId, clienteId});
 
                             break;
+                        default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Log.e("ERROR " + response.code(), response.message());
+                            break;
                     }
                 }
 
@@ -5892,6 +6516,7 @@ public class Servicios_Sincronizado {
                                 MRenovacionGrupal.Cliente cliente = integrante.getCliente();
                                 MRenovacionGrupal.Negocio negocio = integrante.getNegocio();
                                 MRenovacionGrupal.Conyuge conyuge = integrante.getConyuge();
+
                                 long id = 0;
                                 //Inserta registro de integrante
                                 params = new HashMap<>();
@@ -5919,6 +6544,8 @@ public class Servicios_Sincronizado {
                                 params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
                                 params.put(22, "0");                                                    //IS NUEVO
                                 params.put(23, String.valueOf(integrante.getClienteId()));              //CLIENTE ID
+                                params.put(24, String.valueOf(integrante.getCiclo()));
+                                params.put(25, integrante.getMontoPrestamoAnterior());
 
                                 id = dBhelper.saveIntegrantesGpoRen(db, params);
 
@@ -6085,6 +6712,15 @@ public class Servicios_Sincronizado {
                             cv.put("descargado", 1);
                             db.update(TBL_PRESTAMOS_TO_RENOVAR, cv, "grupo_id = ?", new String[]{grupoId});
                             break;
+                        default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Log.e("ERROR " + response.code(), response.message());
+                            break;
+
                     }
                 }
 
@@ -6579,8 +7215,8 @@ public class Servicios_Sincronizado {
 
 
             MultipartBody.Part fachada_cliente = null;
-            File image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
-
+            File image_fachada_cliente = null;
+            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -6591,7 +7227,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_cliente = null;
             File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
-            if (image_fachada_cliente != null) {
+            if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_cliente);
@@ -6600,7 +7236,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_negocio = null;
-            File image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            File image_fachada_negocio = null;
+            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -6610,7 +7247,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_aval = null;
-            File image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
+            File image_fachada_aval = null;
+            if(fachadaAval != null && !fachadaAval.equals("")) image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
             if (image_fachada_aval != null) {
                 RequestBody imageBodyFachadaAval =
                         RequestBody.create(
@@ -6621,7 +7259,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_aval = null;
             File image_firma_aval = new File(ROOT_PATH + "Firma/"+firmaAval);
-            if (image_fachada_aval != null) {
+            if (image_firma_aval != null) {
                 RequestBody imageBodyFirmaAval =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_aval);
@@ -6715,8 +7353,12 @@ public class Servicios_Sincronizado {
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
                             break;
-                        case 500:
-
+                        default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             break;
                     }
 
@@ -6759,8 +7401,8 @@ public class Servicios_Sincronizado {
 
 
             MultipartBody.Part fachada_cliente = null;
-            File image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
-
+            File image_fachada_cliente = null;
+            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -6771,7 +7413,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_cliente = null;
             File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
-            if (image_fachada_cliente != null) {
+            if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_cliente);
@@ -6780,7 +7422,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_negocio = null;
-            File image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            File image_fachada_negocio = null;
+            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -6790,7 +7433,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_aval = null;
-            File image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
+            File image_fachada_aval = null;
+            if(fachadaAval != null && !fachadaAval.equals("")) image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
             if (image_fachada_aval != null) {
                 RequestBody imageBodyFachadaAval =
                         RequestBody.create(
@@ -6800,8 +7444,9 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_aval = null;
-            File image_firma_aval = new File(ROOT_PATH + "Firma/"+firmaAval);
-            if (image_fachada_aval != null) {
+            File image_firma_aval = null;
+            if(firmaAval != null) image_firma_aval = new File(ROOT_PATH + "Firma/"+firmaAval);
+            if (image_firma_aval != null) {
                 RequestBody imageBodyFirmaAval =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_aval);
@@ -6896,8 +7541,12 @@ public class Servicios_Sincronizado {
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id});
                             break;
-                        case 500:
-
+                        default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             break;
                     }
 
@@ -6950,8 +7599,8 @@ public class Servicios_Sincronizado {
 
 
             MultipartBody.Part fachada_cliente = null;
-            File image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
-
+            File image_fachada_cliente = null;
+            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -6962,7 +7611,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_cliente = null;
             File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
-            if (image_fachada_cliente != null) {
+            if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_cliente);
@@ -6971,7 +7620,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_negocio = null;
-            File image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            File image_fachada_negocio = null;
+            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -7072,6 +7722,15 @@ public class Servicios_Sincronizado {
                                 cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
                             }
+
+                            if(iIndex + 1 < iTotal)
+                            {
+                                SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
+                            }
+                            break;
+                        case 500:
+                            Log.e("500", response.message());
+                            Log.e("500", response.errorBody().toString());
                             if(iIndex + 1 < iTotal)
                             {
                                 SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
@@ -7140,8 +7799,8 @@ public class Servicios_Sincronizado {
 
 
             MultipartBody.Part fachada_cliente = null;
-            File image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
-
+            File image_fachada_cliente = null;
+            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -7152,7 +7811,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_cliente = null;
             File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
-            if (image_fachada_cliente != null) {
+            if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma_cliente);
@@ -7161,7 +7820,8 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part fachada_negocio = null;
-            File image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            File image_fachada_negocio = null;
+            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -7191,8 +7851,9 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_curp = null;
-            File image_curp = new File(ROOT_PATH + "Documentos/"+curp);
-            if (!curp.isEmpty() && image_curp != null) {
+            File image_curp = null;
+            if(curp != null && !curp.equals("")) image_curp =  new File(ROOT_PATH + "Documentos/"+curp);
+            if (image_curp != null) {
                 RequestBody imageBody =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_curp);
@@ -7271,6 +7932,12 @@ public class Servicios_Sincronizado {
                             }
                             break;
                         default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             if(iIndex + 1 < iTotal)
                             {
                                 SendIntegranteRenovacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato7, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19, sDato21, sDato23);
@@ -7282,6 +7949,7 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
+                    Log.e("Error", t.getMessage());
                     Log.e("Error", "failSolicitud");
                     if(iIndex + 1 < iTotal)
                     {

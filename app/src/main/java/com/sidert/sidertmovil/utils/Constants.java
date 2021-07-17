@@ -669,6 +669,16 @@ public class Constants {
     public final static String K_FOTO_FACHADA                   = "foto_fachada";
     public final static String K_REFERENCIA_DOMICILIARIA        = "referencia_domiciliaria";
     public final static String K_FIRMA                          = "firma";
+    public final static String K_LOCATED_AT                     = "located_at";
+    public final static String K_AVAL_LOCATED_AT                = "aval_located_at";
+    public final static String K_AVAL_LATITUD                   = "aval_latitud";
+    public final static String K_AVAL_LONGITUD                  = "aval_longitud";
+    public final static String K_SOL_LOCATED_AT                 = "solicitante_located_at";
+    public final static String K_SOL_LATITUD                    = "solicitante_latitud";
+    public final static String K_SOL_LONGITUD                   = "solicitante_longitud";
+    public final static String K_TIENE_FIRMA                    = "tiene_firma";
+    public final static String K_NOMBRE_QUIEN_FIRMA             = "nombre_quien_firma";
+
 
     public final static String K_SOLICITANTE_CONYUGE            = "solicitante_conyugue";
 

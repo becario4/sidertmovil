@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_renovacion;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 
 import java.util.ArrayList;
@@ -55,6 +57,8 @@ public class RenovacionCredito extends AppCompatActivity {
 
     /**Funcion para extraer todas las solicitudes de renovacion de individual y grupal*/
     private void initComponents(){
+        ClienteRenDao clienteDao = new ClienteRenDao(ctx);
+
         /**Se prepara la consulta para obtener la solicitudes (SELECT * FROM TBL_SOLICITUDES_REN)*/
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, "", "", null);
 
@@ -65,13 +69,19 @@ public class RenovacionCredito extends AppCompatActivity {
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
             for(int i = 0; i < row.getCount(); i++){/**Se recorre los resultados*/
                 HashMap<Integer, String> item = new HashMap();
-                Log.e("id_solicitud", row.getString(0) + " nombre: "+row.getString(5));
+
+                ClienteRen cliente = null;
+
+                if(row.getString(3).equals("1")) cliente = clienteDao.findByIdSolicitud(row.getInt(0));
+
                 item.put(0,row.getString(0));           //ID solicitud
                 item.put(1, row.getString(5).trim().toUpperCase()); //Nombre
                 item.put(2, row.getString(3));          //Tipo solicitud
                 item.put(3, row.getString(11));         //Estatus
                 item.put(4, row.getString(7));          //Fecha Termino
                 item.put(5, row.getString(10));         //Fecha Envio
+                item.put(6, "");//pendiente
+                if(cliente != null) item.put(7, cliente.getComentarioRechazo());//pendiente
 
                 data.add(item);/**Se agrega el map al array */
                 row.moveToNext();

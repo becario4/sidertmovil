@@ -89,7 +89,8 @@ public class dialog_originacion_gpo extends DialogFragment {
         db = dBhelper.getWritableDatabase();
 
         _plazo = getResources().getStringArray(R.array.intervalo);
-        _frecuencia = getResources().getStringArray(R.array.lapso);
+        _frecuencia = getResources().getStringArray(R.array.lapso_grupal);
+
 
         session = new SessionManager(ctx);
         boostrap = (SolicitudCreditoGpo) getActivity();
@@ -163,7 +164,7 @@ public class dialog_originacion_gpo extends DialogFragment {
             if (is_edit) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setTitle(R.string.selected_option)
-                        .setItems(R.array.lapso, new DialogInterface.OnClickListener() {
+                        .setItems(R.array.lapso_grupal, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int position) {
                                 tvPeriodicidad.setError(null);
                                 tvPeriodicidad.setText(_frecuencia[position]);

@@ -205,7 +205,9 @@ public class SidertTables {
                 "ciudad TEXT," +
                 "localidad TEXT," +
                 "municipio TEXT," +
-                "estado TEXT)";
+                "estado TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_SOLICITUDES = "CREATE TABLE " + TBL_SOLICITUDES + " (" +
                 "id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -272,7 +274,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_IND = "CREATE TABLE " + TBL_CONYUGE_IND + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -326,7 +332,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "comentario_rechazo TEXT)";
+                "comentario_rechazo TEXT," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_AVAL_IND = "CREATE TABLE " + TBL_AVAL_IND + " (" +
                 "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -380,7 +388,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_REFERENCIA_IND = "CREATE TABLE " + TBL_REFERENCIA_IND + " (" +
                 "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -493,7 +505,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "dependientes TEXT)";
+                "dependientes TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_NEGOCIO_INTEGRANTE_T = "CREATE TABLE " + TBL_NEGOCIO_INTEGRANTE + " (" +
                 "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -530,7 +544,11 @@ public class SidertTables {
                 "ref_domiciliaria TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "located_at TEXT," +
+                "tiene_negocio TEXT DEFAULT 'SI'," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_INTEGRANTE_T = "CREATE TABLE " + TBL_CONYUGE_INTEGRANTE + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -568,7 +586,13 @@ public class SidertTables {
                 "monto_solicitado TEXT," +
                 "casa_reunion INTEGER," +
                 "firma TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT," +
+                "tiene_firma TEXT DEFAULT 'SI'," +
+                "nombre_quien_firma TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_CROQUIS_GPO = "CREATE TABLE " + TBL_CROQUIS_GPO + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1182,7 +1206,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_IND_AUTO = "CREATE TABLE " + TBL_CONYUGE_IND_AUTO + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1236,7 +1264,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "comentario_rechazo TEXT)";
+                "comentario_rechazo TEXT," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_AVAL_IND_AUTO = "CREATE TABLE " + TBL_AVAL_IND_AUTO + " (" +
                 "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1290,7 +1320,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_REFERENCIA_IND_AUTO = "CREATE TABLE " + TBL_REFERENCIA_IND_AUTO + " (" +
                 "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1338,7 +1372,9 @@ public class SidertTables {
                 "ciudad TEXT," +
                 "localidad TEXT," +
                 "municipio TEXT," +
-                "estado TEXT)";
+                "estado TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_DATOS_CREDITO_GPO_AUTO = "CREATE TABLE " + TBL_CREDITO_GPO_AUTO + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1411,7 +1447,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "dependientes TEXT)";
+                "dependientes TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_NEGOCIO_INTEGRANTE_AUTO = "CREATE TABLE " + TBL_NEGOCIO_INTEGRANTE_AUTO + " (" +
                 "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1448,7 +1486,11 @@ public class SidertTables {
                 "ref_domiciliaria TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "located_at TEXT," +
+                "tiene_negocio TEXT DEFAULT 'SI'," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_INTEGRANTE_AUTO = "CREATE TABLE " + TBL_CONYUGE_INTEGRANTE_AUTO + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1487,7 +1529,13 @@ public class SidertTables {
                 "casa_reunion INTEGER," +
                 "firma TEXT," +
                 "estatus_completado INTEGER," +
-                "monto_autorizado TEXT)";
+                "monto_autorizado TEXT," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT," +
+                "tiene_firma TEXT DEFAULT 'SI'," +
+                "nombre_quien_firma TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_CROQUIS_GPO_AUTO = "CREATE TABLE " + TBL_CROQUIS_GPO_AUTO + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1579,7 +1627,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_IND_REN = "CREATE TABLE " + TBL_CONYUGE_IND_REN + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1633,7 +1685,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "comentario_rechazo TEXT)";
+                "comentario_rechazo TEXT," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_AVAL_IND_REN = "CREATE TABLE " + TBL_AVAL_IND_REN + " (" +
                 "id_aval INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1687,7 +1741,11 @@ public class SidertTables {
                 "firma TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_REFERENCIA_IND_REN = "CREATE TABLE " + TBL_REFERENCIA_IND_REN + " (" +
                 "id_referencia INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1735,7 +1793,9 @@ public class SidertTables {
                 "ciudad TEXT," +
                 "localidad TEXT," +
                 "municipio TEXT," +
-                "estado TEXT)";
+                "estado TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_DOCUMENTOS_REN = "CREATE TABLE " + TBL_DOCUMENTOS_REN + " (" +
                 "id_documento INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1787,7 +1847,10 @@ public class SidertTables {
                 "estatus_completado INTEGER," +
                 "id_solicitud_integrante INTEGER," +
                 "is_nuevo INTEGER," +
-                "cliente_id TEXT)";
+                "cliente_id TEXT," +
+                "ciclo INTEGER DEFAULT 0," +
+                "monto_prestamo_anterior TEXT DEFAULT '0.00'" +
+                ")";
 
         static final String CREATE_TBL_TELEFONOS_INTEGRANTE_REN = "CREATE TABLE " + TBL_TELEFONOS_INTEGRANTE_REN + " (" +
                 "id_telefonico INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1821,7 +1884,9 @@ public class SidertTables {
                 "foto_fachada TEXT," +
                 "ref_domiciliaria TEXT," +
                 "estatus_completado INTEGER," +
-                "dependientes TEXT)";
+                "dependientes TEXT," +
+                "located_at TEXT" +
+                ")";
 
         static final String CREATE_TBL_NEGOCIO_INTEGRANTE_REN = "CREATE TABLE " + TBL_NEGOCIO_INTEGRANTE_REN + " (" +
                 "id_negocio INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1858,7 +1923,11 @@ public class SidertTables {
                 "ref_domiciliaria TEXT," +
                 "estatus_rechazo INTEGER," +
                 "comentario_rechazo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "located_at TEXT," +
+                "tiene_negocio TEXT DEFAULT 'SI'," +
+                "ubicado_en_dom_cli TEXT DEFAULT 'NO'" +
+                ")";
 
         static final String CREATE_TBL_CONYUGE_INTEGRANTE_REN = "CREATE TABLE " + TBL_CONYUGE_INTEGRANTE_REN + " (" +
                 "id_conyuge INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1896,7 +1965,13 @@ public class SidertTables {
                 "monto_solicitado TEXT," +
                 "casa_reunion INTEGER," +
                 "firma TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "latitud TEXT," +
+                "longitud TEXT," +
+                "located_at TEXT," +
+                "tiene_firma TEXT DEFAULT 'SI'," +
+                "nombre_quien_firma TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_CROQUIS_GPO_REN = "CREATE TABLE " + TBL_CROQUIS_GPO_REN + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -2460,5 +2535,218 @@ public class SidertTables {
         static final String ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV = "ALTER TABLE " + TBL_PRESTAMOS +
                 " ADD COLUMN estatus_prestamo_id" +
                 " INTEGER DEFAULT 3";
+
+        static final String ADD_LOCATED_AT_DIRECCIONES = "ALTER TABLE " + TBL_DIRECCIONES +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_DIRECCIONES_AUTO = "ALTER TABLE " + TBL_DIRECCIONES_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_DIRECCIONES_RENOV = "ALTER TABLE " + TBL_DIRECCIONES_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_CLIENTE = "ALTER TABLE " + TBL_CLIENTE_IND +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_CLIENTE = "ALTER TABLE " + TBL_CLIENTE_IND +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_CLIENTE = "ALTER TABLE " + TBL_CLIENTE_IND +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_CLIENTE_AUTO = "ALTER TABLE " + TBL_CLIENTE_IND_AUTO +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_CLIENTE_AUTO = "ALTER TABLE " + TBL_CLIENTE_IND_AUTO +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_CLIENTE_AUTO = "ALTER TABLE " + TBL_CLIENTE_IND_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_CLIENTE_RENOV = "ALTER TABLE " + TBL_CLIENTE_IND_REN +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_CLIENTE_RENOV = "ALTER TABLE " + TBL_CLIENTE_IND_REN +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_CLIENTE_RENOV = "ALTER TABLE " + TBL_CLIENTE_IND_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_AVAL = "ALTER TABLE " + TBL_AVAL_IND +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_AVAL = "ALTER TABLE " + TBL_AVAL_IND +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_AVAL = "ALTER TABLE " + TBL_AVAL_IND +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_AVAL_AUTO = "ALTER TABLE " + TBL_AVAL_IND_AUTO +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_AVAL_AUTO = "ALTER TABLE " + TBL_AVAL_IND_AUTO +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_AVAL_AUTO = "ALTER TABLE " + TBL_AVAL_IND_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_AVAL_RENOV = "ALTER TABLE " + TBL_AVAL_IND_REN +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_AVAL_RENOV = "ALTER TABLE " + TBL_AVAL_IND_REN +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_AVAL_RENOV = "ALTER TABLE " + TBL_AVAL_IND_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_NEG_INT = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_DOM_INT = "ALTER TABLE " + TBL_DOMICILIO_INTEGRANTE +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_OD_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_OD_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_OD_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_OD_INT_REN = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_OD_INT_REN = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_OD_INT_REN = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_NEG_INT_REN = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_DOM_INT_REN = "ALTER TABLE " + TBL_DOMICILIO_INTEGRANTE_REN +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LATITUD_OD_INT_AUTO = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
+                " ADD COLUMN latitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LONGITUD_OD_INT_AUTO = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
+                " ADD COLUMN longitud" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_OD_INT_AUTO = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_DOM_INT_AUTO = "ALTER TABLE " + TBL_DOMICILIO_INTEGRANTE_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_LOCATED_AT_NEG_INT_AUTO = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_AUTO +
+                " ADD COLUMN located_at" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_UBIC_DC_NEG_IND = "ALTER TABLE " + TBL_NEGOCIO_IND +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_UBIC_DC_NEG_IND_REN = "ALTER TABLE " + TBL_NEGOCIO_IND_REN +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_UBIC_DC_NEG_IND_AUT = "ALTER TABLE " + TBL_NEGOCIO_IND_AUTO +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_TIENE_F_OD_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN tiene_firma" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_NOM_QF_OD_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN nombre_quien_firma" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_TIENE_F_OD_INT_REN = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN tiene_firma" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_NOM_QF_OD_INT_REN= "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN nombre_quien_firma" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_TIENE_F_OD_INT_AUT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
+                " ADD COLUMN tiene_firma" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_NOM_QF_OD_INT_AUT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_AUTO +
+                " ADD COLUMN nombre_quien_firma" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_TIENE_NEG_NEG_INT = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE +
+                " ADD COLUMN tiene_negocio" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_UBIC_DC_NEG_INT = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_TIENE_NEG_NEG_INT_REN = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_REN +
+                " ADD COLUMN tiene_negocio" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_UBIC_DC_NEG_INT_REN = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_REN +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_TIENE_NEG_NEG_INT_AUT = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_AUTO +
+                " ADD COLUMN tiene_negocio" +
+                " TEXT DEFAULT 'SI'";
+
+        static final String ADD_UBIC_DC_NEG_INT_AUT = "ALTER TABLE " + TBL_NEGOCIO_INTEGRANTE_AUTO +
+                " ADD COLUMN ubicado_en_dom_cli" +
+                " TEXT DEFAULT 'NO'";
+
+        static final String ADD_CICLO_INT_GPO_REN = "ALTER TABLE " + TBL_INTEGRANTES_GPO_REN +
+                " ADD COLUMN ciclo" +
+                " INTEGER DEFAULT 0";
+
+        static final String ADD_MONTO_ANT_INT_GPO_REN = "ALTER TABLE " + TBL_INTEGRANTES_GPO_REN +
+                " ADD COLUMN monto_prestamo_anterior" +
+                " TEXT DEFAULT '0.00'";
+
     }
 }

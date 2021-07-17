@@ -101,6 +101,7 @@ public class Configuracion extends AppCompatActivity {
         public void onClick(View v) {
             /**Valida que se encuentre conectado a internet*/
             if (NetworkStatus.haveNetworkConnection(ctx)) {
+                Log.e("SYNCRO", session.getUser().get(6));
                 /**Deshabilita el boton para no repetir el envio*/
                 cvSincronizarFichas.setEnabled(false);
                 /**Hilo para deshabilitar el boton por 3 segundos y despues habilitarlo*/
@@ -119,19 +120,19 @@ public class Configuracion extends AppCompatActivity {
                             /**Procesos a enviar que esten en pendiente de envio*/
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                             /**Envia cierres de dia que esten en pendiente de envio*/
-                            ss.SaveCierreDia(ctx, true);
+                            //ss.SaveCierreDia(ctx, true);
                             /**Envia geolocalizaciones que esten en pendiente de envio*/
-                            ss.SaveGeolocalizacion(ctx, true);
+                            //ss.SaveGeolocalizacion(ctx, true);
                             /**Envia respuestas de VIGENTE, COBRANZA y VENCIDA de individual y grupal que esten en pendiente de envio*/
-                            ss.SaveRespuestaGestion(ctx, true);
+                            //ss.SaveRespuestaGestion(ctx, true);
                             /**Envia impresiones que esten en pendiente de envio*/
-                            ss.SendImpresionesVi(ctx, true);
+                            //ss.SendImpresionesVi(ctx, true);
                             /**Envia reimpresiones que esten en pendiente de envio*/
-                            ss.SendReimpresionesVi(ctx, true);
+                            //ss.SendReimpresionesVi(ctx, true);
                             /**Envia la ubicacion del asesor que esten en pendiente de envio*/
-                            ss.SendTracker(ctx, true);
+                            //ss.SendTracker(ctx, true);
                             /**Envia los reportes de mesa de ayuda que esten en pendiente de envio*/
-                            ss.GetTickets(ctx, true);
+                            //ss.GetTickets(ctx, true);
 
                             /**Esta funciones son de originacion y renovacion*/
                             /**------------------------------------------------*/
@@ -149,15 +150,18 @@ public class Configuracion extends AppCompatActivity {
                             ss.GetSolicitudesRechazadasInd(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion grupal que fueron rechazadas por la admin*/
                             ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            /**OBTIENE LOS ESTATUS DE LAS SOLICITUDES**/
+                            ss.GetSolicitudesEstatusInd(ctx, false);
+                            ss.GetSolicitudesEstatusGpo(ctx, false);
 
                             /**Envia las consultas Realizadas de circulo de credito*/
-                            ss.SendConsultaCC(ctx, false);
+                            //ss.SendConsultaCC(ctx, false);
                             /**Envia las gestiones de cobros en efectivo de AGF y CC*/
-                            ss.SendRecibos(ctx, false);
+                            //ss.SendRecibos(ctx, false);
                             /**Obtiene el ultimo folio de impresiones de AGF y CC*/
-                            ss.GetUltimosRecibos(ctx);
+                            //ss.GetUltimosRecibos(ctx);
                             /**Obtiene los prestamos autorizados y vigentes para agf**/
-                            ss.GetPrestamos(ctx, false);
+                            //ss.GetPrestamos(ctx, false);
 
                             /**Funciones de Cancelancion de gestiones y obtencion de respuesta de cancelacion ya no se ocuparon*/
                             //ss.CancelGestiones(ctx, true);
