@@ -96,6 +96,20 @@ public class SessionManager {
     private final String GESTION_PENDIENTE_CC_AGF = "gestion_pendiente_cc_agf";
     private final String CONTADOR_GESTION_CC_AGF = "gestion_recibo_cc_agf";
 
+    //FILTROS VERIFICACION DOMICILIARIA
+    private final String VER_DOM_CLIENTE_NOMBRE = "ver_dom_cliente_nombre";
+    private final String VER_DOM_GRUPO_NOMBRE = "ver_dom_grupo_nombre";
+    private final String VER_DOM_FLAG_IND = "ver_dom_flag_ind";
+    private final String VER_DOM_FLAG_GRU = "ver_dom_flag_gru";
+    private final String CONTADOR_VER_DIS = "contador_ver_dis";
+
+    //FILTROS GESTIONES VERIFICACION DOMICILIARIA
+    private final String GES_VER_DOM_CLIENTE_NOMBRE = "ges_ver_dom_cliente_nombre";
+    private final String GES_VER_DOM_GRUPO_NOMBRE = "ges_ver_dom_grupo_nombre";
+    private final String GES_VER_DOM_FLAG_IND = "ges_ver_dom_flag_ind";
+    private final String GES_VER_DOM_FLAG_GRU = "ges_ver_dom_flag_gru";
+    private final String GES_CONTADOR_VER_DIS = "ges_contador_ver_dis";
+
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -206,6 +220,52 @@ public class SessionManager {
         preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
         macAddress = preferences.getString(MAC_ADDRESS, "");
         return macAddress;
+    }
+
+    //==================== Filtros de Verificacion Domiciliaria ================================================
+    public void setFiltrosVerDom (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(VER_DOM_CLIENTE_NOMBRE, filtros.get(VER_DOM_CLIENTE_NOMBRE));
+        editor.putString(VER_DOM_GRUPO_NOMBRE, filtros.get(VER_DOM_GRUPO_NOMBRE));
+        editor.putString(VER_DOM_FLAG_IND, filtros.get(VER_DOM_FLAG_IND));
+        editor.putString(VER_DOM_FLAG_GRU, filtros.get(VER_DOM_FLAG_GRU));
+        editor.putString(CONTADOR_VER_DIS, filtros.get(CONTADOR_VER_DIS));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosVerDom (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(VER_DOM_CLIENTE_NOMBRE, ""));
+        filtros.add(preferences.getString(VER_DOM_GRUPO_NOMBRE, ""));
+        filtros.add(preferences.getString(VER_DOM_FLAG_IND,"0"));
+        filtros.add(preferences.getString(VER_DOM_FLAG_GRU, "0"));
+        filtros.add(preferences.getString(CONTADOR_VER_DIS, "0"));
+        return filtros;
+    }
+
+    //==================== Filtros de Gestiones Verificacion Domiciliaria ================================================
+    public void setFiltrosGesVerDom (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(GES_VER_DOM_CLIENTE_NOMBRE, filtros.get(GES_VER_DOM_CLIENTE_NOMBRE));
+        editor.putString(GES_VER_DOM_GRUPO_NOMBRE, filtros.get(GES_VER_DOM_GRUPO_NOMBRE));
+        editor.putString(GES_VER_DOM_FLAG_IND, filtros.get(GES_VER_DOM_FLAG_IND));
+        editor.putString(GES_VER_DOM_FLAG_GRU, filtros.get(GES_VER_DOM_FLAG_GRU));
+        editor.putString(GES_CONTADOR_VER_DIS, filtros.get(GES_CONTADOR_VER_DIS));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosGesVerDom (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(GES_VER_DOM_CLIENTE_NOMBRE, ""));
+        filtros.add(preferences.getString(GES_VER_DOM_GRUPO_NOMBRE, ""));
+        filtros.add(preferences.getString(GES_VER_DOM_FLAG_IND,"0"));
+        filtros.add(preferences.getString(GES_VER_DOM_FLAG_GRU, "0"));
+        filtros.add(preferences.getString(GES_CONTADOR_VER_DIS, "0"));
+        return filtros;
     }
 
     //==================== Filtros de Cierre de Dia ================================================

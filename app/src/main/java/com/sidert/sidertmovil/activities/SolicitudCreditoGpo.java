@@ -230,6 +230,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                 item.put(5, "");
                 item.put(6, row_integrantes.getString(1));
                 item.put(7, row_integrantes.getString(20));
+                item.put(8, row_integrantes.getString(2));
                 data.add(item);
                 row_integrantes.moveToNext();
             }

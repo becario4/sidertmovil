@@ -74,6 +74,7 @@ public class dialog_renovar_integrante extends DialogFragment {
     private int id_cargo = 0;
 
     private int id_credito = 0;
+    private int id_integrante = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +102,29 @@ public class dialog_renovar_integrante extends DialogFragment {
         setCancelable(false);
 
         id_credito = Integer.parseInt(getArguments().getString("id_credito"));
+
+        String nombre = getArguments().getString("nombre");
+        String paterno = getArguments().getString("paterno");
+        String materno = getArguments().getString("materno");
+        String cargo = getArguments().getString("cargo");
+
+        if(nombre != null && !nombre.isEmpty())
+        {
+            id_integrante = Integer.parseInt(getArguments().getString("id_integrante"));
+
+            etNombre.setText(nombre);
+            etPaterno.setText(paterno);
+            etMaterno.setText(materno);
+            tvCargo.setText(cargo);
+
+            etNombre.setEnabled(false);
+            etPaterno.setEnabled(false);
+            etMaterno.setEnabled(false);
+
+
+        }
+
+
 
         tvCargo.setOnClickListener(tvCargo_OnClick);
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
@@ -191,191 +215,201 @@ public class dialog_renovar_integrante extends DialogFragment {
 
         int tipo = 2;
         long id = 0;
-        //Inserta registro de integrante
-        HashMap<Integer, String> params = new HashMap<>();
-        params.put(0, String.valueOf(id_credito));                              //ID CREDITO
-        params.put(1, String.valueOf(id_cargo));                                //CARGO
-        params.put(2, etNombre.getText().toString().trim().toUpperCase());      //NOMBRE(S)
-        params.put(3, etPaterno.getText().toString().trim().toUpperCase());     //PATERNO
-        params.put(4, etMaterno.getText().toString().trim().toUpperCase());     //MATERNO
-        params.put(5, "");                                                      //FECHA NACIMIENTO
-        params.put(6, "");                                                      //EDAD
-        params.put(7, "2");                                                     //GENERO
-        params.put(8, "");                                                      //ESTADO NACIMIENTO
-        params.put(9, "");                                                      //RFC
-        params.put(10, "");                                                     //CURP
-        params.put(11, "");                                                     //CURP DIGITO VERI
-        params.put(12, "");                                                     //TIPO IDENTIFICACION
-        params.put(13, "");                                                     //NO IDENTIFICACION
-        params.put(14, "");                                                     //NIVEL ESTUDIO
-        params.put(15, "");                                                     //OCUPACION
-        params.put(16, "");                                                     //ESTADO CIVIL
-        params.put(17, "0");                                                    //BIENES
-        params.put(18, "0");                                                    //ESTATUS RECHAZO
-        params.put(19, "");                                                     //COMENTARIO RECHAZO
-        params.put(20, "0");                                                    //ESTATUS COMPLETO
-        params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
-        params.put(22, "1");                                                    //IS NUEVO
-        params.put(23, "");                                                     //CLIENTE ID
-        params.put(24, "0");                                                     //CLIENTE ID
-        params.put(25, "0.00");                                                     //CLIENTE ID
 
-        id = dBhelper.saveIntegrantesGpoRen(db, params);
+        if(id_integrante == 0) {
+            //Inserta registro de integrante
+            HashMap<Integer, String> params = new HashMap<>();
+            params.put(0, String.valueOf(id_credito));                              //ID CREDITO
+            params.put(1, String.valueOf(id_cargo));                                //CARGO
+            params.put(2, etNombre.getText().toString().trim().toUpperCase());      //NOMBRE(S)
+            params.put(3, etPaterno.getText().toString().trim().toUpperCase());     //PATERNO
+            params.put(4, etMaterno.getText().toString().trim().toUpperCase());     //MATERNO
+            params.put(5, "");                                                      //FECHA NACIMIENTO
+            params.put(6, "");                                                      //EDAD
+            params.put(7, "2");                                                     //GENERO
+            params.put(8, "");                                                      //ESTADO NACIMIENTO
+            params.put(9, "");                                                      //RFC
+            params.put(10, "");                                                     //CURP
+            params.put(11, "");                                                     //CURP DIGITO VERI
+            params.put(12, "");                                                     //TIPO IDENTIFICACION
+            params.put(13, "");                                                     //NO IDENTIFICACION
+            params.put(14, "");                                                     //NIVEL ESTUDIO
+            params.put(15, "");                                                     //OCUPACION
+            params.put(16, "");                                                     //ESTADO CIVIL
+            params.put(17, "0");                                                    //BIENES
+            params.put(18, "0");                                                    //ESTATUS RECHAZO
+            params.put(19, "");                                                     //COMENTARIO RECHAZO
+            params.put(20, "0");                                                    //ESTATUS COMPLETO
+            params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
+            params.put(22, "1");                                                    //IS NUEVO
+            params.put(23, "");                                                     //CLIENTE ID
+            params.put(24, "0");                                                     //CLIENTE ID
+            params.put(25, "0.00");                                                     //CLIENTE ID
 
-        //Inserta registro de datos telefonicos
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));              //ID INTEGRANTE
-        params.put(1, "");                              //TEL CASA
-        params.put(2, "");                              //TEL CELULAR
-        params.put(3, "");                              //TEL MENSAJES
-        params.put(4, "");                              //TEL TRABAJO
-        params.put(5, "0");                             //ESTATUS COMPLETADO
+            id = dBhelper.saveIntegrantesGpoRen(db, params);
 
-        dBhelper.saveDatosTelefonicos(db, params, tipo);
+            //Inserta registro de datos telefonicos
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));              //ID INTEGRANTE
+            params.put(1, "");                              //TEL CASA
+            params.put(2, "");                              //TEL CELULAR
+            params.put(3, "");                              //TEL MENSAJES
+            params.put(4, "");                              //TEL TRABAJO
+            params.put(5, "0");                             //ESTATUS COMPLETADO
 
-        //Inserta registro de datos domicilio
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));          //ID INTEGRANTE
-        params.put(1, "");                          //LATITUD
-        params.put(2, "");                          //LONGITUD
-        params.put(3, "");                          //CALLE
-        params.put(4, "");                          //NO_EXTERIOR
-        params.put(5, "");                          //NO INTERIOR
-        params.put(6, "");                          //MANZANA
-        params.put(7, "");                          //LOTE
-        params.put(8, "");                          //CP
-        params.put(9, "");                          //COLONIA
-        params.put(10, "");                         //CIUDAD
-        params.put(11, "");                         //LOCALIDAD
-        params.put(12, "");                         //MUNICIPIO
-        params.put(13, "");                         //ESTADO
-        params.put(14, "");                         //TIPO VIVIENDA
-        params.put(15, "");                         //PARENTESCO
-        params.put(16, "");                         //OTRO TIPO VIVIENDA
-        params.put(17, "");                         //TIEMPO VIVIR SITIO
-        params.put(18, "");                         //FOTO FACHADA
-        params.put(19, "");                         //REF DOMICILIARIA
-        params.put(20, "0");                        //ESTATUS COMPLETO
-        params.put(21, "");                         //DEPENDIENTES ECONOMICOS
+            dBhelper.saveDatosTelefonicos(db, params, tipo);
 
-        dBhelper.saveDatosDomicilio(db, params, tipo);
+            //Inserta registro de datos domicilio
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(1, "");                          //LATITUD
+            params.put(2, "");                          //LONGITUD
+            params.put(3, "");                          //CALLE
+            params.put(4, "");                          //NO_EXTERIOR
+            params.put(5, "");                          //NO INTERIOR
+            params.put(6, "");                          //MANZANA
+            params.put(7, "");                          //LOTE
+            params.put(8, "");                          //CP
+            params.put(9, "");                          //COLONIA
+            params.put(10, "");                         //CIUDAD
+            params.put(11, "");                         //LOCALIDAD
+            params.put(12, "");                         //MUNICIPIO
+            params.put(13, "");                         //ESTADO
+            params.put(14, "");                         //TIPO VIVIENDA
+            params.put(15, "");                         //PARENTESCO
+            params.put(16, "");                         //OTRO TIPO VIVIENDA
+            params.put(17, "");                         //TIEMPO VIVIR SITIO
+            params.put(18, "");                         //FOTO FACHADA
+            params.put(19, "");                         //REF DOMICILIARIA
+            params.put(20, "0");                        //ESTATUS COMPLETO
+            params.put(21, "");                         //DEPENDIENTES ECONOMICOS
 
-        //Inserta registro de negocio
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));          //ID INTEGRANTE
-        params.put(1, "");                          //NOMBRE
-        params.put(2, "");                          //LATITID
-        params.put(3, "");                          //LONGITUD
-        params.put(4, "");                          //CALLE
-        params.put(5, "");                          //NO EXTERIOR
-        params.put(6, "");                          //NO INTERIOR
-        params.put(7, "");                          //MANZANA
-        params.put(8, "");                          //LOTE
-        params.put(9, "");                          //CP
-        params.put(10, "");                         //COLONIA
-        params.put(11, "");                         //CIUDAD
-        params.put(12, "");                         //LOCALIDAD
-        params.put(13,"");                          //MUNICIPIO
-        params.put(14,"");                          //ESTADO
-        params.put(15,"");                          //DESTINO CREDITO
-        params.put(16,"");                          //OTRO DESTINO CREDITO
-        params.put(17,"");                          //OCUPACION
-        params.put(18,"");                          //ACTIVIDAD ECONOMICA
-        params.put(19,"");                          //ANTIGUEDA
-        params.put(20,"");                          //INGRESO MENSUAL
-        params.put(21,"");                          //INGRESOS OTROS
-        params.put(22,"");                          //GASTO MENSUAL
-        params.put(23,"");                          //CAPACIDAD DE PAGO
-        params.put(24,"");                          //MONTO MAXIMO
-        params.put(25,"");                          //MEDIOS PAGO
-        params.put(26,"");                          //OTRO MEDIO DE PAGO
-        params.put(27,"");                          //NUM OPERACIONES MENSUALES
-        params.put(28,"");                          //NUM OPERACIONES MENSUALES EFECTIVO
-        params.put(29,"");                          //FOTO FACHADA
-        params.put(30,"");                          //REFERENCIA DOMICILIARIA
-        params.put(31,"0");                         //ESTATUS RECHAZO
-        params.put(32,"");                          //COMENTARIO RECHAZADO
-        params.put(33,"0");                         //ESTATUS COMPLETADO
+            dBhelper.saveDatosDomicilio(db, params, tipo);
 
-        dBhelper.saveDatosNegocioGpo(db, params, tipo);
+            //Inserta registro de negocio
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(1, "");                          //NOMBRE
+            params.put(2, "");                          //LATITID
+            params.put(3, "");                          //LONGITUD
+            params.put(4, "");                          //CALLE
+            params.put(5, "");                          //NO EXTERIOR
+            params.put(6, "");                          //NO INTERIOR
+            params.put(7, "");                          //MANZANA
+            params.put(8, "");                          //LOTE
+            params.put(9, "");                          //CP
+            params.put(10, "");                         //COLONIA
+            params.put(11, "");                         //CIUDAD
+            params.put(12, "");                         //LOCALIDAD
+            params.put(13, "");                          //MUNICIPIO
+            params.put(14, "");                          //ESTADO
+            params.put(15, "");                          //DESTINO CREDITO
+            params.put(16, "");                          //OTRO DESTINO CREDITO
+            params.put(17, "");                          //OCUPACION
+            params.put(18, "");                          //ACTIVIDAD ECONOMICA
+            params.put(19, "");                          //ANTIGUEDA
+            params.put(20, "");                          //INGRESO MENSUAL
+            params.put(21, "");                          //INGRESOS OTROS
+            params.put(22, "");                          //GASTO MENSUAL
+            params.put(23, "");                          //CAPACIDAD DE PAGO
+            params.put(24, "");                          //MONTO MAXIMO
+            params.put(25, "");                          //MEDIOS PAGO
+            params.put(26, "");                          //OTRO MEDIO DE PAGO
+            params.put(27, "");                          //NUM OPERACIONES MENSUALES
+            params.put(28, "");                          //NUM OPERACIONES MENSUALES EFECTIVO
+            params.put(29, "");                          //FOTO FACHADA
+            params.put(30, "");                          //REFERENCIA DOMICILIARIA
+            params.put(31, "0");                         //ESTATUS RECHAZO
+            params.put(32, "");                          //COMENTARIO RECHAZADO
+            params.put(33, "0");                         //ESTATUS COMPLETADO
 
-        //Inserta registro del conyuge
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));          //ID INTEGRANTE
-        params.put(1, "");                          //NOMBRE
-        params.put(2, "");                          //PATERNO
-        params.put(3, "");                          //MATERNO
-        params.put(4, "");                          //NACIONALIDAD
-        params.put(5, "");                          //OCUPACION
-        params.put(6, "");                          //CALLE
-        params.put(7, "");                          //NO EXTERIOR
-        params.put(8, "");                          //NO INTERIOR
-        params.put(9, "");                          //MANZANA
-        params.put(10, "");                          //LOTE
-        params.put(11, "");                          //CP
-        params.put(12, "");                          //COLONIA
-        params.put(13, "");                          //CIUDAD
-        params.put(14, "");                          //LOCALIDAD
-        params.put(15, "");                          //MUNICIPIO
-        params.put(16, "");                          //ESTADO
-        params.put(17, "");                          //INGRESO MENSUAL
-        params.put(18, "");                          //GASTO MENSUAL
-        params.put(19, "");                          //TEL CASA
-        params.put(20, "");                          //TEL CELULAR
-        params.put(21, "0");                         //ESTATUS COMPLETADO
+            dBhelper.saveDatosNegocioGpo(db, params, tipo);
 
-        dBhelper.saveDatosConyugeGpo(db, params, tipo);
+            //Inserta registro del conyuge
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(1, "");                          //NOMBRE
+            params.put(2, "");                          //PATERNO
+            params.put(3, "");                          //MATERNO
+            params.put(4, "");                          //NACIONALIDAD
+            params.put(5, "");                          //OCUPACION
+            params.put(6, "");                          //CALLE
+            params.put(7, "");                          //NO EXTERIOR
+            params.put(8, "");                          //NO INTERIOR
+            params.put(9, "");                          //MANZANA
+            params.put(10, "");                          //LOTE
+            params.put(11, "");                          //CP
+            params.put(12, "");                          //COLONIA
+            params.put(13, "");                          //CIUDAD
+            params.put(14, "");                          //LOCALIDAD
+            params.put(15, "");                          //MUNICIPIO
+            params.put(16, "");                          //ESTADO
+            params.put(17, "");                          //INGRESO MENSUAL
+            params.put(18, "");                          //GASTO MENSUAL
+            params.put(19, "");                          //TEL CASA
+            params.put(20, "");                          //TEL CELULAR
+            params.put(21, "0");                         //ESTATUS COMPLETADO
 
-        //Inserta otros datos del integrante
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));          //ID INTEGRANTE
-        params.put(1, "");                          //CLASIFICACION RIESGO
-        params.put(2, "");                          //MEDIO CONTACTO
-        params.put(3, "");                          //EMAIL
-        params.put(4, "");                          //ESTADO CUENTA
-        params.put(5, "0");                         //ESTATUS INTEGRANTE
-        params.put(6, "");                          //MONTO SOLICITADO
-        params.put(7, "0");                         //CASA REUNION
-        params.put(8, "");                          //FIRMA
-        params.put(9, "0");                         //ESTATUS COMPLETADO
+            dBhelper.saveDatosConyugeGpo(db, params, tipo);
 
-        dBhelper.saveDatosOtrosGpo(db, params, tipo);
+            //Inserta otros datos del integrante
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(1, "");                          //CLASIFICACION RIESGO
+            params.put(2, "");                          //MEDIO CONTACTO
+            params.put(3, "");                          //EMAIL
+            params.put(4, "");                          //ESTADO CUENTA
+            params.put(5, "0");                         //ESTATUS INTEGRANTE
+            params.put(6, "");                          //MONTO SOLICITADO
+            params.put(7, "0");                         //CASA REUNION
+            params.put(8, "");                          //FIRMA
+            params.put(9, "0");                         //ESTATUS COMPLETADO
 
-        //Inserta registro de croquis
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
-        params.put(1, "");                                  //CALLE PRINCIPAL
-        params.put(2, "");                                  //LATERAL UNO
-        params.put(3, "");                                  //LATERAL DOS
-        params.put(4, "");                                  //CALLE TRASERA
-        params.put(5, "");                                  //REFERENCIAS
-        params.put(6, "0");                                 //ESTATUS COMPLETADO
+            dBhelper.saveDatosOtrosGpo(db, params, tipo);
 
-        dBhelper.saveCroquisGpo(db, params, tipo);
+            //Inserta registro de croquis
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));                  //ID SOLICITUD
+            params.put(1, "");                                  //CALLE PRINCIPAL
+            params.put(2, "");                                  //LATERAL UNO
+            params.put(3, "");                                  //LATERAL DOS
+            params.put(4, "");                                  //CALLE TRASERA
+            params.put(5, "");                                  //REFERENCIAS
+            params.put(6, "0");                                 //ESTATUS COMPLETADO
 
-        //Inserta registro de politicas de integrante
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));      //ID INTEGRANTE
-        params.put(1, "0");                     //PROPIETARIO REAL
-        params.put(2, "0");                     //PROVEEDOR RECURSOS
-        params.put(3, "0");                     //PERSONA POLITICA
-        params.put(4, "0");                     //ESTATUS COMPLETADO
+            dBhelper.saveCroquisGpo(db, params, tipo);
 
-        dBhelper.savePoliticasIntegrante(db, params, tipo);
+            //Inserta registro de politicas de integrante
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));      //ID INTEGRANTE
+            params.put(1, "0");                     //PROPIETARIO REAL
+            params.put(2, "0");                     //PROVEEDOR RECURSOS
+            params.put(3, "0");                     //PERSONA POLITICA
+            params.put(4, "0");                     //ESTATUS COMPLETADO
 
-        //Inserta registro de documentos de integrante
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));      //ID INTEGRANTE
-        params.put(1, "");                      //INE FRONTAL
-        params.put(2, "");                      //INE REVERSO
-        params.put(3, "");                      //CURP
-        params.put(4, "");                      //COMPROBANTE
-        params.put(5, "0");                     //ESTATUS COMPLETADO
+            dBhelper.savePoliticasIntegrante(db, params, tipo);
 
-        dBhelper.saveDocumentosIntegrante(db, params, tipo);
+            //Inserta registro de documentos de integrante
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id));      //ID INTEGRANTE
+            params.put(1, "");                      //INE FRONTAL
+            params.put(2, "");                      //INE REVERSO
+            params.put(3, "");                      //CURP
+            params.put(4, "");                      //COMPROBANTE
+            params.put(5, "0");                     //ESTATUS COMPLETADO
 
-        mListener.onComplete(id,etNombre.getText().toString().trim().toUpperCase(),etPaterno.getText().toString().trim().toUpperCase(),etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
-        getDialog().dismiss();
+            dBhelper.saveDocumentosIntegrante(db, params, tipo);
+
+            mListener.onComplete(id, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
+            getDialog().dismiss();
+        }
+        else
+        {
+            dBhelper.saveCargoIntegranteGpoRen(db, id_cargo, id_integrante);
+
+            mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
+            getDialog().dismiss();
+        }
     }
 
     @Override
@@ -396,8 +430,16 @@ public class dialog_renovar_integrante extends DialogFragment {
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, null, null, null, null);
-            getDialog().dismiss();
+            if(id_integrante == 0)
+            {
+                mListener.onComplete(0, null, null, null, null);
+                getDialog().dismiss();
+            }
+            else
+            {
+                getDialog().dismiss();
+            }
+
         }
     };
 }

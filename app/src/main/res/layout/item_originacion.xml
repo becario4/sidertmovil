@@ -28,7 +28,10 @@
             <TextView
                 android:id="@+id/tvNombre"
                 android:textColor="@color/black"
-                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="0dp"
                 android:lines="1"
                 android:textSize="18sp"
                 android:ellipsize="end"
@@ -37,16 +40,34 @@
 
         </LinearLayout>
         <TextView
+            android:id="@+id/tvCargo"
+            android:textColor="@color/gray"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
             android:id="@+id/tvComentario"
             android:textColor="@color/red"
             android:visibility="gone"
             android:textSize="18sp"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="0dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/tvFechaTermino"
             android:textColor="@color/black"
-            android:padding="5dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="0dp"
             android:textSize="18sp"
             android:ellipsize="end"
             android:layout_width="wrap_content"
@@ -55,7 +76,10 @@
         <TextView
             android:id="@+id/tvFechaEnvio"
             android:textColor="@color/black"
-            android:padding="5dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="0dp"
             android:textSize="18sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

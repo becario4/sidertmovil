@@ -39,6 +39,10 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -52,6 +56,15 @@ public class Configuracion extends AppCompatActivity {
 
     private Context ctx;
     private CardView cvSincronizarFichas;
+    private CardView cvSincronizarGeolocalizaciones;
+    private CardView cvSincronizarImpresiones;
+    private CardView cvSincronizarRutas;
+    private CardView cvSincronizarAgf;
+    private CardView cvSincronizarCirculoCredito;
+    private CardView cvSincronizarOriginacion;
+    private CardView cvSincronizarRenovaciones;
+    private CardView cvSincronizarEstadoSolicitudes;
+    private CardView cvSincronizarVerificacionesDomiciliarias;
 
     private SessionManager session;
 
@@ -68,7 +81,18 @@ public class Configuracion extends AppCompatActivity {
         Init();
         ctx = this;
         Toolbar tbMain = findViewById(R.id.tbMain);
-        cvSincronizarFichas = findViewById(R.id.cvSincronizarFichas);
+
+        cvSincronizarFichas                      = findViewById(R.id.cvSincronizarFichas);
+        cvSincronizarGeolocalizaciones           = findViewById(R.id.cvSincronizarGeolocalizaciones);
+        cvSincronizarImpresiones                 = findViewById(R.id.cvSincronizarImpresiones);
+        cvSincronizarRutas                       = findViewById(R.id.cvSincronizarRutas);
+        cvSincronizarAgf                         = findViewById(R.id.cvSincronizarAgf);
+        cvSincronizarCirculoCredito              = findViewById(R.id.cvSincronizarCirculoCredito);
+        cvSincronizarOriginacion                 = findViewById(R.id.cvSincronizarOriginacion);
+        cvSincronizarRenovaciones                = findViewById(R.id.cvSincronizarRenovaciones);
+        cvSincronizarEstadoSolicitudes           = findViewById(R.id.cvSincronizarEstadoSolicitudes);
+        cvSincronizarVerificacionesDomiciliarias = findViewById(R.id.cvSincronizarVerificacionesDomiciliarias);
+
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
         CardView cvDownloadApk = findViewById(R.id.cvDownloadApk);
@@ -85,6 +109,16 @@ public class Configuracion extends AppCompatActivity {
 
         /**Evento de click para sincronizar lo que esté pendiente de envio...gestiones, impresiones, cierre de dia....*/
         cvSincronizarFichas.setOnClickListener(cvSincronizarFichas_OnClick);
+        cvSincronizarGeolocalizaciones.setOnClickListener(cvSincronizarGeolocalizaciones_OnClick);
+        cvSincronizarImpresiones.setOnClickListener(cvSincronizarImpresiones_OnClick);
+        cvSincronizarRutas.setOnClickListener(cvSincronizarRutas_OnClick);
+        cvSincronizarAgf.setOnClickListener(cvSincronizarAgf_OnClick);
+        cvSincronizarCirculoCredito.setOnClickListener(cvSincronizarCirculoCredito_OnClick);
+        cvSincronizarOriginacion.setOnClickListener(cvSincronizarOriginacion_OnClick);
+        cvSincronizarRenovaciones.setOnClickListener(cvSincronizarRenovaciones_OnClick);
+        cvSincronizarEstadoSolicitudes.setOnClickListener(cvSincronizarEstadoSolicitudes_OnClick);
+        cvSincronizarVerificacionesDomiciliarias.setOnClickListener(cvSincronizarVerificacionesDomiciliarias_OnClick);
+
         /**Evento de click para descargar las geolocalizaciones ya realizadas*/
         cvFichasGestionadas.setOnClickListener(cvFichasGestionadas_OnClick);
         /**Evento de click para descargar catalogos no se ocupa pero hay que corregir*/
@@ -93,6 +127,55 @@ public class Configuracion extends AppCompatActivity {
         cvDownloadApk.setOnClickListener(cvDownloadApk_OnClick);
         /**Evento para abrir la configuracion de fecha y hora se encuentra oculto este boton*/
         cvFechaHora.setOnClickListener(cvFechaHora_OnClick);
+
+        try {
+            if (session.getUser().get(8) != null)
+            {
+                JSONArray jsonModulos = new JSONArray(session.getUser().get(8));
+                for (int i = 0; i < jsonModulos.length(); i++) {
+                    JSONObject item = jsonModulos.getJSONObject(i);
+                    switch (item.getString("nombre").toLowerCase()) {
+                        case "cartera":
+                        {
+                            cvSincronizarFichas.setVisibility(View.VISIBLE);
+                            break;
+                        }
+                        case "geolocalizar":
+                            cvSincronizarGeolocalizaciones.setVisibility(View.VISIBLE);
+                            break;
+                        case "impresion":
+                            cvSincronizarImpresiones.setVisibility(View.VISIBLE);
+                            break;
+                        case "ruta":
+                            cvSincronizarRutas.setVisibility(View.VISIBLE);
+                            break;
+                        case "recuperacion agf":
+                            cvSincronizarAgf.setVisibility(View.VISIBLE);
+                            break;
+                        case "recuperacion cc":
+                            cvSincronizarCirculoCredito.setVisibility(View.VISIBLE);
+                            break;
+                        case "originacion":
+                            cvSincronizarOriginacion.setVisibility(View.VISIBLE);
+                            break;
+                        case "renovacion":
+                            cvSincronizarRenovaciones.setVisibility(View.VISIBLE);
+                            break;
+                        case "solicitudes":
+                            //menuGeneral.getItem(8).setVisible(true);
+                            break;
+                        case "verificacion domiciliaria":
+                            cvSincronizarVerificacionesDomiciliarias.setVisibility(View.VISIBLE);
+                            break;
+                        case "sesiones":
+                            //cvSincronizarGeolocalizaciones.setVisibility(View.GONE);
+                            break;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**Evento para sincronizar lo que esta pendiente de envio*/
@@ -120,56 +203,452 @@ public class Configuracion extends AppCompatActivity {
                             /**Procesos a enviar que esten en pendiente de envio*/
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                             /**Envia cierres de dia que esten en pendiente de envio*/
-                            //ss.SaveCierreDia(ctx, true);
+                            ss.SaveCierreDia(ctx, true);
                             /**Envia geolocalizaciones que esten en pendiente de envio*/
-                            //ss.SaveGeolocalizacion(ctx, true);
+                            //-ss.SaveGeolocalizacion(ctx, true);
                             /**Envia respuestas de VIGENTE, COBRANZA y VENCIDA de individual y grupal que esten en pendiente de envio*/
-                            //ss.SaveRespuestaGestion(ctx, true);
+                            ss.SaveRespuestaGestion(ctx, true);
                             /**Envia impresiones que esten en pendiente de envio*/
-                            //ss.SendImpresionesVi(ctx, true);
+                            //-ss.SendImpresionesVi(ctx, true);
                             /**Envia reimpresiones que esten en pendiente de envio*/
-                            //ss.SendReimpresionesVi(ctx, true);
+                            //-ss.SendReimpresionesVi(ctx, true);
                             /**Envia la ubicacion del asesor que esten en pendiente de envio*/
-                            //ss.SendTracker(ctx, true);
+                            ss.SendTracker(ctx, true);
                             /**Envia los reportes de mesa de ayuda que esten en pendiente de envio*/
-                            //ss.GetTickets(ctx, true);
+                            ss.GetTickets(ctx, true);
 
                             /**Esta funciones son de originacion y renovacion*/
                             /**------------------------------------------------*/
                             /**Envia la solicitudes que ya fueron autorizadas por el gerente colocando el monto autorizado*/
-                            ss.MontoAutorizado(ctx, false);
+                            //-ss.MontoAutorizado(ctx, false);
                             /**Envia las solicitudes de originacion individual*/
-                            ss.SendOriginacionInd(ctx, false);
+                            //-ss.SendOriginacionInd(ctx, false);
                             /**Envia las solicitudes de originacion grupal*/
-                            ss.SendOriginacionGpo(ctx, false);
+                            //-ss.SendOriginacionGpo(ctx, false);
                             /**Envia las solicitudes de renovacion individual*/
-                            ss.SendRenovacionInd(ctx, false);
+                            //-ss.SendRenovacionInd(ctx, false);
                             /**Envia las solicitudes de renovacion grupal*/
-                            ss.SendRenovacionGpo(ctx, false);
+                            //-ss.SendRenovacionGpo(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion individual que fueron rechazadas por la admin*/
-                            ss.GetSolicitudesRechazadasInd(ctx, false);
+                            //--ss.GetSolicitudesRechazadasInd(ctx, false);
                             /**Obtiene las solicitudes de originacion y renovacion grupal que fueron rechazadas por la admin*/
-                            ss.GetSolicitudesRechazadasGpo(ctx, false);
+                            //--ss.GetSolicitudesRechazadasGpo(ctx, false);
                             /**OBTIENE LOS ESTATUS DE LAS SOLICITUDES**/
-                            ss.GetSolicitudesEstatusInd(ctx, false);
-                            ss.GetSolicitudesEstatusGpo(ctx, false);
+                            //--ss.GetSolicitudesEstatusInd(ctx, false);
+                            //--ss.GetSolicitudesEstatusGpo(ctx, false);
 
                             /**Envia las consultas Realizadas de circulo de credito*/
-                            //ss.SendConsultaCC(ctx, false);
+                            //-ss.SendConsultaCC(ctx, false);
                             /**Envia las gestiones de cobros en efectivo de AGF y CC*/
-                            //ss.SendRecibos(ctx, false);
+                            //--ss.SendRecibos(ctx, false);
                             /**Obtiene el ultimo folio de impresiones de AGF y CC*/
-                            //ss.GetUltimosRecibos(ctx);
+                            //-ss.GetUltimosRecibos(ctx);
                             /**Obtiene los prestamos autorizados y vigentes para agf**/
-                            //ss.GetPrestamos(ctx, false);
+                            //-ss.GetPrestamos(ctx, false);
 
                             /**Funciones de Cancelancion de gestiones y obtencion de respuesta de cancelacion ya no se ocuparon*/
-                            //ss.CancelGestiones(ctx, true);
-                            //ss.SendCancelGestiones(ctx, true);
+                            //-ss.CancelGestiones(ctx, true);
+                            //-ss.SendCancelGestiones(ctx, true);
+
+                            //-ss.GetGestionesVerDom(ctx, true);
+                            //-ss.SendGestionesVerDom(ctx, true);
 
                         }
                         cvSincronizarFichas.setEnabled(true);
                     }
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarGeolocalizaciones_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarGeolocalizaciones.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SaveGeolocalizacion(ctx, true);
+                    }
+                    cvSincronizarGeolocalizaciones.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarImpresiones_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarImpresiones.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SendImpresionesVi(ctx, true);
+                        ss.SendReimpresionesVi(ctx, true);
+                    }
+                    cvSincronizarImpresiones.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarRutas_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarRutas.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SendTracker(ctx, true);
+                    }
+                    cvSincronizarRutas.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarAgf_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarAgf.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.GetUltimosRecibos(ctx);
+                        ss.GetPrestamos(ctx, false);
+                        ss.SendRecibos(ctx, false);
+                    }
+                    cvSincronizarAgf.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarCirculoCredito_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarCirculoCredito.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SendConsultaCC(ctx, false);
+                        ss.SendRecibos(ctx, false);
+                    }
+                    cvSincronizarCirculoCredito.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarOriginacion_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarOriginacion.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SendOriginacionInd(ctx, false);
+                        ss.SendOriginacionGpo(ctx, false);
+                        ss.CancelGestiones(ctx, true);
+                        ss.SendCancelGestiones(ctx, true);
+                    }
+                    cvSincronizarOriginacion.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarRenovaciones_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarRenovaciones.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.SendRenovacionInd(ctx, false);
+                        ss.SendRenovacionGpo(ctx, false);
+                        ss.CancelGestiones(ctx, true);
+                        ss.SendCancelGestiones(ctx, true);
+                    }
+                    cvSincronizarRenovaciones.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarEstadoSolicitudes_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarEstadoSolicitudes.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.GetSolicitudesRechazadasInd(ctx, false);
+                        ss.GetSolicitudesRechazadasGpo(ctx, false);
+                        ss.GetSolicitudesEstatusInd(ctx, false);
+                        ss.GetSolicitudesEstatusGpo(ctx, false);
+                        ss.MontoAutorizado(ctx, false);
+                    }
+                    cvSincronizarEstadoSolicitudes.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarVerificacionesDomiciliarias_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarVerificacionesDomiciliarias.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ss.GetGestionesVerDom(ctx, true);
+                        ss.SendGestionesVerDom(ctx, true);
+                    }
+                    cvSincronizarVerificacionesDomiciliarias.setEnabled(true);
                 }, 3000);
 
             }
@@ -429,4 +908,7 @@ public class Configuracion extends AppCompatActivity {
         super.onResume();
         myReceiver.Register(myReceiver);
     }
+
+
+
 }

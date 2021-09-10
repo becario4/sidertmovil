@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -110,6 +112,29 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
             holder.tvFechaEnvio.setVisibility(View.GONE);
         }
 
+        if(item.containsKey(8))
+        {
+            holder.tvCargo.setVisibility(View.VISIBLE);
+
+            switch (item.get(8)){
+                case "1":
+                    holder.tvCargo.setText(ctx.getResources().getString(R.string.presidente).toUpperCase());
+                    break;
+                case "3":
+                    holder.tvCargo.setText(ctx.getResources().getString(R.string.tesorera).toUpperCase());
+                    break;
+                case "2":
+                    holder.tvCargo.setText(ctx.getResources().getString(R.string.secretaria).toUpperCase());
+                    break;
+                case "4":
+                    holder.tvCargo.setText(ctx.getResources().getString(R.string.integrante).toUpperCase());
+                    break;
+                default:
+                    holder.tvCargo.setText("PENDIENTE DE ASIGNAR CARGO");
+                    break;
+            }
+        }
+
         holder.ivInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +150,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView tvCargo;
         private TextView tvNombre;
         private TextView tvComentario;
         private TextView tvFechaTermino;
@@ -133,6 +159,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvCargo         = itemView.findViewById(R.id.tvCargo);
             tvNombre        = itemView.findViewById(R.id.tvNombre);
             tvComentario    = itemView.findViewById(R.id.tvComentario);
             tvFechaTermino  = itemView.findViewById(R.id.tvFechaTermino);

@@ -28,6 +28,7 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.catalogos.Localidad;
 import com.sidert.sidertmovil.models.catalogos.LocalidadDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 //import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
@@ -124,8 +125,10 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
         //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        session.setDominio("http://192.168.0.108:", "8083");//LOCALHOST
-        //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
+        //session.setDominio("http://192.168.0.123:", "8083");//LOCALHOST
+        session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
+
+
 
         /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
@@ -161,9 +164,12 @@ public class SplashSidertActivity extends AppCompatActivity {
         /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
         las secciones de originacion y renovacion de los estados de
         Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
+        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+        ss.GetServiciosSincronizados(ctx, false);
         new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
         new RegistrarLocalidades().execute();
+
 
         /**Este proceso era antes de lanzar originacion y renovacion*/
         /*Handler handler_home=new Handler();

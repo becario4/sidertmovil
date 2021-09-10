@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/CLcontainer"
+    android:clipChildren="false"
+    android:background="@android:color/white"
+    android:layout_marginStart="@dimen/paddingcl">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_anchorGravity="center">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/tbMain"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:title="Gestión Verifiación Domiciliaria"
+                app:titleTextColor="@android:color/white" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <!-- Nombre sucursal -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Sucursal"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etSucursalNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Nombre asesor -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Asesor"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etAsesorNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Nombre cliente -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cliente"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etClienteNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Fecha nacimiento del cliente -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Fecha de Nacimiento"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etClienteFechaNacimiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Monto Solicitado -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Monto Solicitado"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etMontoSolicitado"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Domicilio -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Domicilio"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etDomicilioDireccion"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Nacionalidad -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nacionalidad"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etClienteNacionalidad"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Referencias -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Referencia"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etDomicilioReferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Horario localizacion-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Horario de Localización"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etHorarioLocalizacion"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/bkg_rounded_edges_blocked"
+                        android:enabled="false"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Tipo Integrante -->
+                <LinearLayout
+                    android:id="@+id/llTipoIntegrante"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@android:style/Widget.EditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:text="Tipo de integrante"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <TextView
+                        android:id="@+id/tvTipoIntegrante"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/et_rounded_edges"
+                        android:drawableRight="@drawable/ic_drop_down"
+                        android:gravity="center_vertical"
+                        android:hint="SELECCIONE UN OPCIÓN"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/etsize" />
+                </LinearLayout>
+
+                <!-- Ubicacion -->
+                <LinearLayout
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:text="Ubicación del domicilio"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="@dimen/labelsize"
+                        android:focusableInTouchMode="false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tvUbicacion"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/ibUbicacion"
+                        android:src="@drawable/ic_pin"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/round_corner_blue"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"/>
+                    <ProgressBar
+                        android:id="@+id/pbLoadMap"
+                        android:visibility="gone"
+                        android:indeterminate="true"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/mapUbicacion"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp" />
+                </LinearLayout>
+
+                <!--  Fotografía de fachada  -->
+                <LinearLayout
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvFotoFachada"
+                        android:textColor="@android:color/black"
+                        android:text="@string/facade_photo"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="@dimen/labelsize"
+                        android:focusableInTouchMode="false"
+                        android:background="@android:color/white"
+                        style="@android:style/Widget.EditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageButton
+                            android:id="@+id/ibFotoFachada"
+                            android:layout_width="match_parent"
+                            android:contentDescription="@string/facade_photo"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/round_corner_blue"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
+                            android:src="@drawable/ic_camera_white" />
+                        <ImageView
+                            android:id="@+id/ivFotoFachada"
+                            android:contentDescription="@string/facade_photo"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Bandera coincide domicilio -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvCoincideDomicilio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Coincide Domicilio"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <RadioGroup
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/rgCoincideDomicilio"
+                        >
+                        <RadioButton
+                            android:id="@+id/rbSi"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:gravity="center"
+                            android:layout_height="40dp"
+                            android:background="@drawable/radio_flat_selector_left"
+                            android:button="@android:color/transparent"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="16dp"
+                            android:paddingBottom="3dp"
+                            android:text="Si"
+                            android:textColor="@drawable/radio_flat_text_selector_left" />
+
+
+                        <RadioButton
+                            android:id="@+id/rbNo"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/radio_flat_selector_rigth"
+                            android:button="@android:color/transparent"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="16dp"
+                            android:paddingBottom="3dp"
+                            android:text="No"
+                            android:textColor="@drawable/radio_flat_text_selector_rigth" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <!-- Comentario -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Comentario"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/tvsize" />
+
+                    <EditText
+                        android:id="@+id/etComentario"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/et_height"
+                        android:background="@drawable/btn_rounded_white"
+                        android:enabled="true"
+                        android:paddingLeft="10dp"
+                        android:textColor="@drawable/edit_text_selector"
+                        android:textSize="@dimen/etsize"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

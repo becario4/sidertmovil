@@ -2112,6 +2112,52 @@ public class SidertTables {
                 "fecha_envio TEXT," +
                 "estatus INTEGER," +
                 "costo_consulta TEXT)";
+
+        static final String CREATE_TABLE_VER_DOM = "CREATE TABLE " + TBL_VERIFICACIONES_DOMICILIARIAS + "("
+            + "_id INTEGER PRIMARY KEY,"                   //0
+            + "verificacion_domiciliaria_id INTEGER,"      //1
+            + "prestamo_id INTEGER,"                       //2
+            + "cliente_id INTEGER,"                        //3
+            + "cliente_nombre TEXT,"                       //4
+            + "cliente_nacionalidad TEXT,"                 //5
+            + "cliente_fecha_nacimiento TEXT,"             //6
+            + "domicilio_direccion TEXT,"                  //7
+            + "domicilio_referencia TEXT,"                 //8
+            + "monto_solicitado TEXT,"                     //9
+            + "horario_localizacion TEXT,"                 //10
+            + "verificacion_tipo_id INTEGER,"              //11
+            + "estatus INTEGER,"                           //12
+            + "solicitante_id INTEGER,"                    //13
+            + "solicitud_id INTEGER,"                      //14
+            + "asesor_serie_id TEXT,"                      //15
+            + "asesor_nombre TEXT,"                        //16
+            + "usuario_id INTEGER,"                        //17
+            + "sucursal_id INTEGER,"                       //18
+            + "sucursal_nombre TEXT,"                      //19
+            + "fecha_asignacion TEXT,"                     //20
+            + "fecha_expiracion TEXT,"                     //21
+            + "created_at TEXT,"                           //22
+            + "grupo_id INTEGER,"                          //24
+            + "grupo_nombre TEXT,"                         //25
+            + "num_solicitud INTEGER"                      //26
+        + ")";
+
+        static final String CREATE_TABLE_GESTIONES_VER_DOM = "CREATE TABLE " + TBL_GESTIONES_VER_DOM + "("
+                + "_id INTEGER PRIMARY KEY,"                   //0
+                + "verificacion_domiciliaria_id INTEGER,"      //1
+                + "latitud TEXT,"                              //2
+                + "longitud TEXT,"                             //3
+                + "foto_fachada TEXT,"                         //4
+                + "domicilio_coincide INTEGER,"                //5
+                + "comentario TEXT,"                           //6
+                + "estatus INTEGER,"                           //7
+                + "usuario_id INTEGER,"                        //8
+                + "usuario_nombre TEXT,"                       //9
+                + "fecha_inicio TEXT,"                         //10
+                + "fecha_fin TEXT,"                            //11
+                + "fecha_envio TEXT,"                          //12
+                + "created_at TEXT"                            //13
+            + ")";
         
         // ================  TABLAS GENERALES  ===================================
 
@@ -2219,6 +2265,19 @@ public class SidertTables {
                 "id_prestamo TEXT," +
                 "tel_casa TEXT," +
                 "tel_celular TEXT)";
+
+
+        static final String CREATE_TBL_SERVICIOS_SINCRONIZADOS = "CREATE TABLE " + TBL_SERVICIOS_SINCRONIZADOS + " (" +
+                "_id INTEGER PRIMARY KEY," +
+                "nombre TEXT," +
+                "estatus INTEGER," +
+                "posicion INTEGER," +
+                "ejecutado INTEGER" +
+                ")";
+
+
+
+
 
         static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
                                                 " ADD COLUMN " + SidertEntry.CREATE_AT +
@@ -2747,6 +2806,18 @@ public class SidertTables {
         static final String ADD_MONTO_ANT_INT_GPO_REN = "ALTER TABLE " + TBL_INTEGRANTES_GPO_REN +
                 " ADD COLUMN monto_prestamo_anterior" +
                 " TEXT DEFAULT '0.00'";
+
+        static final String ADD_GRUPO_ID_VER_DOM = "ALTER TABLE " + TBL_VERIFICACIONES_DOMICILIARIAS +
+                " ADD COLUMN grupo_id" +
+                " INTEGER DEFAULT NULL";
+
+        static final String ADD_GRUPO_NOM_VER_DOM = "ALTER TABLE " + TBL_VERIFICACIONES_DOMICILIARIAS +
+                " ADD COLUMN grupo_nombre" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_NO_SOL_VER_DOM = "ALTER TABLE " + TBL_VERIFICACIONES_DOMICILIARIAS +
+                " ADD COLUMN num_solicitud" +
+                " INTEGER DEFAULT NULL";
 
     }
 }

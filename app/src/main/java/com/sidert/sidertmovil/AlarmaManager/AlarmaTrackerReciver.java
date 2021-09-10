@@ -21,6 +21,8 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizado;
+import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizadoDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NetworkStatus;
@@ -181,7 +183,6 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                 notificationManager.cancelAll();
             }
             else {
-
                 Calendar c = Calendar.getInstance();
 
                 final LocationManager locationManager;
@@ -217,7 +218,8 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                         //ActivityCompat.finishAffinity(this);
                         ctx.startActivity(i);
                     }
-                } else {
+                }
+                else {
                     if (session.getUser().get(0) != null && session.getUser().get(6).equals("true")) {
 
                         HashMap<Integer, String> params_sincro = new HashMap<>();
@@ -262,32 +264,87 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
 
                         if (NetworkStatus.haveNetworkConnection(ctx)) {
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                            ss.SaveGeolocalizacion(ctx, false);
-                            ss.SaveRespuestaGestion(ctx, false);
-                            ss.SendImpresionesVi(ctx, false);
-                            ss.SendReimpresionesVi(ctx, false);
+                            ServicioSincronizadoDao servicioSincronizadoDao = new ServicioSincronizadoDao(ctx);
+
+                            ServicioSincronizado servicioSincronizado = servicioSincronizadoDao.findNextToSynchronize();
+
+                            if(servicioSincronizado == null)
+                            {
+                                servicioSincronizadoDao.restart();
+                                servicioSincronizado = servicioSincronizadoDao.findNextToSynchronize();
+                            }
+
                             ss.SendTracker(ctx, false);
-                            ss.SaveCierreDia(ctx, false);
                             ss.GetTickets(ctx, false);
 
-                            handler.postDelayed(() -> {
-                                ss.SendConsultaCC(ctx, false);
-                                ss.MontoAutorizado(ctx, false);
-                                ss.SendOriginacionInd (ctx, false);
-                                ss.SendOriginacionGpo(ctx, false);
-                            }, 10000);
+                            if(servicioSincronizado != null)
+                            {
+                                int ejecutado = 0;
 
-                            ss.SendRecibos(ctx, false);
-                            ss.GetUltimosRecibos(ctx);
+                                switch (servicioSincronizado.getNombre())
+                                {
+                                    case "GESTION DE CARTERA":
+                                    {
+                                        ss.SaveRespuestaGestion(ctx, false);
+                                        break;
+                                    }
+                                    case "IMPRESIONES DE GESTION DE CARTERA":
+                                    {
+                                        ss.SendImpresionesVi(ctx, false);
+                                        ss.SendReimpresionesVi(ctx, false);
+                                        break;
+                                    }
+                                    case "APOYO GASTOS FUNERARIOS":
+                                    {
+                                        ss.SendRecibos(ctx, false);
+                                        break;
+                                    }
+                                    case "CIRCULO DE CREDITO":
+                                    {
+                                        ss.SendConsultaCC(ctx, false);
+                                        break;
+                                    }
+                                    case "ORIGINACION":
+                                    {
+                                        ss.SendOriginacionInd (ctx, false);
+                                        ss.SendOriginacionGpo(ctx, false);
+                                        break;
+                                    }
+                                    case "RENOVACION":
+                                    {
+                                        ss.SendRenovacionInd(ctx, false);
+                                        ss.SendRenovacionGpo(ctx, false);
+                                        break;
+                                    }
+                                    case "VERIFICACION DOMICILIARIA":
+                                    {
+                                        ss.SendGestionesVerDom(ctx, false);
+                                        break;
+                                    }
+                                    case "CIERRE DE DIA":
+                                    {
+                                        ss.SaveCierreDia(ctx, false);
+                                        break;
+                                    }
+                                    case "GEOLOCALIZACION":
+                                    {
+                                        ss.SaveGeolocalizacion(ctx, false);
+                                        break;
+                                    }
+                                    case "RESULTADO SOLICITUD":
+                                    {
+                                        ss.MontoAutorizado(ctx, false);
+                                        ss.GetSolicitudesRechazadasInd(ctx, false);
+                                        ss.GetSolicitudesRechazadasGpo(ctx, false);
+                                        break;
+                                    }
+                                }
 
-                            ss.SendConsultaCC(ctx, false);
+                                servicioSincronizado.setEjecutado(ejecutado);
+                                servicioSincronizadoDao.update(servicioSincronizado);
+                            }
 
-                            handler.postDelayed(() -> {
-                                ss.SendRenovacionInd(ctx, false);
-                                ss.SendRenovacionGpo(ctx, false);
-                                ss.GetSolicitudesRechazadasInd(ctx, false);
-                                ss.GetSolicitudesRechazadasGpo(ctx, false);
-                            }, 20000);
+                            //ss.GetUltimosRecibos(ctx);
 
                             //ss.CancelGestiones(ctx, false);
                             //ss.SendCancelGestiones(ctx, false);

@@ -169,6 +169,12 @@
             android:name=".activities.CapturarFirma"
             android:screenOrientation="landscape" />
         <activity
+            android:name=".views.verificaciondomiciliaria.VerificacionDomiciliariaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".views.verificaciondomiciliaria.GestionVerificacionDomiciliariaActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".SplashSidertActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">

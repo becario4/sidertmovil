@@ -621,6 +621,20 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>NO PAGO</item>              <!-- 1 -->
     </string-array>
 
+    <string-array name="verificaciones_tipos">
+        <item>INDIVIDUAL</item>                <!-- 0 -->
+        <item>PRESIDENTE</item>                <!-- 1 -->
+        <item>SECRETARIA</item>                <!-- 2 -->
+        <item>TESORERO</item>                  <!-- 3 -->
+        <item>INTEGRANTE</item>                <!-- 4 -->
+    </string-array>
+
+    <string-array name="verificaciones_tipos_grupales">
+        <item>PRESIDENTE</item>               <!-- 0 -->
+        <item>SECRETARIA</item>               <!-- 1 -->
+        <item>TESORERO</item>                 <!-- 2 -->
+    </string-array>
+
     <string name="Rmonto"></string>
     <string name="RprimerNombre"></string>
     <string name="RapellidoPaterno"></string>

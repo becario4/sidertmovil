@@ -161,7 +161,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_CC);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_CC);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_CLIENTE);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VER_DOM);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTIONES_VER_DOM);
 
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS);
 
         Log.v("CreacionTablas", "se crearon tablas");
     }
@@ -282,6 +285,20 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ARQUEO_CAJA_T); }
         catch (Exception e) {  Log.e("Tablas", "Catch tabla ARQUEO_CAJA_T"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VER_DOM); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TABLE_VER_DOM"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTIONES_VER_DOM); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TABLE_GESTIONES_VER_DOM"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS); }
+        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TBL_SERVICIOS_SINCRONIZADOS"); }
+
+
+
+
+
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION); }
         catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
@@ -836,10 +853,16 @@ public class DBhelper extends SQLiteOpenHelper {
         catch (Exception e) { Log.e("ADD_CICLO_INT_GPO_REN", "ya contiene la columna"); }
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_ANT_INT_GPO_REN); }
-        catch (Exception e) { Log.e("ADD_MONTO_ANT_INT_GPO_REN", "ya contiene la columna"); }
+        catch (Exception e) { Log.e("ADD_MTO_ANT_INT_GPO_REN", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_ID_VER_DOM); }
+        catch (Exception e) { Log.e("ADD_GRUPO_ID_VER_DOM", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_NOM_VER_DOM); }
+        catch (Exception e) { Log.e("ADD_GRUPO_NOM_VER_DOM", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_NO_SOL_VER_DOM); }
+        catch (Exception e) { Log.e("ADD_NO_SOL_VER_DOM", "ya contiene la columna"); }
 
     }
 
@@ -2634,6 +2657,14 @@ public class DBhelper extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
         return id;
+    }
+
+    public void saveCargoIntegranteGpoRen (SQLiteDatabase db, Integer id_cargo, Integer id_integrante){
+        ContentValues cv = new ContentValues();
+
+        cv.put("cargo", id_cargo);
+
+        db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
     }
 
     public void saveDatosTelefonicos (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){

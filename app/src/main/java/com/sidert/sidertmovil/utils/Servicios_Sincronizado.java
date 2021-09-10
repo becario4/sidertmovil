@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
@@ -59,6 +60,8 @@ import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.GestionCirculoCreditoDao;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCreditoDao;
+import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizado;
+import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizadoDao;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -77,13 +80,20 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
+import com.sidert.sidertmovil.models.verificacionesdomiciliarias.GestionVerificacionDomiciliaria;
+import com.sidert.sidertmovil.models.verificacionesdomiciliarias.GestionVerificacionDomiciliariaDao;
+import com.sidert.sidertmovil.models.verificacionesdomiciliarias.VerificacionDomiciliaria;
+import com.sidert.sidertmovil.models.verificacionesdomiciliarias.VerificacionDomiciliariaDao;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.ApoyoGastosFunerariosService;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.PrestamoService;
 import com.sidert.sidertmovil.services.apoyogastosfunerarios.ReciboService;
 import com.sidert.sidertmovil.services.circulocredito.CirculoCreditoService;
 import com.sidert.sidertmovil.services.circulocredito.ReciboCirculoCreditoService;
+import com.sidert.sidertmovil.services.serviciossincronizados.ServicioSincronizadoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
+import com.sidert.sidertmovil.services.verificaciondomiciliaria.GestionVerificacionDomiciliariaService;
+import com.sidert.sidertmovil.services.verificaciondomiciliaria.VerificacionDomiciliariaService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -607,6 +617,75 @@ public class Servicios_Sincronizado {
                 }
             });
         }
+    }
+
+    public void SendGestionesVerDom(Context ctx, boolean flag) {
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loading.setCancelable(false);
+
+        GestionVerificacionDomiciliariaDao gestionDao = new GestionVerificacionDomiciliariaDao(ctx);
+
+        List<GestionVerificacionDomiciliaria> gestiones = gestionDao.findAllByEstatus(1L);
+
+        for(GestionVerificacionDomiciliaria gestion : gestiones)
+        {
+            new GuardarVerDom().execute(ctx, gestion);
+        }
+
+        if(flag) loading.dismiss();
+    }
+
+    public void GetGestionesVerDom(Context ctx, boolean flag) {
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag) loading.show();
+
+        SessionManager session = new SessionManager(ctx);
+        VerificacionDomiciliariaDao verificacionDao = new VerificacionDomiciliariaDao(ctx);
+
+        VerificacionDomiciliariaService verificacionService = new RetrofitClient().newInstance(ctx).create(VerificacionDomiciliariaService.class);
+        Call<List<VerificacionDomiciliaria>> call = verificacionService.show("Bearer "+ session.getUser().get(7));
+
+        call.enqueue(new Callback<List<VerificacionDomiciliaria>>() {
+            @Override
+            public void onResponse(Call<List<VerificacionDomiciliaria>> call, Response<List<VerificacionDomiciliaria>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<VerificacionDomiciliaria> verificaciones = response.body();
+
+                        if (verificaciones != null && verificaciones.size() > 0){
+                            for (VerificacionDomiciliaria item : verificaciones){
+                                VerificacionDomiciliaria verificacionDb = null;
+
+                                verificacionDb = verificacionDao.findByVerificacionDomiciliariaId(item.getVerificacionDomiciliariaId());
+
+                                if(verificacionDb != null)
+                                {
+                                    item.setId(verificacionDb.getId());
+                                    verificacionDao.update(item);
+                                }
+                                else
+                                {
+                                    verificacionDao.store(item);
+                                }
+                            }
+                        }
+                        loading.dismiss();
+                        break;
+                    default:
+                        Log.e("ERROR AQUI PREST AUT", response.message());
+                        loading.dismiss();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<VerificacionDomiciliaria>> call, Throwable t) {
+                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                loading.dismiss();
+                t.printStackTrace();
+            }
+        });
     }
 
     public class DescargarFotoFachada extends AsyncTask<Object, Void, String> {
@@ -3671,6 +3750,10 @@ public class Servicios_Sincronizado {
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoId() == 4) {//Actualiza solicitud de originacion que rechazo la adminitradora para correccion de datos
 
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", "");
+                                            db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+
                                             if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
                                                 cv = new ContentValues();
                                                 cv.put("estatus", 0);
@@ -6468,6 +6551,8 @@ public class Servicios_Sincronizado {
 
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
+            Log.e("AQUI GRUPO0", grupoId);
+
             Call<MRenovacionGrupal> call = api.getPrestamoRenovarGpo(
                     grupoId,
                     "Bearer "+ session.getUser().get(7));
@@ -8848,5 +8933,127 @@ public class Servicios_Sincronizado {
             return "";
         }
     }
+
+    public class GuardarVerDom extends AsyncTask<Object, Void, String>{
+        @Override
+        protected String doInBackground(final Object... params) {
+            Context ctx = (Context) params[0];
+            GestionVerificacionDomiciliaria gestion = (GestionVerificacionDomiciliaria) params[1];
+
+            GestionVerificacionDomiciliariaDao gestionDao = new GestionVerificacionDomiciliariaDao(ctx);
+
+            gestion.setFechaEnvio(Miscellaneous.ObtenerFecha("timestamp"));
+            gestion.setEstatus(2);
+
+            //JSONObject gestionJson = gestion.getJson();
+            Gson gson = new Gson();
+            String gestionJson = gson.toJson(gestion);
+
+            SessionManager session = new SessionManager(ctx);
+            GestionVerificacionDomiciliariaService gestionService = new RetrofitClient().newInstance(ctx).create(GestionVerificacionDomiciliariaService.class);
+
+            MultipartBody.Part fotoFachada = null;
+
+            if(!gestion.getFotoFachada().isEmpty() && gestion.getFotoFachada() != null)
+            {
+                File image_foto = new File(ROOT_PATH + "Fachada/"+ gestion.getFotoFachada());
+                if (image_foto != null)
+                {
+                    RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
+                    fotoFachada = MultipartBody.Part.createFormData("foto_fachada", image_foto.getName(), imageEvidencia);
+                }
+            }
+
+            RequestBody gestionBody = RequestBody.create(MultipartBody.FORM, gestionJson);
+
+            Log.e("AQUI VERDOM", gestionJson);
+
+            Call<GestionVerificacionDomiciliaria> call = gestionService.store(
+                    "Bearer " + session.getUser().get(7),
+                    gestionBody,
+                    fotoFachada
+            );
+
+            call.enqueue(new Callback<GestionVerificacionDomiciliaria>() {
+                @Override
+                public void onResponse(Call<GestionVerificacionDomiciliaria> call, Response<GestionVerificacionDomiciliaria> response) {
+                    switch (response.code()){
+                        case 200:
+                            gestionDao.update(gestion);
+                            break;
+                        default:
+                            try {
+                                Log.e("ERROR " + response.code(), response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Log.e("ERROR " + response.code(), response.message());
+                    }
+                }
+                @Override
+                public void onFailure(Call<GestionVerificacionDomiciliaria> call, Throwable t) {
+                    Log.e("ERROR ", t.getMessage());
+                    Log.e("ERROR ", t.getCause().toString());
+                }
+            });
+
+            return "";
+        }
+    }
+
+    public void GetServiciosSincronizados(Context ctx, boolean flag) {
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loading.setCancelable(false);
+
+        SessionManager session = new SessionManager(ctx);
+
+        ServicioSincronizadoDao servicioSincronizadoDao = new ServicioSincronizadoDao(ctx);
+
+        ServicioSincronizadoService servicioSincronizadoService = new RetrofitClient().newInstance(ctx).create(ServicioSincronizadoService.class);
+
+        Call<List<ServicioSincronizado>> call = servicioSincronizadoService.show("Bearer "+ session.getUser().get(7));
+
+        call.enqueue(new Callback<List<ServicioSincronizado>>() {
+            @Override
+            public void onResponse(Call<List<ServicioSincronizado>> call, Response<List<ServicioSincronizado>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<ServicioSincronizado> serviciosSincronizados = response.body();
+
+                        if (serviciosSincronizados != null && serviciosSincronizados.size() > 0){
+                            for (ServicioSincronizado item : serviciosSincronizados){
+                                Log.e("AQUI SS ID", String.valueOf(item.getId()));
+
+                                ServicioSincronizado servicioSincronizado = servicioSincronizadoDao.findById(item.getId());
+
+                                if(servicioSincronizado != null)
+                                {
+                                    servicioSincronizadoDao.update(item);
+                                }
+                                else
+                                {
+                                    servicioSincronizadoDao.store(item);
+                                }
+                            }
+                        }
+                        loading.dismiss();
+                        break;
+                    default:
+                        Log.e("ERROR AQUI PREST AUT", response.message());
+                        loading.dismiss();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ServicioSincronizado>> call, Throwable t) {
+                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                loading.dismiss();
+                t.printStackTrace();
+            }
+        });
+    }
+
+
 
 }

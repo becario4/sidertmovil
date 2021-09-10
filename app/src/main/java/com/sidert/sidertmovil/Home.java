@@ -67,6 +67,7 @@ import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity;
+import com.sidert.sidertmovil.views.verificaciondomiciliaria.VerificacionDomiciliariaActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -299,6 +300,10 @@ public class Home extends AppCompatActivity {
                     startActivity(consulta_cc);
                     break;
                     */
+                case R.id.nvVerificacionDomiciliaria:/**/
+                    Intent verDom = new Intent(ctx, VerificacionDomiciliariaActivity.class);
+                    startActivity(verDom);
+                    break;
                 default:/**Manda directo a la validacion de inicio de sesion o cartera*/
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
@@ -525,8 +530,11 @@ public class Home extends AppCompatActivity {
                         case "solicitudes":/**Si tiene permiso de solicitudes*/
                             //menuGeneral.getItem(8).setVisible(true);
                             break;
-                        case "sesiones":/**Si tiene permiso de sesiones*/
+                        case "verificacion domiciliaria":/**Si tiene permiso de sesiones*/
                             menuGeneral.getItem(9).setVisible(true);
+                            break;
+                        case "sesiones":/**Si tiene permiso de sesiones*/
+                            menuGeneral.getItem(10).setVisible(true);
                             break;
                     }
                 }

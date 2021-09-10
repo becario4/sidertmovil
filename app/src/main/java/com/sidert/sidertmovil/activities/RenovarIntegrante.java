@@ -742,19 +742,19 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         /**Valida si va ser el registro de un integrante nuevo para comenzar con el registro del nombre y el cargo*/
         if (getIntent().getBooleanExtra("is_new",true)) {
+            //isNuevo =  getIntent().getBooleanExtra("is_new",true);
             /**Obtiene los datos que se pasaron entre clases*/
             id_credito = getIntent().getStringExtra("id_credito");
             /**Funcion para registrar primero el nombre y el cargo del integrante*/
             openRegistroIntegrante(id_credito);
         }
         else{/**En caso de ya estar registrado continuara con el registro de los demas datos*/
-
             /**Obtiene los datos que se pasaron entre clases*/
             id_credito = getIntent().getStringExtra("id_credito");
-            id_integrante = getIntent().getStringExtra("id_integrante");
 
             /**Funcion para precargar la informacion que ha sido guardada del integrante*/
             initComponents(getIntent().getStringExtra("id_credito"), getIntent().getStringExtra("id_integrante"));
+
         }
 
         tvRiesgo.setText(_riesgo[2]);
@@ -2577,6 +2577,14 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
+        if(is_edit && !isNuevo) {
+            tvCargo.setBackground(ContextCompat.getDrawable(ctx, (R.drawable.et_rounded_edges)));
+
+            tvCargo.setOnClickListener(v -> {
+                id_integrante = getIntent().getStringExtra("id_integrante");
+                openRegistroIntegrante(id_credito, id_integrante);
+            });
+        }
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -2731,7 +2739,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvFechaNacCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit && isNuevo) {
+            if (is_edit) {
                 dialog_date_picker dialogDatePicker = new dialog_date_picker();
                 Bundle b = new Bundle();
 
@@ -4155,6 +4163,20 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         b.putString("id_credito", String.valueOf(id_credito));
         renovar_integrante.setArguments(b);
         renovar_integrante.setCancelable(false);
+        renovar_integrante.show(getSupportFragmentManager(), NameFragments.DIALOGREGISTROINTEGRANTE);
+    }
+
+    private void openRegistroIntegrante(String id_credito, String id_integrante) {
+        dialog_renovar_integrante renovar_integrante = new dialog_renovar_integrante();
+        Bundle b = new Bundle();
+        b.putString("id_credito", String.valueOf(id_credito));
+        b.putString("id_integrante", String.valueOf(id_integrante));
+        b.putString("nombre", etNombreCli.getText().toString().trim().toUpperCase());
+        b.putString("paterno", etApPaternoCli.getText().toString().trim().toUpperCase());
+        b.putString("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
+        b.putString("cargo", tvCargo.getText().toString().trim().toUpperCase());
+        renovar_integrante.setArguments(b);
+        renovar_integrante.setCancelable(true);
         renovar_integrante.show(getSupportFragmentManager(), NameFragments.DIALOGREGISTROINTEGRANTE);
     }
 
@@ -5966,7 +5988,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             if (row_casa.getCount() > 0 && row_casa.getInt(0) != id_integrante){
                 cbCasaReuniones.setEnabled(false);
             }
-            isNuevo = true;
+            if(this.id_integrante.equals("")) isNuevo = true;
             llCurp.setVisibility(View.VISIBLE);
         }
         else {
@@ -6363,4 +6385,5 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 break;
         }
     }
+
 }

@@ -12,7 +12,6 @@ import com.sidert.sidertmovil.database.DBhelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS_CC;
 
 public class GestionCirculoCreditoDao {

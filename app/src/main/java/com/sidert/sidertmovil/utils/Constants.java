@@ -514,6 +514,10 @@ public class Constants {
     public final static String TBL_RECIBOS_CC                       = "tbl_recibos_cc";
     public final static String TBL_RECUPERACION_RECIBOS_CC          = "tbl_recuperacion_recibos_cc";
 
+    public final static String TBL_SERVICIOS_SINCRONIZADOS          = "tbl_servicios_sincronizados";
+
+    public final static String TBL_VERIFICACIONES_DOMICILIARIAS     = "tbl_verificaciones_domiciliarias";
+    public final static String TBL_GESTIONES_VER_DOM                = "tbl_gestiones_ver_dom";
 
     public final static String STATUS_FICHAS                = "status_fichas";
     public final static String ESTADOS                      = "estados";

@@ -278,38 +278,38 @@ public class ReciboActivity extends AppCompatActivity {
 
                 if(continuar)
                 {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-                    builder.setTitle(R.string.selected_option)
-                            .setItems(_medio_pago, (dialog, position) -> {
-                                tvMedioPago.setError(null);
-                                tvMedioPago.setText(_medio_pago[position]);
-                                byteEvidencia = null;
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(_medio_pago, (dialog, position) -> {
+                            tvMedioPago.setError(null);
+                            tvMedioPago.setText(_medio_pago[position]);
+                            byteEvidencia = null;
 
-                                /**En caso de seleccionar medio de pago EFECTIVO se habialitan opcion de impresion*/
-                                if(Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6)
-                                {
-                                    llImprimirRecibo.setVisibility(View.VISIBLE);
-                                    ibGaleria.setEnabled(false);
-                                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                                    ibFoto.setEnabled(false);
-                                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                                    tvImprimirRecibo.setText("SI");
-                                    SelectImprimirRecibos(0);
-                                }
-                                else{
-                                    llImprimirRecibo.setVisibility(View.GONE);
-                                    ibGaleria.setEnabled(true);
-                                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
-                                    ibGaleria.setVisibility(View.VISIBLE);
-                                    ibFoto.setEnabled(true);
-                                    ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
-                                    ibFoto.setVisibility(View.VISIBLE);
-                                    llFotoGaleria.setVisibility(View.VISIBLE);
-                                    ivEvidencia.setVisibility(View.GONE);
-                                }
-                            });
-                    builder.create();
-                    builder.show();
+                            /**En caso de seleccionar medio de pago EFECTIVO se habialitan opcion de impresion*/
+                            if(Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6)
+                            {
+                                llImprimirRecibo.setVisibility(View.VISIBLE);
+                                ibGaleria.setEnabled(false);
+                                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                                ibFoto.setEnabled(false);
+                                ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                                tvImprimirRecibo.setText("SI");
+                                SelectImprimirRecibos(0);
+                            }
+                            else{
+                                llImprimirRecibo.setVisibility(View.GONE);
+                                ibGaleria.setEnabled(true);
+                                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                ibGaleria.setVisibility(View.VISIBLE);
+                                ibFoto.setEnabled(true);
+                                ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                ibFoto.setVisibility(View.VISIBLE);
+                                llFotoGaleria.setVisibility(View.VISIBLE);
+                                ivEvidencia.setVisibility(View.GONE);
+                            }
+                        });
+                builder.create();
+                builder.show();
                 }
             }
             else

@@ -40,13 +40,13 @@
     <item
         android:id="@+id/nvOriginacion"
         android:title="Originación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 7 -->
     <item
         android:id="@+id/nvRenovacion"
         android:title="Renovación"
-        android:visible="true"
+        android:visible="false"
         android:icon="@drawable/item_orders" />
     <!-- 8 -->
     <item
@@ -56,29 +56,34 @@
         android:icon="@drawable/item_orders" />
     <!-- 9 -->
     <item
+        android:id="@+id/nvVerificacionDomiciliaria"
+        android:title="Verificación Domiciliaria"
+        android:icon="@drawable/item_orders"
+        android:visible="false"/>
+    <!-- 10 -->
+    <item
         android:id="@+id/nvLogin"
         android:title="Sesiones "
         android:visible="false"
         android:icon="@drawable/ic_users" />
-
-    <!-- 10 -->
+    <!-- 11 -->
     <item
         android:id="@+id/nvMesaAyuda"
         android:title="Mesa de Ayuda"
         android:visible="true"
         android:icon="@drawable/ic_mesa_ayuda" />
 
-    <!-- 11 -->
+    <!-- 12 -->
     <item
         android:id="@+id/nvConfiguraciones"
         android:title="Configuraciones"
         android:icon="@drawable/item_settings" />
-<!--- 12 -->
+<!--- 13 -->
     <item
         android:id="@+id/nvGuiaRapida"
         android:title="Guía Rápida"
         android:icon="@drawable/ic_help_outline" />
-    <!-- 13 -->
+    <!-- 14 -->
    <!-- <item
         android:id="@+id/nvConsultaCC"
         android:title="Consulta CC"

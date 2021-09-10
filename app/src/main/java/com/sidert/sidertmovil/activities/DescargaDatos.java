@@ -149,7 +149,7 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetMediosPagoOri(ctx);
         sc.GetNivelesEstudios(ctx);
         sc.GetEstadosCiviles(ctx);
-        sc.GetMediosPagoOri(ctx);
+        //sc.GetMediosPagoOri(ctx);
         sc.GetParentesco(ctx);
         sc.GetTipoIdentificacion(ctx);
         sc.GetViviendaTipos(ctx);
@@ -177,6 +177,7 @@ public class DescargaDatos extends AppCompatActivity {
          * autorizar el monto*/
         ss.GetPrestamosAutorizados(ctx, false);
 
+        ss.GetGestionesVerDom(ctx, false);
     }
 
     /**funcion para Descargar el ultimo folio de vigente y vencida
