@@ -64,6 +64,8 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRenDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
@@ -618,6 +620,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     boolean hasFractionalPart = false;
     
     private Miscellaneous m;
+
+
+    boolean pushMapButtonCli = false;
+    boolean pushMapButtonAval = false;
+    boolean pushMapButtonNeg = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1340,8 +1347,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
             }
         });
-        //tvFechaNacCli.setOnClickListener(tvFechaNac_OnClick);
-        //tvEstadoNacCli.setOnClickListener(etEstadoNac_OnClick);
+
         etCurpCli.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1546,10 +1552,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         } else {
-                            UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
+                            if(tvColoniaCli.isEnabled())
+                            {
+                                UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
+                                tvColoniaCli.setText("");
+                            }
+
                             UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
                             UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
-                            tvColoniaCli.setText("");
+
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }
@@ -1969,10 +1980,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         } else {
-                            UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
+                            if(tvColoniaCony.isEnabled())
+                            {
+                                UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
+                                tvColoniaCony.setText("");
+                            }
+
                             UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
                             UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
-                            tvColoniaCony.setText("");
+
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }
@@ -2378,10 +2394,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         } else {
-                            UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
+                            if(tvColoniaNeg.isEnabled())
+                            {
+                                UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
+                                tvColoniaNeg.setText("");
+                            }
+
                             UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
                             UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
-                            tvColoniaNeg.setText("");
+
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }
@@ -2488,7 +2509,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 etIngMenNeg.removeTextChangedListener(this);
-
+                etIngMenNeg.setError(null);
+                ivError5.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etIngMenNeg).length();
@@ -2595,7 +2617,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 etGastosMenNeg.removeTextChangedListener(this);
-
+                etGastosMenNeg.setError(null);
+                ivError5.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etGastosMenNeg).length();
@@ -2962,8 +2985,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 if (!m.GetStr(tvMontoMaxNeg).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",", "")) > 0) {
                     if (e.length() > 0)
                         try {
-                            if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",", "")))
+                            if (Double.parseDouble(e.toString().replace(",","")) > 0)
+                                if (Double.parseDouble(e.toString().replace(",","")) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",", "")))
                                     Update("capacidad_pago", TBL_NEGOCIO_IND_REN, e.toString().trim().replace(",", ""));
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago", "NEGOCIO");
@@ -3199,8 +3222,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 }
             }
         });
-        tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
-        tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
         etCurpAval.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -3385,8 +3407,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
                         } else {
-                            UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
-                            tvColoniaAval.setText("");
+                            if(tvColoniaAval.isEnabled())
+                            {
+                                UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
+                                tvColoniaAval.setText("");
+                            }
+
                             UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
                             UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
                             tvMunicipioAval.setText(row.getString(4));
@@ -3534,7 +3560,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 etIngMenAval.removeTextChangedListener(this);
-
+                etIngMenAval.setError(null);
+                ivError6.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etIngMenAval).length();
@@ -3642,7 +3669,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable e) {
                 etGastosSemAval.removeTextChangedListener(this);
-
+                etGastosSemAval.setError(null);
+                ivError6.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etGastosSemAval).length();
@@ -4015,8 +4043,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 if (!m.GetStr(tvMontoMaxAval).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",", "")) > 0) {
                     if (e.length() > 0)
                         try {
-                            if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",", "")))
+                            if (Double.parseDouble(e.toString().replace(",","")) > 0)
+                                if (Double.parseDouble(e.toString().replace(",","")) <= Double.parseDouble(m.GetStr(tvMontoMaxAval).replace(",", "")))
                                     Update("capacidad_pagos", TBL_AVAL_IND_REN, e.toString().trim().replace(",", ""));
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago", "AVAL");
@@ -4368,10 +4396,15 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
                         } else {
-                            UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
+                            if(tvColoniaRef.isEnabled())
+                            {
+                                UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
+                                tvColoniaRef.setText("");
+                            }
+
                             UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
                             UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
-                            tvColoniaRef.setText("");
+
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
                         }
@@ -4931,7 +4964,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener etColonia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCli) {
+            if (isEditCli || tvColoniaCli.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -4946,7 +4979,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLocalidadCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCli) {
+            if (isEditCli || tvLocalidadCli.getText().toString().trim().isEmpty()) {
                 if (!m.GetStr(tvMunicipioCli).isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
                     row.moveToFirst();
@@ -5035,6 +5068,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 tvTipoCasaCli.setError(null);
                                 tvTipoCasaCli.setText(_tipo_casa[position]);
                                 switch (position) {
+                                    case 1:
                                     case 2:
                                         llCasaFamiliar.setVisibility(View.VISIBLE);
                                         llCasaOtroCli.setVisibility(View.GONE);
@@ -5141,7 +5175,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvColoniaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditAva) {
+            if (isEditAva || tvColoniaAval.getText().toString().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5156,7 +5190,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLocalidadAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditAva) {
+            if (isEditAva || tvLocalidadAval.getText().toString().trim().isEmpty()) {
                 if (!m.GetStr(tvMunicipioAval).isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioAval)});
                     row.moveToFirst();
@@ -5389,7 +5423,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener etColoniaNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditNeg) {
+            if (isEditNeg || tvColoniaNeg.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5418,7 +5452,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLocalidadNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditNeg) {
+            if (isEditNeg || tvLocalidadNeg.getText().toString().trim().isEmpty()) {
                 if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
                     row.moveToFirst();
@@ -5538,7 +5572,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCon) {
+            if (isEditCon || tvColoniaCony.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5553,7 +5587,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLocalidadCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCon) {
+            if (isEditCon || tvLocalidadCony.getText().toString().trim().isEmpty()) {
                 if (!m.GetStr(tvMunicipioCony).isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
                     row.moveToFirst();
@@ -5764,7 +5798,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvColoniaRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditRef) {
+            if (isEditRef || tvColoniaRef.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIA + "s"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5779,7 +5813,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private View.OnClickListener tvLocalidadRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditRef) {
+            if (isEditRef || tvLocalidadRef.getText().toString().trim().isEmpty()) {
                 if (!m.GetStr(tvMunicipioRef).isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioRef)});
                     row.moveToFirst();
@@ -7038,6 +7072,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                     cv.put("tipo_vivienda", m.GetStr(tvTipoCasaCli));
                                     switch (m.GetStr(tvTipoCasaCli)) {
                                         case "CASA FAMILIAR":
+                                        case "CASA RENTADA":
                                             if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                                                 flag_tipo_casa = true;
                                                 cv.put("parentesco", m.GetStr(tvTipoCasaCli));
@@ -7061,7 +7096,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                             break;
                                     }
                                     if (flag_tipo_casa) {
-                                        if (latLngUbiCli != null) {
+                                        if (latLngUbiCli != null || pushMapButtonCli) {
                                             tvMapaCli.setError(null);
                                             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
                                                     !validator.validate(etNoExtCli, new String[]{validator.REQUIRED}) &&
@@ -7194,29 +7229,32 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     /**Funcion para validar y guardar los datos de la seccion del conyuge*/
     private boolean saveConyuge() {
         boolean save_conyuge = false;
-        if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
-                !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
-                !validator.validate(etNacionalidadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
-                (
-                        !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
-                                || (
-                                !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
-                                        && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
-                        )
-                ) &&
-                !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
-                !m.ValidTextView(tvColoniaCony) &&
-                !validator.validate(etCiudadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validatorTV.validate(tvLocalidadCony, new String[]{validatorTV.REQUIRED}) &&
-                !m.ValidTextView(tvMunicipioCony) &&
-                !m.ValidTextView(tvEstadoCony) &&
-                !validator.validate(etIngMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                !validator.validate(etGastoMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                !validator.validate(etCasaCony, new String[]{validator.PHONE}) &&
-                !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.PHONE})) {
+        if (
+            !validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+            !validator.validate(etApPaternoCony, new String[]{validator.ONLY_TEXT}) &&
+            !validator.validate(etApMaternoCony, new String[]{validator.ONLY_TEXT}) &&
+            !validator.validate(etNacionalidadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+            !validatorTV.validate(tvOcupacionCony, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etCalleCony, new String[]{validator.REQUIRED}) &&
+            (
+                !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
+                || (
+                        !validator.validate(etManzanaCony, new String[]{validator.REQUIRED})
+                        && !validator.validate(etLoteCony, new String[]{validator.REQUIRED})
+                )
+            ) &&
+            !validator.validate(etCpCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.CP}) &&
+            !m.ValidTextView(tvColoniaCony) &&
+            !validator.validate(etCiudadCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+            !validatorTV.validate(tvLocalidadCony, new String[]{validatorTV.REQUIRED}) &&
+            !m.ValidTextView(tvMunicipioCony) &&
+            !m.ValidTextView(tvEstadoCony) &&
+            !validator.validate(etIngMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
+            !validator.validate(etGastoMenCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
+            !validator.validate(etCasaCony, new String[]{validator.PHONE}) &&
+            !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.PHONE})
+        )
+        {
 
             etNoExtCony.setError(null);
             etManzanaCony.setError(null);
@@ -7251,8 +7289,11 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdCony, "CONYUGE"});
 
             save_conyuge = true;
-        } else
+        }
+        else
+        {
             ivError3.setVisibility(View.VISIBLE);
+        }
 
         if(
             !validator.validate(etNoExtCony, new String[]{validator.REQUIRED})
@@ -7297,7 +7338,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     private boolean saveDatosNegocio() {
         boolean save_negocio = false;
         if (!validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
-            if (latLngUbiNeg != null) {
+            if (latLngUbiNeg != null || pushMapButtonNeg) {
                 tvMapaNeg.setError(null);
                 if (!validator.validate(etCalleNeg, new String[]{validator.REQUIRED}) &&
                         (
@@ -7332,24 +7373,61 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 !validator.validate(etGastosLuzNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etGastosTelNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                 !validator.validate(etGastosRentaNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
-                                !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER})) {
-                            if (getGastoMen()) {
-                                if (!validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
-                                        !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})) {
-                                    boolean otro_medio = false;
-                                    if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
-                                        if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
-                                            otro_medio = true;
-                                    } else
-                                        otro_medio = true;
+                                !validator.validate(etGastosOtrosNeg, new String[]{validator.REQUIRED, validator.ONLY_NUMBER})
+                        )
+                        {
+                            boolean flag = true;
 
-                                    if (otro_medio) {
-                                        if (!validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
-                                                !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
-                                                (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO") && !validatorTV.validate(etNumOperacionEfectNeg, new String[]{validatorTV.REQUIRED})) || !m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")) {
-                                            if (!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})) {
-                                                /*if (byteFotoFachNeg != null) {
-                                                    tvFachadaNeg.setError(null);*/
+                            try{
+                                if(Double.parseDouble(etIngMenNeg.getText().toString().replace(",", "")) <= 100)
+                                {
+                                    flag = false;
+                                    etIngMenNeg.setError("El ingreso mensual debe ser mayor a 100!");
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                etIngMenNeg.setError(e.getMessage());
+                                flag = false;
+                            }
+
+                            try{
+                                if(Double.parseDouble(etGastosMenNeg.getText().toString().replace(",", "")) <= 100)
+                                {
+                                    flag = false;
+                                    etGastosMenNeg.setError("El gasto mensual debe ser mayor a 100!");
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                etGastosMenNeg.setError(e.getMessage());
+                                flag = false;
+                            }
+
+                            if(flag) {
+
+                                if (getGastoMen()) {
+                                    if (
+                                            !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED, validator.MONEY}) &&
+                                                    !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})
+                                    ) {
+                                        boolean otro_medio = false;
+                                        if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
+                                            if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                                                otro_medio = true;
+                                        } else {
+                                            otro_medio = true;
+                                        }
+
+                                        if (otro_medio) {
+                                            if (
+                                                    !validatorTV.validate(tvMontoMaxNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                            !validatorTV.validate(tvNumOperacionNeg, new String[]{validatorTV.REQUIRED}) &&
+                                                            (m.GetStr(tvMediosPagoNeg).contains("EFECTIVO") && !validatorTV.validate(etNumOperacionEfectNeg, new String[]{validatorTV.REQUIRED})) || !m.GetStr(tvMediosPagoNeg).contains("EFECTIVO")
+                                            ) {
+                                                if (!validatorTV.validate(tvDiasVentaNeg, new String[]{validatorTV.REQUIRED})) {
+                                                    /*if (byteFotoFachNeg != null) {
+                                                        tvFachadaNeg.setError(null);*/
                                                     if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED, validator.GENERAL})) {
                                                         ivError5.setVisibility(View.GONE);
                                                         ContentValues cv = new ContentValues();
@@ -7359,7 +7437,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         cv.put("otro_destino", m.GetStr(etOtroDestinoNeg));
                                                         cv.put("antiguedad", Integer.parseInt(m.GetStr(etAntiguedadNeg)));
                                                         cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",", ""));
-                                                        cv.put("ing_otros", m.GetStr(etGastosOtrosNeg).replace(",", ""));
+                                                        cv.put("ing_otros", m.GetStr(etOtrosIngNeg).replace(",", ""));
                                                         cv.put("gasto_semanal", m.GetStr(etGastosMenNeg).replace(",", ""));
                                                         cv.put("gasto_agua", m.GetStr(etGastosAguaNeg).replace(",", ""));
                                                         cv.put("gasto_luz", m.GetStr(etGastosLuzNeg).replace(",", ""));
@@ -7389,24 +7467,34 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdNeg, "NEGOCIO"});
 
                                                         save_negocio = true;
-                                                    } else
+                                                    } else {
                                                         ivError5.setVisibility(View.VISIBLE);
-                                                /*} else {
+                                                    }
+                                                    /*} else {
+                                                        ivError5.setVisibility(View.VISIBLE);
+                                                        tvFachadaNeg.setError("");
+                                                    }*/
+                                                } else {
                                                     ivError5.setVisibility(View.VISIBLE);
-                                                    tvFachadaNeg.setError("");
-                                                }*/
-                                            } else
+                                                }
+                                            } else {
                                                 ivError5.setVisibility(View.VISIBLE);
-                                        } else
+                                            }
+                                        } else {
                                             ivError5.setVisibility(View.VISIBLE);
+                                        }
                                     } else
                                         ivError5.setVisibility(View.VISIBLE);
-                                } else
+                                } else {
+                                    etGastosMenNeg.setError("La suma de todos los gastos no puede ser cero (0).");
                                     ivError5.setVisibility(View.VISIBLE);
-                            } else {
-                                etGastosMenNeg.setError("La suma de todos los gastos no puede ser cero (0).");
+                                }
+                            }
+                            else
+                            {
                                 ivError5.setVisibility(View.VISIBLE);
                             }
+
                         } else
                             ivError5.setVisibility(View.VISIBLE);
                     } else
@@ -7458,7 +7546,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                 !validator.validate(etNumIdentifAval, new String[]{validator.REQUIRED, validator.ALFANUMERICO}) &&
                                 !validatorTV.validate(tvOcupacionAval, new String[]{validatorTV.REQUIRED}) &&
                                 !validatorTV.validate(tvActividadEcoAval, new String[]{validatorTV.REQUIRED})) {
-                            if (latLngUbiAval != null) {
+                            if (latLngUbiAval != null || pushMapButtonAval) {
                                 tvMapaAval.setError(null);
                                 if (!validator.validate(etCalleAval, new String[]{validator.REQUIRED}) &&
                                         (
@@ -7498,7 +7586,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                     rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) {
                                                 tvNombreNegAval.setError(null);
 
-                                                if (((rgNegocioAval.getCheckedRadioButtonId() == R.id.rbSiNeg && !validator.validate(etNombreNegocioAval, new String[]{validator.REQUIRED}) && !validator.validate(etAntiguedadAval, new String[]{validator.REQUIRED, validator.YEARS})) || rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) &&
+                                                if (
+                                                        ((rgNegocioAval.getCheckedRadioButtonId() == R.id.rbSiNeg && !validator.validate(etNombreNegocioAval, new String[]{validator.REQUIRED}) && !validator.validate(etAntiguedadAval, new String[]{validator.REQUIRED, validator.YEARS})) || rgNegocioAval.getCheckedRadioButtonId() == R.id.rbNoNeg) &&
                                                         !validator.validate(etIngMenAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validator.validate(etIngOtrosAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                                                         !validator.validate(etGastosSemAval, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
@@ -7518,94 +7607,126 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                                                         !validator.validate(etCelularAval, new String[]{validator.REQUIRED, validator.PHONE}) &&
                                                         !validator.validate(etTelMensAval, new String[]{validator.PHONE}) &&
                                                         !validator.validate(etTelTrabajoAval, new String[]{validator.PHONE}) &&
-                                                        !validator.validate(etEmailAval, new String[]{validator.EMAIL})) {
-                                                    /*if (byteFotoFachAval != null) {
-                                                        tvFachadaAval.setError(null);*/
-                                                        if (!validator.validate(etReferenciaAval, new String[]{validator.REQUIRED})) {
-                                                            if (byteFirmaAval != null) {
-                                                                tvFirmaAval.setError(null);
-                                                                ivError6.setVisibility(View.GONE);
-                                                                cv.put("nombre", m.GetStr(etNombreAval));
-                                                                cv.put("paterno", m.GetStr(etApPaternoAval));
-                                                                cv.put("materno", m.GetStr(etApMaternoAval));
-                                                                cv.put("fecha_nacimiento", m.GetStr(tvFechaNacAval));
-                                                                cv.put("edad", m.GetStr(tvEdadAval));
-                                                                switch (rgGeneroAval.getCheckedRadioButtonId()) {
-                                                                    case R.id.rbHombre:
-                                                                        cv.put("genero", 0);
-                                                                        break;
-                                                                    case R.id.rbMujer:
-                                                                        cv.put("genero", 1);
-                                                                        break;
-                                                                }
-                                                                cv.put("estado_nacimiento", m.GetStr(tvEstadoNacAval));
-                                                                cv.put("rfc", m.GetStr(tvRfcAval));
-                                                                cv.put("curp", m.GetStr(etCurpAval));
-                                                                cv.put("parentesco_cliente", m.GetStr(tvParentescoAval));
-                                                                cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacionAval));
-                                                                cv.put("no_identificacion", m.GetStr(etNumIdentifAval));
-                                                                cv.put("ocupacion", m.GetStr(tvOcupacionAval));
-                                                                cv.put("actividad_economica", m.GetStr(tvActividadEcoAval));
-                                                                cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasAval));
-                                                                switch (rgNegocioAval.getCheckedRadioButtonId()) {
-                                                                    case R.id.rbSiNeg:
-                                                                        cv.put("tiene_negocio", 1);
-                                                                        cv.put("nombre_negocio", m.GetStr(etNombreNegocioAval));
-                                                                        break;
-                                                                    case R.id.rbNoNeg:
-                                                                        cv.put("tiene_negocio", 2);
-                                                                        break;
-                                                                }
-                                                                cv.put("ing_mensual", m.GetStr(etIngMenAval).replace(",", ""));
-                                                                cv.put("ing_otros", m.GetStr(etIngOtrosAval).replace(",", ""));
-                                                                cv.put("gasto_semanal", m.GetStr(etGastosSemAval).replace(",", ""));
-                                                                cv.put("gasto_agua", m.GetStr(etGastosAguaAval).trim().replace(",", ""));
-                                                                cv.put("gasto_luz", m.GetStr(etGastosLuzAval).replace(",", ""));
-                                                                cv.put("gasto_telefono", m.GetStr(etGastosTelAval).replace(",", ""));
-                                                                cv.put("gasto_renta", m.GetStr(etGastosRentaAval).replace(",", ""));
-                                                                cv.put("gasto_otros", m.GetStr(etGastosOtrosAval).replace(",", ""));
-                                                                cv.put("medio_pago", m.GetStr(tvMediosPagoAval));
-                                                                cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoAval));
-                                                                cv.put("monto_maximo", m.GetStr(tvMontoMaxAval).replace(",", ""));
-                                                                cv.put("capacidad_pagos", m.GetStr(etCapacidadPagoAval).replace(",", ""));
-                                                                cv.put("horario_localizacion", m.GetStr(tvHoraLocAval));
-                                                                cv.put("activos_observables", m.GetStr(tvActivosObservables));
-                                                                cv.put("antigueda", m.GetStr(etAntiguedadAval));
-                                                                cv.put("tel_casa", m.GetStr(etTelCasaAval));
-                                                                cv.put("tel_celular", m.GetStr(etCelularAval));
-                                                                cv.put("tel_mensajes", m.GetStr(etTelMensAval));
-                                                                cv.put("tel_trabajo", m.GetStr(etTelTrabajoAval));
-                                                                cv.put("email", m.GetStr(etEmailAval));
-                                                                cv.put("ref_domiciliaria", m.GetStr(etReferenciaAval));
+                                                        !validator.validate(etEmailAval, new String[]{validator.EMAIL})
+                                                ) {
+                                                    boolean flag = true;
 
-                                                                db.update(TBL_AVAL_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-
-                                                                cv = new ContentValues();
-                                                                cv.put("latitud", String.valueOf(latLngUbiAval.latitude));
-                                                                cv.put("longitud", String.valueOf(latLngUbiAval.longitude));
-                                                                cv.put("calle", m.GetStr(etCalleAval));
-                                                                cv.put("num_exterior", m.GetStr(etNoExtAval));
-                                                                cv.put("num_interior", m.GetStr(etNoIntAval));
-                                                                cv.put("manzana", m.GetStr(etManzanaAval));
-                                                                cv.put("lote", m.GetStr(etLoteAval));
-                                                                cv.put("cp", m.GetStr(etCpAval));
-                                                                cv.put("colonia", m.GetStr(tvColoniaAval));
-                                                                cv.put("ciudad", m.GetStr(etCiudadAval));
-                                                                cv.put("localidad", m.GetStr(tvLocalidadAval));
-                                                                cv.put("municipio", m.GetStr(tvMunicipioAval));
-                                                                cv.put("estado", m.GetStr(tvEstadoAval));
-                                                                db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdAval, "AVAL"});
-                                                                save_aval = true;
-                                                            } else {
-                                                                tvFirmaAval.setError("");
-                                                            }
-                                                        } else {
-                                                            ivError6.setVisibility(View.VISIBLE);
+                                                    try {
+                                                        if (Double.parseDouble(etIngMenAval.getText().toString().replace(",", "")) <= 100) {
+                                                            flag = false;
+                                                            etIngMenAval.setError("El ingreso mensual debe ser mayor a 100!");
                                                         }
-                                                    /*} else {
-                                                        tvFachadaAval.setError("");
+                                                    } catch (Exception e) {
+                                                        etIngMenAval.setError(e.getMessage());
+                                                        flag = false;
+                                                    }
+
+                                                    try {
+                                                        if (Double.parseDouble(etGastosSemAval.getText().toString().replace(",", "")) <= 100) {
+                                                            flag = false;
+                                                            etGastosSemAval.setError("El gasto mensual debe ser mayor a 100!");
+                                                        }
+                                                    } catch (Exception e) {
+                                                        etGastosSemAval.setError(e.getMessage());
+                                                        flag = false;
+                                                    }
+
+                                                    if(flag)
+                                                    {
+
+                                                            /*if (byteFotoFachAval != null) {
+                                                                tvFachadaAval.setError(null);*/
+                                                                if (!validator.validate(etReferenciaAval, new String[]{validator.REQUIRED})) {
+                                                                    if (byteFirmaAval != null) {
+                                                                        tvFirmaAval.setError(null);
+                                                                        ivError6.setVisibility(View.GONE);
+                                                                        cv.put("nombre", m.GetStr(etNombreAval));
+                                                                        cv.put("paterno", m.GetStr(etApPaternoAval));
+                                                                        cv.put("materno", m.GetStr(etApMaternoAval));
+                                                                        cv.put("fecha_nacimiento", m.GetStr(tvFechaNacAval));
+                                                                        cv.put("edad", m.GetStr(tvEdadAval));
+                                                                        switch (rgGeneroAval.getCheckedRadioButtonId()) {
+                                                                            case R.id.rbHombre:
+                                                                                cv.put("genero", 0);
+                                                                                break;
+                                                                            case R.id.rbMujer:
+                                                                                cv.put("genero", 1);
+                                                                                break;
+                                                                        }
+                                                                        cv.put("estado_nacimiento", m.GetStr(tvEstadoNacAval));
+                                                                        cv.put("rfc", m.GetStr(tvRfcAval));
+                                                                        cv.put("curp", m.GetStr(etCurpAval));
+                                                                        cv.put("parentesco_cliente", m.GetStr(tvParentescoAval));
+                                                                        cv.put("tipo_identificacion", m.GetStr(tvTipoIdentificacionAval));
+                                                                        cv.put("no_identificacion", m.GetStr(etNumIdentifAval));
+                                                                        cv.put("ocupacion", m.GetStr(tvOcupacionAval));
+                                                                        cv.put("actividad_economica", m.GetStr(tvActividadEcoAval));
+                                                                        cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasAval));
+                                                                        switch (rgNegocioAval.getCheckedRadioButtonId()) {
+                                                                            case R.id.rbSiNeg:
+                                                                                cv.put("tiene_negocio", 1);
+                                                                                cv.put("nombre_negocio", m.GetStr(etNombreNegocioAval));
+                                                                                break;
+                                                                            case R.id.rbNoNeg:
+                                                                                cv.put("tiene_negocio", 2);
+                                                                                break;
+                                                                        }
+                                                                        cv.put("ing_mensual", m.GetStr(etIngMenAval).replace(",", ""));
+                                                                        cv.put("ing_otros", m.GetStr(etIngOtrosAval).replace(",", ""));
+                                                                        cv.put("gasto_semanal", m.GetStr(etGastosSemAval).replace(",", ""));
+                                                                        cv.put("gasto_agua", m.GetStr(etGastosAguaAval).trim().replace(",", ""));
+                                                                        cv.put("gasto_luz", m.GetStr(etGastosLuzAval).replace(",", ""));
+                                                                        cv.put("gasto_telefono", m.GetStr(etGastosTelAval).replace(",", ""));
+                                                                        cv.put("gasto_renta", m.GetStr(etGastosRentaAval).replace(",", ""));
+                                                                        cv.put("gasto_otros", m.GetStr(etGastosOtrosAval).replace(",", ""));
+                                                                        cv.put("medio_pago", m.GetStr(tvMediosPagoAval));
+                                                                        cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoAval));
+                                                                        cv.put("monto_maximo", m.GetStr(tvMontoMaxAval).replace(",", ""));
+                                                                        cv.put("capacidad_pagos", m.GetStr(etCapacidadPagoAval).replace(",", ""));
+                                                                        cv.put("horario_localizacion", m.GetStr(tvHoraLocAval));
+                                                                        cv.put("activos_observables", m.GetStr(tvActivosObservables));
+                                                                        cv.put("antigueda", m.GetStr(etAntiguedadAval));
+                                                                        cv.put("tel_casa", m.GetStr(etTelCasaAval));
+                                                                        cv.put("tel_celular", m.GetStr(etCelularAval));
+                                                                        cv.put("tel_mensajes", m.GetStr(etTelMensAval));
+                                                                        cv.put("tel_trabajo", m.GetStr(etTelTrabajoAval));
+                                                                        cv.put("email", m.GetStr(etEmailAval));
+                                                                        cv.put("ref_domiciliaria", m.GetStr(etReferenciaAval));
+
+                                                                        db.update(TBL_AVAL_IND_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                                                                        cv = new ContentValues();
+                                                                        cv.put("latitud", String.valueOf(latLngUbiAval.latitude));
+                                                                        cv.put("longitud", String.valueOf(latLngUbiAval.longitude));
+                                                                        cv.put("calle", m.GetStr(etCalleAval));
+                                                                        cv.put("num_exterior", m.GetStr(etNoExtAval));
+                                                                        cv.put("num_interior", m.GetStr(etNoIntAval));
+                                                                        cv.put("manzana", m.GetStr(etManzanaAval));
+                                                                        cv.put("lote", m.GetStr(etLoteAval));
+                                                                        cv.put("cp", m.GetStr(etCpAval));
+                                                                        cv.put("colonia", m.GetStr(tvColoniaAval));
+                                                                        cv.put("ciudad", m.GetStr(etCiudadAval));
+                                                                        cv.put("localidad", m.GetStr(tvLocalidadAval));
+                                                                        cv.put("municipio", m.GetStr(tvMunicipioAval));
+                                                                        cv.put("estado", m.GetStr(tvEstadoAval));
+                                                                        db.update(TBL_DIRECCIONES_REN, cv, "id_direccion = ? AND tipo_direccion = ?", new String[]{direccionIdAval, "AVAL"});
+                                                                        save_aval = true;
+                                                                    } else {
+                                                                        tvFirmaAval.setError("");
+                                                                    }
+                                                                } else {
+                                                                    ivError6.setVisibility(View.VISIBLE);
+                                                                }
+                                                            /*} else {
+                                                                tvFachadaAval.setError("");
+                                                                ivError6.setVisibility(View.VISIBLE);
+                                                            }*/
+                                                    }
+                                                    else
+                                                    {
                                                         ivError6.setVisibility(View.VISIBLE);
-                                                    }*/
+                                                    }
+
                                                 } else {
                                                     ivError6.setVisibility(View.VISIBLE);
                                                 }
@@ -8519,8 +8640,59 @@ public class RenovacionCreditoInd extends AppCompatActivity {
     }
 
     //===================== Listener GPS  =======================================================
-    /**Funcion para obtener la ubicacion del cliente*/
-    private void ObtenerUbicacion() {
+    private void findUbicacion(String idDireccion, String tipo)
+    {
+        DireccionRenDao direccionDao = new DireccionRenDao(ctx);
+        DireccionRen direccion = direccionDao.findByIdDireccion(Long.parseLong(idDireccion));
+
+        if(direccion != null && !direccion.getLatitud().equals("0") && !direccion.getLatitud().equals("") )
+        {
+            AlertDialog alertDialog = Popups.showDialogConfirm(this, warning,
+                    R.string.guardar_cambios, R.string.yes, dialog -> {
+                        switch(tipo) {
+                            case "CLIENTE":
+                                setUbicacion();
+                                break;
+                            case "AVAL":
+                                setUbicacionAval();
+                                break;
+                            case "NEGOCIO":
+                                setUbicacionNegocio();
+                                break;
+                            default:
+                                break;
+                        }
+                        dialog.dismiss();
+                    }, R.string.cancel, dialog -> {
+                        dialog.dismiss();
+                    }
+            );
+
+            alertDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            alertDialog.setCancelable(true);
+            alertDialog.show();
+        }
+        else
+        {
+            switch(tipo) {
+                case "CLIENTE":
+                    setUbicacion();
+                    break;
+                case "AVAL":
+                    setUbicacionAval();
+                    break;
+                case "NEGOCIO":
+                    setUbicacionNegocio();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void setUbicacion()
+    {
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -8529,7 +8701,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
             @Override
             public void onComplete(String latitud, String longitud) {
-
                 ibMapCli.setEnabled(true);
                 /**Valida si obtuvo la ubicacion*/
                 if (!latitud.isEmpty() && !longitud.isEmpty()) {
@@ -8577,13 +8748,73 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 pbLoadCli.setVisibility(View.GONE);
                 ibMapCli.setEnabled(true);
                 latLngUbiCli = new LatLng(0, 0);
+                pushMapButtonCli = true;
+                Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
+            }
+        }, 60000);
+
+    }
+
+    private void setUbicacionAval()
+    {
+        pbLoadAval.setVisibility(View.VISIBLE);
+        ibMapAval.setEnabled(false);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final Handler myHandler = new Handler();
+        locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
+            @Override
+            public void onComplete(String latitud, String longitud) {
+
+                ibMapAval.setEnabled(true);
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
+                    mapAval.setVisibility(View.VISIBLE);
+                    UpdateDireccion("latitud", latitud, direccionIdAval, "AVAL");
+                    UpdateDireccion("longitud", longitud, direccionIdAval, "AVAL");
+                    UpdateDireccion("located_at", Miscellaneous.ObtenerFecha(TIMESTAMP), direccionIdAval, "AVAL");
+                    UbicacionAval(Double.parseDouble(latitud), Double.parseDouble(longitud));
+                } else {
+                    latLngUbiAval = new LatLng(0, 0);
+                    UpdateDireccion("latitud", "", direccionIdAval, "AVAL");
+                    UpdateDireccion("longitud", "", direccionIdAval, "AVAL");
+                    pbLoadAval.setVisibility(View.GONE);
+                    Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
+                }
+
+                myHandler.removeCallbacksAndMessages(null);
+
+                CancelUbicacion();
+
+            }
+        });
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+
+        String provider;
+
+        if (NetworkStatus.haveNetworkConnection(ctx)) {
+            Log.e("Proveedor", "RED");
+            provider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Log.e("Proveedor", "GPS");
+            provider = LocationManager.GPS_PROVIDER;
+        }
+
+        locationManager.requestSingleUpdate(provider, locationListener, null);
+
+        myHandler.postDelayed(new Runnable() {
+            public void run() {
+                locationManager.removeUpdates(locationListener);
+                pbLoadAval.setVisibility(View.GONE);
+                ibMapAval.setEnabled(true);
+                latLngUbiAval = new LatLng(0, 0);
+                pushMapButtonAval = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
 
-    /**Funcion para obtener la ubicacion del cliente*/
-    private void ObtenerUbicacionNeg() {
+    private void setUbicacionNegocio()
+    {
         pbLoadNeg.setVisibility(View.VISIBLE);
         ibMapNeg.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -8641,65 +8872,24 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 pbLoadNeg.setVisibility(View.GONE);
                 ibMapNeg.setEnabled(true);
                 latLngUbiNeg = new LatLng(0, 0);
+                pushMapButtonNeg = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
 
+    /**Funcion para obtener la ubicacion del cliente*/
+    private void ObtenerUbicacion() {
+        findUbicacion(direccionIdCli, "CLIENTE");
+    }
+
+    /**Funcion para obtener la ubicacion del cliente*/
+    private void ObtenerUbicacionNeg() {
+        findUbicacion(direccionIdNeg, "NEGOCIO");
+    }
+
     private void ObtenerUbicacionAval() {
-        pbLoadAval.setVisibility(View.VISIBLE);
-        ibMapAval.setEnabled(false);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        final Handler myHandler = new Handler();
-        locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
-            @Override
-            public void onComplete(String latitud, String longitud) {
-
-                ibMapAval.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()) {
-                    mapAval.setVisibility(View.VISIBLE);
-                    UpdateDireccion("latitud", latitud, direccionIdAval, "AVAL");
-                    UpdateDireccion("longitud", longitud, direccionIdAval, "AVAL");
-                    UpdateDireccion("located_at", Miscellaneous.ObtenerFecha(TIMESTAMP), direccionIdAval, "AVAL");
-                    UbicacionAval(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                } else {
-                    latLngUbiAval = new LatLng(0, 0);
-                    UpdateDireccion("latitud", "", direccionIdAval, "AVAL");
-                    UpdateDireccion("longitud", "", direccionIdAval, "AVAL");
-                    pbLoadAval.setVisibility(View.GONE);
-                    Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
-                }
-
-                myHandler.removeCallbacksAndMessages(null);
-
-                CancelUbicacion();
-
-            }
-        });
-        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-
-        String provider;
-
-        if (NetworkStatus.haveNetworkConnection(ctx)) {
-            Log.e("Proveedor", "RED");
-            provider = LocationManager.NETWORK_PROVIDER;
-        } else {
-            Log.e("Proveedor", "GPS");
-            provider = LocationManager.GPS_PROVIDER;
-        }
-
-        locationManager.requestSingleUpdate(provider, locationListener, null);
-
-        myHandler.postDelayed(new Runnable() {
-            public void run() {
-                locationManager.removeUpdates(locationListener);
-                pbLoadNeg.setVisibility(View.GONE);
-                ibMapNeg.setEnabled(true);
-                latLngUbiAval = new LatLng(0, 0);
-                Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
-            }
-        }, 60000);
+        findUbicacion(direccionIdAval, "AVAL");
     }
 
     private void ObtenerUbicacionFirmaCliente (){
@@ -8712,10 +8902,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Update("latitud", TBL_CLIENTE_IND_REN, latitud);
                 Update("longitud", TBL_CLIENTE_IND_REN, longitud);
                 Update("located_at", TBL_CLIENTE_IND_REN, Miscellaneous.ObtenerFecha(TIMESTAMP));
-            }
-            else
-            {
-                latLngUbiCli = new LatLng(0,0);
             }
 
             myHandler.removeCallbacksAndMessages(null);
@@ -8740,7 +8926,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         myHandler.postDelayed(() -> {
             locationManager.removeUpdates(locationListener);
-            latLngUbiCli = new LatLng(0,0);
         }, 60000);
     }
 
@@ -8755,10 +8940,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Update("longitud", TBL_AVAL_IND_REN, longitud);
                 Update("located_at", TBL_AVAL_IND_REN, Miscellaneous.ObtenerFecha(TIMESTAMP));
             }
-            else
-            {
-                latLngUbiCli = new LatLng(0,0);
-            }
 
             myHandler.removeCallbacksAndMessages(null);
 
@@ -8782,7 +8963,6 @@ public class RenovacionCreditoInd extends AppCompatActivity {
 
         myHandler.postDelayed(() -> {
             locationManager.removeUpdates(locationListener);
-            latLngUbiCli = new LatLng(0,0);
         }, 60000);
     }
 
@@ -8883,7 +9063,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         mMapCli.animateCamera(ubication);
 
         pbLoadCli.setVisibility(View.GONE);
-        ibMapCli.setVisibility(View.GONE);
+        //ibMapCli.setVisibility(View.GONE);
     }
 
     private void addMarkerNeg(double lat, double lng) {
@@ -8899,7 +9079,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         mMapNeg.animateCamera(ubication);
 
         pbLoadNeg.setVisibility(View.GONE);
-        ibMapNeg.setVisibility(View.GONE);
+        //ibMapNeg.setVisibility(View.GONE);
     }
 
     private void addMarkerAval(double lat, double lng) {
@@ -8915,7 +9095,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         mMapAval.animateCamera(ubication);
 
         pbLoadAval.setVisibility(View.GONE);
-        ibMapAval.setVisibility(View.GONE);
+        //ibMapAval.setVisibility(View.GONE);
     }
 
     private void CancelUbicacion() {
@@ -9002,9 +9182,9 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         solicitud.show();
 
-        if (tipo.equals("NEGOCIO"))
+        if (tipo.equals("NEGOCIO") && etCapacidadPagoNeg.isEnabled())
             etCapacidadPagoNeg.setText("");
-        else if (tipo.equals("AVAL"))
+        else if (tipo.equals("AVAL") && etCapacidadPagoAval.isEnabled())
             etCapacidadPagoAval.setText("");
     }
 
@@ -9223,11 +9403,45 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         }
 
         tvEstadoNacCli.setText(row.getString(8));
-        tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
         tvRfcCli.setText(row.getString(9));
-        etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
         etCurpCli.setText(row.getString(10));
-        etCurpCli.setEnabled(false);
+
+        HashMap<Integer, String> paramsCurpConfirm = new HashMap<>();
+
+        paramsCurpConfirm.put(0, m.GetStr(etNombreCli));
+        paramsCurpConfirm.put(1, m.GetStr(etApPaternoCli));
+        paramsCurpConfirm.put(2, m.GetStr(etApMaternoCli));
+        paramsCurpConfirm.put(3, m.GetStr(tvFechaNacCli));
+        if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre) {
+            paramsCurpConfirm.put(4, "Hombre");
+        }
+        else
+        {
+            paramsCurpConfirm.put(4, "Mujer");
+        }
+        paramsCurpConfirm.put(5, m.GetStr(tvEstadoNacCli));
+
+        String curpConfirm = m.GenerarCurp(paramsCurpConfirm);
+        Log.e("AQUI CURP", curpConfirm);
+
+        if(
+            etCurpCli.getText().toString().trim().length() == 18
+            && etCurpCli.getText().toString().trim().substring(1, 16).equals(curpConfirm)
+        )
+        {
+            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCurpCli.setEnabled(false);
+            tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            tvFechaNacCli.setOnClickListener(tvFechaNac_OnClick);
+            tvEstadoNacCli.setOnClickListener(etEstadoNac_OnClick);
+        }
+
         //etCurpIdCli.setText(row.getString(11)); etCurpIdCli.setEnabled(false);
         tvOcupacionCli.setText(row.getString(12));
         tvActividadEcoCli.setText(row.getString(13));
@@ -9260,6 +9474,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvTipoCasaCli.setText(row.getString(19));
         switch (row.getString(19)) {
             case "CASA FAMILIAR":
+            case "CASA RENTADA":
                 llCasaFamiliar.setVisibility(View.VISIBLE);
                 tvCasaFamiliar.setText(row.getString(20));
                 break;
@@ -9287,10 +9502,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etManzanaCli.setText(rowDir.getString(8));
         etManzanaCli.setEnabled(isEditCli);
         etCpCli.setText(rowDir.getString(9));
-        etCpCli.setEnabled(isEditCli);
+        //etCpCli.setEnabled(isEditCli);
+        etCpCli.setEnabled(true);
         tvColoniaCli.setText(rowDir.getString(10));
         etCiudadCli.setText(rowDir.getString(11));
-        etCiudadCli.setEnabled(isEditCli);
+
+        if(!etCiudadCli.getText().toString().trim().isEmpty())
+        {
+            etCiudadCli.setEnabled(isEditCli);
+            etCiudadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadCli.setEnabled(true);
+        }
+
         tvLocalidadCli.setText(rowDir.getString(12));
         tvMunicipioCli.setText(rowDir.getString(13));
         tvEstadoCli.setText(rowDir.getString(14));
@@ -9359,10 +9585,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etManzanaCony.setText(rowDir.getString(8));
         etManzanaCony.setEnabled(isEditCon);
         etCpCony.setText(rowDir.getString(9));
-        etCpCony.setEnabled(isEditCon);
+        //etCpCony.setEnabled(isEditCon);
+        etCpCony.setEnabled(true);
         tvColoniaCony.setText(rowDir.getString(10));
         etCiudadCony.setText(rowDir.getString(11));
-        etCiudadCony.setEnabled(isEditCon);
+
+        if(!etCiudadCony.getText().toString().trim().isEmpty())
+        {
+            etCiudadCony.setEnabled(isEditCon);
+            etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadCony.setEnabled(true);
+        }
+
         tvLocalidadCony.setText(rowDir.getString(12));
         tvMunicipioCony.setText(rowDir.getString(13));
         tvEstadoCony.setText(rowDir.getString(14));
@@ -9426,10 +9663,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etManzanaNeg.setText(rowDir.getString(8));
         etManzanaNeg.setEnabled(isEditNeg);
         etCpNeg.setText(rowDir.getString(9));
-        etCpNeg.setEnabled(isEditNeg);
+        //etCpNeg.setEnabled(isEditNeg);
+        etCpNeg.setEnabled(true);
         tvColoniaNeg.setText(rowDir.getString(10));
         etCiudadNeg.setText(rowDir.getString(11));
-        etCiudadNeg.setEnabled(isEditNeg);
+
+        if(!etCiudadNeg.getText().toString().trim().isEmpty())
+        {
+            etCiudadNeg.setEnabled(isEditNeg);
+            etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadNeg.setEnabled(true);
+        }
+
         tvLocalidadNeg.setText(rowDir.getString(12));
         tvMunicipioNeg.setText(rowDir.getString(13));
         tvEstadoNeg.setText(rowDir.getString(14));
@@ -9544,7 +9792,8 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvEstadoNacAval.setText(row.getString(8));
         tvRfcAval.setText(row.getString(9));
         etCurpAval.setText(row.getString(10));
-        etCurpAval.setEnabled(isEditAva);
+
+
         //etCurpIdAval.setText(row.getString(11)); etCurpIdAval.setEnabled(is_edit);
         tvParentescoAval.setText(row.getString(12));
         tvTipoIdentificacionAval.setText(row.getString(13));
@@ -9572,10 +9821,22 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etManzanaAval.setText(rowDir.getString(8));
         etManzanaAval.setEnabled(isEditAva);
         etCpAval.setText(rowDir.getString(9));
-        etCpAval.setEnabled(isEditAva);
+        //etCpAval.setEnabled(isEditAva);
+        etCpAval.setEnabled(true);
+
         tvColoniaAval.setText(rowDir.getString(10));
         etCiudadAval.setText(rowDir.getString(11));
-        etCiudadAval.setEnabled(isEditAva);
+
+        if(!etCiudadAval.getText().toString().trim().isEmpty())
+        {
+            etCiudadAval.setEnabled(isEditAva);
+            etCiudadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadAval.setEnabled(true);
+        }
+
         tvLocalidadAval.setText(rowDir.getString(12));
         tvMunicipioAval.setText(rowDir.getString(13));
         tvEstadoAval.setText(rowDir.getString(14));
@@ -9711,10 +9972,21 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         etManzanaRef.setText(rowDir.getString(8));
         etManzanaRef.setEnabled(isEditRef);
         etCpRef.setText(rowDir.getString(9));
-        etCpRef.setEnabled(isEditRef);
+        //etCpRef.setEnabled(isEditRef);
+        etCpRef.setEnabled(true);
         tvColoniaRef.setText(rowDir.getString(10));
         etCiudadRef.setText(rowDir.getString(11));
-        etCiudadRef.setEnabled(isEditRef);
+
+        if(!etCiudadRef.getText().toString().trim().isEmpty())
+        {
+            etCiudadRef.setEnabled(isEditRef);
+            etCiudadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadRef.setEnabled(true);
+        }
+
         tvLocalidadRef.setText(rowDir.getString(12));
         tvMunicipioRef.setText(rowDir.getString(13));
         tvEstadoRef.setText(rowDir.getString(14));
@@ -9841,12 +10113,12 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNombreCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApMaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
             for (int i = 0; i < rgGeneroCli.getChildCount(); i++) {
                 ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(false);
             }
-            tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            //etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvOcupacionCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvTipoIdentificacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etNumIdentifCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9863,10 +10135,18 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNoIntCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaCli.getText().toString().trim().isEmpty())
+            {
+                tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadCli.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
             etTelCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCelularCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etTelMensCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9879,6 +10159,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachCli.setEnabled(false);
             ibFotoFachCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapCli.setVisibility(View.GONE);
         }
 
         /**Valida si la seccion del conyuge ya fue guardada para bloquear los campos*/
@@ -9893,10 +10174,20 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNoIntCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ///etCpCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaCony.getText().toString().trim().isEmpty())
+            {
+                tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            //etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvLocalidadCony.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
             etIngMenCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etGastoMenCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9920,10 +10211,18 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNoIntNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaNeg.getText().toString().trim().isEmpty())
+            {
+                tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadNeg.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
             tvActEcoEspNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvActEconomicaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvDestinoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9947,6 +10246,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachNeg.setEnabled(false);
             ibFotoFachNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapNeg.setVisibility(View.GONE);
         }
 
         /**Valida si la seccion del aval ya fue guardada para bloquear los campos*/
@@ -9954,12 +10254,46 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNombreAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApMaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvFechaNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
             for (int i = 0; i < rgGeneroAval.getChildCount(); i++) {
                 ((RadioButton) rgGeneroAval.getChildAt(i)).setEnabled(false);
             }
-            tvEstadoNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCurpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
+
+            HashMap<Integer, String> paramsCurpAvalConfirm = new HashMap<>();
+
+            paramsCurpAvalConfirm.put(0, m.GetStr(etNombreAval));
+            paramsCurpAvalConfirm.put(1, m.GetStr(etApPaternoAval));
+            paramsCurpAvalConfirm.put(2, m.GetStr(etApMaternoAval));
+            paramsCurpAvalConfirm.put(3, m.GetStr(tvFechaNacAval));
+
+            if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre) {
+                paramsCurpAvalConfirm.put(4, "Hombre");
+            }
+            else
+            {
+                paramsCurpAvalConfirm.put(4, "Mujer");
+            }
+            paramsCurpAvalConfirm.put(5, m.GetStr(tvEstadoNacAval));
+
+            String curpAvalConfirm = m.GenerarCurp(paramsCurpAvalConfirm);
+            Log.e("AQUI CURP", curpAvalConfirm);
+
+            if(
+                etCurpAval.getText().toString().trim().length() == 18
+                && etCurpAval.getText().toString().trim().substring(1, 16).equals(curpAvalConfirm)
+            )
+            {
+                etCurpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+                etCurpAval.setEnabled(false);
+                tvFechaNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+                tvEstadoNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+            else
+            {
+                tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+                tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+            }
+
             tvParentescoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvTipoIdentificacionAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etNumIdentifAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -9969,10 +10303,19 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNoIntAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvColoniaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaAval.getText().toString().trim().isEmpty())
+            {
+                tvColoniaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadAval.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
             tvTipoCasaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvFamiliarAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etNombreTitularAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -10003,6 +10346,7 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etReferenciaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachAval.setEnabled(false);
             ibFotoFachAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapAval.setVisibility(View.GONE);
         }
 
         /**Valida si la seccion de la referencia ya fue guardada para bloquear los campos*/
@@ -10016,10 +10360,13 @@ public class RenovacionCreditoInd extends AppCompatActivity {
             etNoIntRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvLocalidadRef.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
             etTelCelRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 

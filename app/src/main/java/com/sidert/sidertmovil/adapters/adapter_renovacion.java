@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -47,20 +48,22 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         HashMap<Integer, String> item = data.get(position);
         holder.tvNombre.setText(item.get(1));
         if (item.containsKey(3)){
-            if (item.get(3).equals("0"))
+            if (item.get(3).equals("0")) {
                 holder.ivInfo.setVisibility(View.VISIBLE);
+                holder.tvFechaVencimiento.setVisibility(View.VISIBLE);
+            }
             else
                 holder.ivInfo.setVisibility(View.GONE);
         }
 
         if (item.containsKey(7)){
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipo);
+
             //if (!item.get(7).trim().isEmpty()) {
-                Log.e("AQUI SOLICITUD", item.get(7).trim().toUpperCase());
-                Log.e("AQUI SOLICITUD", String.valueOf((item.get(7).trim().toUpperCase().equals("AUTORIZADO"))));
 
                 String comentario = Miscellaneous.ucFirst(item.get(7));
 
-                if(item.get(7).trim().toUpperCase().equals("AUTORIZADO"))
+                if(item.get(7).trim().toUpperCase().equals("VALIDADO"))
                 {
                     holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.green));
                 }
@@ -72,14 +75,17 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
                 {
                     holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.red));
                 }
-                else
+                else if(!item.get(7).trim().isEmpty())
                 {
                     holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.orange));
                     comentario = "Editar";
                 }
 
-                holder.tvComentario.setVisibility(View.VISIBLE);
-                holder.tvComentario.setText(comentario);
+                if(!comentario.trim().isEmpty())
+                {
+                    holder.tvComentario.setVisibility(View.VISIBLE);
+                    holder.tvComentario.setText(comentario);
+                }
             /*}
             else {
                 holder.tvComentario.setVisibility(View.GONE);
@@ -88,6 +94,7 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         }
         else
         {
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipo);
             holder.tvComentario.setVisibility(View.GONE);
             holder.tvComentario.setText("");
         }
@@ -105,6 +112,11 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         }
         else
             holder.tvFechaEnvio.setVisibility(View.GONE);
+
+        if(holder.tvFechaVencimiento.getVisibility() == View.VISIBLE)
+        {
+            holder.tvFechaVencimiento.setText("Fecha vencimiento: " + item.get(8).trim());
+        }
 
         holder.ivInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,14 +138,18 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
         private TextView tvFechaEnvio;
         private ImageView ivInfo;
         private TextView tvComentario;
+        private TextView tvFechaVencimiento;
+        private ImageView ivTipo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNombre        = itemView.findViewById(R.id.tvNombre);
-            tvFechaTermino  = itemView.findViewById(R.id.tvFechaTermino);
-            tvFechaEnvio    = itemView.findViewById(R.id.tvFechaEnvio);
-            ivInfo          = itemView.findViewById(R.id.ivInfo);
-            tvComentario    = itemView.findViewById(R.id.tvComentario);
+            tvNombre           = itemView.findViewById(R.id.tvNombre);
+            tvFechaTermino     = itemView.findViewById(R.id.tvFechaTermino);
+            tvFechaEnvio       = itemView.findViewById(R.id.tvFechaEnvio);
+            ivInfo             = itemView.findViewById(R.id.ivInfo);
+            tvComentario       = itemView.findViewById(R.id.tvComentario);
+            tvFechaVencimiento = itemView.findViewById(R.id.tvFechaVencimiento);
+            ivTipo             = itemView.findViewById(R.id.ivTipo);
         }
 
         public void bind (final HashMap<Integer, String> item){

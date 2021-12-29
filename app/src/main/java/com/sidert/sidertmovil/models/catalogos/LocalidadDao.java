@@ -86,4 +86,29 @@ public class LocalidadDao {
 
         return localidades;
     }
+
+    public Localidad findByLocalidadId(Integer localidadId)
+    {
+        Localidad localidad = null;
+
+        String sql = "SELECT * FROM " + tbl_localidades + " WHERE id_localidad = ?";
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(localidadId)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            localidad = new Localidad();
+
+            localidad.setId(row.getInt(0));
+            localidad.setLocalidadId(row.getInt(1));
+            localidad.setNombre(row.getString(2));
+            localidad.setMunicipioId(row.getInt(3));
+        }
+
+        row.close();
+
+        return localidad;
+    }
 }

@@ -68,6 +68,14 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
@@ -124,9 +132,11 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
@@ -443,6 +453,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     DecimalFormat dfnd = new DecimalFormat("#,###", symbols);
 
     boolean hasFractionalPart = false;
+
+    boolean pushMapButtonCli = false;
+    boolean pushMapButtonNeg = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1099,10 +1112,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_DOMICILIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                            if(tvColoniaCli.isEnabled())
+                            {
+                                Update("colonia", TBL_DOMICILIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                                tvColoniaCli.setText("");
+                            }
                             Update("municipio", TBL_DOMICILIO_INTEGRANTE, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_DOMICILIO_INTEGRANTE, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaCli.setText("");
+
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }
@@ -1377,10 +1394,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                            if(tvColoniaNeg.isEnabled())
+                            {
+                                Update("colonia", TBL_NEGOCIO_INTEGRANTE, "", "id_integrante", id_integrante);
+                                tvColoniaNeg.setText("");
+                            }
+
                             Update("municipio", TBL_NEGOCIO_INTEGRANTE, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_NEGOCIO_INTEGRANTE, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaNeg.setText("");
+
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }
@@ -1488,7 +1510,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             @Override
             public void afterTextChanged(Editable s) {
                 etIngMenNeg.removeTextChangedListener(this);
-
+                etIngMenNeg.setError(null);
+                ivError4.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etIngMenNeg).length();
@@ -1597,7 +1620,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             @Override
             public void afterTextChanged(Editable s) {
                 etGastosSemNeg.removeTextChangedListener(this);
-
+                etGastosSemNeg.setError(null);
+                ivError4.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etGastosSemNeg).length();
@@ -1681,8 +1705,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 if (!m.GetStr(tvMontoMaxNeg).isEmpty() && Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")) > 0) {
                     if (e.length() > 0)
                         try {
-                            if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")))
+                            if (Double.parseDouble(e.toString().replace(",","")) > 0)
+                                if (Double.parseDouble(e.toString().replace(",","")) <= Double.parseDouble(m.GetStr(tvMontoMaxNeg).replace(",","")))
                                     Update("capacidad_pago", TBL_NEGOCIO_INTEGRANTE, e.toString().trim().replace(",",""), "id_integrante", id_integrante);
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago","NEGOCIO");
@@ -2016,10 +2040,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_CONYUGE_INTEGRANTE, "", "id_integrante", id_integrante);
+                            if(tvColoniaCony.isEnabled())
+                            {
+                                Update("colonia", TBL_CONYUGE_INTEGRANTE, "", "id_integrante", id_integrante);
+                                tvColoniaCony.setText("");
+                            }
+
                             Update("municipio", TBL_CONYUGE_INTEGRANTE, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_CONYUGE_INTEGRANTE, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaCony.setText("");
+
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }
@@ -2899,6 +2928,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                                 tvTipoCasaCli.setText(_tipo_casa[position]);
                                 Update("tipo_vivienda", TBL_DOMICILIO_INTEGRANTE, _tipo_casa[position], "id_integrante", id_integrante);
                                 switch (position) {
+                                    case 1:
                                     case 2:
                                         llCasaFamiliar.setVisibility(View.VISIBLE);
                                         llCasaOtroCli.setVisibility(View.GONE);
@@ -4147,8 +4177,69 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     }
 
     //===================== Listener GPS  =======================================================
-    /**Funcion para obtener las ubicacion del domicilio del cliente*/
-    private void ObtenerUbicacion (){
+    private void findUbicacion(String idIntegrante, String tipo)
+    {
+        DomicilioIntegrante domicilio = null;
+        NegocioIntegrante negocio = null;
+
+        switch(tipo) {
+            case "CLIENTE":
+                DomicilioIntegranteDao domicilioDao = new DomicilioIntegranteDao(ctx);
+                domicilio = domicilioDao.findByIdIntegrante(Long.valueOf(idIntegrante));
+                break;
+            case "NEGOCIO":
+                NegocioIntegranteDao negocioDao = new NegocioIntegranteDao(ctx);
+                negocio = negocioDao.findByIdIntegrante(Long.valueOf(idIntegrante));
+                break;
+            default:
+                break;
+        }
+
+        if(
+                (negocio != null && !negocio.getLatitud().equals("0") && !negocio.getLatitud().equals("") )
+                        || (domicilio != null && !domicilio.getLatitud().equals("0") && !domicilio.getLatitud().equals("") )
+        )
+        {
+            AlertDialog alertDialog = Popups.showDialogConfirm(this, warning,
+                    R.string.guardar_cambios, R.string.yes, dialog -> {
+                        switch(tipo) {
+                            case "CLIENTE":
+                                setUbicacion();
+                                break;
+                            case "NEGOCIO":
+                                setUbicacionNegocio();
+                                break;
+                            default:
+                                break;
+                        }
+                        dialog.dismiss();
+                    }, R.string.cancel, dialog -> {
+                        dialog.dismiss();
+                    }
+            );
+
+            alertDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            alertDialog.setCancelable(true);
+            alertDialog.show();
+        }
+        else
+        {
+            switch(tipo) {
+                case "CLIENTE":
+                    setUbicacion();
+                    break;
+                case "NEGOCIO":
+                    setUbicacionNegocio();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void setUbicacion()
+    {
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -4208,13 +4299,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 pbLoadCli.setVisibility(View.GONE);
                 ibMapCli.setEnabled(true);
                 latLngUbiCli = new LatLng(0,0);
+                pushMapButtonCli = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
 
-    /**Funcion para obtener las ubicacion del domicilio del negocio*/
-    private void ObtenerUbicacionNeg (){
+    private void setUbicacionNegocio()
+    {
         pbLoadNeg.setVisibility(View.VISIBLE);
         ibMapNeg.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -4275,9 +4367,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 pbLoadNeg.setVisibility(View.GONE);
                 ibMapNeg.setEnabled(true);
                 latLngUbiNeg = new LatLng(0,0);
+                pushMapButtonNeg = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
+    }
+
+    /**Funcion para obtener las ubicacion del domicilio del cliente*/
+    private void ObtenerUbicacion (){
+        findUbicacion(id_integrante, "CLIENTE");
+    }
+
+    /**Funcion para obtener las ubicacion del domicilio del negocio*/
+    private void ObtenerUbicacionNeg (){
+        findUbicacion(id_integrante, "NEGOCIO");
     }
 
     private void ObtenerUbicacionFirmaCliente (){
@@ -4290,9 +4393,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 Update("latitud", TBL_OTROS_DATOS_INTEGRANTE, latitud, "id_integrante", id_integrante);
                 Update("longitud", TBL_OTROS_DATOS_INTEGRANTE, longitud, "id_integrante", id_integrante);
                 Update("located_at", TBL_OTROS_DATOS_INTEGRANTE, Miscellaneous.ObtenerFecha(TIMESTAMP), "id_integrante", id_integrante);
-            }
-            else{
-                latLngUbiCli = new LatLng(0,0);
             }
 
             myHandler.removeCallbacksAndMessages(null);
@@ -4319,7 +4419,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
         myHandler.postDelayed(() -> {
             locationManager.removeUpdates(locationListener);
-            latLngUbiCli = new LatLng(0,0);
         }, 60000);
     }
 
@@ -4393,7 +4492,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         mMapCli.animateCamera(ubication);
 
         pbLoadCli.setVisibility(View.GONE);
-        ibMapCli.setVisibility(View.GONE);
+        //ibMapCli.setVisibility(View.GONE);
     }
     private void addMarkerNeg (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
@@ -4408,7 +4507,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         mMapNeg.animateCamera(ubication);
 
         pbLoadNeg.setVisibility(View.GONE);
-        ibMapNeg.setVisibility(View.GONE);
+        //ibMapNeg.setVisibility(View.GONE);
     }
 
     /**Funcion para remover solicitudes de obtencion de ubicacion despues de obtener la ubicacion*/
@@ -5065,8 +5164,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             etReferenciaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachCli.setEnabled(false);
             ibFotoFachCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            ibMapCli.setEnabled(false);
-            ibMapCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //ibMapCli.setEnabled(false);
+            //ibMapCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapCli.setVisibility(View.GONE);
 
             etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCalleNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5094,8 +5194,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachNeg.setEnabled(false);
             ibFotoFachNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            ibMapNeg.setEnabled(false);
-            ibMapNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //ibMapNeg.setEnabled(false);
+            //ibMapNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapNeg.setVisibility(View.GONE);
 
             etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5280,7 +5381,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private boolean saveDatosDomicilio(){
         boolean save_domicilio = false;
         ContentValues cv = new ContentValues();
-        if (latLngUbiCli != null) {
+        if (latLngUbiCli != null || pushMapButtonCli) {
             tvMapaCli.setError(null);
             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
                 (
@@ -5302,6 +5403,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 cv.put("tipo_vivienda", m.GetStr(tvTipoCasaCli));
                 switch (m.GetStr(tvTipoCasaCli)){
                     case "CASA FAMILIAR":
+                    case "CASA RENTADA":
                         if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                             flag_tipo_casa = true;
                             cv.put("parentesco", m.GetStr(tvCasaFamiliar));
@@ -5404,7 +5506,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg
         ){
             etNombreNeg.setError(null);
-            if (latLngUbiNeg != null || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg){
+            if (latLngUbiNeg != null || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg || pushMapButtonNeg){
                 tvMapaNeg.setError(null);
                 if (
                         (
@@ -5452,69 +5554,100 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED}) &&
                             !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})
                     ){
-                        boolean otro_medio = false;
-                        if (m.GetStr(tvMediosPagoNeg).contains("OTRO")){
-                            if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                        boolean flag = true;
+
+                        try{
+                            if(Double.parseDouble(etIngMenNeg.getText().toString().replace(",", "")) <= 100)
+                            {
+                                flag = false;
+                                etIngMenNeg.setError("El ingreso mensual debe ser mayor a 100!");
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            etIngMenNeg.setError(e.getMessage());
+                            flag = false;
+                        }
+
+                        try{
+                            if(Double.parseDouble(etGastosSemNeg.getText().toString().replace(",", "")) <= 100)
+                            {
+                                flag = false;
+                                etGastosSemNeg.setError("El gasto mensual debe ser mayor a 100!");
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            etGastosSemNeg.setError(e.getMessage());
+                            flag = false;
+                        }
+
+                        if(flag) {
+                            boolean otro_medio = false;
+                            if (m.GetStr(tvMediosPagoNeg).contains("OTRO")) {
+                                if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                                    otro_medio = true;
+                            } else
                                 otro_medio = true;
+
+                            if (otro_medio) {
+                                /*if (byteFotoFachNeg != null){*/
+                                if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED}) || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg) {
+                                    ivError4.setVisibility(View.GONE);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("nombre", m.GetStr(etNombreNeg));
+                                    if (rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg) {
+                                        cv.put("latitud", "");
+                                        cv.put("longitud", "");
+                                    } else {
+                                        cv.put("latitud", String.valueOf(latLngUbiNeg.latitude));
+                                        cv.put("longitud", String.valueOf(latLngUbiNeg.longitude));
+                                    }
+
+                                    cv.put("calle", m.GetStr(etCalleNeg));
+                                    cv.put("no_exterior", m.GetStr(etNoExtNeg));
+                                    cv.put("no_interior", m.GetStr(etNoIntNeg));
+                                    cv.put("manzana", m.GetStr(etManzanaNeg));
+                                    cv.put("lote", m.GetStr(etLoteNeg));
+                                    cv.put("cp", m.GetStr(etCpNeg));
+                                    cv.put("colonia", m.GetStr(tvColoniaNeg));
+                                    cv.put("ciudad", m.GetStr(etCiudadNeg));
+                                    cv.put("localidad", m.GetStr(tvLocalidadNeg));
+                                    cv.put("municipio", m.GetStr(tvMunicipioNeg));
+                                    cv.put("destino_credito", m.GetStr(tvDestinoNeg));
+                                    cv.put("otro_destino_credito", m.GetStr(etOtroDestinoNeg));
+                                    cv.put("actividad_economica", m.GetStr(tvActEconomicaNeg));
+                                    cv.put("antiguedad", m.GetStr(etAntiguedadNeg));
+                                    cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",", ""));
+                                    cv.put("ing_otros", m.GetStr(etOtrosIngNeg).replace(",", ""));
+                                    cv.put("gasto_semanal", m.GetStr(etGastosSemNeg).replace(",", ""));
+                                    cv.put("capacidad_pago", m.GetStr(etCapacidadPagoNeg).replace(",", ""));
+                                    cv.put("monto_maximo", m.GetStr(tvMontoMaxNeg).replace(",", ""));
+                                    cv.put("medios_pago", m.GetStr(tvMediosPagoNeg));
+                                    cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoNeg));
+                                    cv.put("ref_domiciliaria", m.GetStr(etReferenciNeg));
+                                    cv.put("estatus_completado", 1);
+
+                                    db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
+
+                                    save_negocio = true;
+                                } else
+                                    ivError4.setVisibility(View.VISIBLE);
+                                /*}
+                                else {
+                                    tvFachadaNeg.setError("");
+                                    ivError4.setVisibility(View.VISIBLE);
+                                }*/
+                            } else {
+                                ivError4.setVisibility(View.VISIBLE);
+                            }
                         }
                         else
-                            otro_medio = true;
-
-                        if (otro_medio){
-                        /*if (byteFotoFachNeg != null){*/
-                            if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED}) || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg){
-                                ivError4.setVisibility(View.GONE);
-                                ContentValues cv = new ContentValues();
-                                cv.put("nombre", m.GetStr(etNombreNeg));
-                                if(rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg)
-                                {
-                                    cv.put("latitud", "");
-                                    cv.put("longitud", "");
-                                }
-                                else
-                                {
-                                    cv.put("latitud", String.valueOf(latLngUbiNeg.latitude));
-                                    cv.put("longitud", String.valueOf(latLngUbiNeg.longitude));
-                                }
-
-                                cv.put("calle", m.GetStr(etCalleNeg));
-                                cv.put("no_exterior", m.GetStr(etNoExtNeg));
-                                cv.put("no_interior", m.GetStr(etNoIntNeg));
-                                cv.put("manzana", m.GetStr(etManzanaNeg));
-                                cv.put("lote", m.GetStr(etLoteNeg));
-                                cv.put("cp", m.GetStr(etCpNeg));
-                                cv.put("colonia", m.GetStr(tvColoniaNeg));
-                                cv.put("ciudad", m.GetStr(etCiudadNeg));
-                                cv.put("localidad", m.GetStr(tvLocalidadNeg));
-                                cv.put("municipio", m.GetStr(tvMunicipioNeg));
-                                cv.put("destino_credito", m.GetStr(tvDestinoNeg));
-                                cv.put("otro_destino_credito", m.GetStr(etOtroDestinoNeg));
-                                cv.put("actividad_economica", m.GetStr(tvActEconomicaNeg));
-                                cv.put("antiguedad", m.GetStr(etAntiguedadNeg));
-                                cv.put("ing_mensual", m.GetStr(etIngMenNeg).replace(",",""));
-                                cv.put("ing_otros", m.GetStr(etOtrosIngNeg).replace(",",""));
-                                cv.put("gasto_semanal", m.GetStr(etGastosSemNeg).replace(",",""));
-                                cv.put("capacidad_pago", m.GetStr(etCapacidadPagoNeg).replace(",",""));
-                                cv.put("monto_maximo", m.GetStr(tvMontoMaxNeg).replace(",",""));
-                                cv.put("medios_pago", m.GetStr(tvMediosPagoNeg));
-                                cv.put("otro_medio_pago", m.GetStr(etOtroMedioPagoNeg));
-                                cv.put("ref_domiciliaria", m.GetStr(etReferenciNeg));
-                                cv.put("estatus_completado", 1);
-
-                                db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
-
-                                save_negocio = true;
-                            }
-                            else
-                                ivError4.setVisibility(View.VISIBLE);
-                        /*}
-                        else {
-                            tvFachadaNeg.setError("");
+                        {
                             ivError4.setVisibility(View.VISIBLE);
-                        }*/
-                    }
-                    else
-                        ivError4.setVisibility(View.VISIBLE);
+                        }
+
+
                     }
                     else
                         ivError4.setVisibility(View.VISIBLE);
@@ -6289,7 +6422,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         solicitud.show();
 
-        if (tipo.equals("NEGOCIO"))
+        if (tipo.equals("NEGOCIO") && etCapacidadPagoNeg.isEnabled())
             etCapacidadPagoNeg.setText("");
 
     }

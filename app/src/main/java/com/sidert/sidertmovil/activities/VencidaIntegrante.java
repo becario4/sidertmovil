@@ -2423,12 +2423,12 @@ public class VencidaIntegrante extends AppCompatActivity {
                         whatsappIntent.setType("text/plain");
                         whatsappIntent.setPackage("com.whatsapp");
                         whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-                        whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
                         whatsappIntent.setType("image/jpeg");
+                        whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
                         whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         try {
-                            ctx.startActivity(whatsappIntent);
+                            ctx.startActivity(Intent.createChooser(whatsappIntent, null));
                         } catch (android.content.ActivityNotFoundException ex) {
                             Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
                         }

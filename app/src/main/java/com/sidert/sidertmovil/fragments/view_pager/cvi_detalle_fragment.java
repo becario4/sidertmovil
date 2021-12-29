@@ -3,9 +3,11 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.VencidaIndividual;
@@ -137,14 +140,14 @@ public class cvi_detalle_fragment extends Fragment {
             if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
             } else {
-                /*if (!parent.ficha_ri.getCliente().getTelDomicilio().isEmpty()){
+                if (!parent.telCliente.isEmpty()){
                     Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelDomicilio()));
+                    intent.setData(Uri.parse("tel:" + parent.telCliente));
                     startActivity(intent);
                 }
                 else {
                     Toast.makeText(ctx, "No cuenta con telefono de domicilio", Toast.LENGTH_SHORT).show();
-                }*/
+                }
 
             }
         }
@@ -156,14 +159,14 @@ public class cvi_detalle_fragment extends Fragment {
             if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
             } else {
-                /*if (!parent.ficha_ri.getCliente().getTelCelular().isEmpty()) {
+                if (!parent.telCelular.isEmpty()) {
                     Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + parent.ficha_ri.getCliente().getTelCelular()));
+                    intent.setData(Uri.parse("tel:" + parent.telCelular));
                     startActivity(intent);
                 }
                 else {
                     Toast.makeText(ctx, "No cuenta con telefono celular", Toast.LENGTH_SHORT).show();
-                }*/
+                }
             }
         }
     };

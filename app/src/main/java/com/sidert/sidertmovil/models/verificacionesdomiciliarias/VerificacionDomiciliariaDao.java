@@ -289,12 +289,15 @@ public class VerificacionDomiciliariaDao {
 
         String sql = "select * from(" +
                 "SELECT " +
-                "  min(vdg._id) as id, " +
-                "  min(vdg.verificacion_domiciliaria_id) as verificacion_domiciliaria_id, " +
-                "  vdg.grupo_nombre as nombre, " +
+                /*"  min(vdg._id) as id, " +
+                "  min(vdg.verificacion_domiciliaria_id) as verificacion_domiciliaria_id, " +*/
+                "  vdg._id as id, " +
+                "  vdg.verificacion_domiciliaria_id as verificacion_domiciliaria_id, " +
+                "  vdg.grupo_nombre || ' | ' || vdg.cliente_nombre as nombre, " +
                 "  vdg.num_solicitud, " +
                 "  vdg.grupo_id, " +
-                "  max(vdg.verificacion_tipo_id) as verificacion_tipo_id " +
+                "  vdg.verificacion_tipo_id as verificacion_tipo_id " +
+                /*"  max(vdg.verificacion_tipo_id) as verificacion_tipo_id " +*/
                 "FROM " + TBL_VERIFICACIONES_DOMICILIARIAS + " AS vdg " +
                 "LEFT JOIN " + TBL_GESTIONES_VER_DOM + " AS gg ON gg.verificacion_domiciliaria_id = vdg.verificacion_domiciliaria_id " +
                 "WHERE gg._id is null " +
@@ -302,7 +305,7 @@ public class VerificacionDomiciliariaDao {
                 "AND vdg.grupo_id > 1 " +
                 "AND strftime('%Y-%m-%d', 'now') <= substr(vdg.fecha_expiracion , 1, 10) " +
                 "AND vdg.estatus = 1 " +
-                "GROUP BY vdg.grupo_nombre, vdg.num_solicitud, vdg.grupo_id " +
+                /*"GROUP BY vdg.grupo_nombre, vdg.num_solicitud, vdg.grupo_id " +*/
                 "UNION " +
                 "SELECT " +
                 "  vdi._id as id, " +

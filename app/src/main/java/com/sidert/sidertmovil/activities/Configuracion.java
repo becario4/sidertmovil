@@ -27,6 +27,18 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.downloadapk.MyReceiverApk;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_pass_update_apk;
 import com.sidert.sidertmovil.models.MResponseDefault;
+import com.sidert.sidertmovil.models.catalogos.Colonia;
+import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
+import com.sidert.sidertmovil.models.catalogos.Localidad;
+import com.sidert.sidertmovil.models.catalogos.LocalidadDao;
+import com.sidert.sidertmovil.models.catalogos.Municipio;
+import com.sidert.sidertmovil.models.catalogos.MunicipioDao;
+import com.sidert.sidertmovil.models.cierrededia.CierreDeDia;
+import com.sidert.sidertmovil.models.cierrededia.CierreDeDiaDao;
+import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividual;
+import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividualDao;
+import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencida;
+import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencidaDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -43,6 +55,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -51,6 +68,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
+import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class Configuracion extends AppCompatActivity {
 
@@ -65,6 +83,9 @@ public class Configuracion extends AppCompatActivity {
     private CardView cvSincronizarRenovaciones;
     private CardView cvSincronizarEstadoSolicitudes;
     private CardView cvSincronizarVerificacionesDomiciliarias;
+    private CardView sincronizarColonias;
+    private CardView sincronizarLocalidades;
+    private CardView sincronizarMunicipios;
 
     private SessionManager session;
 
@@ -92,6 +113,9 @@ public class Configuracion extends AppCompatActivity {
         cvSincronizarRenovaciones                = findViewById(R.id.cvSincronizarRenovaciones);
         cvSincronizarEstadoSolicitudes           = findViewById(R.id.cvSincronizarEstadoSolicitudes);
         cvSincronizarVerificacionesDomiciliarias = findViewById(R.id.cvSincronizarVerificacionesDomiciliarias);
+        sincronizarColonias                      = findViewById(R.id.sincronizarColonias);
+        sincronizarLocalidades                   = findViewById(R.id.sincronizarLocalidades);
+        sincronizarMunicipios                    = findViewById(R.id.sincronizarMunicipios);
 
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
@@ -118,6 +142,10 @@ public class Configuracion extends AppCompatActivity {
         cvSincronizarRenovaciones.setOnClickListener(cvSincronizarRenovaciones_OnClick);
         cvSincronizarEstadoSolicitudes.setOnClickListener(cvSincronizarEstadoSolicitudes_OnClick);
         cvSincronizarVerificacionesDomiciliarias.setOnClickListener(cvSincronizarVerificacionesDomiciliarias_OnClick);
+        sincronizarColonias.setOnClickListener(sincronizarColonias_OnClick);
+        sincronizarLocalidades.setOnClickListener(sincronizarLocalidades_OnClick);
+        sincronizarMunicipios.setOnClickListener(sincronizarMunicipios_OnClick);
+
 
         /**Evento de click para descargar las geolocalizaciones ya realizadas*/
         cvFichasGestionadas.setOnClickListener(cvFichasGestionadas_OnClick);
@@ -157,9 +185,17 @@ public class Configuracion extends AppCompatActivity {
                             break;
                         case "originacion":
                             cvSincronizarOriginacion.setVisibility(View.VISIBLE);
+                            cvSincronizarEstadoSolicitudes.setVisibility(View.VISIBLE);
+                            sincronizarColonias.setVisibility(View.VISIBLE);
+                            sincronizarLocalidades.setVisibility(View.VISIBLE);
+                            sincronizarMunicipios.setVisibility(View.VISIBLE);
                             break;
                         case "renovacion":
                             cvSincronizarRenovaciones.setVisibility(View.VISIBLE);
+                            cvSincronizarEstadoSolicitudes.setVisibility(View.VISIBLE);
+                            sincronizarColonias.setVisibility(View.VISIBLE);
+                            sincronizarLocalidades.setVisibility(View.VISIBLE);
+                            sincronizarMunicipios.setVisibility(View.VISIBLE);
                             break;
                         case "solicitudes":
                             //menuGeneral.getItem(8).setVisible(true);
@@ -203,19 +239,20 @@ public class Configuracion extends AppCompatActivity {
                             /**Procesos a enviar que esten en pendiente de envio*/
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
                             /**Envia cierres de dia que esten en pendiente de envio*/
-                            ss.SaveCierreDia(ctx, true);
+                            ss.SaveCierreDia(ctx, false);
                             /**Envia geolocalizaciones que esten en pendiente de envio*/
                             //-ss.SaveGeolocalizacion(ctx, true);
-                            /**Envia respuestas de VIGENTE, COBRANZA y VENCIDA de individual y grupal que esten en pendiente de envio*/
-                            ss.SaveRespuestaGestion(ctx, true);
                             /**Envia impresiones que esten en pendiente de envio*/
                             //-ss.SendImpresionesVi(ctx, true);
                             /**Envia reimpresiones que esten en pendiente de envio*/
                             //-ss.SendReimpresionesVi(ctx, true);
                             /**Envia la ubicacion del asesor que esten en pendiente de envio*/
-                            ss.SendTracker(ctx, true);
+                            ss.SendTracker(ctx, false);
                             /**Envia los reportes de mesa de ayuda que esten en pendiente de envio*/
-                            ss.GetTickets(ctx, true);
+                            ss.GetTickets(ctx, false);
+
+                            /**Envia respuestas de VIGENTE, COBRANZA y VENCIDA de individual y grupal que esten en pendiente de envio*/
+                            ss.SaveRespuestaGestion(ctx, true);
 
                             /**Esta funciones son de originacion y renovacion*/
                             /**------------------------------------------------*/
@@ -252,6 +289,109 @@ public class Configuracion extends AppCompatActivity {
 
                             //-ss.GetGestionesVerDom(ctx, true);
                             //-ss.SendGestionesVerDom(ctx, true);
+
+                            /*BUSCAR Y REGISTRAR CIERRE DE DIA*/
+                            Log.e("AQUI CIERRE DE DIA", session.getUser().get(0));
+                            //if(session.getUser().get(0).equals("599"))
+                            if(false)
+                            {
+                                GestionIndividualDao gestionIndividualDao = new GestionIndividualDao(ctx);
+                                CierreDeDiaDao cierreDeDiaDao = new CierreDeDiaDao(ctx);
+                                ImpresionVencidaDao impresionVencidaDao = new ImpresionVencidaDao(ctx);
+
+                                GestionIndividual gestionIndividual = gestionIndividualDao.findByFolioAndIdPrestamo("112", "323557");
+                                com.sidert.sidertmovil.models.cierrededia.CierreDeDia cierreDeDia = null;
+                                ImpresionVencida impresionVencida = null;
+
+                                if(gestionIndividual == null)
+                                {
+                                    gestionIndividual = new GestionIndividual();
+
+                                    gestionIndividual.setIdPrestamo("323557");
+                                    gestionIndividual.setLatitud("19.1977874");
+                                    gestionIndividual.setLongitud("-96.2862257");
+                                    gestionIndividual.setContacto("NO");
+                                    gestionIndividual.setComentario("");
+                                    gestionIndividual.setActualizarTelefono("NO");
+                                    gestionIndividual.setNuevoTelefono("");
+                                    gestionIndividual.setResultadoGestion("PAGO");
+                                    gestionIndividual.setMotivoNoPago("");
+                                    gestionIndividual.setFechaFallecimiento("");
+                                    gestionIndividual.setFechaMontoPromesa("");
+                                    gestionIndividual.setMontoPromesa("");
+                                    gestionIndividual.setMedioPago("EFECTIVO");
+                                    gestionIndividual.setFechaPago("2021-11-18 11:22:30");
+                                    gestionIndividual.setPagaraRequerido("NO");
+                                    gestionIndividual.setPagoRealizado("500");
+                                    gestionIndividual.setImprimirRecibo("SI");
+                                    gestionIndividual.setFolio("112");
+                                    gestionIndividual.setEvidencia("bc0d8e78-4b3e-4ed2-be96-a6cfc4bb706b.jpg");
+                                    gestionIndividual.setTipoImagen("FOTOGRAFIA");
+                                    gestionIndividual.setGerente("NO");
+                                    gestionIndividual.setFirma("");
+                                    gestionIndividual.setFechaInicio("2021-12-21 11:22:22");
+                                    gestionIndividual.setFechaFin("2021-12-21 11:27:41");
+                                    gestionIndividual.setFechaEnvio("2021-12-21 11:27:43");
+                                    gestionIndividual.setEstatus("2");
+                                    gestionIndividual.setResImpresion("0");
+                                    gestionIndividual.setEstatusPago("");
+                                    gestionIndividual.setSaldoCorte("");
+                                    gestionIndividual.setSaldoActual("");
+                                    gestionIndividual.setDiasAtraso("825");
+                                    gestionIndividual.setSerialId("20211221112222-599-983876-L007-1037774");
+
+                                    gestionIndividual.setId(Integer.parseInt(gestionIndividualDao.store(gestionIndividual).toString()));
+
+                                    impresionVencida = impresionVencidaDao.findByNumPrestamoAndCreateAt("983876-L007", "2021-12-21 11:23:19");
+
+                                    if(impresionVencida == null) {
+                                        impresionVencida = new ImpresionVencida();
+
+                                        impresionVencida.setNumPrestamoIdGestion("983876-L007-" + gestionIndividual.getId());
+                                        impresionVencida.setAsesorId(session.getUser().get(0));
+                                        impresionVencida.setFolio(112);
+                                        impresionVencida.setTipoImpresion("O");
+                                        impresionVencida.setMonto("500");
+                                        impresionVencida.setClaveCliente("1037774");
+                                        impresionVencida.setCreateAt("2021-12-21 11:23:19");
+                                        impresionVencida.setSentAt("2021-12-21 11:23:18");
+                                        impresionVencida.setEstatus(1);
+                                        impresionVencida.setNumPrestamo("983876-L007");
+                                        impresionVencida.setCelular("");
+
+                                        impresionVencida.setId(Integer.parseInt(impresionVencidaDao.store(impresionVencida).toString()));
+
+                                        cierreDeDia = cierreDeDiaDao.findByIdRespuestaAndAsesorId("0", session.getUser().get(0));
+                                    }
+
+                                    if(cierreDeDia == null)
+                                    {
+                                        cierreDeDia = new CierreDeDia();
+                                        cierreDeDia.setAsesorId(session.getUser().get(0));
+                                        cierreDeDia.setIdRespuesta(gestionIndividual.getId().toString());
+                                        cierreDeDia.setNumPrestamo("983876-L007");
+                                        cierreDeDia.setClaveCliente("1037774");
+                                        cierreDeDia.setMedioPago("");
+                                        cierreDeDia.setMontoDepositado("");
+                                        cierreDeDia.setEvidencia("");
+                                        cierreDeDia.setTipoCierre("INDIVIDUAL");
+                                        cierreDeDia.setTipoPrestamo("VENCIDA");
+                                        cierreDeDia.setFechaInicio("");
+                                        cierreDeDia.setFechaFin("");
+                                        cierreDeDia.setFechaEnvio("");
+                                        cierreDeDia.setEstatus(0);
+                                        cierreDeDia.setNombre("EVANGELINA HERNANDEZ DEL RIO");
+                                        cierreDeDia.setSerialId("");
+
+                                        cierreDeDiaDao.store(cierreDeDia);
+                                    }
+                                }
+
+
+                            }
+
+
+
 
                         }
                         cvSincronizarFichas.setEnabled(true);
@@ -553,11 +693,12 @@ public class Configuracion extends AppCompatActivity {
 
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
-
+                        ss.GetPrestamosToRenovar(ctx);
                         ss.SendRenovacionInd(ctx, false);
                         ss.SendRenovacionGpo(ctx, false);
                         ss.CancelGestiones(ctx, true);
                         ss.SendCancelGestiones(ctx, true);
+
                     }
                     cvSincronizarRenovaciones.setEnabled(true);
                 }, 3000);
@@ -724,6 +865,224 @@ public class Configuracion extends AppCompatActivity {
                 not_network.show();
             }
         }
+    };
+
+    private View.OnClickListener sincronizarColonias_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                sincronizarColonias.setEnabled(false);
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        try {
+                            InputStream is = getResources().openRawResource(R.raw.colonias);
+                            BufferedReader reader = new BufferedReader(
+                                    new InputStreamReader(is, Charset.forName(UTF_8))
+                            );
+                            String line;
+                            int i = 0;
+                            while ((line = reader.readLine()) != null) {
+                                String[] rowColonia = line.split(";");
+
+                                Integer coloniaId = Integer.parseInt(rowColonia[0].trim());
+                                Colonia colonia = coloniaDao.findByColoniaId(coloniaId);
+
+                                if(colonia == null) {
+                                    colonia = new Colonia();
+                                    colonia.setColoniaId(Integer.parseInt(rowColonia[0].trim()));
+                                    colonia.setNombre(rowColonia[2].trim().toUpperCase());
+                                    colonia.setCp(Integer.parseInt(rowColonia[3].trim()));
+                                    colonia.setMunicipioId(Integer.parseInt(rowColonia[1].trim()));
+
+                                    long id = coloniaDao.store(colonia);
+
+                                    if(id == 0)
+                                    {
+                                        Log.e("AQUI INSERTADO ERROR: ", colonia.getColoniaId() + " - " + colonia.getNombre());
+                                    }
+                                    else
+                                    {
+                                        Log.e("AQUI INSERTADO SUCCESS: ", colonia.getColoniaId() + " - " + colonia.getNombre());
+                                    }
+
+                                }
+                                else
+                                {
+                                    Log.e("AQUI ENCONTRADO: ", colonia.getColoniaId() + " - " + colonia.getNombre());
+                                }
+
+                                i += 1;
+                            }
+                        } catch (IOException e) {
+                            Log.e("Caragndo colonia error: ", e.getMessage());
+                        }
+                    }
+
+                    sincronizarColonias.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, dialog -> dialog.dismiss());
+
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener sincronizarLocalidades_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                sincronizarLocalidades.setEnabled(false);
+                LocalidadDao localidadDao = new LocalidadDao(ctx);
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        try {
+                            InputStream is = getResources().openRawResource(R.raw.localidades);
+                            BufferedReader reader = new BufferedReader(
+                                    new InputStreamReader(is, Charset.forName(UTF_8))
+                            );
+                            String line;
+                            int i = 0;
+                            while ((line = reader.readLine()) != null) {
+                                String[] row = line.split(",");
+
+                                try{
+                                //if(row[0] != null && !row[0].trim().equals("")) {
+                                    Integer localidadId = Integer.parseInt(row[0].trim());
+                                    Localidad localidad = localidadDao.findByLocalidadId(localidadId);
+
+                                    if (localidad == null) {
+                                        localidad = new Localidad();
+                                        localidad.setLocalidadId(Integer.parseInt(row[0].trim()));
+                                        localidad.setNombre(row[2].trim().toUpperCase());
+                                        localidad.setMunicipioId(Integer.parseInt(row[1].trim()));
+
+                                        long id = localidadDao.store(localidad);
+
+                                        if (id == 0) {
+                                            Log.e("AQUI INSERTADO ERROR: ", localidad.getLocalidadId() + " - " + localidad.getNombre());
+                                        } else {
+                                            Log.e("AQUI INSERTADO SUCCESS: ", localidad.getLocalidadId() + " - " + localidad.getNombre());
+                                        }
+
+                                    } else {
+                                        Log.e("AQUI ENCONTRADO: ", localidad.getLocalidadId() + " - " + localidad.getNombre());
+                                    }
+                                }
+                                //else
+                                catch(Exception e)
+                                {
+                                    Log.e("AQUI LECTURA ERROR: ", e.getMessage());
+                                    Log.e("AQUI LECTURA ERROR: ", ((row[0] != null) ? row[0].trim() : "") + " - " + ((row[2] != null) ? row[2].trim() : "") + " - " + ((row[1] != null) ? row[1].trim() : ""));
+                                }
+
+                                i += 1;
+                            }
+                        } catch (IOException e) {
+                            Log.e("Caragndo colonia error: ", e.getMessage());
+                        }
+                    }
+
+                    sincronizarLocalidades.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, dialog -> dialog.dismiss());
+
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener sincronizarMunicipios_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                sincronizarMunicipios.setEnabled(false);
+                MunicipioDao municipioDao = new MunicipioDao(ctx);
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        try {
+                            InputStream is = getResources().openRawResource(R.raw.municipios);
+                            BufferedReader reader = new BufferedReader(
+                                    new InputStreamReader(is, Charset.forName(UTF_8))
+                            );
+                            String line;
+                            int i = 0;
+                            while ((line = reader.readLine()) != null) {
+                                String[] row = line.split(",");
+
+                                Integer municipioId = Integer.parseInt(row[0].trim());
+                                Municipio municipio = municipioDao.findByMunicipioId(municipioId);
+
+                                if(municipio == null) {
+                                    municipio = new Municipio();
+                                    municipio.setMunicipioId(Integer.parseInt(row[0].trim()));
+                                    municipio.setNombre(row[2].trim().toUpperCase());
+                                    municipio.setEstadoId(Integer.parseInt(row[1].trim()));
+
+                                    long id = municipioDao.store(municipio);
+
+                                    if(id == 0)
+                                    {
+                                        Log.e("AQUI INSERTADO ERROR: ", municipio.getMunicipioId() + " - " + municipio.getNombre());
+                                    }
+                                    else
+                                    {
+                                        Log.e("AQUI INSERTADO SUCCESS: ", municipio.getMunicipioId() + " - " + municipio.getNombre());
+                                    }
+
+                                }
+                                else
+                                {
+                                    Log.e("AQUI ENCONTRADO: ", municipio.getMunicipioId() + " - " + municipio.getNombre());
+                                }
+
+                                i += 1;
+                            }
+                        } catch (IOException e) {
+                            Log.e("Caragndo colonia error: ", e.getMessage());
+                        }
+                    }
+
+                    sincronizarMunicipios.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, dialog -> dialog.dismiss());
+
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
     };
 
     /**Evento para descargar el apk abriendo un dialogFragment para validar por contraseña primero*/

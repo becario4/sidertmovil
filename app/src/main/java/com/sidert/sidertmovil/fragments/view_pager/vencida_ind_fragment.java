@@ -2416,6 +2416,8 @@ public class vencida_ind_fragment extends Fragment {
                         values.put(3, "1");
                         dBhelper.saveResumenGestion(db, values);
 
+                        Log.e("AQUI VISTA vencida_ind frag", "PRUEBA WHATSAPP");
+
                         Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
 
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
@@ -2423,6 +2425,7 @@ public class vencida_ind_fragment extends Fragment {
 
                         Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
                         Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+
                         whatsappIntent.setType("text/plain");
                         whatsappIntent.setPackage("com.whatsapp");
                         whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + parent.nombre);
@@ -2431,7 +2434,7 @@ public class vencida_ind_fragment extends Fragment {
                         whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         try {
-                            ctx.startActivity(whatsappIntent);
+                            ctx.startActivity(Intent.createChooser(whatsappIntent, null));
                         } catch (android.content.ActivityNotFoundException ex) {
                             Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
                         }

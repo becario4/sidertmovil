@@ -8,7 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.SolicitudDetalleEstatusGpo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 
 public class SolicitudRenDao {
@@ -18,6 +22,41 @@ public class SolicitudRenDao {
     public SolicitudRenDao(Context ctx){
         this.dbHelper = new DBhelper(ctx);
         this.db = dbHelper.getWritableDatabase();
+    }
+
+    public List<SolicitudRen> findAllOrderByFechaVencimiento()
+    {
+        List<SolicitudRen> solicitudes = new ArrayList<SolicitudRen>();
+
+        String sql = "" +
+            "SELECT " +
+            "s.* " +
+            "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+            "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+            "ORDER BY pr.fecha_vencimiento "
+        ;
+
+        Cursor row = db.rawQuery(sql, new String[]{});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                SolicitudRen solicitud = new SolicitudRen();
+
+                Fill(row, solicitud);
+
+                solicitudes.add(solicitud);
+                row.moveToNext();
+            }
+
+        }
+
+        row.close();
+
+        return solicitudes;
     }
 
     public SolicitudRen findByIdSolicitud(int idSolicitud)

@@ -15,12 +15,18 @@ import android.widget.LinearLayout;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_renovacion;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
@@ -60,31 +66,37 @@ public class RenovacionCredito extends AppCompatActivity {
         ClienteRenDao clienteDao = new ClienteRenDao(ctx);
 
         /**Se prepara la consulta para obtener la solicitudes (SELECT * FROM TBL_SOLICITUDES_REN)*/
-        Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, "", "", null);
+        //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, "", "", null);
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        List<SolicitudRen> solicitudes = solicitudRenDao.findAllOrderByFechaVencimiento();
+
 
         /**Valida si encontró algun registro*/
-        if (row.getCount() > 0){
-            row.moveToFirst();
-
+        if (solicitudes.size() > 0){
             ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
-            for(int i = 0; i < row.getCount(); i++){/**Se recorre los resultados*/
+            for(SolicitudRen solicitud : solicitudes){
                 HashMap<Integer, String> item = new HashMap();
 
                 ClienteRen cliente = null;
 
-                if(row.getString(3).equals("1")) cliente = clienteDao.findByIdSolicitud(row.getInt(0));
+                //if(row.getString(3).equals("1")) cliente = clienteDao.findByIdSolicitud(row.getInt(0));
+                if(solicitud.getTipoSolicitud() == 1) cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                item.put(0,row.getString(0));           //ID solicitud
-                item.put(1, row.getString(5).trim().toUpperCase()); //Nombre
-                item.put(2, row.getString(3));          //Tipo solicitud
-                item.put(3, row.getString(11));         //Estatus
-                item.put(4, row.getString(7));          //Fecha Termino
-                item.put(5, row.getString(10));         //Fecha Envio
+                item.put(0, String.valueOf(solicitud.getIdSolicitud()));           //ID solicitud
+                item.put(1, solicitud.getNombre().trim().toUpperCase()); //Nombre
+                item.put(2, String.valueOf(solicitud.getTipoSolicitud()));          //Tipo solicitud
+                item.put(3, String.valueOf(solicitud.getEstatus()));         //Estatus
+                item.put(4, solicitud.getFechaTermino());          //Fecha Termino
+                item.put(5, solicitud.getFechaGuardado());         //Fecha Envio
                 item.put(6, "");//pendiente
                 if(cliente != null) item.put(7, cliente.getComentarioRechazo());//pendiente
 
+                PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findByClienteNombre(solicitud.getNombre().trim().toUpperCase());
+
+                item.put(8, (prestamoToRenovar != null) ? prestamoToRenovar.getFechaVencimiento() : "");
+
                 data.add(item);/**Se agrega el map al array */
-                row.moveToNext();
             }/**Termina el ciclo for*/
 
             /**Agrega el listado de solicitudes*/

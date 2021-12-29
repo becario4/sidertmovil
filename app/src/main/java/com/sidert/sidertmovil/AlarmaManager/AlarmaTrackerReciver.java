@@ -286,49 +286,58 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                     case "GESTION DE CARTERA":
                                     {
                                         ss.SaveRespuestaGestion(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "IMPRESIONES DE GESTION DE CARTERA":
                                     {
                                         ss.SendImpresionesVi(ctx, false);
                                         ss.SendReimpresionesVi(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "APOYO GASTOS FUNERARIOS":
                                     {
                                         ss.SendRecibos(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "CIRCULO DE CREDITO":
                                     {
                                         ss.SendConsultaCC(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "ORIGINACION":
                                     {
                                         ss.SendOriginacionInd (ctx, false);
                                         ss.SendOriginacionGpo(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "RENOVACION":
                                     {
                                         ss.SendRenovacionInd(ctx, false);
                                         ss.SendRenovacionGpo(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "VERIFICACION DOMICILIARIA":
                                     {
                                         ss.SendGestionesVerDom(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "CIERRE DE DIA":
                                     {
                                         ss.SaveCierreDia(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "GEOLOCALIZACION":
                                     {
                                         ss.SaveGeolocalizacion(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                     case "RESULTADO SOLICITUD":
@@ -336,6 +345,7 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                         ss.MontoAutorizado(ctx, false);
                                         ss.GetSolicitudesRechazadasInd(ctx, false);
                                         ss.GetSolicitudesRechazadasGpo(ctx, false);
+                                        ejecutado = 1;
                                         break;
                                     }
                                 }

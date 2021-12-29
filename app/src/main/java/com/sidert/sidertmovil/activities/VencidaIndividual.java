@@ -43,6 +43,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_CLIENTE;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.VENCIDA_IND;
@@ -71,6 +72,9 @@ public class VencidaIndividual extends AppCompatActivity {
 
     public String latitud = "";
     public String longitud = "";
+
+    public String telCliente = "";
+    public String telCelular = "";
 
     private BottomNavigationView nvMenu;
 
@@ -143,6 +147,16 @@ public class VencidaIndividual extends AppCompatActivity {
             row.moveToFirst();
             saldo_corte = row.getDouble(0);
         }
+
+
+        /**Consulta para obtener el telefono del cliente y se guarda en variable global*/
+        row = dBhelper.getRecords(TBL_TELEFONOS_CLIENTE, " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
+        if (row.getCount() > 0){
+            row.moveToFirst();
+            telCliente = row.getString(2);
+            telCelular = row.getString(3);
+        }
+        row.close();
 
 
         boolean is_recuperacion = false;

@@ -65,6 +65,12 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_integrante;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_renovar_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
@@ -116,6 +122,7 @@ import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
@@ -448,6 +455,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private boolean isNuevo = false;
 
     private Calendar myCalendar;
+
+    boolean pushMapButtonCli = false;
+    boolean pushMapButtonNeg = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -751,7 +761,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         else{/**En caso de ya estar registrado continuara con el registro de los demas datos*/
             /**Obtiene los datos que se pasaron entre clases*/
             id_credito = getIntent().getStringExtra("id_credito");
-
+            id_integrante = getIntent().getStringExtra("id_integrante");
             /**Funcion para precargar la informacion que ha sido guardada del integrante*/
             initComponents(getIntent().getStringExtra("id_credito"), getIntent().getStringExtra("id_integrante"));
 
@@ -1124,10 +1134,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                            if(tvColoniaCli.isEnabled())
+                            {
+                                Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                                tvColoniaCli.setText("");
+                            }
+
                             Update("municipio", TBL_DOMICILIO_INTEGRANTE_REN, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_DOMICILIO_INTEGRANTE_REN, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaCli.setText("");
+
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }
@@ -1401,10 +1416,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                            if(tvColoniaNeg.isEnabled())
+                            {
+                                Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                                tvColoniaNeg.setText("");
+                            }
+
                             Update("municipio", TBL_NEGOCIO_INTEGRANTE_REN, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_NEGOCIO_INTEGRANTE_REN, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaNeg.setText("");
+
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }
@@ -1512,7 +1532,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             @Override
             public void afterTextChanged(Editable s) {
                 etIngMenNeg.removeTextChangedListener(this);
-
+                etIngMenNeg.setError(null);
+                ivError4.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = etIngMenNeg.getText().length();
@@ -1597,6 +1618,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     Update("ing_otros", TBL_NEGOCIO_INTEGRANTE_REN, s.toString().trim().replace(",",""), "id_integrante", id_integrante);
                 else
                     Update("ing_otros", TBL_NEGOCIO_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+
                 MontoMaximoNeg();
 
                 etOtrosIngNeg.addTextChangedListener(this);
@@ -1621,7 +1643,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             @Override
             public void afterTextChanged(Editable s) {
                 etGastosSemNeg.removeTextChangedListener(this);
-
+                etGastosSemNeg.setError(null);
+                ivError4.setVisibility(View.GONE);
                 try {
                     int inilen, endlen;
                     inilen = etGastosSemNeg.getText().length();
@@ -1705,8 +1728,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 if (!tvMontoMaxNeg.getText().toString().trim().isEmpty() && Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")) > 0) {
                     if (e.length() > 0)
                         try {
-                            if (Double.parseDouble(e.toString()) > 0)
-                                if (Double.parseDouble(e.toString()) <= Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")))
+                            if (Double.parseDouble(e.toString().replace(",","")) > 0)
+                                if (Double.parseDouble(e.toString().replace(",","")) <= Double.parseDouble(tvMontoMaxNeg.getText().toString().trim().replace(",","")))
                                     Update("capacidad_pago", TBL_NEGOCIO_INTEGRANTE_REN, e.toString().trim().replace(",",""), "id_integrante", id_integrante);
                                 else
                                     ShowMensajes("EL monto no puede superar a la capacidad de pago","NEGOCIO");
@@ -2039,10 +2062,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }else {
-                            Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                            if(tvColoniaCony.isEnabled())
+                            {
+                                Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, "", "id_integrante", id_integrante);
+                                tvColoniaCony.setText("");
+                            }
+
                             Update("municipio", TBL_CONYUGE_INTEGRANTE_REN, row.getString(4), "id_integrante", id_integrante);
                             Update("estado", TBL_CONYUGE_INTEGRANTE_REN, row.getString(1), "id_integrante", id_integrante);
-                            tvColoniaCony.setText("");
+
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }
@@ -2577,11 +2605,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
-        if(is_edit && !isNuevo) {
+        //&& !isNuevo
+        //if(is_edit) {
+        if(true) {
             tvCargo.setBackground(ContextCompat.getDrawable(ctx, (R.drawable.et_rounded_edges)));
 
             tvCargo.setOnClickListener(v -> {
-                id_integrante = getIntent().getStringExtra("id_integrante");
                 openRegistroIntegrante(id_credito, id_integrante);
             });
         }
@@ -2865,7 +2894,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener etColonia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvColoniaCli.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -2880,7 +2909,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvLocalidadCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvLocalidadCli.getText().toString().trim().isEmpty()) {
                 if (!tvMunicipioCli.getText().toString().trim().isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCli.getText().toString().trim().toUpperCase()});
                     row.moveToFirst();
@@ -2920,6 +2949,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                 tvTipoCasaCli.setText(_tipo_casa[position]);
                                 Update("tipo_vivienda", TBL_DOMICILIO_INTEGRANTE_REN, _tipo_casa[position], "id_integrante", id_integrante);
                                 switch (position) {
+                                    case 1:
                                     case 2:
                                         llCasaFamiliar.setVisibility(View.VISIBLE);
                                         llCasaOtroCli.setVisibility(View.GONE);
@@ -3008,7 +3038,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvColoniaNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvColoniaNeg.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -3023,7 +3053,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvLocalidadNeg_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvLocalidadNeg.getText().toString().trim().isEmpty()) {
                 if (!tvMunicipioNeg.getText().toString().trim().isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioNeg.getText().toString().trim().toUpperCase()});
                     row.moveToFirst();
@@ -3243,7 +3273,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvColoniaCony.getText().toString().trim().isEmpty()) {
                 Intent i_colonia = new Intent(ctx, Catalogos.class);
                 i_colonia.putExtra(TITULO, Miscellaneous.ucFirst("Colonias"));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -3258,7 +3288,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvLocalidadCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit) {
+            if (is_edit || tvLocalidadCony.getText().toString().trim().isEmpty()) {
                 if (!tvMunicipioCony.getText().toString().trim().isEmpty()) {
                     Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{tvMunicipioCony.getText().toString().trim().toUpperCase()});
                     row.moveToFirst();
@@ -4131,7 +4161,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     params.put(5, tvEstadoNacCli.getText().toString().trim());
                 else
                     params.put(5, "");
-
+                Log.e("AQUI", "FECHA NACIMIENTO");
+                Log.e("AQUI", tvFechaNacCli.getText().toString());
+                Log.e("AQUI", String.valueOf(id_integrante));
                 Update("fecha_nacimiento", TBL_INTEGRANTES_GPO_REN, tvFechaNacCli.getText().toString().trim(), "id", id_integrante);
                 Update("edad", TBL_INTEGRANTES_GPO_REN, tvEdadCli.getText().toString().trim(), "id", id_integrante);
                 etCurpCli.setText(Miscellaneous.GenerarCurp(params));
@@ -4181,8 +4213,69 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     }
 
     //===================== Listener GPS  =======================================================
-    /**Funciones para obtener la ubicacion*/
-    private void ObtenerUbicacion (){
+    private void findUbicacion(String idDomicilio, String tipo)
+    {
+        DomicilioIntegranteRen domicilio = null;
+        NegocioIntegranteRen negocio = null;
+
+        switch(tipo) {
+            case "CLIENTE":
+                DomicilioIntegranteRenDao domicilioDao = new DomicilioIntegranteRenDao(ctx);
+                domicilio = domicilioDao.findByIdIntegrante(Long.valueOf(idDomicilio));
+                break;
+            case "NEGOCIO":
+                NegocioIntegranteRenDao negocioDao = new NegocioIntegranteRenDao(ctx);
+                negocio = negocioDao.findByIdIntegrante(Long.valueOf(idDomicilio));
+                break;
+            default:
+                break;
+        }
+
+        if(
+            (negocio != null && !negocio.getLatitud().equals("0") && !negocio.getLatitud().equals("") )
+            || (domicilio != null && !domicilio.getLatitud().equals("0") && !domicilio.getLatitud().equals("") )
+        )
+        {
+            AlertDialog alertDialog = Popups.showDialogConfirm(this, warning,
+                    R.string.guardar_cambios, R.string.yes, dialog -> {
+                        switch(tipo) {
+                            case "CLIENTE":
+                                setUbicacion();
+                                break;
+                            case "NEGOCIO":
+                                setUbicacionNegocio();
+                                break;
+                            default:
+                                break;
+                        }
+                        dialog.dismiss();
+                    }, R.string.cancel, dialog -> {
+                        dialog.dismiss();
+                    }
+            );
+
+            alertDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            alertDialog.setCancelable(true);
+            alertDialog.show();
+        }
+        else
+        {
+            switch(tipo) {
+                case "CLIENTE":
+                    setUbicacion();
+                    break;
+                case "NEGOCIO":
+                    setUbicacionNegocio();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void setUbicacion()
+    {
         pbLoadCli.setVisibility(View.VISIBLE);
         ibMapCli.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -4237,12 +4330,14 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 pbLoadCli.setVisibility(View.GONE);
                 ibMapCli.setEnabled(true);
                 latLngUbiCli = new LatLng(0,0);
+                pushMapButtonCli = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
     }
 
-    private void ObtenerUbicacionNeg (){
+    private void setUbicacionNegocio()
+    {
         pbLoadNeg.setVisibility(View.VISIBLE);
         ibMapNeg.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -4297,9 +4392,19 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 pbLoadNeg.setVisibility(View.GONE);
                 ibMapNeg.setEnabled(true);
                 latLngUbiNeg = new LatLng(0,0);
+                pushMapButtonNeg = true;
                 Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         }, 60000);
+    }
+
+    /**Funciones para obtener la ubicacion*/
+    private void ObtenerUbicacion (){
+        findUbicacion(id_integrante, "CLIENTE");
+    }
+
+    private void ObtenerUbicacionNeg (){
+        findUbicacion(id_integrante, "NEGOCIO");
     }
 
     private void ObtenerUbicacionFirmaCliente (){
@@ -4312,9 +4417,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 Update("latitud", TBL_OTROS_DATOS_INTEGRANTE_REN, latitud, "id_integrante", id_integrante);
                 Update("longitud", TBL_OTROS_DATOS_INTEGRANTE_REN, longitud, "id_integrante", id_integrante);
                 Update("located_at", TBL_OTROS_DATOS_INTEGRANTE_REN, Miscellaneous.ObtenerFecha(TIMESTAMP), "id_integrante", id_integrante);
-            }
-            else{
-                latLngUbiCli = new LatLng(0,0);
             }
 
             myHandler.removeCallbacksAndMessages(null);
@@ -4341,7 +4443,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         myHandler.postDelayed(() -> {
             locationManager.removeUpdates(locationListener);
-            latLngUbiCli = new LatLng(0,0);
         }, 60000);
     }
 
@@ -4415,7 +4516,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         mMapCli.animateCamera(ubication);
 
         pbLoadCli.setVisibility(View.GONE);
-        ibMapCli.setVisibility(View.GONE);
+        //ibMapCli.setVisibility(View.GONE);
     }
     private void addMarkerNeg (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
@@ -4430,7 +4531,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         mMapNeg.animateCamera(ubication);
 
         pbLoadNeg.setVisibility(View.GONE);
-        ibMapNeg.setVisibility(View.GONE);
+        //ibMapNeg.setVisibility(View.GONE);
     }
 
     private void CancelUbicacion (){
@@ -4526,8 +4627,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
-        //tvMunicipioNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
-        //tvEstadoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+        tvMunicipioNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+        tvEstadoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         ibFotoFachNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.round_corner_blue));
     }
@@ -4592,7 +4693,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 "p.estatus_completado AS ePoliticas, " +
                 "COALESCE(cro.estatus_completado, 1) AS eCroquis, " +
                 "i.ciclo, " +
-                "i.monto_prestamo_anterior " +
+                "i.monto_prestamo_anterior, " +
+                "cgp.id_solicitud " +
                 "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i "+
                 "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
                 "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
@@ -4602,6 +4704,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 "LEFT JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante AND o.casa_reunion = 1 " +
                 "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
                 "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
+                "INNER JOIN " + TBL_CREDITO_GPO_REN + " AS cgp ON cgp.id = i.id_credito " +
                 "WHERE i.id_credito = ? AND i.id = ? ";
         Cursor row = db.rawQuery(sql, new String[]{id_credito, id_integrante});
         row.moveToFirst();
@@ -4692,6 +4795,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCurpCli.setEnabled(false);
             etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            if(etCurpCli.getText().toString().trim().length() < 18)
+            {
+                etCurpCli.setEnabled(true);
+                etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+            }
+
         }
         tvEdadCli.setText(row.getString(7));
         switch (row.getInt(8)){
@@ -4706,6 +4815,41 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvEstadoNacCli.setText(row.getString(9));
         tvRfcCli.setText(row.getString(10));
         etCurpCli.setText(row.getString(11));
+
+        HashMap<Integer, String> paramsCurpConfirm = new HashMap<>();
+
+        paramsCurpConfirm.put(0, Miscellaneous.GetStr(etNombreCli));
+        paramsCurpConfirm.put(1, Miscellaneous.GetStr(etApPaternoCli));
+        paramsCurpConfirm.put(2, Miscellaneous.GetStr(etApMaternoCli));
+        paramsCurpConfirm.put(3, Miscellaneous.GetStr(tvFechaNacCli));
+        if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre) {
+            paramsCurpConfirm.put(4, "Hombre");
+        }
+        else
+        {
+            paramsCurpConfirm.put(4, "Mujer");
+        }
+        paramsCurpConfirm.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+
+        String curpConfirm = Miscellaneous.GenerarCurp(paramsCurpConfirm);
+        Log.e("AQUI CURP", curpConfirm);
+
+        if(
+                etCurpCli.getText().toString().trim().length() == 18
+                        && etCurpCli.getText().toString().trim().substring(1, 16).equals(curpConfirm)
+        )
+        {
+            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCurpCli.setEnabled(false);
+            tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            tvFechaNacCli.setOnClickListener(tvFechaNacCli_OnClick);
+            tvEstadoNacCli.setOnClickListener(tvEstadoNacCli_OnClick);
+        }
+
         //etCurpIdCli.setText(row.getString(12));
         tvTipoIdentificacion.setText(row.getString(13));
         etNumIdentifCli.setText(row.getString(14)); etNumIdentifCli.setEnabled(is_edit);
@@ -4758,10 +4902,36 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etNoIntCli.setText(row.getString(6)); etNoIntCli.setEnabled(is_edit);
         etManzanaCli.setText(row.getString(7)); etManzanaCli.setEnabled(is_edit);
         etLoteCli.setText(row.getString(8)); etLoteCli.setEnabled(is_edit);
-        etCpCli.setText(row.getString(9)); etCpCli.setEnabled(is_edit);
+        etCpCli.setText(row.getString(9));
+        //etCpCli.setEnabled(is_edit);
+        etCpCli.setEnabled(true);
         tvColoniaCli.setText(row.getString(10));
-        etCiudadCli.setText(row.getString(11)); etCiudadCli.setEnabled(is_edit);
+
+        etCiudadCli.setText(row.getString(11));
+        //etCiudadCli.setEnabled(is_edit);
+
+        if(!etCiudadCli.getText().toString().trim().isEmpty())
+        {
+            etCiudadCli.setEnabled(is_edit);
+            etCiudadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadCli.setEnabled(true);
+        }
+
         tvLocalidadCli.setText(row.getString(12));
+
+        if(!tvColoniaCli.getText().toString().trim().isEmpty())
+        {
+            tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        if(!tvLocalidadCli.getText().toString().trim().isEmpty())
+        {
+            tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
         if (!row.getString(13).trim().isEmpty())
             tvMunicipioCli.setText(row.getString(13));
         else
@@ -4775,6 +4945,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvTipoCasaCli.setText(row.getString(15));
         switch (row.getString(15)){
             case "CASA FAMILIAR":
+            case "CASA RENTADA":
                 llCasaFamiliar.setVisibility(View.VISIBLE);
                 tvCasaFamiliar.setText(row.getString(16));
                 break;
@@ -4815,10 +4986,35 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etNoIntNeg.setText(row.getString(7)); etNoIntNeg.setEnabled(is_edit);
         etManzanaNeg.setText(row.getString(8)); etManzanaNeg.setEnabled(is_edit);
         etLoteNeg.setText(row.getString(9)); etLoteNeg.setEnabled(is_edit);
-        etCpNeg.setText(row.getString(10)); etCpNeg.setEnabled(is_edit);
+        etCpNeg.setText(row.getString(10));
+        //etCpNeg.setEnabled(is_edit);
+        etCpNeg.setEnabled(true);
+
         tvColoniaNeg.setText(row.getString(11));
-        etCiudadNeg.setText(row.getString(12)); etCiudadNeg.setEnabled(is_edit);
+        etCiudadNeg.setText(row.getString(12));
+        //etCiudadNeg.setEnabled(is_edit);
         tvLocalidadNeg.setText(row.getString(13));
+
+        if(!etCiudadNeg.getText().toString().trim().isEmpty())
+        {
+            etCiudadNeg.setEnabled(is_edit);
+            etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadNeg.setEnabled(true);
+        }
+
+        if(!tvColoniaNeg.getText().toString().trim().isEmpty())
+        {
+            tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        if(!tvLocalidadNeg.getText().toString().trim().isEmpty())
+        {
+            tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
         if (!row.getString(14).trim().isEmpty())
             tvMunicipioNeg.setText(row.getString(14));
         else
@@ -4910,10 +5106,36 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etNoIntCony.setText(row.getString(9)); etNoIntCony.setEnabled(is_edit);
         etManzanaCony.setText(row.getString(10)); etManzanaCony.setEnabled(is_edit);
         etLoteCony.setText(row.getString(11)); etLoteCony.setEnabled(is_edit);
-        etCpCony.setText(row.getString(12)); etCpCony.setEnabled(is_edit);
+        etCpCony.setText(row.getString(12));
+        //etCpCony.setEnabled(is_edit);
+        etCpCony.setEnabled(true);
+
         tvColoniaCony.setText(row.getString(13));
-        etCiudadCony.setText(row.getString(14)); etCiudadCony.setEnabled(is_edit);
+        etCiudadCony.setText(row.getString(14));
+        //etCiudadCony.setEnabled(is_edit);
         tvLocalidadCony.setText(row.getString(15));
+
+        if(!etCiudadCony.getText().toString().trim().isEmpty())
+        {
+            etCiudadCony.setEnabled(is_edit);
+            etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+        else
+        {
+            etCiudadCony.setEnabled(true);
+        }
+
+        if(!tvColoniaCony.getText().toString().trim().isEmpty())
+        {
+            tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        if(!tvLocalidadCony.getText().toString().trim().isEmpty())
+        {
+            tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+
         if (!row.getString(16).trim().isEmpty())
             tvMunicipioCony.setText(row.getString(16));
         else
@@ -5100,12 +5322,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 ((RadioButton) rgTieneNegocio.getChildAt(i)).setEnabled(false);
             }
 
-            tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             for(int i = 0; i < rgGeneroCli.getChildCount(); i++){
                 ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(false);
             }
-            tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
+            //tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
             tvTipoIdentificacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etNumIdentifCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvEstudiosCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5125,10 +5347,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etNoIntCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCiudadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvTipoCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvCasaFamiliar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etTiempoSitio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5136,8 +5358,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etReferenciaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachCli.setEnabled(false);
             ibFotoFachCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            ibMapCli.setEnabled(false);
-            ibMapCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //ibMapCli.setEnabled(false);
+            //ibMapCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapCli.setVisibility(View.GONE);
 
             etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCalleNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5145,10 +5368,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etNoIntNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCiudadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvDestinoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etOtroDestinoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvActEcoEspNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5165,8 +5388,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachNeg.setEnabled(false);
             ibFotoFachNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            ibMapNeg.setEnabled(false);
-            ibMapNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //ibMapNeg.setEnabled(false);
+            //ibMapNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapNeg.setVisibility(View.GONE);
 
             etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5178,10 +5402,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etNoIntCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etManzanaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etLoteCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCpCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
-            tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etIngresoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -5345,7 +5569,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private boolean saveDatosDomicilio(){
         boolean save_domicilio = false;
         ContentValues cv = new ContentValues();
-        if (latLngUbiCli != null) {
+        if (latLngUbiCli != null || pushMapButtonCli) {
             tvMapaCli.setError(null);
             if (!validator.validate(etCalleCli, new String[]{validator.REQUIRED}) &&
                     (
@@ -5367,6 +5591,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 cv.put("tipo_vivienda", Miscellaneous.GetStr(tvTipoCasaCli));
                 switch (Miscellaneous.GetStr(tvTipoCasaCli)){
                     case "CASA FAMILIAR":
+                    case "CASA RENTADA":
                         if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                             flag_tipo_casa = true;
                             cv.put("parentesco", Miscellaneous.GetStr(tvCasaFamiliar));
@@ -5468,7 +5693,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg
         ){
             etNombreNeg.setError(null);
-            if (latLngUbiNeg != null || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg){
+            if (latLngUbiNeg != null || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg || pushMapButtonNeg){
                 tvMapaNeg.setError(null);
                 if (
                         (
@@ -5516,29 +5741,54 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                 !validator.validate(etCapacidadPagoNeg, new String[]{validator.REQUIRED}) &&
                                 !validatorTV.validate(tvMediosPagoNeg, new String[]{validatorTV.REQUIRED})
                         ){
-                            boolean otro_medio = false;
-                            if (Miscellaneous.GetStr(tvMediosPagoNeg).contains("OTRO")){
-                                if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
-                                    otro_medio = true;
-                            }
-                            else
-                                otro_medio = true;
+                            boolean flag = true;
 
-                            if (otro_medio){
-                                /*if (byteFotoFachNeg != null){*/
-                                    if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED}) || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg){
+                            try{
+                                if(Double.parseDouble(etIngMenNeg.getText().toString().replace(",", "")) <= 100)
+                                {
+                                    flag = false;
+                                    etIngMenNeg.setError("El ingreso mensual debe ser mayor a 100!");
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                etIngMenNeg.setError(e.getMessage());
+                                flag = false;
+                            }
+
+                            try{
+                                if(Double.parseDouble(etGastosSemNeg.getText().toString().replace(",", "")) <= 100)
+                                {
+                                    flag = false;
+                                    etGastosSemNeg.setError("El gasto mensual debe ser mayor a 100!");
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                etGastosSemNeg.setError(e.getMessage());
+                                flag = false;
+                            }
+
+                            if(flag) {
+                                boolean otro_medio = false;
+                                if (Miscellaneous.GetStr(tvMediosPagoNeg).contains("OTRO")) {
+                                    if (!validator.validate(etOtroMedioPagoNeg, new String[]{validator.REQUIRED}))
+                                        otro_medio = true;
+                                } else
+                                    otro_medio = true;
+
+                                if (otro_medio) {
+                                    /*if (byteFotoFachNeg != null){*/
+                                    if (!validator.validate(etReferenciNeg, new String[]{validator.REQUIRED}) || rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg) {
                                         etReferenciNeg.setError(null);
                                         ivError4.setVisibility(View.GONE);
                                         ContentValues cv = new ContentValues();
                                         cv.put("nombre", Miscellaneous.GetStr(etNombreNeg));
 
-                                        if(rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg)
-                                        {
+                                        if (rgTieneNegocio.getCheckedRadioButtonId() == R.id.rbNoTieneNeg) {
                                             cv.put("latitud", "");
                                             cv.put("longitud", "");
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             cv.put("latitud", String.valueOf(latLngUbiNeg.latitude));
                                             cv.put("longitud", String.valueOf(latLngUbiNeg.longitude));
                                         }
@@ -5557,11 +5807,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                         cv.put("otro_destino_credito", Miscellaneous.GetStr(etOtroDestinoNeg));
                                         cv.put("actividad_economica", Miscellaneous.GetStr(tvActEconomicaNeg));
                                         cv.put("antiguedad", Miscellaneous.GetStr(etAntiguedadNeg));
-                                        cv.put("ing_mensual", Miscellaneous.GetStr(etIngMenNeg).replace(",",""));
-                                        cv.put("ing_otros", Miscellaneous.GetStr(etOtrosIngNeg).replace(",",""));
-                                        cv.put("gasto_semanal", Miscellaneous.GetStr(etGastosSemNeg).replace(",",""));
-                                        cv.put("capacidad_pago", Miscellaneous.GetStr(etCapacidadPagoNeg).replace(",",""));
-                                        cv.put("monto_maximo", Miscellaneous.GetStr(tvMontoMaxNeg).replace(",",""));
+                                        cv.put("ing_mensual", Miscellaneous.GetStr(etIngMenNeg).replace(",", ""));
+                                        cv.put("ing_otros", Miscellaneous.GetStr(etOtrosIngNeg).replace(",", ""));
+                                        cv.put("gasto_semanal", Miscellaneous.GetStr(etGastosSemNeg).replace(",", ""));
+                                        cv.put("capacidad_pago", Miscellaneous.GetStr(etCapacidadPagoNeg).replace(",", ""));
+                                        cv.put("monto_maximo", Miscellaneous.GetStr(tvMontoMaxNeg).replace(",", ""));
                                         cv.put("medios_pago", Miscellaneous.GetStr(tvMediosPagoNeg));
                                         cv.put("otro_medio_pago", Miscellaneous.GetStr(etOtroMedioPagoNeg));
                                         cv.put("ref_domiciliaria", Miscellaneous.GetStr(etReferenciNeg));
@@ -5570,17 +5820,20 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                                         db.update(TBL_NEGOCIO_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
 
                                         save_negocio = true;
-                                    }
-                                    else
+                                    } else
                                         ivError4.setVisibility(View.VISIBLE);
-                                /*}
-                                else {
-                                    tvFachadaNeg.setError("");
+                                    /*}
+                                    else {
+                                        tvFachadaNeg.setError("");
+                                        ivError4.setVisibility(View.VISIBLE);
+                                    }*/
+                                } else
                                     ivError4.setVisibility(View.VISIBLE);
-                                }*/
                             }
                             else
+                            {
                                 ivError4.setVisibility(View.VISIBLE);
+                            }
                         }
                         else
                             ivError4.setVisibility(View.VISIBLE);
@@ -5988,8 +6241,14 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             if (row_casa.getCount() > 0 && row_casa.getInt(0) != id_integrante){
                 cbCasaReuniones.setEnabled(false);
             }
-            if(this.id_integrante.equals("")) isNuevo = true;
-            llCurp.setVisibility(View.VISIBLE);
+            if(this.id_integrante.equals("")){
+                isNuevo = true;
+                llCurp.setVisibility(View.VISIBLE);
+            }
+            else llCurp.setVisibility(View.GONE);
+
+            if(isNuevo) Log.e("AQUI", "cliente nuevo");
+            else Log.e("AQUI", "cliente renovado");
         }
         else {
             /**en caso de que cancelo el registo cierra el formulario de solicitud*/
@@ -6359,7 +6618,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         solicitud.show();
 
-        if (tipo.equals("NEGOCIO"))
+        if (tipo.equals("NEGOCIO") && etCapacidadPagoNeg.isEnabled())
             etCapacidadPagoNeg.setText("");
 
     }

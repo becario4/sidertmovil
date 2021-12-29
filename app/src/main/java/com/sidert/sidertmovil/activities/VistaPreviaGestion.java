@@ -561,7 +561,8 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
             try {
                 //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + m.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
-                String mPath = ROOT_PATH+"Resumen";
+                String mPath = Environment.getExternalStorageDirectory().toString() + "/Resumen";
+                //String mPath = ROOT_PATH+"Resumen";
 
                 // create bitmap screen capture
                 View v1 = getWindow().getDecorView().getRootView();
@@ -586,7 +587,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
                     directory.mkdir();
                 }
 
-                name = UUID.randomUUID().toString() + ".jpg";
+                name = UUID.randomUUID().toString() + ".jpeg";
                 img = new File(mPath+"/"+name);
 
 
@@ -630,7 +631,8 @@ public class VistaPreviaGestion extends AppCompatActivity {
             i_result.putExtra(FECHA_FIN, fechaFin);
             i_result.putExtra(NOMBRE, name);
             i_result.putExtra(RESPONSE, true);
-            i_result.putExtra(SCREEN_SHOT, img.getPath());
+            //i_result.putExtra(SCREEN_SHOT, img.getPath());
+            i_result.putExtra(SCREEN_SHOT, img.getAbsolutePath());
             setResult(RESULT_OK, i_result);
 
 

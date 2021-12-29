@@ -2539,6 +2539,8 @@ public class recuperacion_gpo_fragment extends Fragment {
                         values.put(3, "2");
                         dBhelper.saveResumenGestion(db, values);
 
+                        Log.e("AQUI VISTA recuperacion gpo fr", "PRUEBA WHATSAPP");
+
                         Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
 
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();

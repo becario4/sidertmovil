@@ -157,9 +157,14 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetDestinosCredito(ctx);
         sc.GetPlazosPrestamo(ctx);
 
+
         /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
          * o prestamos autorizados para autorizar monto*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+        ss.SendImpresionesVi(ctx, false);
+        ss.SendReimpresionesVi(ctx, false);
+
         /**Descarga los prestamos autorizados y vigentes para realizar cobros AGF*/
         ss.GetPrestamos(ctx, false);
         /**Descarga el ultimo folio de AGF*/

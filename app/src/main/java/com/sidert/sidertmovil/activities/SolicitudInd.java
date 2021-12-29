@@ -258,7 +258,7 @@ public class SolicitudInd extends AppCompatActivity {
     private TextView tvMontoMaxNeg;
     private TextView tvNumOperacionNeg;
     private LinearLayout llOperacionesEfectivo;
-    private EditText etNumOperacionEfectNeg;
+    private TextView etNumOperacionEfectNeg;
     private TextView tvDiasVentaNeg;
     private TextView tvFachadaNeg;
     private ImageButton ibFotoFachNeg;
@@ -1522,7 +1522,7 @@ public class SolicitudInd extends AppCompatActivity {
         mMapCli.animateCamera(ubication);
 
         pbLoadCli.setVisibility(View.GONE);
-        ibMapCli.setVisibility(View.GONE);
+        //ibMapCli.setVisibility(View.GONE);
     }
     private void addMarkerNeg (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
@@ -1537,7 +1537,7 @@ public class SolicitudInd extends AppCompatActivity {
         mMapNeg.animateCamera(ubication);
 
         pbLoadNeg.setVisibility(View.GONE);
-        ibMapNeg.setVisibility(View.GONE);
+        //ibMapNeg.setVisibility(View.GONE);
     }
     private void addMarkerAval (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
@@ -1552,7 +1552,7 @@ public class SolicitudInd extends AppCompatActivity {
         mMapAval.animateCamera(ubication);
 
         pbLoadAval.setVisibility(View.GONE);
-        ibMapAval.setVisibility(View.GONE);
+        //ibMapAval.setVisibility(View.GONE);
     }
 
     private void initComponents (String idSolicitud) {
@@ -1688,7 +1688,7 @@ public class SolicitudInd extends AppCompatActivity {
         }
         else{
             tvMapaCli.setVisibility(View.GONE);
-            ibMapCli.setVisibility(View.GONE);
+            //ibMapCli.setVisibility(View.GONE);
         }
         etCalleCli.setText(rowDir.getString(4));
         etNoExtCli.setText(rowDir.getString(5));
@@ -1780,7 +1780,7 @@ public class SolicitudInd extends AppCompatActivity {
         }
         else{
             tvMapaNeg.setVisibility(View.GONE);
-            ibMapNeg.setVisibility(View.GONE);
+            //ibMapNeg.setVisibility(View.GONE);
         }
         etCalleNeg.setText(rowDir.getString(4));
         etNoExtNeg.setText(rowDir.getString(5));
@@ -1884,7 +1884,7 @@ public class SolicitudInd extends AppCompatActivity {
         }
         else{
             tvMapaAval.setVisibility(View.GONE);
-            ibMapAval.setVisibility(View.GONE);
+            //ibMapAval.setVisibility(View.GONE);
         }
         etCalleAval.setText(rowDir.getString(4));
         etNoExtAval.setText(rowDir.getString(5));

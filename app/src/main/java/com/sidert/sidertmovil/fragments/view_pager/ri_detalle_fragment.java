@@ -172,6 +172,7 @@ public class ri_detalle_fragment extends Fragment {
     private View.OnClickListener btnCallHome_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Log.e("AQUI CELL", "llamada a casa");
             Call(parent.telCliente);
         }
     };
@@ -179,6 +180,7 @@ public class ri_detalle_fragment extends Fragment {
     private View.OnClickListener btnCallCell_onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Log.e("AQUI CELL", "llamada a celular");
             Call(parent.telCelular);
         }
     };
@@ -375,6 +377,9 @@ public class ri_detalle_fragment extends Fragment {
 
 
     private void Call(String strPhone){
+        Log.e("AQUI CELL", "xxx");
+        Log.e("AQUI CELL", strPhone);
+
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.CALL_PHONE}, Constants.REQUEST_CODE_LLAMADA);
         } else {

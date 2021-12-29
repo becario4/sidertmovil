@@ -358,6 +358,8 @@ public class Login extends AppCompatActivity {
                                 /**Se guarda en variables de sesion las sucursales que tiene asginada*/
                                 session.setSucursales(json_info.getString(SUCURSALES));
 
+
+
                                 Log.e("SUCURSALES","--------->"+session.getSucursales());
 
                                 /**Se crea una alarma que para cada 15 minutos este

@@ -686,6 +686,8 @@ public class VistaGestion extends AppCompatActivity {
                     dBhelper.saveResumenGestion(db, values);
                 }
 
+                Log.e("AQUI VISTA GESTION", "PRUEBA WHATSAPP");
+
                 File img = new File(ROOT_PATH+"Resumen/"+resumen);
                 Uri imgUri = Uri.parse(img.getPath());
                 Intent whatsappIntent = new Intent(Intent.ACTION_SEND);

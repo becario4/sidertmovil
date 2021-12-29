@@ -2367,6 +2367,8 @@ public class recuperacion_ind_fragment extends Fragment {
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
                         ss.SaveRespuestaGestion(ctx, false);
 
+                        Log.e("AQUI recuperacion_ind_frag", "PRUEBA WHATSAPP");
+
                         Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
                         Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
                         whatsappIntent.setType("text/plain");

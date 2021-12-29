@@ -345,6 +345,9 @@ public class SolicitudIntegrante extends AppCompatActivity {
 
     boolean hasFractionalPart = false;
 
+    boolean pushMapButtonCli = false;
+    boolean pushMapButtonNeg = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1178,7 +1181,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
         mMapCli.animateCamera(ubication);
 
         pbLoadCli.setVisibility(View.GONE);
-        ibMapCli.setVisibility(View.GONE);
+        //ibMapCli.setVisibility(View.GONE);
     }
     private void addMarkerNeg (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
@@ -1193,7 +1196,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
         mMapNeg.animateCamera(ubication);
 
         pbLoadNeg.setVisibility(View.GONE);
-        ibMapNeg.setVisibility(View.GONE);
+        //ibMapNeg.setVisibility(View.GONE);
     }
 
     private void initComponents (String id_credito, String id_integrante){

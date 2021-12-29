@@ -11,28 +11,90 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.EligeImpresora" />
-        <activity  android:name=".views.pdfreader.PdfReaderActivity"/>
-        <activity android:name=".activities.CobrosCC" />
-        <activity android:name=".activities.ConsultadosCC" />
-        <activity android:name=".views.circulocredito.CirculoCreditoActivity" />
-        <activity android:name=".activities.ConsultarCC" />
-        <activity android:name=".activities.FormularioCC" />
-
-        <activity android:name=".activities.SolicitudIntegrante" />
-        <activity android:name=".activities.SolicitudGpo" />
-        <activity android:name=".activities.SolicitudInd" />
-        <activity android:name=".activities.Solicitudes" />
-        <activity android:name=".views.apoyogastosfunerarios.ResumenActivity" />
-        <activity android:name=".views.apoyogastosfunerarios.ReciboActivity" />
-        <activity android:name=".activities.RenovarIntegrante" />
-        <activity android:name=".activities.RenovacionCreditoGpo" />
-        <activity android:name=".activities.RenovacionCreditoInd" />
-        <activity android:name=".activities.RenovacionCredito" />
-        <activity android:name=".activities.ResumenImpresiones" />
-        <activity android:name=".activities.SolicitudTicket" />
-        <activity android:name=".activities.GenerarCurp" />
-        <activity android:name=".activities.CodigosOxxo" />
+        <activity
+            android:name=".activities.EligeImpresora"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".views.pdfreader.PdfReaderActivity"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.CobrosCC"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.ConsultadosCC"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".views.circulocredito.CirculoCreditoActivity"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.ConsultarCC"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.FormularioCC"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.SolicitudIntegrante"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.SolicitudGpo"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.SolicitudInd"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.Solicitudes"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".views.apoyogastosfunerarios.ResumenActivity"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".views.apoyogastosfunerarios.ReciboActivity"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.RenovarIntegrante"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.RenovacionCreditoGpo"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.RenovacionCreditoInd"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.RenovacionCredito"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.ResumenImpresiones"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.SolicitudTicket"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.GenerarCurp"
+            android:screenOrientation="portrait"
+        />
+        <activity
+            android:name=".activities.CodigosOxxo"
+            android:screenOrientation="portrait"
+        />
         <activity
             android:name=".activities.ReporteInicioSesion"
             android:screenOrientation="portrait" />
@@ -244,6 +306,8 @@
 
     <uses-feature android:name="android.hardware.camera2.full" />
 
+
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />

@@ -8,580 +8,707 @@
     android:id="@+id/CLcontainer"
     android:clipChildren="false"
     android:layout_marginStart="@dimen/paddingcl">
-    <LinearLayout
+    <ScrollView
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content">
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/tbMain"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="@string/settings"
-                app:titleTextColor="@color/white"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarFichas"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/tbMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:title="@string/settings"
+                    app:titleTextColor="@color/white"
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarFichas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Fichas"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Fichas"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarGeolocalizaciones"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarGeolocalizaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Geolocalizaciones"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Geolocalizaciones"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarImpresiones"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarImpresiones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Impresiones"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Impresiones"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarRutas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarRutas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Rutas"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Rutas"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarAgf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarAgf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar AGF"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar AGF"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarCirculoCredito"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarCirculoCredito"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Circulos de Crédito"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Circulos de Crédito"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarOriginacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarOriginacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Originaciones"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Originaciones"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarRenovaciones"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarRenovaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Renovaciones"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Renovaciones"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarEstadoSolicitudes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarEstadoSolicitudes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Estados de Solicitudes"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Estados de Solicitudes"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvSincronizarVerificacionesDomiciliarias"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvSincronizarVerificacionesDomiciliarias"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_update"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Sincronizar Verificaciones Domiciliarias"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Verificaciones Domiciliarias"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvFechaHora"
-            android:visibility="gone"
-            android:layout_marginTop="3dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sincronizarColonias"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_icon_timestamp"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Configurar Fecha y Hora"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Colonias"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvFichasGestionadas"
-            android:layout_marginTop="3dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sincronizarLocalidades"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_done_black"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Obtener Fichas Contestadas"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Localidades"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvCatalogos"
-            android:layout_marginTop="3dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sincronizarMunicipios"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="3dp"
-                        android:src="@drawable/ic_sync"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_update"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Actualizar Catálogos"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:text="Sincronizar Municipios"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvDownloadApk"
-            android:layout_marginTop="3dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="@dimen/cardview_default_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvFechaHora"
+                android:visibility="gone"
+                android:layout_marginTop="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:cardBackgroundColor="@color/yellow"
-                    app:cardElevation="@dimen/cardview_default_elevation"
-                    app:cardCornerRadius="5dp">
-                    <ImageView
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:paddingTop="5dp"
-                        android:paddingLeft="5dp"
-                        android:src="@drawable/ic_device_black"
-                        android:layout_marginRight="12dp"/>
-                </androidx.cardview.widget.CardView>
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_icon_timestamp"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:text="Descargar APK"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
+                    <TextView
+                        android:text="Configurar Fecha y Hora"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvFichasGestionadas"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@android:color/black"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="17sp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_done_black"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
+                    <TextView
+                        android:text="Obtener Fichas Contestadas"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvCatalogos"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_sync"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:text="Actualizar Catálogos"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvDownloadApk"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:paddingTop="5dp"
+                            android:paddingLeft="5dp"
+                            android:src="@drawable/ic_device_black"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:text="Descargar APK"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
@@ -55,13 +56,16 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
         }
 
         if (item.containsKey(7)){
+
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipo);
+
             //if (!item.get(7).trim().isEmpty()) {
             Log.e("AQUI SOLICITUD", item.get(7).trim().toUpperCase());
             Log.e("AQUI SOLICITUD", String.valueOf((item.get(7).trim().toUpperCase().equals("AUTORIZADO"))));
 
             String comentario = Miscellaneous.ucFirst(item.get(7));
 
-            if(item.get(7).trim().toUpperCase().equals("AUTORIZADO"))
+            if(item.get(7).trim().toUpperCase().equals("VALIDADO"))
             {
                 holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.green));
             }
@@ -73,7 +77,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
             {
                 holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.red));
             }
-            else
+            else if(!item.get(7).trim().toUpperCase().isEmpty())
             {
                 holder.tvComentario.setTextColor(ctx.getResources().getColor(R.color.orange));
                 comentario = "Editar";
@@ -83,8 +87,12 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
                 if (item.get(2).equals("2") && comentario.equals("Editar")) comentario = "";
             }
 
-            holder.tvComentario.setVisibility(View.VISIBLE);
-            holder.tvComentario.setText(comentario);
+            if(!comentario.trim().isEmpty())
+            {
+                holder.tvComentario.setVisibility(View.VISIBLE);
+                holder.tvComentario.setText(comentario);
+            }
+
             /*}
             else {
                 holder.tvComentario.setVisibility(View.GONE);
@@ -93,6 +101,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
         }
         else
         {
+            Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_group_blue)).into(holder.ivTipo);
             holder.tvComentario.setVisibility(View.GONE);
             holder.tvComentario.setText("");
         }
@@ -156,6 +165,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
         private TextView tvFechaTermino;
         private TextView tvFechaEnvio;
         private ImageView ivInfo;
+        private ImageView ivTipo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -165,6 +175,7 @@ public class adapter_originacion extends RecyclerView.Adapter<adapter_originacio
             tvFechaTermino  = itemView.findViewById(R.id.tvFechaTermino);
             tvFechaEnvio    = itemView.findViewById(R.id.tvFechaEnvio);
             ivInfo          = itemView.findViewById(R.id.ivInfo);
+            ivTipo          = itemView.findViewById(R.id.ivTipo);
         }
 
         public void bind (final HashMap<Integer, String> item){

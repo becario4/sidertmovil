@@ -20,13 +20,13 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.sidert.sidertmovil"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
-        versionName "2.6.4"
+        versionName "2.6.5"
         //multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -54,8 +54,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     //-----------------------  Nuevas Dependencias  ---------------------------------
     //implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:design:30.0.0'
+    implementation 'com.android.support:cardview-v7:30.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0' //Imagenes en forma circular
     implementation 'com.squareup.okhttp3:okhttp:3.5.0'
@@ -65,11 +65,11 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:16.1.0"
     implementation "com.google.firebase:firebase-core:16.0.9"
     implementation "com.google.firebase:firebase-messaging:18.0.0"
-    //implementation 'com.google.firebase:firebase-firestore:17.0.2'
+    //implementation 'com.google.firebase:firebase-firestore:0.2'
 
-    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:support-v4:30.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.android.support:recyclerview-v7:28.0.0' //Listas
+    implementation 'com.android.support:recyclerview-v7:30.0.0' //Listas
 
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+' //gif
