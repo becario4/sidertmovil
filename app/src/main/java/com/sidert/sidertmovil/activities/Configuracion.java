@@ -39,6 +39,13 @@ import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividual;
 import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividualDao;
 import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencida;
 import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencidaDao;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -61,6 +68,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -86,6 +94,8 @@ public class Configuracion extends AppCompatActivity {
     private CardView sincronizarColonias;
     private CardView sincronizarLocalidades;
     private CardView sincronizarMunicipios;
+    private CardView cvSincronizarIntegrantesRen;
+    private CardView cvCompletarIntegrantesRen;
 
     private SessionManager session;
 
@@ -111,11 +121,13 @@ public class Configuracion extends AppCompatActivity {
         cvSincronizarCirculoCredito              = findViewById(R.id.cvSincronizarCirculoCredito);
         cvSincronizarOriginacion                 = findViewById(R.id.cvSincronizarOriginacion);
         cvSincronizarRenovaciones                = findViewById(R.id.cvSincronizarRenovaciones);
+        cvSincronizarIntegrantesRen              = findViewById(R.id.cvSincronizarIntegrantesRen);
         cvSincronizarEstadoSolicitudes           = findViewById(R.id.cvSincronizarEstadoSolicitudes);
         cvSincronizarVerificacionesDomiciliarias = findViewById(R.id.cvSincronizarVerificacionesDomiciliarias);
         sincronizarColonias                      = findViewById(R.id.sincronizarColonias);
         sincronizarLocalidades                   = findViewById(R.id.sincronizarLocalidades);
         sincronizarMunicipios                    = findViewById(R.id.sincronizarMunicipios);
+        cvCompletarIntegrantesRen                = findViewById(R.id.cvCompletarIntegrantesRen);
 
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
@@ -140,11 +152,13 @@ public class Configuracion extends AppCompatActivity {
         cvSincronizarCirculoCredito.setOnClickListener(cvSincronizarCirculoCredito_OnClick);
         cvSincronizarOriginacion.setOnClickListener(cvSincronizarOriginacion_OnClick);
         cvSincronizarRenovaciones.setOnClickListener(cvSincronizarRenovaciones_OnClick);
+        cvSincronizarIntegrantesRen.setOnClickListener(cvSincronizarIntegrantesRen_OnClick);
         cvSincronizarEstadoSolicitudes.setOnClickListener(cvSincronizarEstadoSolicitudes_OnClick);
         cvSincronizarVerificacionesDomiciliarias.setOnClickListener(cvSincronizarVerificacionesDomiciliarias_OnClick);
         sincronizarColonias.setOnClickListener(sincronizarColonias_OnClick);
         sincronizarLocalidades.setOnClickListener(sincronizarLocalidades_OnClick);
         sincronizarMunicipios.setOnClickListener(sincronizarMunicipios_OnClick);
+        cvCompletarIntegrantesRen.setOnClickListener(cvCompletarIntegrantesRen_OnClick);
 
 
         /**Evento de click para descargar las geolocalizaciones ya realizadas*/
@@ -192,10 +206,12 @@ public class Configuracion extends AppCompatActivity {
                             break;
                         case "renovacion":
                             cvSincronizarRenovaciones.setVisibility(View.VISIBLE);
+                            cvSincronizarIntegrantesRen.setVisibility(View.VISIBLE);
                             cvSincronizarEstadoSolicitudes.setVisibility(View.VISIBLE);
                             sincronizarColonias.setVisibility(View.VISIBLE);
                             sincronizarLocalidades.setVisibility(View.VISIBLE);
                             sincronizarMunicipios.setVisibility(View.VISIBLE);
+                            cvCompletarIntegrantesRen.setVisibility(View.VISIBLE);
                             break;
                         case "solicitudes":
                             //menuGeneral.getItem(8).setVisible(true);
@@ -292,7 +308,7 @@ public class Configuracion extends AppCompatActivity {
 
                             /*BUSCAR Y REGISTRAR CIERRE DE DIA*/
                             Log.e("AQUI CIERRE DE DIA", session.getUser().get(0));
-                            //if(session.getUser().get(0).equals("599"))
+                            //if(session.getUser().get(0).equals("131"))
                             if(false)
                             {
                                 GestionIndividualDao gestionIndividualDao = new GestionIndividualDao(ctx);
@@ -682,6 +698,73 @@ public class Configuracion extends AppCompatActivity {
             if (NetworkStatus.haveNetworkConnection(ctx)) {
                 cvSincronizarRenovaciones.setEnabled(false);
 
+                /*SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
+                SolicitudRen solicitud = solicitudDao.findByNombre("AMANECER 7377");
+                if(solicitud != null)
+                {
+                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                    if(creditoGpoRen != null)
+                    {
+                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                        List<IntegranteGpoRen> integrantes = integranteGpoRenDao.findByIdCredito(creditoGpoRen.getId());
+
+                        for(IntegranteGpoRen i : integrantes)
+                        {
+                            i.setEstatusCompletado(1);
+                            integranteGpoRenDao.saveEstatus(i);
+                        }
+
+                        solicitud.setEstatus(1);
+                        solicitudDao.updateEstatus(solicitud);
+                    }
+                }*/
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                        ss.CancelGestiones(ctx, false);
+                        ss.SendCancelGestiones(ctx, false);
+                        ss.SendRenovacionInd(ctx, false);
+                        ss.SendRenovacionGpo(ctx, false);
+                    }
+                    cvSincronizarRenovaciones.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+    private View.OnClickListener cvSincronizarIntegrantesRen_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvSincronizarIntegrantesRen.setEnabled(false);
+
                 Handler handler_home = new Handler();
                 handler_home.postDelayed(() -> {
                     /**Valida si esta la sesion activa*/
@@ -694,13 +777,50 @@ public class Configuracion extends AppCompatActivity {
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
                         ss.GetPrestamosToRenovar(ctx);
-                        ss.SendRenovacionInd(ctx, false);
-                        ss.SendRenovacionGpo(ctx, false);
-                        ss.CancelGestiones(ctx, true);
-                        ss.SendCancelGestiones(ctx, true);
-
                     }
-                    cvSincronizarRenovaciones.setEnabled(true);
+                    cvSincronizarIntegrantesRen.setEnabled(true);
+                }, 3000);
+
+            }
+            else{
+                /**No tiene conexion a internet */
+                AlertDialog error_connect = Popups.showDialogMessage(ctx, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_connect.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                error_connect.show();
+            }
+        }
+
+    };
+
+
+    private View.OnClickListener cvCompletarIntegrantesRen_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                cvCompletarIntegrantesRen.setEnabled(false);
+
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        HashMap<Integer, String> params_sincro = new HashMap<>();
+                        params_sincro.put(0, session.getUser().get(0));
+                        params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
+                        dBhelper.saveSincronizado(db, Constants.SINCRONIZADO_T, params_sincro);
+
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                        ss.GetPrestamosToRenovarForce(ctx);
+                    }
+                    cvCompletarIntegrantesRen.setEnabled(true);
                 }, 3000);
 
             }

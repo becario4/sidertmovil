@@ -81,8 +81,18 @@ public class SplashSidertActivity extends AppCompatActivity {
         try {
             Log.e("MODEL", Build.MODEL);
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+
+            if(Build.MODEL.trim().equals("SM-A022M"))
+            {
+                Log.e("MAC", Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+                session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+            }
+
             for (NetworkInterface nif : all) {
                 Log.e("MAC NIF", nif.getName());
+
+
+
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
                 byte[] macBytes = nif.getHardwareAddress();
@@ -108,10 +118,11 @@ public class SplashSidertActivity extends AppCompatActivity {
 
                 String newMacAddress = mac[0]+":"+mac[1]+":"+mac[2]+":"+mac[3]+":"+mac[4]+":"+mac[5];
                 Log.e("MAC NIF ADDRESS", newMacAddress);
+
                 /**Se guarda la MacAddress en variable de sesion*/
                 if(Build.MODEL.trim().equals("SM-A022M"))
                 {
-                    session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+                    //session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
                 }
                 else
                 {
@@ -125,10 +136,8 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
         //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        session.setDominio("http://192.168.0.139:", "8080");//LOCALHOST
-        //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
-
-
+        //session.setDominio("http://192.168.0.105:", "8080");//LOCALHOST
+        session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";

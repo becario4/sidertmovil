@@ -130,10 +130,16 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ESTADO_NAC_AVA
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA_ASESOR;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA_CLI;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBANTE_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBATE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBATE_GARANTIA;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONTAL;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONTAL_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO_AVAL;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_SELFIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_AVAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CLIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CONY;
@@ -238,6 +244,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private TextView tvCantidadLetra;
     private TextView tvDestino;
     private TextView tvRiesgo;
+    private EditText etMontoRefinanciar;
     //=========================================
     //======== DATOS PERSONALES ===============
     private LinearLayout llComentAdminCli;
@@ -452,6 +459,24 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageButton ibFirmaAval;
     private ImageView ivFirmaAval;
     public byte[] byteFirmaAval;
+    private TextView tvIneFrontalAval;
+    private ImageButton ibIneFrontalAval;
+    private ImageView ivIneFrontalAval;
+    public byte[] byteIneFrontalAval;
+    private TextView tvIneReversoAval;
+    private ImageButton ibIneReversoAval;
+    private ImageView ivIneReversoAval;
+    public byte[] byteIneReversoAval;
+    private LinearLayout llFotoCurpAval;
+    private TextView tvCurpAval;
+    private ImageButton ibCurpAval;
+    private ImageView ivCurpAval;
+    public byte[] byteCurpAval;
+    private TextView tvComprobanteAval;
+    private ImageButton ibComprobanteAval;
+    private ImageView ivComprobanteAval;
+    public byte[] byteComprobanteAval;
+
     //========================================
     //========== REFERENCIA ==================
     private LinearLayout llComentAdminRef;
@@ -482,6 +507,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private TextView tvLateraUno;
     private TextView tvLateraDos;
     private MultiAutoCompleteTextView etReferencia;
+    private MultiAutoCompleteTextView etCaracteristicasDomicilio;
     //========================================
     //======= POLITICAS ======================
     private TextView tvPropietarioReal;
@@ -515,6 +541,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageButton ibFirmaAsesor;
     private ImageView ivFirmaAsesor;
     public byte[] byteFirmaAsesor;
+    private TextView tvIneSelfie;
+    private ImageButton ibIneSelfie;
+    private ImageView ivIneSelfie;
+    public byte[] byteIneSelfie;
+    private TextView tvComprobanteGarantia;
+    private ImageButton ibComprobanteGarantia;
+    private ImageView ivComprobanteGarantia;
+    public byte[] byteComprobanteGarantia;
     //========================================
     //================= Image View  =====================
     private ImageView ivDown1;
@@ -668,6 +702,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvCantidadLetra     = findViewById(R.id.tvCantidadLetra);
         tvDestino           = findViewById(R.id.tvDestino);
         tvRiesgo            = findViewById(R.id.tvRiesgo);
+        etMontoRefinanciar  = findViewById(R.id.etMontoRefinanciar);
         //==========================================================================================
         //=================================  DATOS PERSONALES  =====================================
         llComentAdminCli     = findViewById(R.id.llComentCli);
@@ -875,6 +910,20 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvFirmaAval         = findViewById(R.id.tvFirmaAval);
         ibFirmaAval         = findViewById(R.id.ibFirmaAval);
         ivFirmaAval         = findViewById(R.id.ivFirmaAval);
+
+        tvIneFrontalAval    = findViewById(R.id.tvIneFrontalAval);
+        ibIneFrontalAval    = findViewById(R.id.ibIneFrontalAval);
+        ivIneFrontalAval    = findViewById(R.id.ivIneFrontalAval);
+        tvIneReversoAval    = findViewById(R.id.tvIneReversoAval);
+        ibIneReversoAval    = findViewById(R.id.ibIneReversoAval);
+        ivIneReversoAval    = findViewById(R.id.ivIneReversoAval);
+        llFotoCurpAval      = findViewById(R.id.llFotoCurpAval);
+        tvCurpAval          = findViewById(R.id.tvCurpAval);
+        ibCurpAval          = findViewById(R.id.ibCurpAval);
+        ivCurpAval          = findViewById(R.id.ivCurpAval);
+        tvComprobanteAval   = findViewById(R.id.tvComprobanteAval);
+        ibComprobanteAval   = findViewById(R.id.ibComprobanteAval);
+        ivComprobanteAval   = findViewById(R.id.ivComprobanteAval);
         //==========================================================================================
         //==================================  DATOS REFERENCIA  ====================================
         llComentAdminRef     = findViewById(R.id.llComentRef);
@@ -905,6 +954,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvLateraUno         = findViewById(R.id.tvLateralUno);
         tvLateraDos         = findViewById(R.id.tvLateralDos);
         etReferencia        = findViewById(R.id.etReferencia);
+        etCaracteristicasDomicilio = findViewById(R.id.etCaracteristicasDomicilio);
         //==========================================================================================
         //==================================  DATOS POLITICAS   ====================================
         tvPropietarioReal       = findViewById(R.id.tvPropietarioReal);
@@ -933,6 +983,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvFirmaAsesor       = findViewById(R.id.tvFirmaAsesor);
         ibFirmaAsesor       = findViewById(R.id.ibFirmaAsesor);
         ivFirmaAsesor       = findViewById(R.id.ivFirmaAsesor);
+        tvIneSelfie         = findViewById(R.id.tvIneSelfie);
+        ibIneSelfie         = findViewById(R.id.ibIneSelfie);
+        ivIneSelfie         = findViewById(R.id.ivIneSelfie);
+        tvComprobanteGarantia = findViewById(R.id.tvComprobanteGarantia);
+        ibComprobanteGarantia = findViewById(R.id.ibComprobanteGarantia);
+        ivComprobanteGarantia = findViewById(R.id.ivComprobanteGarantia);
         //=========================================================
         //================ LINEAR LAYOUT  =========================
         llDatosCredito      = findViewById(R.id.llDatosCredito);
@@ -1154,6 +1210,68 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         });
         tvDestino.setOnClickListener(tvDestino_OnClick);
         tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
+        etMontoRefinanciar.addTextChangedListener(new TextWatcher() {
+            private final String PATTERN_MONTO_CREDITO  = "[0-9]+";
+            private Pattern pattern;
+            private Matcher matcher;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
+                {
+                    hasFractionalPart = true;
+                } else {
+                    hasFractionalPart = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                etMontoRefinanciar.removeTextChangedListener(this);
+
+                try {
+                    int inilen, endlen;
+                    inilen = m.GetStr(etMontoRefinanciar).length();
+                    String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
+                    Number n = df.parse(v);
+                    int cp = etMontoRefinanciar.getSelectionStart();
+                    if (hasFractionalPart) {
+                        etMontoRefinanciar.setText(df.format(n));
+                    } else {
+                        etMontoRefinanciar.setText(dfnd.format(n));
+                    }
+                    endlen = m.GetStr(etMontoRefinanciar).length();
+                    int sel = (cp + (endlen - inilen));
+                    if (sel > 0 && sel <= m.GetStr(etMontoRefinanciar).length()) {
+                        etMontoRefinanciar.setSelection(sel);
+                    } else {
+                        // place cursor at the end?
+                        etMontoRefinanciar.setSelection(m.GetStr(etMontoRefinanciar).length() - 1);
+                    }
+                } catch (NumberFormatException nfe) {
+                    // do nothing?
+                } catch (ParseException e) {
+                    // do nothing?
+                }
+
+                if (s.length()> 0){
+                    pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
+                    matcher = pattern.matcher(s.toString().replace(",",""));
+                    if(!matcher.matches()) {
+                        etMontoRefinanciar.setError("La cantidad no corresponde a un monto válido");
+                    }else{
+                        Update("monto_refinanciar", TBL_CREDITO_IND, s.toString().trim().replace(",",""));
+                    }
+                }
+
+                etMontoRefinanciar.addTextChangedListener(this);
+            }
+        });
         //==============================  PERSONALES LISTENER ======================================
         etNombreCli.addTextChangedListener(new TextWatcher() {
             @Override
@@ -4524,11 +4642,36 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     Update("referencias",TBL_CROQUIS_IND, "");
             }
         });
+        etCaracteristicasDomicilio.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable e) {
+                if (e.length() > 0)
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_IND, e.toString().trim().toUpperCase());
+                else
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_IND, "");
+            }
+        });
         //================================  ESCANEAR DOCUMENTOS  ===================================
         ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
         ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
+        ibComprobanteGarantia.setOnClickListener(ibComprobanteGarantia_OnClick);
+        ibIneFrontalAval.setOnClickListener(ibIneFrontalAval_OnClick);
+        ibIneReversoAval.setOnClickListener(ibIneReversoAval_OnClick);
+        ibCurpAval.setOnClickListener(ibCurpAval_OnClick);
+        ibComprobanteAval.setOnClickListener(ibComprobanteAval_OnClick);
         //================================  CLIENTE GENERO LISTENER  ===============================
         rgGeneroCli.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -4739,7 +4882,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
         ivFirmaAsesor.setOnClickListener(ivFirmaAsesor_OnClick);
-
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+        ivComprobanteGarantia.setOnClickListener(ivComprobanteGarantia_OnClick);
+        ivIneFrontalAval.setOnClickListener(ivIneFrontalAval_OnClik);
+        ivIneReversoAval.setOnClickListener(ivIneReversoAval_OnClick);
+        ivCurpAval.setOnClickListener(ivCurpAval_OnClick);;
+        ivComprobanteAval.setOnClickListener(ivComprobanteAval_OnClick);
     }
 
     private View.OnClickListener ibFirmaAsesor_OnClick = new View.OnClickListener() {
@@ -5977,6 +6125,68 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     };
 
+    private View.OnClickListener ibIneSelfie_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(SolicitudCreditoInd.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_ine_selfie");
+            startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+        }
+    };
+
+    private View.OnClickListener ibComprobanteGarantia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(SolicitudCreditoInd.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_comprobante_garantia");
+            startActivityForResult(i, REQUEST_CODE_FOTO_COMPROBATE_GARANTIA);
+        }
+    };
+
+    private View.OnClickListener ibIneFrontalAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent scanIntent = new Intent(SolicitudCreditoInd.this, CardIOActivity.class);
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+            startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_FRONTAL_AVAL);
+        }
+    };
+
+    private View.OnClickListener ibIneReversoAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent scanIntent = new Intent(SolicitudCreditoInd.this, CardIOActivity.class);
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+            scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+            scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+            scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+            scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+            startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_REVERSO_AVAL);
+        }
+    };
+
+    private View.OnClickListener ibCurpAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(SolicitudCreditoInd.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_curp_aval");
+            startActivityForResult(i, REQUEST_CODE_FOTO_CURP_AVAL);
+        }
+    };
+
+    private View.OnClickListener ibComprobanteAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(SolicitudCreditoInd.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_comprobante_aval");
+            startActivityForResult(i, REQUEST_CODE_FOTO_COMPROBANTE_AVAL);
+        }
+    };
+
     //================== IMAGE VIEW LISTENER  ======================================================
     private View.OnClickListener ivFotoFachCli_OnClick = new View.OnClickListener() {
         @Override
@@ -6251,6 +6461,60 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
+    private View.OnClickListener ivIneSelfie_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditDoc){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
     private View.OnClickListener ivIneReverso_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6418,6 +6682,235 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
+    private View.OnClickListener ivComprobanteGarantia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditDoc){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_COMPROBATE_GARANTIA);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteComprobanteGarantia);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else {
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteComprobanteGarantia);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+    private View.OnClickListener ivIneFrontalAval_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditAva){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent scanIntent = new Intent(SolicitudCreditoInd.this, CardIOActivity.class);
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+                                startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_FRONTAL_AVAL);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneFrontalAval);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneFrontalAval);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+
+    private View.OnClickListener ivIneReversoAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditAva){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent scanIntent = new Intent(SolicitudCreditoInd.this, CardIOActivity.class);
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_SCAN,true); // supmit cuando termine de reconocer el documento
+                                scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY,true); // esconder teclado
+                                scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO,true); // cambiar logo de paypal por el de card.io
+                                scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE,true); // capture img
+                                scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE,true); // capturar img
+                                startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_REVERSO_AVAL);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneReversoAval);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneReversoAval);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+
+    private View.OnClickListener ivCurpAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditAva){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_CURP_AVAL);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteCurpAval);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else {
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteCurpAval);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+
     private View.OnClickListener ivFirmaAsesor_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -6444,6 +6937,62 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
+
+    private View.OnClickListener ivComprobanteAval_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isEditAva){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(context, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_COMPROBANTE_AVAL);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteComprobanteAval);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else {
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(context, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(context, VerImagen.class);
+                                i.putExtra(IMAGEN, byteComprobanteAval);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+
     // ================== IMAGE VIEW  ===================================
     private View.OnClickListener llCredito_OnClick = new View.OnClickListener() {
         @Override
@@ -7254,6 +7803,22 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     }
                 }
                 break;
+            case REQUEST_CODE_FOTO_INE_SELFIE:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvIneSelfie.setError(null);
+                        ibIneSelfie.setVisibility(View.GONE);
+                        ivIneSelfie.setVisibility(View.VISIBLE);
+                        byteIneSelfie = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
+                        try {
+                            Update("ine_selfie", TBL_DOCUMENTOS, m.save(byteIneSelfie, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:
                 if (resultCode == RESULT_SCAN_SUPPRESSED){
                     if (data != null){
@@ -7318,6 +7883,92 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Glide.with(ctx).load(byteComprobante).centerCrop().into(ivComprobante);
                         try {
                             Update("comprobante", TBL_DOCUMENTOS, m.save(byteComprobante, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_COMPROBATE_GARANTIA:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvComprobanteGarantia.setError(null);
+                        ibComprobanteGarantia.setVisibility(View.GONE);
+                        ivComprobanteGarantia.setVisibility(View.VISIBLE);
+                        byteComprobanteGarantia = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteComprobanteGarantia).centerCrop().into(ivComprobanteGarantia);
+                        try {
+                            Update("comprobante_garantia", TBL_DOCUMENTOS, m.save(byteComprobanteGarantia, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_FRONTAL_AVAL:
+                if (resultCode == RESULT_SCAN_SUPPRESSED){
+                    if (data != null){
+                        tvIneFrontalAval.setError(null);
+                        Bitmap cardIneFrontalAval = CardIOActivity.getCapturedCardImage(data);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneFrontalAval.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byteIneFrontalAval =  baos.toByteArray();
+                        ibIneFrontalAval.setVisibility(View.GONE);
+                        ivIneFrontalAval.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(byteIneFrontalAval).centerCrop().into(ivIneFrontalAval);
+                        try {
+                            Update("ine_frontal_aval", TBL_DOCUMENTOS, m.save(byteIneFrontalAval, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_REVERSO_AVAL:
+                if (resultCode == RESULT_SCAN_SUPPRESSED){
+                    if (data != null){
+                        tvIneReversoAval.setError(null);
+                        Bitmap cardIneReversoAval = CardIOActivity.getCapturedCardImage(data);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneReversoAval.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byteIneReversoAval =  baos.toByteArray();
+                        ibIneReversoAval.setVisibility(View.GONE);
+                        ivIneReversoAval.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(byteIneReversoAval).centerCrop().into(ivIneReversoAval);
+                        try {
+                            Update("ine_reverso_aval", TBL_DOCUMENTOS, m.save(byteIneReversoAval, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_CURP_AVAL:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvCurpAval.setError(null);
+                        ibCurpAval.setVisibility(View.GONE);
+                        ivCurpAval.setVisibility(View.VISIBLE);
+                        byteCurpAval = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteCurpAval).centerCrop().into(ivCurpAval);
+                        try {
+                            Update("curp_aval", TBL_DOCUMENTOS, m.save(byteCurpAval, 4));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_COMPROBANTE_AVAL:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvComprobanteAval.setError(null);
+                        ibComprobanteAval.setVisibility(View.GONE);
+                        ivComprobanteAval.setVisibility(View.VISIBLE);
+                        byteComprobanteAval = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteComprobanteAval).centerCrop().into(ivComprobanteAval);
+                        try {
+                            Update("comprobante_aval", TBL_DOCUMENTOS, m.save(byteComprobanteAval, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -7523,14 +8174,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
     private boolean saveDatosCredito(){
         boolean save_credito = false;
-        if (!validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvFrecuencia, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvFechaDesembolso, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvDiaDesembolso, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvHoraVisita, new String[]{validatorTV.REQUIRED}) &&
-        !validator.validate(etMontoPrestamo, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO}) &&
-        !validatorTV.validate(tvDestino, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED})){
+        if (
+            !validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvFrecuencia, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvFechaDesembolso, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvDiaDesembolso, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvHoraVisita, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etMontoPrestamo, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO}) &&
+            !validatorTV.validate(tvDestino, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etMontoRefinanciar, new String[]{validator.REQUIRED})
+        ){
             ivError1.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("plazo",m.GetStr(tvPlazo));
@@ -7541,6 +8195,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("monto_prestamo",m.GetStr(etMontoPrestamo).replace(",",""));
             cv.put("destino",m.GetStr(tvDestino));
             cv.put("clasificacion_riesgo", m.GetStr(tvRiesgo));
+            cv.put("monto_refinanciar", m.GetStr(etMontoRefinanciar).replace(",",""));
 
             db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_credito = true;
@@ -8205,6 +8860,29 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                         flag = false;
                                                     }
 
+
+                                                    if (byteIneFrontalAval != null) {
+                                                        if (byteIneReversoAval != null) {
+                                                            if (byteCurpAval != null) {
+                                                                if (byteComprobanteAval != null) {
+
+                                                                } else {
+                                                                    flag = false;
+                                                                    tvComprobanteAval.setError("");
+                                                                }
+                                                            } else {
+                                                                flag = false;
+                                                                tvCurpAval.setError("");
+                                                            }
+                                                        } else {
+                                                            flag = false;
+                                                            tvIneReversoAval.setError("");
+                                                        }
+                                                    } else {
+                                                        flag = false;
+                                                        tvIneFrontalAval.setError("");
+                                                    }
+
                                                     if(flag) {
 
                                                         /*if (byteFotoFachAval != null) {
@@ -8411,11 +9089,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
     private boolean saveCroquis(){
         boolean save_croquis = false;
-        if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-        !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
+        if(
+            !validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED})
+        ){
             //ivError8.setVisibility(View.GONE);
             ivError2.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
@@ -8424,6 +9105,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             cv.put("lateral_dos", m.GetStr(tvLateraDos));
             cv.put("calle_trasera", m.GetStr(tvTrasera));
             cv.put("referencias", m.GetStr(etReferencia));
+            cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasDomicilio));
 
             db.update(TBL_CROQUIS_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
             save_croquis = true;
@@ -8495,36 +9177,37 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
     private boolean saveDocumentacion(){
         boolean save_documentacion = false;
-        if (byteIneFrontal != null){
-            if (byteIneReverso != null){
-                if (byteCurp != null){
-                    if (byteComprobante != null){
-                        if (byteFirmaAsesor != null) {
-                            save_documentacion = true;
-                        }
-                        else{
+        if (byteIneSelfie != null) {
+            if (byteIneFrontal != null) {
+                if (byteIneReverso != null) {
+                    if (byteCurp != null) {
+                        if (byteComprobante != null) {
+                            if (byteFirmaAsesor != null) {
+                                save_documentacion = true;
+                            } else {
+                                ivError10.setVisibility(View.VISIBLE);
+                                tvFirmaAsesor.setError("");
+                            }
+                        } else {
                             ivError10.setVisibility(View.VISIBLE);
-                            tvFirmaAsesor.setError("");
+                            tvComprobante.setError("");
                         }
-                    }
-                    else{
+                    } else {
                         ivError10.setVisibility(View.VISIBLE);
-                        tvComprobante.setError("");
+                        tvCurp.setError("");
                     }
-                }
-                else{
+                } else {
                     ivError10.setVisibility(View.VISIBLE);
-                    tvCurp.setError("");
+                    tvIneReverso.setError("");
                 }
-            }
-            else{
+            } else {
                 ivError10.setVisibility(View.VISIBLE);
-                tvIneReverso.setError("");
+                tvIneFrontal.setError("");
             }
         }
         else{
             ivError10.setVisibility(View.VISIBLE);
-            tvIneFrontal.setError("");
+            tvIneSelfie.setError("");
         }
 
         return save_documentacion;
@@ -9229,7 +9912,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvDiaDesembolso.setText(row.getString(5));
         tvHoraVisita.setText(row.getString(6));
         if (!row.getString(7).trim().isEmpty())
-            etMontoPrestamo.setText(dfnd.format(row.getInt(7))); etMontoPrestamo.setEnabled(isEditCre);
+            etMontoPrestamo.setText(dfnd.format(row.getInt(7)));
+        etMontoPrestamo.setEnabled(isEditCre);
         if (!row.getString(7).trim().isEmpty()) {
             tvCantidadLetra.setText((m.cantidadLetra(row.getString(7)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
             if (row.getInt(7) >= 30000)
@@ -9237,6 +9921,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
         tvDestino.setText(row.getString(8));
         tvRiesgo.setText(row.getString(9));
+        if (row.getString(11) != null && !row.getString(11).trim().isEmpty()) etMontoRefinanciar.setText(dfnd.format(row.getInt(11)));
+        etMontoRefinanciar.setEnabled(isEditCre);
+
         row.close(); //Cierra dato del credito
 
         //Llenado de datos del cliente
@@ -9687,6 +10374,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvTrasera.setText(row.getString(5).trim().toUpperCase());
         etReferencia.setText(row.getString(6));
         etReferencia.setEnabled(isEditCro);
+        etCaracteristicasDomicilio.setText(row.getString(9));
+        etCaracteristicasDomicilio.setEnabled(isEditCro);
         row.close(); //Cierra datos del croquis
 
         row = dBhelper.getRecords(TBL_POLITICAS_PLD_IND, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
@@ -9726,6 +10415,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         row = dBhelper.getRecords(TBL_DOCUMENTOS, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
         isEditDoc = row.getInt(8) == 0;
+
         if (!row.getString(2).isEmpty()){
             File ineFrontalFile = new File(ROOT_PATH + "Documentos/"+row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
@@ -9770,6 +10460,61 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             ibFirmaAsesor.setVisibility(View.GONE);
             ivFirmaAsesor.setVisibility(View.VISIBLE);
         }
+
+        if (row.getString(9) != null && !row.getString(9).isEmpty()){
+            File ineSelfieFile = new File(ROOT_PATH + "Documentos/"+row.getString(9));
+            Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
+            byteIneSelfie = m.getBytesUri(ctx, uriIneSelfie,0);
+            Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
+            ibIneSelfie.setVisibility(View.GONE);
+            ivIneSelfie.setVisibility(View.VISIBLE);
+        }
+
+        if (row.getString(10) != null && !row.getString(10).isEmpty()){
+            File comprobanteGarantia = new File(ROOT_PATH + "Documentos/"+row.getString(10));
+            Uri uriComprobanteGarantia = Uri.fromFile(comprobanteGarantia);
+            byteComprobanteGarantia = m.getBytesUri(ctx, uriComprobanteGarantia,0);
+            Glide.with(ctx).load(uriComprobanteGarantia).into(ivComprobanteGarantia);
+            ibComprobanteGarantia.setVisibility(View.GONE);
+            ivComprobanteGarantia.setVisibility(View.VISIBLE);
+        }
+
+        if (row.getString(11) != null && !row.getString(11).isEmpty()){
+            File ineFrontalAvalFile = new File(ROOT_PATH + "Documentos/"+row.getString(11));
+            Uri uriIneFrontalAval = Uri.fromFile(ineFrontalAvalFile);
+            byteIneFrontalAval = m.getBytesUri(ctx, uriIneFrontalAval,0);
+            Glide.with(ctx).load(uriIneFrontalAval).into(ivIneFrontalAval);
+            ibIneFrontalAval.setVisibility(View.GONE);
+            ivIneFrontalAval.setVisibility(View.VISIBLE);
+        }
+
+        if (row.getString(12) != null && !row.getString(12).isEmpty()){
+            File ineReversoAvalFile = new File(ROOT_PATH + "Documentos/"+row.getString(12));
+            Uri uriIneReversoAval = Uri.fromFile(ineReversoAvalFile);
+            byteIneReversoAval = m.getBytesUri(ctx, uriIneReversoAval,0);
+            Glide.with(ctx).load(uriIneReversoAval).into(ivIneReversoAval);
+            ibIneReversoAval.setVisibility(View.GONE);
+            ivIneReversoAval.setVisibility(View.VISIBLE);
+        }
+
+        if (row.getString(13) != null && !row.getString(13).isEmpty()){
+            File curpAvalFile = new File(ROOT_PATH + "Documentos/"+row.getString(13));
+            Uri uriCurpAval = Uri.fromFile(curpAvalFile);
+            byteCurpAval = m.getBytesUri(ctx, uriCurpAval,0);
+            Glide.with(ctx).load(uriCurpAval).into(ivCurpAval);
+            ibCurpAval.setVisibility(View.GONE);
+            ivCurpAval.setVisibility(View.VISIBLE);
+        }
+
+        if (row.getString(14) != null && !row.getString(14).isEmpty()){
+            File comprobanteAvalFile = new File(ROOT_PATH + "Documentos/"+row.getString(14));
+            Uri uriComprobanteAval = Uri.fromFile(comprobanteAvalFile);
+            byteComprobanteAval = m.getBytesUri(ctx, uriComprobanteAval,0);
+            Glide.with(ctx).load(uriComprobanteAval).into(ivComprobanteAval);
+            ibComprobanteAval.setVisibility(View.GONE);
+            ivComprobanteAval.setVisibility(View.VISIBLE);
+        }
+
         row.close(); //Cierra datos de los documentos
 
         //if (!is_edit){
@@ -9781,6 +10526,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etMontoPrestamo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvDestino.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvRiesgo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etMontoRefinanciar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
         else
             ivError1.setVisibility(View.VISIBLE);
@@ -9983,8 +10729,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         else
             ivError7.setVisibility(View.VISIBLE);
 
-        if (!isEditCro)
+        if (!isEditCro) {
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCaracteristicasDomicilio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
 
         if (!isEditPol) {
             for (int i = 0; i < rgPropietarioReal.getChildCount(); i++) {

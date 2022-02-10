@@ -2,13 +2,17 @@ package com.sidert.sidertmovil.activities;
 
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 //import android.support.v4.app.ActivityCompat;
@@ -16,7 +20,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +55,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
@@ -560,9 +567,6 @@ public class VistaPreviaGestion extends AppCompatActivity {
             File img = null;
 
             try {
-                //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + m.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
-                String mPath = Environment.getExternalStorageDirectory().toString() + "/Resumen";
-                //String mPath = ROOT_PATH+"Resumen";
 
                 // create bitmap screen capture
                 View v1 = getWindow().getDecorView().getRootView();
@@ -580,63 +584,124 @@ public class VistaPreviaGestion extends AppCompatActivity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);*/
 
-                File directory = new File(mPath);
-                if(!directory.exists())
+
+                //String mPath = Environment.getExternalStorageDirectory().toString() + "/" + m.ObtenerFecha(TIMESTAMP).replace(" ","") + ".jpg";
+                String mPath = ROOT_PATH+"Resumen";
+                name = UUID.randomUUID().toString() + ".jpg";
+                int quality = 100;
+                //Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    Log.e("AQUI", "entre a mayor igual que");
+                    try {
+                        FileOutputStream fos;
+                        ContentResolver resolver = getContentResolver();
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil");
+                        Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                        fos = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
+                        /*whatsappIntent.setType("text/plain");
+                        whatsappIntent.setPackage("com.whatsapp");
+                        whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                        whatsappIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                        whatsappIntent.setType("image/jpeg");
+                        whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        */
+
+                        Intent i_result = new Intent();
+                        if (etEstatusPago.getVisibility() == View.VISIBLE){
+                            i_result.putExtra(ESTATUS, etEstatusPago.getText().toString().trim().toUpperCase());
+                            i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
+                            i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
+                        }
+
+                        if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
+                            i_result.putExtra(UBICACION, false);
+                        }
+
+                        Log.e("AQUI PATH", Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil");
+                        i_result.putExtra(FECHA_FIN, fechaFin);
+                        i_result.putExtra(NOMBRE, name);
+                        i_result.putExtra(RESPONSE, true);
+                        //i_result.putExtra(SCREEN_SHOT, img.getPath());
+                        //i_result.putExtra(SCREEN_SHOT, Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil" + File.separator + name);
+                        i_result.putExtra(SCREEN_SHOT, imageUri.getPath());
+                        setResult(RESULT_OK, i_result);
+
+
+                        finish();
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.e("AQUI", ex.getMessage());
+                    }
+                }
+                else
                 {
-                    Log.v("Carpeta", "No existe Resumen");
-                    directory.mkdir();
+                    File directory = new File(mPath);
+
+                    if(!directory.exists())
+                    {
+                        directory.mkdirs();
+                    }
+
+                    img = new File(mPath+"/"+name);
+
+                    FileOutputStream outputStream = new FileOutputStream(img);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+
+                   /* Uri imgUri = Uri.parse(img.getPath());
+                    whatsappIntent.setType("text/plain");
+                    whatsappIntent.setPackage("com.whatsapp");
+                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                    whatsappIntent.setType("image/jpeg");
+                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);*/
+
+                    Intent i_result = new Intent();
+                    if (etEstatusPago.getVisibility() == View.VISIBLE){
+                        i_result.putExtra(ESTATUS, etEstatusPago.getText().toString().trim().toUpperCase());
+                        i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
+                        i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
+                    }
+
+                    if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
+                        i_result.putExtra(UBICACION, false);
+                    }
+
+                    i_result.putExtra(FECHA_FIN, fechaFin);
+                    i_result.putExtra(NOMBRE, name);
+                    i_result.putExtra(RESPONSE, true);
+                    //i_result.putExtra(SCREEN_SHOT, img.getPath());
+                    i_result.putExtra(SCREEN_SHOT, img.getAbsolutePath());
+                    setResult(RESULT_OK, i_result);
+
+
+                    finish();
                 }
 
-                name = UUID.randomUUID().toString() + ".jpeg";
-                img = new File(mPath+"/"+name);
+                /*try {
+                    ctx.startActivity(whatsappIntent);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Log.e("AQUI", ex.getMessage());
+                    Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception ex)
+                {
+                    Toast.makeText(ctx, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("AQUI", ex.getMessage());
+                }*/
 
-
-                FileOutputStream outputStream = new FileOutputStream(img);
-                int quality = 100;
-                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-                outputStream.flush();
-                outputStream.close();
             } catch (Throwable e) {
-                // Several error may come out with file handling or DOM
-                e.printStackTrace();
+                Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("AQUI", e.getMessage());
             }
 
-
-            /*Uri imgUri = Uri.parse(img.getPath());
-            Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-            whatsappIntent.setType("text/plain");
-            whatsappIntent.setPackage("com.whatsapp");
-            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-            whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-            whatsappIntent.setType("image/jpeg");
-            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            try {
-                ctx.startActivity(whatsappIntent);
-            } catch (android.content.ActivityNotFoundException ex) {
-                Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
-            }*/
-
-            Intent i_result = new Intent();
-            if (etEstatusPago.getVisibility() == View.VISIBLE){
-                i_result.putExtra(ESTATUS, etEstatusPago.getText().toString().trim().toUpperCase());
-                i_result.putExtra(SALDO_CORTE, etSaldoCorte.getText().toString().trim().toUpperCase());
-                i_result.putExtra(SALDO_ACTUAL, etSaldoActual.getText().toString().trim().toUpperCase());
-            }
-
-            if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
-                i_result.putExtra(UBICACION, false);
-            }
-
-            i_result.putExtra(FECHA_FIN, fechaFin);
-            i_result.putExtra(NOMBRE, name);
-            i_result.putExtra(RESPONSE, true);
-            //i_result.putExtra(SCREEN_SHOT, img.getPath());
-            i_result.putExtra(SCREEN_SHOT, img.getAbsolutePath());
-            setResult(RESULT_OK, i_result);
-
-
-            finish();
         }
     };
 

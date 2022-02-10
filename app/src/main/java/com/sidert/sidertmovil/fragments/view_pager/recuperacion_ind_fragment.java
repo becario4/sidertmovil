@@ -3,6 +3,8 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 /*import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +32,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -86,6 +90,8 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -2368,19 +2374,47 @@ public class recuperacion_ind_fragment extends Fragment {
                         ss.SaveRespuestaGestion(ctx, false);
 
                         Log.e("AQUI recuperacion_ind_frag", "PRUEBA WHATSAPP");
-
-                        Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
                         Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-                        whatsappIntent.setType("text/plain");
-                        whatsappIntent.setPackage("com.whatsapp");
-                        whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + parent.nombre);
-                        whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                        whatsappIntent.setType("image/jpeg");
-                        whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
+                            String selection = "_display_name = ?";
+                            String[] selectionArgs = new String[] {data.getStringExtra(NOMBRE)};
+
+                            Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
+
+                            Uri contentUri = null;
+
+                            while (cursor.moveToNext()) {
+                                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                                long id = cursor.getLong(idColumn);
+                                contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                            }
+
+
+                            whatsappIntent.setType("text/plain");
+                            whatsappIntent.setPackage("com.whatsapp");
+                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + parent.nombre);
+                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                            whatsappIntent.setType("image/jpeg");
+                            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        }
+                        else
+                        {
+                            Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
+                            whatsappIntent.setType("text/plain");
+                            whatsappIntent.setPackage("com.whatsapp");
+                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + parent.nombre);
+                            whatsappIntent.setType("image/jpeg");
+                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        }
 
                         try {
-                            ctx.startActivity(whatsappIntent);
+                            //ctx.startActivity(whatsappIntent);
+                            ctx.startActivity(Intent.createChooser(whatsappIntent, null));
                         } catch (android.content.ActivityNotFoundException ex) {
+                            Log.e("error ", ex.getMessage());
                             Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
                         }
 

@@ -1,6 +1,9 @@
 package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 //import android.support.v4.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +21,7 @@ import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_cancel_gestion;
@@ -47,6 +53,7 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -77,10 +84,12 @@ import static com.sidert.sidertmovil.utils.Constants.MOTIVO_NO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUEVO_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.PAGO_REALIZADO;
+import static com.sidert.sidertmovil.utils.Constants.PATH;
 import static com.sidert.sidertmovil.utils.Constants.RESULTADO_PAGO;
 import static com.sidert.sidertmovil.utils.Constants.RESUMEN;
 import static com.sidert.sidertmovil.utils.Constants.RESUMEN_INTEGRANTES;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+import static com.sidert.sidertmovil.utils.Constants.SCREEN_SHOT;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
@@ -236,7 +245,7 @@ public class VistaGestion extends AppCompatActivity {
 
         invalidateOptionsMenu();
 
-
+        Log.e("AQUI DATOS", new Gson().toJson(datos));
         //Log.e("latitud", String.valueOf(datos.getDouble(LATITUD)));
         //Log.e("longitud", String.valueOf(datos.getDouble(LONGITUD)));
         if (datos.getDouble(LATITUD) == 0 && datos.getDouble(LONGITUD) == 0){
@@ -613,6 +622,9 @@ public class VistaGestion extends AppCompatActivity {
                 dlg_cancel.show(getSupportFragmentManager(), DIALOGCANCELGESTION);
                 break;
             case R.id.nvShare:
+
+                String name = "";
+
                 if (resumen.isEmpty() && cliente.isEmpty()){
                     String sql = "";
                     Cursor row = null;
@@ -637,7 +649,6 @@ public class VistaGestion extends AppCompatActivity {
                     }
 
                     row.moveToFirst();
-
                     tvTitulo.setText(row.getString(1));
                     tvSubtitutlo.setText("Fin Gestión "+row.getString(0));
 
@@ -646,33 +657,46 @@ public class VistaGestion extends AppCompatActivity {
                     row.close();
 
                     String mPath = ROOT_PATH+"Resumen";
-                    String name = "";
                     File img = null;
+                    int quality = 100;
 
                     try {
                         // create bitmap screen capture
+                        name = UUID.randomUUID().toString() + ".jpg";
+
                         View v1 = getWindow().getDecorView().getRootView();
                         v1.setDrawingCacheEnabled(true);
                         Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
                         v1.setDrawingCacheEnabled(false);
-                        File directory = new File(mPath);
-                        if(!directory.exists())
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            FileOutputStream fos;
+                            ContentResolver resolver = getContentResolver();
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil");
+                            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                            fos = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
+                        }
+                        else
                         {
-                            Log.v("Carpeta", "No existe Resumen");
-                            directory.mkdir();
+                            File directory = new File(mPath);
+                            if(!directory.exists())
+                            {
+                                directory.mkdir();
+                            }
+
+                            img = new File(mPath+"/"+name);
+                            FileOutputStream outputStream = new FileOutputStream(img);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                            outputStream.flush();
+                            outputStream.close();
                         }
 
-                        name = UUID.randomUUID().toString() + ".jpg";
-                        img = new File(mPath+"/"+name);
-
-
-                        FileOutputStream outputStream = new FileOutputStream(img);
-                        int quality = 100;
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-                        outputStream.flush();
-                        outputStream.close();
-
                         resumen = name;
+
                     } catch (Throwable e) {
                         // Several error may come out with file handling or DOM
                         e.printStackTrace();
@@ -685,18 +709,86 @@ public class VistaGestion extends AppCompatActivity {
                     values.put(3, tipoGestion);
                     dBhelper.saveResumenGestion(db, values);
                 }
+                else {
+                    String sql = "";
+                    Cursor row = null;
+
+                    if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")){
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")){
+                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+                    else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")){
+                        Log.e("Respuesta","Vencida Grupal Integrante: "+idRespuesta);
+
+                        sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                        row = db.rawQuery(sql, new String[]{idRespuesta});
+                    }
+
+                    row.moveToFirst();
+                    tvTitulo.setText(row.getString(1));
+                    tvSubtitutlo.setText("Fin Gestión "+ row.getString(0));
+
+                    Log.e("AQUI TITULO", cliente);
+                    Log.e("AQUI SUBTITULO", row.getString(0));
+
+                    row.close();
+                }
 
                 Log.e("AQUI VISTA GESTION", "PRUEBA WHATSAPP");
 
-                File img = new File(ROOT_PATH+"Resumen/"+resumen);
-                Uri imgUri = Uri.parse(img.getPath());
+                /*File img;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    img = new File(Environment.getStorageDirectory().toString()+"/Resumen/"+resumen);
+                }
+                else
+                {
+                    img = new File(PATH+"/Resumen/"+resumen);
+                }*/
+
+
                 Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-                whatsappIntent.setType("text/plain");
-                whatsappIntent.setPackage("com.whatsapp");
-                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
-                whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                whatsappIntent.setType("image/jpeg");
-                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
+                    String selection = "_display_name = ?";
+                    String[] selectionArgs = new String[] {resumen};
+
+                    Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
+
+                    Uri contentUri = null;
+
+                    while (cursor.moveToNext()) {
+                        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                        long id = cursor.getLong(idColumn);
+                        contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                    }
+
+                    whatsappIntent.setType("text/plain");
+                    whatsappIntent.setPackage("com.whatsapp");
+                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
+                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    whatsappIntent.setType("image/jpeg");
+                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                else
+                {
+                    File img = new File(ROOT_PATH+"/Resumen/"+resumen);
+                    Uri imgUri = Uri.parse(img.getPath());
+                    whatsappIntent.setType("text/plain");
+                    whatsappIntent.setPackage("com.whatsapp");
+                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
+                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                    whatsappIntent.setType("image/jpeg");
+                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
 
                 try {
                     ctx.startActivity(whatsappIntent);

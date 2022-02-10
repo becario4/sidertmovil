@@ -104,9 +104,12 @@ import static com.sidert.sidertmovil.utils.Constants.CALLE;
 import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.EXTRA;
+import static com.sidert.sidertmovil.utils.Constants.IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
+import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
+import static com.sidert.sidertmovil.utils.Constants.PICTURE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_COLONIA_CONY;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA_CLI;
@@ -114,17 +117,21 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBAT
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONTAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_SELFIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CLIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CONY;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_NEG;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
@@ -142,6 +149,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_SOLICITUD;
 import static com.sidert.sidertmovil.utils.Constants.TITULO;
 import static com.sidert.sidertmovil.utils.Constants.firma;
+import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
@@ -315,6 +323,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private RadioGroup rgFirmaRuegoEncargo;
     private LinearLayout llNombreFirmaRuegoEncargo;
     private EditText etNombreFirmaRuegoEncargo;
+    private EditText etMontoRefinanciar;
     //=========================================================================
     //======= CROQUIS ========================
     private TextView tvCasa;
@@ -331,6 +340,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private TextView tvLateraUno;
     private TextView tvLateraDos;
     private MultiAutoCompleteTextView etReferencia;
+    private MultiAutoCompleteTextView etCaracteristicasDomicilio;
     //========================================
     //======= POLITICAS ======================
     private TextView tvPropietarioReal;
@@ -361,6 +371,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private ImageButton ibComprobante;
     private ImageView ivComprobante;
     public byte[] byteComprobante;
+    private TextView tvIneSelfie;
+    private ImageButton ibIneSelfie;
+    private ImageView ivIneSelfie;
+    public byte[] byteIneSelfie;
     //=========================================================================
     //===================  LINEAR LAYOUT  =====================================
     private LinearLayout llPersonales;
@@ -641,6 +655,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvLateraUno         = findViewById(R.id.tvLateralUno);
         tvLateraDos         = findViewById(R.id.tvLateralDos);
         etReferencia        = findViewById(R.id.etReferencia);
+        etCaracteristicasDomicilio = findViewById(R.id.etCaracteristicasDomicilio);
         //==========================================================================================
         //==================================  DATOS POLITICAS   ====================================
         tvPropietarioReal       = findViewById(R.id.tvPropietarioReal);
@@ -667,6 +682,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvComprobante         = findViewById(R.id.tvComprobante);
         ibComprobante         = findViewById(R.id.ibComprobante);
         ivComprobante         = findViewById(R.id.ivComprobante);
+        etMontoRefinanciar  = findViewById(R.id.etMontoRefinanciar);
+        tvIneSelfie         = findViewById(R.id.tvIneSelfie);
+        ibIneSelfie         = findViewById(R.id.ibIneSelfie);
+        ivIneSelfie         = findViewById(R.id.ivIneSelfie);
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
@@ -2285,6 +2304,68 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //==================================  OTROS LISTENER  ======================================
         /**Evento de click o ingreso de datos en seccion de otros datos del integrante con guardado en automatico*/
         tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
+        etMontoRefinanciar.addTextChangedListener(new TextWatcher() {
+            private final String PATTERN_MONTO_CREDITO  = "[0-9]+";
+            private Pattern pattern;
+            private Matcher matcher;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
+                {
+                    hasFractionalPart = true;
+                } else {
+                    hasFractionalPart = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                etMontoRefinanciar.removeTextChangedListener(this);
+
+                try {
+                    int inilen, endlen;
+                    inilen = Miscellaneous.GetStr(etMontoRefinanciar).length();
+                    String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
+                    Number n = df.parse(v);
+                    int cp = etMontoRefinanciar.getSelectionStart();
+                    if (hasFractionalPart) {
+                        etMontoRefinanciar.setText(df.format(n));
+                    } else {
+                        etMontoRefinanciar.setText(dfnd.format(n));
+                    }
+                    endlen = Miscellaneous.GetStr(etMontoRefinanciar).length();
+                    int sel = (cp + (endlen - inilen));
+                    if (sel > 0 && sel <= Miscellaneous.GetStr(etMontoRefinanciar).length()) {
+                        etMontoRefinanciar.setSelection(sel);
+                    } else {
+                        // place cursor at the end?
+                        etMontoRefinanciar.setSelection(Miscellaneous.GetStr(etMontoRefinanciar).length() - 1);
+                    }
+                } catch (NumberFormatException nfe) {
+                    // do nothing?
+                } catch (ParseException e) {
+                    // do nothing?
+                }
+
+                if (s.length()> 0){
+                    pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
+                    matcher = pattern.matcher(s.toString().replace(",",""));
+                    if(!matcher.matches()) {
+                        etMontoRefinanciar.setError("La cantidad no corresponde a un monto válido");
+                    }else{
+                        Update("monto_refinanciar", TBL_OTROS_DATOS_INTEGRANTE_REN, s.toString().trim().replace(",",""), "id_integrante", id_integrante);
+                    }
+                }
+
+                etMontoRefinanciar.addTextChangedListener(this);
+            }
+        });
         tvMedioContacto.setOnClickListener(tvMedioContacto_OnClick);
         tvEstadoCuenta.setOnClickListener(tvEstadoCuenta_OnClick);
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -2409,12 +2490,32 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                     Update("referencias",TBL_CROQUIS_GPO_REN, "", "id_integrante", id_integrante);
             }
         });
+        etCaracteristicasDomicilio.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable e) {
+                if (e.length() > 0)
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_GPO_REN, e.toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                else
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_GPO_REN, "", "id_integrante", id_integrante);
+            }
+        });
         //====================================  DOCUMENTOS  ========================================
         /**Evento de click de datos del neogocio del integrante con guardado en automatico*/
         ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
         ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
         //==========================================================================
         /**Evento de click para retroceder o avanzar en seccionesro*/
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
@@ -2605,6 +2706,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
         //&& !isNuevo
         //if(is_edit) {
         if(true) {
@@ -3452,6 +3554,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     };
     //==============================================================================================
     //================================== ACTION DOCUMENTOS =========================================
+    private View.OnClickListener ibIneSelfie_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(RenovarIntegrante.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_ine_selfie");
+            startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+        }
+    };
+
     /**Evento para capturar la fotografia del ine/ife de la parte frontal*/
     private View.OnClickListener ibIneFrontal_OnClick = new View.OnClickListener() {
         @Override
@@ -3853,6 +3964,61 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
                                 i.putExtra(Constants.IMAGEN, byteComprobante);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
+            }
+        }
+    };
+
+    private View.OnClickListener ivIneSelfie_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
                                 startActivity(i);
                                 dialog.dismiss();
 
@@ -5200,6 +5366,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             etNombreFirmaRuegoEncargo.setText(row.getString(15).trim());
         }
 
+        if (row.getString(16) != null && !row.getString(16).trim().isEmpty()) etMontoRefinanciar.setText(dfnd.format(row.getInt(16)));
+        etMontoRefinanciar.setEnabled(is_edit);
+
         /**obtiene si hay un integrante para la casa de reuniones para deshabilitar el campo*/
         Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1", "", null);
         row_casa.moveToFirst();
@@ -5227,6 +5396,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvLateraDos.setText(row.getString(4).trim().toUpperCase());
         tvTrasera.setText(row.getString(5).trim().toUpperCase());
         etReferencia.setText(row.getString(6)); etReferencia.setEnabled(is_edit);
+        etCaracteristicasDomicilio.setText(row.getString(8));
+        etCaracteristicasDomicilio.setEnabled(is_edit);
         row.close(); //Cierra datos del croquis
 
         /**obtiene los datos de la politicas pld*/
@@ -5306,6 +5477,16 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ibComprobante.setVisibility(View.GONE);
             ivComprobante.setVisibility(View.VISIBLE);
         }
+
+        if (row.getString(7) != null && !row.getString(7).isEmpty()){
+            File ineSelfieFile = new File(ROOT_PATH + "Documentos/"+row.getString(7));
+            Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
+            byteIneSelfie = Miscellaneous.getBytesUri(ctx, uriIneSelfie, 0);
+            Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
+            ibIneSelfie.setVisibility(View.GONE);
+            ivIneSelfie.setVisibility(View.VISIBLE);
+        }
+
         row.close(); //Cierra datos de documentos del integrante
 
 
@@ -5422,6 +5603,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             cbCasaReuniones.setEnabled(false);
 
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCaracteristicasDomicilio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
             for(int i = 0; i < rgPropietarioReal.getChildCount(); i++){
                 ((RadioButton) rgPropietarioReal.getChildAt(i)).setEnabled(false);
@@ -5432,6 +5614,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             for(int i = 0; i < rgPoliticamenteExp.getChildCount(); i++){
                 ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(false);
             }
+
+            etMontoRefinanciar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
     }
@@ -5945,9 +6129,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos generales*/
     private boolean saveDatosOtros(){
         boolean save_otros = false;
-        if (!validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvMedioContacto, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED})
+        if (
+            !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvMedioContacto, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etMontoRefinanciar, new String[]{validator.REQUIRED})
         ){
             if (rgEstatus.getCheckedRadioButtonId() == R.id.rbNuevo ||
                     rgEstatus.getCheckedRadioButtonId() == R.id.rbRenovado ||
@@ -5978,6 +6164,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             cv.put("casa_reunion", 0);
 
                         cv.put("estatus_completado", 1);
+                        cv.put("monto_refinanciar", Miscellaneous.GetStr(etMontoRefinanciar).replace(",",""));
                         db.update(TBL_OTROS_DATOS_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
 
                         save_otros = true;
@@ -6008,7 +6195,10 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
                 !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
+                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED}) &&
+                !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED})
+        )
+        {
             //ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("calle_principal", Miscellaneous.GetStr(tvPrincipal));
@@ -6017,6 +6207,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             cv.put("calle_trasera", Miscellaneous.GetStr(tvTrasera));
             cv.put("referencias", Miscellaneous.GetStr(etReferencia));
             cv.put("estatus_completado", 1);
+            cv.put("caracteristicas_domicilio", Miscellaneous.GetStr(etCaracteristicasDomicilio));
 
             db.update(TBL_CROQUIS_GPO_REN, cv, "id_integrante = ?", new String[]{id_integrante});
             save_croquis = true;
@@ -6472,6 +6663,22 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             Update("firma", TBL_OTROS_DATOS_INTEGRANTE_REN, Miscellaneous.save(byteFirmaCli, 3), "id_integrante", id_integrante);
                             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) ObtenerUbicacionFirmaCliente();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_SELFIE:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvIneSelfie.setError(null);
+                        ibIneSelfie.setVisibility(View.GONE);
+                        ivIneSelfie.setVisibility(View.VISIBLE);
+                        byteIneSelfie = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
+                        try {
+                            Update("ine_selfie", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneSelfie, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

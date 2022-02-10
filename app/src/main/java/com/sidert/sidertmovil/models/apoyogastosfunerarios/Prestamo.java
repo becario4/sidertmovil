@@ -202,7 +202,7 @@ public class Prestamo implements Serializable {
 
         for (int i = 0; i < edades.length; i++)
         {
-            if(Integer.parseInt(edades[i]) < 70 && Long.parseLong(montos[i]) <= 29000)
+            if(Integer.parseInt(edades[i]) < 75 && Long.parseLong(montos[i]) <= 29000)
             {
                 contador++;
             }

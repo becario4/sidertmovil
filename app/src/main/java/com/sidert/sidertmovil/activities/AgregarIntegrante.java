@@ -110,9 +110,12 @@ import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
 import static com.sidert.sidertmovil.utils.Constants.EXTRA;
+import static com.sidert.sidertmovil.utils.Constants.IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
+import static com.sidert.sidertmovil.utils.Constants.ORDER_ID;
+import static com.sidert.sidertmovil.utils.Constants.PICTURE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_COLONIA_CONY;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FIRMA;
@@ -121,15 +124,20 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_COMPROBAT
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_CURP;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_FRONTAL;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_REVERSO;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_FOTO_INE_SELFIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CLIE;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_CONY;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_NEG;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
@@ -145,6 +153,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_SOLICITUD;
 import static com.sidert.sidertmovil.utils.Constants.TITULO;
 import static com.sidert.sidertmovil.utils.Constants.firma;
+import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
@@ -319,6 +328,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private RadioGroup rgFirmaRuegoEncargo;
     private LinearLayout llNombreFirmaRuegoEncargo;
     private EditText etNombreFirmaRuegoEncargo;
+    private EditText etMontoRefinanciar;
     //=========================================================================
     //======= CROQUIS ========================
     private TextView tvCasa;
@@ -335,6 +345,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private TextView tvLateraUno;
     private TextView tvLateraDos;
     private MultiAutoCompleteTextView etReferencia;
+    private MultiAutoCompleteTextView etCaracteristicasDomicilio;
     //========================================
     //======= POLITICAS ======================
     private TextView tvPropietarioReal;
@@ -364,6 +375,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageButton ibComprobante;
     private ImageView ivComprobante;
     public byte[] byteComprobante;
+    private TextView tvIneSelfie;
+    private ImageButton ibIneSelfie;
+    private ImageView ivIneSelfie;
+    public byte[] byteIneSelfie;
     //=========================================================================
     //===================  LINEAR LAYOUT  =====================================
     private LinearLayout llPersonales;
@@ -639,6 +654,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         tvLateraUno         = findViewById(R.id.tvLateralUno);
         tvLateraDos         = findViewById(R.id.tvLateralDos);
         etReferencia        = findViewById(R.id.etReferencia);
+        etCaracteristicasDomicilio = findViewById(R.id.etCaracteristicasDomicilio);
         //==========================================================================================
         //==================================  DATOS POLITICAS   ====================================
         tvPropietarioReal       = findViewById(R.id.tvPropietarioReal);
@@ -664,6 +680,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         tvComprobante         = findViewById(R.id.tvComprobante);
         ibComprobante         = findViewById(R.id.ibComprobante);
         ivComprobante         = findViewById(R.id.ivComprobante);
+        etMontoRefinanciar  = findViewById(R.id.etMontoRefinanciar);
+        tvIneSelfie         = findViewById(R.id.tvIneSelfie);
+        ibIneSelfie         = findViewById(R.id.ibIneSelfie);
+        ivIneSelfie         = findViewById(R.id.ivIneSelfie);
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
@@ -2264,6 +2284,68 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         /**Evento de click e ingreso de datos en la seccion de otros datos asi como el actualizado
          * de datos al mas ligero cambio en el ingreso de datos*/
         tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
+        etMontoRefinanciar.addTextChangedListener(new TextWatcher() {
+            private final String PATTERN_MONTO_CREDITO  = "[0-9]+";
+            private Pattern pattern;
+            private Matcher matcher;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
+                {
+                    hasFractionalPart = true;
+                } else {
+                    hasFractionalPart = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                etMontoRefinanciar.removeTextChangedListener(this);
+
+                try {
+                    int inilen, endlen;
+                    inilen = m.GetStr(etMontoRefinanciar).length();
+                    String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
+                    Number n = df.parse(v);
+                    int cp = etMontoRefinanciar.getSelectionStart();
+                    if (hasFractionalPart) {
+                        etMontoRefinanciar.setText(df.format(n));
+                    } else {
+                        etMontoRefinanciar.setText(dfnd.format(n));
+                    }
+                    endlen = m.GetStr(etMontoRefinanciar).length();
+                    int sel = (cp + (endlen - inilen));
+                    if (sel > 0 && sel <= m.GetStr(etMontoRefinanciar).length()) {
+                        etMontoRefinanciar.setSelection(sel);
+                    } else {
+                        // place cursor at the end?
+                        etMontoRefinanciar.setSelection(m.GetStr(etMontoRefinanciar).length() - 1);
+                    }
+                } catch (NumberFormatException nfe) {
+                    // do nothing?
+                } catch (ParseException e) {
+                    // do nothing?
+                }
+
+                if (s.length()> 0){
+                    pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
+                    matcher = pattern.matcher(s.toString().replace(",",""));
+                    if(!matcher.matches()) {
+                        etMontoRefinanciar.setError("La cantidad no corresponde a un monto válido");
+                    }else{
+                        Update("monto_refinanciar", TBL_OTROS_DATOS_INTEGRANTE, s.toString().trim().replace(",",""), "id_integrante", id_integrante);
+                    }
+                }
+
+                etMontoRefinanciar.addTextChangedListener(this);
+            }
+        });
         tvMedioContacto.setOnClickListener(tvMedioContacto_OnClick);
         tvEstadoCuenta.setOnClickListener(tvEstadoCuenta_OnClick);
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -2390,6 +2472,25 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     Update("referencias",TBL_CROQUIS_GPO, "", "id_integrante", id_integrante);
             }
         });
+        etCaracteristicasDomicilio.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable e) {
+                if (e.length() > 0)
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_GPO, e.toString().trim().toUpperCase(), "id_integrante", id_integrante);
+                else
+                    Update("caracteristicas_domicilio", TBL_CROQUIS_GPO, "", "id_integrante", id_integrante);
+            }
+        });
         //====================================  DOCUMENTOS  ========================================
         /**Evento de click para captura de documentos en la seccion de Documentacion asi como el actualizado
          * de datos al mas ligero cambio*/
@@ -2397,6 +2498,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
         //==========================================================================
 
         /**Evento de click para los botones de retroceso y avance en las secciones*/
@@ -2589,6 +2691,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -3447,6 +3550,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         }
     };
 
+    private View.OnClickListener ibIneSelfie_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(AgregarIntegrante.this, CameraVertical.class);
+            i.putExtra(ORDER_ID, "O_ine_selfie");
+            startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+        }
+    };
+
     /**Evento de click para capturar la fotografia al INE/IFE reverso*/
     private View.OnClickListener ibIneReverso_OnClick = new View.OnClickListener() {
         @Override
@@ -3615,6 +3727,60 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 Objects.requireNonNull(firma_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 firma_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 firma_dlg.show();
+            }
+        }
+    };
+    private View.OnClickListener ivIneSelfie_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (is_edit){
+                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
+                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, CameraVertical.class);
+                                startActivityForResult(i, REQUEST_CODE_FOTO_INE_SELFIE);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
+                                startActivity(i);
+                                dialog.dismiss();
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                evidencia_dlg.show();
+            }
+            else{
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, question,
+                        R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, VerImagen.class);
+                                i.putExtra(IMAGEN, byteIneSelfie);
+                                startActivity(i);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_dlg.show();
             }
         }
     };
@@ -4823,6 +4989,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivFotoFachCli.setVisibility(View.VISIBLE);
         }
         etReferenciaCli.setText(row.getString(20)); etReferenciaCli.setEnabled(is_edit);
+
         row.close(); //Cierra datos del domicilio del integrante
 
         /**consulta para obtener los datos del negocio*/
@@ -5006,6 +5173,9 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             etNombreFirmaRuegoEncargo.setText(row.getString(15).trim());
         }
 
+        if (row.getString(16) != null && !row.getString(16).trim().isEmpty()) etMontoRefinanciar.setText(dfnd.format(row.getInt(16)));
+        etMontoRefinanciar.setEnabled(is_edit);
+
         /**Consulta para obtener si algun integrante ya establecio su casa para las reuniones,
          * se deshabilitará la opcion para los demas integrantes*/
         Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1 AND i.estatus_completado IN (0,1,2)", "", null);
@@ -5034,6 +5204,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         tvLateraDos.setText(row.getString(4).trim().toUpperCase());
         tvTrasera.setText(row.getString(5).trim().toUpperCase());
         etReferencia.setText(row.getString(6));
+        etCaracteristicasDomicilio.setText(row.getString(8));
+        etCaracteristicasDomicilio.setEnabled(is_edit);
         row.close(); //Cierra datos del croquis
 
         /**Consulta para obtener los datos de Politicas PLD*/
@@ -5110,6 +5282,16 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ibComprobante.setVisibility(View.GONE);
             ivComprobante.setVisibility(View.VISIBLE);
         }
+
+        if (row.getString(9) != null && !row.getString(9).isEmpty()){
+            File ineSelfieFile = new File(ROOT_PATH + "Documentos/"+row.getString(9));
+            Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
+            byteIneSelfie = m.getBytesUri(ctx, uriIneSelfie,0);
+            Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
+            ibIneSelfie.setVisibility(View.GONE);
+            ivIneSelfie.setVisibility(View.VISIBLE);
+        }
+
         row.close(); //Cierra datos de documentos del integrante
 
 
@@ -5228,6 +5410,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             cbCasaReuniones.setEnabled(false);
 
             etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCaracteristicasDomicilio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
 
             for(int i = 0; i < rgPropietarioReal.getChildCount(); i++){
                 ((RadioButton) rgPropietarioReal.getChildAt(i)).setEnabled(false);
@@ -5238,6 +5421,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             for(int i = 0; i < rgPoliticamenteExp.getChildCount(); i++){
                 ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(false);
             }
+
+            etMontoRefinanciar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
     }
@@ -5761,9 +5946,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos generales*/
     private boolean saveDatosOtros(){
         boolean save_otros = false;
-        if (!validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvMedioContacto, new String[]{validatorTV.REQUIRED}) &&
-        !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED})
+        if (
+            !validatorTV.validate(tvRiesgo, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvMedioContacto, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvEstadoCuenta, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etMontoRefinanciar, new String[]{validator.REQUIRED})
         ){
             if (rgEstatus.getCheckedRadioButtonId() == R.id.rbNuevo ||
             rgEstatus.getCheckedRadioButtonId() == R.id.rbRenovado ||
@@ -5794,6 +5981,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             cv.put("casa_reunion", 0);
 
                         cv.put("estatus_completado", 1);
+                        cv.put("monto_refinanciar", m.GetStr(etMontoRefinanciar).replace(",",""));
+
                         db.update(TBL_OTROS_DATOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{id_integrante});
 
                         save_otros = true;
@@ -5820,11 +6009,15 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del croquis*/
     private boolean saveCroquis(){
         boolean save_croquis = false;
-        if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED})){
+        if (
+            !validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
+            !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED}) &&
+            !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED})
+        )
+        {
             //ivError7.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("calle_principal", m.GetStr(tvPrincipal));
@@ -5833,6 +6026,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             cv.put("calle_trasera", m.GetStr(tvTrasera));
             cv.put("referencias", m.GetStr(etReferencia));
             cv.put("estatus_completado", 1);
+            cv.put("caracteristicas_domicilio", m.GetStr(etCaracteristicasDomicilio));
 
             db.update(TBL_CROQUIS_GPO, cv, "id_integrante = ?", new String[]{id_integrante});
             save_croquis = true;
@@ -5909,36 +6103,42 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos de documentacion*/
     private boolean saveDocumentos(){
         boolean save_documentos = false;
-        if (byteIneFrontal != null){
-            if (byteIneReverso != null){
-                if (byteCurp != null){
-                    if (byteComprobante != null){
-                        ivError9.setVisibility(View.GONE);
-                        ContentValues cv = new ContentValues();
-                        cv.put("estatus_completado", 1);
+        if (byteIneSelfie != null) {
+            if (byteIneFrontal != null){
+                if (byteIneReverso != null){
+                    if (byteCurp != null){
+                        if (byteComprobante != null){
+                            ivError9.setVisibility(View.GONE);
+                            ContentValues cv = new ContentValues();
+                            cv.put("estatus_completado", 1);
 
-                        db.update(TBL_DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+                            db.update(TBL_DOCUMENTOS_INTEGRANTE, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
 
-                        save_documentos = true;
+                            save_documentos = true;
+                        }
+                        else{
+                             tvComprobante.setError("");
+                             ivError9.setVisibility(View.VISIBLE);
+                        }
                     }
                     else{
-                         tvComprobante.setError("");
-                         ivError9.setVisibility(View.VISIBLE);
+                        tvCurp.setError("");
+                        ivError9.setVisibility(View.VISIBLE);
                     }
                 }
                 else{
-                    tvCurp.setError("");
+                    tvIneReverso.setError("");
                     ivError9.setVisibility(View.VISIBLE);
                 }
             }
-            else{
-                tvIneReverso.setError("");
+            else {
+                tvIneFrontal.setError(null);
                 ivError9.setVisibility(View.VISIBLE);
             }
         }
-        else {
-            tvIneFrontal.setError(null);
+        else{
             ivError9.setVisibility(View.VISIBLE);
+            tvIneSelfie.setError("");
         }
 
         return save_documentos;
@@ -6277,6 +6477,22 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             Update("firma", TBL_OTROS_DATOS_INTEGRANTE, m.save(byteFirmaCli, 3), "id_integrante", id_integrante);
                             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) ObtenerUbicacionFirmaCliente();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case REQUEST_CODE_FOTO_INE_SELFIE:
+                if (resultCode == Activity.RESULT_OK){
+                    if (data != null){
+                        tvIneSelfie.setError(null);
+                        ibIneSelfie.setVisibility(View.GONE);
+                        ivIneSelfie.setVisibility(View.VISIBLE);
+                        byteIneSelfie = data.getByteArrayExtra(PICTURE);
+                        Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
+                        try {
+                            Update("ine_selfie", TBL_DOCUMENTOS_INTEGRANTE, m.save(byteIneSelfie, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

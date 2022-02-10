@@ -184,7 +184,7 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
                     else {
                         recibo.setNombre(prestamo.getNombreCliente().substring(1));
                         recibo.setNombreFirma(prestamo.getNombreCliente().substring(1));
-                        recibo.setNumIntegrantes((Integer.parseInt(prestamo.getEdad()) < 70 && Double.parseDouble(prestamo.getMonto()) <= 29000)?1:0);
+                        recibo.setNumIntegrantes((Integer.parseInt(prestamo.getEdad()) < 75 && Double.parseDouble(prestamo.getMonto()) <= 29000)?1:0);
                     }
 
                     recibo.setPlazo(prestamo.getPlazo());
@@ -217,9 +217,9 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
 
                     startActivity(intentRecibo);
                 }
-                else if(Integer.parseInt(prestamo.getEdad()) >= 70)
+                else if(Integer.parseInt(prestamo.getEdad()) >= 75)
                 {
-                    Toast.makeText(ctx, "Esta persona tiene mas de 70 años", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "Esta persona tiene mas de 75 años", Toast.LENGTH_SHORT).show();
                 }
                 else if(Double.parseDouble(prestamo.getMonto()) > 29000)
                 {

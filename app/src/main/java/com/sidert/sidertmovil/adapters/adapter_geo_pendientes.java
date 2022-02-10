@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
@@ -74,6 +75,8 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
 
         holder.tvNombre.setText(item.getNombre());
         holder.tvDireccion.setText(item.getDireccion());
+        holder.tvFechaDesembolso.setText(item.getFecha_desembolso());
+        holder.tvNumPrestamo.setText(item.getNum_prestamo());
 
         if (item.getTipo_form() == 1){
             Glide.with(ctx).load(ctx.getResources().getDrawable(R.drawable.ic_person_blue)).into(holder.ivTipo);
@@ -153,12 +156,16 @@ public class adapter_geo_pendientes extends RecyclerView.Adapter<adapter_geo_pen
         private TextView tvTituloUno;
         private TextView tvTituloDos;
         private TextView tvTituloTres;
+        private TextView tvFechaDesembolso;
+        private TextView tvNumPrestamo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre     = itemView.findViewById(R.id.tvNombre);
             tvtotal      = itemView.findViewById(R.id.tvTotal);
             tvDireccion  = itemView.findViewById(R.id.tvDireccion);
+            tvFechaDesembolso = itemView.findViewById(R.id.tvFechaDesembolso);
+            tvNumPrestamo = itemView.findViewById(R.id.tvNumPrestamo);
             llResUno     = itemView.findViewById(R.id.llResUno);
             llResDos     = itemView.findViewById(R.id.llResDos);
             llResTres    = itemView.findViewById(R.id.llResTres);

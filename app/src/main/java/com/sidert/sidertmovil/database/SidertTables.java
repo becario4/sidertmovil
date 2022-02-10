@@ -234,7 +234,9 @@ public class SidertTables {
                 "monto_prestamo TEXT," +
                 "destino TEXT," +
                 "clasificacion_riesgo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "monto_refinanciar TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_CLIENTE_IND = "CREATE TABLE " + TBL_CLIENTE_IND + " (" +
                 "id_cliente INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -415,7 +417,9 @@ public class SidertTables {
                 "calle_trasera TEXT," +
                 "referencias TEXT," +
                 "estatus_completado INTEGER," +
-                "comentario_rechazo TEXT)";
+                "comentario_rechazo TEXT," +
+                "caracteristicas_domicilio TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_POLITICAS_PLD_IND = "CREATE TABLE " + TBL_POLITICAS_PLD_IND + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -434,7 +438,14 @@ public class SidertTables {
                 "comprobante TEXT," +
                 "codigo_barras TEXT," +
                 "firma_asesor TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "ine_selfie TEXT," +
+                "comprobante_garantia TEXT," +
+                "ine_frontal_aval TEXT," +
+                "ine_reverso_aval TEXT," +
+                "curp_aval TEXT," +
+                "comprobante_aval TEXT" +
+                ")";
 
 
         static final String CREATE_TBL_DATOS_CREDITO_GPO = "CREATE TABLE " + TBL_CREDITO_GPO + " (" +
@@ -591,7 +602,8 @@ public class SidertTables {
                 "longitud TEXT," +
                 "located_at TEXT," +
                 "tiene_firma TEXT DEFAULT 'SI'," +
-                "nombre_quien_firma TEXT DEFAULT ''" +
+                "nombre_quien_firma TEXT DEFAULT ''," +
+                "monto_refinanciar TEXT DEFAULT ''" +
                 ")";
 
         static final String CREATE_TBL_CROQUIS_GPO = "CREATE TABLE " + TBL_CROQUIS_GPO + " (" +
@@ -602,7 +614,9 @@ public class SidertTables {
                 "lateral_dos TEXT," +
                 "calle_trasera TEXT," +
                 "referencias TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "caracteristicas_domicilio TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_POLITICAS_INTEGRANTE = "CREATE TABLE " + TBL_POLITICAS_PLD_INTEGRANTE + " (" +
                 "id_politica INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -619,7 +633,8 @@ public class SidertTables {
                 "ine_reverso TEXT," +
                 "curp TEXT," +
                 "comprobante TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "ine_selfie TEXT )";
 
         public static final String CREATE_TBL_RECIBOS = "CREATE TABLE " + TBL_RECIBOS + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1587,7 +1602,9 @@ public class SidertTables {
                 "observaciones TEXT," +
                 "destino TEXT," +
                 "clasificacion_riesgo TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "monto_refinanciar TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_CLIENTE_IND_REN = "CREATE TABLE " + TBL_CLIENTE_IND_REN + " (" +
                 "id_cliente INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1768,7 +1785,9 @@ public class SidertTables {
                 "calle_trasera TEXT," +
                 "referencias TEXT," +
                 "estatus_completado INTEGER," +
-                "comentario_rechazo TEXT)";
+                "comentario_rechazo TEXT," +
+                "caracteristicas_domicilio TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_POLITICAS_PLD_IND_REN = "CREATE TABLE " + TBL_POLITICAS_PLD_IND_REN + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1806,7 +1825,14 @@ public class SidertTables {
                 "comprobante TEXT," +
                 "codigo_barras TEXT," +
                 "firma_asesor TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "ine_selfie TEXT," +
+                "comprobante_garantia TEXT," +
+                "ine_frontal_aval TEXT," +
+                "ine_reverso_aval TEXT," +
+                "curp_aval TEXT," +
+                "comprobante_aval TEXT" +
+                ")";
 
         static final String CREATE_TBL_DATOS_CREDITO_GPO_REN = "CREATE TABLE " + TBL_CREDITO_GPO_REN + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1970,7 +1996,8 @@ public class SidertTables {
                 "longitud TEXT," +
                 "located_at TEXT," +
                 "tiene_firma TEXT DEFAULT 'SI'," +
-                "nombre_quien_firma TEXT DEFAULT ''" +
+                "nombre_quien_firma TEXT DEFAULT ''," +
+                "monto_refinanciar TEXT DEFAULT ''" +
                 ")";
 
         static final String CREATE_TBL_CROQUIS_GPO_REN = "CREATE TABLE " + TBL_CROQUIS_GPO_REN + " (" +
@@ -1981,7 +2008,9 @@ public class SidertTables {
                 "lateral_dos TEXT," +
                 "calle_trasera TEXT," +
                 "referencias TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "caracteristicas_domicilio TEXT DEFAULT ''" +
+                ")";
 
         static final String CREATE_TBL_POLITICAS_INTEGRANTE_REN = "CREATE TABLE " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " (" +
                 "id_politica INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -1998,7 +2027,8 @@ public class SidertTables {
                 "ine_reverso TEXT," +
                 "curp TEXT," +
                 "comprobante TEXT," +
-                "estatus_completado INTEGER)";
+                "estatus_completado INTEGER," +
+                "ine_selfie TEXT)";
 
         //========================================= TBLS PARA PRESTAMOS AGF CC  ============================
         static final String CREATE_TBL_PRESTAMOS = "CREATE TABLE " + TBL_PRESTAMOS + " (" +
@@ -2818,6 +2848,94 @@ public class SidertTables {
         static final String ADD_NO_SOL_VER_DOM = "ALTER TABLE " + TBL_VERIFICACIONES_DOMICILIARIAS +
                 " ADD COLUMN num_solicitud" +
                 " INTEGER DEFAULT NULL";
+
+        static final String ADD_MONTO_REFINANCIAR_IND = "ALTER TABLE " + TBL_CREDITO_IND +
+                " ADD COLUMN monto_refinanciar" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CARACT_DOM_CRO_IND = "ALTER TABLE " + TBL_CROQUIS_IND +
+                " ADD COLUMN caracteristicas_domicilio" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_INE_SELF_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+                " ADD COLUMN ine_selfie" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_COM_GAR_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+            " ADD COLUMN comprobante_garantia" +
+            " TEXT DEFAULT NULL";
+
+        static final String ADD_INE_FRON_AVAL_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+                " ADD COLUMN ine_frontal_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_INE_REV_AVAL_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+                " ADD COLUMN ine_reverso_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_CURP_AVAL_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+                " ADD COLUMN curp_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_COM_DOM_AVAL_DOC_IND = "ALTER TABLE " + TBL_DOCUMENTOS +
+                " ADD COLUMN comprobante_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_MONTO_REFINANCIAR_IND_REN = "ALTER TABLE " + TBL_CREDITO_IND_REN +
+                " ADD COLUMN monto_refinanciar" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CARACT_DOM_CRO_IND_REN = "ALTER TABLE " + TBL_CROQUIS_IND_REN +
+                " ADD COLUMN caracteristicas_domicilio" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_INE_SELF_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN ine_selfie" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_COM_GAR_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN comprobante_garantia" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_INE_FRON_AVAL_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN ine_frontal_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_INE_REV_AVAL_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN ine_reverso_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_CURP_AVAL_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN curp_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_COM_DOM_AVAL_DOC_IND_REN = "ALTER TABLE " + TBL_DOCUMENTOS_REN +
+                " ADD COLUMN comprobante_aval" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_MONTO_REFIN_INT = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " ADD COLUMN monto_refinanciar" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CARAC_DOM_INT = "ALTER TABLE " + TBL_CROQUIS_GPO +
+                " ADD COLUMN caracteristicas_domicilio" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_INE_SELFIE_DOC_INT = "ALTER TABLE " + TBL_DOCUMENTOS_INTEGRANTE +
+                " ADD COLUMN ine_selfie" +
+                " TEXT DEFAULT NULL";
+
+        static final String ADD_MONTO_REFIN_INT_REN = "ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " ADD COLUMN monto_refinanciar" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_CARAC_DOM_INT_REN = "ALTER TABLE " + TBL_CROQUIS_GPO_REN +
+                " ADD COLUMN caracteristicas_domicilio" +
+                " TEXT DEFAULT ''";
+
+        static final String ADD_INE_SELFIE_DOC_INT_REN = "ALTER TABLE " + TBL_DOCUMENTOS_INTEGRANTE_REN +
+                " ADD COLUMN ine_selfie" +
+                " TEXT DEFAULT NULL";
 
     }
 }

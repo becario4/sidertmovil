@@ -1692,6 +1692,212 @@
             android:layout_height="70dp" />
     </LinearLayout>
 
+    <!--  Fotografía del INE/IFE Frontal  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvIneFrontalAval"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del INE/IFE Aval Frontal"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibIneFrontalAval"
+                android:layout_width="match_parent"
+                android:contentDescription="Fotografía del INE/IFE Aval Frontal"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivIneFrontalAval"
+                android:contentDescription="Fotografía del INE/IFE Aval Frontal"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--  Fotografía del INE/IFE Reverso  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvIneReversoAval"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del INE/IFE Aval Reverso"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibIneReversoAval"
+                android:layout_width="match_parent"
+                android:contentDescription="Fotografía del INE/IFE Aval Reverso"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivIneReversoAval"
+                android:contentDescription="@string/facade_photo"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--  Selfie INE
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvIneSelfieAval"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del Aval con su INE/IFE"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibIneSelfieAval"
+                android:layout_width="match_parent"
+                android:contentDescription="Selfie INE/IFE Aval"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivIneSelfieAval"
+                android:contentDescription="Selfie INE/IFE Aval"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>-->
+
+    <!--  Fotografía del CURP  -->
+    <LinearLayout
+        android:id="@+id/llFotoCurpAval"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvCurpAval"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del CURP"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibCurpAval"
+                android:layout_width="match_parent"
+                android:contentDescription="CURP"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivCurpAval"
+                android:contentDescription="CURP"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--  Fotografía del Comprobante de Domicilio  -->
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvComprobanteAval"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del Comprobante de Domicilio Aval"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibComprobanteAval"
+                android:layout_width="match_parent"
+                android:contentDescription="Comprobante de Domicilio Aval"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivComprobanteAval"
+                android:contentDescription="Comprobante de Domicilio Aval"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"

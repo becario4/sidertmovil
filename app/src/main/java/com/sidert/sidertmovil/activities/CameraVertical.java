@@ -59,6 +59,7 @@ import com.bumptech.glide.Glide;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
 import java.io.ByteArrayOutputStream;
@@ -80,9 +81,17 @@ import java.util.Objects;
 
 public class CameraVertical extends AppCompatActivity {
 
+    private ImageButton ibFlashButton;
     private ImageButton ibCapture;
     private TextureView textureView;
     private ImageView ivFotoFinal;
+
+    public static final String CAMERA_FRONT = "1";
+    public static final String CAMERA_BACK = "0";
+
+    //private String cameraId = CAMERA_BACK;
+    private boolean isFlashSupported;
+    private boolean isTorchOn = false;
 
 
     //Check state orientation of output image
@@ -149,7 +158,7 @@ public class CameraVertical extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_vertical);
-
+        cameraId = "0";
         ctx = this;
         textureView = findViewById(R.id.tvCamera);
         assert textureView != null;
@@ -161,6 +170,7 @@ public class CameraVertical extends AppCompatActivity {
         btnGuardar  = findViewById(R.id.btnGuardar);
         btnNueva    = findViewById(R.id.btnNueva);
         ivFotoFinal = findViewById(R.id.ivFotoFinal);
+        ibFlashButton = findViewById(R.id.ibFlashButton);
 
         //name_photo = getIntent().getStringExtra(Constants.ORDER_ID);
 
@@ -199,6 +209,12 @@ public class CameraVertical extends AppCompatActivity {
 
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
         btnNueva.setOnClickListener(btnNueva_OnClick);
+        ibFlashButton.setOnClickListener(v -> {
+            switchFlash();
+        });
+
+        setupFlashButton();
+
     }
 
     private View.OnClickListener btnGuardar_OnClick = new View.OnClickListener() {
@@ -250,6 +266,7 @@ public class CameraVertical extends AppCompatActivity {
                         openCamera();
                         llPregunta.setVisibility(View.GONE);
                         ibCapture.setVisibility(View.VISIBLE);
+                        ibFlashButton.setVisibility(View.VISIBLE);
                         //finish();
                         //startActivity(getIntent());
                         //btnGuardar.setVisibility(View.INVISIBLE);
@@ -274,6 +291,9 @@ public class CameraVertical extends AppCompatActivity {
                 public void run() {
                     llPregunta.setVisibility(View.GONE);
                     ibCapture.setVisibility(View.VISIBLE);
+                    ibFlashButton.setVisibility(View.VISIBLE);
+                    isTorchOn = false;
+                    setupFlashButton();
                     /*if (mOrientationListener.canDetectOrientation()) {
                         mOrientationListener.enable();
                     } else {
@@ -334,9 +354,10 @@ public class CameraVertical extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Log.e("Resultado", result.toString());
-                    Log.e("Request", request.describeContents()+"sefsf");
-                    Log.e("Session", session.toString());
+
+                    Log.e("Rquest", Miscellaneous.ConvertToJson(request));
+                    Log.e("Resultado", Miscellaneous.ConvertToJson(result));
+                    Log.e("Session", Miscellaneous.ConvertToJson(session));
                     //mOrientationListener.disable();
                     closeCameraDevice();//cameraDevice.close();
                 }
@@ -362,6 +383,7 @@ public class CameraVertical extends AppCompatActivity {
             },mBackgroundHandler);
 
             ibCapture.setVisibility(View.GONE);
+            ibFlashButton.setVisibility(View.GONE);
             final AlertDialog loading = Popups.showLoadingDialog(CameraVertical.this,R.string.please_wait, R.string.loading_info);
             loading.setCancelable(false);
             loading.show();
@@ -435,8 +457,8 @@ public class CameraVertical extends AppCompatActivity {
         try{
             cameraId = manager.getCameraIdList()[0];
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
             assert map != null;
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
             //Check realtime permission if run higher API 23
@@ -543,6 +565,48 @@ public class CameraVertical extends AppCompatActivity {
         if (cameraDevice != null) {
             cameraDevice.close();
             cameraDevice = null;
+        }
+    }
+
+    public void switchFlash() {
+        try {
+            if (cameraId != null && cameraId.equals(CAMERA_BACK)) {
+                //if (isFlashSupported) {
+                if(true)
+                {
+                    if(isTorchOn)
+                    {
+                        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                        cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+                        ibFlashButton.setImageResource(R.drawable.ic_flash_on);
+                        isTorchOn = false;
+                    }
+                    else
+                    {
+                        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                        cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+                        ibFlashButton.setImageResource(R.drawable.ic_flash_off);
+                        isTorchOn = true;
+                    }
+                }
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setupFlashButton() {
+        if (cameraId != null && cameraId.equals(CAMERA_BACK)) {
+            ibFlashButton.setVisibility(View.VISIBLE);
+
+            if (isTorchOn) {
+                ibFlashButton.setImageResource(R.drawable.ic_flash_off);
+            }
+            else {
+                ibFlashButton.setImageResource(R.drawable.ic_flash_on);
+            }
+        } else {
+            ibFlashButton.setVisibility(View.GONE);
         }
     }
 }

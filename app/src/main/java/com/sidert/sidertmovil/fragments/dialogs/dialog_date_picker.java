@@ -265,7 +265,7 @@ public class dialog_date_picker extends DialogFragment {
                 else {
                     if (date2.before(date1) || date2.equals(date1)) {
                         if (identifer == 2){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 71){
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76){
                                 SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()),"fechaNacCli");
                                 dismiss();
@@ -283,7 +283,7 @@ public class dialog_date_picker extends DialogFragment {
 
                         }
                         else if (identifer == 3){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacAval");
                                 dismiss();
@@ -300,7 +300,7 @@ public class dialog_date_picker extends DialogFragment {
                             }
                         }
                         else if (identifer == 4){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 AgregarIntegrante integranteActivity = (AgregarIntegrante) getActivity();
                                 integranteActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacCli");
                                 dismiss();
@@ -372,7 +372,7 @@ public class dialog_date_picker extends DialogFragment {
                             dismiss();
                         }
                         else if (identifer == 15){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 SolicitudCreditoInd registerActivity = (SolicitudCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacRef");
                                 dismiss();
@@ -389,7 +389,7 @@ public class dialog_date_picker extends DialogFragment {
                             }
                         }
                         else if (identifer == 16){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 RenovacionCreditoInd registerActivity = (RenovacionCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacAval");
                                 dismiss();
@@ -406,7 +406,7 @@ public class dialog_date_picker extends DialogFragment {
                             }
                         }
                         else if (identifer == 17){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 RenovacionCreditoInd registerActivity = (RenovacionCreditoInd) getActivity();
                                 registerActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacRef");
                                 dismiss();
@@ -423,7 +423,7 @@ public class dialog_date_picker extends DialogFragment {
                             }
                         }
                         else if (identifer == 18){
-                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 70) {
+                            if (Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) > 17 && Integer.parseInt(Miscellaneous.GetEdad(sdf.format(myCalendar.getTime()))) < 76) {
                                 RenovarIntegrante integranteActivity = (RenovarIntegrante) getActivity();
                                 integranteActivity.setDate(sdf.format(myCalendar.getTime()), "fechaNacCli");
                                 dismiss();

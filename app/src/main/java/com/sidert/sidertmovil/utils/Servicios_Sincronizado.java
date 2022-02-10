@@ -409,7 +409,7 @@ public class Servicios_Sincronizado {
         if (row.getCount() > 0){
             row.moveToFirst();
 
-            String fileNameReport = "dGFibGUtY29i.csv";
+            /*String fileNameReport = "dGFibGUtY29i.csv";
             File fileReport = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),fileNameReport);
 
             Writer out = null;
@@ -422,53 +422,56 @@ public class Servicios_Sincronizado {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            String title = "id_prestamo,num_solicitud,respuesta"+"\n";
-            try {
-                out.append(title);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < row.getCount(); i++){
-                HashMap<String, String> params = new HashMap<>();
-                params.put("id_prestamo", row.getString(1));
-                params.put("num_solicitud", row.getString(29));
-                JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
-                params.put("respuesta", json_res.toString());
-                params.put("tipo", row.getString(38));
 
-                String val = row.getString(1)+","+row.getString(29)+","+json_res.toString()+"\n";
+                String title = "id_prestamo,num_solicitud,respuesta" + "\n";
                 try {
-                    out.append(val);
+                    out.append(title);
                 } catch (IOException e) {
                     e.printStackTrace();
+                }*/
+                for (int i = 0; i < row.getCount(); i++) {
+                    HashMap<String, String> params = new HashMap<>();
+                    params.put("id_prestamo", row.getString(1));
+                    params.put("num_solicitud", row.getString(29));
+                    JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
+                    params.put("respuesta", json_res.toString());
+                    params.put("tipo", row.getString(38));
+
+                    /*String val = row.getString(1) + "," + row.getString(29) + "," + json_res.toString() + "\n";
+                    try {
+                        out.append(val);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }*/
+
+                    try {
+                        String evidencia = "";
+                        String tipo_imagen = "-1";
+                        String firma = "";
+                        if (json_res.has("evidencia"))
+                            evidencia = json_res.getString("evidencia");
+                        if (json_res.has("tipo_imagen"))
+                            tipo_imagen = json_res.getString("tipo_imagen");
+                        if (json_res.has("firma"))
+                            firma = json_res.getString("firma");
+
+                        Log.e("res_envio", json_res.toString());
+
+                        SendrespuestaGestion(ctx, params, row.getInt(28), row.getString(0), evidencia, tipo_imagen, firma, showDG);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    row.moveToNext();
                 }
 
+                /*
                 try {
-                    String evidencia = "";
-                    String tipo_imagen = "-1";
-                    String firma = "";
-                    if (json_res.has("evidencia"))
-                        evidencia = json_res.getString("evidencia");
-                    if (json_res.has("tipo_imagen"))
-                        tipo_imagen = json_res.getString("tipo_imagen");
-                    if (json_res.has("firma"))
-                        firma = json_res.getString("firma");
-
-                    Log.e("res_envio", json_res.toString());
-
-                    SendrespuestaGestion(ctx, params, row.getInt(28), row.getString(0), evidencia, tipo_imagen, firma, showDG);
-                } catch (JSONException e) {
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
                     e.printStackTrace();
-                }
-                row.moveToNext();
-            }
+                }*/
 
-            try {
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         row.close();
 
@@ -768,6 +771,9 @@ public class Servicios_Sincronizado {
                         json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(8));
                         json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
                         json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
+                        int montoRefinanciar = 0;
+                        if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) Integer.parseInt(row_soli.getString(11).replace(",",""));
+                        json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                         row_soli.close();//Cierra datos de credito
                         json_solicitud.put(K_FECHA_INICIO, row.getString(6));
                         json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
@@ -1148,7 +1154,7 @@ public class Servicios_Sincronizado {
                         json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
                         json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
                         json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
-
+                        json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
                         json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
                         row_soli.close(); //Cierra datos del croquis
 
@@ -1179,12 +1185,99 @@ public class Servicios_Sincronizado {
                         json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
                         String firmaAsesor = row_soli.getString(7);
 
+                        String identificacionSelfie = "";
+                        if(row_soli.getString(9) != null)
+                        {
+                            json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
+                            identificacionSelfie = row_soli.getString(9);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                        }
+
+                        String comprobanteGarantia = "";
+                        if(row_soli.getString(10) != null)
+                        {
+                            json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
+                            comprobanteGarantia = row_soli.getString(10);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+                        }
+
+                        String identificacionFrontalAval = "";
+                        if(row_soli.getString(11) != null)
+                        {
+                            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
+                            identificacionFrontalAval = row_soli.getString(11);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+                        }
+
+                        String identificacionReversoAval = "";
+                        if(row_soli.getString(12) != null)
+                        {
+                            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
+                            identificacionReversoAval = row_soli.getString(12);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+                        }
+
+                        String curpAval = "";
+                        if(row_soli.getString(13) != null)
+                        {
+                            json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
+                            curpAval = row_soli.getString(13);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_CURP_AVAL, "");
+                        }
+
+                        String comprobanteAval = "";
+                        if(row_soli.getString(14) != null)
+                        {
+                            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
+                            comprobanteAval = row_soli.getString(14);
+                        }
+                        else
+                        {
+                            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+                        }
+
                         json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
 
                         row_soli.close(); //Cierre de datos de documentos
 
                         Log.e("documentos", json_documentos.toString());
-                        new GuardarSolicitudInd().execute(ctx, json_solicitud, fachadaCli, firmaCli, fachadaNeg, fachadaAval, firmaAval,identiFrontal, identiReverso, curp,comprobante, firmaAsesor, row.getString(0), row.getLong(4));
+                        new GuardarSolicitudInd().execute(
+                                ctx,
+                                json_solicitud,
+                                fachadaCli,
+                                firmaCli,
+                                fachadaNeg,
+                                fachadaAval,
+                                firmaAval,
+                                identiFrontal,
+                                identiReverso,
+                                curp,
+                                comprobante,
+                                firmaAsesor,
+                                row.getString(0),
+                                row.getLong(4),
+                                identificacionSelfie,
+                                comprobanteGarantia,
+                                identificacionFrontalAval,
+                                identificacionReversoAval,
+                                curpAval,
+                                comprobanteAval
+                        );
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1229,6 +1322,10 @@ public class Servicios_Sincronizado {
                     json_solicitud.put(K_OBSERVACIONES, row_soli.getString(12));
                     json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
                     json_solicitud.put(K_CLIENTE_ID, row_soli.getLong(11));
+                    int montoRefinanciar = 0;
+                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) Integer.parseInt(row_soli.getString(16).replace(",",""));
+                    json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
+
                     row_soli.close();//Cierra datos de credito
                     json_solicitud.put(K_FECHA_INICIO, row.getString(6));
                     json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
@@ -1607,6 +1704,7 @@ public class Servicios_Sincronizado {
                     json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
                     json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
                     json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
 
                     json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
                     row_soli.close(); //Cierra datos del croquis
@@ -1635,6 +1733,71 @@ public class Servicios_Sincronizado {
                     json_documentos.put(K_CODIGO_BARRAS, row_soli.getString(6));
                     json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
                     String firmaAsesor = row_soli.getString(7);
+                    String identificacionSelfie = "";
+                    if(row_soli.getString(9) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
+                        identificacionSelfie = row_soli.getString(9);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                    }
+
+                    String comprobanteGarantia = "";
+                    if(row_soli.getString(10) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
+                        comprobanteGarantia = row_soli.getString(10);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+                    }
+
+                    String identificacionFrontalAval = "";
+                    if(row_soli.getString(11) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
+                        identificacionFrontalAval = row_soli.getString(11);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+                    }
+
+                    String identificacionReversoAval = "";
+                    if(row_soli.getString(12) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
+                        identificacionReversoAval = row_soli.getString(12);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+                    }
+
+                    String curpAval = "";
+                    if(row_soli.getString(13) != null)
+                    {
+                        json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
+                        curpAval = row_soli.getString(13);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_CURP_AVAL, "");
+                    }
+
+                    String comprobanteAval = "";
+                    if(row_soli.getString(14) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
+                        comprobanteAval = row_soli.getString(14);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+                    }
 
                     json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
 
@@ -1645,19 +1808,26 @@ public class Servicios_Sincronizado {
                     Log.e("Renovacion",json_solicitud.toString());
                     Log.e("-----","--------------------------------------------------------");
                     new GuardarRenovacionInd().execute(
-                            ctx,
-                            json_solicitud,
-                            fachadaCli,
-                            firmaCli,
-                            fachadaNeg,
-                            fachadaAval,
-                            firmaAval,
-                            identiFrontal,
-                            identiReverso,
-                            comprobante,
-                            firmaAsesor,
-                            row.getString(0),
-                            row.getLong(4));
+                        ctx,
+                        json_solicitud,
+                        fachadaCli,
+                        firmaCli,
+                        fachadaNeg,
+                        fachadaAval,
+                        firmaAval,
+                        identiFrontal,
+                        identiReverso,
+                        comprobante,
+                        firmaAsesor,
+                        row.getString(0),
+                        row.getLong(4),
+                        identificacionSelfie,
+                        comprobanteGarantia,
+                        identificacionFrontalAval,
+                        identificacionReversoAval,
+                        curpAval,
+                        comprobanteAval
+                    );
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1849,7 +2019,10 @@ public class Servicios_Sincronizado {
                 "o.longitud," +
                 "o.located_at," +
                 "o.tiene_firma," +
-                "o.nombre_quien_firma" +
+                "o.nombre_quien_firma," +
+                "o.monto_refinanciar," +
+                "cro.caracteristicas_domicilio," +
+                "docu.ine_selfie" +
             " FROM " + TBL_INTEGRANTES_GPO + " AS i " +
             "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
             "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
@@ -1958,7 +2131,9 @@ public class Servicios_Sincronizado {
                 json_otros_datos.put(K_MONTO_PRESTAMO, rowIntegrante.getInt(118));
                 json_otros_datos.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(rowIntegrante.getString(118)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                 json_otros_datos.put(K_CASA_REUNION, (rowIntegrante.getInt(119) == 1));
-
+                int montoRefinanciar = 0;
+                if(rowIntegrante.getString(150) != null && !rowIntegrante.getString(150).isEmpty()) montoRefinanciar = Integer.parseInt(rowIntegrante.getString(150).replace(",",""));
+                json_otros_datos.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                 json_solicitud.put(K_OTROS_DATOS, json_otros_datos);
 
 
@@ -2080,6 +2255,17 @@ public class Servicios_Sincronizado {
                 json_documentos.put(K_COMPROBANTE_DOMICILIO, rowIntegrante.getString(127));
                 String comprobante = rowIntegrante.getString(127);
 
+                String identiSelfie = "";
+                if(rowIntegrante.getString(152) != null)
+                {
+                    json_documentos.put(K_IDENTIFICACION_SELFIE, rowIntegrante.getString(152));
+                    identiSelfie = rowIntegrante.getString(152);
+                }
+                else
+                {
+                    json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                }
+
                 json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
 
                 JSONObject json_politicas = new JSONObject();
@@ -2095,7 +2281,7 @@ public class Servicios_Sincronizado {
                     json_croquis.put(K_CALLE_LATERAL_DER, rowIntegrante.getString(139));
                     json_croquis.put(K_CALLE_ATRAS, rowIntegrante.getString(140));
                     json_croquis.put(K_REFERENCIAS, rowIntegrante.getString(141));
-
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, rowIntegrante.getString(151));
                     json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
                 }
 
@@ -2133,7 +2319,8 @@ public class Servicios_Sincronizado {
                         sDato15,
                         sDato16,
                         sDato17,
-                        sDato19
+                        sDato19,
+                        identiSelfie
                 );
 
             } catch (JSONException e) {
@@ -2435,7 +2622,10 @@ public class Servicios_Sincronizado {
                 "o.longitud," +
                 "o.located_at," +
                 "o.tiene_firma," +
-                "o.nombre_quien_firma" +
+                "o.nombre_quien_firma," +
+                "o.monto_refinanciar," +
+                "cro.caracteristicas_domicilio," +
+                "docu.ine_selfie" +
             " FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
             "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
             "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
@@ -2549,7 +2739,9 @@ public class Servicios_Sincronizado {
                 json_otros_datos.put(K_MONTO_PRESTAMO, rowIntegrante.getInt(120));
                 json_otros_datos.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(rowIntegrante.getString(120)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                 json_otros_datos.put(K_CASA_REUNION, (rowIntegrante.getInt(121) == 1));
-
+                int montoRefinanciar = 0;
+                if(rowIntegrante.getString(152) != null && !rowIntegrante.getString(152).isEmpty()) montoRefinanciar = Integer.parseInt(rowIntegrante.getString(152).replace(",",""));
+                json_otros_datos.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                 json_solicitud.put(K_OTROS_DATOS, json_otros_datos);
 
 
@@ -2671,6 +2863,17 @@ public class Servicios_Sincronizado {
                 json_documentos.put(K_COMPROBANTE_DOMICILIO, rowIntegrante.getString(129));
                 String comprobante = rowIntegrante.getString(129);
 
+                String identiSelfie = "";
+                if(rowIntegrante.getString(154) != null)
+                {
+                    json_documentos.put(K_IDENTIFICACION_SELFIE, rowIntegrante.getString(154));
+                    identiSelfie = rowIntegrante.getString(154);
+                }
+                else
+                {
+                    json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                }
+
                 json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
 
                 JSONObject json_politicas = new JSONObject();
@@ -2686,7 +2889,7 @@ public class Servicios_Sincronizado {
                     json_croquis.put(K_CALLE_LATERAL_DER, rowIntegrante.getString(141));
                     json_croquis.put(K_CALLE_ATRAS, rowIntegrante.getString(142));
                     json_croquis.put(K_REFERENCIAS, rowIntegrante.getString(143));
-
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, rowIntegrante.getString(153));
                     json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
                 }
 
@@ -2722,7 +2925,8 @@ public class Servicios_Sincronizado {
                     sDato17,
                     sDato19,
                     sDato21,
-                    sDato23
+                    sDato23,
+                    identiSelfie
                 );
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -5946,6 +6150,80 @@ public class Servicios_Sincronizado {
         });
     }
 
+    public void GetPrestamosToRenovarForce(final Context ctx){
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        final SessionManager session = new SessionManager(ctx);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+
+        Call<List<MPrestamosRenovar>> call = api.getPrestamoToRenovar("Bearer "+ session.getUser().get(7));
+
+        call.enqueue(new Callback<List<MPrestamosRenovar>>() {
+            @Override
+            public void onResponse(Call<List<MPrestamosRenovar>> call, Response<List<MPrestamosRenovar>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<MPrestamosRenovar> prestamos = response.body();
+                        if (prestamos.size() > 0){
+                            for(MPrestamosRenovar item : prestamos){
+                                if (item.getTipoPrestamo().equals("INDIVIDUAL")) {
+                                    String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND prestamo_id = ? and cliente_id = ?";
+                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId()) });
+
+                                    if (row.getCount() == 0) {
+                                        HashMap<Integer, String> params = new HashMap<>();
+                                        params.put(0, session.getUser().get(0));
+                                        params.put(1, String.valueOf(item.getPrestamoId()));
+                                        params.put(2, String.valueOf(item.getClienteId()));
+                                        params.put(3, item.getNombre());
+                                        params.put(4, item.getNoPrestamo().trim());
+                                        params.put(5, item.getFechaVencimiento());
+                                        params.put(6, String.valueOf(item.getNumPagos()));
+                                        params.put(7, "0");
+                                        params.put(8, "1");
+                                        params.put(9, String.valueOf(item.getGrupoId()));
+
+                                        dBhelper.savePrestamosToRenovar(db, params);
+
+                                    }
+                                    row.close();
+                                }
+                                else{
+                                    String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND grupo_id = ? and tipo_prestamo = 2";
+                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getGrupoId())});
+
+                                    if (row.getCount() == 0) {
+                                        HashMap<Integer, String> params = new HashMap<>();
+                                        params.put(0, session.getUser().get(0));
+                                        params.put(1, String.valueOf(item.getPrestamoId()));
+                                        params.put(2, String.valueOf(item.getClienteId()));
+                                        params.put(3, item.getNombre());
+                                        params.put(4, item.getNoPrestamo().trim());
+                                        params.put(5, item.getFechaVencimiento());
+                                        params.put(6, String.valueOf(item.getNumPagos()));
+                                        params.put(7, "0");
+                                        params.put(8, "2");
+                                        params.put(9, String.valueOf(item.getGrupoId()));
+
+                                        dBhelper.savePrestamosToRenovar(db, params);
+
+                                    }
+                                    row.close();
+                                }
+                            }
+                            GetDatosRenovarForce(ctx);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MPrestamosRenovar>> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void GetDatosRenovar(Context ctx){
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -5968,6 +6246,12 @@ public class Servicios_Sincronizado {
             }
         }
         row.close();
+
+    }
+
+    private void GetDatosRenovarForce(Context ctx){
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         //SE GUARDAN LOS QUE YA SE SINCRONIZAR PERO DE FORMA PARCIAL
         String sqlParcial = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
@@ -6957,7 +7241,7 @@ public class Servicios_Sincronizado {
 
                                 Log.e("AQUI", "INTEGRANTE");
                                 String sqlIntegrante = "SELECT *  FROM " + TBL_INTEGRANTES_GPO_REN + " WHERE cliente_id = ? or (trim(nombre) = ? and trim(paterno) = ? and trim(materno) = ?)";
-                                Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(integrante.getClienteId()).trim(), Miscellaneous.validStr(cliente.getNombre()).trim().toUpperCase(), Miscellaneous.validStr(cliente.getPaterno()).trim().toUpperCase(), Miscellaneous.validStr(cliente.getMaterno()).trim().toUpperCase()});
+                                Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(integrante.getClienteId()).trim(), Miscellaneous.validStr(cliente.getNombre()).toUpperCase().trim(), Miscellaneous.validStr(cliente.getPaterno()).toUpperCase().trim(), Miscellaneous.validStr(cliente.getMaterno()).toUpperCase().trim()});
 
                                 if (rowIntegrante.getCount() == 0  && id_solicitud > 0 && id_credito > 0) {
                                     Log.e("AQUI", "store");
@@ -7660,6 +7944,12 @@ public class Servicios_Sincronizado {
             String firmaAsesor = (String) params[11];
             final String id = (String) params[12];
             Long solicitudId = (Long) params[13];
+            String ineSelfie = (String) params[14];
+            String comprobanteGarantia = (String) params[15];
+            String ineFrontalAval = (String) params[16];
+            String ineReversoAval = (String) params[17];
+            String curpAval = (String) params[18];
+            String comprobanteAval = (String) params[19];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -7760,7 +8050,6 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_asesor = null;
-
             File image_firma_asesor = new File(ROOT_PATH + "Firma/"+firmaAsesor);
             if (image_firma_asesor != null) {
                 RequestBody imageBody =
@@ -7768,6 +8057,72 @@ public class Servicios_Sincronizado {
                                 MediaType.parse("image/*"), image_firma_asesor);
 
                 firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
+            }
+
+            MultipartBody.Part ine_selfie = null;
+            File image_ine_selfie = null;
+            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (image_ine_selfie != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_selfie);
+
+                ine_selfie = MultipartBody.Part.createFormData("identificacion_selfie", image_ine_selfie.getName(), imageBody);
+            }
+
+            MultipartBody.Part comprobante_garantia = null;
+            File image_comprobante_garantia = null;
+            if(comprobanteGarantia != null && !comprobanteGarantia.equals("")) image_comprobante_garantia = new File(ROOT_PATH + "Documentos/"+comprobanteGarantia);
+            if (image_comprobante_garantia != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_comprobante_garantia);
+
+                comprobante_garantia = MultipartBody.Part.createFormData("comprobante_garantia", image_comprobante_garantia.getName(), imageBody);
+            }
+
+            MultipartBody.Part ine_frontal_aval = null;
+            File image_ine_frontal_aval = null;
+            if(ineFrontalAval != null && !ineFrontalAval.equals("")) image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/"+ineFrontalAval);
+            if (image_ine_frontal_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_frontal_aval);
+
+                ine_frontal_aval = MultipartBody.Part.createFormData("identificacion_frontal_aval", image_ine_frontal_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part ine_reverso_aval = null;
+            File image_ine_reverso_aval = null;
+            if(ineReversoAval != null && !ineReversoAval.equals("")) image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/"+ineReversoAval);
+            if (image_ine_reverso_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_reverso_aval);
+
+                ine_reverso_aval = MultipartBody.Part.createFormData("identificacion_reverso_aval", image_ine_reverso_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part curp_aval = null;
+            File image_curp_aval = null;
+            if(curpAval != null && !curpAval.equals("")) image_curp_aval = new File(ROOT_PATH + "Documentos/"+curpAval);
+            if (image_curp_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_curp_aval);
+
+                curp_aval = MultipartBody.Part.createFormData("curp_aval", image_curp_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part comprobante_aval = null;
+            File image_comprobante_aval = null;
+            if(comprobanteAval != null && !comprobanteAval.equals("")) image_comprobante_aval = new File(ROOT_PATH + "Documentos/"+comprobanteAval);
+            if (image_comprobante_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_comprobante_aval);
+
+                comprobante_aval = MultipartBody.Part.createFormData("comprobante_domicilio_aval", image_comprobante_aval.getName(), imageBody);
             }
 
             RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, solicitud.toString());
@@ -7789,7 +8144,14 @@ public class Servicios_Sincronizado {
                     foto_curp,
                     foto_comprobante,
                     firma_asesor,
-                    solicitudIdBody);
+                    solicitudIdBody,
+                    ine_selfie,
+                    comprobante_garantia,
+                    ine_frontal_aval,
+                    ine_reverso_aval,
+                    curp_aval,
+                    comprobante_aval
+                    );
 
             ContentValues cv = new ContentValues();
             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -7811,8 +8173,10 @@ public class Servicios_Sincronizado {
                         default:
                             try {
                                 Log.e("ERROR " + response.code(), response.errorBody().string());
+
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                Log.e("AQUI", e.getMessage());
                             }
                             break;
                     }
@@ -7822,6 +8186,7 @@ public class Servicios_Sincronizado {
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
                     Log.e("Error", "failSolicitud");
+                    Log.e("Error", t.getMessage());
                     t.printStackTrace();
 
                 }
@@ -7849,6 +8214,12 @@ public class Servicios_Sincronizado {
             String firmaAsesor = (String) params[10];
             final String id = (String) params[11];
             Long solicitudId = (Long) params[12];
+            String ineSelfie = (String) params[13];
+            String comprobanteGarantia = (String) params[14];
+            String ineFrontalAval = (String) params[15];
+            String ineReversoAval = (String) params[16];
+            String curpAval = (String) params[17];
+            String comprobanteAval = (String) params[18];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -7940,8 +8311,8 @@ public class Servicios_Sincronizado {
                 foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
             }*/
 
-            MultipartBody.Part foto_comprobante = null;
             File image_comprobante = new File(ROOT_PATH + "Documentos/"+comprobante);
+            MultipartBody.Part foto_comprobante = null;
             if (image_comprobante != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -7961,12 +8332,80 @@ public class Servicios_Sincronizado {
                 firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
             }
 
+            MultipartBody.Part ine_selfie = null;
+            File image_ine_selfie = null;
+            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (image_ine_selfie != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_selfie);
+
+                ine_selfie = MultipartBody.Part.createFormData("identificacion_selfie", image_ine_selfie.getName(), imageBody);
+            }
+
+            MultipartBody.Part comprobante_garantia = null;
+            File image_comprobante_garantia = null;
+            if(comprobanteGarantia != null && !comprobanteGarantia.equals("")) image_comprobante_garantia = new File(ROOT_PATH + "Documentos/"+comprobanteGarantia);
+            if (image_comprobante_garantia != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_comprobante_garantia);
+
+                comprobante_garantia = MultipartBody.Part.createFormData("comprobante_garantia", image_comprobante_garantia.getName(), imageBody);
+            }
+
+            MultipartBody.Part ine_frontal_aval = null;
+            File image_ine_frontal_aval = null;
+            if(ineFrontalAval != null && !ineFrontalAval.equals("")) image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/"+ineFrontalAval);
+            if (image_ine_frontal_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_frontal_aval);
+
+                ine_frontal_aval = MultipartBody.Part.createFormData("identificacion_frontal_aval", image_ine_frontal_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part ine_reverso_aval = null;
+            File image_ine_reverso_aval = null;
+            if(ineReversoAval != null && !ineReversoAval.equals("")) image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/"+ineReversoAval);
+            if (image_ine_reverso_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_reverso_aval);
+
+                ine_reverso_aval = MultipartBody.Part.createFormData("identificacion_reverso_aval", image_ine_reverso_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part curp_aval = null;
+            File image_curp_aval = null;
+            if(curpAval != null && !curpAval.equals("")) image_curp_aval = new File(ROOT_PATH + "Documentos/"+curpAval);
+            if (image_curp_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_curp_aval);
+
+                curp_aval = MultipartBody.Part.createFormData("curp_aval", image_curp_aval.getName(), imageBody);
+            }
+
+            MultipartBody.Part comprobante_aval = null;
+            File image_comprobante_aval = null;
+            if(comprobanteAval != null && !comprobanteAval.equals("")) image_comprobante_aval = new File(ROOT_PATH + "Documentos/"+comprobanteAval);
+            if (image_comprobante_aval != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_comprobante_aval);
+
+                comprobante_aval = MultipartBody.Part.createFormData("comprobante_domicilio_aval", image_comprobante_aval.getName(), imageBody);
+            }
+
             RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, solicitud.toString());
 
             RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitudId));
 
             Log.e("solicitud", solicitud.toString());
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+
+            MultipartBody.Part partNull = null;
 
             Call<MResSaveSolicitud> call = api.guardarOriginacionInd("Bearer "+ session.getUser().get(7),
                     solicitudBody,
@@ -7980,7 +8419,14 @@ public class Servicios_Sincronizado {
                     foto_curp,
                     foto_comprobante,
                     firma_asesor,
-                    solicitudIdBody);
+                    solicitudIdBody,
+                    ine_selfie,
+                    comprobante_garantia,
+                    ine_frontal_aval,
+                    ine_reverso_aval,
+                    curp_aval,
+                    comprobante_aval
+                );
 
             ContentValues cv = new ContentValues();
             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -8011,7 +8457,8 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
-                   Log.e("Error", "failSolicitud");
+                    Log.e("ERROR", t.getMessage());
+                    Log.e("Error", "failSolicitud");
 
                 }
             });
@@ -8049,6 +8496,7 @@ public class Servicios_Sincronizado {
             String sDato16 = (String) params[22];
             String sDato17 = (String) params[23];
             String sDato19 = (String) params[24];
+            String ineSelfie = (String) params[25];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -8127,6 +8575,17 @@ public class Servicios_Sincronizado {
                 foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
             }
 
+            MultipartBody.Part ine_selfie = null;
+            File image_ine_selfie = null;
+            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (image_ine_selfie != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_selfie);
+
+                ine_selfie = MultipartBody.Part.createFormData("identificacion_selfie", image_ine_selfie.getName(), imageBody);
+            }
+
             /*MultipartBody.Part firma_asesor = null;
 
             File image_firma_asesor = new File(ROOT_PATH + "Firma/"+firmaAsesor);
@@ -8156,7 +8615,8 @@ public class Servicios_Sincronizado {
                     foto_curp,
                     foto_comprobante,
                     solicitudIdBody,
-                    solicitudIntegranteIdBody);
+                    solicitudIntegranteIdBody,
+                    ine_selfie);
 
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
@@ -8249,6 +8709,7 @@ public class Servicios_Sincronizado {
             String sDato19 = (String) params[25];
             String sDato21 = (String) params[26];
             String sDato23 = (String) params[27];
+            String ineSelfie = (String) params[28];
 
             SessionManager session = new SessionManager(ctx);
             DBhelper dBhelper = new DBhelper(ctx);
@@ -8332,6 +8793,17 @@ public class Servicios_Sincronizado {
                 foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
             }
 
+            MultipartBody.Part ine_selfie = null;
+            File image_ine_selfie = null;
+            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (image_ine_selfie != null) {
+                RequestBody imageBody =
+                        RequestBody.create(
+                                MediaType.parse("image/*"), image_ine_selfie);
+
+                ine_selfie = MultipartBody.Part.createFormData("identificacion_selfie", image_ine_selfie.getName(), imageBody);
+            }
+
             /*MultipartBody.Part firma_asesor = null;
 
             File image_firma_asesor = new File(ROOT_PATH + "Firma/"+firmaAsesor);
@@ -8360,7 +8832,8 @@ public class Servicios_Sincronizado {
                     foto_curp,
                     foto_comprobante,
                     solicitudIdBody,
-                    solicitudIntegranteIdBody);
+                    solicitudIntegranteIdBody,
+                    ine_selfie);
 
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override

@@ -163,7 +163,99 @@ public class geo_pendientes_fragment extends Fragment {
     private void GetGeolocalizacion(String where) {
         Cursor row;
 
-        String sql = "SELECT * FROM (SELECT ci.id_cartera, ci.clave, ci.nombre, ci.direccion, ci.colonia, ci.num_solicitud, ci.asesor_nombre, 1 AS tipo_ficha, 1 AS total_integrantes, 0 AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'CLIENTE' AND g.id_cartera = ci.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'NEGOCIO' AND g.id_cartera = ci.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'AVAL' AND g.id_cartera = ci.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_IND_T + " AS ci LEFT JOIN "+TBL_PRESTAMOS_IND_T+" AS pi ON pi.id_cliente = ci.id_cartera AND pi.tipo_cartera IN ('VIGENTE', 'AUTORIZADO')  UNION SELECT cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre, 2 AS tipo_ficha, COUNT(m._id) AS total_integrantes, SUM(CASE WHEN gr._id IS NOT NULL THEN 1 ELSE 0 END) AS total_contestadas, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'PRESIDENTE' AND g.id_cartera = cg.id_cartera), '') AS res_uno, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'TESORERO' AND g.id_cartera = cg.id_cartera), '') AS res_dos, COALESCE((SELECT COALESCE(g._id,'') AS id FROM "+TBL_GEO_RESPUESTAS_T+" AS g WHERE g.tipo_geolocalizacion = 'SECRETARIO' AND g.id_cartera = cg.id_cartera), '') AS res_tres FROM " + TBL_CARTERA_GPO_T + " AS cg LEFT JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = cg.id_cartera AND pg.tipo_cartera IN ('VIGENTE', 'AUTORIZADO') LEFT JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON m.id_prestamo = pg.id_prestamo LEFT JOIN "+TBL_GEO_RESPUESTAS_T+" AS gr ON gr.id_integrante = m.id_integrante GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre ) AS geo_res" + where +" ORDER BY nombre ASC";
+        String sql = "" +
+                "SELECT * FROM ( " +
+                    "SELECT " +
+                    "ci.id_cartera, " +
+                    "ci.clave, " +
+                    "ci.nombre, " +
+                    "ci.direccion, " +
+                    "ci.colonia, " +
+                    "ci.num_solicitud, " +
+                    "ci.asesor_nombre, " +
+                    "1 AS tipo_ficha, " +
+                    "1 AS total_integrantes, " +
+                    "0 AS total_contestadas, " +
+                    "COALESCE(" +
+                        "(" +
+                            "SELECT COALESCE(g._id,'') AS id " +
+                            "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                            "WHERE g.tipo_geolocalizacion = 'CLIENTE' " +
+                            "AND g.id_cartera = ci.id_cartera" +
+                        ")," +
+                        " ''" +
+                    ") AS res_uno, " +
+                    "COALESCE(" +
+                        "(" +
+                            "SELECT COALESCE(g._id,'') AS id " +
+                            "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                            "WHERE g.tipo_geolocalizacion = 'NEGOCIO' " +
+                            "AND g.id_cartera = ci.id_cartera" +
+                        "), " +
+                        "''" +
+                    ") AS res_dos, " +
+                    "COALESCE(" +
+                        "(" +
+                            "SELECT COALESCE(g._id,'') AS id " +
+                            "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                            "WHERE g.tipo_geolocalizacion = 'AVAL' " +
+                            "AND g.id_cartera = ci.id_cartera" +
+                        "), " +
+                        "''" +
+                    ") AS res_tres, " +
+                    "pi.num_prestamo," +
+                    "pi.fecha_entrega " +
+                    "FROM " + TBL_CARTERA_IND_T + " AS ci " +
+                    "LEFT JOIN "+TBL_PRESTAMOS_IND_T+" AS pi ON pi.id_cliente = ci.id_cartera AND pi.tipo_cartera IN ('VIGENTE', 'AUTORIZADO')  " +
+                    "UNION " +
+                    "SELECT " +
+                        "cg.id_cartera, " +
+                        "cg.clave, " +
+                        "cg.nombre, " +
+                        "cg.direccion, " +
+                        "cg.colonia, " +
+                        "pg.num_solicitud, " +
+                        "cg.asesor_nombre, " +
+                        "2 AS tipo_ficha, " +
+                        "COUNT(m._id) AS total_integrantes, " +
+                        "SUM(CASE WHEN gr._id IS NOT NULL THEN 1 ELSE 0 END) AS total_contestadas, " +
+                        "COALESCE(" +
+                            "(" +
+                                "SELECT COALESCE(g._id,'') AS id " +
+                                "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                                "WHERE g.tipo_geolocalizacion = 'PRESIDENTE' " +
+                                "AND g.id_cartera = cg.id_cartera" +
+                            "), " +
+                            "''" +
+                        ") AS res_uno, " +
+                        "COALESCE(" +
+                            "(" +
+                                "SELECT COALESCE(g._id,'') AS id " +
+                                "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                                "WHERE g.tipo_geolocalizacion = 'TESORERO' " +
+                                "AND g.id_cartera = cg.id_cartera" +
+                            "), " +
+                            "''" +
+                        ") AS res_dos, " +
+                        "COALESCE(" +
+                            "(" +
+                                "SELECT COALESCE(g._id,'') AS id " +
+                                "FROM "+TBL_GEO_RESPUESTAS_T+" AS g " +
+                                "WHERE g.tipo_geolocalizacion = 'SECRETARIO' " +
+                                "AND g.id_cartera = cg.id_cartera" +
+                            "), " +
+                            "''" +
+                        ") AS res_tres," +
+                        "pg.num_prestamo," +
+                        "pg.fecha_entrega " +
+                        "FROM " + TBL_CARTERA_GPO_T + " AS cg " +
+                        "LEFT JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = cg.id_cartera AND pg.tipo_cartera IN ('VIGENTE', 'AUTORIZADO') " +
+                        "LEFT JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON m.id_prestamo = pg.id_prestamo " +
+                        "LEFT JOIN "+TBL_GEO_RESPUESTAS_T+" AS gr ON gr.id_integrante = m.id_integrante AND gr.num_solicitud = m.num_solicitud " +
+                        "GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre, pg.num_solicitud, pg.num_prestamo, pg.fecha_entrega " +
+                    ") AS geo_res" +
+                    where +
+                    " ORDER BY nombre ASC, num_solicitud DESC";
 
         row = db.rawQuery(sql, null);
         _m_geolocalizacion = new ArrayList<>();
@@ -200,6 +292,8 @@ public class geo_pendientes_fragment extends Fragment {
                             mGeo.setTotal_integrantes(row.getInt(8));
                             mGeo.setTotal_contestadas(row.getInt(9));
                             mGeo.setStatus(0);
+                            mGeo.setNum_prestamo(row.getString(13));
+                            mGeo.setFecha_desembolso(row.getString(14));
                             _m_geolocalizacion.add(mGeo);
                         }
 
@@ -223,6 +317,8 @@ public class geo_pendientes_fragment extends Fragment {
                             mGeo.setTotal_integrantes(row.getInt(8));
                             mGeo.setTotal_contestadas(row.getInt(9));
                             mGeo.setStatus(0);
+                            mGeo.setNum_prestamo(row.getString(13));
+                            mGeo.setFecha_desembolso(row.getString(14));
                             _m_geolocalizacion.add(mGeo);
                         }
                         break;

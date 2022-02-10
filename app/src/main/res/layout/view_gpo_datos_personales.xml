@@ -934,6 +934,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp" />
         </LinearLayout>
+
+        <!-- Caracteristicas del domicilio -->
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@android:color/black"
+                android:text="Características del domicilio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <MultiAutoCompleteTextView
+                android:id="@+id/etCaracteristicasDomicilio"
+                android:textColor="@drawable/edit_text_selector"
+                android:inputType="textMultiLine|textCapCharacters"
+                android:ems="10"
+                android:maxLength="250"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:paddingLeft="10dp"
+                android:background="@drawable/et_rounded_edges"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/et_height" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <!--  Fotografía de fachada  -->
@@ -1610,6 +1637,8 @@
             android:layout_width="match_parent"
             android:layout_height="70dp" />
     </LinearLayout>
+
+
 
     <RelativeLayout
         android:layout_marginTop="10dp"

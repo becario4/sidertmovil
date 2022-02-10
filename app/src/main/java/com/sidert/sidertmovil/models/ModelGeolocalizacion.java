@@ -9,6 +9,8 @@ public class ModelGeolocalizacion implements Serializable {
     private int tipo_form;
     private String nombre;
     private String num_solicitud;
+    private String num_prestamo;
+    private String fecha_desembolso;
     private String direccion;
     private String colonia;
     private String res_uno, res_dos, res_tres;
@@ -127,5 +129,21 @@ public class ModelGeolocalizacion implements Serializable {
 
     public void setTotal_contestadas(int total_contestadas) {
         this.total_contestadas = total_contestadas;
+    }
+
+    public String getNum_prestamo() {
+        return num_prestamo;
+    }
+
+    public void setNum_prestamo(String num_prestamo) {
+        this.num_prestamo = num_prestamo;
+    }
+
+    public String getFecha_desembolso() {
+        return fecha_desembolso;
+    }
+
+    public void setFecha_desembolso(String fecha_desembolso) {
+        this.fecha_desembolso = fecha_desembolso;
     }
 }

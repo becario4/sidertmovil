@@ -7,6 +7,7 @@ buildscript {
     dependencies {
 
         //classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        //classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
         //classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -26,7 +27,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "2.6.5"
+        versionName "2.6.11"
         //multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -44,7 +45,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion '28.0.3'
+    //buildToolsVersion '28.0.3'
 }
 
 dependencies {
@@ -72,7 +73,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:30.0.0' //Listas
 
     //implementation 'com.android.support:multidex:1.0.1'
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+' //gif
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23' //gif
     implementation 'com.github.gcacace:signature-pad:1.2.1' //Firma digital
     implementation 'com.github.chrisbanes:PhotoView:1.2.6' //Zoom imagen
     implementation 'com.squareup.retrofit2:retrofit:2.5.0' //Para servicios

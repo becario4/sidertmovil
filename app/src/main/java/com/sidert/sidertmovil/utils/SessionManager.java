@@ -110,6 +110,9 @@ public class SessionManager {
     private final String GES_VER_DOM_FLAG_GRU = "ges_ver_dom_flag_gru";
     private final String GES_CONTADOR_VER_DIS = "ges_contador_ver_dis";
 
+    //PERMISOS
+    private final String IMAGE_FORM_GALLERY = "image_from_gallery";
+
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;

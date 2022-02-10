@@ -471,7 +471,14 @@ public interface ManagerInterface {
                                                   @Part MultipartBody.Part curp,
                                                   @Part MultipartBody.Part comprobante_domicilio,
                                                   @Part MultipartBody.Part firma_asesor,
-                                                  @Part("solicitud_id") RequestBody solicitudId);
+                                                  @Part("solicitud_id") RequestBody solicitudId,
+                                                  @Part MultipartBody.Part ine_selfie,
+                                                  @Part MultipartBody.Part comprobante_garantia,
+                                                  @Part MultipartBody.Part ine_frontal_aval,
+                                                  @Part MultipartBody.Part ine_reverso_aval,
+                                                  @Part MultipartBody.Part curp_aval,
+                                                  @Part MultipartBody.Part comprobante_aval
+                                                  );
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_ORIGINACION_IND)
@@ -485,7 +492,8 @@ public interface ManagerInterface {
                                                   @Part MultipartBody.Part identificacion_frontal,
                                                   @Part MultipartBody.Part identificacion_reverso,
                                                   @Part MultipartBody.Part comprobante_domicilio,
-                                                  @Part MultipartBody.Part firma_asesor);
+                                                  @Part MultipartBody.Part firma_asesor
+                                                 );
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_ORIGINACION_GPO)
@@ -499,7 +507,8 @@ public interface ManagerInterface {
                                                   @Part MultipartBody.Part curp,
                                                   @Part MultipartBody.Part comprobante_domicilio,
                                                   @Part("solicitud_id") RequestBody solicitud_grupal_id,
-                                                  @Part("solicitud_integrante_id") RequestBody solicitud_integrante_id);
+                                                  @Part("solicitud_integrante_id") RequestBody solicitud_integrante_id,
+                                                  @Part MultipartBody.Part ine_selfie);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_CIERRE_DIA)

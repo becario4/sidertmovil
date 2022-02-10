@@ -13,6 +13,7 @@ import java.util.List;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 
 public class SolicitudRenDao {
@@ -22,6 +23,33 @@ public class SolicitudRenDao {
     public SolicitudRenDao(Context ctx){
         this.dbHelper = new DBhelper(ctx);
         this.db = dbHelper.getWritableDatabase();
+    }
+
+    public SolicitudRen findByNombre(String nombre)
+    {
+        SolicitudRen solicitud = null;
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "WHERE s.nombre = ? "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(nombre)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            solicitud = new SolicitudRen();
+
+            Fill(row, solicitud);
+        }
+
+        row.close();
+
+        return solicitud;
     }
 
     public List<SolicitudRen> findAllOrderByFechaVencimiento()
@@ -35,6 +63,42 @@ public class SolicitudRenDao {
             "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
             "ORDER BY pr.fecha_vencimiento "
         ;
+
+        Cursor row = db.rawQuery(sql, new String[]{});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                SolicitudRen solicitud = new SolicitudRen();
+
+                Fill(row, solicitud);
+
+                solicitudes.add(solicitud);
+                row.moveToNext();
+            }
+
+        }
+
+        row.close();
+
+        return solicitudes;
+    }
+
+    public List<SolicitudRen> findAllOrderByFechaVencimientoMayor90()
+    {
+        List<SolicitudRen> solicitudes = new ArrayList<SolicitudRen>();
+
+        String sql = "" +
+                "SELECT " +
+                "s.* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+                "WHERE pr.fecha_vencimiento > DATE('now', '-45 day')" +
+                "ORDER BY pr.fecha_vencimiento "
+                ;
 
         Cursor row = db.rawQuery(sql, new String[]{});
 

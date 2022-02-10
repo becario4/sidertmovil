@@ -571,7 +571,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                     evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     evidencia_dlg.show();
-                } else {
+                }
+                else
+                {
                     final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                             R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
                                 @Override

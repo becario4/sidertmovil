@@ -8,9 +8,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.Nullable;
@@ -18,6 +22,7 @@ import androidx.annotation.Nullable;
 import android.support.v4.app.Fragment;*/
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -51,18 +56,24 @@ import com.sidert.sidertmovil.activities.GeolocalizacionGpo;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
+import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
@@ -85,6 +96,7 @@ public class geo_presidente_fragment extends Fragment {
     private ImageButton ibUbicacion;
     private ImageButton ibCodigoBarras;
     private ImageButton ibFotoFachada;
+    private ImageButton ibGaleriaFachada;
     private ImageView ivFotoFachada;
     private MapView mapUbicacion;
     private LinearLayout llFechaFinalizacion;
@@ -142,6 +154,7 @@ public class geo_presidente_fragment extends Fragment {
         ibUbicacion = view.findViewById(R.id.ibUbicacion);
         ibCodigoBarras = view.findViewById(R.id.ibCodigoBarras);
         ibFotoFachada = view.findViewById(R.id.ibFotoFachada);
+        ibGaleriaFachada = view.findViewById(R.id.ibGaleriaFachada);
 
         ivFotoFachada = view.findViewById(R.id.ivFotoFachada);
 
@@ -157,6 +170,8 @@ public class geo_presidente_fragment extends Fragment {
         mapUbicacion.onCreate(savedInstanceState);
         locationManager = (LocationManager) boostrap.getSystemService(Context.LOCATION_SERVICE);
 
+        ibGaleriaFachada.setEnabled(false);
+
         initComponents();
 
 
@@ -170,6 +185,7 @@ public class geo_presidente_fragment extends Fragment {
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
+        ibGaleriaFachada.setOnClickListener(ibGaleriaFachada_OnClick);
         ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
 
@@ -260,12 +276,35 @@ public class geo_presidente_fragment extends Fragment {
         }
     };
 
+    private View.OnClickListener ibGaleriaFachada_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+            } else {
+                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
+                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
+                    compress = 40;
+
+                /**Libreria para recortar imagenes*/
+                CropImage.activity()
+                        .setAutoZoomEnabled(true)
+                        .setMinCropWindowSize(3000,4000)
+                        .setOutputCompressQuality(compress)
+                        .start(ctx, geo_presidente_fragment.this);
+            }
+
+        }
+    };
+
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (flag_edit) {
                 final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, Constants.question,
-                        R.string.capturar_foto, R.string.fotografia, new Popups.DialogMessage() {
+                        R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(boostrap, CameraVertical.class);
@@ -274,12 +313,17 @@ public class geo_presidente_fragment extends Fragment {
                                 dialog.dismiss();
 
                             }
-                        }, R.string.ver_imagen, new Popups.DialogMessage() {
+                        }, R.string.galeria, new Popups.DialogMessage() {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
-                                Intent i = new Intent(boostrap, VerImagen.class);
-                                i.putExtra(Constants.IMAGEN, byteFotoFachada);
-                                startActivity(i);
+                                int compress = 10;
+                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                    compress = 40;
+                                CropImage.activity()
+                                        .setAutoZoomEnabled(true)
+                                        .setMinCropWindowSize(3000,4000)
+                                        .setOutputCompressQuality(compress)
+                                        .start(ctx, geo_presidente_fragment.this);
                                 dialog.dismiss();
                             }
                         }, R.string.cancel, new Popups.DialogMessage() {
@@ -457,10 +501,60 @@ public class geo_presidente_fragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
                         ibFotoFachada.setVisibility(View.GONE);
+                        ibGaleriaFachada.setVisibility(View.GONE);
                         ivFotoFachada.setVisibility(View.VISIBLE);
                         byteFotoFachada = data.getByteArrayExtra(Constants.PICTURE);
                         Glide.with(ctx).load(byteFotoFachada).centerCrop().into(ivFotoFachada);
                     }
+                }
+                break;
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
+                if (data != null){/**Valida que se esté recibiendo el archivo*/
+                    try {
+                        Log.e("AQUI", "CROP IMAGE");
+                        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                        Uri imageUri = result.getUri();
+
+                        /**Convierte la iamgen adjuntada a un array de byte*/
+                        byteFotoFachada = Miscellaneous.getBytesUri(ctx, imageUri, 0);
+
+                        ibFotoFachada.setVisibility(View.GONE);
+                        ivFotoFachada.setVisibility(View.VISIBLE);
+                        ibGaleriaFachada.setVisibility(View.GONE);
+
+                        /**Al array de byte (imagen adjuntada) se le agrega la fecha y hora de cuando fue adjuntad para crear una nueva imagen con fecha y hora*/
+                        View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                        Bitmap newBitMap = null;
+
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(byteFotoFachada, 0, byteFotoFachada.length);
+
+                        Bitmap.Config config = bitmap.getConfig();
+
+                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                        /**Aqui le coloca la fecha y hora a la imagen*/
+                        Canvas canvas = new Canvas(newBitMap);
+                        canvas.drawBitmap(bitmap, 0, 0, null);
+
+                        vCanvas.draw(canvas);
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        /**Se comprime la imagen para que no este tan pesada */
+                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+
+                        /**Se extraen la nueva imagen en array de byte para guardar posteriormente*/
+                        byteFotoFachada = baos.toByteArray();
+                        /**Coloca la imagen en el contededor del imageView*/
+                        Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivFotoFachada);
+
+                    }catch (Exception e){
+                        /**En caso de que haya adjuntado un archivo  con diferente formato al JPEG*/
+                        AlertDialog success = Popups.showDialogMessage(ctx, "", R.string.error_image, R.string.accept, dialog -> dialog.dismiss());
+                        success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        success.show();
+                    }
+
                 }
                 break;
         }
@@ -551,6 +645,7 @@ public class geo_presidente_fragment extends Fragment {
             etCodigoBarras.setVisibility(View.VISIBLE);
             etCodigoBarras.setText(row.getString(11));
             ibFotoFachada.setVisibility(View.GONE);
+            ibGaleriaFachada.setVisibility(View.GONE);
             Log.e("Fachada", row.getString(12));
             File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(12));
             Uri uriFachada = Uri.fromFile(fachadaFile);

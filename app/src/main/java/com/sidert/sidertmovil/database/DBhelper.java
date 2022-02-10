@@ -864,6 +864,72 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_NO_SOL_VER_DOM); }
         catch (Exception e) { Log.e("ADD_NO_SOL_VER_DOM", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND); }
+        catch (Exception e) { Log.e("ADD_MONTO_REFINANCIAR_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND); }
+        catch (Exception e) { Log.e("ADD_CARACT_DOM_CRO_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_INE_SELF_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_COM_GAR_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_INE_FRON_AVAL_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_INE_REV_AVAL_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_CURP_AVAL_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND); }
+        catch (Exception e) { Log.e("ADD_COM_DOM_AVAL_DOC_IND", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND_REN); }
+        catch (Exception e) { Log.e("ADD_MONTO_REFINANCIAR_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND_REN); }
+        catch (Exception e) { Log.e("ADD_CARACT_DOM_CRO_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_INE_SELF_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_COM_GAR_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_INE_FRON_AVAL_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_INE_REV_AVAL_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_CURP_AVAL_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND_REN); }
+        catch (Exception e) { Log.e("ADD_COM_DOM_AVAL_DOC_IND_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT); }
+        catch (Exception e) { Log.e("ADD_MONTO_REFIN_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT); }
+        catch (Exception e) { Log.e("ADD_CARAC_DOM_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT); }
+        catch (Exception e) { Log.e("ADD_INE_SELFIE_DOC_INT", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT_REN); }
+        catch (Exception e) { Log.e("ADD_MONTO_REFIN_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT_REN); }
+        catch (Exception e) { Log.e("ADD_CARAC_DOM_INT_REN", "ya contiene la columna"); }
+
+        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT_REN); }
+        catch (Exception e) { Log.e("ADD_INE_SELFIE_DOC_INT_REN", "ya contiene la columna"); }
+
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {

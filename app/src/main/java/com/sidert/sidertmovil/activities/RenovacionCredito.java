@@ -68,7 +68,7 @@ public class RenovacionCredito extends AppCompatActivity {
         /**Se prepara la consulta para obtener la solicitudes (SELECT * FROM TBL_SOLICITUDES_REN)*/
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, "", "", null);
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
-        List<SolicitudRen> solicitudes = solicitudRenDao.findAllOrderByFechaVencimiento();
+        List<SolicitudRen> solicitudes = solicitudRenDao.findAllOrderByFechaVencimientoMayor90();
 
 
         /**Valida si encontró algun registro*/

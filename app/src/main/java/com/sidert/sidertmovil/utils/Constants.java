@@ -251,7 +251,7 @@ public class Constants {
 
     //==========================   REQUEST CODE   ==================================================
     public final static int REQUEST_CODE_FIRMA                     = 456;
-    public final static int REQUEST_CODE_DISPOSITIVO                    = 962;
+    public final static int REQUEST_CODE_DISPOSITIVO               = 962;
     public final static int REQUEST_CODE_IMPRESORA                 = 963;
     public final static int REQUEST_CODE_INTEGRANTES_GPO           = 951;
     public final static int REQUEST_CODE_RESUMEN_INTEGRANTES_GPO   = 834;
@@ -289,15 +289,20 @@ public class Constants {
     public final static int REQUEST_CODE_FIRMA_AVAL                = 863;
     public final static int REQUEST_CODE_FIRMA_CLI                 = 862;
     public final static int REQUEST_CODE_FIRMA_ASESOR              = 861;
+    public final static int REQUEST_CODE_FOTO_INE_SELFIE           = 801;
     public final static int REQUEST_CODE_FOTO_INE_FRONTAL          = 752;
     public final static int REQUEST_CODE_FOTO_INE_REVERSO          = 798;
     public final static int REQUEST_CODE_FOTO_CURP                 = 768;
     public final static int REQUEST_CODE_FOTO_COMPROBATE           = 715;
+    public final static int REQUEST_CODE_FOTO_COMPROBATE_GARANTIA  = 802;
     public final static int REQUEST_CODE_MIEMBRO_GEO               = 668;
     public final static int REQUEST_CODE_CAMERA_CIERRE_DIA         = 416;
     public final static int REQUEST_CODE_SOPORTE                   = 685;
     public final static int REQUEST_CODE_CALLE                     = 648;
-
+    public final static int REQUEST_CODE_FOTO_INE_FRONTAL_AVAL     = 803;
+    public final static int REQUEST_CODE_FOTO_INE_REVERSO_AVAL     = 804;
+    public final static int REQUEST_CODE_FOTO_CURP_AVAL            = 805;
+    public final static int REQUEST_CODE_FOTO_COMPROBANTE_AVAL     = 806;
     public final static int CANCEL_TRACKER_ID                      = 300;
 
     //=========================== PARÁMETROS FECHAS  ===============================================
@@ -613,6 +618,7 @@ public class Constants {
     public final static String K_ESTATUS_INTEGRANTE             = "estatus_integrante";
     public final static String K_FECHA_INICIO                   = "fecha_inicio";
     public final static String K_FECHA_ENVIO                    = "fecha_envio";
+    public final static String K_MONTO_REFINANCIAR              = "monto_refinanciar";
     public final static String K_SOLICITUD_ID                   = "solicitud_id";
     public final static String K_FECHA_TERMINO                  = "fecha_termino";
     public final static String K_SOLICITANTE                    = "solicitante";
@@ -732,12 +738,18 @@ public class Constants {
     public final static String K_SOLICITANTE_POLITICAS                   = "solicitante_politicas";
 
 
+    public final static String K_IDENTIFICACION_SELFIE                 = "identificacion_selfie";
     public final static String K_SOLICITANTE_DOCUMENTOS                = "solicitante_documentos";
     public final static String K_IDENTIFICACION_FRONTAL                = "identificacion_frontal";
     public final static String K_IDENTIFICACION_REVERSO                = "identificacion_reverso";
     public final static String K_COMPROBANTE_DOMICILIO                 = "comprobante_domicilio";
     public final static String K_CODIGO_BARRAS                         = "codigo_barras";
     public final static String K_FIRMA_ASESOR                          = "firma_asesor";
+    public final static String K_COMPROBANTE_GARANTIA                  = "comprobante_garantia";
+    public final static String K_IDENTIFICACION_FRONTAL_AVAL           = "identificacion_frontal_aval";
+    public final static String K_IDENTIFICACION_REVERSO_AVAL           = "identificacion_reverso_aval";
+    public final static String K_CURP_AVAL                             = "curp_aval";
+    public final static String K_COMPROBANTE_DOMICILIO_AVAL            = "comprobante_domicilio_aval";
 
 
 }

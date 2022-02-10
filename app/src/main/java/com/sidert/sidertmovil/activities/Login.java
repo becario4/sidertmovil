@@ -436,6 +436,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    Log.e("AQUI", t.toString());
                     Log.e("error", "fail: " + t.getMessage());
                     loading.dismiss();
                 }
