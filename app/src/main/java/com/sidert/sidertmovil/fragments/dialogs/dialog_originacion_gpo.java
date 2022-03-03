@@ -21,6 +21,10 @@ import android.widget.TextView;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.SolicitudCreditoGpo;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
@@ -39,7 +43,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 public class dialog_originacion_gpo extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(long id_solicitud, long id_credito, String nombre, String plazo, String periodicidad, String fecha, String dia, String hora);
+        void onComplete(long id_solicitud, long id_credito, String nombre, String plazo, String periodicidad, String fecha, String dia, String hora, Boolean isEdit);
     }
 
     @Override
@@ -70,6 +74,7 @@ public class dialog_originacion_gpo extends DialogFragment {
     private Button btnCerrar;
     private Calendar myCalendar;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private String idSolicitud;
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -103,22 +108,38 @@ public class dialog_originacion_gpo extends DialogFragment {
         btnCerrar = view.findViewById(R.id.btnCerrar);
         btnGuardar = view.findViewById(R.id.btnGuardar);
 
-        if (!getArguments().getBoolean("is_edit")){
+        //if (!getArguments().getBoolean("is_edit")){
+        if (getArguments().containsKey("plazo")){
             etNombre.setText(getArguments().getString("nombre"));
-            etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNombre.setEnabled(false);
             tvPlazo.setText(getArguments().getString("plazo"));
-            tvPlazo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_left));
             tvPeriodicidad.setText(getArguments().getString("periodicidad"));
-            tvPeriodicidad.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
             tvFechaDesembolso.setText(getArguments().getString("fecha_desembolso"));
-            tvFechaDesembolso.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             tvDiaDesembolso.setText(getArguments().getString("dia_desembolso"));
             tvHoraVisita.setText(getArguments().getString("hora_visita"));
-            tvHoraVisita.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            is_edit = false;
-            btnGuardar.setVisibility(View.GONE);
+            idSolicitud = getArguments().getString("id_solicitud");
+
+            is_edit = getArguments().getBoolean("is_edit");
+
+            if(!is_edit)
+            {
+                etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNombre.setEnabled(false);
+                tvPlazo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_left));
+                tvPlazo.setEnabled(false);
+                tvPeriodicidad.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
+                tvPeriodicidad.setEnabled(false);
+                tvFechaDesembolso.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvFechaDesembolso.setEnabled(false);
+                tvHoraVisita.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvHoraVisita.setEnabled(false);
+                btnGuardar.setVisibility(View.GONE);
+            }
+
             btnCerrar.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            idSolicitud = "";
         }
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -244,9 +265,9 @@ public class dialog_originacion_gpo extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (!is_edit)
-                mListener.onComplete(0, 0,etNombre.getText().toString().trim().toUpperCase(), tvPlazo.getText().toString(), tvPeriodicidad.getText().toString(), tvFechaDesembolso.getText().toString().trim(), tvDiaDesembolso.getText().toString(), tvHoraVisita.getText().toString());
+                mListener.onComplete(0, 0,etNombre.getText().toString().trim().toUpperCase(), tvPlazo.getText().toString(), tvPeriodicidad.getText().toString(), tvFechaDesembolso.getText().toString().trim(), tvDiaDesembolso.getText().toString(), tvHoraVisita.getText().toString(), is_edit);
             else
-                mListener.onComplete(0, 0,null, null, null, null, null, null);
+                mListener.onComplete(0, 0,null, null, null, null, null, null, null);
             getDialog().dismiss();
         }
     };
@@ -295,46 +316,77 @@ public class dialog_originacion_gpo extends DialogFragment {
     }
 
     private void saveGrupo (){
-        long id_solicitud;
-        // Crea la solicitud de credito grupal
-        HashMap<Integer, String> params = new HashMap<>();
-        params.put(0, getString(R.string.vol_solicitud));                               //VOL SOLICITUD
-        params.put(1,session.getUser().get(9));                 //USUARIO ID
-        params.put(2,"2");                                      //TIPO SOLICITUD
-        params.put(3,"0");                                      //ID ORIGINACION
-        params.put(4, etNombre.getText().toString().trim().toUpperCase());                                  //NOMBRE
-        params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
-        params.put(6,"");                                       //FECHA TERMINO
-        params.put(7,"");                                       //FECHA ENVIO
-        params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
-        params.put(9, "");                                      //FECHA GUARDADO
-        params.put(10, "0");                                    //ESTATUS
+        if(idSolicitud.equals("")) {
+            long id_solicitud;
+            // Crea la solicitud de credito grupal
+            HashMap<Integer, String> params = new HashMap<>();
+            params.put(0, getString(R.string.vol_solicitud));                               //VOL SOLICITUD
+            params.put(1, session.getUser().get(9));                 //USUARIO ID
+            params.put(2, "2");                                      //TIPO SOLICITUD
+            params.put(3, "0");                                      //ID ORIGINACION
+            params.put(4, etNombre.getText().toString().trim().toUpperCase());                                  //NOMBRE
+            params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
+            params.put(6, "");                                       //FECHA TERMINO
+            params.put(7, "");                                       //FECHA ENVIO
+            params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
+            params.put(9, "");                                      //FECHA GUARDADO
+            params.put(10, "0");                                    //ESTATUS
 
-        id_solicitud = dBhelper.saveSolicitudes(db, params, 1);
+            id_solicitud = dBhelper.saveSolicitudes(db, params, 1);
 
 
+            //Inserta registro de datos del credito
+            long id_credito;
+            params = new HashMap<>();
+            params.put(0, String.valueOf(id_solicitud));
+            params.put(1, etNombre.getText().toString().trim().toUpperCase());
+            params.put(2, tvPlazo.getText().toString());
+            params.put(3, tvPeriodicidad.getText().toString());
+            params.put(4, tvFechaDesembolso.getText().toString().trim());
+            params.put(5, tvDiaDesembolso.getText().toString().trim());
+            params.put(6, tvHoraVisita.getText().toString().trim());
+            params.put(7, "0");
 
-        //Inserta registro de datos del credito
-        long id_credito;
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id_solicitud));
-        params.put(1, etNombre.getText().toString().trim().toUpperCase());
-        params.put(2, tvPlazo.getText().toString());
-        params.put(3, tvPeriodicidad.getText().toString());
-        params.put(4, tvFechaDesembolso.getText().toString().trim());
-        params.put(5, tvDiaDesembolso.getText().toString().trim());
-        params.put(6, tvHoraVisita.getText().toString().trim());
-        params.put(7,"0");
+            id_credito = dBhelper.saveDatosCreditoGpo(db, params, 1);
 
-        id_credito = dBhelper.saveDatosCreditoGpo(db, params, 1);
+            mListener.onComplete(id_solicitud,
+                    id_credito, etNombre.getText().toString().trim().toUpperCase(),
+                    tvPlazo.getText().toString(),
+                    tvPeriodicidad.getText().toString(),
+                    tvFechaDesembolso.getText().toString().trim(),
+                    tvDiaDesembolso.getText().toString().trim(),
+                    tvHoraVisita.getText().toString().trim(),
+                    is_edit
+            );
+        }
+        else
+        {
+            CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
+            CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(Integer.parseInt(idSolicitud));
 
-        mListener.onComplete(id_solicitud,
-                id_credito,etNombre.getText().toString().trim().toUpperCase(),
-                tvPlazo.getText().toString(),
-                tvPeriodicidad.getText().toString(),
-                tvFechaDesembolso.getText().toString().trim(),
-                tvDiaDesembolso.getText().toString().trim(),
-                tvHoraVisita.getText().toString().trim());
+            if(creditoGpo != null)
+            {
+                creditoGpo.setPlazo(tvPlazo.getText().toString());
+                creditoGpo.setPeriodicidad(tvPeriodicidad.getText().toString());
+                creditoGpo.setFechaDesembolso(tvFechaDesembolso.getText().toString().trim());
+                creditoGpo.setDisDesembolso(tvDiaDesembolso.getText().toString().trim());
+                creditoGpo.setHoraVisita(tvHoraVisita.getText().toString().trim());
+
+                creditoGpoDao.update(creditoGpo);
+
+                mListener.onComplete(
+                    creditoGpo.getIdSolicitud(),
+                    creditoGpo.getId(),
+                    etNombre.getText().toString().trim().toUpperCase(),
+                    tvPlazo.getText().toString(),
+                    tvPeriodicidad.getText().toString(),
+                    tvFechaDesembolso.getText().toString().trim(),
+                    tvDiaDesembolso.getText().toString().trim(),
+                    tvHoraVisita.getText().toString().trim(),
+                    is_edit
+                );
+            }
+        }
         getDialog().dismiss();
 
     }

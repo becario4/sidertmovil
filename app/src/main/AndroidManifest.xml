@@ -65,19 +65,19 @@
             android:screenOrientation="portrait"
         />
         <activity
-            android:name=".activities.RenovarIntegrante"
+            android:name=".views.renovacion.RenovarIntegrante"
             android:screenOrientation="portrait"
         />
         <activity
-            android:name=".activities.RenovacionCreditoGpo"
+            android:name=".views.renovacion.RenovacionCreditoGpo"
             android:screenOrientation="portrait"
         />
         <activity
-            android:name=".activities.RenovacionCreditoInd"
+            android:name=".views.renovacion.RenovacionCreditoInd"
             android:screenOrientation="portrait"
         />
         <activity
-            android:name=".activities.RenovacionCredito"
+            android:name=".views.renovacion.RenovacionCredito"
             android:screenOrientation="portrait"
         />
         <activity

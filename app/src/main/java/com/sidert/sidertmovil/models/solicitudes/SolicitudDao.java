@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.sidert.sidertmovil.database.DBhelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 
 public class SolicitudDao {
@@ -71,6 +75,92 @@ public class SolicitudDao {
 
         return solicitud;
     }
+
+    public List<Solicitud> findAllByFilters(
+            String sMenor45,
+            String sGrupales,
+            String sIndividuales,
+            String sNombre,
+            int iEstatus
+    )
+    {
+        List<Solicitud> solicitudes = new ArrayList<>();
+
+        String sql = "" +
+                "SELECT " +
+                "s.* " +
+                "FROM " + TBL_SOLICITUDES + " AS s " +
+                "WHERE ((s.fecha_inicio > DATE('now', '-45 day') AND ? = '1') OR ? = '0') " +
+                "AND ((s.tipo_solicitud > 1 AND ? = '1') OR ? = '0') " +
+                "AND ((s.tipo_solicitud = 1 AND ? = '1') OR ? = '0') " +
+                "AND (s.nombre like '%'||?||'%') " +
+                "AND (" +
+                "   (s.estatus = 0 AND ? = '0') " +
+                "   OR (s.estatus <= 1 AND ? = '1') " +
+                "   OR (s.estatus <= 2 AND ? = '1')" +
+                "   OR (s.estatus > 2 AND ? = '3')" +
+                ")" +
+                "ORDER BY s.fecha_inicio "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{sMenor45, sMenor45, sGrupales, sGrupales, sIndividuales, sIndividuales, sNombre, String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                Solicitud solicitud = new Solicitud();
+
+                Fill(row, solicitud);
+
+                solicitudes.add(solicitud);
+                row.moveToNext();
+            }
+
+        }
+
+        row.close();
+
+        return solicitudes;
+    }
+
+    public List<String> showNombres(int iEstatus)
+    {
+        List<String> nombres = new ArrayList<>();
+
+        String sql = "" +
+                "SELECT " +
+                "distinct(s.nombre) as nombre " +
+                "FROM " + TBL_SOLICITUDES + " AS s " +
+                "WHERE " +
+                "(" +
+                "   (s.estatus = 0 AND ? = '0') " +
+                "   OR (s.estatus <= 1 AND ? = '1') " +
+                "   OR (s.estatus <= 2 AND ? = '1')" +
+                "   OR (s.estatus > 2 AND ? = '3')" +
+                ")" +
+                "ORDER BY s.fecha_inicio "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                nombres.add(row.getString(0));
+                row.moveToNext();
+            }
+        }
+
+        row.close();
+
+        return nombres;
+    }
+
 
     public void updateEstatus(Solicitud solicitud)
     {

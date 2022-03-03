@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,6 +94,9 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
         rbDisponibles.setChecked(true);
 
+        getClientesDisponibles();
+        getClientesGestionados();
+
         rbDisponibles.setOnClickListener(v -> {
             iTipoSeccion = 1;
             setupBadge();
@@ -109,8 +113,9 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
     protected void getDisponibles()
     {
-        String nombreCliente = session.getFiltrosVerDom().get(0);
+
         String nombreGrupo = session.getFiltrosVerDom().get(1);
+        String nombreCliente = session.getFiltrosVerDom().get(0);
         String banderaIndividual = session.getFiltrosVerDom().get(2);
         String banderaGrupal     = session.getFiltrosVerDom().get(3);
         String[] filters         = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
@@ -133,10 +138,14 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
     protected void getGestionados()
     {
-        String nombreCliente = session.getFiltrosVerDom().get(0);
-        String nombreGrupo = session.getFiltrosVerDom().get(1);
-        String banderaIndividual = session.getFiltrosVerDom().get(2);
-        String banderaGrupal     = session.getFiltrosVerDom().get(3);
+        String nombreGrupo       = session.getFiltrosGesVerDom().get(1);
+        String nombreCliente     = session.getFiltrosGesVerDom().get(0);
+        String banderaIndividual = session.getFiltrosGesVerDom().get(2);
+        String banderaGrupal     = session.getFiltrosGesVerDom().get(3);
+        Log.e("AQUI PRESTAMO:", "-" + nombreGrupo + "-");
+        Log.e("AQUI PRESTAMO:", "-" + nombreCliente + "-");
+        Log.e("AQUI PRESTAMO:", "-" + banderaIndividual + "-");
+        Log.e("AQUI PRESTAMO:", "-" + banderaGrupal + "-");
         String[] filters         = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
         List<VerificacionDomiciliaria> verificaciones = verificacionDao.findGestionadas(filters);
 
@@ -184,9 +193,9 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
         if(nombres.size() > 0)
         {
             nombresVerGes = new String[nombres.size()];
-
             for(int i = 0; i < nombres.size(); i++)
             {
+                Log.e("AQUI NOMBRE", nombres.get(i));
                 nombresVerGes[i] = nombres.get(i);
             }
 
@@ -305,7 +314,7 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
                                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                    getDisponibles();
+                                    getGestionados();
 
                                     break;
                             }
@@ -354,6 +363,7 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
                                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                                         getGestionados();
+                                        acNombreVerGes.setAdapter(adapterNombresVerGes);
 
                                         break;
                                 }
@@ -396,9 +406,9 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
                 break;
             case 2:
-                acNombreVerDis = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
-                cbIndVerDis    = filtros_dg.getHolderView().findViewById(R.id.cbInd);
-                cbGpoVerDis    = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+                acNombreVerGes = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
+                cbIndVerGes    = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+                cbGpoVerGes    = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
 
                 acNombreVerGes.setAdapter(adapterNombresVerGes);
 
@@ -486,12 +496,21 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getClientesDisponibles();
-        getClientesGestionados();
 
-        rbDisponibles.setChecked(true);
+        switch (iTipoSeccion)
+        {
+            case 1:
+                getClientesDisponibles();
+                rbDisponibles.setChecked(true);
+                getDisponibles();
+                break;
+            case 2:
+                getClientesGestionados();
+                rbGestionados.setChecked(true);
+                getGestionados();
+                break;
+        }
 
-        getDisponibles();
     }
 
 }

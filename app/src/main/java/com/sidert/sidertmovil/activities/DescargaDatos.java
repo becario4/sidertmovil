@@ -32,6 +32,8 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
+import com.sidert.sidertmovil.models.cartera.amortizaciones.Amortizacion;
+import com.sidert.sidertmovil.models.cartera.amortizaciones.AmortizacionDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -954,40 +956,88 @@ public class DescargaDatos extends AppCompatActivity {
 
                                     /**Si se obtiene datos de amortizaciones se actualizan datos*/
                                     if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                        /**Se realiza recorrido para el listado de amortizaciones*/
-                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
-                                            /**Actualiza los datos de amortizacion del prestamo*/
-                                            MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
-                                            ContentValues cv_amortiz = new ContentValues();
-                                            cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                      //FECHA
-                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");   //FECHA PAGO
-                                            cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                                  //CAPITAL
-                                            cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                                  //INTERES
-                                            cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                          //IVA
-                                            cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                                //COMISION
-                                            cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                      //TOTAL
-                                            cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));                     //CAPITAL PAGADO
-                                            cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));                     //INTERES PAGADO
-                                            cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                             //IVA PAGADO
-                                            cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));  //INTERES MORATORIO PAGADO
-                                            cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));          //IVA_MORATORIO PAGADO
-                                            cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                   //COMISION PAGADA
-                                            String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
-                                            Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
-                                            if (rowAmortiz.getCount() > 0) {
-                                                rowAmortiz.moveToFirst();
-                                                if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)) {
-                                                    cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
-                                                    cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                                    //PAGADO
-                                                    cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                                    //NUMERO
-                                                    cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                           //DIAS ATRASO
-                                                }
-                                            }
-                                            rowAmortiz.close();
-                                            cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                             //FECHA ACTUALIZADO
+                                        MAmortizacion mAmortizacionExiste = prestamos.get(i).getAmortizaciones().get(0);
+                                        AmortizacionDao amortizacionDao = new AmortizacionDao(ctx);
+                                        Amortizacion amortizacionExiste = amortizacionDao.findByIdAmortizacion(String.valueOf(mAmortizacionExiste.getId()));
 
-                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                        Log.e("AQUI", "EXISTO EN PRESTAMOS");
+
+                                        if(amortizacionExiste != null)
+                                        {
+
+                                            Log.e("AQUI AMORTIZACION EXISTO", amortizacionExiste.getIdAmortizacion());
+
+                                            /**Se realiza recorrido para el listado de amortizaciones*/
+                                            for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                                /**Actualiza los datos de amortizacion del prestamo*/
+                                                MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
+                                                ContentValues cv_amortiz = new ContentValues();
+                                                cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                      //FECHA
+                                                cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");   //FECHA PAGO
+                                                cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                                  //CAPITAL
+                                                cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                                  //INTERES
+                                                cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                          //IVA
+                                                cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                                //COMISION
+                                                cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                      //TOTAL
+                                                cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));                     //CAPITAL PAGADO
+                                                cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));                     //INTERES PAGADO
+                                                cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                             //IVA PAGADO
+                                                cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));  //INTERES MORATORIO PAGADO
+                                                cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));          //IVA_MORATORIO PAGADO
+                                                cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                   //COMISION PAGADA
+                                                String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
+                                                Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                                if (rowAmortiz.getCount() > 0) {
+                                                    rowAmortiz.moveToFirst();
+                                                    if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)) {
+                                                        cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
+                                                        cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                                    //PAGADO
+                                                        cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                                    //NUMERO
+                                                        cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                           //DIAS ATRASO
+                                                    }
+                                                }
+                                                rowAmortiz.close();
+                                                cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                             //FECHA ACTUALIZADO
+
+                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                            }
                                         }
+                                        else
+                                        {
+                                            Log.e("AQUI AMORTIZACION NO EXISTO", String.valueOf(prestamos.get(i).getId()));
+
+                                            amortizacionDao.deleteByIdPrestamo(String.valueOf(prestamos.get(i).getId()));
+
+                                            for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
+                                                MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
+
+                                                Amortizacion amortizacion = new Amortizacion();
+                                                amortizacion.setIdAmortizacion(String.valueOf(mAmortizacion.getId()));
+                                                amortizacion.setIdPrestamo(String.valueOf(mAmortizacion.getPrestamoId()));
+                                                amortizacion.setFecha(mAmortizacion.getFecha());
+                                                amortizacion.setFechaPago((mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");
+                                                amortizacion.setCapital(String.valueOf(mAmortizacion.getCapital()));
+                                                amortizacion.setInteres(String.valueOf(mAmortizacion.getInteres()));
+                                                amortizacion.setIva(String.valueOf(mAmortizacion.getIva()));
+                                                amortizacion.setComision(String.valueOf(mAmortizacion.getComision()));
+                                                amortizacion.setTotal(String.valueOf(mAmortizacion.getTotal()));
+                                                amortizacion.setCapitalPagado(String.valueOf(mAmortizacion.getCapitalPagado()));
+                                                amortizacion.setInteresPagado(String.valueOf(mAmortizacion.getInteresPagado()));
+                                                amortizacion.setIvaPagado(String.valueOf(mAmortizacion.getIvaPagado()));
+                                                amortizacion.setInteresMoratorioPagado(String.valueOf(mAmortizacion.getInteresMoratorioPagado()));
+                                                amortizacion.setIvaMoratorioPagado(String.valueOf(mAmortizacion.getIvaMoratorioPagado()));
+                                                amortizacion.setComisionPagada(String.valueOf(mAmortizacion.getComisionPagada()));
+                                                amortizacion.setTotalPagado(String.valueOf(mAmortizacion.getTotalPagado()));
+                                                amortizacion.setPagado(String.valueOf(mAmortizacion.getPagado()));
+                                                amortizacion.setNumero(String.valueOf(mAmortizacion.getNumero()));
+                                                amortizacion.setDiasAtraso(String.valueOf(mAmortizacion.getDiasAtraso()));
+                                                amortizacion.setFechaDispositivo(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                                amortizacion.setFechaActualizado(Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                                                amortizacionDao.store(amortizacion);
+                                            }
+                                        }
+
                                     }
 
                                     /**Si se obtienen pagos  del prestamo se actualizan datos*/
@@ -1220,6 +1270,7 @@ public class DescargaDatos extends AppCompatActivity {
                                     }
 
                                     double sumPago = 0;
+
                                     for (int r = 0; r < rowRuta.getCount(); r++){
                                         /**Se obtiene la fecha de fin gestion de la respuesta*/
                                         String[] fechaFinGes = rowRuta.getString(23).split(" ");
@@ -1279,37 +1330,77 @@ public class DescargaDatos extends AppCompatActivity {
 
                                 /**Actualiza los datos de las amortizaciones*/
                                 if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                    for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
-                                        MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
-                                        ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
-                                        cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
-                                        cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                            //CAPITAL
-                                        cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                            //INTERES
-                                        cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                    //IVA
-                                        cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                          //COMISION
-                                        cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                //TOTAL
-                                        cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));               //CAPITAL PAGADO
-                                        cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));               //INTERES PAGADO
-                                        cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                       //IVA PAGADO
-                                        cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));//INTERES MORATORIO PAGADO
-                                        cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));                  //IVA_MORATORIO PAGADO
-                                        cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                      //COMISION PAGADA
-                                        String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
-                                        Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
-                                        if (rowAmortiz.getCount() > 0) {
-                                            rowAmortiz.moveToFirst();
-                                            if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)){
-                                                cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
-                                                cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                              //PAGADO
-                                                cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                              //NUMERO
-                                                cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
-                                            }
-                                        }
-                                        rowAmortiz.close();
-                                        cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
+                                    MAmortizacion mAmortizacionExiste = prestamos.get(i).getAmortizaciones().get(0);
+                                    AmortizacionDao amortizacionDao = new AmortizacionDao(ctx);
+                                    Amortizacion amortizacionExiste = amortizacionDao.findByIdAmortizacion(String.valueOf(mAmortizacionExiste.getId()));
 
-                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                    if(amortizacionExiste != null)
+                                    {
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
+                                            MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
+                                            ContentValues cv_amortiz = new ContentValues();
+                                            cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
+                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
+                                            cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                            //CAPITAL
+                                            cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                            //INTERES
+                                            cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                    //IVA
+                                            cv_amortiz.put("comision", String.valueOf(mAmortizacion.getComision()));                          //COMISION
+                                            cv_amortiz.put("total", String.valueOf(mAmortizacion.getTotal()));                                //TOTAL
+                                            cv_amortiz.put("capital_pagado", String.valueOf(mAmortizacion.getCapitalPagado()));               //CAPITAL PAGADO
+                                            cv_amortiz.put("interes_pagado", String.valueOf(mAmortizacion.getInteresPagado()));               //INTERES PAGADO
+                                            cv_amortiz.put("iva_pagado", String.valueOf(mAmortizacion.getIvaPagado()));                       //IVA PAGADO
+                                            cv_amortiz.put("interes_moratorio_pagado", String.valueOf(mAmortizacion.getInteresMoratorioPagado()));//INTERES MORATORIO PAGADO
+                                            cv_amortiz.put("iva_moratorio_pagado", String.valueOf(mAmortizacion.getIvaMoratorioPagado()));                  //IVA_MORATORIO PAGADO
+                                            cv_amortiz.put("comision_pagada", String.valueOf(mAmortizacion.getComisionPagada()));                      //COMISION PAGADA
+                                            String sqlAmortiz = "SELECT total, total_pagado FROM " + TBL_AMORTIZACIONES_T + " WHERE id_amortizacion = ? AND id_prestamo = ?";
+                                            Cursor rowAmortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                            if (rowAmortiz.getCount() > 0) {
+                                                rowAmortiz.moveToFirst();
+                                                if (rowAmortiz.getDouble(0) > rowAmortiz.getDouble(1)){
+                                                    cv_amortiz.put("total_pagado", String.valueOf(mAmortizacion.getTotalPagado()));                         //TOTAL PAGADO
+                                                    cv_amortiz.put("pagado", String.valueOf(mAmortizacion.getPagado()));                              //PAGADO
+                                                    cv_amortiz.put("numero", String.valueOf(mAmortizacion.getNumero()));                              //NUMERO
+                                                    cv_amortiz.put("dias_atraso", String.valueOf(mAmortizacion.getDiasAtraso()));                          //DIAS ATRASO
+                                                }
+                                            }
+                                            rowAmortiz.close();
+                                            cv_amortiz.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP)); //FECHA ACTUALIZADO
+
+                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_amortizacion = ? AND id_prestamo = ?", new String[]{String.valueOf(mAmortizacion.getId()), String.valueOf(prestamos.get(i).getId())});
+                                        }
+                                    }
+                                    else
+                                    {
+                                        amortizacionDao.deleteByIdPrestamo(String.valueOf(prestamos.get(i).getId()));
+
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
+                                            MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
+
+                                            Amortizacion amortizacion = new Amortizacion();
+                                            amortizacion.setIdAmortizacion(String.valueOf(mAmortizacion.getId()));
+                                            amortizacion.setIdPrestamo(String.valueOf(mAmortizacion.getPrestamoId()));
+                                            amortizacion.setFecha(mAmortizacion.getFecha());
+                                            amortizacion.setFechaPago((mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");
+                                            amortizacion.setCapital(String.valueOf(mAmortizacion.getCapital()));
+                                            amortizacion.setInteres(String.valueOf(mAmortizacion.getInteres()));
+                                            amortizacion.setIva(String.valueOf(mAmortizacion.getIva()));
+                                            amortizacion.setComision(String.valueOf(mAmortizacion.getComision()));
+                                            amortizacion.setTotal(String.valueOf(mAmortizacion.getTotal()));
+                                            amortizacion.setCapitalPagado(String.valueOf(mAmortizacion.getCapitalPagado()));
+                                            amortizacion.setInteresPagado(String.valueOf(mAmortizacion.getInteresPagado()));
+                                            amortizacion.setIvaPagado(String.valueOf(mAmortizacion.getIvaPagado()));
+                                            amortizacion.setInteresMoratorioPagado(String.valueOf(mAmortizacion.getInteresMoratorioPagado()));
+                                            amortizacion.setIvaMoratorioPagado(String.valueOf(mAmortizacion.getIvaMoratorioPagado()));
+                                            amortizacion.setComisionPagada(String.valueOf(mAmortizacion.getComisionPagada()));
+                                            amortizacion.setTotalPagado(String.valueOf(mAmortizacion.getTotalPagado()));
+                                            amortizacion.setPagado(String.valueOf(mAmortizacion.getPagado()));
+                                            amortizacion.setNumero(String.valueOf(mAmortizacion.getNumero()));
+                                            amortizacion.setDiasAtraso(String.valueOf(mAmortizacion.getDiasAtraso()));
+                                            amortizacion.setFechaDispositivo(Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                            amortizacion.setFechaActualizado(Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                                            amortizacionDao.store(amortizacion);
+                                        }
                                     }
                                 }//Termina If de Actualizado de amortizaciones
 

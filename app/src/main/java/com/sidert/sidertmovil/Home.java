@@ -44,12 +44,11 @@ import com.crashlytics.android.Crashlytics;*/
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
-import com.sidert.sidertmovil.activities.RenovacionCredito;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCredito;
 import com.sidert.sidertmovil.activities.Solicitudes;

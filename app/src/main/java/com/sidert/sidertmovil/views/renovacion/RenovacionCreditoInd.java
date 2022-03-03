@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.activities;
+package com.sidert.sidertmovil.views.renovacion;
 
 import android.Manifest;
 import android.app.Activity;
@@ -15,13 +15,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Handler;
-//import androidx.annotation.Nullable;
-//import android.support.design.widget.FloatingActionButton;
-//import android.support.v4.app.ActivityCompat;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -59,9 +56,15 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.CapturarFirma;
+import com.sidert.sidertmovil.activities.Catalogos;
+import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_originacion_gpo;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_plazo_ind;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
@@ -150,17 +153,13 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_CONY
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
@@ -179,7 +178,7 @@ import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
 /**Clase para guardar los datos de la solicitud de renovacion individual*/
-public class RenovacionCreditoInd extends AppCompatActivity {
+public class RenovacionCreditoInd extends AppCompatActivity implements dialog_plazo_ind.OnCompleteListener {
 
     private Context ctx;
 
@@ -4878,6 +4877,16 @@ public class RenovacionCreditoInd extends AppCompatActivity {
         tvDestino.setText(_destino[1]);
         Update("destino", TBL_CREDITO_IND, m.GetStr(tvDestino));
 
+        if(tvPlazo.getText().equals(""))
+        {
+            dialog_plazo_ind dialogPlazoInd = new dialog_plazo_ind();
+            dialogPlazoInd.setCancelable(false);
+            Bundle b = new Bundle();
+
+            dialogPlazoInd.setArguments(b);
+            dialogPlazoInd.show(getSupportFragmentManager(), NameFragments.DIALOGPLAZOIND);
+        }
+
         if(etCpNeg.getText() != null && m.GetStr(etCpNeg).equals("") == false)
         {
             Cursor rowDireccion = dBhelper.getDireccionByCP(etCpNeg.getText().toString());
@@ -9328,6 +9337,14 @@ public class RenovacionCreditoInd extends AppCompatActivity {
                 Update("horario_localizacion", TBL_AVAL_IND_REN, timer);
                 break;
         }
+    }
+
+    @Override
+    public void onComplete(String plazo, String periodicidad) {
+        if(plazo.equals("")) finish();
+
+        tvPlazo.setText(plazo);
+        tvFrecuencia.setText(periodicidad);
     }
 
     //===================== Listener GPS  =======================================================

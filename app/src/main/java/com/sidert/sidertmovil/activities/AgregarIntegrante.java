@@ -147,6 +147,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
@@ -2838,6 +2839,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 llDatosDocumentos.setVisibility(View.GONE);
             }
         }
+        
     };
 
     private void ClickDefault(){
@@ -4822,7 +4824,21 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //Cursor row = dBhelper.getIntegranteOri(id_credito, id_integrante);
         //row.moveToFirst();
         /**Consulta para obtener todos las columnas de estatus de las tablas(secciones)*/
-        String sql = "SELECT i.estatus_completado AS eIntegrante, i.estado_civil AS civil, t.estatus_completado AS eTelefono, d.estatus_completado AS eDomiclio, n.estatus_completado AS eNegocio, c.estatus_completado AS eConyuge, o.estatus_completado AS eOtros, doc.estatus_completado AS eDocumentos, p.estatus_completado AS ePoliticas, COALESCE(cro.estatus_completado, 1) AS eCroquis FROM " + TBL_INTEGRANTES_GPO + " AS i "+
+        String sql = "SELECT " +
+                "   i.estatus_completado AS eIntegrante, " +
+                "   i.estado_civil AS civil, " +
+                "   t.estatus_completado AS eTelefono, " +
+                "   d.estatus_completado AS eDomiclio, " +
+                "   n.estatus_completado AS eNegocio, " +
+                "   c.estatus_completado AS eConyuge, " +
+                "   o.estatus_completado AS eOtros, " +
+                "   doc.estatus_completado AS eDocumentos, " +
+                "   p.estatus_completado AS ePoliticas, " +
+                "   COALESCE(cro.estatus_completado, " +
+                "       1" +
+                "   ) AS eCroquis," +
+                "   s.estatus " +
+                "FROM " + TBL_INTEGRANTES_GPO + " AS i "+
                 "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
                 "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
                 "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE + " AS n ON i.id = n.id_integrante " +
@@ -4831,6 +4847,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 "LEFT JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante AND o.casa_reunion = 1 " +
                 "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS p ON i.id = p.id_integrante " +
                 "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS doc ON i.id = doc.id_integrante " +
+                "INNER JOIN " + TBL_CREDITO_GPO + " AS cgp ON cgp.id = i.id_credito " +
+                "INNER JOIN " + TBL_SOLICITUDES + " AS s ON s.id_solicitud = cgp.id_solicitud " +
                 "WHERE i.id_credito = ? AND i.id = ? ";
         Cursor row = db.rawQuery(sql, new String[]{id_credito, id_integrante});
         row.moveToFirst();
@@ -4853,6 +4871,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         row.getInt(9) == 1){
             is_edit = false;
         }
+
+        if(row.getInt(10) >= 2)
+        {
+            is_edit = false;
+        }
+
         row.close(); //Cierra datos de estatus de todas las tablas
 
         cbNegEnDomCli.setEnabled(is_edit);
@@ -5283,8 +5307,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivComprobante.setVisibility(View.VISIBLE);
         }
 
-        if (row.getString(9) != null && !row.getString(9).isEmpty()){
-            File ineSelfieFile = new File(ROOT_PATH + "Documentos/"+row.getString(9));
+        if (row.getString(7) != null && !row.getString(7).isEmpty()){
+            File ineSelfieFile = new File(ROOT_PATH + "Documentos/"+row.getString(7));
             Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
             byteIneSelfie = m.getBytesUri(ctx, uriIneSelfie,0);
             Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);

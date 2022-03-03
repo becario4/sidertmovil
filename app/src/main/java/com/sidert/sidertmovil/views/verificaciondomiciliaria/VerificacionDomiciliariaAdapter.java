@@ -95,12 +95,7 @@ public class VerificacionDomiciliariaAdapter extends RecyclerView.Adapter<Verifi
         }
 
         public void bind (final VerificacionDomiciliaria verDom){
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View view) {
-                    evento.previewOnClick(verDom);
-                }
-            });
+            itemView.setOnClickListener(view -> evento.previewOnClick(verDom));
         }
 
     }

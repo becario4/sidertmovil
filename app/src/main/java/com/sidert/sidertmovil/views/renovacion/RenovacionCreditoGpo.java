@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.activities;
+package com.sidert.sidertmovil.views.renovacion;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,26 +46,16 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
@@ -188,7 +178,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         Bundle b = new Bundle();
         /**Valida si ya no tiene que editar y solo es para visualizar los datos*/
         if (!is_new) {
-            b.putBoolean("is_edit", false);
+            b.putBoolean("is_edit", is_edit);
             b.putString("nombre", nombre_gpo);
             b.putString("plazo", plazo);
             b.putString("periodicidad", periodicidad);
@@ -489,7 +479,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
     /**Funcion que recibe los datos del credito del dialogFragment*/
     @Override
-    public void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones) {
+    public void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones, Boolean isEdit) {
         if (plazo != null && periodicidad != null) {/**Si el usuario guardo los datos del credito podrá continuar con el registro de integrantes*/
             is_new = false;
 
@@ -499,7 +489,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             this.dia_desembolso = dia;
             this.hora_visita = hora;
             this.observaciones = observaciones;
-            is_edit = false;
+            is_edit = isEdit;
 
         }
         else if (plazo == null ) {/**En caso de no guardar los datos del credito se cierra la vista*/

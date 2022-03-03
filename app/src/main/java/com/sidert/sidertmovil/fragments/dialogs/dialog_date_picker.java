@@ -21,11 +21,10 @@ import androidx.fragment.app.DialogFragment;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
-import com.sidert.sidertmovil.activities.ConsultarCC;
 import com.sidert.sidertmovil.activities.FormularioCC;
 import com.sidert.sidertmovil.activities.GenerarCurp;
-import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
-import com.sidert.sidertmovil.activities.RenovarIntegrante;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCreditoInd;
+import com.sidert.sidertmovil.views.renovacion.RenovarIntegrante;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.activities.TrackerAsesor;

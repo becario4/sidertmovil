@@ -45,6 +45,7 @@ public class NameFragments {
     public final static String DIALOGUPDATEAPK                  = "dialog_update_apk";
     public final static String DIALOGTIMEPICKER                 = "dialog_time_picker";
     public final static String DIALOGORIGINACIONGPO             = "dialog_originacion_gpo";
+    public final static String DIALOGPLAZOIND                   = "dialog_plazo_ind";
     public final static String DIALOGINFOAUTORIZARCC            = "dialog_info_autorizar_cc";
     public final static String DIALOGRENOVACIONGPO              = "dialog_renovacion_gpo";
     public final static String DIALOGOCIRCULOCREDITO            = "dialog_circulo_credito";

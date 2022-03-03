@@ -1,4 +1,4 @@
-package com.sidert.sidertmovil.activities;
+package com.sidert.sidertmovil.views.renovacion;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;*/
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -59,18 +59,19 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.CapturarFirma;
+import com.sidert.sidertmovil.activities.Catalogos;
+import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_integrante;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_renovar_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.DomicilioIntegranteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.NegocioIntegranteRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
@@ -124,25 +125,18 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_LOCALIDAD_NEG;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_OCUPACION_NEG;
 import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AVAL_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_OTROS_DATOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_POLITICAS_PLD_INTEGRANTE_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_REFERENCIA_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
@@ -4860,7 +4854,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 "COALESCE(cro.estatus_completado, 1) AS eCroquis, " +
                 "i.ciclo, " +
                 "i.monto_prestamo_anterior, " +
-                "cgp.id_solicitud " +
+                "cgp.id_solicitud, " +
+                "s.estatus " +
                 "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i "+
                 "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
                 "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
@@ -4871,6 +4866,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
                 "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
                 "INNER JOIN " + TBL_CREDITO_GPO_REN + " AS cgp ON cgp.id = i.id_credito " +
+                "INNER JOIN " + TBL_SOLICITUDES_REN + " AS s ON s.id_solicitud = cgp.id_solicitud " +
                 "WHERE i.id_credito = ? AND i.id = ? ";
         Cursor row = db.rawQuery(sql, new String[]{id_credito, id_integrante});
         row.moveToFirst();
@@ -4906,6 +4902,11 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 row.getInt(7) == 1 &&
                 row.getInt(8) == 1 &&
                 row.getInt(9) == 1){
+            is_edit = false;
+        }
+
+        if(row.getInt(13) >= 2)
+        {
             is_edit = false;
         }
 

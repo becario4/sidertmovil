@@ -179,7 +179,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         Bundle b = new Bundle();
         Log.e("is_edit", String.valueOf(is_edit));
         if (!is_new) {
-            b.putBoolean("is_edit", false);
+            b.putString("id_solicitud", String.valueOf(id_solicitud));
+            b.putBoolean("is_edit", is_edit);
             b.putString("nombre", nombre_gpo);
             b.putString("plazo", plazo);
             b.putString("periodicidad", periodicidad);
@@ -190,6 +191,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         }
         else
             b.putBoolean("is_edit", true);
+
         originacion_gpo.setArguments(b);
         originacion_gpo.show(getSupportFragmentManager(), NameFragments.DIALOGORIGINACIONGPO);
     }
@@ -454,7 +456,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
     }
 
     @Override
-    public void onComplete(long id_solicitud, long id_credito, String nombre, String plazo, String periodicidad, String fecha, String dia, String hora) {
+    public void onComplete(long id_solicitud, long id_credito, String nombre, String plazo, String periodicidad, String fecha, String dia, String hora, Boolean isEdit) {
         if (id_solicitud > 0 && id_credito > 0) {
             is_new = false;
             this.id_solicitud = id_solicitud;
@@ -465,7 +467,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             this.fecha_desembolso = fecha;
             this.dia_desembolso = dia;
             this.hora_visita = hora;
-            is_edit = false;
+            is_edit = isEdit;
         }
         else if (nombre == null )
             finish();

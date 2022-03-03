@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCreditoInd;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Constants;
 

@@ -382,8 +382,8 @@ public class VerificacionDomiciliariaDao {
                 "WHERE gi._id is not null " +
                 "AND (vdi.cliente_nombre LIKE '%'||?||'%' AND vdi.grupo_id = 1) " +
                 ") as pivot " +
-                "WHERE (grupo_id > 1 OR ? = '0') " +
-                "AND (grupo_id = 1 OR ? = '0') " +
+                "WHERE (grupo_id = 1 OR ? = '0') " +
+                "AND (grupo_id > 1 OR ? = '0') " +
                 "ORDER BY nombre ";
         Cursor row = db.rawQuery(sql, filters);
 

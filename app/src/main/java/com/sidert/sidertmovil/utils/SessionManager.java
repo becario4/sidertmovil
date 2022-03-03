@@ -65,6 +65,31 @@ public class SessionManager {
     private final String ESTATUS_FICHA_PEN_C = "estatus_ficha_pen_c";
     private final String CONTADOR_CARTERA_C = "contador_cartera_c";
     private final String MODULOS            = "modulos";
+    private final String TIPO_REN_IND = "tipo_renovacion_ind";
+    private final String TIPO_REN_GPO = "tipo_renovacion_gpo";
+    private final String NOMBRE_REN   = "nombre_renovacion";
+    private final String MENOR_45_REN = "menor45_renovacion";
+    private final String CONTADOR_REN = "contador_renovacion";
+    private final String TIPO_REN_IND_PRO = "tipo_renovacion_ind_pro";
+    private final String TIPO_REN_GPO_PRO = "tipo_renovacion_gpo_pro";
+    private final String NOMBRE_REN_PRO   = "nombre_renovacion_pro";
+    private final String MENOR_45_REN_PRO = "menor45_renovacion_pro";
+    private final String CONTADOR_REN_PRO = "contador_renovacion_pro";
+    private final String TIPO_REN_IND_COMP = "tipo_renovacion_ind_comp";
+    private final String TIPO_REN_GPO_COMP = "tipo_renovacion_gpo_comp";
+    private final String NOMBRE_REN_COMP   = "nombre_renovacion_comp";
+    private final String MENOR_45_REN_COMP = "menor45_renovacion_comp";
+    private final String CONTADOR_REN_COMP = "contador_renovacion_comp";
+    private final String TIPO_ORI_IND_PRO = "tipo_originacion_ind_pro";
+    private final String TIPO_ORI_GPO_PRO = "tipo_originacion_gpo_pro";
+    private final String NOMBRE_ORI_PRO   = "nombre_originacion_pro";
+    private final String MENOR_45_ORI_PRO = "menor45_originacion_pro";
+    private final String CONTADOR_ORI_PRO = "contador_originacion_pro";
+    private final String TIPO_ORI_IND_COMP = "tipo_originacion_ind_comp";
+    private final String TIPO_ORI_GPO_COMP = "tipo_originacion_gpo_comp";
+    private final String NOMBRE_ORI_COMP   = "nombre_originacion_comp";
+    private final String MENOR_45_ORI_COMP = "menor45_originacion_comp";
+    private final String CONTADOR_ORI_COMP = "contador_originacion_comp";
 
 
     private final String NOMBRE_CIERRE          = "nombre_cierre";
@@ -447,6 +472,117 @@ public class SessionManager {
         filtros.add(preferences.getString(NOMBRE_CARTERA_C, ""));    // 4 -> NOMBRE
         filtros.add(preferences.getString(CONTADOR_CARTERA_C, "0")); // 5 -> CONTADOR
         return filtros;
+    }
+
+    // ===================  Filtros de Renovaciones ==============================================================
+    public ArrayList<String> getFiltrosDisponiblesRen (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_REN_IND, "0"));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_REN_GPO, "0"));  // 1 -> GPO
+        filtros.add(preferences.getString(NOMBRE_REN,""));  // 2 -> NOMBRE
+        filtros.add(preferences.getString(MENOR_45_REN, "0")); // 3 -> MENOR 45 DIA VENCIMIENTO
+        filtros.add(preferences.getString(CONTADOR_REN, "0")); // 4 -> CONTADOR
+        return filtros;
+    }
+
+    public void setFiltrosDisponiblesRen (HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_REN_IND, filtros.get(TIPO_REN_IND));
+        editor.putString(TIPO_REN_GPO, filtros.get(TIPO_REN_GPO));
+        editor.putString(NOMBRE_REN, filtros.get(NOMBRE_REN));
+        editor.putString(MENOR_45_REN, filtros.get(MENOR_45_REN));
+        editor.putString(CONTADOR_REN, filtros.get(CONTADOR_REN));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosEnProcesoRen (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_REN_IND_PRO, "0"));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_REN_GPO_PRO, "0"));  // 1 -> GPO
+        filtros.add(preferences.getString(NOMBRE_REN_PRO,""));  // 2 -> NOMBRE
+        filtros.add(preferences.getString(MENOR_45_REN_PRO, "0")); // 3 -> MENOR 45 DIA VENCIMIENTO
+        filtros.add(preferences.getString(CONTADOR_REN_PRO, "0")); // 4 -> CONTADOR
+        return filtros;
+    }
+
+    public void setFiltrosEnProcesoRen(HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_REN_IND_PRO, filtros.get(TIPO_REN_IND_PRO));
+        editor.putString(TIPO_REN_GPO_PRO, filtros.get(TIPO_REN_GPO_PRO));
+        editor.putString(NOMBRE_REN_PRO, filtros.get(NOMBRE_REN_PRO));
+        editor.putString(MENOR_45_REN_PRO, filtros.get(MENOR_45_REN_PRO));
+        editor.putString(CONTADOR_REN_PRO, filtros.get(CONTADOR_REN_PRO));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCompletadosRen (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_REN_IND_COMP, "0"));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_REN_GPO_COMP, "0"));  // 1 -> GPO
+        filtros.add(preferences.getString(NOMBRE_REN_COMP,""));  // 2 -> NOMBRE
+        filtros.add(preferences.getString(MENOR_45_REN_COMP, "0")); // 3 -> MENOR 45 DIA VENCIMIENTO
+        filtros.add(preferences.getString(CONTADOR_REN_COMP, "0")); // 4 -> CONTADOR
+        return filtros;
+    }
+
+    public void setFiltrosCompletadosRen(HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_REN_IND_COMP, filtros.get(TIPO_REN_IND_COMP));
+        editor.putString(TIPO_REN_GPO_COMP, filtros.get(TIPO_REN_GPO_COMP));
+        editor.putString(NOMBRE_REN_COMP, filtros.get(NOMBRE_REN_COMP));
+        editor.putString(MENOR_45_REN_COMP, filtros.get(MENOR_45_REN_COMP));
+        editor.putString(CONTADOR_REN_COMP, filtros.get(CONTADOR_REN_COMP));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosEnProcesoOri (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_ORI_IND_PRO, "0"));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_ORI_GPO_PRO, "0"));  // 1 -> GPO
+        filtros.add(preferences.getString(NOMBRE_ORI_PRO,""));  // 2 -> NOMBRE
+        filtros.add(preferences.getString(MENOR_45_ORI_PRO, "0")); // 3 -> MENOR 45 DIA VENCIMIENTO
+        filtros.add(preferences.getString(CONTADOR_ORI_PRO, "0")); // 4 -> CONTADOR
+        return filtros;
+    }
+
+    public void setFiltrosEnProcesoOri(HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_ORI_IND_PRO, filtros.get(TIPO_ORI_IND_PRO));
+        editor.putString(TIPO_ORI_GPO_PRO, filtros.get(TIPO_ORI_GPO_PRO));
+        editor.putString(NOMBRE_ORI_PRO, filtros.get(NOMBRE_ORI_PRO));
+        editor.putString(MENOR_45_ORI_PRO, filtros.get(MENOR_45_ORI_PRO));
+        editor.putString(CONTADOR_ORI_PRO, filtros.get(CONTADOR_ORI_PRO));
+        editor.commit();
+    }
+
+    public ArrayList<String> getFiltrosCompletadosOri (){
+        ArrayList<String> filtros = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        filtros.add(preferences.getString(TIPO_ORI_IND_COMP, "0"));  // 0 -> IND
+        filtros.add(preferences.getString(TIPO_ORI_GPO_COMP, "0"));  // 1 -> GPO
+        filtros.add(preferences.getString(NOMBRE_ORI_COMP,""));  // 2 -> NOMBRE
+        filtros.add(preferences.getString(MENOR_45_ORI_COMP, "0")); // 3 -> MENOR 45 DIA VENCIMIENTO
+        filtros.add(preferences.getString(CONTADOR_ORI_COMP, "0")); // 4 -> CONTADOR
+        return filtros;
+    }
+
+    public void setFiltrosCompletadosOri(HashMap<String, String> filtros){
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(TIPO_ORI_IND_COMP, filtros.get(TIPO_ORI_IND_COMP));
+        editor.putString(TIPO_ORI_GPO_COMP, filtros.get(TIPO_ORI_GPO_COMP));
+        editor.putString(NOMBRE_ORI_COMP, filtros.get(NOMBRE_ORI_COMP));
+        editor.putString(MENOR_45_ORI_COMP, filtros.get(MENOR_45_ORI_COMP));
+        editor.putString(CONTADOR_ORI_COMP, filtros.get(CONTADOR_ORI_COMP));
+        editor.commit();
     }
 
     // ===================  Info User ==============================================================

@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 //import android.support.v4.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,36 +22,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.RenovacionCreditoGpo;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCreditoGpo;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.ID_CREDITO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 
 public class dialog_renovacion_gpo extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones);
+        void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones, Boolean isEdit);
     }
 
     @Override
@@ -121,24 +111,36 @@ public class dialog_renovacion_gpo extends DialogFragment {
 
         etNombre.setText(getArguments().getString("nombre"));
 
-        if (!getArguments().getBoolean("is_edit")){
-            etNombre.setText(getArguments().getString("nombre"));
-            etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etNombre.setEnabled(false);
+        //if (!getArguments().getBoolean("is_edit")){
+        if (getArguments().containsKey("plazo")){
+            //etNombre.setText(getArguments().getString("nombre"));
             tvPlazo.setText(getArguments().getString("plazo"));
-            tvPlazo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_left));
             tvPeriodicidad.setText(getArguments().getString("periodicidad"));
-            tvPeriodicidad.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
             tvFechaDesembolso.setText(getArguments().getString("fecha_desembolso"));
-            tvFechaDesembolso.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             tvDiaDesembolso.setText(getArguments().getString("dia_desembolso"));
             tvHoraVisita.setText(getArguments().getString("hora_visita"));
-            tvHoraVisita.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             etObservaciones.setText(getArguments().getString("observaciones"));
-            etObservaciones.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-            etObservaciones.setEnabled(false);
-            is_edit = false;
-            btnGuardar.setVisibility(View.GONE);
+
+            //is_edit = false;
+            is_edit = getArguments().getBoolean("is_edit");
+
+            if(!is_edit)
+            {
+                btnGuardar.setVisibility(View.GONE);
+                etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etNombre.setEnabled(false);
+                tvPlazo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_left));
+                tvPlazo.setEnabled(false);
+                tvPeriodicidad.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked_right));
+                tvPeriodicidad.setEnabled(false);
+                tvFechaDesembolso.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvFechaDesembolso.setEnabled(false);
+                tvHoraVisita.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                tvHoraVisita.setEnabled(false);
+                etObservaciones.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                etObservaciones.setEnabled(false);
+            }
+
             btnCerrar.setVisibility(View.VISIBLE);
         }
 
@@ -263,9 +265,9 @@ public class dialog_renovacion_gpo extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (!is_edit)
-                mListener.onComplete(tvPlazo.getText().toString(), tvPeriodicidad.getText().toString(), tvFechaDesembolso.getText().toString().trim(), tvDiaDesembolso.getText().toString(), tvHoraVisita.getText().toString(), etObservaciones.getText().toString());
+                mListener.onComplete(tvPlazo.getText().toString(), tvPeriodicidad.getText().toString(), tvFechaDesembolso.getText().toString().trim(), tvDiaDesembolso.getText().toString(), tvHoraVisita.getText().toString(), etObservaciones.getText().toString(), is_edit);
             else
-                mListener.onComplete( null, null, null, null, null, null);
+                mListener.onComplete( null, null, null, null, null, null, null);
             getDialog().dismiss();
         }
     };
@@ -331,7 +333,9 @@ public class dialog_renovacion_gpo extends DialogFragment {
                 tvFechaDesembolso.getText().toString().trim(),
                 tvDiaDesembolso.getText().toString().trim(),
                 tvHoraVisita.getText().toString().trim(),
-                etObservaciones.getText().toString().trim().toLowerCase());
+                etObservaciones.getText().toString().trim().toLowerCase(),
+                is_edit
+        );
         getDialog().dismiss();
 
     }

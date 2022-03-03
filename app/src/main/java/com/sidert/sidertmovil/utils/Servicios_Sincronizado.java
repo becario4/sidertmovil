@@ -3844,7 +3844,7 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_AVAL_IND + " AS ava ON s.id_solicitud = ava.id_solicitud " +
                                             "JOIN " + TBL_REFERENCIA_IND + " AS ref ON s.id_solicitud = ref.id_solicitud " +
                                             "JOIN " + TBL_CROQUIS_IND + " AS cro ON s.id_solicitud = cro.id_solicitud " +
-                                            "WHERE s.id_originacion = ? AND s.estatus = 2";
+                                            "WHERE s.id_originacion = ? AND s.estatus >= 2";
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
 
                                     Log.e("XXXXCount", row.getCount()+" Total");
@@ -3939,7 +3939,7 @@ public class Servicios_Sincronizado {
                                             Log.e("XXXXXXXX","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                                             Log.e("Comentario",  Miscellaneous.validStr(item.getComentarioAdminCliente()));
                                             cv = new ContentValues();
-                                            cv.put("estatus", 3);
+                                            cv.put("estatus", 5);
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
@@ -3959,7 +3959,7 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_AVAL_IND_REN + " AS ava ON s.id_solicitud = ava.id_solicitud " +
                                             "JOIN " + TBL_REFERENCIA_IND_REN + " AS ref ON s.id_solicitud = ref.id_solicitud " +
                                             "JOIN " + TBL_CROQUIS_IND_REN + " AS cro ON s.id_solicitud = cro.id_solicitud " +
-                                            "WHERE s.id_originacion = ? AND s.estatus = 2";
+                                            "WHERE s.id_originacion = ? AND s.estatus >= 2";
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
 
                                     if (row.getCount() > 0) {
@@ -4050,7 +4050,7 @@ public class Servicios_Sincronizado {
 
 
                                             cv = new ContentValues();
-                                            cv.put("estatus", 3);
+                                            cv.put("estatus", 5);
                                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
@@ -4112,7 +4112,7 @@ public class Servicios_Sincronizado {
                                             "JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante " +
                                             "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS pol ON i.id = pol.id_integrante " +
                                             "JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS doc ON i.id = doc.id_integrante " +
-                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
+                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado >= 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
@@ -4174,12 +4174,14 @@ public class Servicios_Sincronizado {
                                             db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus", 0);
+
+                                            if(item.getSolicitudEstadoIdSolicitud() == 2) cv.put("estatus", 5);
+
                                             cv.put("id_originacion", String.valueOf(item.getId()));
                                             //cv.put("fecha_termino", "");
                                             //cv.put("fecha_envio", "");
                                             //cv.put("fecha_guardado", "");
-                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                            db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
                                     }
                                 }
@@ -4207,7 +4209,7 @@ public class Servicios_Sincronizado {
                                         "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
                                         "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
                                         "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
-                                        "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado = 2";
+                                        "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado >= 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
@@ -4265,8 +4267,10 @@ public class Servicios_Sincronizado {
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
                                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
 
-                                            cv = new ContentValues();
-                                            //cv.put("estatus", 0);
+                                            cv = new ContentValues();//cv.put("estatus", 0);
+
+                                            if(item.getSolicitudEstadoIdSolicitud() == 2) cv.put("estatus", 5);
+
                                             cv.put("id_originacion", String.valueOf(item.getId()));
                                             //cv.put("fecha_termino", "");
                                             //cv.put("fecha_envio", "");
@@ -4296,7 +4300,6 @@ public class Servicios_Sincronizado {
             @Override
             public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t) {
                 Log.e("ERROR ", t.getMessage());
-                Log.e("ERROR ", t.getCause().toString());
             }
         });
 
@@ -4341,7 +4344,7 @@ public class Servicios_Sincronizado {
                                     }
                                     else if(se.getSolicitudEstadoId() == 3)
                                     {
-                                        solicitud.setEstatus(2);
+                                        solicitud.setEstatus(3);
                                         comentario = "VALIDADO";
                                     }
                                     else
@@ -4349,6 +4352,8 @@ public class Servicios_Sincronizado {
                                         //solicitud.setEstatus(3);
                                         //comentario = cliente.getComentarioRechazo();
                                     }
+
+                                    if(se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
 
 
                                     Log.e("AQUI comentario", comentario);
@@ -4381,13 +4386,15 @@ public class Servicios_Sincronizado {
                                     else if(se.getSolicitudEstadoId() == 3)
                                     {
                                         comentario = "VALIDADO";
-                                        solicitud.setEstatus(2);
+                                        solicitud.setEstatus(3);
                                     }
                                     else
                                     {
                                         //comentario = cliente.getComentarioRechazo();
                                         //solicitud.setEstatus(3);
                                     }
+
+                                    if(se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
 
                                     cliente.setComentarioRechazo(comentario);
                                     clienteDao.updateEstatus(cliente);
@@ -4456,6 +4463,11 @@ public class Servicios_Sincronizado {
                                         //comentario = se.getComentarioAdmin();
                                     }
 
+                                    if(se.getSolicitudEstadoIdSolicitud() == 2) solicitud.setEstatus(5);
+                                    if(se.getSolicitudEstadoIdSolicitud() == 3) solicitud.setEstatus(3);
+
+                                    Log.e("AQUI ORI", String.valueOf(se.getId()));
+
                                     integrante.setComentarioRechazo(comentario);
                                     integranteDao.updateEstatus(integrante);
 
@@ -4494,6 +4506,12 @@ public class Servicios_Sincronizado {
                                     {
                                         //comentario = se.getComentarioAdmin();
                                     }
+
+
+                                    Log.e("AQUI REN", String.valueOf(se.getId()));
+
+                                    if(se.getSolicitudEstadoIdSolicitud() == 2) solicitud.setEstatus(5);
+                                    if(se.getSolicitudEstadoIdSolicitud() == 3) solicitud.setEstatus(3);
 
                                     integrante.setComentarioRechazo(comentario);
                                     integranteDao.updateEstatus(integrante);
@@ -9838,7 +9856,6 @@ public class Servicios_Sincronizado {
                 @Override
                 public void onFailure(Call<GestionVerificacionDomiciliaria> call, Throwable t) {
                     Log.e("ERROR ", t.getMessage());
-                    Log.e("ERROR ", t.getCause().toString());
                 }
             });
 

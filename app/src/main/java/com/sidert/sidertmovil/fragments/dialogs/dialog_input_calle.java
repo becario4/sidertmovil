@@ -1,8 +1,6 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
@@ -15,17 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.AgregarIntegrante;
-import com.sidert.sidertmovil.activities.RenovacionCreditoInd;
-import com.sidert.sidertmovil.activities.RenovarIntegrante;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCreditoInd;
+import com.sidert.sidertmovil.views.renovacion.RenovarIntegrante;
 import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Validator;
 
 import static com.sidert.sidertmovil.utils.Constants.CALLE;
-import static com.sidert.sidertmovil.utils.Constants.DATE;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TIPO_SOLICITUD;
 

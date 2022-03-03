@@ -159,14 +159,9 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
 
         VerificacionDomiciliaria verificacionTemp = (VerificacionDomiciliaria) getIntent().getExtras().get("ver_dom");
 
-        Log.e("AQUI VERDOM", verificacionTemp.getClienteNombre());
-        Log.e("AQUI VERDOM", String.valueOf(verificacionTemp.getVerificacionDomiciliariaId()));
-        Log.e("AQUI VERDOM", String.valueOf(verificacionTemp.getVerificacionTipoId()));
-
         if(verificacionTemp != null && verificacionTemp.getVerificacionDomiciliariaId() != null)
         {
-            if(verificacionTemp.getGrupoId() == 1) verificacion = verificacionDao.findByVerificacionDomiciliariaIdAndVerificacionTipoId(verificacionTemp.getVerificacionDomiciliariaId(), verificacionTemp.getVerificacionTipoId());
-            else verificacion = verificacionDao.findByGrupoIdAndNumSolicitudAndVerificacionTipoId(verificacionTemp.getGrupoId(), verificacionTemp.getNumSolicitud(), verificacionTemp.getVerificacionTipoId());
+            verificacion = verificacionDao.findByVerificacionDomiciliariaId(verificacionTemp.getVerificacionDomiciliariaId());
 
             if(verificacion != null) {
                 gestion = gestionDao.findByVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
