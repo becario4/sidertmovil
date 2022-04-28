@@ -1,8 +1,10 @@
 package com.sidert.sidertmovil;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,9 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;*/
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -32,6 +38,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -291,8 +298,24 @@ public class Home extends AppCompatActivity {
                     setFragment(MESA_AYUDA, null);
                     break;
                 case R.id.nvGuiaRapida:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
-                    Intent help = new Intent(ctx, PdfReaderActivity.class);
-                    startActivity(help);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (Environment.isExternalStorageManager()){
+                            Intent help = new Intent(ctx, PdfReaderActivity.class);
+                            startActivity(help);
+                        }else{
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivity(intent);
+                        }
+                    }
+                    else
+                    {
+                        Intent help = new Intent(ctx, PdfReaderActivity.class);
+                        startActivity(help);
+                    }
+
                     break;
       /*          case R.id.nvConsultaCC: --Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones
                     Intent consulta_cc = new Intent(getApplicationContext(), ConsultarCC.class);

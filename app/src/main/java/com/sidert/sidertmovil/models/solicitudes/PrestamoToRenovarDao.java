@@ -1,11 +1,14 @@
 package com.sidert.sidertmovil.models.solicitudes;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
+
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 
 public class PrestamoToRenovarDao{
     final DBhelper dbHelper;
@@ -43,6 +46,99 @@ public class PrestamoToRenovarDao{
 
         return prestamoToRenovar;
 
+    }
+    public PrestamoToRenovar findLikeClienteNombre(String clienteNombre)
+    {
+        PrestamoToRenovar prestamoToRenovar = null;
+
+        String sql = "" +
+                "SELECT * " +
+                "FROM " + Constants.TBL_PRESTAMOS_TO_RENOVAR + " AS p " +
+                "WHERE p.cliente_nombre like '%'||?||'%' " +
+                "ORDER BY p.fecha_vencimiento "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{clienteNombre});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            prestamoToRenovar = new PrestamoToRenovar();
+
+            fill(row, prestamoToRenovar);
+        }
+
+        row.close();
+
+        return prestamoToRenovar;
+
+    }
+
+    public PrestamoToRenovar findByPrestamoId(Integer prestamoId)
+    {
+        PrestamoToRenovar prestamoToRenovar = null;
+
+        String sql = "" +
+                "SELECT * " +
+                "FROM " + Constants.TBL_PRESTAMOS_TO_RENOVAR + " AS p " +
+                "WHERE p.prestamo_id = ? " +
+                "ORDER BY p.fecha_vencimiento "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(prestamoId)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            prestamoToRenovar = new PrestamoToRenovar();
+
+            fill(row, prestamoToRenovar);
+        }
+
+        row.close();
+
+        return prestamoToRenovar;
+
+    }
+
+    public PrestamoToRenovar findByClienteNombreAndPosition(String clienteNombre, Integer position)
+    {
+        PrestamoToRenovar prestamoToRenovar = null;
+
+        String sql = "" +
+                "SELECT * " +
+                "FROM " + Constants.TBL_PRESTAMOS_TO_RENOVAR + " AS p " +
+                "WHERE trim(p.cliente_nombre) = trim(?) " +
+                "ORDER BY p.fecha_vencimiento " +
+                "LIMIT 1 " +
+                "OFFSET " + position
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{clienteNombre});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            prestamoToRenovar = new PrestamoToRenovar();
+
+            fill(row, prestamoToRenovar);
+        }
+
+        row.close();
+
+        return prestamoToRenovar;
+
+    }
+
+    public void update(PrestamoToRenovar prestamoToRenovar) {
+        ContentValues cv = new ContentValues();
+
+        cv.put("cliente_nombre", prestamoToRenovar.getClienteNombre());
+
+        db.update(Constants.TBL_PRESTAMOS_TO_RENOVAR, cv, "cliente_id = ?", new String[]{String.valueOf(prestamoToRenovar.getClienteId())});
     }
 
     public void fill(Cursor row, PrestamoToRenovar prestamoToRenovar)

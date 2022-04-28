@@ -54,6 +54,10 @@ public class SolicitudRen implements Serializable {
     @Expose
     private Integer estatus;
 
+    @SerializedName("prestamo_id")
+    @Expose
+    private Integer prestamoId;
+
     public Integer getIdSolicitud() {
         return idSolicitud;
     }
@@ -148,5 +152,13 @@ public class SolicitudRen implements Serializable {
 
     public void setEstatus(Integer estatus) {
         this.estatus = estatus;
+    }
+
+    public Integer getPrestamoId() {
+        return prestamoId;
+    }
+
+    public void setPrestamoId(Integer prestamoId) {
+        this.prestamoId = prestamoId;
     }
 }

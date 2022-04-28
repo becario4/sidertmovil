@@ -39,6 +39,8 @@ import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividual;
 import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividualDao;
 import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencida;
 import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencidaDao;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
@@ -764,6 +766,26 @@ public class Configuracion extends AppCompatActivity {
             /**Valida que se encuentre conectado a internet*/
             if (NetworkStatus.haveNetworkConnection(ctx)) {
                 cvSincronizarIntegrantesRen.setEnabled(false);
+
+                /*if(session.getUser().get(0).equals("013"))
+                {
+                    PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                    SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+
+                    PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombre("LUISA OLIVARES CALLEJAS");
+                    if(prestamoToRenovar != null)
+                    {
+                        prestamoToRenovar.setClienteNombre("LUISA OLIVARES CALLEJA");
+                        prestamoToRenovarDao.update(prestamoToRenovar);
+                    }
+
+                    SolicitudRen solicitudRen = solicitudRenDao.findLikeNombre("LUISA OLIVARES CALLEJAS");
+                    if(solicitudRen != null)
+                    {
+                        solicitudRen.setNombre("LUISA OLIVARES CALLEJA");
+                        solicitudRenDao.update(solicitudRen);
+                    }
+                }*/
 
                 Handler handler_home = new Handler();
                 handler_home.postDelayed(() -> {

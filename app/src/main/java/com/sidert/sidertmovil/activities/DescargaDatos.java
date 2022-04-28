@@ -159,7 +159,6 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetDestinosCredito(ctx);
         sc.GetPlazosPrestamo(ctx);
 
-
         /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
          * o prestamos autorizados para autorizar monto*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
@@ -357,7 +356,7 @@ public class DescargaDatos extends AppCompatActivity {
                                                 else
                                                     params.put(0, String.valueOf(item.getNumPrestamoIdGestion()));  //num_prestamo_id_gestion
                                                 params.put(1, item.getAsesorid());                              //asesor_id
-                                                params.put(2, item.getFolio());                                 //folio
+                                                params.put(2, item.getFolio());                                 //folioco
                                                 params.put(3, item.getTipo());                                  //tipo_impresion
                                                 params.put(4, String.valueOf(item.getMontoRealizado()));        //monto
                                                 params.put(5, item.getClavecliente());                          //clave_cliente

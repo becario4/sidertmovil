@@ -355,9 +355,9 @@ public class CameraVertical extends AppCompatActivity {
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
 
-                    Log.e("Rquest", Miscellaneous.ConvertToJson(request));
-                    Log.e("Resultado", Miscellaneous.ConvertToJson(result));
-                    Log.e("Session", Miscellaneous.ConvertToJson(session));
+                    //Log.e("Rquest", Miscellaneous.ConvertToJson(request));
+                    //Log.e("Resultado", Miscellaneous.ConvertToJson(result));
+                    //Log.e("Session", Miscellaneous.ConvertToJson(session));
                     //mOrientationListener.disable();
                     closeCameraDevice();//cameraDevice.close();
                 }

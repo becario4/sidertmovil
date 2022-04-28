@@ -115,7 +115,7 @@
             android:textColor="@drawable/edit_text_selector"
             android:inputType="textCapCharacters"
             android:paddingLeft="10dp"
-            android:maxLength="100"
+            android:maxLength="80"
             android:background="@drawable/et_rounded_edges"
             android:layout_width="match_parent"
             android:layout_height="@dimen/et_height" />

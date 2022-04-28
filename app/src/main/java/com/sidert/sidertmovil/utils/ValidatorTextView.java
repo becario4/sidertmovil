@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.utils;
 
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.regex.Matcher;
@@ -17,18 +18,20 @@ public class ValidatorTextView {
     public final String CURP            = "curp";
     public final String CURP_ID         = "curp_id";
     public final String RFC             = "rfc";
+    public final String ALFANUMERICO    = "alfanumerico";
 
 
-    public  String REQUIRED_MESSAGE       = "Este campo es requerido.";
-    public  String ONLY_TEXT_MESSAGE      = "Solo permite letras y espacios.";
-    public  String ONLY_NUMBER_MESSAGE    = "Solo permite números.";
-    public  String GENERAL_MESSAGE        = "Solo letras y/o números";
-    public  String ONLY_TEN_NUMBERS       = "Debe contener 10 carcateres numéricos";
-    public  String MENSAJE_MONEDA         = "Verifique el monto ingresado";
-    public  String MENSAJE_MONTO_CREDITO  = "La cantidad no corresponde a un monto de crédito válido";
-    public  String MENSAJE_CURP_NO_VALIDA = "No corresponde a una CURP válida";
-    public  String MENSAJE_CURP_ID        = "Formato incorrecto";
-    public  String MENSAJE_RFC            = "No corresponde a un RFC válido";
+    public String REQUIRED_MESSAGE       = "Este campo es requerido.";
+    public String ONLY_TEXT_MESSAGE      = "Solo permite letras y espacios.";
+    public String ONLY_NUMBER_MESSAGE    = "Solo permite números.";
+    public String GENERAL_MESSAGE        = "Solo letras y/o números";
+    public String ONLY_TEN_NUMBERS       = "Debe contener 10 carcateres numéricos";
+    public String MENSAJE_MONEDA         = "Verifique el monto ingresado";
+    public String MENSAJE_MONTO_CREDITO  = "La cantidad no corresponde a un monto de crédito válido";
+    public String MENSAJE_CURP_NO_VALIDA = "No corresponde a una CURP válida";
+    public String MENSAJE_CURP_ID        = "Formato incorrecto";
+    public String MENSAJE_RFC            = "No corresponde a un RFC válido";
+    public String ALFANUMERICO_MESSAGE   = "Solo se permite letras y números";
 
     private final String PATTERN_ONLY_TEXT      = "[A-Za-z ÑñÁáÉéÍíÓóÚú]*";
     private final String PATTERN_ONLY_NUMBER    = "[0-9]*";
@@ -38,6 +41,7 @@ public class ValidatorTextView {
     private final String PATTERN_CURP           = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}";
     private final String PATTERN_CURP_ID        = "[0-9]{2}";
     private final String PATTERN_RFC            = "[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])|[A-Z][AEIOU][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Zd]{2})(Ad)";
+    private final String PATTERN_ALFANUMERICO   = "[0-9 A-Za-z]*";
 
     private Pattern pattern;
     private Matcher matcher;
@@ -176,6 +180,18 @@ public class ValidatorTextView {
                     matcher = pattern.matcher(tvx.getText().toString().toLowerCase());
                     if(!matcher.matches()) {
                         tvx.setError(GENERAL_MESSAGE);
+                        tvx.setFocusable(true);
+                        tvx.setFocusableInTouchMode(true);
+                        tvx.requestFocus();
+                        error = true;
+                        return error;
+                    }
+                    break;
+                case ALFANUMERICO:
+                    pattern = Pattern.compile(PATTERN_ALFANUMERICO);
+                    matcher = pattern.matcher(tvx.getText().toString().toLowerCase());
+                    if(!matcher.matches()) {
+                        tvx.setError(ALFANUMERICO_MESSAGE);
                         tvx.setFocusable(true);
                         tvx.setFocusableInTouchMode(true);
                         tvx.requestFocus();

@@ -67,6 +67,8 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_originacion_gpo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_plazo_ind;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.catalogos.Colonia;
+import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRenDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -90,6 +92,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -1671,7 +1674,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         } else {
-                            if(tvColoniaCli.isEnabled())
+                            if(tvColoniaCli.isEnabled() && tvColoniaCli.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
                                 tvColoniaCli.setText("");
@@ -2099,7 +2102,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         } else {
-                            if(tvColoniaCony.isEnabled())
+                            if(tvColoniaCony.isEnabled() && tvColoniaCony.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
                                 tvColoniaCony.setText("");
@@ -2513,7 +2516,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         } else {
-                            if(tvColoniaNeg.isEnabled())
+                            if(tvColoniaNeg.isEnabled() && tvColoniaNeg.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                                 tvColoniaNeg.setText("");
@@ -3526,7 +3529,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
                         } else {
-                            if(tvColoniaAval.isEnabled())
+                            if(tvColoniaAval.isEnabled() && tvColoniaAval.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
                                 tvColoniaAval.setText("");
@@ -4515,7 +4518,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
                         } else {
-                            if(tvColoniaRef.isEnabled())
+                            if(tvColoniaRef.isEnabled() && tvColoniaRef.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
                                 tvColoniaRef.setText("");
@@ -4902,6 +4905,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             }
             rowDireccion.close();
         }
+
+
     }
 
     /**Evento para obtener la firma del asesor*/
@@ -5140,8 +5145,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (isEditCli || tvLocalidadCli.getText().toString().trim().isEmpty()) {
-                if (!m.GetStr(tvMunicipioCli).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpCli.getText().toString().trim());;
+
+                if (!m.GetStr(tvMunicipioCli).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5351,8 +5359,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (isEditAva || tvLocalidadAval.getText().toString().trim().isEmpty()) {
-                if (!m.GetStr(tvMunicipioAval).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioAval)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpAval.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioAval).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5613,8 +5624,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (isEditNeg || tvLocalidadNeg.getText().toString().trim().isEmpty()) {
-                if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpNeg.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioNeg).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5748,8 +5762,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (isEditCon || tvLocalidadCony.getText().toString().trim().isEmpty()) {
-                if (!m.GetStr(tvMunicipioCony).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpCony.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioCony).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5974,8 +5991,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (isEditRef || tvLocalidadRef.getText().toString().trim().isEmpty()) {
-                if (!m.GetStr(tvMunicipioRef).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioRef)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpRef.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioRef).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(ctx, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -7593,7 +7613,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
         boolean save_cliente = false;
         ContentValues cv = new ContentValues();
-        if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED}) &&
                 !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
                 !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
@@ -8415,12 +8435,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     /**Funcion para validar y guardar los datos de la seccion del croquis*/
     private boolean saveCroquis() {
         boolean save_croquis = false;
-        if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED}) &&
-                !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED})
+        if (!validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+                !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+                !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+                !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+                !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+                !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO})
         ) {
             //ivError8.setVisibility(View.GONE);
             ivError2.setVisibility(View.GONE);
@@ -9343,8 +9363,37 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     public void onComplete(String plazo, String periodicidad) {
         if(plazo.equals("")) finish();
 
+        Log.e("AQUI PLAZO", plazo);
+        Log.e("AQUI PERIODICIDAD", periodicidad);
+
         tvPlazo.setText(plazo);
         tvFrecuencia.setText(periodicidad);
+
+        Update("plazo", TBL_CREDITO_IND_REN, m.GetStr(tvPlazo));
+        Update("periodicidad", TBL_CREDITO_IND_REN, m.GetStr(tvFrecuencia));
+
+        int indice = 0;
+
+        for(int i = 0; i < _frecuencia.length; i++)
+        {
+            if(_frecuencia[i].equals(tvFrecuencia.getText().toString())) indice = i;
+        }
+
+        switch (indice) {
+            case 0:
+                tvNumOperacionNeg.setText("4");
+                Update("num_operacion_mensuales", TBL_NEGOCIO_IND_REN, "4");
+                break;
+            case 1:
+            case 2:
+                tvNumOperacionNeg.setText("2");
+                Update("num_operacion_mensuales", TBL_NEGOCIO_IND_REN, "2");
+                break;
+            case 3:
+                tvNumOperacionNeg.setText("1");
+                Update("num_operacion_mensuales", TBL_NEGOCIO_IND_REN, "1");
+                break;
+        }
     }
 
     //===================== Listener GPS  =======================================================
@@ -10875,6 +10924,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             tvComportamiento.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etObservaciones.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             //etMontoRefinanciar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        if(isEditCli)
+        {
+            etObservaciones.setEnabled(isEditCli);
+            etObservaciones.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         }
 
         /**Valida si la seccion de datos personales ya fue guardada para bloquear los campos*/

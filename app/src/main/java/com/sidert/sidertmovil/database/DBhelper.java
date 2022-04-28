@@ -930,6 +930,9 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT_REN); }
         catch (Exception e) { Log.e("ADD_INE_SELFIE_DOC_INT_REN", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_SOL_REN); }
+        catch (Exception e) { Log.e("ADD_PRESTAMO_ID_SOL_REN", "ya contiene la columna"); }
+
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {
@@ -1777,31 +1780,68 @@ public class DBhelper extends SQLiteOpenHelper {
 
         String tbl = (tipo == 1)?TBL_SOLICITUDES:TBL_SOLICITUDES_REN;
 
-        String sql = "INSERT INTO " + tbl + " (" +
-                "vol_solicitud, " +
-                "usuario_id, " +
-                "tipo_solicitud, " +
-                "id_originacion, " +
-                "nombre, " +
-                "fecha_inicio, " +
-                "fecha_termino, " +
-                "fecha_envio, " +
-                "fecha_dispositivo, " +
-                "fecha_guardado, " +
-                "estatus) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(0));                       //VOL SOLICITUD
-        pInsert.bindLong(2, Long.parseLong(params.get(1)));         //USUARIO ID
-        pInsert.bindLong(3, Long.parseLong(params.get(2)));         //TIPO SOLICITUD
-        pInsert.bindLong(4, Long.parseLong(params.get(3)));         //ID ORIGINACION
-        pInsert.bindString(5, params.get(4));                       //NOMBRE
-        pInsert.bindString(6, params.get(5));                       //FECHA INICIO
-        pInsert.bindString(7, params.get(6));                       //FECHA TERMINO
-        pInsert.bindString(8, params.get(7));                       //FECHA ENVIO
-        pInsert.bindString(9, params.get(8));                       //FECHA DISPOSITIVO
-        pInsert.bindString(10, params.get(9));                      //FECHA CREADO
-        pInsert.bindLong(11, Long.parseLong(params.get(10)));       //ESTATUS
+        String sql = "";
+        SQLiteStatement pInsert;
+
+        if(tipo != 1)
+        {
+            sql = "INSERT INTO " + tbl + " (" +
+                    "vol_solicitud, " +
+                    "usuario_id, " +
+                    "tipo_solicitud, " +
+                    "id_originacion, " +
+                    "nombre, " +
+                    "fecha_inicio, " +
+                    "fecha_termino, " +
+                    "fecha_envio, " +
+                    "fecha_dispositivo, " +
+                    "fecha_guardado, " +
+                    "estatus," +
+                    "prestamo_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            pInsert = db.compileStatement(sql);
+            pInsert.bindString(1, params.get(0));                       //VOL SOLICITUD
+            pInsert.bindLong(2, Long.parseLong(params.get(1)));         //USUARIO ID
+            pInsert.bindLong(3, Long.parseLong(params.get(2)));         //TIPO SOLICITUD
+            pInsert.bindLong(4, Long.parseLong(params.get(3)));         //ID ORIGINACION
+            pInsert.bindString(5, params.get(4));                       //NOMBRE
+            pInsert.bindString(6, params.get(5));                       //FECHA INICIO
+            pInsert.bindString(7, params.get(6));                       //FECHA TERMINO
+            pInsert.bindString(8, params.get(7));                       //FECHA ENVIO
+            pInsert.bindString(9, params.get(8));                       //FECHA DISPOSITIVO
+            pInsert.bindString(10, params.get(9));                      //FECHA CREADO
+            pInsert.bindLong(11, Long.parseLong(params.get(10)));       //ESTATUS
+            pInsert.bindLong(12, Long.parseLong(params.get(11)));       //PRESTAMO ID
+        }
+        else
+        {
+            sql = "INSERT INTO " + tbl + " (" +
+                    "vol_solicitud, " +
+                    "usuario_id, " +
+                    "tipo_solicitud, " +
+                    "id_originacion, " +
+                    "nombre, " +
+                    "fecha_inicio, " +
+                    "fecha_termino, " +
+                    "fecha_envio, " +
+                    "fecha_dispositivo, " +
+                    "fecha_guardado, " +
+                    "estatus)" +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            pInsert = db.compileStatement(sql);
+            pInsert.bindString(1, params.get(0));                       //VOL SOLICITUD
+            pInsert.bindLong(2, Long.parseLong(params.get(1)));         //USUARIO ID
+            pInsert.bindLong(3, Long.parseLong(params.get(2)));         //TIPO SOLICITUD
+            pInsert.bindLong(4, Long.parseLong(params.get(3)));         //ID ORIGINACION
+            pInsert.bindString(5, params.get(4));                       //NOMBRE
+            pInsert.bindString(6, params.get(5));                       //FECHA INICIO
+            pInsert.bindString(7, params.get(6));                       //FECHA TERMINO
+            pInsert.bindString(8, params.get(7));                       //FECHA ENVIO
+            pInsert.bindString(9, params.get(8));                       //FECHA DISPOSITIVO
+            pInsert.bindString(10, params.get(9));                      //FECHA CREADO
+            pInsert.bindLong(11, Long.parseLong(params.get(10)));       //ESTATUS
+        }
+
         Long id = pInsert.executeInsert();
 
         db.setTransactionSuccessful();

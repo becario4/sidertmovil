@@ -211,7 +211,9 @@ public class CierreDeDia extends AppCompatActivity {
         if (!validator.validate(etMontoDepositado, new String[]{validator.REQUIRED, validator.MONEY})){
             try {
                 String montoDepo = etMontoDepositado.getText().toString().replace(",", "");
-                if (montoDepo.equals(item.getPago().replace(",",""))){
+                //if (montoDepo.equals(item.getPago().replace(",",""))){
+                if (Double.parseDouble(montoDepo) == Double.parseDouble(item.getPago().replace(",","")) )
+                {
                     if (byteEvidencia != null) {
                         Guardar();
                     }

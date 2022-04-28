@@ -54,6 +54,68 @@ public class SolicitudRenDao {
         return solicitud;
     }
 
+    public SolicitudRen findLikeNombre(String nombre)
+    {
+        SolicitudRen solicitud = null;
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "WHERE s.nombre like '%'||?||'%' "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(nombre)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            solicitud = new SolicitudRen();
+
+            Fill(row, solicitud);
+        }
+
+        row.close();
+
+        return solicitud;
+    }
+
+    public List<SolicitudRen> findByNombreAndPrestamoId(String nombre, Integer prestamoId)
+    {
+        List<SolicitudRen> solicitudes = new ArrayList<>();
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "WHERE trim(s.nombre) = trim(?) " +
+                "AND (s.prestamo_id = ? or s.prestamo_id is null) " +
+                "ORDER BY s.fecha_inicio"
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(nombre), String.valueOf(prestamoId)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                SolicitudRen solicitud = new SolicitudRen();
+
+                Fill(row, solicitud);
+
+                solicitudes.add(solicitud);
+                row.moveToNext();
+            }
+        }
+
+        row.close();
+
+        return solicitudes;
+    }
+
     public List<SolicitudRen> findAllOrderByFechaVencimiento()
     {
         List<SolicitudRen> solicitudes = new ArrayList<SolicitudRen>();
@@ -103,13 +165,13 @@ public class SolicitudRenDao {
                     "SELECT " +
                     "s.*, c.estatus_completado, pr.fecha_vencimiento, pr.grupo_id, c.plazo " +
                     "FROM " + TBL_SOLICITUDES_REN + " AS s " +
-                    "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+                    "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.prestamo_id = s.prestamo_id " +
                     "INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id_solicitud = s.id_solicitud " +
                     "UNION " +
                     "SELECT " +
                     "s.*, c.estatus_completado, pr.fecha_vencimiento, pr.grupo_id, c.plazo " +
                     "FROM " + TBL_SOLICITUDES_REN + " AS s " +
-                    "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+                    "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.prestamo_id = s.prestamo_id " +
                     "INNER JOIN " + TBL_CREDITO_IND_REN + " AS c ON c.id_solicitud = s.id_solicitud " +
                 ") AS x " +
                 "WHERE ((x.fecha_vencimiento > DATE('now', '-45 day') AND ? = '1') OR ? = '0') " +
@@ -117,7 +179,7 @@ public class SolicitudRenDao {
                 "AND ((x.grupo_id = 1 AND ? = '1') OR ? = '0') " +
                 "AND (x.nombre like '%'||?||'%') " +
                 "AND (" +
-                "   (x.estatus_completado = 0 AND ? = '0') " +
+                "   (x.estatus_completado = 0 AND ? = '0' AND x.plazo = '') " +
                 "   OR ((x.estatus_completado = 1 OR x.plazo <> '') AND ? = '1' AND x.estatus <= 2) " +
                 "   OR ((x.estatus_completado = 2 OR x.plazo <> '') AND ? = '1' AND x.estatus <= 2)" +
                 "   OR (x.estatus > 2 AND ? = '3')" +
@@ -156,11 +218,11 @@ public class SolicitudRenDao {
                 "SELECT " +
                 "distinct(s.nombre) as nombre " +
                 "FROM " + TBL_SOLICITUDES_REN + " AS s " +
-                "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+                "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.prestamo_id = s.prestamo_id " +
                 "INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id_solicitud = s.id_solicitud " +
                 "WHERE " +
                 "(" +
-                "   (c.estatus_completado = 0 AND ? = '0') " +
+                "   (c.estatus_completado = 0 AND ? = '0' AND c.plazo = '') " +
                 "   OR ((c.estatus_completado = 1 OR c.plazo <> '') AND ? = '1' AND s.estatus <= 2) " +
                 "   OR ((c.estatus_completado = 2 OR c.plazo <> '') AND ? = '1' AND s.estatus <= 2)" +
                 "   OR (s.estatus > 2 AND ? = '3')" +
@@ -169,11 +231,11 @@ public class SolicitudRenDao {
                 "SELECT " +
                 "distinct(s.nombre) as nombre " +
                 "FROM " + TBL_SOLICITUDES_REN + " AS s " +
-                "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.cliente_nombre = s.nombre " +
+                "INNER JOIN " + TBL_PRESTAMOS_TO_RENOVAR + " AS pr ON pr.prestamo_id = s.prestamo_id " +
                 "INNER JOIN " + TBL_CREDITO_IND_REN + " AS c ON c.id_solicitud = s.id_solicitud " +
                 "WHERE " +
                 "(" +
-                "   (c.estatus_completado = 0 AND ? = '0') " +
+                "   (c.estatus_completado = 0 AND ? = '0' AND c.plazo = '') " +
                 "   OR ((c.estatus_completado = 1 OR c.plazo <> '') AND ? = '1' AND s.estatus <= 2) " +
                 "   OR ((c.estatus_completado = 2 OR c.plazo <> '') AND ? = '1' AND s.estatus <= 2)" +
                 "   OR (s.estatus > 2 AND ? = '3')" +
@@ -262,6 +324,36 @@ public class SolicitudRenDao {
         return solicitud;
     }
 
+    public SolicitudRen findByNombreAndPosition(String nombre, Integer position)
+    {
+        SolicitudRen solicitud = null;
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "WHERE s.nombre = ? " +
+                "ORDER BY s.fecha_inicio " +
+                "LIMIT 1" +
+                "OFFSET ?"
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{nombre, String.valueOf(position)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            solicitud = new SolicitudRen();
+
+            Fill(row, solicitud);
+        }
+
+        row.close();
+
+        return solicitud;
+    }
+
     public SolicitudRen findByIdOriginacion(int idOriginacion)
     {
         SolicitudRen solicitud = null;
@@ -302,6 +394,22 @@ public class SolicitudRenDao {
         db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
+    public void updatePrestamo(SolicitudRen solicitud) {
+        ContentValues cv = new ContentValues();
+
+        cv.put("prestamo_id", solicitud.getPrestamoId());
+
+        db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+    }
+
+    public void update(SolicitudRen solicitudRen) {
+        ContentValues cv = new ContentValues();
+
+        cv.put("nombre", solicitudRen.getNombre());
+
+        db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitudRen.getIdSolicitud())});
+    }
+
     private void Fill(Cursor row, SolicitudRen solicitud)
     {
         solicitud.setIdSolicitud(row.getInt(0));
@@ -316,5 +424,7 @@ public class SolicitudRenDao {
         solicitud.setFechaDispositivo(row.getString(9));
         solicitud.setFechaGuardado(row.getString(10));
         solicitud.setEstatus(row.getInt(11));
+        solicitud.setPrestamoId(row.getInt(12));
     }
+
 }

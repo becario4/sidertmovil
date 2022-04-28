@@ -289,7 +289,8 @@ public class RenovacionCredito extends AppCompatActivity {
             if(cliente != null) item.put(7, cliente.getComentarioRechazo());//pendiente
 
             PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
-            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findByClienteNombre(solicitud.getNombre().trim().toUpperCase());
+            //PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findByClienteNombre(solicitud.getNombre().trim().toUpperCase());
+            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findByPrestamoId(solicitud.getPrestamoId());
 
             item.put(8, (prestamoToRenovar != null) ? prestamoToRenovar.getFechaVencimiento() : "");
 

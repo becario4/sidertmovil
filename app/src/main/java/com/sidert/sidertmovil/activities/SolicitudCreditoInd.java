@@ -64,6 +64,8 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_cli;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.catalogos.Colonia;
+import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.Direccion;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionDao;
 import com.sidert.sidertmovil.utils.Constants;
@@ -88,6 +90,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1646,7 +1649,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioCli.setText(row.getString(4));
                             tvEstadoCli.setText(row.getString(1));
                         }else {
-                            if(tvColoniaCli.isEnabled())
+                            if(tvColoniaCli.isEnabled() && tvColoniaCli.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
                                 tvColoniaCli.setText("");
@@ -2083,7 +2086,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioCony.setText(row.getString(4));
                             tvEstadoCony.setText(row.getString(1));
                         }else {
-                            if(tvColoniaCony.isEnabled())
+                            if(tvColoniaCony.isEnabled() && tvColoniaCony.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
                                 tvColoniaCony.setText("");
@@ -2499,7 +2502,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioNeg.setText(row.getString(4));
                             tvEstadoNeg.setText(row.getString(1));
                         }else {
-                            if(tvColoniaNeg.isEnabled())
+                            if(tvColoniaNeg.isEnabled() && tvColoniaNeg.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                                 tvColoniaNeg.setText("");
@@ -3527,7 +3530,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioAval.setText(row.getString(4));
                             tvEstadoAval.setText(row.getString(1));
                         }else {
-                            if(tvColoniaAval.isEnabled())
+                            if(tvColoniaAval.isEnabled() && tvColoniaAval.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
                                 tvColoniaAval.setText("");
@@ -4534,7 +4537,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             tvMunicipioRef.setText(row.getString(4));
                             tvEstadoRef.setText(row.getString(1));
                         }else {
-                            if(tvColoniaRef.isEnabled())
+                            if(tvColoniaRef.isEnabled() && tvColoniaRef.getText().toString().equals(""))
                             {
                                 UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
                                 tvColoniaRef.setText("");
@@ -5079,7 +5082,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener etColonia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCli) {
+            if (isEditCli || tvColoniaCli.getText().toString().equals("")) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5094,8 +5097,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditCli) {
-                if (!m.GetStr(tvMunicipioCli).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCli)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpCli.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioCli).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5282,7 +5288,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener tvColoniaAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditAva) {
+            if (isEditAva || tvColoniaAval.getText().toString().equals("")) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5297,8 +5303,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditAva) {
-                if (!m.GetStr(tvMunicipioAval).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioAval)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpAval.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioAval).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5524,7 +5533,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener etColoniaAct_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditNeg) {
+            if (isEditNeg || tvColoniaNeg.getText().toString().equals("")) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIAS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5552,8 +5561,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditNeg) {
-                if (!m.GetStr(tvMunicipioNeg).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioNeg)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpNeg.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioNeg).isEmpty() && colonias.size() > 0) {
+
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5665,7 +5678,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener tvColoniaCony_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditCon) {
+            if (isEditCon || tvColoniaCony.getText().toString().equals("")) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(ESTADOS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5680,8 +5693,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditCon) {
-                if (!m.GetStr(tvMunicipioCony).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioCony)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpCony.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioCony).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -5893,7 +5909,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener tvColoniaRef_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEditRef) {
+            if (isEditRef || tvColoniaRef.getText().toString().equals("")) {
                 Intent i_colonia = new Intent(context, Catalogos.class);
                 i_colonia.putExtra(TITULO, m.ucFirst(COLONIAS));
                 i_colonia.putExtra(CATALOGO, COLONIAS);
@@ -5908,8 +5924,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (isEditRef) {
-                if (!m.GetStr(tvMunicipioRef).isEmpty()) {
-                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_nombre = ?", "", new String[]{m.GetStr(tvMunicipioRef)});
+                ColoniaDao coloniaDao = new ColoniaDao(ctx);
+                List<Colonia> colonias = coloniaDao.findAllByCp(etCpRef.getText().toString().trim());
+
+                if (!m.GetStr(tvMunicipioRef).isEmpty() && colonias.size() > 0) {
+                    Cursor row = dBhelper.getRecords(TABLE_MUNICIPIOS, " WHERE municipio_id = ?", "", new String[]{String.valueOf(colonias.get(0).getMunicipioId())});
                     row.moveToFirst();
                     Intent i_localidad = new Intent(context, Catalogos.class);
                     i_localidad.putExtra(TITULO, m.ucFirst(LOCALIDADES));
@@ -8209,7 +8228,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         boolean save_cliente = false;
         ContentValues cv = new ContentValues();
-        if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+        if (!validator.validate(etNombreCli, new String[]{validator.REQUIRED}) &&
         !validator.validate(etApPaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validator.validate(etApMaternoCli, new String[]{validator.ONLY_TEXT}) &&
         !validatorTV.validate(tvFechaNacCli, new String[]{validatorTV.REQUIRED}) &&
@@ -9090,12 +9109,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private boolean saveCroquis(){
         boolean save_croquis = false;
         if(
-            !validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED}) &&
-            !validatorTV.validate(tvPrincipal, new String[]{validatorTV.REQUIRED}) &&
-            !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED}) &&
-            !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED}) &&
-            !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED}) &&
-            !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED})
+            !validatorTV.validate(tvLateraUno, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+            !validatorTV.validate(tvPrincipal, new String[]{validatorTV.ALFANUMERICO, validatorTV.ALFANUMERICO}) &&
+            !validatorTV.validate(tvTrasera, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+            !validatorTV.validate(tvLateraDos, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+            !validator.validate(etReferencia, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO}) &&
+            !validator.validate(etCaracteristicasDomicilio, new String[]{validatorTV.REQUIRED, validatorTV.ALFANUMERICO})
         ){
             //ivError8.setVisibility(View.GONE);
             ivError2.setVisibility(View.GONE);
@@ -10019,6 +10038,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             mapCli.setVisibility(View.VISIBLE);
             Ubicacion(rowDir.getDouble(2), rowDir.getDouble(3));
         }
+
         etCalleCli.setText(rowDir.getString(4)); etCalleCli.setEnabled(isEditCli);
         etNoExtCli.setText(rowDir.getString(5)); etNoExtCli.setEnabled(isEditCli);
         etNoIntCli.setText(rowDir.getString(6)); etNoIntCli.setEnabled(isEditCli);
@@ -10788,18 +10808,22 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     public void setCalle (String calle, String tipo){
         switch (tipo){
             case "PRINCIPAL":
+                tvPrincipal.setError(null);
                 tvPrincipal.setText(calle);
                 Update("calle_principal",TBL_CROQUIS_IND, calle.trim().toUpperCase());
                 break;
             case "TRASERA":
+                tvTrasera.setError(null);
                 tvTrasera.setText(calle);
                 Update("calle_trasera",TBL_CROQUIS_IND, calle.trim().toUpperCase());
                 break;
             case "LATERAL UNO":
+                tvLateraUno.setError(null);
                 tvLateraUno.setText(calle);
                 Update("lateral_uno",TBL_CROQUIS_IND, calle.trim().toUpperCase());
                 break;
             case "LATERAL DOS":
+                tvLateraDos.setError(null);
                 tvLateraDos.setText(calle);
                 Update("lateral_dos",TBL_CROQUIS_IND, calle.trim().toUpperCase());
                 break;

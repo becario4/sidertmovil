@@ -1584,7 +1584,8 @@ public class SidertTables {
                 "fecha_envio TEXT," +
                 "fecha_dispositivo TEXT," +
                 "fecha_guardado TEXT," +
-                "estatus INTEGER)";
+                "estatus INTEGER," +
+                "prestamo_id INTEGER)";
 
         static final String CREATE_TBL_CREDITO_IND_REN = "CREATE TABLE " + TBL_CREDITO_IND_REN + " (" +
                 "id_credito INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -2936,6 +2937,10 @@ public class SidertTables {
         static final String ADD_INE_SELFIE_DOC_INT_REN = "ALTER TABLE " + TBL_DOCUMENTOS_INTEGRANTE_REN +
                 " ADD COLUMN ine_selfie" +
                 " TEXT DEFAULT NULL";
+
+        static final String ADD_PRESTAMO_ID_SOL_REN = "ALTER TABLE " + TBL_SOLICITUDES_REN +
+                " ADD COLUMN prestamo_id" +
+                " INTEGER DEFAULT NULL";
 
     }
 }

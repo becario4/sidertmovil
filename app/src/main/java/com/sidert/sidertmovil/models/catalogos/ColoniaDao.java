@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteStatement;
 
 import com.sidert.sidertmovil.database.DBhelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ColoniaDao {
     final DBhelper dbHelper;
     final SQLiteDatabase db;
@@ -64,15 +67,50 @@ public class ColoniaDao {
 
             colonia = new Colonia();
 
-            colonia.setId(row.getInt(0));
-            colonia.setColoniaId(row.getInt(1));
-            colonia.setNombre(row.getString(2));
-            colonia.setCp(row.getInt(3));
-            colonia.setMunicipioId(row.getInt(4));
+            Fill(row,  colonia);
+
         }
 
         row.close();
 
         return colonia;
+    }
+
+    public List<Colonia> findAllByCp(String cp)
+    {
+        List<Colonia> colonias = new ArrayList<>();
+
+        String sql = "SELECT * FROM " + tbl_colonias + " WHERE cp = ?";
+
+        Cursor row = db.rawQuery(sql, new String[]{cp});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++) {
+                Colonia colonia = new Colonia();
+
+                Fill(row, colonia);
+
+                colonias.add(colonia);
+
+                row.moveToNext();
+            }
+
+        }
+
+        row.close();
+
+        return colonias;
+    }
+
+    private void Fill(Cursor row, Colonia colonia)
+    {
+        colonia.setId(row.getInt(0));
+        colonia.setColoniaId(row.getInt(1));
+        colonia.setNombre(row.getString(2));
+        colonia.setCp(row.getInt(3));
+        colonia.setMunicipioId(row.getInt(4));
     }
 }

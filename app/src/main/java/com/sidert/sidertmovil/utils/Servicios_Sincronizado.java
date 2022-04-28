@@ -62,6 +62,8 @@ import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCredito;
 import com.sidert.sidertmovil.models.circulocredito.ReciboCirculoCreditoDao;
 import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizado;
 import com.sidert.sidertmovil.models.serviciossincronizados.ServicioSincronizadoDao;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
+import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -2458,11 +2460,14 @@ public class Servicios_Sincronizado {
                 "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
                 "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
                 "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
-                "WHERE i.id_credito = ? AND i.id_solicitud_integrante = ? AND i.estatus_completado = 1 " +
+                "WHERE i.id_credito = ? " +
+                //"AND i.id_solicitud_integrante = ? " +
+                "AND i.estatus_completado = 1 " +
                 "order by i.id_credito"
             ;
 
-            rowTotal = db.rawQuery(sql, new String[]{sDato12, "0"});
+            //rowTotal = db.rawQuery(sql, new String[]{sDato12, "0"});
+            rowTotal = db.rawQuery(sql, new String[]{sDato12});
             iTotal = rowTotal.getCount();
         }
         else
@@ -2635,12 +2640,15 @@ public class Servicios_Sincronizado {
             "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
             "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
             "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
-            "WHERE i.id_credito = ? AND i.id_solicitud_integrante = ? AND i.estatus_completado = 1 " +
+            "WHERE i.id_credito = ? " +
+            //"AND i.id_solicitud_integrante = ? " +
+            "AND i.estatus_completado = 1 " +
             "order by i.id_credito " +
             "limit 1"
         ;
 
-        Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "0"});
+        //Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "0"});
+        Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12});
         rowIntegrante.moveToFirst();
 
         String id_solicitud = sDato0;
@@ -2946,7 +2954,7 @@ public class Servicios_Sincronizado {
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
+        String sql = "SELECT s.id_solicitud, s.vol_solicitud, s.usuario_id, s.tipo_solicitud, s.id_originacion, s.nombre, s.fecha_inicio, s.fecha_termino, s.fecha_envio, s.fecha_dispositivo, s.fecha_guardado, s.estatus, c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
         Cursor row = db.rawQuery(sql, null);
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
@@ -4121,50 +4129,50 @@ public class Servicios_Sincronizado {
                                         if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
                                             cv = new ContentValues();
                                             cv.put("cargo", item.getCargo());
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
                                             db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_TELEFONOS_INTEGRANTE, cv, "id_telefonico = ?", new String[]{row.getString(1)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_DOMICILIO_INTEGRANTE, cv, "id_domicilio = ?", new String[]{row.getString(2)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_NEGOCIO_INTEGRANTE, cv, "id_negocio = ?", new String[]{row.getString(3)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_CONYUGE_INTEGRANTE, cv, "id_conyuge = ?", new String[]{row.getString(4)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             if (item.getCargo() == 3)
                                                 cv.put("casa_reunion", 1);
                                             db.update(TBL_OTROS_DATOS_INTEGRANTE, cv, "id_otro = ?", new String[]{row.getString(5)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_CROQUIS_GPO, cv, "id = ?", new String[]{row.getString(6)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_POLITICAS_PLD_INTEGRANTE, cv, "id_politica = ?", new String[]{row.getString(7)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_DOCUMENTOS_INTEGRANTE, cv, "id_documento = ?", new String[]{row.getString(8)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus", 0);
+                                            cv.put("estatus", 0);
                                             cv.put("id_originacion", String.valueOf(item.getId()));
-                                            //cv.put("fecha_termino", "");
-                                            //cv.put("fecha_envio", "");
-                                            //cv.put("fecha_guardado", "");
+                                            cv.put("fecha_termino", "");
+                                            cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
                                         else{ //Es rechazo completo de la solicitud
@@ -4217,48 +4225,48 @@ public class Servicios_Sincronizado {
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
                                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_TELEFONOS_INTEGRANTE_REN, cv, "id_telefonico = ?", new String[]{row.getString(1)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_DOMICILIO_INTEGRANTE_REN, cv, "id_domicilio = ?", new String[]{row.getString(2)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_NEGOCIO_INTEGRANTE_REN, cv, "id_negocio = ?", new String[]{row.getString(3)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_conyuge = ?", new String[]{row.getString(4)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_OTROS_DATOS_INTEGRANTE_REN, cv, "id_otro = ?", new String[]{row.getString(5)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_CROQUIS_GPO_REN, cv, "id = ?", new String[]{row.getString(6)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_POLITICAS_PLD_INTEGRANTE_REN, cv, "id_politica = ?", new String[]{row.getString(7)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus_completado", 0);
+                                            cv.put("estatus_completado", 0);
                                             db.update(TBL_DOCUMENTOS_INTEGRANTE_REN, cv, "id_documento = ?", new String[]{row.getString(8)});
 
                                             cv = new ContentValues();
-                                            //cv.put("estatus", 0);
+                                            cv.put("estatus", 0);
                                             cv.put("id_originacion", String.valueOf(item.getId()));
-                                            //cv.put("fecha_termino", "");
-                                            //cv.put("fecha_envio", "");
-                                            //cv.put("fecha_guardado", "");
+                                            cv.put("fecha_termino", "");
+                                            cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
                                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
                                         else{//Es rechazo de solcitud completo
@@ -6107,6 +6115,7 @@ public class Servicios_Sincronizado {
             public void onResponse(Call<List<MPrestamosRenovar>> call, Response<List<MPrestamosRenovar>> response) {
                 switch (response.code()){
                     case 200:
+                        Log.e("AQUI", String.valueOf(response.code()));
                         List<MPrestamosRenovar> prestamos = response.body();
                         if (prestamos.size() > 0){
                             for(MPrestamosRenovar item : prestamos){
@@ -6133,8 +6142,8 @@ public class Servicios_Sincronizado {
                                     row.close();
                                 }
                                 else{
-                                    String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND grupo_id = ? and tipo_prestamo = 2";
-                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getGrupoId())});
+                                    String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND grupo_id = ? and tipo_prestamo = 2 AND prestamo_id = ?";
+                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getGrupoId()), String.valueOf(item.getPrestamoId())});
 
                                     if (row.getCount() == 0) {
                                         HashMap<Integer, String> params = new HashMap<>();
@@ -6158,12 +6167,15 @@ public class Servicios_Sincronizado {
                             GetDatosRenovar(ctx);
                         }
                         break;
+                    default:
+                        Log.e("AQUI", String.valueOf(response.code()));
+                        break;
                 }
             }
 
             @Override
             public void onFailure(Call<List<MPrestamosRenovar>> call, Throwable t) {
-
+                Log.e("AQUI", t.getMessage());
             }
         });
     }
@@ -6245,14 +6257,61 @@ public class Servicios_Sincronizado {
     private void GetDatosRenovar(Context ctx){
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+
+        String sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR;
+        Cursor row = db.rawQuery(sql, new String[]{});
+
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+
+            for (int x = 0; x < row.getCount(); x++) {
+                Log.e("AQUI ASIGNAR UNO ", row.getString(5));
+
+                List<SolicitudRen> solicitudesRen = solicitudRenDao.findByNombreAndPrestamoId(row.getString(5), row.getInt(1));
+
+                Log.e("AQUI ENCONTRADOS ", String.valueOf(solicitudesRen.size()));
+
+                if (solicitudesRen.size() == 1) {
+                    Log.e("AQUI ENCONTRADO ", String.valueOf(solicitudesRen.get(0).getPrestamoId()));
+
+                    if (solicitudesRen.get(0).getPrestamoId() == null || solicitudesRen.get(0).getPrestamoId() == 0) {
+                        Log.e("AQUI ASIGNAR PRESTAMO ID UNO ", solicitudesRen.get(0).getNombre());
+                        solicitudesRen.get(0).setPrestamoId(row.getInt(1));
+                        solicitudRenDao.updatePrestamo(solicitudesRen.get(0));
+                    }
+                } else if (solicitudesRen.size() > 1) {
+                    for (int i = 0; i < solicitudesRen.size(); i++) {
+                        Log.e("AQUI ENCONTRADO ", String.valueOf(solicitudesRen.get(i).getPrestamoId()));
+
+                        if (solicitudesRen.get(i).getPrestamoId() == null || solicitudesRen.get(i).getPrestamoId() == 0) {
+                            Log.e("AQUI ASIGNAR PRESTAMO ID DOS ", solicitudesRen.get(i).getNombre());
+
+                            PrestamoToRenovar prestamoToRenovarTemp = prestamoToRenovarDao.findByClienteNombreAndPosition(row.getString(5), i);
+                            if(prestamoToRenovarTemp != null)
+                            {
+                                solicitudesRen.get(i).setPrestamoId(prestamoToRenovarTemp.getPrestamoId());
+                                solicitudRenDao.updatePrestamo(solicitudesRen.get(i));
+                            }
+
+                        }
+                    }
+                }
+
+                row.moveToNext();
+            }
+        }
+
+        row.close();
 
         //SE GUARDAN LOS QUE NO HAN SIDO SINCRONIZADOS
-
-        String sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
-        Cursor row = db.rawQuery(sql, new String[]{"0"});
+        sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
+        row = db.rawQuery(sql, new String[]{"0"});
 
         if (row.getCount() > 0){
             row.moveToFirst();
+
             for (int i = 0; i < row.getCount(); i++){
                 if (row.getInt(4) == 1)
                     new RegistrarDatosRenovacion().
@@ -6460,6 +6519,8 @@ public class Servicios_Sincronizado {
             final String clienteId = (String) obj[3];
             final String fechaVencimiento = (String) obj[4];
 
+            Log.e("AQUI: ", String.valueOf(prestamoId));
+            Log.e("AQUI: ", String.valueOf(clienteId));
             ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Call<MRenovacion> call = api.getPrestamoRenovar(
@@ -6520,6 +6581,7 @@ public class Servicios_Sincronizado {
                             params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
+                            params.put(11, String.valueOf(item.getPrestamo().getPrestamodId())); //prestamo_id
 
                             id = dBhelper.saveSolicitudes(db, params, tipoSolicitud);
 
@@ -6610,6 +6672,7 @@ public class Servicios_Sincronizado {
 
                             //Inserta registro de direccion del cliente
                             params = new HashMap<>();
+
                             params.put(0, "CONYUGE");                                               //TIPO DIRECCION
                             params.put(1, Miscellaneous.validStr(item.getConyuge().getLatitud()));  //LATITUD
                             params.put(2, Miscellaneous.validStr(item.getConyuge().getLongitud())); //LONGITUD
@@ -6926,6 +6989,7 @@ public class Servicios_Sincronizado {
                             params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
+                            params.put(11, String.valueOf(item.getPrestamo().getPrestamodId())); //prestamo_id
 
                             id_solicitud = dBhelper.saveSolicitudes(db, params, 2);
 

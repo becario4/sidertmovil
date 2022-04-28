@@ -52,8 +52,11 @@ public class adapter_renovacion extends RecyclerView.Adapter<adapter_renovacion.
                 holder.ivInfo.setVisibility(View.VISIBLE);
                 holder.tvFechaVencimiento.setVisibility(View.VISIBLE);
             }
-            else
+            else {
+                holder.ivInfo.setVisibility(View.VISIBLE);
+                holder.tvFechaVencimiento.setVisibility(View.VISIBLE);
                 holder.ivInfo.setVisibility(View.GONE);
+            }
         }
 
         if (item.containsKey(7)){
