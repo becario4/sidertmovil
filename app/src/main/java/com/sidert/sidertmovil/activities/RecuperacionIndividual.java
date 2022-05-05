@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sidert.sidertmovil.R;
@@ -100,7 +101,6 @@ public class RecuperacionIndividual extends AppCompatActivity {
         nvMenu          = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
         nvMenu.setOnNavigationItemSelectedListener(nvMenu_onClick);
-
         menu = nvMenu.getMenu();
 
         setSupportActionBar(TBmain);

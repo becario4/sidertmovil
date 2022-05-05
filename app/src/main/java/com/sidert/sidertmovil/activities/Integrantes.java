@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 //import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,13 +21,17 @@ import com.sidert.sidertmovil.adapters.adapter_integrantes;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_imprimir_recibos;
 import com.sidert.sidertmovil.models.MIntegrante;
+import com.sidert.sidertmovil.views.expedientes.DocumentosIntegranteActivity;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 
+import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
+import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.NUMERO_DE_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 
 /**Clase donde se puede visualizar los integrantes de un grupo*/
@@ -97,16 +102,21 @@ public class Integrantes extends AppCompatActivity {
             }
 
             /**Se pasa el listado de integrantes al adaptador */
-            adapter = new adapter_integrantes(ctx, data, new adapter_integrantes.Event() {
-                @Override
-                public void IntegranteOnClick(MIntegrante item) {
-                    /*dialog_imprimir_recibos dialogRoot = new dialog_imprimir_recibos();
-                    Bundle b = new Bundle();
-                    b.putString(ID_INTEGRANTE, String.valueOf(item.getId()));
-                    b.putString(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
-                    dialogRoot.setArguments(b);
-                    dialogRoot.show(getSupportFragmentManager(), DIALOGIMPRIMIRRECIBOS);*/
-                }
+            adapter = new adapter_integrantes(ctx, data, item -> {
+                Intent view = new Intent(this, DocumentosIntegranteActivity.class);
+                view.putExtra(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
+                view.putExtra(ID_INTEGRANTE, String.valueOf(item.getId()));
+                view.putExtra(NOMBRE, item.getNombre());
+                view.putExtra(NUMERO_DE_PRESTAMO, String.valueOf(item.getNumSolicitud()));
+                view.putExtra(NOMBRE_GRUPO, tvNombreGpo.getText());
+                startActivity(view);
+
+                /*dialog_imprimir_recibos dialogRoot = new dialog_imprimir_recibos();
+                Bundle b = new Bundle();
+                b.putString(ID_INTEGRANTE, String.valueOf(item.getId()));
+                b.putString(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
+                dialogRoot.setArguments(b);
+                dialogRoot.show(getSupportFragmentManager(), DIALOGIMPRIMIRRECIBOS);*/
             });
             rvIntegrantes.setAdapter(adapter);
         }

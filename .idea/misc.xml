@@ -12,12 +12,15 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_circulo_credito.xml" value="0.28125" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_codigos_oxxo.xml" value="0.271286231884058" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_configuracion.xml" value="0.1" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_documentos_integrante.xml" value="0.2866847826086957" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_expedientes_vencida_individual.xml" value="0.1259259259259259" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_geo_integrante.xml" value="0.18703703703703703" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_geolocalizacion_ind.xml" value="0.12824074074074074" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_home.xml" value="0.1824074074074074" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_main.xml" value="0.19212962962962962" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_prestamos_clientes.xml" value="0.1125" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_recuperacion_c_c.xml" value="0.33564814814814814" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_recuperacion_grupal.xml" value="0.1259259259259259" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_recuperacion_individual.xml" value="0.1" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_renovacion_credito.xml" value="0.30978260869565216" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_resumen_cartera.xml" value="0.1125" />
@@ -25,10 +28,15 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_solicitud_ind.xml" value="0.1" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_solicitud_integrante.xml" value="0.1837962962962963" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_solicitudes.xml" value="0.25" />
-        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_vencida_integrante.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_vencida_individual.xml" value="0.1259259259259259" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_vencida_integrante.xml" value="0.2372159090909091" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_vista_gestion.xml" value="0.13240740740740742" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/activity_vista_previa_gestion.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_cvg_pagos.xml" value="0.10277777777777777" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_cvi_detalle.xml" value="0.18703703703703703" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_cvi_pagos.xml" value="0.25" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_document_opened.xml" value="0.1" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_documentos.xml" value="0.1" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_geo_aval.xml" value="0.18703703703703703" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_geo_cliente.xml" value="0.18703703703703703" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/fragment_geo_negocio.xml" value="0.18703703703703703" />
@@ -41,6 +49,7 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/item_cierre_dia.xml" value="0.32592592592592595" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/item_geo_pendiente.xml" value="0.32592592592592595" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/item_originacion.xml" value="0.10925925925925926" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/item_prestamo.xml" value="0.1259259259259259" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/item_prestamo_agf_cc.xml" value="0.20652173913043478" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/popup_contrasena_root.xml" value="0.19814814814814816" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/popup_originacion_gpo.xml" value="0.32592592592592595" />
@@ -63,6 +72,7 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/view_step_referencias_solicitante.xml" value="0.14166666666666666" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/layout/viewpager_fragment.xml" value="0.32592592592592595" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_nav_recuperacion_ind.xml" value="0.1" />
+        <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_prestamos.xml" value="0.1259259259259259" />
       </map>
     </option>
   </component>

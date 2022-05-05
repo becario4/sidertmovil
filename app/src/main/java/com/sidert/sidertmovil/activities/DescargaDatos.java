@@ -32,8 +32,12 @@ import com.sidert.sidertmovil.models.MIntegrante;
 import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.models.MPrestamoGpoRes;
 import com.sidert.sidertmovil.models.MPrestamoRes;
+import com.sidert.sidertmovil.models.apoyogastosfunerarios.ApoyoGastosFunerariosResponse;
 import com.sidert.sidertmovil.models.cartera.amortizaciones.Amortizacion;
 import com.sidert.sidertmovil.models.cartera.amortizaciones.AmortizacionDao;
+import com.sidert.sidertmovil.models.documentosclientes.DocumentoCliente;
+import com.sidert.sidertmovil.models.documentosclientes.DocumentoClienteDao;
+import com.sidert.sidertmovil.services.expedientes.DocumentoClienteService;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -43,6 +47,8 @@ import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Sincronizar_Catalogos;
+
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -554,6 +560,7 @@ public class DescargaDatos extends AppCompatActivity {
 
                                             db.update(TBL_CARTERA_IND_T, cv, "id_cartera = ?", new String[]{String.valueOf(cartera.get(i).getId())});
                                         }
+
                                         row.close();
                                         break;
                                     case 2:/**Grupal*/
@@ -1068,6 +1075,51 @@ public class DescargaDatos extends AppCompatActivity {
                                     db.update(TBL_TELEFONOS_CLIENTE, cv_telefonos, "id_prestamo = ?", new String[]{String.valueOf(prestamos.get(i).getId())});
                                 }
                                 row.close();
+
+                                //BUSCAR SI SE TIENE LOS DOCUMENTOS DE EXPEDIENTES
+                                /*DocumentoClienteDao documentoClienteDao = new DocumentoClienteDao(ctx);
+                                List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(prestamos.get(i).getId());
+
+                                if(documentosClientes.size() == 0)
+                                {
+                                    DocumentoClienteService api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
+                                    Call<List<DocumentoCliente>> callDocumentoCliente = api.show(prestamos.get(i).getId(),"Bearer "+ session.getUser().get(7));
+                                    callDocumentoCliente.enqueue(new Callback<List<DocumentoCliente>>() {
+                                         @Override
+                                         public void onResponse(Call<List<DocumentoCliente>> call, Response<List<DocumentoCliente>> response) {
+                                             Log.e("ind", "id_carteta: " + id + " code" + response.code());
+                                             if (response.code() == 200) {
+
+                                                 List<DocumentoCliente> documentosClientesResponse = response.body();
+
+                                                 for(DocumentoCliente dc : documentosClientesResponse)
+                                                 {
+                                                     DocumentoCliente documentoCliente = new DocumentoCliente();
+
+                                                     documentoCliente.setArchivoBase64(dc.getArchivoBase64());
+                                                     documentoCliente.setClavecliente(dc.getClavecliente());
+                                                     documentoCliente.setClienteId(dc.getClienteId());
+                                                     documentoCliente.setFecha(dc.getFecha());
+                                                     documentoCliente.setGrupoId(dc.getGrupoId());
+                                                     //documentoCliente.setId(dc.getId());
+                                                     documentoCliente.setNumSolicitud(dc.getNumSolicitud());
+                                                     documentoCliente.setPrestamoId(dc.getPrestamoId());
+                                                     documentoCliente.setTipo(dc.getTipo());
+
+                                                     documentoClienteDao.store(documentoCliente);
+                                                 }
+                                             }
+                                         }
+
+                                        @Override
+                                        public void onFailure(Call<List<DocumentoCliente>> call, Throwable t) {
+                                             Log.e("Error", "DocumentoCliente" + t.getMessage());
+                                        }
+                                    });
+                                }
+                                */
+
+
                             } //Fin Ciclo For
                         }//Fin IF
                     else{
@@ -1427,6 +1479,49 @@ public class DescargaDatos extends AppCompatActivity {
 
                             }
                             row.close();
+
+                            //BUSCAR SI SE TIENE LOS DOCUMENTOS DE EXPEDIENTES
+                            /*DocumentoClienteDao documentoClienteDao = new DocumentoClienteDao(ctx);
+                            List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(prestamos.get(i).getId());
+
+                            if(documentosClientes.size() == 0)
+                            {
+                                DocumentoClienteService api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
+                                Call<List<DocumentoCliente>> callDocumentoCliente = api.show(prestamos.get(i).getId(),"Bearer "+ session.getUser().get(7));
+                                callDocumentoCliente.enqueue(new Callback<List<DocumentoCliente>>() {
+                                    @Override
+                                    public void onResponse(Call<List<DocumentoCliente>> call, Response<List<DocumentoCliente>> response) {
+                                        Log.e("ind", "id_carteta: " + id + " code" + response.code());
+                                        if (response.code() == 200) {
+
+                                            List<DocumentoCliente> documentosClientesResponse = response.body();
+
+                                            for(DocumentoCliente dc : documentosClientesResponse)
+                                            {
+                                                DocumentoCliente documentoCliente = new DocumentoCliente();
+
+                                                documentoCliente.setArchivoBase64(dc.getArchivoBase64());
+                                                documentoCliente.setClavecliente(dc.getClavecliente());
+                                                documentoCliente.setClienteId(dc.getClienteId());
+                                                documentoCliente.setFecha(dc.getFecha());
+                                                documentoCliente.setGrupoId(dc.getGrupoId());
+                                                //documentoCliente.setId(dc.getId());
+                                                documentoCliente.setNumSolicitud(dc.getNumSolicitud());
+                                                documentoCliente.setPrestamoId(dc.getPrestamoId());
+                                                documentoCliente.setTipo(dc.getTipo());
+
+                                                documentoClienteDao.store(documentoCliente);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<List<DocumentoCliente>> call, Throwable t) {
+                                        Log.e("Error", "DocumentoCliente" + t.getMessage());
+                                    }
+                                });
+                            }
+                            */
                         } //Fin Ciclo For
                     }//Fin IF
                     else{

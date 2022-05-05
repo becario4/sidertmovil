@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.6.18</string>
+    <string name="app_version">2.6.19</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
@@ -104,6 +104,7 @@
     <string name="comentario">Comentario</string>
     <string name="facade_photo">Fotografía de fachada</string>
     <string name="order">Orden</string>
+    <string name="expedientes">Expedientes</string>
     <string name="fotografia">Fotografía</string>
     <string name="galeria">Galería</string>
     <string name="preview">VISTA PREVIA</string>
@@ -368,12 +369,26 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
     <string name="hello_world">Hello Square World!</string>
 
+    <string name="Rmonto"></string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="RprimerNombre"></string>
+    <string name="RapellidoPaterno"></string>
+    <string name="RapellidoMaterno"></string>
+    <string name="Rcurp"></string>
+    <string name="Rrfc"></string>
+    <string name="Rdireccion"></string>
+    <string name="Rcolonia"></string>
+    <string name="Rmunicipio"></string>
+    <string name="Rciudad"></string>
+    <string name="Restado"></string>
+    <string name="Rcp"></string>
+    <string name="RfechaNacimiento"></string>
+    <string name="labeldispositivo">Dispositivos Detectados:</string>
     <string-array name="sexo">
         <item>MUJER</item>
         <item>HOMBRE</item>
     </string-array>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string-array name="contacto_cliente">
         <item>SI</item>
         <item>NO</item>
@@ -505,14 +520,21 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
 
     </string-array>
     <string-array name="parentesco_titular"></string-array>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
     <string-array name="casa_familiar"></string-array>
+
     <string-array name="casa_familiar_aval"></string-array>
+
     <string-array name="intervalo">
         <item>4 MESES</item>               <!--1-->
         <item>5 MESES</item>               <!--2-->
         <item>6 MESES</item>               <!--3-->
         <item>9 MESES</item>               <!--3-->
     </string-array>
+
     <string-array name="lapso">
         <item>SEMANAL</item>               <!--1-->
         <item>CATORCENAL</item>            <!--2-->
@@ -612,15 +634,10 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>$17.50</item>             <!-- 0 -->
         <item>$22.50</item>             <!-- 1 -->
     </string-array>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
     <string-array name="resultado_gestion">
         <item>PAGO</item>              <!-- 0 -->
         <item>NO PAGO</item>              <!-- 1 -->
     </string-array>
-
     <string-array name="verificaciones_tipos">
         <item>INDIVIDUAL</item>                <!-- 0 -->
         <item>PRESIDENTE</item>                <!-- 1 -->
@@ -628,26 +645,10 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>TESORERO</item>                  <!-- 3 -->
         <item>INTEGRANTE</item>                <!-- 4 -->
     </string-array>
-
     <string-array name="verificaciones_tipos_grupales">
         <item>PRESIDENTE</item>               <!-- 0 -->
         <item>SECRETARIA</item>               <!-- 1 -->
         <item>TESORERO</item>                 <!-- 2 -->
         <item>INTEGRANTE</item>               <!-- 3 -->
     </string-array>
-
-    <string name="Rmonto"></string>
-    <string name="RprimerNombre"></string>
-    <string name="RapellidoPaterno"></string>
-    <string name="RapellidoMaterno"></string>
-    <string name="Rcurp"></string>
-    <string name="Rrfc"></string>
-    <string name="Rdireccion"></string>
-    <string name="Rcolonia"></string>
-    <string name="Rmunicipio"></string>
-    <string name="Rciudad"></string>
-    <string name="Restado"></string>
-    <string name="Rcp"></string>
-    <string name="RfechaNacimiento"></string>
-    <string name="labeldispositivo">Dispositivos Detectados:</string>
 </resources>

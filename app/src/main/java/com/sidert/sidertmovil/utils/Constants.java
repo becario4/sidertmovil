@@ -520,6 +520,7 @@ public class Constants {
     public final static String TBL_RECUPERACION_RECIBOS_CC          = "tbl_recuperacion_recibos_cc";
 
     public final static String TBL_SERVICIOS_SINCRONIZADOS          = "tbl_servicios_sincronizados";
+    public final static String TBL_DOCUMENTOS_CLIENTES              = "tbl_documentos_clientes";
 
     public final static String TBL_VERIFICACIONES_DOMICILIARIAS     = "tbl_verificaciones_domiciliarias";
     public final static String TBL_GESTIONES_VER_DOM                = "tbl_gestiones_ver_dom";

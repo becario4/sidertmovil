@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sidert.sidertmovil.R;
@@ -75,6 +76,8 @@ public class VencidaGrupal extends AppCompatActivity {
 
     private SessionManager session;
 
+    private boolean bExpedientes = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +102,7 @@ public class VencidaGrupal extends AppCompatActivity {
         Bundle data = getIntent().getExtras();
         id_prestamo = data.getString(ID_PRESTAMO);
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
+        if(data.containsKey("expedientes")) bExpedientes = true;
 
         Cursor row;
         row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
@@ -165,6 +169,19 @@ public class VencidaGrupal extends AppCompatActivity {
             e.printStackTrace();
         }
         //nvMenu.setSelectedItemId(R.id.nvGestion);
+
+        if(bExpedientes)
+        {
+            setTitle(getApplicationContext().getString(R.string.expedientes));
+            nvMenu.findViewById(R.id.nvGestion).setVisibility(View.GONE);
+            menu.getItem(1).setVisible(false);
+            nvMenu.setSelectedItemId(R.id.nvDatos);
+        }
+        else
+        {
+            nvMenu.setSelectedItemId(R.id.nvGestion);
+            nvMenu.setVisibility(View.GONE);
+        }
     }
 
     @Override

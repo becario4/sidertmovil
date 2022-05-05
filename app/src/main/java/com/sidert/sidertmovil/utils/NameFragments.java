@@ -30,6 +30,7 @@ public class NameFragments {
     public final static String IMPRESSION_HISTORY   = "impression_history_fragment";
     public final static String SYNCHRONIZE_DB       = "synchronize_db_fragment";
     public final static String AUTORIZAR_CC         = "autorizar_cc_fragment";
+    public final static String DOCUMENTOS_IND       = "documentos_ind_fragment";
 
     //TODO: Dialogos
     public final static String DIALOGDETAILSORDER               = "dialog_details_order";

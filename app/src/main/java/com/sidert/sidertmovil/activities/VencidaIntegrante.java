@@ -282,7 +282,7 @@ public class VencidaIntegrante extends AppCompatActivity {
         dBhelper        = new DBhelper(ctx);
         db              = dBhelper.getWritableDatabase();
 
-        tbMain              = findViewById(R.id.tbMain);
+        tbMain          = findViewById(R.id.tbMain);
 
         id_prestamo     = getIntent().getStringExtra(ID_PRESTAMO);
         id_integrante   = getIntent().getStringExtra(ID_INTEGRANTE);
@@ -1501,6 +1501,7 @@ public class VencidaIntegrante extends AppCompatActivity {
             }
         });
     }
+
     private void addMarker (double lat, double lng){
         LatLng coordenadas = new LatLng(lat,lng);
         latLngGestion = coordenadas;
@@ -1515,6 +1516,7 @@ public class VencidaIntegrante extends AppCompatActivity {
         pbLoading.setVisibility(View.GONE);
         ibMap.setVisibility(View.GONE);
     }
+
     private void CancelUbicacion (){
         if (flagUbicacion)
             locationManager.removeUpdates(locationListener);
@@ -1589,6 +1591,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectActualizarTelefono(int pos){
         switch (pos){
             case 0:
@@ -1606,6 +1609,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectResultadoGestion(int pos){
         switch (pos){
             case 0: //Si Pago
@@ -1650,6 +1654,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectMedioPago (int pos){
         if (!tvPagaraRequerido.getText().toString().trim().isEmpty()) tvPagaraRequerido.setError(null);
         else tvPagaraRequerido.setError("");
@@ -1725,6 +1730,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectPagoRequerido (int pos){
         switch (pos){
             case 0: // Si pagará requerido
@@ -1745,6 +1751,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectImprimirRecibos(int pos){
         switch (pos){
             case 0: // Imprimir Recibos
@@ -1779,6 +1786,7 @@ public class VencidaIntegrante extends AppCompatActivity {
         }
 
     }
+
     private void SelectMotivoNoPago (int pos){
         tvMotivoNoPago.setError(null);
         switch (pos){
@@ -1821,6 +1829,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 break;
         }
     }
+
     private void SelectEstaGerente (int pos){
         switch (pos){
             case 0: // Si está el gerente

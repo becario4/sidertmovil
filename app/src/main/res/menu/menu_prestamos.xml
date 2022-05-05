@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/nvExpedientes"
+        android:title="Expedientes"
+        android:icon="@drawable/ic_detalle" />
+
+    <item
         android:id="@+id/nvRecuperacion"
         android:title="Recuperación"
         android:icon="@drawable/ic_recuperacion_blue" />

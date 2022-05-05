@@ -2306,6 +2306,18 @@ public class SidertTables {
                 "ejecutado INTEGER" +
                 ")";
 
+        static final String CREATE_TBL_DOCUMENTOS_CLIENTES = "CREATE TABLE " + TBL_DOCUMENTOS_CLIENTES + " (" +
+            "id INTEGER PRIMARY KEY," +
+            "grupo_id INTEGER," +
+            "cliente_id INTEGER," +
+            "clavecliente TEXT," +
+            "prestamo_id INTEGER," +
+            "num_solicitud INTEGER," +
+            "fecha TEXT," +
+            "tipo TEXT," +
+            "archivo_base64 TEXT" +
+        ")";
+
 
 
 

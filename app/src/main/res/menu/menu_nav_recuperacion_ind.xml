@@ -15,4 +15,10 @@
         android:id="@+id/nvReporte"
         android:title="Pagos"
         android:icon="@drawable/ic_reporte"/>
+
+    <item
+        android:id="@+id/nvDocumentos"
+        android:title="Documentos"
+        android:icon="@drawable/ic_folder_white"
+        android:visible="false"/>
 </menu>

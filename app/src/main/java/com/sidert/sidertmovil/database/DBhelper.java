@@ -165,6 +165,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTIONES_VER_DOM);
 
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES);
 
         Log.v("CreacionTablas", "se crearon tablas");
     }
@@ -933,6 +934,8 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_SOL_REN); }
         catch (Exception e) { Log.e("ADD_PRESTAMO_ID_SOL_REN", "ya contiene la columna"); }
 
+        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES); }
+        catch (Exception e) { Log.e("CREATE_TBL_DOCUMENTOS_CLIENTES", "ya existe la tabla DOCUMENTOS_CLIENTES"); }
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {

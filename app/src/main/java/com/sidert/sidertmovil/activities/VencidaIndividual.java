@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sidert.sidertmovil.R;
@@ -26,8 +27,10 @@ import com.sidert.sidertmovil.fragments.view_pager.cvi_detalle_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.cvi_pagos_fragment;
 import com.sidert.sidertmovil.fragments.view_pager.vencida_ind_fragment;
 import com.sidert.sidertmovil.utils.BottomNavigationViewHelper;
+import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.views.expedientes.DocumentosFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +48,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_CLIENTE;
 import static com.sidert.sidertmovil.utils.NameFragments.DETALLE_IND;
+import static com.sidert.sidertmovil.utils.NameFragments.DOCUMENTOS_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_IND;
 import static com.sidert.sidertmovil.utils.NameFragments.VENCIDA_IND;
 
@@ -82,6 +86,8 @@ public class VencidaIndividual extends AppCompatActivity {
 
     private SessionManager session;
 
+    private boolean bExpedientes = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +113,9 @@ public class VencidaIndividual extends AppCompatActivity {
         setTitle(getApplicationContext().getString(R.string.order));
 
         Bundle data = getIntent().getExtras();
+
+        if(data.containsKey("expedientes")) bExpedientes = true;
+
         id_prestamo = data.getString(ID_PRESTAMO);
         monto_amortiz = data.getString(MONTO_AMORTIZACION);
 
@@ -189,7 +198,21 @@ public class VencidaIndividual extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        nvMenu.setSelectedItemId(R.id.nvGestion);
+        if(bExpedientes)
+        {
+            setTitle(getApplicationContext().getString(R.string.expedientes));
+            nvMenu.findViewById(R.id.nvGestion).setVisibility(View.GONE);
+            nvMenu.findViewById(R.id.nvDocumentos).setVisibility(View.VISIBLE);
+            menu.getItem(1).setVisible(false);
+            menu.getItem(3).setVisible(true);
+            nvMenu.setSelectedItemId(R.id.nvDatos);
+        }
+        else
+        {
+            nvMenu.setSelectedItemId(R.id.nvGestion);
+            nvMenu.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -214,6 +237,11 @@ public class VencidaIndividual extends AppCompatActivity {
                     break;
                 case R.id.nvReporte:
                     setFragment(NameFragments.REPORTE_PAGOS_IND, null);
+                    break;
+                case R.id.nvDocumentos:
+                    Bundle data = new Bundle();
+                    data.putString(ID_PRESTAMO, id_prestamo);
+                    setFragment(DOCUMENTOS_IND, data);
                     break;
 
             }
@@ -256,7 +284,16 @@ public class VencidaIndividual extends AppCompatActivity {
                 } else
                     return;
                 break;
-
+            case DOCUMENTOS_IND:
+                if(!(current instanceof DocumentosFragment)){
+                    DocumentosFragment documentos = new DocumentosFragment();
+                    documentos.setArguments(extras);
+                    transaction.replace(R.id.flMain, documentos, DOCUMENTOS_IND);
+                    tokenFragment = DOCUMENTOS_IND;
+                }
+                else
+                    return;
+                break;
         }
 
         if(!tokenFragment.equals(VENCIDA_IND) && !tokenFragment.equals(DETALLE_IND) && !tokenFragment.equals(REPORTE_PAGOS_IND)) {

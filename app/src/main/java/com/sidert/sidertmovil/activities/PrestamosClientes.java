@@ -14,26 +14,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.Window;
-import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_prestamos;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.MPrestamo;
-import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.Miscellaneous;
-import com.sidert.sidertmovil.utils.NetworkStatus;
-import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import static com.sidert.sidertmovil.utils.Constants.CLAVE;
 import static com.sidert.sidertmovil.utils.Constants.FECHA_AMORTIZACION;
@@ -42,16 +32,12 @@ import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.NOMBRE;
 import static com.sidert.sidertmovil.utils.Constants.NUMERO_DE_PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NAME;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
@@ -172,6 +158,24 @@ public class PrestamosClientes extends AppCompatActivity {
         /**Coloca los prestamos obtener al adaptor para ser visualizados con el recycler*/
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
             @Override
+            public void ExpedientesClick(MPrestamo item) {
+                Intent intent_order;
+
+                if (item.getTipoPrestamo().equals("VENCIDA")) {
+                    intent_order = new Intent(ctx, VencidaIndividual.class);
+                    intent_order.putExtra("expedientes", true);
+                }
+                else {
+                    intent_order = new Intent(ctx, VencidaIndividual.class);
+                    intent_order.putExtra("expedientes", true);
+                }
+
+                intent_order.putExtra(ID_PRESTAMO, item.getId());
+                intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
+                startActivity(intent_order);
+            }
+
+            @Override
             public void PrestamoClick(MPrestamo item) {
                 /**Evento al dar tap sobre el prestamo para Comenzar a Recuperar(gestionar)*/
                 Intent intent_order;
@@ -280,6 +284,26 @@ public class PrestamosClientes extends AppCompatActivity {
 
         /**Coloca los prestamos obtener al adaptor para ser visualizados con el recycler*/
         adatper = new adapter_prestamos(ctx, mPrestamos, new adapter_prestamos.Event() {
+            @Override
+            public void ExpedientesClick(MPrestamo item) {
+                Intent intent_order;
+
+                if (item.getTipoPrestamo().equals("VENCIDA")) {
+                    intent_order = new Intent(ctx, VencidaGrupal.class);
+                    intent_order.putExtra("expedientes", true);
+                }
+                else
+                {
+                    intent_order = new Intent(ctx, RecuperacionGrupal.class);
+                    intent_order.putExtra("expedientes", true);
+                }
+
+
+                intent_order.putExtra(ID_PRESTAMO, item.getId());
+                intent_order.putExtra(MONTO_AMORTIZACION, item.getMontoAmortiz());
+                startActivity(intent_order);
+            }
+
             @Override
             public void PrestamoClick(MPrestamo item) {
                 /**Evento al dar tap sobre el prestamo para Comenzar a Recuperar(gestionar)*/

@@ -32,6 +32,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
     private Event evento;
     private SessionManager session;
     public interface Event {
+        void ExpedientesClick(MPrestamo item);
         void PrestamoClick(MPrestamo item);
         void GestionadasClick(MPrestamo item);
         void CodigoOxxoClick(MPrestamo item);
@@ -102,6 +103,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                         @Override
                         public void onClick(final View view) {
                             PopupMenu popup = new PopupMenu(view.getContext(), view);
+
                             try {
                                 Field[] fields = popup.getClass().getDeclaredFields();
                                 for (Field field : fields) {
@@ -114,12 +116,20 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                         break;
                                     }
                                 }
-                            } catch (Exception e) {
+                            }
+                            catch (Exception e)
+                            {
                                 e.printStackTrace();
                             }
                             popup.getMenuInflater().inflate(R.menu.menu_prestamos, popup.getMenu());
+
+                            int iIndexExpedientes = 0;
+                            int iIndexRecuperacion = 1;
+                            int iIndexGestionadas = 2;
+                            int iIndexCodigosOxxo = 3;
+
                             if (item_prestamo.getEstatus().equals("1"))
-                                popup.getMenu().getItem(0).setEnabled(false);
+                                popup.getMenu().getItem(iIndexRecuperacion).setEnabled(false);
 
                             Log.e("ROLE", session.getUser().get(5));
                             if (session.getUser().get(5).contains("ROLE_SUPER") ||
@@ -141,7 +151,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                                 for(int j = 0; j < permisos.length(); j++){
                                                     JSONObject item_permiso = permisos.getJSONObject(j);
                                                     if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
-                                                        popup.getMenu().getItem(2).setVisible(true);
+                                                        popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
                                                         break;
                                                     }
                                                 }
@@ -152,7 +162,22 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                     }
 
                                 }else
-                                    popup.getMenu().getItem(2).setVisible(true);
+                                    popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
+
+                                if (
+                                        session.getUser().get(5).contains("ROLE_SUPER") ||
+                                        session.getUser().get(5).contains("ROLE_ANALISTA") ||
+                                        session.getUser().get(5).contains("ROLE_DIRECCION") ||
+                                        session.getUser().get(5).contains("ROLE_GESTOR") ||
+                                        session.getUser().get(5).contains("ROLE_GERENTECARTERAVENCIDA")
+                                ) {
+                                    popup.getMenu().getItem(iIndexExpedientes).setVisible(true);
+                                }
+                                else
+                                {
+                                    popup.getMenu().getItem(iIndexExpedientes).setVisible(false);
+                                }
+
                             }
 
                             popup.setGravity(Gravity.RIGHT);
@@ -160,6 +185,9 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
                                     switch (item.getItemId()) {
+                                        case R.id.nvExpedientes:
+                                            evento.ExpedientesClick(item_prestamo);
+                                            return true;
                                         case R.id.nvRecuperacion:
                                             evento.PrestamoClick(item_prestamo);
                                             return true;
