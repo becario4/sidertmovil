@@ -82,7 +82,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             Log.e("MODEL", Build.MODEL);
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-            if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M"))
+            if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E"))
             {
                 Log.e("MAC", Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
                 session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
@@ -120,7 +120,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 Log.e("MAC NIF ADDRESS", newMacAddress);
 
                 /**Se guarda la MacAddress en variable de sesion*/
-                if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M"))
+                if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E"))
                 {
                     //session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
                 }
@@ -135,8 +135,9 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
 
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
-        session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        //session.setDominio("http://192.168.1.90:", "8083");//LOCALHOST
+        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
+        session.setDominio("http://192.168.0.121:", "8083");//LOCALHOST
+        //session.setDominio("http://192.168.3.58:", "8083");
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/

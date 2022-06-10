@@ -41,11 +41,16 @@ import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencida;
 import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencidaDao;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRenDao;
 import com.sidert.sidertmovil.utils.Constants;
@@ -659,6 +664,38 @@ public class Configuracion extends AppCompatActivity {
                 handler_home.postDelayed(() -> {
                     /**Valida si esta la sesion activa*/
                     if (session.getUser().get(6).equals("true")) {
+
+                        /*
+                            if(session.getUser().get(0).equals("582")){
+                            SolicitudDao solicitudDao = new SolicitudDao(ctx);
+                            Solicitud solicitud = solicitudDao.findLikeNombre("CRISANTEMOS DE CAMARON");
+
+                            if (solicitud != null) {
+                                CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
+                                CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                                if(creditoGpo != null)
+                                {
+                                    IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
+                                    List<IntegranteGpo> integranteGpoList = integranteGpoDao.findAllByIdCredito(creditoGpo.getId());
+
+                                    if(integranteGpoList.size() > 0)
+                                    {
+                                        for(IntegranteGpo iGpo : integranteGpoList)
+                                        {
+                                            iGpo.setEstatusCompletado(0);
+                                            iGpo.setEstatusRechazo(0);
+                                            integranteGpoDao.updateEstatus(iGpo);
+                                            integranteGpoDao.saveEstatus(iGpo);
+                                        }
+                                    }
+
+                                    solicitud.setEstatus(0);
+                                    solicitudDao.updateEstatus(solicitud);
+                                }
+                            }
+                        }
+                        */
                         HashMap<Integer, String> params_sincro = new HashMap<>();
                         params_sincro.put(0, session.getUser().get(0));
                         params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
@@ -798,6 +835,77 @@ public class Configuracion extends AppCompatActivity {
 
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        /*
+                        if(session.getUser().get(0).equals("617"))
+                        {
+                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombre("ACELERADA");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombre("ACELERADA");
+                                if (solicitudRen != null) {
+                                    solicitudRen.setPrestamoId(prestamoToRenovar.getPrestamoId());
+                                    solicitudRenDao.updatePrestamo(solicitudRen);
+                                }
+                            }
+
+                        }*/
+                        /*
+                        if (session.getUser().get(0).equals("015"))
+                        {
+                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombre("LAS INIGUALABLES");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombre("LAS INIGUALABLES");
+
+                                if (solicitudRen != null) {
+                                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                                    if(creditoGpoRen != null)
+                                    {
+                                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                                        if(integranteGpoRenList.size() > 0)
+                                        {
+                                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                                            {
+                                                iGpoRen.setEstatusCompletado(0);
+                                                iGpoRen.setEstatusRechazo(0);
+                                                integranteGpoRenDao.updateEstatus(iGpoRen);
+                                                integranteGpoRenDao.saveEstatus(iGpoRen);
+                                            }
+                                        }
+
+                                        solicitudRen.setEstatus(0);
+                                        solicitudRenDao.updateEstatus(solicitudRen);
+                                    }
+                                }
+                            }
+                        }
+                        */
+
+                        if(session.getUser().get(0).equals("403"))
+                        {
+                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombre("SALVADOR AVILA VERA");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombre("SALVADOR AVILA VERA");
+                                if (solicitudRen != null) {
+                                    solicitudRen.setPrestamoId(prestamoToRenovar.getPrestamoId());
+                                    solicitudRenDao.updatePrestamo(solicitudRen);
+                                }
+                            }
+
+                        }
+
                         ss.GetPrestamosToRenovar(ctx);
                     }
                     cvSincronizarIntegrantesRen.setEnabled(true);

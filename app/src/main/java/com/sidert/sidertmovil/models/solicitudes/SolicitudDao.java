@@ -49,6 +49,33 @@ public class SolicitudDao {
         return solicitud;
     }
 
+    public Solicitud findLikeNombre(String nombre)
+    {
+        Solicitud solicitud = null;
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES + " AS s " +
+                "WHERE s.nombre = ? "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{nombre});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            solicitud = new Solicitud();
+
+            Fill(row, solicitud);
+        }
+
+        row.close();
+
+        return solicitud;
+    }
+
     public Solicitud findByIdOriginacion(int idOriginacion)
     {
         Solicitud solicitud = null;

@@ -4498,23 +4498,16 @@ public class Servicios_Sincronizado {
                                 if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
                                 if(credito != null) solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
 
-                                if(solicitud != null)
-                                {
+                                if(solicitud != null) {
                                     String comentario = "";
 
-                                    if(se.getSolicitudEstadoIdIntegrante() == 1)
-                                    {
+                                    if (se.getSolicitudEstadoIdIntegrante() == 1) {
                                         comentario = "EN REVISIÓN";
-                                    }
-                                    else if (se.getSolicitudEstadoIdIntegrante() == 3)
-                                    {
+                                    } else if (se.getSolicitudEstadoIdIntegrante() == 3) {
                                         comentario = "VALIDADO";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         //comentario = se.getComentarioAdmin();
                                     }
-
 
                                     Log.e("AQUI REN", String.valueOf(se.getId()));
 
@@ -5139,6 +5132,9 @@ public class Servicios_Sincronizado {
                             }
                         }
 
+                        break;
+                    default:
+                        Log.e("CodeSolicitudeAutorizar", "Autorizar: " + response);
                         break;
                 }
             }

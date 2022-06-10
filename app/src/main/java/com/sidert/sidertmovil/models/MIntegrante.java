@@ -50,6 +50,8 @@ public class MIntegrante implements Serializable {
     @Expose
     private String curp;
 
+    private Integer idPrestamoIntegrante;
+
     public Integer getId() {
         return id;
     }
@@ -153,4 +155,13 @@ public class MIntegrante implements Serializable {
     public void setCurp(String curp) {
         this.curp = curp;
     }
+
+    public Integer getIdPrestamoIntegrante() {
+        return idPrestamoIntegrante;
+    }
+
+    public void setIdPrestamoIntegrante(Integer idPrestamoIntegrante) {
+        this.idPrestamoIntegrante = idPrestamoIntegrante;
+    }
 }
+

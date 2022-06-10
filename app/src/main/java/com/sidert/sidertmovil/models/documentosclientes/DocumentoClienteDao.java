@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import com.sidert.sidertmovil.database.DBhelper;
 
@@ -24,35 +25,41 @@ public class DocumentoClienteDao {
 
     public long store(DocumentoCliente documentoCliente)
     {
-        Long id;
+        Long id = 0L;
         String sql;
 
         db.beginTransaction();
 
-        sql = "INSERT INTO " + documentoCliente.TBL + " (" +
-            documentoCliente.COL_GRUPO_ID +"," +
-            documentoCliente.COL_CLIENTE_ID +"," +
-            documentoCliente.COL_CLAVECLIENTE +"," +
-            documentoCliente.COL_PRESTAMO_ID +"," +
-            documentoCliente.COL_NUM_SOLICITUD +"," +
-            documentoCliente.COL_FECHA +"," +
-            documentoCliente.COL_TIPO +"," +
-            documentoCliente.COL_ARCHIVO_BASE64 +
-        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        ;
+        try{
+            sql = "INSERT INTO " + documentoCliente.TBL + " (" +
+                    documentoCliente.COL_GRUPO_ID +"," +
+                    documentoCliente.COL_CLIENTE_ID +"," +
+                    documentoCliente.COL_CLAVECLIENTE +"," +
+                    documentoCliente.COL_PRESTAMO_ID +"," +
+                    documentoCliente.COL_NUM_SOLICITUD +"," +
+                    documentoCliente.COL_FECHA +"," +
+                    documentoCliente.COL_TIPO +"," +
+                    documentoCliente.COL_ARCHIVO_BASE64 +
+                    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            ;
 
-        SQLiteStatement pInsert = db.compileStatement(sql);
+            SQLiteStatement pInsert = db.compileStatement(sql);
 
-        pInsert.bindLong(1, documentoCliente.getGrupoId());
-        pInsert.bindLong(2, documentoCliente.getClienteId());
-        pInsert.bindString(3, documentoCliente.getClavecliente());
-        pInsert.bindLong(4, documentoCliente.getPrestamoId());
-        pInsert.bindLong(5, documentoCliente.getNumSolicitud());
-        pInsert.bindString(6, documentoCliente.getFecha());
-        pInsert.bindString(7, documentoCliente.getTipo());
-        pInsert.bindString(8, documentoCliente.getArchivoBase64());
+            pInsert.bindLong(1, documentoCliente.getGrupoId());
+            pInsert.bindLong(2, documentoCliente.getClienteId());
+            pInsert.bindString(3, documentoCliente.getClavecliente());
+            pInsert.bindLong(4, documentoCliente.getPrestamoId());
+            pInsert.bindLong(5, documentoCliente.getNumSolicitud());
+            pInsert.bindString(6, documentoCliente.getFecha());
+            pInsert.bindString(7, documentoCliente.getTipo());
+            pInsert.bindString(8, documentoCliente.getArchivoBase64());
 
-        id = pInsert.executeInsert();
+            id = pInsert.executeInsert();
+        }
+        catch(Exception ex)
+        {
+            Log.e("AQUI DOCUMENTO STORE", ex.getMessage());
+        }
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -91,7 +98,16 @@ public class DocumentoClienteDao {
     public List<DocumentoCliente> findAllByPrestamoId(Integer prestamoId)
     {
         String sql = "" +
-                "SELECT * " +
+                "SELECT " +
+                DocumentoCliente.COL_ID + ", " +
+                DocumentoCliente.COL_GRUPO_ID + ", " +
+                DocumentoCliente.COL_CLIENTE_ID + ", " +
+                DocumentoCliente.COL_CLAVECLIENTE + ", " +
+                DocumentoCliente.COL_PRESTAMO_ID + ", " +
+                DocumentoCliente.COL_NUM_SOLICITUD + ", " +
+                DocumentoCliente.COL_FECHA + ", " +
+                DocumentoCliente.COL_TIPO + ", " +
+                "'' AS " + DocumentoCliente.COL_ARCHIVO_BASE64 + " " +
                 "FROM " + DocumentoCliente.TBL + " AS dc " +
                 "WHERE dc." + DocumentoCliente.COL_PRESTAMO_ID + " = ? " +
                 " ORDER BY dc." + DocumentoCliente.COL_FECHA
@@ -144,14 +160,20 @@ public class DocumentoClienteDao {
 
     private void Fill(Cursor row, DocumentoCliente documentoCliente)
     {
-        documentoCliente.setId(row.getInt(row.getColumnIndex(documentoCliente.COL_ID)));
-        documentoCliente.setGrupoId(row.getInt(row.getColumnIndex(documentoCliente.COL_GRUPO_ID)));
-        documentoCliente.setClienteId(row.getInt(row.getColumnIndex(documentoCliente.COL_CLIENTE_ID)));
-        documentoCliente.setClavecliente(row.getString(row.getColumnIndex(documentoCliente.COL_CLAVECLIENTE)));
-        documentoCliente.setPrestamoId(row.getInt(row.getColumnIndex(documentoCliente.COL_PRESTAMO_ID)));
-        documentoCliente.setNumSolicitud(row.getInt(row.getColumnIndex(documentoCliente.COL_NUM_SOLICITUD)));
-        documentoCliente.setFecha(row.getString(row.getColumnIndex(documentoCliente.COL_FECHA)));
-        documentoCliente.setTipo(row.getString(row.getColumnIndex(documentoCliente.COL_TIPO)));
-        documentoCliente.setArchivoBase64(row.getString(row.getColumnIndex(documentoCliente.COL_ARCHIVO_BASE64)));
+        try {
+            documentoCliente.setId(row.getInt(row.getColumnIndex(documentoCliente.COL_ID)));
+            documentoCliente.setGrupoId(row.getInt(row.getColumnIndex(documentoCliente.COL_GRUPO_ID)));
+            documentoCliente.setClienteId(row.getInt(row.getColumnIndex(documentoCliente.COL_CLIENTE_ID)));
+            documentoCliente.setClavecliente(row.getString(row.getColumnIndex(documentoCliente.COL_CLAVECLIENTE)));
+            documentoCliente.setPrestamoId(row.getInt(row.getColumnIndex(documentoCliente.COL_PRESTAMO_ID)));
+            documentoCliente.setNumSolicitud(row.getInt(row.getColumnIndex(documentoCliente.COL_NUM_SOLICITUD)));
+            documentoCliente.setFecha(row.getString(row.getColumnIndex(documentoCliente.COL_FECHA)));
+            documentoCliente.setTipo(row.getString(row.getColumnIndex(documentoCliente.COL_TIPO)));
+            documentoCliente.setArchivoBase64(row.getString(row.getColumnIndex(documentoCliente.COL_ARCHIVO_BASE64)));
+        }
+        catch(Exception ex)
+        {
+            Log.e("AQUI DOCUMENTO FILL", ex.getMessage());
+        }
     }
 }

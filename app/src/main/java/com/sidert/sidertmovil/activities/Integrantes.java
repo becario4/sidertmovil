@@ -96,7 +96,7 @@ public class Integrantes extends AppCompatActivity {
                 item.setTipo(row.getString(9));
                 item.setMontoPrestamo(row.getString(10));
                 item.setMontoRequerido(row.getString(11));
-                item.setPrestamoId(row.getInt(1));
+                item.setIdPrestamoIntegrante(row.getInt(15));
                 data.add(item);
                 row.moveToNext();
             }
@@ -104,7 +104,7 @@ public class Integrantes extends AppCompatActivity {
             /**Se pasa el listado de integrantes al adaptador */
             adapter = new adapter_integrantes(ctx, data, item -> {
                 Intent view = new Intent(this, DocumentosIntegranteActivity.class);
-                view.putExtra(ID_PRESTAMO, String.valueOf(item.getPrestamoId()));
+                view.putExtra(ID_PRESTAMO, String.valueOf(item.getIdPrestamoIntegrante()));
                 view.putExtra(ID_INTEGRANTE, String.valueOf(item.getId()));
                 view.putExtra(NOMBRE, item.getNombre());
                 view.putExtra(NUMERO_DE_PRESTAMO, String.valueOf(item.getNumSolicitud()));

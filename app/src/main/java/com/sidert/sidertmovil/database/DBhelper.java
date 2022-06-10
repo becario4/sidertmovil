@@ -1714,6 +1714,7 @@ public class DBhelper extends SQLiteOpenHelper {
     }
 
     public void saveTrackerAsesor(SQLiteDatabase db, HashMap<Integer, String> params) {
+        Log.e("AQUI", "GUARDANDO TRACKER");
         String tbl = TBL_TRACKER_ASESOR_T;
         db.beginTransaction();
         String sql = "INSERT INTO " + tbl + "(" +

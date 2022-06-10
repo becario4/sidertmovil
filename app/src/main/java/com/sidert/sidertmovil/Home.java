@@ -2,6 +2,7 @@ package com.sidert.sidertmovil;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -79,6 +80,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -227,14 +229,13 @@ public class Home extends AppCompatActivity {
             /**Evento de click para cerrar sesion*/
             ivLogout.setOnClickListener(ivLogout_OnClick);
         }
-        else{/** esto era cuando se lanzo por primera vez sidert movil y solo tenia Denuncia PLD pero
-                ya no se ocupa esta vista*/
+        else {/** esto era cuando se lanzo por primera vez sidert movil y solo tenia Denuncia PLD pero
+         ya no se ocupa esta vista*/
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             TBmain.setVisibility(View.GONE);
             mTabLayout.setVisibility(View.GONE);
             setFragment(NameFragments.COMPLAINT_TEMP, null);
         }
-
     }
 
     /**Listener el menu lateral... Si se agrega otro menu tendrá que colocarse aqui

@@ -461,7 +461,7 @@
             android:id="@+id/etReferenciaNeg"
             android:inputType="textMultiLine|textCapCharacters"
             android:ems="10"
-            android:maxLength="100"
+            android:maxLength="80"
             android:ellipsize="end"
             android:gravity="start"
             android:textColor="@drawable/edit_text_selector"

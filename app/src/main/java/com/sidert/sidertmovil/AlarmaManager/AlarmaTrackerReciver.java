@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 //import android.support.v4.app.ActivityCompat;
@@ -68,10 +69,10 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context ctx, Intent intent) {
         Bundle data = intent.getExtras();
-
         final Handler handler = new Handler();
 
         if (data != null) {
+
             final DBhelper dBhelper = new DBhelper(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
             final SessionManager session = new SessionManager(ctx);
@@ -221,7 +222,6 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                 }
                 else {
                     if (session.getUser().get(0) != null && session.getUser().get(6).equals("true")) {
-
                         HashMap<Integer, String> params_sincro = new HashMap<>();
                         params_sincro.put(0, session.getUser().get(0));
                         params_sincro.put(1, Miscellaneous.ObtenerFecha("timestamp"));
@@ -229,38 +229,35 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                         dBhelper.saveSincronizado(db, SINCRONIZADO_T, params_sincro);
 
                         locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+
                         final Handler myHandler = new Handler();
-                        locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
-                            @Override
-                            public void onComplete(String latitud, String longitud) {
-                                HashMap<Integer, String> params = new HashMap<>();
-                                params.put(0, session.getUser().get(0));
-                                params.put(1, session.getUser().get(9));
-                                params.put(2, session.getUser().get(1) + " " + session.getUser().get(2) + " " + session.getUser().get(3));
-                                params.put(3, latitud);
-                                params.put(4, longitud);
-                                params.put(5, String.valueOf(battery));
-                                params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                params.put(7, "");
-                                params.put(8, "0");
 
-                                dBhelper.saveTrackerAsesor(db, params);
+                        locationListener = new MyCurrentListener((latitud, longitud) -> {
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, session.getUser().get(0));
+                            params.put(1, session.getUser().get(9));
+                            params.put(2, session.getUser().get(1) + " " + session.getUser().get(2) + " " + session.getUser().get(3));
+                            params.put(3, latitud);
+                            params.put(4, longitud);
+                            params.put(5, String.valueOf(battery));
+                            params.put(6, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                            params.put(7, "");
+                            params.put(8, "0");
 
+                            dBhelper.saveTrackerAsesor(db, params);
 
-                                myHandler.removeCallbacksAndMessages(null);
+                            myHandler.removeCallbacksAndMessages(null);
 
-                            }
                         });
+
                         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         }
 
-                        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
 
-                        myHandler.postDelayed(new Runnable() {
-                            public void run() {
-                                locationManager.removeUpdates(locationListener);
-                            }
-                        }, 60000);
+                        //locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600000, 0,locationListener);//60000 = cada 10 minutos
+
+                        myHandler.postDelayed(() -> locationManager.removeUpdates(locationListener), 60000);
 
                         if (NetworkStatus.haveNetworkConnection(ctx)) {
                             Servicios_Sincronizado ss = new Servicios_Sincronizado();
@@ -284,28 +281,52 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                 switch (servicioSincronizado.getNombre())
                                 {
                                     case "GESTION DE CARTERA":
-                                    {
-                                        ss.SaveRespuestaGestion(ctx, false);
-                                        ejecutado = 1;
-                                        break;
-                                    }
                                     case "IMPRESIONES DE GESTION DE CARTERA":
                                     {
+                                        ss.SaveRespuestaGestion(ctx, false);
                                         ss.SendImpresionesVi(ctx, false);
                                         ss.SendReimpresionesVi(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+                                        servicioSincronizado = servicioSincronizadoDao.findNextToSynchronize();
+                                        if(
+                                            servicioSincronizado != null
+                                            && (
+                                                servicioSincronizado.getNombre().equals("GESTION DE CARTERA")
+                                                || servicioSincronizado.getNombre().equals("IMPRESIONES DE GESTION DE CARTERA")
+                                            )
+                                        )
+                                        {
+                                            servicioSincronizado.setEjecutado(ejecutado);
+                                            servicioSincronizadoDao.update(servicioSincronizado);
+                                        }
+
                                         break;
                                     }
                                     case "APOYO GASTOS FUNERARIOS":
-                                    {
-                                        ss.SendRecibos(ctx, false);
-                                        ejecutado = 1;
-                                        break;
-                                    }
                                     case "CIRCULO DE CREDITO":
                                     {
+                                        ss.SendRecibos(ctx, false);
                                         ss.SendConsultaCC(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+                                        servicioSincronizado = servicioSincronizadoDao.findNextToSynchronize();
+                                        if(
+                                            servicioSincronizado != null
+                                            && (
+                                                servicioSincronizado.getNombre().equals("APOYO GASTOS FUNERARIOS")
+                                                || servicioSincronizado.getNombre().equals("CIRCULO DE CREDITO")
+                                            )
+                                        )
+                                        {
+                                            servicioSincronizado.setEjecutado(ejecutado);
+                                            servicioSincronizadoDao.update(servicioSincronizado);
+                                        }
+
                                         break;
                                     }
                                     case "ORIGINACION":
@@ -313,6 +334,10 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                         ss.SendOriginacionInd (ctx, false);
                                         ss.SendOriginacionGpo(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+
                                         break;
                                     }
                                     case "RENOVACION":
@@ -320,38 +345,60 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                         ss.SendRenovacionInd(ctx, false);
                                         ss.SendRenovacionGpo(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+
                                         break;
                                     }
                                     case "VERIFICACION DOMICILIARIA":
                                     {
                                         ss.SendGestionesVerDom(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+
                                         break;
                                     }
                                     case "CIERRE DE DIA":
                                     {
                                         ss.SaveCierreDia(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+
                                         break;
                                     }
                                     case "GEOLOCALIZACION":
-                                    {
-                                        ss.SaveGeolocalizacion(ctx, false);
-                                        ejecutado = 1;
-                                        break;
-                                    }
                                     case "RESULTADO SOLICITUD":
                                     {
+                                        ss.SaveGeolocalizacion(ctx, false);
                                         ss.MontoAutorizado(ctx, false);
                                         ss.GetSolicitudesRechazadasInd(ctx, false);
                                         ss.GetSolicitudesRechazadasGpo(ctx, false);
                                         ejecutado = 1;
+
+                                        servicioSincronizado.setEjecutado(ejecutado);
+                                        servicioSincronizadoDao.update(servicioSincronizado);
+                                        servicioSincronizado = servicioSincronizadoDao.findNextToSynchronize();
+                                        if(
+                                            servicioSincronizado != null
+                                            && (
+                                                servicioSincronizado.getNombre().equals("GEOLOCALIZACION")
+                                                || servicioSincronizado.getNombre().equals("RESULTADO SOLICITUD")
+                                            )
+                                        )
+                                        {
+                                            servicioSincronizado.setEjecutado(ejecutado);
+                                            servicioSincronizadoDao.update(servicioSincronizado);
+                                        }
+
                                         break;
                                     }
                                 }
 
-                                servicioSincronizado.setEjecutado(ejecutado);
-                                servicioSincronizadoDao.update(servicioSincronizado);
                             }
 
                             //ss.GetUltimosRecibos(ctx);

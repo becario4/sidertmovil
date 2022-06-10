@@ -1,6 +1,8 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.MisCierresDeDia;
@@ -57,10 +60,13 @@ import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CANCEL_TRACKER_ID;
 import static com.sidert.sidertmovil.utils.Constants.ID_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_GPO_T;
