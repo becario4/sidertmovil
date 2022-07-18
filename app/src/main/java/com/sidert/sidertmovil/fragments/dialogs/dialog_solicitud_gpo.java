@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.SolicitudGpo;
+import com.sidert.sidertmovil.views.solicitudesautorizadas.SolicitudGpo;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.SessionManager;
 

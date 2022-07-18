@@ -63,14 +63,13 @@ import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
-import com.sidert.sidertmovil.fragments.dialogs.dialog_originacion_gpo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_plazo_ind;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.DireccionRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DireccionRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DireccionRenDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
@@ -8624,9 +8623,9 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
                     /**Funcion para enviar la solicitud a guardar al servidor*/
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SendRenovacionInd(ctx, false);
                     loading.dismiss();
+                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                    ss.SendRenovacionInd(ctx, true);
                     Toast.makeText(ctx, "Termina guardado de solicitud", Toast.LENGTH_SHORT).show();
 
                     finish();

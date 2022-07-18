@@ -855,6 +855,48 @@ public class recuperacion_gpo_fragment extends Fragment {
                     }
                 }
             }
+            else
+            {
+                row.close();
+
+                row = dBhelper.getRecords(TBL_MIEMBROS_GPO_T, " WHERE id_prestamo = ?", "", new String[]{parent.id_prestamo});
+
+                if (row.getCount() > 0){
+                    row.moveToFirst();
+                    for (int i = 0; i < row.getCount(); i++){
+                        String sqlIntegrante = "" +
+                            "SELECT " +
+                            "m.* " +
+                            "FROM " + TBL_MIEMBROS_PAGOS_T + " AS m " +
+                            "WHERE m.id_prestamo = ? " +
+                            "AND m.id_integrante = ? "
+                        ;
+
+                        Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(parent.id_prestamo), row.getString(2)});
+
+                        if(rowIntegrante.getCount() == 0)
+                        {
+                            HashMap<Integer, String> params = new HashMap<>();
+                            params.put(0, row.getString(2));
+                            params.put(1, row.getString(1));
+                            params.put(2, parent.id_respuesta);
+                            params.put(3, row.getString(5));
+                            params.put(4, row.getString(11));
+                            params.put(5, "0");
+                            params.put(6, "0");
+                            params.put(7, "0");
+                            params.put(8, "0");
+
+                            dBhelper.saveMiembrosPagos(db, params);
+                        }
+
+                        rowIntegrante.close();
+
+                        row.moveToNext();
+                    }
+                }
+            }
+
             row.close();
 
             Intent i_integrantes = new Intent(ctx, IntegrantesGpo.class);

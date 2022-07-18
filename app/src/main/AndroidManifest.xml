@@ -34,16 +34,16 @@
             android:name=".activities.FormularioCC"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudIntegrante"
+            android:name=".views.originacion.SolicitudIntegrante"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudGpo"
+            android:name=".views.solicitudesautorizadas.SolicitudGpo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudInd"
+            android:name=".views.solicitudesautorizadas.SolicitudInd"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.Solicitudes"
+            android:name=".views.solicitudesautorizadas.Solicitudes"
             android:screenOrientation="portrait" />
         <activity
             android:name=".views.apoyogastosfunerarios.ResumenActivity"
@@ -133,7 +133,7 @@
             android:name=".activities.Catalogos"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.AgregarIntegrante"
+            android:name=".views.originacion.AgregarIntegrante"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ResumenGeo"
@@ -142,10 +142,10 @@
             android:name=".activities.Configuracion"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudCreditoGpo"
+            android:name=".views.originacion.SolicitudCreditoGpo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudCreditoInd"
+            android:name=".views.originacion.SolicitudCreditoInd"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.VerImagen"
@@ -157,7 +157,7 @@
             android:name=".activities.GeolocalizacionInd"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.SolicitudCredito"
+            android:name=".views.originacion.SolicitudCredito"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ResumenIntegrantes"

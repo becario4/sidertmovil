@@ -936,6 +936,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES); }
         catch (Exception e) { Log.e("CREATE_TBL_DOCUMENTOS_CLIENTES", "ya existe la tabla DOCUMENTOS_CLIENTES"); }
+
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {

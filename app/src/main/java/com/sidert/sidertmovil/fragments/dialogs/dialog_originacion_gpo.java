@@ -19,12 +19,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.SolicitudCreditoGpo;
+import com.sidert.sidertmovil.views.originacion.SolicitudCreditoGpo;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.models.solicitudes.Solicitud;
-import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpoDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;

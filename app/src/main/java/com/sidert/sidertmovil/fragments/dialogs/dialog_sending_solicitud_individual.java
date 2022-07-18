@@ -1,0 +1,678 @@
+package com.sidert.sidertmovil.fragments.dialogs;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.models.ApiResponse;
+import com.sidert.sidertmovil.models.MResSaveSolicitud;
+import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Conyugue;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ConyugueDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.CreditoInd;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.CreditoIndDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Croquis;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.CroquisDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Direccion;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.DireccionDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Documento;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.DocumentoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Economico;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.EconomicoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Negocio;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.NegocioDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.PoliticaPld;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.PoliticaPldDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Referencia;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ReferenciaDao;
+import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
+import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.RetrofitClient;
+import com.sidert.sidertmovil.utils.SessionManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.sidert.sidertmovil.utils.Constants.*;
+import static com.sidert.sidertmovil.utils.Constants.K_ACTIVOS_OBSERVABLES;
+import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LOCATED_AT;
+import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_CARACTERISTICAS_DOMICILIO;
+import static com.sidert.sidertmovil.utils.Constants.K_HORA_LOCALIZACION;
+import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_NEGOCIO;
+import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_TITULAR;
+import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO_TITULAR;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_AVAL;
+import static com.sidert.sidertmovil.utils.Constants.K_TIENE_NEGOCIO;
+
+public class dialog_sending_solicitud_individual extends DialogFragment {
+    private Context ctx;
+
+    ImageView ivClose;
+    ProgressBar pbSending;
+    TextView tvCliente;
+    TextView tvError;
+    TextView tvTitle;
+    SessionManager session;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.popup_sending_solicitud_individual, container, false);
+
+        ctx     = getContext();
+        session = new SessionManager(ctx);
+
+        ivClose   = v.findViewById(R.id.ivClose);
+        pbSending = v.findViewById(R.id.pbSending);
+        tvCliente = v.findViewById(R.id.tvCliente);
+        tvError   = v.findViewById(R.id.tvError);
+        tvTitle   = v.findViewById(R.id.tvTitle);
+
+        Long idSolicitud = getArguments().getLong(ID_SOLICITUD);
+        boolean esRenovacion = getArguments().getBoolean(ES_RENOVACION);
+
+        if(esRenovacion)
+        {
+            SendRenovacion(idSolicitud);
+        }
+        else
+        {
+            SendOriginacion(idSolicitud);
+        }
+
+        return v;
+    }
+
+    private void SendRenovacion(long idSolicitud)
+    {
+
+    }
+
+    private void SendOriginacion(long idSolicitud)
+    {
+
+        SolicitudDao solicitudDao = new SolicitudDao(ctx);
+        Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(idSolicitud)));
+
+        if (solicitud != null) {
+            tvCliente.setText(solicitud.getNombre());
+
+            try {
+                CreditoIndDao creditoIndDao = new CreditoIndDao(ctx);
+                CreditoInd creditoInd = creditoIndDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                ClienteDao clienteDao = new ClienteDao(ctx);
+                Cliente cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                ConyugueDao conyugueDao = new ConyugueDao(ctx);
+                Conyugue conyugue = conyugueDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                AvalDao avalDao = new AvalDao(ctx);
+                Aval aval = avalDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                DocumentoDao documentoDao = new DocumentoDao(ctx);
+                Documento documento = documentoDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                EconomicoDao economicoDao = new EconomicoDao(ctx);
+                Economico economico = economicoDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                NegocioDao negocioDao = new NegocioDao(ctx);
+                Negocio negocio = negocioDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                PoliticaPldDao politicaPldDao = new PoliticaPldDao(ctx);
+                PoliticaPld politicaPld = politicaPldDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                ReferenciaDao referenciaDao = new ReferenciaDao(ctx);
+                Referencia referencia = referenciaDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                CroquisDao croquisDao = new CroquisDao(ctx);
+                Croquis croquis = croquisDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                JSONObject json_solicitud = new JSONObject();
+
+                fillSolicitudJson(json_solicitud, solicitud);
+                fillCreditoJson(json_solicitud, creditoInd);
+                fillClienteJson(json_solicitud, cliente);
+                if((cliente.getEstadoCivil().equals("CASADO(A)") || cliente.getEstadoCivil().equals("UNIÓN LIBRE")) && conyugue != null)
+                    fillConyugueJson(json_solicitud, conyugue);
+                if(Integer.parseInt(creditoInd.getMontoPrestamo().replace(",","")) >= 30000)
+                    fillEconomicoJson(json_solicitud, economico);
+                fillNegocioJson(json_solicitud, negocio);
+                fillAvalJson(json_solicitud, aval);
+                fillReferenciaJson(json_solicitud, referencia);
+                fillCroquisJson(json_solicitud, croquis);
+                fillDocumentoJson(json_solicitud, documento);
+                fillPoliticaPldJson(json_solicitud, politicaPld);
+
+                MultipartBody.Part fachada_cliente      = cliente.getFachadaMBPart();
+                MultipartBody.Part firma_cliente        = cliente.getFirmaMBPart();
+                MultipartBody.Part fachada_negocio      = negocio.getFachadaMBPart();
+                MultipartBody.Part fachada_aval         = aval.getFachadaMBPart();
+                MultipartBody.Part firma_aval           = aval.getFirmaMBPart();
+                MultipartBody.Part foto_ine_frontal     = documento.getFotoIneFrontalMBPart();
+                MultipartBody.Part foto_ine_reverso     = documento.getFotoIneReversoMBPart();
+                MultipartBody.Part ine_selfie           = documento.getIneSelfieMBPart();
+                MultipartBody.Part foto_curp            = documento.getCurpMBPart();
+                MultipartBody.Part comprobante          = documento.getComprobanteMBPart();
+                MultipartBody.Part firma_asesor         = documento.getFirmaAsesorMBPart();
+                MultipartBody.Part comprobante_garantia = documento.getComprobanteGarantiaMBPart();
+                MultipartBody.Part ine_frontal_aval     = documento.getIneFrontalAvalMBPart();
+                MultipartBody.Part ine_reverso_aval     = documento.getIneReversoAvalMBPart();
+                MultipartBody.Part curp_aval            = documento.getCurpAvalMBPart();
+                MultipartBody.Part comprobante_aval     = documento.getComprobanteDomicilioAvalMBPart();
+
+                RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
+                RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitud.getIdOriginacion()));
+
+
+                SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+                Call<MResSaveSolicitud> call = solicitudIndService.saveOriginacion("Bearer " + session.getUser().get(7),
+                    solicitudBody,
+                    fachada_cliente,
+                    firma_cliente,
+                    fachada_negocio,
+                    fachada_aval,
+                    firma_aval,
+                    foto_ine_frontal,
+                    foto_ine_reverso,
+                    foto_curp,
+                    comprobante,
+                    firma_asesor,
+                    solicitudIdBody,
+                    ine_selfie,
+                    comprobante_garantia,
+                    ine_frontal_aval,
+                    ine_reverso_aval,
+                    curp_aval,
+                    comprobante_aval
+                );
+
+                call.enqueue(new Callback<MResSaveSolicitud>() {
+                    @Override
+                    public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
+                        switch (response.code()) {
+                            case 200:
+                                MResSaveSolicitud res = response.body();
+                                solicitud.setEstatus(2);
+                                solicitud.setIdOriginacion(res.getIdSolicitud());
+                                solicitudDao.solicitudEnviada(solicitud);
+                                Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                                break;
+                            default:
+                                try {
+                                    showError(response.errorBody().string());
+                                } catch (IOException e) {
+                                    showError(e.getMessage());
+                                }
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MResSaveSolicitud> call, Throwable t){
+                        showError(t.getMessage());
+                    }
+
+                });
+
+                /*
+                SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+                Call<ApiResponse> call = solicitudIndService.jsonOriginacionInd("Bearer " + session.getUser().get(7), new Gson().toJson(json_solicitud));
+
+                call.enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        ApiResponse apiResponse;
+
+                        switch (response.code()) {
+                            case 200:
+                                apiResponse = response.body();
+                            //    loadingSendData.dismiss();
+
+                                if (apiResponse.getError() != null) {
+                                    Toast.makeText(ctx, "¡Solicitud compartida!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(ctx, apiResponse.getMensaje(), Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            default:
+                          //      loadingSendData.dismiss();
+                                Toast.makeText(ctx, response.message(), Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        //loadingSendData.dismiss();
+                        Log.e("AQUI ERROR", t.getMessage());
+                        Toast.makeText(ctx, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                */
+            }
+            catch (Exception e) {
+                showError(e.getMessage());
+            }
+        }
+    }
+
+    private void showError(String message)
+    {
+        Log.e("AQUI", message);
+
+        int limit = message.length();
+
+        if(limit > 1000) limit = 1000;
+
+        tvError.setText(message.substring(0, limit));
+        tvError.setVisibility(View.VISIBLE);
+        ivClose.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ivClose.setOnClickListener(ivClose_OnClick);
+    }
+
+    private View.OnClickListener ivClose_OnClick = view -> {
+        dismiss();
+    };
+
+    private void fillSolicitudJson(JSONObject json_solicitud, Solicitud solicitud) throws JSONException {
+        json_solicitud.put(K_FECHA_INICIO, solicitud.getFechaInicio());
+        json_solicitud.put(K_FECHA_TERMINO, solicitud.getFechaTermino());
+        json_solicitud.put(K_FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+    }
+
+    private void fillCreditoJson(JSONObject json_solicitud, CreditoInd creditoInd) throws JSONException {
+        json_solicitud.put(K_PLAZO, creditoInd.getPlazoAsInt());
+        json_solicitud.put(K_PERIODICIDAD, creditoInd.getPeriodicidadAsInt());
+        json_solicitud.put(K_FECHA_DESEMBOLSO, creditoInd.getFechaDesembolso());
+        json_solicitud.put(K_HORA_VISITA, creditoInd.getHoraVisita());
+        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(creditoInd.getMontoPrestamo().replace(",","")));
+        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(creditoInd.getMontoPrestamo().replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+        json_solicitud.put(K_DESTINO_PRESTAMO, creditoInd.getDestino());
+        json_solicitud.put(K_CLASIFICACION_RIESGO, creditoInd.getClasificacionRiesgo());
+        json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
+        if(creditoInd.getMontoRefinanciar() != null && !creditoInd.getMontoRefinanciar().isEmpty())
+            Integer.parseInt(creditoInd.getMontoRefinanciar().replace(",",""));
+        else
+            json_solicitud.put(K_MONTO_REFINANCIAR, 0);
+    }
+
+    private void fillClienteJson(JSONObject json_solicitud, Cliente cliente) throws JSONException
+    {
+        DireccionDao direccionDao = new DireccionDao(ctx);
+        Direccion direccionCliente = direccionDao.findByIdDireccion(Long.parseLong(cliente.getDireccionId()));
+
+        JSONObject json_solicitante = new JSONObject();
+
+        json_solicitante.put(K_NOMBRE, cliente.getNombre());
+        json_solicitante.put(K_PATERNO, cliente.getPaterno());
+        json_solicitante.put(K_MATERNO, cliente.getMaterno());
+        json_solicitante.put(K_FECHA_NACIMIENTO, cliente.getFechaNacimiento());
+        json_solicitante.put(K_EDAD, cliente.getEdad());
+        json_solicitante.put(K_GENERO, cliente.getGenero());
+        json_solicitante.put(K_ESTADO_NACIMIENTO, cliente.getEstadoNacimiento());
+        json_solicitante.put(K_RFC, cliente.getRfc());
+        json_solicitante.put(K_CURP, cliente.getCurp() + cliente.getCurpDigitoVeri());
+        json_solicitante.put(K_OCUPACION, cliente.getOcupacion());
+        json_solicitante.put(K_ACTIVIDAD_ECONOMICA, cliente.getActividadEconomica());
+        json_solicitante.put(K_IDENTIFICACION_TIPO, cliente.getTipoIdentificacion());
+        json_solicitante.put(K_NO_IDENTIFICACION, cliente.getNoIdentificacion());
+        json_solicitante.put(K_NIVEL_ESTUDIO, cliente.getNivelEstudio());
+
+        json_solicitante.put(K_ESTADO_CIVIL, cliente.getEstadoCivil());
+
+        if(cliente.getEstadoCivil().equals("CASADO(A)")) json_solicitante.put(K_BIENES, (cliente.getBienes() == 1)?"MANCOMUNADOS":"SEPARADOS");
+
+        json_solicitante.put(K_TIPO_VIVIENDA, cliente.getTipoVivienda());
+
+        if(cliente.getTipoVivienda().equals("CASA FAMILIAR")) json_solicitante.put(K_PARENTESCO, cliente.getParentesco());
+        else if (cliente.getTipoVivienda().equals("OTRO")) json_solicitante.put(K_OTRO_TIPO_VIVIENDA, cliente.getOtroTipoVivienda());
+
+        json_solicitante.put(K_LATITUD, direccionCliente.getLatitud());
+        json_solicitante.put(K_LONGITUD, direccionCliente.getLongitud());
+        json_solicitante.put(K_CALLE, direccionCliente.getCalle());
+        json_solicitante.put(K_NO_EXTERIOR, direccionCliente.getNumExterior());
+        json_solicitante.put(K_NO_INTERIOR, direccionCliente.getNumInterior());
+        json_solicitante.put(K_NO_LOTE, direccionCliente.getLote());
+        json_solicitante.put(K_NO_MANZANA, direccionCliente.getManzana());
+        json_solicitante.put(K_CODIGO_POSTAL, direccionCliente.getCp());
+        json_solicitante.put(K_COLONIA, direccionCliente.getColonia());
+        json_solicitante.put(K_CIUDAD, direccionCliente.getCiudad());
+        json_solicitante.put(K_LOCALIDAD, direccionCliente.getLocalidad());
+        json_solicitante.put(K_MUNICIPIO, direccionCliente.getMunicipio());
+        json_solicitante.put(K_ESTADO, direccionCliente.getEstado());
+        json_solicitante.put(K_LOCATED_AT, direccionCliente.getLocatedAt());
+
+        json_solicitante.put(K_TEL_CASA, cliente.getTelCasa());
+        json_solicitante.put(K_TEL_CELULAR, cliente.getTelCelular());
+        json_solicitante.put(K_TEL_MENSAJE, cliente.getTelMensajes());
+        json_solicitante.put(K_TEL_TRABAJO, cliente.getTelTrabajo());
+        json_solicitante.put(K_TIEMPO_VIVIR_SITIO, cliente.getTiempoVivirSitio());
+        json_solicitante.put(K_DEPENDIENTES_ECONOMICO, cliente.getDependientes());
+        json_solicitante.put(K_MEDIO_CONTACTO, cliente.getMedioContacto());
+        json_solicitante.put(K_ESTADO_CUENTA, cliente.getEstadoCuenta());
+        json_solicitante.put(K_EMAIL, cliente.getEmail());
+        json_solicitante.put(K_FOTO_FACHADA, cliente.getFotoFachada());
+        json_solicitante.put(K_REFERENCIA_DOMICILIARIA, cliente.getRefDomiciliaria());
+        json_solicitante.put(K_FIRMA, cliente.getFirma());
+        json_solicitante.put(K_SOL_LATITUD, cliente.getLatitud());
+        json_solicitante.put(K_SOL_LONGITUD, cliente.getLongitud());
+        json_solicitante.put(K_SOL_LOCATED_AT, cliente.getLocatedAt());
+        json_solicitante.put(K_TIENE_FIRMA, "SI");
+        json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
+        json_solicitud.put(K_SOLICITANTE, json_solicitante);
+    }
+
+    private void fillConyugueJson(JSONObject json_solicitud, Conyugue conyugue) throws JSONException
+    {
+        JSONObject json_conyuge = new JSONObject();
+
+        DireccionDao direccionConyugueDao = new DireccionDao(ctx);
+        Direccion direccionConyugue = direccionConyugueDao.findByIdDireccion(Long.parseLong(conyugue.getDireccionId()));
+
+        json_conyuge.put(K_NOMBRE, conyugue.getNombre());
+        json_conyuge.put(K_PATERNO, conyugue.getPaterno());
+        json_conyuge.put(K_MATERNO, conyugue.getMaterno());
+        json_conyuge.put(K_NACIONALIDAD, conyugue.getNacionalidad());
+        json_conyuge.put(K_OCUPACION, conyugue.getOcupacion());
+
+        json_conyuge.put(K_CALLE, direccionConyugue.getCalle());
+        json_conyuge.put(K_NO_EXTERIOR, direccionConyugue.getNumExterior());
+        json_conyuge.put(K_NO_INTERIOR, direccionConyugue.getNumInterior());
+        json_conyuge.put(K_NO_LOTE, direccionConyugue.getLote());
+        json_conyuge.put(K_NO_MANZANA, direccionConyugue.getManzana());
+        json_conyuge.put(K_CODIGO_POSTAL, direccionConyugue.getCp());
+        json_conyuge.put(K_COLONIA, direccionConyugue.getColonia());
+        json_conyuge.put(K_CIUDAD, direccionConyugue.getCiudad());
+        json_conyuge.put(K_LOCALIDAD, direccionConyugue.getLocalidad());
+        json_conyuge.put(K_MUNICIPIO, direccionConyugue.getMunicipio());
+        json_conyuge.put(K_ESTADO, direccionConyugue.getEstado());
+
+        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(conyugue.getIngMensual().replace(",","")));
+        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(conyugue.getGastoMensual().replace(",","")));
+        json_conyuge.put(K_TEL_CASA, conyugue.getTelCasa());
+        json_conyuge.put(K_TEL_CELULAR, conyugue.getTelCelular());
+
+        json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
+    }
+
+    private void fillEconomicoJson(JSONObject json_solicitud, Economico economico) throws JSONException
+    {
+        JSONObject json_economicos = new JSONObject();
+
+        json_economicos.put(K_PROPIEDADES,economico.getPropiedades());
+        json_economicos.put(K_VALOR_APROXIMADO, economico.getValorAproximado());
+        json_economicos.put(K_UBICACION, economico.getUbicacion());
+        json_economicos.put(K_INGRESO, economico.getIngreso().replace(",",""));
+
+        json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
+    }
+
+    private void fillNegocioJson(JSONObject json_solicitud, Negocio negocio) throws JSONException
+    {
+        MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
+        DireccionDao direccionNegocioDao = new DireccionDao(ctx);
+        Direccion direccionNegocio = direccionNegocioDao.findByIdDireccion(Long.parseLong(negocio.getDireccionId()));
+
+        JSONObject json_negocio = new JSONObject();
+
+        json_negocio.put(K_NOMBRE, negocio.getNombre());
+        json_negocio.put(K_LATITUD, direccionNegocio.getLatitud());
+        json_negocio.put(K_LONGITUD, direccionNegocio.getLatitud());
+        json_negocio.put(K_CALLE, direccionNegocio.getCalle());
+        json_negocio.put(K_NO_EXTERIOR, direccionNegocio.getNumExterior());
+        json_negocio.put(K_NO_INTERIOR, direccionNegocio.getNumInterior());
+        json_negocio.put(K_NO_LOTE, direccionNegocio.getLote());
+        json_negocio.put(K_NO_MANZANA, direccionNegocio.getManzana());
+        json_negocio.put(K_CODIGO_POSTAL, direccionNegocio.getCp());
+        json_negocio.put(K_COLONIA, direccionNegocio.getColonia());
+        json_negocio.put(K_CIUDAD, direccionNegocio.getCiudad());
+        json_negocio.put(K_LOCALIDAD, direccionNegocio.getLocalidad());
+        json_negocio.put(K_MUNICIPIO, direccionNegocio.getMunicipio());
+        json_negocio.put(K_ESTADO, direccionNegocio.getEstado());
+        json_negocio.put(K_LOCATED_AT, direccionNegocio.getLocatedAt());
+        json_negocio.put(K_OCUPACION, negocio.getOcupacion());
+        json_negocio.put(K_ACTIVIDAD_ECONOMICA, negocio.getActividadEconomica());
+        json_negocio.put(K_DESTINO_CREDITO, negocio.getDestinoCredito());
+        if (negocio.getDestinoCredito().contains("OTRO"))
+            json_negocio.put(K_OTRO_DESTINO_CREDITO, negocio.getOtroDestino());
+        json_negocio.put(K_ANTIGUEDAD, negocio.getAntiguedad());
+        json_negocio.put(K_INGRESO_MENSUAL, negocio.getIngMensual().replace(",",""));
+        json_negocio.put(K_INGRESOS_OTROS, negocio.getIngOtros().replace(",",""));
+        json_negocio.put(K_GASTO_MENSUAL, negocio.getGastoSemanal().replace(",",""));
+        json_negocio.put(K_GASTO_AGUA, negocio.getGastoAgua().replace(",",""));
+        json_negocio.put(K_GASTO_LUZ, negocio.getGastoLuz().replace(",",""));
+        json_negocio.put(K_GASTO_TELEFONO, negocio.getGastoTelefono().replace(",",""));
+        json_negocio.put(K_GASTO_RENTA, negocio.getGastoRenta().replace(",",""));
+        json_negocio.put(K_GASTO_OTROS, negocio.getGastoOtros().replace(",",""));
+        json_negocio.put(K_CAPACIDAD_PAGO, negocio.getMontoMaximo());
+        if (negocio.getMedioPago().contains("OTRO"))
+            json_negocio.put(K_OTRO_MEDIOS_PAGOS, negocio.getOtroMedioPago());
+        json_negocio.put(K_MEDIOS_PAGOS, medioPagoDao.findIdsByNombres(negocio.getMedioPago()));
+        json_negocio.put(K_MONTO_MAXIMO, negocio.getCapacidadPago());
+        json_negocio.put(K_NUM_OPERACIONES_MENSUAL, negocio.getNumOperacionMensuales());
+        if (negocio.getMedioPago().contains("EFECTIVO"))
+            json_negocio.put(K_NUM_OPERACIONES_MENSUAL_EFECTIVO, negocio.getNumOperacionEfectivo());
+        json_negocio.put(K_DIAS_VENTA, negocio.getDiasVenta());
+        json_negocio.put(K_FOTO_FACHADA, negocio.getFotoFachada());
+        json_negocio.put(K_REFERENCIA_NEGOCIO, negocio.getRefDomiciliaria());
+
+        json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
+    }
+
+    private void fillAvalJson(JSONObject json_solicitud, Aval aval) throws JSONException
+    {
+        JSONObject json_aval = new JSONObject();
+
+        MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
+        DireccionDao direccionDao = new DireccionDao(ctx);
+        Direccion direccionAval = direccionDao.findByIdDireccion(Long.parseLong(aval.getDireccionId()));
+
+        json_aval.put(K_NOMBRE, aval.getNombre());
+        json_aval.put(K_PATERNO, aval.getPaterno());
+        json_aval.put(K_MATERNO, aval.getPaterno());
+        json_aval.put(K_FECHA_NACIMIENTO, aval.getFechaNacimiento());
+        json_aval.put(K_EDAD, aval.getEdad());
+        json_aval.put(K_GENERO, aval.getGenero());
+        json_aval.put(K_ESTADO_NACIMIENTO, aval.getEstadoNacimiento());
+        json_aval.put(K_RFC, aval.getRfc());
+        json_aval.put(K_CURP, aval.getCurp() + aval.getCurpDigito());
+        json_aval.put(K_PARENTESCO_SOLICITANTE, aval.getParentescoCliente());
+        json_aval.put(K_IDENTIFICACION_TIPO, aval.getTipoIdentificacion());
+        json_aval.put(K_NO_IDENTIFICACION, aval.getNoIdentificacion());
+        json_aval.put(K_OCUPACION, aval.getOcupacion());
+        json_aval.put(K_ACTIVIDAD_ECONOMICA, aval.getActividadEconomica());
+
+        json_aval.put(K_LATITUD, direccionAval.getLatitud());
+        json_aval.put(K_LONGITUD, direccionAval.getLongitud());
+        json_aval.put(K_CALLE, direccionAval.getCalle());
+        json_aval.put(K_NO_EXTERIOR, direccionAval.getNumExterior());
+        json_aval.put(K_NO_INTERIOR, direccionAval.getNumInterior());
+        json_aval.put(K_NO_LOTE, direccionAval.getLote());
+        json_aval.put(K_NO_MANZANA, direccionAval.getManzana());
+        json_aval.put(K_CODIGO_POSTAL, direccionAval.getCp());
+        json_aval.put(K_COLONIA, direccionAval.getColonia());
+        json_aval.put(K_CIUDAD, direccionAval.getCiudad());
+        json_aval.put(K_LOCALIDAD, direccionAval.getLocalidad());
+        json_aval.put(K_MUNICIPIO, direccionAval.getMunicipio());
+        json_aval.put(K_ESTADO, direccionAval.getEstado());
+        json_aval.put(K_LOCATED_AT, direccionAval.getLocatedAt());
+
+        json_aval.put(K_TIPO_VIVIENDA, aval.getTipoVivienda());
+
+        if (aval.getTipoVivienda().equals("CASA FAMILIAR") || aval.getTipoVivienda().equals("CASA RENTADA"))
+        {
+            json_aval.put(K_NOMBRE_TITULAR, aval.getNombreTitular());
+            json_aval.put(K_PARENTESCO_TITULAR, aval.getParentesco());
+        }
+        json_aval.put(K_CARACTERISTICAS_DOMICILIO, aval.getCaracteristicasDomicilio());
+        json_aval.put(K_TIENE_NEGOCIO, aval.getTieneNegocio() == 1);
+        if (aval.getTieneNegocio() == 1)
+        {
+            json_aval.put(K_NOMBRE_NEGOCIO, aval.getNombreNegocio().trim().toUpperCase());
+            json_aval.put(K_ANTIGUEDAD, aval.getAntigueda());
+        }
+
+        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(aval.getIngMensual().replace(",","")));
+        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(aval.getIngOtros().replace(",","")));
+        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(aval.getGastoSemanal().replace(",","")));
+        json_aval.put(K_GASTO_AGUA, Double.parseDouble(aval.getGastoAgua().replace(",","")));
+        json_aval.put(K_GASTO_LUZ, Double.parseDouble(aval.getGastoLuz().replace(",","")));
+        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(aval.getGastoTelefono().replace(",","")));
+        json_aval.put(K_GASTO_RENTA, Double.parseDouble(aval.getGastoRenta().replace(",","")));
+        json_aval.put(K_GASTO_OTROS, Double.parseDouble(aval.getGastoOtros().replace(",","")));
+        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(aval.getCapacidadPagos().replace(",","")));
+        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(aval.getMontoMaximo().replace(",","")));
+        json_aval.put(K_MEDIOS_PAGOS, medioPagoDao.findIdsByNombres(aval.getMedioPago()));
+        if (aval.getMedioPago().contains("OTRO"))
+            json_aval.put(K_OTRO_MEDIOS_PAGOS, aval.getOtroMedioPago());
+        json_aval.put(K_HORA_LOCALIZACION, aval.getHorarioLocalizacion());
+        json_aval.put(K_ACTIVOS_OBSERVABLES, aval.getActivosObservables());
+        json_aval.put(K_TEL_CASA, aval.getTelCasa());
+        json_aval.put(K_TEL_CELULAR, aval.getTelCelular());
+        json_aval.put(K_TEL_MENSAJE, aval.getTelMensajes());
+        json_aval.put(K_TEL_TRABAJO, aval.getTelTrabajo());
+        json_aval.put(K_EMAIL, aval.getEmail());
+        json_aval.put(K_FOTO_FACHADA, aval.getFotoFachada());
+        json_aval.put(K_REFERENCIA_DOMICILIARIA, aval.getRefDomiciliaria());
+        json_aval.put(K_FIRMA, aval.getFirma());
+        json_aval.put(K_AVAL_LATITUD, aval.getLatitud());
+        json_aval.put(K_AVAL_LONGITUD, aval.getLongitud());
+        json_aval.put(K_AVAL_LOCATED_AT, aval.getLocatedAt());
+
+        json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
+    }
+
+    private void fillReferenciaJson(JSONObject json_solicitud, Referencia referencia) throws  JSONException
+    {
+        JSONObject json_referencia = new JSONObject();
+
+        DireccionDao direccionDao = new DireccionDao(ctx);
+        Direccion direccionReferencia = direccionDao.findByIdDireccion(Long.parseLong(referencia.getDireccionId()));
+
+        json_referencia.put(K_NOMBRE, referencia.getNombre());
+        json_referencia.put(K_PATERNO, referencia.getPaterno());
+        json_referencia.put(K_MATERNO, referencia.getMaterno());
+        json_referencia.put(K_FECHA_NACIMIENTO, referencia.getFechaNacimiento());
+
+        json_referencia.put(K_CALLE, direccionReferencia.getCalle());
+        json_referencia.put(K_NO_EXTERIOR, direccionReferencia.getNumExterior());
+        json_referencia.put(K_NO_INTERIOR, direccionReferencia.getNumInterior());
+        json_referencia.put(K_NO_LOTE, direccionReferencia.getLote());
+        json_referencia.put(K_NO_MANZANA, direccionReferencia.getManzana());
+        json_referencia.put(K_CODIGO_POSTAL, direccionReferencia.getCp());
+        json_referencia.put(K_COLONIA, direccionReferencia.getColonia());
+        json_referencia.put(K_CIUDAD, direccionReferencia.getCiudad());
+        json_referencia.put(K_LOCALIDAD, direccionReferencia.getLocalidad());
+        json_referencia.put(K_MUNICIPIO,direccionReferencia.getMunicipio());
+        json_referencia.put(K_ESTADO, direccionReferencia.getEstado());
+
+        json_referencia.put(K_TEL_CELULAR, referencia.getTelCelular());
+
+        json_solicitud.put(K_SOLICITANTE_REFERENCIA, json_referencia);
+
+    }
+
+    private void fillCroquisJson(JSONObject json_solicitud, Croquis croquis) throws  JSONException
+    {
+        JSONObject json_croquis = new JSONObject();
+
+        json_croquis.put(K_CALLE_ENFRENTE, croquis.getCallePrincipal());
+        json_croquis.put(K_CALLE_LATERAL_IZQ, croquis.getLateralUno());
+        json_croquis.put(K_CALLE_LATERAL_DER, croquis.getLateralDos());
+        json_croquis.put(K_CALLE_ATRAS, croquis.getCalleTrasera());
+        json_croquis.put(K_REFERENCIAS, croquis.getReferencias());
+        json_croquis.put(K_CARACTERISTICAS_DOMICILIO, croquis.getCaracteristicasDomicilio());
+
+        json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
+    }
+
+    private void fillPoliticaPldJson(JSONObject json_solicitud, PoliticaPld politicaPld) throws  JSONException
+    {
+        JSONObject json_politicas = new JSONObject();
+
+        json_politicas.put(K_PROPIETARIO, politicaPld.getPropietarioReal() == 1);
+        json_politicas.put(K_PROVEEDOR_RECURSOS, politicaPld.getProveedorRecursos() == 1);
+        json_politicas.put(K_POLITICAMENTE_EXP, politicaPld.getPersonaPolitica() == 1);
+
+        json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
+    }
+
+    private void fillDocumentoJson(JSONObject json_solicitud, Documento documento) throws  JSONException
+    {
+        JSONObject json_documentos = new JSONObject();
+
+        json_documentos.put(K_IDENTIFICACION_FRONTAL, documento.getIneFrontal());
+        json_documentos.put(K_IDENTIFICACION_REVERSO, documento.getIneReverso());
+        json_documentos.put(K_CURP, documento.getCurp());
+        json_documentos.put(K_COMPROBANTE_DOMICILIO, documento.getComprobante());
+        json_documentos.put(K_CODIGO_BARRAS, documento.getCodigoBarras());
+        json_documentos.put(K_FIRMA_ASESOR, documento.getFirmaAsesor());
+
+        if(documento.getIneSelfie() != null)
+            json_documentos.put(K_IDENTIFICACION_SELFIE, documento.getIneSelfie());
+        else
+            json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+
+        if(documento.getComprobanteGarantia() != null)
+            json_documentos.put(K_COMPROBANTE_GARANTIA, documento.getComprobanteGarantia());
+        else
+            json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+
+        if(documento.getIneFrontalAval() != null)
+            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, documento.getIneFrontalAval());
+        else
+            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+
+        if(documento.getIneReversoAval() != null)
+            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, documento.getIneReversoAval());
+        else
+            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+
+        if(documento.getCurpAval() != null)
+            json_documentos.put(K_CURP_AVAL, documento.getCurpAval());
+        else
+            json_documentos.put(K_CURP_AVAL, "");
+
+        if(documento.getComprobanteAval() != null)
+            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, documento.getComprobanteAval());
+        else
+            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+
+        json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
+    }
+
+}

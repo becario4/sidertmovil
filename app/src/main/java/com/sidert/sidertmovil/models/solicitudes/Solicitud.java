@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Solicitud implements Serializable {
+    public final static String TBL                         = "tbl_solicitudes";
+
     @SerializedName("id_solicitud")
     @Expose
     private Integer idSolicitud;

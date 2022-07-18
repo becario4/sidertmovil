@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class SolicitudDao {
     final DBhelper dbHelper;
@@ -198,6 +200,17 @@ public class SolicitudDao {
         cv.put("fecha_termino", solicitud.getFechaTermino());
         //cv.put("fecha_envio", solicitud.getFechaEnvio());
         //cv.put("fecha_guardado", solicitud.getFechaGuardado());
+
+        db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+    }
+
+    public void solicitudEnviada(Solicitud solicitud)
+    {
+        ContentValues cv = new ContentValues();
+
+        cv.put("estatus", solicitud.getEstatus());
+        if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
 
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }

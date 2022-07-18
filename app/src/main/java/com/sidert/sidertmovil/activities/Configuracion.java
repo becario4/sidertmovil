@@ -33,26 +33,14 @@ import com.sidert.sidertmovil.models.catalogos.Localidad;
 import com.sidert.sidertmovil.models.catalogos.LocalidadDao;
 import com.sidert.sidertmovil.models.catalogos.Municipio;
 import com.sidert.sidertmovil.models.catalogos.MunicipioDao;
-import com.sidert.sidertmovil.models.cierrededia.CierreDeDia;
-import com.sidert.sidertmovil.models.cierrededia.CierreDeDiaDao;
-import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividual;
-import com.sidert.sidertmovil.models.gestion.carteravencida.GestionIndividualDao;
-import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencida;
-import com.sidert.sidertmovil.models.impresion.carteravencida.ImpresionVencidaDao;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
-import com.sidert.sidertmovil.models.solicitudes.Solicitud;
-import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRenDao;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -316,7 +304,7 @@ public class Configuracion extends AppCompatActivity {
                             /*BUSCAR Y REGISTRAR CIERRE DE DIA*/
                             Log.e("AQUI CIERRE DE DIA", session.getUser().get(0));
                             //if(session.getUser().get(0).equals("131"))
-                            if(false)
+                            /*if(false)
                             {
                                 GestionIndividualDao gestionIndividualDao = new GestionIndividualDao(ctx);
                                 CierreDeDiaDao cierreDeDiaDao = new CierreDeDiaDao(ctx);
@@ -411,10 +399,7 @@ public class Configuracion extends AppCompatActivity {
                                 }
 
 
-                            }
-
-
-
+                            }*/
 
                         }
                         cvSincronizarFichas.setEnabled(true);
@@ -797,6 +782,7 @@ public class Configuracion extends AppCompatActivity {
 
     };
 
+    //OBTENER RENOVACIONES
     private View.OnClickListener cvSincronizarIntegrantesRen_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -835,6 +821,77 @@ public class Configuracion extends AppCompatActivity {
 
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        //ReactivarRenovacionGpo("310", "FE 3602", "2022-07-28");
+
+                        /*
+                        if (session.getUser().get(0).equals("403"))
+                        {
+                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombreAndFechaVencimiento("MORALILLO", "2021-12-14");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombreAndPrestamoId("MORALILLO", prestamoToRenovar.getPrestamoId());
+
+                                if (solicitudRen != null) {
+                                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                                    if(creditoGpoRen != null)
+                                    {
+                                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                                        if(integranteGpoRenList.size() > 0)
+                                        {
+                                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                                            {
+                                                iGpoRen.setEstatusCompletado(2);
+                                                iGpoRen.setEstatusRechazo(2);
+                                                integranteGpoRenDao.updateEstatus(iGpoRen);
+                                                integranteGpoRenDao.saveEstatus(iGpoRen);
+                                            }
+                                        }
+
+                                        solicitudRen.setEstatus(2);
+                                        solicitudRenDao.updateEstatus(solicitudRen);
+                                    }
+                                }
+                            }
+
+                            prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombreAndFechaVencimiento("MORALILLO", "2022-07-12");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombreAndPrestamoId("MORALILLO", prestamoToRenovar.getPrestamoId());
+
+                                if (solicitudRen != null) {
+                                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                                    if(creditoGpoRen != null)
+                                    {
+                                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                                        if(integranteGpoRenList.size() > 0)
+                                        {
+                                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                                            {
+                                                iGpoRen.setEstatusCompletado(0);
+                                                iGpoRen.setEstatusRechazo(0);
+                                                integranteGpoRenDao.updateEstatus(iGpoRen);
+                                                integranteGpoRenDao.saveEstatus(iGpoRen);
+                                            }
+                                        }
+
+                                        solicitudRen.setEstatus(0);
+                                        solicitudRenDao.updateEstatus(solicitudRen);
+                                    }
+                                }
+                            }
+                        }*/
 
                         /*
                         if(session.getUser().get(0).equals("617"))
@@ -890,7 +947,7 @@ public class Configuracion extends AppCompatActivity {
                         }
                         */
 
-                        if(session.getUser().get(0).equals("403"))
+                        /*if(session.getUser().get(0).equals("403"))
                         {
                             PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
                             PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombre("SALVADOR AVILA VERA");
@@ -904,7 +961,7 @@ public class Configuracion extends AppCompatActivity {
                                 }
                             }
 
-                        }
+                        }*/
 
                         ss.GetPrestamosToRenovar(ctx);
                     }
@@ -1518,6 +1575,79 @@ public class Configuracion extends AppCompatActivity {
         myReceiver.Register(myReceiver);
     }
 
+    private void ReactivarRenovacionGpo(String asesorId, String nombre, String fechaVencimiento)
+    {
+        if (session.getUser().get(0).equals(asesorId))
+        {
+            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombreAndFechaVencimiento(nombre, fechaVencimiento);
+
+            if(prestamoToRenovar != null) {
+                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombreAndPrestamoId(nombre, prestamoToRenovar.getPrestamoId());
+
+                if (solicitudRen != null) {
+                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                    if(creditoGpoRen != null)
+                    {
+                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                        if(integranteGpoRenList.size() > 0)
+                        {
+                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                            {
+                                iGpoRen.setEstatusCompletado(0);
+                                iGpoRen.setEstatusRechazo(0);
+                                integranteGpoRenDao.updateEstatus(iGpoRen);
+                                integranteGpoRenDao.saveEstatus(iGpoRen);
+                            }
+                        }
+
+                        solicitudRen.setEstatus(0);
+                        solicitudRenDao.updateEstatus(solicitudRen);
+                    }
+                }
+            }
+
+                            /*
+                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
+                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombreAndFechaVencimiento("2 DE NOVIEMBRE 2398", "2022-07-20");
+
+                            if(prestamoToRenovar != null) {
+                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombreAndPrestamoId("2 DE NOVIEMBRE 2398", prestamoToRenovar.getPrestamoId());
+
+                                if (solicitudRen != null) {
+                                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                                    if(creditoGpoRen != null)
+                                    {
+                                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                                        if(integranteGpoRenList.size() > 0)
+                                        {
+                                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                                            {
+                                                iGpoRen.setEstatusCompletado(0);
+                                                iGpoRen.setEstatusRechazo(0);
+                                                integranteGpoRenDao.updateEstatus(iGpoRen);
+                                                integranteGpoRenDao.saveEstatus(iGpoRen);
+                                            }
+                                        }
+
+                                        solicitudRen.setEstatus(0);
+                                        solicitudRenDao.updateEstatus(solicitudRen);
+                                    }
+                                }
+                            }
+                             */
+        }
+    }
 
 
 }

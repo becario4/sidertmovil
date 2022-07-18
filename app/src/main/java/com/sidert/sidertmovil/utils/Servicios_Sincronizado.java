@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Environment;
+
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
@@ -68,19 +68,19 @@ import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.CreditoGpoRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.IntegranteGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.SolicitudDetalleEstatusGpo;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.Cliente;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.models.verificacionesdomiciliarias.GestionVerificacionDomiciliaria;
 import com.sidert.sidertmovil.models.verificacionesdomiciliarias.GestionVerificacionDomiciliariaDao;
@@ -100,14 +100,8 @@ import com.sidert.sidertmovil.services.verificaciondomiciliaria.VerificacionDomi
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -774,7 +768,7 @@ public class Servicios_Sincronizado {
                         json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
                         json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
                         int montoRefinanciar = 0;
-                        if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) Integer.parseInt(row_soli.getString(11).replace(",",""));
+                        if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",",""));
                         json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                         row_soli.close();//Cierra datos de credito
                         json_solicitud.put(K_FECHA_INICIO, row.getString(6));
@@ -1325,7 +1319,7 @@ public class Servicios_Sincronizado {
                     json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
                     json_solicitud.put(K_CLIENTE_ID, row_soli.getLong(11));
                     int montoRefinanciar = 0;
-                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) Integer.parseInt(row_soli.getString(16).replace(",",""));
+                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",",""));
                     json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
 
                     row_soli.close();//Cierra datos de credito
@@ -1852,6 +1846,7 @@ public class Servicios_Sincronizado {
 
         if(iTotalRegistros < 0)
         {
+
             sql = "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.*, p.*, cro.* FROM " + TBL_INTEGRANTES_GPO + " AS i " +
                     "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
                     "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
@@ -2945,7 +2940,7 @@ public class Servicios_Sincronizado {
         rowIntegrante.close();
     }
 
-    public void SendRenovacionGpo (Context ctx, boolean flag){
+    public void SendRenovacionGpo(Context ctx, boolean flag){
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag)
@@ -6368,7 +6363,7 @@ public class Servicios_Sincronizado {
         }
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ?  order by _id  " ;
+        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  " ;
         Cursor row = db.rawQuery(sql, new String[]{"0"});
         Integer iTotalRows = row.getCount();
         SendByOneCirculo( ctx,0,iTotalRows,db,suc,usuario,token );
@@ -8250,9 +8245,15 @@ public class Servicios_Sincronizado {
                             break;
                         default:
                             try {
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
+                                
                                 Log.e("ERROR " + response.code(), response.errorBody().string());
 
                             } catch (IOException e) {
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
+                                
                                 e.printStackTrace();
                                 Log.e("AQUI", e.getMessage());
                             }
@@ -8263,6 +8264,9 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
+                    cv.put("estatus", "1");
+                    db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
+
                     Log.e("Error", "failSolicitud");
                     Log.e("Error", t.getMessage());
                     t.printStackTrace();
@@ -8524,8 +8528,13 @@ public class Servicios_Sincronizado {
                             break;
                         default:
                             try {
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id});
+
                                 Log.e("ERROR " + response.code(), response.errorBody().string());
                             } catch (IOException e) {
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id});
                                 e.printStackTrace();
                             }
                             break;
@@ -8724,8 +8733,10 @@ public class Servicios_Sincronizado {
                             }
                             break;
                         case 500:
-                            Log.e("500", response.message());
-                            Log.e("500", response.errorBody().toString());
+                            cv = new ContentValues();
+                            cv.put("estatus", "1");
+                            db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
+
                             if(iIndex + 1 < iTotal)
                             {
                                 SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
@@ -8734,6 +8745,10 @@ public class Servicios_Sincronizado {
                         default:
                             if(iIndex + 1 < iTotal)
                             {
+                                cv = new ContentValues();
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
+
                                 SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
                             }
                             break;
@@ -8744,6 +8759,10 @@ public class Servicios_Sincronizado {
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
                     Log.e("Error", "failSolicitud"+t.getMessage());
+                    ContentValues cv = new ContentValues();
+                    cv.put("estatus", "1");
+                    db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
+
                     if(iIndex + 1 < iTotal)
                     {
                         SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
@@ -8942,7 +8961,13 @@ public class Servicios_Sincronizado {
                         default:
                             try {
                                 Log.e("ERROR " + response.code(), response.errorBody().string());
+                                cv = new ContentValues();
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id_solicitud});
                             } catch (IOException e) {
+                                cv = new ContentValues();
+                                cv.put("estatus", "1");
+                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id_solicitud});
                                 e.printStackTrace();
                             }
 
@@ -8959,6 +8984,9 @@ public class Servicios_Sincronizado {
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
                     Log.e("Error", t.getMessage());
                     Log.e("Error", "failSolicitud");
+                    ContentValues cv = new ContentValues();
+                    cv.put("estatus", "1");
+                    db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id_solicitud});
                     if(iIndex + 1 < iTotal)
                     {
                         SendIntegranteRenovacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato7, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19, sDato21, sDato23);
@@ -9976,6 +10004,1226 @@ public class Servicios_Sincronizado {
         });
     }
 
+
+
+    public void SendOriginacionInd (Context ctx, boolean flag, long id_solicitud){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag) loading.show();
+
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            Log.e("count solicitudes", row.getCount()+" total");
+            for (int i = 0; i < row.getCount(); i++){
+                Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+
+                row_soli.moveToFirst();
+                JSONObject json_solicitud = new JSONObject();
+                try {
+                    Log.e("Plazo", row_soli.getString(2)+" plazo");
+                    json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
+                    json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
+                    json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
+                    json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(8));
+                    json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
+                    json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
+                    int montoRefinanciar = 0;
+                    if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",",""));
+                    json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
+                    row_soli.close();//Cierra datos de credito
+                    json_solicitud.put(K_FECHA_INICIO, row.getString(6));
+                    json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
+                    json_solicitud.put(K_FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+
+                    row_soli = dBhelper.getRecords(TBL_CLIENTE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_solicitante = new JSONObject();
+                    json_solicitante.put(K_NOMBRE, row_soli.getString(2));
+                    json_solicitante.put(K_PATERNO, row_soli.getString(3));
+                    json_solicitante.put(K_MATERNO, row_soli.getString(4));
+                    json_solicitante.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_solicitante.put(K_EDAD, row_soli.getInt(6));
+                    json_solicitante.put(K_GENERO, row_soli.getInt(7));
+                    json_solicitante.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_solicitante.put(K_RFC, row_soli.getString(9));
+                    json_solicitante.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
+                    json_solicitante.put(K_OCUPACION, row_soli.getString(12));
+                    json_solicitante.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(13));
+                    json_solicitante.put(K_IDENTIFICACION_TIPO, row_soli.getString(14));
+                    json_solicitante.put(K_NO_IDENTIFICACION, row_soli.getString(15));
+                    json_solicitante.put(K_NIVEL_ESTUDIO, row_soli.getString(16));
+                    String estadoCivil = row_soli.getString(17);
+                    json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
+                    if (row_soli.getString(17).equals("CASADO(A)"))
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                    json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
+                    if (row_soli.getString(19).equals("CASA FAMILIAR"))
+                        json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
+                    else if (row_soli.getString(19).equals("OTRO"))
+                        json_solicitante.put(K_OTRO_TIPO_VIVIENDA, row_soli.getString(21));
+                    Cursor row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(22), "CLIENTE"});
+                    row_dir.moveToFirst();
+                    json_solicitante.put(K_LATITUD, row_dir.getString(2));
+                    json_solicitante.put(K_LONGITUD, row_dir.getString(3));
+                    json_solicitante.put(K_CALLE, row_dir.getString(4));
+                    json_solicitante.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_solicitante.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_solicitante.put(K_NO_LOTE, row_dir.getString(7));
+                    json_solicitante.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_solicitante.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_solicitante.put(K_COLONIA, row_dir.getString(10));
+                    json_solicitante.put(K_CIUDAD, row_dir.getString(11));
+                    json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_solicitante.put(K_ESTADO, row_dir.getString(14));
+                    json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+                    json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
+                    json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
+                    json_solicitante.put(K_TEL_MENSAJE, row_soli.getString(25));
+                    json_solicitante.put(K_TEL_TRABAJO, row_soli.getString(26));
+                    json_solicitante.put(K_TIEMPO_VIVIR_SITIO, row_soli.getInt(27));
+                    json_solicitante.put(K_DEPENDIENTES_ECONOMICO, row_soli.getInt(28));
+                    json_solicitante.put(K_MEDIO_CONTACTO, row_soli.getString(29));
+                    json_solicitante.put(K_ESTADO_CUENTA, row_soli.getString(30));
+                    json_solicitante.put(K_EMAIL, row_soli.getString(31));
+                    json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
+                    json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
+                    json_solicitante.put(K_FIRMA, row_soli.getString(34));
+                    json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
+                    json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
+                    json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
+                    json_solicitante.put(K_TIENE_FIRMA, "SI");
+                    json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
+
+
+                    json_solicitud.put(K_SOLICITANTE, json_solicitante);
+                    String fachadaCli = row_soli.getString(32);
+                    String firmaCli = row_soli.getString(34);
+                    row_soli.close(); //Cierra datos del solicitante
+
+                    Log.e("solicitante", json_solicitante.toString());
+
+                    if (estadoCivil.equals("CASADO(A)") ||
+                            estadoCivil.equals("UNIÓN LIBRE")) {
+                        JSONObject json_conyuge = new JSONObject();
+                        row_soli = dBhelper.getRecords(TBL_CONYUGE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        row_soli.moveToFirst();
+                        json_conyuge.put(K_NOMBRE, row_soli.getString(2));
+                        json_conyuge.put(K_PATERNO, row_soli.getString(3));
+                        json_conyuge.put(K_MATERNO, row_soli.getString(4));
+                        json_conyuge.put(K_NACIONALIDAD, row_soli.getString(5));
+                        json_conyuge.put(K_OCUPACION, row_soli.getString(6));
+
+                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
+                        row_dir.moveToFirst();
+                        json_conyuge.put(K_CALLE, row_dir.getString(4));
+                        json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
+                        json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
+                        json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
+                        json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
+                        json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                        json_conyuge.put(K_COLONIA, row_dir.getString(10));
+                        json_conyuge.put(K_CIUDAD, row_dir.getString(11));
+                        json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
+                        json_conyuge.put(K_ESTADO, row_dir.getString(14));
+                        row_dir.close();
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
+                        json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
+                        json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
+
+                        json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
+                        row_soli.close(); //Cierra datos de conyuge
+
+                        Log.e("conyuge", json_conyuge.toString());
+                    }
+
+                    Log.e("Solicituf", json_solicitud.toString());
+                    if (montoPres >= 30000){
+                        row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        row_soli.moveToFirst();
+                        JSONObject json_economicos = new JSONObject();
+                        json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
+                        json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
+                        json_economicos.put(K_UBICACION, row_soli.getString(4));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
+
+                        json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
+                        row_soli.close(); //Cierra datos economicos
+
+                        Log.e("economicos", json_economicos.toString());
+                    }
+
+
+
+                    row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_negocio = new JSONObject();
+                    json_negocio.put(K_NOMBRE, row_soli.getString(2));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(3), "NEGOCIO"});
+                    row_dir.moveToFirst();
+                    json_negocio.put(K_LATITUD, row_dir.getString(2));
+                    json_negocio.put(K_LONGITUD, row_dir.getString(3));
+                    json_negocio.put(K_CALLE, row_dir.getString(4));
+                    json_negocio.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_negocio.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_negocio.put(K_NO_LOTE, row_dir.getString(7));
+                    json_negocio.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_negocio.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_negocio.put(K_COLONIA, row_dir.getString(10));
+                    json_negocio.put(K_CIUDAD, row_dir.getString(11));
+                    json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_negocio.put(K_ESTADO, row_dir.getString(14));
+                    json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close(); //Cierra datos de direccion del negocio
+
+                    json_negocio.put(K_OCUPACION, row_soli.getString(4));
+                    json_negocio.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(5));
+                    json_negocio.put(K_DESTINO_CREDITO, row_soli.getString(6));
+                    if (row_soli.getString(6).contains("OTRO"))
+                        json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
+                    json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
+                    //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambia con monto maximo
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));
+                    String aux = "";
+                    if (!row_soli.getString(18).trim().isEmpty()){
+                        String[] medios = row_soli.getString(18).split(",");
+
+                        if (medios.length > 0){
+                            for (int m = 0; m < medios.length; m++){
+                                if (m == 0)
+                                    aux = "'"+medios[m].trim()+"'";
+                                else
+                                    aux += ","+"'"+medios[m].trim()+"'";
+                            }
+                        }
+                    }
+
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
+                    Cursor row_medio_pago  = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0){
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    }
+                    else{
+                        json_negocio.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(18).contains("OTRO"))
+                        json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
+
+                    //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
+
+                    json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
+
+                    if (row_soli.getString(18).contains("EFECTIVO"))
+                        json_negocio.put(K_NUM_OPERACIONES_MENSUAL_EFECTIVO, row_soli.getInt(22));
+
+                    json_negocio.put(K_DIAS_VENTA, row_soli.getString(23));
+                    json_negocio.put(K_FOTO_FACHADA, row_soli.getString(24));
+                    String fachadaNeg = row_soli.getString(24);
+                    json_negocio.put(K_REFERENCIA_NEGOCIO, row_soli.getString(25));
+
+                    json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
+                    row_soli.close(); // Cierra datos del negocio
+
+                    Log.e("negocio", json_negocio.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_AVAL_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_aval = new JSONObject();
+                    json_aval.put(K_NOMBRE, row_soli.getString(2));
+                    json_aval.put(K_PATERNO, row_soli.getString(3));
+                    json_aval.put(K_MATERNO, row_soli.getString(4));
+                    json_aval.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_aval.put(K_EDAD, row_soli.getInt(6));
+                    json_aval.put(K_GENERO, row_soli.getInt(7));
+                    json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_aval.put(K_RFC, row_soli.getString(9));
+                    json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
+                    json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
+                    json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
+                    json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
+                    json_aval.put(K_OCUPACION, row_soli.getString(15));
+                    json_aval.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(16));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(19), "AVAL"});
+                    row_dir.moveToFirst();
+                    json_aval.put(K_LATITUD, row_dir.getString(2));
+                    json_aval.put(K_LONGITUD, row_dir.getString(3));
+                    json_aval.put(K_CALLE, row_dir.getString(4));
+                    json_aval.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_aval.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_aval.put(K_NO_LOTE, row_dir.getString(7));
+                    json_aval.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_aval.put(K_COLONIA, row_dir.getString(10));
+                    json_aval.put(K_CIUDAD,row_dir.getString(11));
+                    json_aval.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_aval.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_aval.put(K_ESTADO, row_dir.getString(14));
+                    json_aval.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+
+                    json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
+                        json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
+                        json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
+                    }
+                    json_aval.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(23));
+                    json_aval.put(K_TIENE_NEGOCIO, row_soli.getInt(25) == 1);
+                    if (row_soli.getInt(25) == 1) {
+                        json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
+                        json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
+                    }
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
+                    //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambiar con capacidad de pago
+                    //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+
+                    aux = "";
+                    if (!row_soli.getString(36).trim().isEmpty()){
+                        String[] medios = row_soli.getString(36).split(",");
+
+                        if (medios.length > 0){
+                            for (int m = 0; m < medios.length; m++){
+                                if (m == 0)
+                                    aux = "'"+medios[m].trim()+"'";
+                                else
+                                    aux += ","+"'"+medios[m].trim()+"'";
+                            }
+                        }
+                    }
+
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
+                    row_medio_pago  = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0){
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    }
+                    else{
+                        json_aval.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(36).contains("OTRO"))
+                        json_aval.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(37));
+
+                    json_aval.put(K_HORA_LOCALIZACION, row_soli.getString(39));
+                    json_aval.put(K_ACTIVOS_OBSERVABLES, row_soli.getString(40));
+                    json_aval.put(K_TEL_CASA, row_soli.getString(41));
+                    json_aval.put(K_TEL_CELULAR, row_soli.getString(42));
+                    json_aval.put(K_TEL_MENSAJE, row_soli.getString(43));
+                    json_aval.put(K_TEL_TRABAJO, row_soli.getString(44));
+                    json_aval.put(K_EMAIL, row_soli.getString(45));
+                    json_aval.put(K_FOTO_FACHADA, row_soli.getString(46));
+                    String fachadaAval = row_soli.getString(46);
+                    json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
+                    json_aval.put(K_FIRMA, row_soli.getString(48));
+                    json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
+                    json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
+                    json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
+                    String firmaAval = row_soli.getString(48);
+
+                    json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
+
+                    row_soli.close(); //Cierre de datos del aval
+
+                    Log.e("aval", json_aval.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_REFERENCIA_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+
+                    JSONObject json_referencia = new JSONObject();
+                    json_referencia.put(K_NOMBRE, row_soli.getString(2));
+                    json_referencia.put(K_PATERNO, row_soli.getString(3));
+                    json_referencia.put(K_MATERNO, row_soli.getString(4));
+                    json_referencia.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(6), "REFERENCIA"});
+                    row_dir.moveToFirst();
+                    json_referencia.put(K_CALLE, row_dir.getString(4));
+                    json_referencia.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_referencia.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_referencia.put(K_NO_LOTE, row_dir.getString(7));
+                    json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_referencia.put(K_COLONIA, row_dir.getString(10));
+                    json_referencia.put(K_CIUDAD,row_dir.getString(11));
+                    json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_referencia.put(K_ESTADO, row_dir.getString(14));
+                    row_dir.close();//Cierre de datos de referencia
+                    json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
+
+                    json_solicitud.put(K_SOLICITANTE_REFERENCIA, json_referencia);
+                    row_soli.close(); //Cierre de datos de referencia
+
+                    Log.e("referencia", json_referencia.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_CROQUIS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_croquis = new JSONObject();
+                    json_croquis.put(K_CALLE_ENFRENTE, row_soli.getString(2));
+                    json_croquis.put(K_CALLE_LATERAL_IZQ, row_soli.getString(3));
+                    json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
+                    json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
+                    json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
+                    json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
+                    row_soli.close(); //Cierra datos del croquis
+
+                    Log.e("croquis", json_croquis.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_POLITICAS_PLD_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_politicas = new JSONObject();
+                    json_politicas.put(K_PROPIETARIO, row_soli.getInt(2) == 1);
+                    json_politicas.put(K_PROVEEDOR_RECURSOS, row_soli.getInt(3) == 1);
+                    json_politicas.put(K_POLITICAMENTE_EXP, row_soli.getInt(4) == 1);
+                    json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
+                    row_soli.close(); //Cierra datos de politicas pld
+                    Log.e("politicas", json_politicas.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_DOCUMENTOS, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_documentos = new JSONObject();
+                    json_documentos.put(K_IDENTIFICACION_FRONTAL, row_soli.getString(2));
+                    String identiFrontal = row_soli.getString(2);
+                    json_documentos.put(K_IDENTIFICACION_REVERSO, row_soli.getString(3));
+                    String identiReverso = row_soli.getString(3);
+                    json_documentos.put(K_CURP, row_soli.getString(4));
+                    String curp = row_soli.getString(4);
+                    json_documentos.put(K_COMPROBANTE_DOMICILIO, row_soli.getString(5));
+                    String comprobante = row_soli.getString(5);
+                    json_documentos.put(K_CODIGO_BARRAS, row_soli.getString(6));
+                    json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
+                    String firmaAsesor = row_soli.getString(7);
+
+                    String identificacionSelfie = "";
+                    if(row_soli.getString(9) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
+                        identificacionSelfie = row_soli.getString(9);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                    }
+
+                    String comprobanteGarantia = "";
+                    if(row_soli.getString(10) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
+                        comprobanteGarantia = row_soli.getString(10);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+                    }
+
+                    String identificacionFrontalAval = "";
+                    if(row_soli.getString(11) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
+                        identificacionFrontalAval = row_soli.getString(11);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+                    }
+
+                    String identificacionReversoAval = "";
+                    if(row_soli.getString(12) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
+                        identificacionReversoAval = row_soli.getString(12);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+                    }
+
+                    String curpAval = "";
+                    if(row_soli.getString(13) != null)
+                    {
+                        json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
+                        curpAval = row_soli.getString(13);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_CURP_AVAL, "");
+                    }
+
+                    String comprobanteAval = "";
+                    if(row_soli.getString(14) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
+                        comprobanteAval = row_soli.getString(14);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+                    }
+
+                    json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
+
+                    row_soli.close(); //Cierre de datos de documentos
+
+                    Log.e("documentos", json_documentos.toString());
+                    new GuardarSolicitudInd().execute(
+                            ctx,
+                            json_solicitud,
+                            fachadaCli,
+                            firmaCli,
+                            fachadaNeg,
+                            fachadaAval,
+                            firmaAval,
+                            identiFrontal,
+                            identiReverso,
+                            curp,
+                            comprobante,
+                            firmaAsesor,
+                            row.getString(0),
+                            row.getLong(4),
+                            identificacionSelfie,
+                            comprobanteGarantia,
+                            identificacionFrontalAval,
+                            identificacionReversoAval,
+                            curpAval,
+                            comprobanteAval
+                    );
+
+                    if (flag) loading.dismiss();
+
+                } catch (JSONException e) {
+                    ContentValues cv = new ContentValues();
+                    cv.put("estatus", 1);
+
+                    db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                    e.printStackTrace();
+                    if (flag) loading.dismiss();
+                }
+            }
+        }
+
+        row.close();
+
+    }
+
+    public void SendRenovacionInd (Context ctx, boolean flag, long id_solicitud){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        if (flag) loading.show();
+
+        Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            for (int i = 0; i < row.getCount(); i++){
+                Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+
+                row_soli.moveToFirst();
+                JSONObject json_solicitud = new JSONObject();
+                try {
+                    Log.e("Plazo", row_soli.getString(2)+" plazo");
+                    json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
+                    json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
+                    json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
+                    json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(13));
+                    json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(14));
+                    json_solicitud.put(K_COMPORTAMIENTO_PAGO, row_soli.getString(10));
+                    json_solicitud.put(K_OBSERVACIONES, row_soli.getString(12));
+                    json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
+                    json_solicitud.put(K_CLIENTE_ID, row_soli.getLong(11));
+                    int montoRefinanciar = 0;
+                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",",""));
+                    json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
+
+                    row_soli.close();//Cierra datos de credito
+                    json_solicitud.put(K_FECHA_INICIO, row.getString(6));
+                    json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
+                    json_solicitud.put(K_FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+                    row_soli = dBhelper.getRecords(TBL_CLIENTE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_solicitante = new JSONObject();
+                    json_solicitante.put(K_NOMBRE, row_soli.getString(2));
+                    json_solicitante.put(K_PATERNO, row_soli.getString(3));
+                    json_solicitante.put(K_MATERNO, row_soli.getString(4));
+                    json_solicitante.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_solicitante.put(K_EDAD, row_soli.getInt(6));
+                    json_solicitante.put(K_GENERO, row_soli.getInt(7));
+                    json_solicitante.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_solicitante.put(K_RFC, row_soli.getString(9));
+                    json_solicitante.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
+                    json_solicitante.put(K_OCUPACION, row_soli.getString(12));
+                    json_solicitante.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(13));
+                    json_solicitante.put(K_IDENTIFICACION_TIPO, row_soli.getString(14));
+                    json_solicitante.put(K_NO_IDENTIFICACION, row_soli.getString(15));
+                    json_solicitante.put(K_NIVEL_ESTUDIO, row_soli.getString(16));
+                    String estadoCivil = row_soli.getString(17);
+                    json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
+                    if (row_soli.getString(17).equals("CASADO(A)"))
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                    json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
+                    if (row_soli.getString(19).equals("CASA FAMILIAR"))
+                        json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
+                    else if (row_soli.getString(19).equals("OTRO"))
+                        json_solicitante.put(K_OTRO_TIPO_VIVIENDA, row_soli.getString(21));
+                    Cursor row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(22), "CLIENTE"});
+                    row_dir.moveToFirst();
+                    json_solicitante.put(K_LATITUD, row_dir.getString(2));
+                    json_solicitante.put(K_LONGITUD, row_dir.getString(3));
+                    json_solicitante.put(K_CALLE, row_dir.getString(4));
+                    json_solicitante.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_solicitante.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_solicitante.put(K_NO_LOTE, row_dir.getString(7));
+                    json_solicitante.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_solicitante.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_solicitante.put(K_COLONIA, row_dir.getString(10));
+                    json_solicitante.put(K_CIUDAD, row_dir.getString(11));
+                    json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_solicitante.put(K_ESTADO, row_dir.getString(14));
+                    json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+                    json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
+                    json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
+                    json_solicitante.put(K_TEL_MENSAJE, row_soli.getString(25));
+                    json_solicitante.put(K_TEL_TRABAJO, row_soli.getString(26));
+                    json_solicitante.put(K_TIEMPO_VIVIR_SITIO, row_soli.getInt(27));
+                    json_solicitante.put(K_DEPENDIENTES_ECONOMICO, row_soli.getInt(28));
+                    json_solicitante.put(K_MEDIO_CONTACTO, row_soli.getString(29));
+                    json_solicitante.put(K_ESTADO_CUENTA, row_soli.getString(30));
+                    json_solicitante.put(K_EMAIL, row_soli.getString(31));
+                    json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
+                    json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
+                    json_solicitante.put(K_FIRMA, row_soli.getString(34));
+                    json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
+                    json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
+                    json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
+                    json_solicitante.put(K_TIENE_FIRMA, "SI");
+                    json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
+
+                    json_solicitud.put(K_SOLICITANTE, json_solicitante);
+                    String fachadaCli = row_soli.getString(32);
+                    String firmaCli = row_soli.getString(34);
+                    row_soli.close(); //Cierra datos del solicitante
+
+                    Log.e("solicitante", json_solicitante.toString());
+
+                    if (estadoCivil.equals("CASADO(A)") ||
+                            estadoCivil.equals("UNIÓN LIBRE")) {
+                        JSONObject json_conyuge = new JSONObject();
+                        row_soli = dBhelper.getRecords(TBL_CONYUGE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        row_soli.moveToFirst();
+                        json_conyuge.put(K_NOMBRE, row_soli.getString(2));
+                        json_conyuge.put(K_PATERNO, row_soli.getString(3));
+                        json_conyuge.put(K_MATERNO, row_soli.getString(4));
+                        json_conyuge.put(K_NACIONALIDAD, row_soli.getString(5));
+                        json_conyuge.put(K_OCUPACION, row_soli.getString(6));
+
+                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
+                        row_dir.moveToFirst();
+                        json_conyuge.put(K_CALLE, row_dir.getString(4));
+                        json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
+                        json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
+                        json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
+                        json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
+                        json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                        json_conyuge.put(K_COLONIA, row_dir.getString(10));
+                        json_conyuge.put(K_CIUDAD, row_dir.getString(11));
+                        json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
+                        json_conyuge.put(K_ESTADO, row_dir.getString(14));
+                        row_dir.close();
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
+                        json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
+                        json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
+
+                        json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
+                        row_soli.close(); //Cierra datos de conyuge
+
+                        Log.e("conyuge", json_conyuge.toString());
+                    }
+
+                    Log.e("Solicitud", json_solicitud.toString());
+                    if (montoPres >= 30000){
+                        row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        row_soli.moveToFirst();
+                        JSONObject json_economicos = new JSONObject();
+                        json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
+                        json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
+                        json_economicos.put(K_UBICACION, row_soli.getString(4));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
+
+                        json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
+                        row_soli.close(); //Cierra datos economicos
+
+                        Log.e("economicos", json_economicos.toString());
+                    }
+
+                    row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_negocio = new JSONObject();
+                    json_negocio.put(K_NOMBRE, row_soli.getString(2));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(3), "NEGOCIO"});
+                    row_dir.moveToFirst();
+                    json_negocio.put(K_LATITUD, row_dir.getString(2));
+                    json_negocio.put(K_LONGITUD, row_dir.getString(3));
+                    json_negocio.put(K_CALLE, row_dir.getString(4));
+                    json_negocio.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_negocio.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_negocio.put(K_NO_LOTE, row_dir.getString(7));
+                    json_negocio.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_negocio.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_negocio.put(K_COLONIA, row_dir.getString(10));
+                    json_negocio.put(K_CIUDAD, row_dir.getString(11));
+                    json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_negocio.put(K_ESTADO, row_dir.getString(14));
+                    json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close(); //Cierra datos de direccion del negocio
+
+                    json_negocio.put(K_OCUPACION, row_soli.getString(4));
+                    json_negocio.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(5));
+                    json_negocio.put(K_DESTINO_CREDITO, row_soli.getString(6));
+                    if (row_soli.getString(6).contains("OTRO"))
+                        json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
+                    json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
+                    //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambio con monto maximo
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
+                    String aux = "";
+                    if (!row_soli.getString(18).trim().isEmpty()){
+                        String[] medios = row_soli.getString(18).split(",");
+
+                        if (medios.length > 0){
+                            for (int m = 0; m < medios.length; m++){
+                                if (m == 0)
+                                    aux = "'"+medios[m].trim()+"'";
+                                else
+                                    aux += ","+"'"+medios[m].trim()+"'";
+                            }
+                        }
+                    }
+
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
+                    Cursor row_medio_pago  = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0){
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    }
+                    else{
+                        json_negocio.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(18).contains("OTRO"))
+                        json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
+
+                    //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+
+                    json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
+
+                    if (row_soli.getString(18).contains("EFECTIVO"))
+                        json_negocio.put(K_NUM_OPERACIONES_MENSUAL_EFECTIVO, row_soli.getInt(22));
+
+                    json_negocio.put(K_DIAS_VENTA, row_soli.getString(23));
+                    json_negocio.put(K_FOTO_FACHADA, row_soli.getString(24));
+                    String fachadaNeg = row_soli.getString(24);
+                    json_negocio.put(K_REFERENCIA_NEGOCIO, row_soli.getString(25));
+
+                    json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
+                    row_soli.close(); // Cierra datos del negocio
+
+                    Log.e("negocio", json_negocio.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_AVAL_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_aval = new JSONObject();
+                    json_aval.put(K_NOMBRE, row_soli.getString(2));
+                    json_aval.put(K_PATERNO, row_soli.getString(3));
+                    json_aval.put(K_MATERNO, row_soli.getString(4));
+                    json_aval.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_aval.put(K_EDAD, row_soli.getInt(6));
+                    json_aval.put(K_GENERO, row_soli.getInt(7));
+                    json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_aval.put(K_RFC, row_soli.getString(9));
+                    json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
+                    json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
+                    json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
+                    json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
+                    json_aval.put(K_OCUPACION, row_soli.getString(15));
+                    json_aval.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(16));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(19), "AVAL"});
+                    row_dir.moveToFirst();
+                    json_aval.put(K_LATITUD, row_dir.getString(2));
+                    json_aval.put(K_LONGITUD, row_dir.getString(3));
+                    json_aval.put(K_CALLE, row_dir.getString(4));
+                    json_aval.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_aval.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_aval.put(K_NO_LOTE, row_dir.getString(7));
+                    json_aval.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_aval.put(K_COLONIA, row_dir.getString(10));
+                    json_aval.put(K_CIUDAD,row_dir.getString(11));
+                    json_aval.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_aval.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_aval.put(K_ESTADO, row_dir.getString(14));
+                    json_aval.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+
+                    json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
+                        json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
+                        json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
+                    }
+                    json_aval.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(23));
+                    json_aval.put(K_TIENE_NEGOCIO, row_soli.getInt(25) == 1);
+                    if (row_soli.getInt(25) == 1) {
+                        json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
+                        json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
+                    }
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
+                    //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambia con capacidad de pago
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                    //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+
+                    aux = "";
+                    if (!row_soli.getString(36).trim().isEmpty()){
+                        String[] medios = row_soli.getString(36).split(",");
+
+                        if (medios.length > 0){
+                            for (int m = 0; m < medios.length; m++){
+                                if (m == 0)
+                                    aux = "'"+medios[m].trim()+"'";
+                                else
+                                    aux += ","+"'"+medios[m].trim()+"'";
+                            }
+                        }
+                    }
+
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
+                    row_medio_pago  = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0){
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    }
+                    else{
+                        json_aval.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(36).contains("OTRO"))
+                        json_aval.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(37));
+
+                    json_aval.put(K_HORA_LOCALIZACION, row_soli.getString(39));
+                    json_aval.put(K_ACTIVOS_OBSERVABLES, row_soli.getString(40));
+                    json_aval.put(K_TEL_CASA, row_soli.getString(41));
+                    json_aval.put(K_TEL_CELULAR, row_soli.getString(42));
+                    json_aval.put(K_TEL_MENSAJE, row_soli.getString(43));
+                    json_aval.put(K_TEL_TRABAJO, row_soli.getString(44));
+                    json_aval.put(K_EMAIL, row_soli.getString(45));
+                    json_aval.put(K_FOTO_FACHADA, row_soli.getString(46));
+                    String fachadaAval = row_soli.getString(46);
+                    json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
+                    json_aval.put(K_FIRMA, row_soli.getString(48));
+                    json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
+                    json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
+                    json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
+                    String firmaAval = row_soli.getString(48);
+
+                    json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
+
+                    row_soli.close(); //Cierre de datos del aval
+
+                    Log.e("aval", json_aval.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_REFERENCIA_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+
+                    JSONObject json_referencia = new JSONObject();
+                    json_referencia.put(K_NOMBRE, row_soli.getString(2));
+                    json_referencia.put(K_PATERNO, row_soli.getString(3));
+                    json_referencia.put(K_MATERNO, row_soli.getString(4));
+                    json_referencia.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(6), "REFERENCIA"});
+                    row_dir.moveToFirst();
+                    json_referencia.put(K_CALLE, row_dir.getString(4));
+                    json_referencia.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_referencia.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_referencia.put(K_NO_LOTE, row_dir.getString(7));
+                    json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_referencia.put(K_COLONIA, row_dir.getString(10));
+                    json_referencia.put(K_CIUDAD,row_dir.getString(11));
+                    json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_referencia.put(K_ESTADO, row_dir.getString(14));
+                    row_dir.close();//Cierre de datos de referencia
+                    json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
+
+                    json_solicitud.put(K_SOLICITANTE_REFERENCIA, json_referencia);
+                    row_soli.close(); //Cierre de datos de referencia
+
+                    Log.e("referencia", json_referencia.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_CROQUIS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_croquis = new JSONObject();
+                    json_croquis.put(K_CALLE_ENFRENTE, row_soli.getString(2));
+                    json_croquis.put(K_CALLE_LATERAL_IZQ, row_soli.getString(3));
+                    json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
+                    json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
+                    json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
+
+                    json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
+                    row_soli.close(); //Cierra datos del croquis
+
+                    row_soli = dBhelper.getRecords(TBL_POLITICAS_PLD_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_politicas = new JSONObject();
+                    json_politicas.put(K_PROPIETARIO, row_soli.getInt(2) == 1);
+                    json_politicas.put(K_PROVEEDOR_RECURSOS, row_soli.getInt(3) == 1);
+                    json_politicas.put(K_POLITICAMENTE_EXP, row_soli.getInt(4) == 1);
+                    json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
+                    row_soli.close(); //Cierra datos de politicas pld
+
+
+                    row_soli = dBhelper.getRecords(TBL_DOCUMENTOS_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_documentos = new JSONObject();
+                    json_documentos.put(K_IDENTIFICACION_FRONTAL, row_soli.getString(2));
+                    String identiFrontal = row_soli.getString(2);
+                    json_documentos.put(K_IDENTIFICACION_REVERSO, row_soli.getString(3));
+                    String identiReverso = row_soli.getString(3);
+                    //json_documentos.put(K_CURP, row_soli.getString(4));
+                    //String curp = row_soli.getString(4);
+                    json_documentos.put(K_COMPROBANTE_DOMICILIO, row_soli.getString(5));
+                    String comprobante = row_soli.getString(5);
+                    json_documentos.put(K_CODIGO_BARRAS, row_soli.getString(6));
+                    json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
+                    String firmaAsesor = row_soli.getString(7);
+                    String identificacionSelfie = "";
+                    if(row_soli.getString(9) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
+                        identificacionSelfie = row_soli.getString(9);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                    }
+
+                    String comprobanteGarantia = "";
+                    if(row_soli.getString(10) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
+                        comprobanteGarantia = row_soli.getString(10);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+                    }
+
+                    String identificacionFrontalAval = "";
+                    if(row_soli.getString(11) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
+                        identificacionFrontalAval = row_soli.getString(11);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+                    }
+
+                    String identificacionReversoAval = "";
+                    if(row_soli.getString(12) != null)
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
+                        identificacionReversoAval = row_soli.getString(12);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+                    }
+
+                    String curpAval = "";
+                    if(row_soli.getString(13) != null)
+                    {
+                        json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
+                        curpAval = row_soli.getString(13);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_CURP_AVAL, "");
+                    }
+
+                    String comprobanteAval = "";
+                    if(row_soli.getString(14) != null)
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
+                        comprobanteAval = row_soli.getString(14);
+                    }
+                    else
+                    {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+                    }
+
+                    json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
+
+                    row_soli.close(); //Cierre de datos de documentos
+
+                    Log.e("documentos", json_documentos.toString());
+                    Log.e("-----","--------------------------------------------------------");
+                    Log.e("Renovacion",json_solicitud.toString());
+                    Log.e("-----","--------------------------------------------------------");
+                    new GuardarRenovacionInd().execute(
+                            ctx,
+                            json_solicitud,
+                            fachadaCli,
+                            firmaCli,
+                            fachadaNeg,
+                            fachadaAval,
+                            firmaAval,
+                            identiFrontal,
+                            identiReverso,
+                            comprobante,
+                            firmaAsesor,
+                            row.getString(0),
+                            row.getLong(4),
+                            identificacionSelfie,
+                            comprobanteGarantia,
+                            identificacionFrontalAval,
+                            identificacionReversoAval,
+                            curpAval,
+                            comprobanteAval
+                    );
+
+                    if (flag) loading.dismiss();
+
+                } catch (JSONException e) {
+                    if (flag) loading.dismiss();
+
+                    ContentValues cv = new ContentValues();
+                    cv.put("estatus", "1");
+                    db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+                    e.printStackTrace();
+                }
+
+                row.moveToNext();
+            }
+        }
+
+        row.close();
+    }
+
+
+    public void SendOriginacionGpo (Context ctx, boolean flag, long id_solicitud){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag) loading.show();
+
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES + " AS s INNER JOIN " +TBL_CREDITO_GPO + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.id_solicitud = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
+        //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                SendIntegranteOriginacionGpo(
+                        ctx,
+                        0,
+                        -1,
+                        row.getString(0),
+                        row.getLong(4),
+                        row.getString(6),
+                        row.getString(12),
+                        row.getString(14),
+                        row.getString(15),
+                        row.getString(16),
+                        row.getString(17),
+                        row.getString(19)
+                );
+
+                row.moveToNext();
+            }
+
+            Log.e("count solicitudes", row.getCount()+" total");
+        }
+
+        row.close();
+    }
+
+    public void SendRenovacionGpo(Context ctx, boolean flag, long id_solicitud){
+        final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+
+        if (flag)
+            loading.show();
+        SessionManager session = new SessionManager(ctx);
+        final DBhelper dBhelper = new DBhelper(ctx);
+        final SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "" +
+            "SELECT " +
+                "s.id_solicitud, " +
+                "s.vol_solicitud, " +
+                "s.usuario_id, " +
+                "s.tipo_solicitud, " +
+                "s.id_originacion, " +
+                "s.nombre, " +
+                "s.fecha_inicio, " +
+                "s.fecha_termino, " +
+                "s.fecha_envio, " +
+                "s.fecha_dispositivo, " +
+                "s.fecha_guardado, " +
+                "s.estatus, " +
+                "c.* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud " +
+                "WHERE s.id_solicitud = ?";
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
+        //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
+
+
+        if (row.getCount() > 0){
+            row.moveToFirst();
+
+            for(int i = 0; i < row.getCount(); i++)
+            {
+                SendIntegranteRenovacionGpo(
+                        ctx,
+                        0,
+                        -1,
+                        row.getString(0),
+                        row.getLong(4),
+                        row.getString(6),
+                        row.getString(7),
+                        row.getString(12),
+                        row.getString(14),
+                        row.getString(15),
+                        row.getString(16),
+                        row.getString(17),
+                        row.getString(19),
+                        row.getString(21),
+                        row.getString(23)
+                );
+
+                row.moveToNext();
+            }
+
+            Log.e("count solicitudes", row.getCount()+" total");
+        }
+
+        row.close();
+    }
 
 
 }

@@ -85,6 +85,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_CLIENTE;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
@@ -1411,24 +1412,65 @@ public class DescargaDatos extends AppCompatActivity {
                                 /**Actualiza datos de los integrantes*/
                                 if (prestamos.get(i).getIntegrantes() != null) {
                                     for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++){
+
+
                                         /**Actualzia los datos del integrante*/
                                         MIntegrante mIntegrante = prestamos.get(i).getIntegrantes().get(l);
-                                        ContentValues cv_miembro = new ContentValues();
-                                        cv_miembro.put("nombre", mIntegrante.getNombre());                                      //NOMBRE
-                                        cv_miembro.put("direccion", mIntegrante.getDireccion());                                //DIRECCION
-                                        cv_miembro.put("tel_casa", mIntegrante.getTelCasa());                                   //TEL CASA
-                                        cv_miembro.put("tel_celular", mIntegrante.getTelCelular());                             //TEL CELULAR
-                                        cv_miembro.put("tipo_integrante", mIntegrante.getTipo());                               //TIPO
-                                        cv_miembro.put("monto_prestamo", mIntegrante.getMontoPrestamo());                       //MONTO PRESTAMO
-                                        cv_miembro.put("monto_requerido", mIntegrante.getMontoRequerido());                     //MONTO REQUERIDO
-                                        cv_miembro.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));             //FECHA ACTUALIZACION
-                                        cv_miembro.put("clave", mIntegrante.getClave());                                        //CLAVE
-                                        cv_miembro.put("id_prestamo_integrante", String.valueOf(mIntegrante.getPrestamoId()));  //PRESTAMO ID
-                                        cv_miembro.put("curp", "");                                                             //CURP
-                                        //cv_miembro.put("curp", mIntegrante.getCurp());                                          //CURP
 
-                                        db.update(TBL_MIEMBROS_GPO_T, cv_miembro, "id_prestamo = ? AND id_integrante = ?",
-                                                new String[]{String.valueOf(prestamos.get(i).getId()), String.valueOf(mIntegrante.getId())});
+
+                                        String sqlIntegrante = "" +
+                                            "SELECT " +
+                                            "m.* " +
+                                            "FROM " + TBL_MIEMBROS_GPO_T + " AS m " +
+                                            "WHERE m.id_prestamo = ? " +
+                                            "AND m.id_integrante = ? "
+                                        ;
+
+                                        Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(prestamos.get(i).getId()), String.valueOf(mIntegrante.getId())});
+
+                                        if(rowIntegrante.getCount() > 0)
+                                        {
+                                            ContentValues cv_miembro = new ContentValues();
+                                            cv_miembro.put("nombre", mIntegrante.getNombre());                                      //NOMBRE
+                                            cv_miembro.put("direccion", mIntegrante.getDireccion());                                //DIRECCION
+                                            cv_miembro.put("tel_casa", mIntegrante.getTelCasa());                                   //TEL CASA
+                                            cv_miembro.put("tel_celular", mIntegrante.getTelCelular());                             //TEL CELULAR
+                                            cv_miembro.put("tipo_integrante", mIntegrante.getTipo());                               //TIPO
+                                            cv_miembro.put("monto_prestamo", mIntegrante.getMontoPrestamo());                       //MONTO PRESTAMO
+                                            cv_miembro.put("monto_requerido", mIntegrante.getMontoRequerido());                     //MONTO REQUERIDO
+                                            cv_miembro.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));             //FECHA ACTUALIZACION
+                                            cv_miembro.put("clave", mIntegrante.getClave());                                        //CLAVE
+                                            cv_miembro.put("id_prestamo_integrante", String.valueOf(mIntegrante.getPrestamoId()));  //PRESTAMO ID
+                                            cv_miembro.put("curp", "");                                                             //CURP
+                                            //cv_miembro.put("curp", mIntegrante.getCurp());                                          //CURP
+
+                                            db.update(TBL_MIEMBROS_GPO_T, cv_miembro, "id_prestamo = ? AND id_integrante = ?",
+                                                    new String[]{String.valueOf(prestamos.get(i).getId()), String.valueOf(mIntegrante.getId())});
+                                        }
+                                        else {
+                                            HashMap<Integer, String> values_miembro = new HashMap<>();
+                                            values_miembro.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
+                                            values_miembro.put(1, String.valueOf(mIntegrante.getId()));                 //INTEGRANTE ID
+                                            values_miembro.put(2, String.valueOf(mIntegrante.getNumSolicitud()));       //NUM SOLICITUD
+                                            values_miembro.put(3, String.valueOf(mIntegrante.getGrupoId()));            //GRUPO ID
+                                            values_miembro.put(4, mIntegrante.getNombre());                             //NOMBRE
+                                            values_miembro.put(5, mIntegrante.getDireccion());                          //DIRECCION
+                                            values_miembro.put(6, mIntegrante.getTelCasa());                            //TEL CASA
+                                            values_miembro.put(7, mIntegrante.getTelCelular());                         //TEL CELULAR
+                                            values_miembro.put(8, mIntegrante.getTipo());                               //TIPO
+                                            values_miembro.put(9, mIntegrante.getMontoPrestamo());                      //MONTO PRESTAMO
+                                            values_miembro.put(10, mIntegrante.getMontoRequerido());                     //MONTO REQUERIDO
+                                            values_miembro.put(11, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA CREACION
+                                            values_miembro.put(12, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZACION
+                                            values_miembro.put(13, mIntegrante.getClave());                              //CLAVE
+                                            values_miembro.put(14, String.valueOf(mIntegrante.getPrestamoId()));         //ID PRESTAMO
+                                            values_miembro.put(15, "");                                                  //CURP
+                                            //values_miembro.put(15, mIntegrante.getCurp());                               //CURP
+                                            dBhelper.saveMiembros(db, values_miembro);
+
+                                        }
+
+                                        rowIntegrante.close();
 
                                         //BUSCAR SI SE TIENE LOS DOCUMENTOS DE EXPEDIENTES
                                         if (session.getUser().get(5).contains("ROLE_GESTOR")) {

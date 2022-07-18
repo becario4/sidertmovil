@@ -1,11 +1,8 @@
 package com.sidert.sidertmovil;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,7 +36,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -58,8 +54,8 @@ import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
 import com.sidert.sidertmovil.views.renovacion.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
-import com.sidert.sidertmovil.activities.SolicitudCredito;
-import com.sidert.sidertmovil.activities.Solicitudes;
+import com.sidert.sidertmovil.views.originacion.SolicitudCredito;
+import com.sidert.sidertmovil.views.solicitudesautorizadas.Solicitudes;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.autorizaciones_cc_fragment;
@@ -80,7 +76,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

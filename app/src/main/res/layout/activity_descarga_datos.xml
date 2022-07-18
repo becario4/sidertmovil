@@ -40,13 +40,13 @@
                 android:layout_height="wrap_content" />
 
             <ProgressBar
-                android:layout_marginBottom="80dp"
-                android:layout_alignParentBottom="true"
-                android:indeterminateTint="@android:color/white"
-                android:indeterminate="true"
-                android:layout_centerHorizontal="true"
                 android:layout_width="80dp"
-                android:layout_height="80dp"/>
+                android:layout_height="80dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="80dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@android:color/white" />
 
             <ScrollView
                 android:layout_width="match_parent"

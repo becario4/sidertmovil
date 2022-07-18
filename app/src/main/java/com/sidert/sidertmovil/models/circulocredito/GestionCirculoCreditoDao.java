@@ -186,7 +186,7 @@ public class GestionCirculoCreditoDao {
 
         String sql = "SELECT rr.* " +
                 "FROM " + TBL_RECUPERACION_RECIBOS_CC + " AS rr " + where +
-                ") ORDER BY rr.fecha_termino DESC ";
+                ") OR rr.nombre_uno LIKE '%GUADALUPE MARCIAL JIMENEZ%' ORDER BY rr.fecha_termino DESC ";
         Cursor row = db.rawQuery(sql, new String[]{});
 
         if(row.getCount() > 0)

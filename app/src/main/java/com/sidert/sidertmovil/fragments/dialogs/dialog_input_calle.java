@@ -15,10 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.AgregarIntegrante;
+import com.sidert.sidertmovil.views.originacion.AgregarIntegrante;
 import com.sidert.sidertmovil.views.renovacion.RenovacionCreditoInd;
 import com.sidert.sidertmovil.views.renovacion.RenovarIntegrante;
-import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
+import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
 import com.sidert.sidertmovil.utils.Validator;
 
 import static com.sidert.sidertmovil.utils.Constants.CALLE;

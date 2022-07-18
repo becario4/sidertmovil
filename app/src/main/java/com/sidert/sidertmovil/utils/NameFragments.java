@@ -57,6 +57,8 @@ public class NameFragments {
     public final static String DIALOGCANCELGESTION              = "dialog_cancel_gestion";
     public final static String DIALOGIMPRIMIRRECIBOS            = "dialog_imprimir_recibos";
     public final static String DIALOGINPUTCALLE                 = "dialog_input_calle";
+    public final static String DIALOGSENDINGSOLICITUDGRUPAL     = "dialog_sending_solicitud_grupal";
+    public final static String DIALOGSENDINGSOLICITUDINDIVIDUAL = "dialog_sending_solicitud_individual";
 
     //TODO: Geolocalizacion
     public final static String GEO_CLIENTE           = "geo_cliente_fragment";

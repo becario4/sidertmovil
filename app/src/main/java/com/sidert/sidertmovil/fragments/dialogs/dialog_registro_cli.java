@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.SolicitudCreditoInd;
+import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;

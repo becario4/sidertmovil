@@ -12,7 +12,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -35,8 +34,8 @@ import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRen;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.ClienteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.views.apoyogastosfunerarios.ResumenActivity;
 

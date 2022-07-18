@@ -81,6 +81,34 @@ public class SolicitudRenDao {
         return solicitud;
     }
 
+    public SolicitudRen findLikeNombreAndPrestamoId(String nombre, Integer prestamoId)
+    {
+        SolicitudRen solicitud = null;
+
+        String sql = "" +
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                "WHERE s.nombre like '%'||?||'%' " +
+                "AND s.prestamo_id = ? "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(nombre), String.valueOf(prestamoId)});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            solicitud = new SolicitudRen();
+
+            Fill(row, solicitud);
+        }
+
+        row.close();
+
+        return solicitud;
+    }
+
     public List<SolicitudRen> findByNombreAndPrestamoId(String nombre, Integer prestamoId)
     {
         List<SolicitudRen> solicitudes = new ArrayList<>();

@@ -603,6 +603,8 @@ public class Constants {
     public final static String EXTRA                    = "extra";
 
     //======================= KYES PARA ORIGINACION  =======================================
+    public final static String ID_SOLICITUD                     = "id_solicitud";
+    public final static String ES_RENOVACION                    = "es_renovacion";
     public final static String K_PLAZO                          = "plazo";
     public final static String K_PERIODICIDAD                   = "periodicidad";
     public final static String K_FECHA_DESEMBOLSO               = "fecha_desembolso";

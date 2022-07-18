@@ -339,6 +339,11 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                                     }, R.string.cancel, new Popups.DialogMessage() {
                                         @Override
                                         public void OnClickListener(AlertDialog dialog) {
+                                            ContentValues cv_solicitud = new ContentValues();
+                                            cv_solicitud.put("estatus", 1);
+
+                                            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+
                                             dialog.dismiss();
                                         }
                                     });

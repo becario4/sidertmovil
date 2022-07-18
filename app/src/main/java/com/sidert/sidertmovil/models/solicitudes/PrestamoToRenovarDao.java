@@ -47,6 +47,35 @@ public class PrestamoToRenovarDao{
         return prestamoToRenovar;
 
     }
+
+    public PrestamoToRenovar findLikeClienteNombreAndFechaVencimiento(String clienteNombre, String fechaVencimiento)
+    {
+        PrestamoToRenovar prestamoToRenovar = null;
+
+        String sql = "" +
+                "SELECT * " +
+                "FROM " + Constants.TBL_PRESTAMOS_TO_RENOVAR + " AS p " +
+                "WHERE p.cliente_nombre like '%'||?||'%' " +
+                "AND p.fecha_vencimiento = ?" +
+                "ORDER BY p.fecha_vencimiento "
+                ;
+
+        Cursor row = db.rawQuery(sql, new String[]{clienteNombre, fechaVencimiento});
+
+        if(row.getCount() > 0)
+        {
+            row.moveToFirst();
+
+            prestamoToRenovar = new PrestamoToRenovar();
+
+            fill(row, prestamoToRenovar);
+        }
+
+        row.close();
+
+        return prestamoToRenovar;
+    }
+
     public PrestamoToRenovar findLikeClienteNombre(String clienteNombre)
     {
         PrestamoToRenovar prestamoToRenovar = null;
