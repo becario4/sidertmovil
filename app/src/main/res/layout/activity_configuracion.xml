@@ -750,6 +750,46 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvCatSolicitud"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:cardElevation="@dimen/cardview_default_elevation">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:cardBackgroundColor="@color/yellow"
+                        app:cardElevation="@dimen/cardview_default_elevation"
+                        app:cardCornerRadius="5dp">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="3dp"
+                            android:src="@drawable/ic_sync"
+                            android:layout_marginRight="12dp"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:text="Actualizar Catálogos de Solicitud"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/black"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="17sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cvDownloadApk"
                 android:layout_marginTop="3dp"
                 android:layout_width="match_parent"

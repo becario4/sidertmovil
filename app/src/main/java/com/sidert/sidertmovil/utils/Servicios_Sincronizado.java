@@ -2646,6 +2646,7 @@ public class Servicios_Sincronizado {
         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12});
         rowIntegrante.moveToFirst();
 
+
         String id_solicitud = sDato0;
         Long id_solicitud_grupal = lDato4;
 

@@ -839,9 +839,9 @@ public class Sincronizar_Catalogos {
         protected void onPreExecute() {
             // TODO Auto-generated method stub
             super.onPreExecute();
-            pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-            pDialog.setCancelable(false);
-            pDialog.show();
+            //pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+            //pDialog.setCancelable(false);
+            //pDialog.show();
         }
 
         @Override
@@ -850,6 +850,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<MCatalogo> catalogo = (List<MCatalogo>) params[0];
             String tbl = (String) params[2];
+            ctx = (Context) params[1];
 
             if (catalogo.size() > 0){
                 DBhelper dBhelper = new DBhelper(ctx);
@@ -876,7 +877,7 @@ public class Sincronizar_Catalogos {
         @Override
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
-            pDialog.dismiss();
+            //pDialog.dismiss();
             super.onPostExecute(result);
 
         }

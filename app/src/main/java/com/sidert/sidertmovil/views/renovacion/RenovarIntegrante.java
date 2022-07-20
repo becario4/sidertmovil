@@ -2886,7 +2886,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvEstadoNacCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (is_edit && isNuevo) {
+            if ((is_edit && isNuevo ) || tvEstadoNacCli.getText().toString().trim().isEmpty()) {
                 Intent i_estados = new Intent(ctx, Catalogos.class);
                 i_estados.putExtra(TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
                 i_estados.putExtra(CATALOGO, Constants.ESTADOS);
@@ -4978,6 +4978,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
             tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            if(tvEstadoNacCli.getText().toString().trim().isEmpty()) tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
             etCurpCli.setEnabled(false);
             etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             if(etCurpCli.getText().toString().trim().length() < 18)

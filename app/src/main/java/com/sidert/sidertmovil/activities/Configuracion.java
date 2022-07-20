@@ -91,6 +91,7 @@ public class Configuracion extends AppCompatActivity {
     private CardView sincronizarMunicipios;
     private CardView cvSincronizarIntegrantesRen;
     private CardView cvCompletarIntegrantesRen;
+    private CardView cvCatSolicitud;
 
     private SessionManager session;
 
@@ -123,6 +124,7 @@ public class Configuracion extends AppCompatActivity {
         sincronizarLocalidades                   = findViewById(R.id.sincronizarLocalidades);
         sincronizarMunicipios                    = findViewById(R.id.sincronizarMunicipios);
         cvCompletarIntegrantesRen                = findViewById(R.id.cvCompletarIntegrantesRen);
+        cvCatSolicitud                           = findViewById(R.id.cvCatSolicitud);
 
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
@@ -154,6 +156,7 @@ public class Configuracion extends AppCompatActivity {
         sincronizarLocalidades.setOnClickListener(sincronizarLocalidades_OnClick);
         sincronizarMunicipios.setOnClickListener(sincronizarMunicipios_OnClick);
         cvCompletarIntegrantesRen.setOnClickListener(cvCompletarIntegrantesRen_OnClick);
+        cvCatSolicitud.setOnClickListener(cvCatSolicitud_OnClick);
 
 
         /**Evento de click para descargar las geolocalizaciones ya realizadas*/
@@ -198,6 +201,7 @@ public class Configuracion extends AppCompatActivity {
                             sincronizarColonias.setVisibility(View.VISIBLE);
                             sincronizarLocalidades.setVisibility(View.VISIBLE);
                             sincronizarMunicipios.setVisibility(View.VISIBLE);
+                            cvCatSolicitud.setVisibility(View.VISIBLE);
                             break;
                         case "renovacion":
                             cvSincronizarRenovaciones.setVisibility(View.VISIBLE);
@@ -207,6 +211,7 @@ public class Configuracion extends AppCompatActivity {
                             sincronizarLocalidades.setVisibility(View.VISIBLE);
                             sincronizarMunicipios.setVisibility(View.VISIBLE);
                             cvCompletarIntegrantesRen.setVisibility(View.VISIBLE);
+                            cvCatSolicitud.setVisibility(View.VISIBLE);
                             break;
                         case "solicitudes":
                             //menuGeneral.getItem(8).setVisible(true);
@@ -224,6 +229,36 @@ public class Configuracion extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    private View.OnClickListener cvCatSolicitud_OnClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            /**Valida que se encuentre conectado a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(() -> {
+                    /**Valida si esta la sesion activa*/
+                    if (session.getUser().get(6).equals("true")) {
+                        /**Procesos a enviar que esten en pendiente de envio*/
+                        Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
+                        sc.GetCategoriasTickets(ctx);
+                        sc.GetEstados(ctx);
+                        sc.GetSectores(ctx);
+                        sc.GetOcupaciones(ctx);
+                        sc.GetMediosPagoOri(ctx);
+                        sc.GetNivelesEstudios(ctx);
+                        sc.GetEstadosCiviles(ctx);
+                        sc.GetParentesco(ctx);
+                        sc.GetTipoIdentificacion(ctx);
+                        sc.GetViviendaTipos(ctx);
+                        sc.GetMediosContacto(ctx);
+                        sc.GetDestinosCredito(ctx);
+                        sc.GetPlazosPrestamo(ctx);
+                    }
+                }, 3000);
+            }
+        }
+    };
 
     /**Evento para sincronizar lo que esta pendiente de envio*/
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {
@@ -1151,11 +1186,11 @@ public class Configuracion extends AppCompatActivity {
             if (NetworkStatus.haveNetworkConnection(ctx)){
                 Sincronizar_Catalogos catalogos = new Sincronizar_Catalogos();
                 catalogos.GetEstados(ctx);
-                catalogos.GetMunicipios(ctx);
+                //catalogos.GetMunicipios(ctx);
                 catalogos.GetOcupaciones(ctx);
                 catalogos.GetSectores(ctx);
                 catalogos.GetTipoIdentificacion(ctx);
-                catalogos.GetColonias(ctx);
+                //catalogos.GetColonias(ctx);
                 catalogos.GetCategoriasTickets(ctx);
                 catalogos.GetPlazosPrestamo(ctx);
             }
