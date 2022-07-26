@@ -2886,7 +2886,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener tvEstadoNacCli_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if ((is_edit && isNuevo ) || tvEstadoNacCli.getText().toString().trim().isEmpty()) {
+            //if ((is_edit && isNuevo ) || tvEstadoNacCli.getText().toString().trim().isEmpty()) {
+            if (is_edit || tvEstadoNacCli.getText().toString().trim().isEmpty()) {
                 Intent i_estados = new Intent(ctx, Catalogos.class);
                 i_estados.putExtra(TITULO, Miscellaneous.ucFirst(Constants.ESTADOS));
                 i_estados.putExtra(CATALOGO, Constants.ESTADOS);

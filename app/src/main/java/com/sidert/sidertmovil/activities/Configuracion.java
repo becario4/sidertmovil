@@ -35,8 +35,14 @@ import com.sidert.sidertmovil.models.catalogos.Municipio;
 import com.sidert.sidertmovil.models.catalogos.MunicipioDao;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovar;
 import com.sidert.sidertmovil.models.solicitudes.PrestamoToRenovarDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CreditoGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpoDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRen;
@@ -685,6 +691,9 @@ public class Configuracion extends AppCompatActivity {
                     /**Valida si esta la sesion activa*/
                     if (session.getUser().get(6).equals("true")) {
 
+                        //ReactivarOriginacionGpo("027", "LAS AMERICAS");
+
+
                         /*
                             if(session.getUser().get(0).equals("582")){
                             SolicitudDao solicitudDao = new SolicitudDao(ctx);
@@ -856,6 +865,8 @@ public class Configuracion extends AppCompatActivity {
 
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
+
+                        ReactivarRenovacionGpo("134", "LOMAS VERDES 3821", "2022-07-26");
 
                         //ReactivarRenovacionGpo("310", "FE 3602", "2022-07-28");
 
@@ -1681,6 +1692,40 @@ public class Configuracion extends AppCompatActivity {
                                 }
                             }
                              */
+        }
+    }
+
+    private void ReactivarOriginacionGpo(String asesorId, String nombre)
+    {
+        if (session.getUser().get(0).equals(asesorId))
+        {
+            SolicitudDao solicitudDao = new SolicitudDao(ctx);
+            Solicitud solicitud = solicitudDao.findLikeNombre(nombre);
+
+            if (solicitud != null) {
+                CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
+                CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
+                if(creditoGpo != null)
+                {
+                    IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
+                    List<IntegranteGpo> integranteGpoList = integranteGpoDao.findAllByIdCredito(creditoGpo.getId());
+
+                    if(integranteGpoList.size() > 0)
+                    {
+                        for(IntegranteGpo iGpo : integranteGpoList)
+                        {
+                            iGpo.setEstatusCompletado(0);
+                            iGpo.setEstatusRechazo(0);
+                            integranteGpoDao.updateEstatus(iGpo);
+                            integranteGpoDao.saveEstatus(iGpo);
+                        }
+                    }
+
+                    solicitud.setEstatus(0);
+                    solicitudDao.updateEstatus(solicitud);
+                }
+            }
         }
     }
 

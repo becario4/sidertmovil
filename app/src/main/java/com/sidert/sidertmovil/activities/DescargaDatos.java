@@ -166,28 +166,27 @@ public class DescargaDatos extends AppCompatActivity {
         sc.GetDestinosCredito(ctx);
         sc.GetPlazosPrestamo(ctx);
 
-        /**Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
-         * o prestamos autorizados para autorizar monto*/
+        //Se descarga informacion como prestamos a renovar, ultimos folios de CC y AGF
+        //o prestamos autorizados para autorizar monto*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
 
         ss.SendImpresionesVi(ctx, false);
         ss.SendReimpresionesVi(ctx, false);
 
-        /**Descarga los prestamos autorizados y vigentes para realizar cobros AGF*/
+        //Descarga los prestamos autorizados y vigentes para realizar cobros AGF
         ss.GetPrestamos(ctx, false);
-        /**Descarga el ultimo folio de AGF*/
+        //Descarga el ultimo folio de AGF
         ss.GetUltimosRecibos(ctx);
-        /**Descarga el ultimo folio de CC*/
+        //Descarga el ultimo folio de CC
         ss.GetUltimosRecibosCC(ctx);
 
-        /**Descarga los prestamos a renovar*/
+        //Descarga los prestamos a renovar
         ss.GetPrestamosToRenovar(ctx);
-        /**Descarga Solicituades Individuales que fueron rechazadas por la admin*/
+        //Descarga Solicituades Individuales que fueron rechazadas por la admin
         ss.GetSolicitudesRechazadasInd(ctx, false);
-        /**Descarga Solicituades Grupales que fueron rechazadas por la admin*/
+        //Descarga Solicituades Grupales que fueron rechazadas por la admin
         ss.GetSolicitudesRechazadasGpo(ctx, false);
-        /**Descarga los prestamos que fueron autorizados por la admin solo para
-         * autorizar el monto*/
+        //Descarga los prestamos que fueron autorizados por la admin solo para autorizar el monto
         ss.GetPrestamosAutorizados(ctx, false);
 
         ss.GetGestionesVerDom(ctx, false);
