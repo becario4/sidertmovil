@@ -331,8 +331,8 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                     }
                                     case "ORIGINACION":
                                     {
-                                        ss.SendOriginacionInd (ctx, false);
-                                        ss.SendOriginacionGpo(ctx, false);
+                                        //ss.SendOriginacionInd (ctx, false);
+                                        //ss.SendOriginacionGpo(ctx, false);
                                         ejecutado = 1;
 
                                         servicioSincronizado.setEjecutado(ejecutado);
@@ -342,8 +342,8 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                     }
                                     case "RENOVACION":
                                     {
-                                        ss.SendRenovacionInd(ctx, false);
-                                        ss.SendRenovacionGpo(ctx, false);
+                                        //ss.SendRenovacionInd(ctx, false);
+                                        //ss.SendRenovacionGpo(ctx, false);
                                         ejecutado = 1;
 
                                         servicioSincronizado.setEjecutado(ejecutado);
@@ -375,9 +375,9 @@ public class AlarmaTrackerReciver extends BroadcastReceiver {
                                     case "RESULTADO SOLICITUD":
                                     {
                                         ss.SaveGeolocalizacion(ctx, false);
-                                        ss.MontoAutorizado(ctx, false);
-                                        ss.GetSolicitudesRechazadasInd(ctx, false);
-                                        ss.GetSolicitudesRechazadasGpo(ctx, false);
+                                        //ss.MontoAutorizado(ctx, false);
+                                        //ss.GetSolicitudesRechazadasInd(ctx, false);
+                                        //ss.GetSolicitudesRechazadasGpo(ctx, false);
                                         ejecutado = 1;
 
                                         servicioSincronizado.setEjecutado(ejecutado);

@@ -691,7 +691,8 @@ public class Configuracion extends AppCompatActivity {
                     /**Valida si esta la sesion activa*/
                     if (session.getUser().get(6).equals("true")) {
 
-                        //ReactivarOriginacionGpo("027", "LAS AMERICAS");
+                        //ReactivarOriginacionGpo("402", "LA ESPERANZA");
+                        //ReactivarOriginacionGpo("402", "LA COLONIA");
 
 
                         /*
@@ -866,9 +867,12 @@ public class Configuracion extends AppCompatActivity {
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
 
-                        ReactivarRenovacionGpo("134", "LOMAS VERDES 3821", "2022-07-26");
+                        ReactivarRenovacionGpo("436", "LAS HIJAS DE LAS COMADRITAS 2435", "2022-07-29");
+                        //ReactivarRenovacionGpo("402", "LA ESPERANZA 4075", "2022-07-21");
 
-                        //ReactivarRenovacionGpo("310", "FE 3602", "2022-07-28");
+                        //ReactivarRenovacionGpo("082", "LAS DESALMADAS 3549", "2022-07-21");
+
+                        ///ReactivarRenovacionGpo("310", "FE 3602", "2022-07-28");
 
                         /*
                         if (session.getUser().get(0).equals("403"))

@@ -710,7 +710,7 @@ public class fichas_pendientes_fragment extends Fragment {
         /**Valida si el tamaño del condicional "where" es mayor que cero para anteponer la
          * palabra reservada WHERE*/
         if (where.length() > 4)
-            GetCartera("WHERE" + where.substring(4));
+            GetCartera(" WHERE" + where.substring(4));
         else
             GetCartera("");
     }
