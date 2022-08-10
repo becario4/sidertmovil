@@ -69,12 +69,16 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_cli;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_individual;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ApiResponse;
+import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
 import com.sidert.sidertmovil.models.permiso.PermisoResponse;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
@@ -95,16 +99,18 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Politi
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.PoliticaPldDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Referencia;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ReferenciaDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
@@ -608,8 +614,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     boolean pushMapButtonNeg = false;
     boolean pushMapButtonAval = false;
 
-    private final int MENU_INDEX_DEVMODE = 2;
-    private final int MENU_INDEX_DESBLOQUEAR = 1;
+    private final int MENU_INDEX_DEVMODE = 3;
+    private final int MENU_INDEX_DESBLOQUEAR = 2;
+    private final int MENU_INDEX_UPDATE_ESTATUS = 1;
     private final int MENU_INDEX_ENVIAR = 0;
     private boolean modoSuperUsuario = false;
 
@@ -7059,7 +7066,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                    m.GetStr(tvEstadoCivilCli).equals("UNIN LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
@@ -7215,7 +7222,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         @Override
         public void onClick(View v) {
             if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                    m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -7243,7 +7250,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 etPropiedadesEco.requestFocus();
             } else {
                 if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                        m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                     ivDown3.setVisibility(View.GONE);
                     ivUp3.setVisibility(View.VISIBLE);
                     llDatosConyuge.setVisibility(View.VISIBLE);
@@ -7329,7 +7336,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             llDatosDocumentos.setVisibility(View.GONE);
         }
     };
-
 
     private View.OnClickListener tvHoraVisita_OnClick = new View.OnClickListener() {
         @Override
@@ -8133,7 +8139,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                         case "CASA RENTADA":
                                             if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                                                 flag_tipo_casa = true;
-                                                cv.put("parentesco", m.GetStr(tvTipoCasaCli));
+                                                cv.put("parentesco", m.GetStr(tvCasaFamiliar));
                                                 cv.put("otro_tipo_vivienda", "");
                                             } else
                                                 ivError2.setVisibility(View.VISIBLE);
@@ -9541,7 +9547,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             menu.getItem(MENU_INDEX_ENVIAR).setVisible(is_edit);
         }
 
-        //menu.getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+        SolicitudDao solicitudDao = new SolicitudDao(ctx);
+        Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (TBmain.getMenu().size() > 1) {
+            if (solicitud != null && solicitud.getEstatus() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+            else
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+        }
+
+        menu.getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
 
         return true;
     }
@@ -9551,15 +9567,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         switch (item.getItemId()) {
             case android.R.id.home:
                 break;
-            /*case R.id.devmode:
+            case R.id.devmode:
                 enviarJSONObjects();
                 break;
             case R.id.desbloquear:
                 if (modoSuperUsuario) {
                     desactivarModoSuper();
-                    bloquearSolicitud();
+                    deshabilitarSolicitud();
                 } else activarModoSuper();
-                break;*/
+                break;
+            case R.id.updateEstatus:
+                obtenerEstatusSolicitud();
+                break;
             case R.id.enviar:
                 sendSolicitud();
                 break;
@@ -9621,7 +9640,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private void initComponents(String idSolicitud) {
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
         row.moveToFirst();
-        is_edit = row.getInt(11) == 0;
+        is_edit = row.getInt(11) <= 1;
         row.close();
 
         //id_cliente = row.getString(11);
@@ -9703,7 +9722,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -10384,6 +10403,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
     private void habilitarCampos() {
         TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(true);
+        TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+
+
         cbNegEnDomCli.setEnabled(true);
         etMontoPrestamo.setEnabled(true);
         etMontoRefinanciar.setEnabled(true);
@@ -10701,6 +10723,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
 
     private void deshabilitarCampos() {
+        SolicitudDao solicitudDao = new SolicitudDao(ctx);
+        Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+        if (solicitud != null && solicitud.getEstatus() > 1) {
+            if (TBmain.getMenu().size() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+        }
+        else {
+            if (TBmain.getMenu().size() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+        }
+
         if (!is_edit) {
             cbNegEnDomCli.setEnabled(false);
             invalidateOptionsMenu();
@@ -11082,7 +11115,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         return solicitudActivada;
     }
 
-    private boolean bloquearSolicitud() {
+    private boolean deshabilitarSolicitud() {
         TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
 
         boolean solicitudBloqueada = false;
@@ -11200,7 +11233,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             apiResponse = response.body();
                             loadingSendData.dismiss();
 
-                            if (apiResponse.getError() != null) {
+                            if (apiResponse.getError() == null) {
                                 Toast.makeText(ctx, "¡Solicitud compartida!", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(ctx, apiResponse.getMensaje(), Toast.LENGTH_SHORT).show();
@@ -11254,20 +11287,23 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
+            //VERSION PRODUCCION
+            /*
             Servicios_Sincronizado ss = new Servicios_Sincronizado();
             ss.SendOriginacionInd(ctx, true);
             Toast.makeText(ctx, "Termina guardado de solicitud", Toast.LENGTH_SHORT).show();
 
             finish();
+            */
 
-            /*dialog_sending_solicitud_individual dialogSendSI = new dialog_sending_solicitud_individual();
+            //PRUEBAS PARA NUEVA VERSION
+            dialog_sending_solicitud_individual dialogSendSI = new dialog_sending_solicitud_individual();
             Bundle b = new Bundle();
             b.putLong(ID_SOLICITUD, id_solicitud);
             b.putBoolean(ES_RENOVACION, false);
             dialogSendSI.setArguments(b);
             dialogSendSI.setCancelable(false);
             dialogSendSI.show(getSupportFragmentManager(), NameFragments.DIALOGSENDINGSOLICITUDINDIVIDUAL);
-             */
         }
     }
 
@@ -11286,7 +11322,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             ivError2.setVisibility(View.GONE);
         }
 
-        if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE"))
+        if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE"))
             conyuge = saveConyuge();
         else
             conyuge = true;
@@ -11321,5 +11357,241 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         return flag;
     }
+
+    private void obtenerEstatusSolicitud()
+    {
+        final AlertDialog loadingEstatus = Popups.showLoadingDialog(context, R.string.please_wait, R.string.loading_info);
+        loadingEstatus.show();
+
+        SolicitudDao solicitudDao = new SolicitudDao(ctx);
+        Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (solicitud != null && solicitud.getEstatus() > 1) {
+
+            SessionManager session = new SessionManager(ctx);
+            SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+            Call<List<SolicitudDetalleEstatusInd>> call = solicitudIndService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
+
+            call.enqueue(new Callback<List<SolicitudDetalleEstatusInd>>() {
+                @Override
+                public void onResponse(Call<List<SolicitudDetalleEstatusInd>> call, Response<List<SolicitudDetalleEstatusInd>> response) {
+                    switch (response.code()) {
+                        case 200:
+                            List<SolicitudDetalleEstatusInd> solicitudes = response.body();
+
+                            for (SolicitudDetalleEstatusInd se : solicitudes) {
+                                if (se.getTipoSolicitud() == 1 && Integer.compare(se.getId(),solicitud.getIdOriginacion()) == 0) {
+                                    ClienteDao clienteDao = new ClienteDao(ctx);
+                                    SolicitudDao solicitudDao = new SolicitudDao(ctx);
+
+                                    Cliente cliente = null;
+                                    Solicitud solicitudTemp = solicitudDao.findByIdOriginacion(se.getId());
+
+                                    if (solicitudTemp != null)
+                                        cliente = clienteDao.findByIdSolicitud(solicitudTemp.getIdSolicitud());
+
+                                    if (cliente != null) {
+                                        String comentario = "";
+
+                                        Log.e("AQUI CLIENTE ID", String.valueOf(cliente.getIdCliente()));
+                                        Log.e("AQUI SOLICITUD ESTADO", String.valueOf(se.getSolicitudEstadoId()));
+
+                                        if (se.getSolicitudEstadoId() == 1) {
+                                            solicitudTemp.setEstatus(2);
+                                            comentario = "EN REVISIÓN";
+                                        } else if (se.getSolicitudEstadoId() == 3) {
+                                            solicitudTemp.setEstatus(3);
+                                            comentario = "VALIDADO";
+                                        } else {
+                                            //solicitud.setEstatus(3);
+                                            //comentario = cliente.getComentarioRechazo();
+                                        }
+
+                                        if (se.getSolicitudEstadoId() == 2) solicitudTemp.setEstatus(5);
+
+
+                                        Log.e("AQUI comentario", comentario);
+
+                                        cliente.setComentarioRechazo(comentario);
+                                        clienteDao.updateEstatus(cliente);
+
+                                        solicitudDao.updateEstatus(solicitudTemp);
+                                    }
+                                }
+                            }
+                            obtenerRechazo(loadingEstatus, solicitud);
+                            break;
+                        default:
+                            obtenerRechazo(loadingEstatus, solicitud);
+                            Log.e("AQUI ", response.message());
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<SolicitudDetalleEstatusInd>> call, Throwable t) {
+                    obtenerRechazo(loadingEstatus, solicitud);
+                    Log.e("Error", "failAGF" + t.getMessage());
+                }
+            });
+
+        }
+
+    }
+
+    private void obtenerRechazo(AlertDialog alert, Solicitud solicitud)
+    {
+        SessionManager session = new SessionManager(ctx);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        Call<List<MSolicitudRechazoInd>> call = api.getSolicitudRechazoInd("Bearer "+ session.getUser().get(7));
+        call.enqueue(new Callback<List<MSolicitudRechazoInd>>() {
+            @Override
+            public void onResponse(Call<List<MSolicitudRechazoInd>> call, Response<List<MSolicitudRechazoInd>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<MSolicitudRechazoInd> solicitudes = response.body();
+                        if (solicitudes.size() > 0){
+                            for (MSolicitudRechazoInd item : solicitudes){
+                                ContentValues cv;
+                                String sql = "";
+                                Cursor row = null;
+                                if (item.getTipoSolicitud() == 1 && Integer.compare(item.getId(),solicitud.getIdOriginacion()) == 0) {
+
+                                    Log.e("EstautsXXXXXX",item.getSolicitudEstadoId()+" XXXXXXXXXx");
+                                    //                 0                1               2              3                4                 5             6             7               8
+                                    sql = "SELECT s.id_solicitud, cre.id_credito, cli.id_cliente, con.id_conyuge, eco.id_economico, neg.id_negocio, ava.id_aval, ref.id_referencia, cro.id FROM " + TBL_SOLICITUDES + " AS s " +
+                                            "JOIN " + TBL_CREDITO_IND + " AS cre ON s.id_solicitud = cre.id_solicitud " +
+                                            "JOIN " + TBL_CLIENTE_IND + " AS cli ON s.id_solicitud = cli.id_solicitud " +
+                                            "JOIN " + TBL_CONYUGE_IND + " AS con ON s.id_solicitud = con.id_solicitud " +
+                                            "JOIN " + TBL_ECONOMICOS_IND + " AS eco ON s.id_solicitud = eco.id_solicitud " +
+                                            "JOIN " + TBL_NEGOCIO_IND + " AS neg ON s.id_solicitud = neg.id_solicitud " +
+                                            "JOIN " + TBL_AVAL_IND + " AS ava ON s.id_solicitud = ava.id_solicitud " +
+                                            "JOIN " + TBL_REFERENCIA_IND + " AS ref ON s.id_solicitud = ref.id_solicitud " +
+                                            "JOIN " + TBL_CROQUIS_IND + " AS cro ON s.id_solicitud = cro.id_solicitud " +
+                                            "WHERE s.id_originacion = ? AND s.estatus >= 2";
+                                    row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
+
+                                    Log.e("XXXXCount", row.getCount()+" Total");
+                                    if (row.getCount() > 0) {
+                                        row.moveToFirst();
+                                        if (item.getSolicitudEstadoId() == 4) { //Actualiza solicitudes de originacion que fueron rechazadas por error de datos
+
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", "");
+                                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+
+                                            if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCliente()));
+                                                int i_update = db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+                                                Log.e("Update", "Update: " + i_update);
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                db.update(TBL_CONYUGE_IND, cv, "id_solicitud = ? AND id_conyuge = ?", new String[]{row.getString(0), row.getString(3)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                db.update(TBL_DOCUMENTOS, cv, "id_solicitud = ? ", new String[]{row.getString(0)});
+                                            }
+
+                                            if (item.getEstatusNegocio() != null && !(Boolean) item.getEstatusNegocio()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminNegocio()));
+                                                db.update(TBL_NEGOCIO_IND, cv, "id_solicitud = ? AND id_negocio = ?", new String[]{row.getString(0), row.getString(5)});
+                                            }
+
+                                            Log.e("NEgocioValieCli", String.valueOf((item.getEstatusCliente() == null || (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()))));
+                                            Log.e("negocioVal", String.valueOf(item.getEstatusAval() != null && !(Boolean) item.getEstatusAval()));
+                                            if (item.getEstatusAval() != null && !(Boolean) item.getEstatusAval()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminAval()));
+                                                db.update(TBL_AVAL_IND, cv, "id_solicitud = ? AND id_aval = ?", new String[]{row.getString(0), row.getString(6)});
+                                            }
+
+                                            Log.e("ReferenciaXXX", String.valueOf((item.getEstatusCliente() == null || (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()))
+                                                    && item.getEstatusReferencia() != null && !(Boolean) item.getEstatusReferencia()));
+
+                                            if (item.getEstatusReferencia() != null && !(Boolean) item.getEstatusReferencia()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminReferencia()));
+                                                db.update(TBL_REFERENCIA_IND, cv, "id_solicitud = ? AND id_referencia = ?", new String[]{row.getString(0), row.getString(7)});
+                                            }
+
+                                            if (item.getEstatusCroquis() != null && !(Boolean) item.getEstatusCroquis()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
+                                                db.update(TBL_CROQUIS_IND, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
+                                            }
+                                        }
+                                        else if (item.getSolicitudEstadoId() == 2) { //Actualiza solicitudes de originacion que fueron solicitudes rechazadas
+                                            Log.e("XXXXXXXX","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                                            Log.e("Comentario",  Miscellaneous.validStr(item.getComentarioAdminCliente()));
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 5);
+                                            db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", Miscellaneous.validStr("NO AUTORIZADO - " + item.getComentarioAdminCliente()));
+                                            db.update(TBL_CLIENTE_IND, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(8)});
+                                        }
+                                    }
+                                    row.close();
+                                }
+                            }
+                        }
+                        alert.dismiss();
+                        finish();
+                        break;
+                    default:
+                        alert.dismiss();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MSolicitudRechazoInd>> call, Throwable t) {
+                alert.dismiss();
+            }
+        });
+
+    }
+
+
 
 }

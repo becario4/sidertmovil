@@ -10,7 +10,7 @@ import com.sidert.sidertmovil.models.IFillModel;
 import java.io.Serializable;
 
 public class EconomicoRen extends BaseModel implements Serializable, IFillModel {
-    public final static String TBL                       = "tbl_economico_ind_ren";
+    public final static String TBL                       = "tbl_economicos_ind_ren";
     protected static final String COL_ID_ECONOMICO       = "id_economico";
     protected static final String COL_ID_SOLICITUD       = "id_solicitud";
     protected static final String COL_PROPIEDADES        = "propiedades";

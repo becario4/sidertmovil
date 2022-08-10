@@ -142,7 +142,8 @@ public class IntegranteGpoRenDao {
                 "SELECT " +
                 "* " +
                 "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
-                "WHERE i.id_credito = ?"
+                "WHERE i.id_credito = ? " +
+                "ORDER BY i.nombre, i.paterno, i.materno, i.id"
                 ;
 
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idCredito)});
@@ -209,5 +210,13 @@ public class IntegranteGpoRenDao {
 
         cv.put("estatus_completado", integrante.getEstatusCompletado());
         db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{String.valueOf(integrante.getId())});
+    }
+
+    public void setCompletado(IntegranteGpoRen integranteGpoRen, Integer idSolicitud)
+    {
+        ContentValues cv = new ContentValues();
+        cv.put("id_solicitud_integrante", idSolicitud);
+        cv.put("estatus_completado",2);
+        db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{String.valueOf(integranteGpoRen.getId())});
     }
 }

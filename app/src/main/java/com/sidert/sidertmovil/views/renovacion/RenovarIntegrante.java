@@ -4058,7 +4058,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ivUp1.setVisibility(View.GONE);
             llDatosPersonales.setVisibility(View.GONE);
 
-            if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4220,7 +4220,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ivUp4.setVisibility(View.GONE);
             llDatosNegocio.setVisibility(View.GONE);
 
-            if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4255,7 +4255,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
 
-            /*if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            /*if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4404,7 +4404,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 break;
             case "NEGOCIO":
                 NegocioIntegranteRenDao negocioDao = new NegocioIntegranteRenDao(ctx);
-                negocio = negocioDao.findByIdIntegrante(Long.valueOf(idDomicilio));
+                negocio = negocioDao.findByIdIntegrante(Integer.valueOf(idDomicilio));
                 break;
             default:
                 break;
@@ -4912,7 +4912,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 row.getInt(3) == 1 &&
                 row.getInt(4) == 1 &&
                 ((row.getString(1).equals("CASADO(A)") ||
-                        row.getString(1).equals("UNIÓN LIBRE") &&
+                        row.getString(1).equals("UNION LIBRE") &&
                                 row.getInt(5) == 1) ||
                         (row.getString(1).equals("SOLTERO(A)") ||
                                 row.getString(1).equals("VIUDO(A)") ||
@@ -5057,7 +5057,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -6387,7 +6387,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 }
 
                 /**se valida el estado civil del intengrante para saber si va a guardar datos del conyige*/
-                if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
+                if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
                 else

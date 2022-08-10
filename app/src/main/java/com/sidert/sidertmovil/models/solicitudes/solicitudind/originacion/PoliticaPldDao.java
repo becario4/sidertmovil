@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.sidert.sidertmovil.models.BaseDao;
 
-public class PoliticaPldDao  extends BaseDao {
+public class PoliticaPldDao extends BaseDao {
 
     public PoliticaPldDao(Context ctx) {
         super(ctx);

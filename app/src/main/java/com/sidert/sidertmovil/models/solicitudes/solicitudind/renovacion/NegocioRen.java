@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion;
 
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+
 import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;
@@ -7,7 +9,12 @@ import com.google.gson.annotations.SerializedName;
 import com.sidert.sidertmovil.models.BaseModel;
 import com.sidert.sidertmovil.models.IFillModel;
 
+import java.io.File;
 import java.io.Serializable;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class NegocioRen extends BaseModel implements Serializable, IFillModel {
     public final static String TBL                            = "tbl_negocio_ind_ren";
@@ -387,6 +394,20 @@ public class NegocioRen extends BaseModel implements Serializable, IFillModel {
 
     public void setUbicadoEnDomCli(String ubicadoEnDomCli) {
         this.ubicadoEnDomCli = ubicadoEnDomCli;
+    }
+
+    public MultipartBody.Part getFachadaMBPart() {
+        MultipartBody.Part fachada_negocio = null;
+        File image_fachada_negocio = null;
+
+        if(fotoFachada != null && !fotoFachada.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/" + fotoFachada);
+
+        if (image_fachada_negocio != null) {
+            RequestBody imageBodyFachadaNeg = RequestBody.create(MediaType.parse("image/*"), image_fachada_negocio);
+            fachada_negocio = MultipartBody.Part.createFormData("fachada_negocio", image_fachada_negocio.getName(), imageBodyFachadaNeg);
+        }
+
+        return fachada_negocio;
     }
 
     @Override

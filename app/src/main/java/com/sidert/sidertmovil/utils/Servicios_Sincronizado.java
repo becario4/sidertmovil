@@ -846,7 +846,7 @@ public class Servicios_Sincronizado {
                         Log.e("solicitante", json_solicitante.toString());
 
                         if (estadoCivil.equals("CASADO(A)") ||
-                            estadoCivil.equals("UNIÓN LIBRE")) {
+                            estadoCivil.equals("UNION LIBRE")) {
                             JSONObject json_conyuge = new JSONObject();
                             row_soli = dBhelper.getRecords(TBL_CONYUGE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                             row_soli.moveToFirst();
@@ -1396,7 +1396,7 @@ public class Servicios_Sincronizado {
                     Log.e("solicitante", json_solicitante.toString());
 
                     if (estadoCivil.equals("CASADO(A)") ||
-                            estadoCivil.equals("UNIÓN LIBRE")) {
+                            estadoCivil.equals("UNION LIBRE")) {
                         JSONObject json_conyuge = new JSONObject();
                         row_soli = dBhelper.getRecords(TBL_CONYUGE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
@@ -2135,7 +2135,7 @@ public class Servicios_Sincronizado {
 
 
                 if (rowIntegrante.getString(17).equals("CASADO(A)") ||
-                        rowIntegrante.getString(17).equals("UNIÓN LIBRE")) {
+                        rowIntegrante.getString(17).equals("UNION LIBRE")) {
                     JSONObject json_conyuge = new JSONObject();
 
                     json_conyuge.put(K_NOMBRE, rowIntegrante.getString(90));
@@ -2435,7 +2435,17 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void SendIntegranteRenovacionGpo(Context ctx, int iIndex, int iTotalRegistros, String sDato0, Long lDato4, String sDato6, String sDato7, String sDato12, String sDato14, String sDato15, String sDato16, String sDato17, String sDato19, String sDato21, String sDato23)
+    public void SendIntegranteRenovacionGpo(
+            Context ctx,
+            int iIndex,
+            int iTotalRegistros,
+            String sDato0,
+            Long lDato4,
+            String sDato6,
+            String sDato7,
+            String sDato12,
+            String sDato14,
+            String sDato15, String sDato16, String sDato17, String sDato19, String sDato21, String sDato23)
     {
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
@@ -2750,7 +2760,7 @@ public class Servicios_Sincronizado {
 
 
                 if (rowIntegrante.getString(17).equals("CASADO(A)") ||
-                        rowIntegrante.getString(17).equals("UNIÓN LIBRE")) {
+                        rowIntegrante.getString(17).equals("UNION LIBRE")) {
                     JSONObject json_conyuge = new JSONObject();
 
                     json_conyuge.put(K_NOMBRE, rowIntegrante.getString(92));
@@ -2950,7 +2960,20 @@ public class Servicios_Sincronizado {
         final DBhelper dBhelper = new DBhelper(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        String sql = "SELECT s.id_solicitud, s.vol_solicitud, s.usuario_id, s.tipo_solicitud, s.id_originacion, s.nombre, s.fecha_inicio, s.fecha_termino, s.fecha_envio, s.fecha_dispositivo, s.fecha_guardado, s.estatus, c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
+        String sql = "SELECT " +
+                "s.id_solicitud, " +
+                "s.vol_solicitud, " +
+                "s.usuario_id," +
+                " s.tipo_solicitud, " +
+                "s.id_originacion, " +
+                "s.nombre, " +
+                "s.fecha_inicio, " +
+                "s.fecha_termino, " +
+                "s.fecha_envio, " +
+                "s.fecha_dispositivo, " +
+                "s.fecha_guardado, " +
+                "s.estatus, " +
+                "c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
         Cursor row = db.rawQuery(sql, null);
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
@@ -4419,6 +4442,7 @@ public class Servicios_Sincronizado {
                 Log.e("Error", "failAGF" + t.getMessage());
             }
         });
+
     }
 
     public void GetSolicitudesEstatusGpo(Context ctx, boolean showDG){
@@ -10118,7 +10142,7 @@ public class Servicios_Sincronizado {
                     Log.e("solicitante", json_solicitante.toString());
 
                     if (estadoCivil.equals("CASADO(A)") ||
-                            estadoCivil.equals("UNIÓN LIBRE")) {
+                            estadoCivil.equals("UNION LIBRE")) {
                         JSONObject json_conyuge = new JSONObject();
                         row_soli = dBhelper.getRecords(TBL_CONYUGE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
@@ -10675,7 +10699,7 @@ public class Servicios_Sincronizado {
                     Log.e("solicitante", json_solicitante.toString());
 
                     if (estadoCivil.equals("CASADO(A)") ||
-                            estadoCivil.equals("UNIÓN LIBRE")) {
+                            estadoCivil.equals("UNION LIBRE")) {
                         JSONObject json_conyuge = new JSONObject();
                         row_soli = dBhelper.getRecords(TBL_CONYUGE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();

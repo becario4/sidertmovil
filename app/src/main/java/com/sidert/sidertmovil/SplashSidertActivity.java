@@ -136,7 +136,7 @@ public class SplashSidertActivity extends AppCompatActivity {
 
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
         //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        //session.setDominio("http://192.168.0.101:", "8083");//LOCALHOST
+        //session.setDominio("http://192.168.0.82:", "8083");//LOCALHOST
         //session.setDominio("http://192.168.3.58:", "8083");
         session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 

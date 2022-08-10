@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion;
 
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+
 import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;
@@ -7,7 +9,12 @@ import com.google.gson.annotations.SerializedName;
 import com.sidert.sidertmovil.models.BaseModel;
 import com.sidert.sidertmovil.models.IFillModel;
 
+import java.io.File;
 import java.io.Serializable;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class DocumentoRen extends BaseModel implements Serializable, IFillModel {
     public static final String TBL                         = "tbl_documentos_ren";
@@ -205,6 +212,189 @@ public class DocumentoRen extends BaseModel implements Serializable, IFillModel 
 
     public void setComprobanteAval(String comprobanteAval) {
         this.comprobanteAval = comprobanteAval;
+    }
+
+    public MultipartBody.Part getFotoIneFrontalMBPart()
+    {
+        MultipartBody.Part foto_ine_frontal = null;
+        File image_ine_frontal = null;
+
+        if(ineFrontal != null && !ineFrontal.equals(""))
+            image_ine_frontal = new File(ROOT_PATH + "Documentos/" + ineFrontal);
+
+        if (image_ine_frontal != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_ine_frontal);
+            foto_ine_frontal = MultipartBody.Part.createFormData("identificacion_frontal", image_ine_frontal.getName(), imageBody);
+        }
+
+        return foto_ine_frontal;
+    }
+
+    public MultipartBody.Part getFotoIneReversoMBPart()
+    {
+        MultipartBody.Part foto_ine_reverso = null;
+        File image_ine_reverso = null;
+
+        if(ineReverso != null && !ineReverso.equals(""))
+            image_ine_reverso = new File(ROOT_PATH + "Documentos/" + ineReverso);
+
+        if (image_ine_reverso != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_ine_reverso);
+            foto_ine_reverso = MultipartBody.Part.createFormData("identificacion_reverso", image_ine_reverso.getName(), imageBody);
+        }
+
+        return foto_ine_reverso;
+    }
+
+    public MultipartBody.Part getIneSelfieMBPart()
+    {
+        MultipartBody.Part ine_selfie = null;
+        File image_ine_selfie = null;
+
+        if(ineSelfie != null && !ineSelfie.equals(""))
+            image_ine_selfie = new File(ROOT_PATH + "Documentos/" + ineSelfie);
+
+        if (image_ine_selfie != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_ine_selfie);
+            ine_selfie = MultipartBody.Part.createFormData("identificacion_selfie", image_ine_selfie.getName(), imageBody);
+        }
+
+        return ine_selfie;
+    }
+
+
+    public MultipartBody.Part getCurpMBPart()
+    {
+        MultipartBody.Part foto_curp = null;
+        File image_curp = null;
+
+        if(curp != null && !curp.equals(""))
+            image_curp = new File(ROOT_PATH + "Documentos/" + curp);
+
+        if (image_curp != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_curp);
+            foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
+        }
+
+        if(foto_curp == null)
+        {
+            RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
+            foto_curp = MultipartBody.Part.createFormData("curp", "", attachmentEmpty);
+        }
+
+        return foto_curp;
+    }
+
+    public MultipartBody.Part getComprobanteMBPart()
+    {
+        MultipartBody.Part foto_comprobante = null;
+        File image_comprobante = null;
+
+        if(comprobante != null && !comprobante.equals(""))
+            image_comprobante = new File(ROOT_PATH + "Documentos/" + comprobante);
+
+        if (image_comprobante != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_comprobante);
+            foto_comprobante = MultipartBody.Part.createFormData("comprobante_domicilio", image_comprobante.getName(), imageBody);
+        }
+
+        return foto_comprobante;
+    }
+
+    public MultipartBody.Part getFirmaAsesorMBPart()
+    {
+        MultipartBody.Part firma_asesor = null;
+        File image_firma_asesor = null;
+
+        if(firmaAsesor != null && !firmaAsesor.equals(""))
+            image_firma_asesor = new File(ROOT_PATH + "Firma/" + firmaAsesor);
+
+        if (image_firma_asesor != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_firma_asesor);
+            firma_asesor = MultipartBody.Part.createFormData("firma_asesor", image_firma_asesor.getName(), imageBody);
+        }
+
+        return firma_asesor;
+    }
+
+    public MultipartBody.Part getComprobanteGarantiaMBPart()
+    {
+        MultipartBody.Part comprobante_garantia = null;
+        File image_comprobante_garantia = null;
+
+        if(comprobanteGarantia != null && !comprobanteGarantia.equals(""))
+            image_comprobante_garantia = new File(ROOT_PATH + "Documentos/" + comprobanteGarantia);
+
+        if (image_comprobante_garantia != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_comprobante_garantia);
+            comprobante_garantia = MultipartBody.Part.createFormData("comprobante_garantia", image_comprobante_garantia.getName(), imageBody);
+        }
+
+        return comprobante_garantia;
+    }
+
+    public MultipartBody.Part getIneFrontalAvalMBPart()
+    {
+        MultipartBody.Part ine_frontal_aval = null;
+        File image_ine_frontal_aval = null;
+
+        if(ineFrontalAval != null && !ineFrontalAval.equals(""))
+            image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/" + ineFrontalAval);
+
+        if (image_ine_frontal_aval != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_ine_frontal_aval);
+            ine_frontal_aval = MultipartBody.Part.createFormData("identificacion_frontal_aval", image_ine_frontal_aval.getName(), imageBody);
+        }
+
+        return ine_frontal_aval;
+    }
+
+    public MultipartBody.Part getIneReversoAvalMBPart()
+    {
+        MultipartBody.Part ine_reverso_aval = null;
+        File image_ine_reverso_aval = null;
+
+        if(ineReversoAval != null && !ineReversoAval.equals(""))
+            image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/" + ineReversoAval);
+
+        if (image_ine_reverso_aval != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_ine_reverso_aval);
+            ine_reverso_aval = MultipartBody.Part.createFormData("identificacion_reverso_aval", image_ine_reverso_aval.getName(), imageBody);
+        }
+
+        return ine_reverso_aval;
+    }
+
+    public MultipartBody.Part getCurpAvalMBPart()
+    {
+        MultipartBody.Part curp_aval = null;
+        File image_curp_aval = null;
+
+        if(curpAval != null && !curpAval.equals(""))
+            image_curp_aval = new File(ROOT_PATH + "Documentos/" + curpAval);
+
+        if (image_curp_aval != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_curp_aval);
+            curp_aval = MultipartBody.Part.createFormData("curp_aval", image_curp_aval.getName(), imageBody);
+        }
+
+        return curp_aval;
+    }
+
+    public MultipartBody.Part getComprobanteDomicilioAvalMBPart()
+    {
+        MultipartBody.Part comprobante_aval = null;
+        File image_comprobante_aval = null;
+
+        if(comprobanteAval != null && !comprobanteAval.equals(""))
+            image_comprobante_aval = new File(ROOT_PATH + "Documentos/" + comprobanteAval);
+
+        if (image_comprobante_aval != null) {
+            RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), image_comprobante_aval);
+            comprobante_aval = MultipartBody.Part.createFormData("comprobante_domicilio_aval", image_comprobante_aval.getName(), imageBody);
+        }
+
+        return comprobante_aval;
     }
 
     @Override

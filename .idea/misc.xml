@@ -81,6 +81,16 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_enviar_datos.xml" value="0.32592592592592595" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_nav_recuperacion_ind.xml" value="0.1" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_prestamos.xml" value="0.1259259259259259" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.17350557244174267" />
+        <entry key="app/src/main/res/layout/activity_solicitud_integrante.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/popup_registro_integrante.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/popup_renovar_integrante.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/popup_sending_solicitud_grupal.xml" value="0.27853260869565216" />
+        <entry key="app/src/main/res/layout/popup_sending_solicitud_individual.xml" value="0.27898550724637683" />
+        <entry key="app/src/main/res/layout/view_step_croquis_solicitante.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/menu_actualizar.xml" value="0.14629629629629629" />
+        <entry key="app/src/main/res/menu/menu_enviar_datos.xml" value="0.3078125" />
+        <entry key="app/src/main/res/menu/menu_save.xml" value="0.27314814814814814" />
       </map>
     </option>
   </component>
@@ -133,7 +143,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="13" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

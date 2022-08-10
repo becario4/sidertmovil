@@ -1114,7 +1114,7 @@ public class SolicitudInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                    tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+                    tvEstadoCivilCli.getText().toString().trim().equals("UNION LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
@@ -1258,7 +1258,7 @@ public class SolicitudInd extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                    tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+                    tvEstadoCivilCli.getText().toString().trim().equals("UNION LIBRE")) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -1288,7 +1288,7 @@ public class SolicitudInd extends AppCompatActivity {
             }
             else{
                 if (tvEstadoCivilCli.getText().toString().trim().equals("CASADO(A)")||
-                        tvEstadoCivilCli.getText().toString().trim().equals("UNIÓN LIBRE")) {
+                        tvEstadoCivilCli.getText().toString().trim().equals("UNION LIBRE")) {
                     ivDown3.setVisibility(View.GONE);
                     ivUp3.setVisibility(View.VISIBLE);
                     llDatosConyuge.setVisibility(View.VISIBLE);
@@ -1658,7 +1658,7 @@ public class SolicitudInd extends AppCompatActivity {
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -1711,7 +1711,7 @@ public class SolicitudInd extends AppCompatActivity {
 
         row.close(); // Cierra datos del cliente
 
-        if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") || tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")) {
+        if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") || tvEstadoCivilCli.getText().toString().equals("UNION LIBRE")) {
             // Llenado de datos del conyuge
             row = dBhelper.getRecords(TBL_CONYUGE_IND_AUTO, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
             row.moveToFirst();

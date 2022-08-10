@@ -77,7 +77,7 @@ public class CreditoGpoDao {
         cv.put("plazo", creditoGpo.getPlazo());
         cv.put("periodicidad", creditoGpo.getPeriodicidad());
         cv.put("fecha_desembolso", creditoGpo.getFechaDesembolso());
-        cv.put("dia_desembolso", creditoGpo.getDisDesembolso());
+        cv.put("dia_desembolso", creditoGpo.getDiaDesembolso());
         cv.put("hora_visita", creditoGpo.getHoraVisita());
         cv.put("estatus_completado", creditoGpo.getEstatusCompletado());
 
@@ -92,7 +92,7 @@ public class CreditoGpoDao {
         creditoGpo.setPlazo(row.getString(3));
         creditoGpo.setPeriodicidad(row.getString(4));
         creditoGpo.setFechaDesembolso(row.getString(5));
-        creditoGpo.setDisDesembolso(row.getString(6));
+        creditoGpo.setDiaDesembolso(row.getString(6));
         creditoGpo.setHoraVisita(row.getString(7));
         creditoGpo.setEstatusCompletado(row.getInt(8));
 

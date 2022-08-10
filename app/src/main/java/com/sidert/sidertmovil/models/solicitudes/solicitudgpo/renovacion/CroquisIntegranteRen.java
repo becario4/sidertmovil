@@ -9,7 +9,7 @@ import com.sidert.sidertmovil.models.IFillModel;
 
 import java.io.Serializable;
 
-public class Croquis extends BaseModel implements Serializable, IFillModel {
+public class CroquisIntegranteRen extends BaseModel implements Serializable, IFillModel {
     public static final String TBL                              = "tbl_croquis_gpo_ren";
     protected static final String COL_ID                        = "id";
     protected static final String COL_ID_INTEGRANTE             = "id_integrante";

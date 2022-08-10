@@ -367,7 +367,7 @@ public class dialog_originacion_gpo extends DialogFragment {
                 creditoGpo.setPlazo(tvPlazo.getText().toString());
                 creditoGpo.setPeriodicidad(tvPeriodicidad.getText().toString());
                 creditoGpo.setFechaDesembolso(tvFechaDesembolso.getText().toString().trim());
-                creditoGpo.setDisDesembolso(tvDiaDesembolso.getText().toString().trim());
+                creditoGpo.setDiaDesembolso(tvDiaDesembolso.getText().toString().trim());
                 creditoGpo.setHoraVisita(tvHoraVisita.getText().toString().trim());
 
                 creditoGpoDao.update(creditoGpo);

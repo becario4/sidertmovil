@@ -233,6 +233,48 @@ public class CreditoIndRen extends BaseModel implements Serializable, IFillModel
         this.montoRefinanciar = montoRefinanciar;
     }
 
+    public int getPlazoAsInt()
+    {
+        int meses = 0;
+
+        switch (plazo) {
+            case "4 MESES":
+                meses = 4;
+                break;
+            case "5 MESES":
+                meses = 5;
+                break;
+            case "6 MESES":
+                meses = 6;
+                break;
+            case "9 MESES":
+                meses = 9;
+                break;
+        }
+
+        return meses;
+    }
+
+    public int getPeriodicidadAsInt()
+    {
+        int no_periodicidad = 0;
+        switch (periodicidad){
+            case "SEMANAL":
+                no_periodicidad = 7;
+                break;
+            case "CATORCENAL":
+                no_periodicidad = 14;
+                break;
+            case "QUINCENAL":
+                no_periodicidad = 15;
+                break;
+            case "MENSUAL":
+                no_periodicidad = 30;
+                break;
+        }
+        return no_periodicidad;
+    }
+
     @Override
     public void fill(Cursor row) {
         this.row = row;

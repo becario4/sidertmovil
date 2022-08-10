@@ -71,6 +71,7 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_integrante;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_renovar_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
@@ -2687,6 +2688,11 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
         ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+
+        tvCargo.setBackground(ContextCompat.getDrawable(ctx, (R.drawable.et_rounded_edges)));
+        tvCargo.setOnClickListener(v -> {
+            openRegistroIntegrante(id_credito, id_integrante);
+        });
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -4029,7 +4035,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp1.setVisibility(View.GONE);
             llDatosPersonales.setVisibility(View.GONE);
 
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4192,7 +4198,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp4.setVisibility(View.GONE);
             llDatosNegocio.setVisibility(View.GONE);
 
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4227,7 +4233,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp6.setVisibility(View.GONE);
             llOtrosDatos.setVisibility(View.GONE);
 
-            /*if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            /*if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -4347,6 +4353,21 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         registro_inte.show(getSupportFragmentManager(), NameFragments.DIALOGREGISTROINTEGRANTE);
     }
 
+    private void openRegistroIntegrante(String id_credito, String id_integrante) {
+        Log.e("AQUI", "CLICK EN CARGO");
+        dialog_registro_integrante renovar_integrante = new dialog_registro_integrante();
+        Bundle b = new Bundle();
+        b.putString("id_credito", String.valueOf(id_credito));
+        b.putString("id_integrante", String.valueOf(id_integrante));
+        b.putString("nombre", etNombreCli.getText().toString().trim().toUpperCase());
+        b.putString("paterno", etApPaternoCli.getText().toString().trim().toUpperCase());
+        b.putString("materno", etApMaternoCli.getText().toString().trim().toUpperCase());
+        b.putString("cargo", tvCargo.getText().toString().trim().toUpperCase());
+        renovar_integrante.setArguments(b);
+        renovar_integrante.setCancelable(true);
+        renovar_integrante.show(getSupportFragmentManager(), NameFragments.DIALOGREGISTROINTEGRANTE);
+    }
+
     //===================== Listener GPS  =======================================================
     private void findUbicacion(String idIntegrante, String tipo)
     {
@@ -4360,7 +4381,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 break;
             case "NEGOCIO":
                 NegocioIntegranteDao negocioDao = new NegocioIntegranteDao(ctx);
-                negocio = negocioDao.findByIdIntegrante(Long.valueOf(idIntegrante));
+                negocio = negocioDao.findByIdIntegrante(Integer.valueOf(idIntegrante));
                 break;
             default:
                 break;
@@ -4863,7 +4884,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         row.getInt(3) == 1 &&
         row.getInt(4) == 1 &&
         ((row.getString(1).equals("CASADO(A)") ||
-        row.getString(1).equals("UNIÓN LIBRE") &&
+        row.getString(1).equals("UNION LIBRE") &&
         row.getInt(5) == 1) ||
         (row.getString(1).equals("SOLTERO(A)") ||
         row.getString(1).equals("VIUDO(A)") ||
@@ -4948,7 +4969,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -6220,7 +6241,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
 
                 /**se valida el estado civil del intengrante para saber si va a guardar datos del conyige*/
-                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")){
+                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
                 else

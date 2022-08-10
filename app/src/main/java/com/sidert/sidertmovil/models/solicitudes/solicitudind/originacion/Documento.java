@@ -297,6 +297,12 @@ public class Documento extends BaseModel implements Serializable, IFillModel {
             foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
         }
 
+        if(foto_curp == null)
+        {
+            RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
+            foto_curp = MultipartBody.Part.createFormData("curp", "", attachmentEmpty);
+        }
+
         return foto_curp;
     }
 

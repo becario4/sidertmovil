@@ -2770,6 +2770,14 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public void saveCargoIntegranteGpo (SQLiteDatabase db, Integer id_cargo, Integer id_integrante){
+        ContentValues cv = new ContentValues();
+
+        cv.put("cargo", id_cargo);
+
+        db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
+    }
+
     public void saveCargoIntegranteGpoRen (SQLiteDatabase db, Integer id_cargo, Integer id_integrante){
         ContentValues cv = new ContentValues();
 

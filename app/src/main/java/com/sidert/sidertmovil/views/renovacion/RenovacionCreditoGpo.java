@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,20 +32,58 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_originacion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_renovacion_gpo;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_grupal;
+import com.sidert.sidertmovil.models.ApiResponse;
+import com.sidert.sidertmovil.models.MSolicitudRechazoGpo;
+import com.sidert.sidertmovil.models.permiso.PermisoResponse;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.SolicitudDetalleEstatusGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.ConyugueIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.ConyugueIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CreditoGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CroquisIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.CroquisIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DocumentoIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DocumentoIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.OtrosDatosIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.OtrosDatosIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.PoliticaPldIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.PoliticaPldIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRenDao;
+import com.sidert.sidertmovil.services.permiso.IPermisoService;
+import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
+import com.sidert.sidertmovil.utils.SessionManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
+import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
 import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
@@ -59,6 +98,13 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**Clase para mostrar los datos del credito grupal y de integrantes*/
 public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_renovacion_gpo.OnCompleteListener {
@@ -92,6 +138,12 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
     private boolean is_new = false;
 
     private Paint p = new Paint();
+
+    private final int MENU_INDEX_DEVMODE = 3;
+    private final int MENU_INDEX_DESBLOQUEAR = 2;
+    private final int MENU_INDEX_UPDATE_ESTATUS = 1;
+    private final int MENU_INDEX_ENVIAR = 0;
+    private boolean modoSuperUsuario = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,11 +269,8 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         hora_visita = row.getString(7);
         observaciones = row.getString(9);
 
-        is_edit = row.getInt(12) == 0; /**Valida si el estatus del credito esta en estatus parcial*/
-        if (!is_edit) {/**En caso de ya estar  guardado la solicitud se oculta el boton de agregar integrantes y menu*/
-            invalidateOptionsMenu();
-            fabAgregar.hide();
-        }
+        is_edit = row.getInt(12) <= 1; /**Valida si el estatus del credito esta en estatus parcial*/
+        deshabilitarCampos();
 
         row.close();
 
@@ -266,8 +315,6 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
         row_integrantes.close();
 
-        if (!is_edit)
-            invalidateOptionsMenu();
     }
 
     /**Funcion para mostrar u ocultar le menu*/
@@ -275,11 +322,25 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_enviar_datos, menu);
-        if (!is_edit)
-        {
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).setVisible(is_edit);
+        //if (!is_edit) {
+            menu.getItem(MENU_INDEX_ENVIAR).setVisible(is_edit);
+        //}
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if (TBmain.getMenu().size() > 1) {
+            if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+            }
+            else
+            {
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+            }
         }
+
+        menu.getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+
         return true;
     }
 
@@ -289,77 +350,21 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.enviar:/**Menu de guardar la solicutud*/
-                Cursor row_credito = null;
-                /**Obtiene los integrantes registrados*/
-                row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
-
-                /**Valida que el grupo tenga al menos 8 integrantes */
-                if (row_credito.getCount() > 3){
-                    Cursor row_cargo;
-
-                    /**Obtiene el comite del grupo*/
-                    row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
-
-                    /**Valida si ya esta registrado el comite*/
-                    if (row_cargo.getCount() == 3){
-                        Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO_REN + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
-
-                        /**Obtienen cuantos integrantes esten en estatus pendientes y completados*/
-                        Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
-                        row_total.moveToFirst();
-
-                        /**Valida que no haya integrantes en estatus parcial*/
-                        if (row_total.getInt(1) == 0){
-                            /**Muestra un dialog para confirmacion de el guardado de datos*/
-                            final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                    R.string.enviar_informacion, R.string.enviar, new Popups.DialogMessage() {
-                                        @Override
-                                        public void OnClickListener(AlertDialog dialog) {
-                                            /**Actualiza los estatus del credito y solicitud en estatus de terminado*/
-                                            ContentValues cv = new ContentValues();
-                                            cv.put("estatus_completado", 1);
-
-                                            db.update(TBL_CREDITO_GPO_REN, cv, "id = ?", new String[]{String.valueOf(id_credito)});
-
-                                            ContentValues cv_solicitud = new ContentValues();
-                                            cv_solicitud.put("estatus", 1);
-                                            cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
-
-                                            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
-
-                                            /**Funcion para enviar los datos de la solicitud al servidor*/
-                                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                                            ss.SendRenovacionGpo(ctx,false);
-
-                                            dialog.dismiss();
-                                            finish();
-
-                                        }
-                                    }, R.string.cancel, new Popups.DialogMessage() {
-                                        @Override
-                                        public void OnClickListener(AlertDialog dialog) {
-                                            ContentValues cv_solicitud = new ContentValues();
-                                            cv_solicitud.put("estatus", 1);
-
-                                            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
-
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                            fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                            fachada_dlg.show();
-                        }
-                        else
-                            Mensaje("Existen integrantes pedientes por guardar");
-                    }
-                    else
-                        Mensaje("Falta elegir al comité del grupo");
+            case R.id.devmode:
+                enviarJSONObjects();
+                break;
+            case R.id.desbloquear:
+                if (modoSuperUsuario) {
+                    desactivarModoSuper();
+                    deshabilitarSolicitud();
                 }
-                else
-                    Mensaje("No cuenta con la cantidad de integrantes para formar un grupo");
-
+                else activarModoSuper();
+                break;
+            case R.id.updateEstatus:
+                obtenerEstatusSolicitud();
+                break;
+            case R.id.enviar:
+                sendSolicitud();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -435,48 +440,48 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
     private void BorrarSolicitud (final String id_integrante, final int position){
         AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
-                R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
-                                R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
+            R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                @Override
+                public void OnClickListener(AlertDialog dialog) {
+                    AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
+                            R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
 
-                                        db.delete(TBL_INTEGRANTES_GPO_REN, "id = ?", new String[]{id_integrante});
-                                        db.delete(TBL_TELEFONOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_DOMICILIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_NEGOCIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_CONYUGE_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_OTROS_DATOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_CROQUIS_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_POLITICAS_PLD_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_DOCUMENTOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_INTEGRANTES_GPO_REN, "id = ?", new String[]{id_integrante});
+                                    db.delete(TBL_TELEFONOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_DOMICILIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_NEGOCIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_CONYUGE_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_OTROS_DATOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_CROQUIS_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_POLITICAS_PLD_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                    db.delete(TBL_DOCUMENTOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
 
-                                        adapter.removeItem(position);
-                                        dialog.dismiss();
+                                    adapter.removeItem(position);
+                                    dialog.dismiss();
 
-                                    }
-                                }, R.string.no, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        adapter.notifyDataSetChanged();
-                                        dialog.dismiss();
-                                    }
-                                });
-                        Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                        confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        confirm_borrar_soli_dlg.show();
-                        dialog.dismiss();
+                                }
+                            }, R.string.no, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    adapter.notifyDataSetChanged();
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    confirm_borrar_soli_dlg.show();
+                    dialog.dismiss();
 
-                    }
-                }, R.string.no, new Popups.DialogMessage() {
-                    @Override
-                    public void OnClickListener(AlertDialog dialog) {
-                        adapter.notifyDataSetChanged();
-                        dialog.dismiss();
-                    }
-                });
+                }
+            }, R.string.no, new Popups.DialogMessage() {
+                @Override
+                public void OnClickListener(AlertDialog dialog) {
+                    adapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+            });
         Objects.requireNonNull(borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
         borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         borrar_soli_dlg.show();
@@ -501,5 +506,578 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             finish();
         }
     }
+
+    private void activarModoSuper()
+    {
+        final AlertDialog loadingDesbloqueo = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loadingDesbloqueo.show();
+
+        SessionManager session = new SessionManager(ctx);
+        IPermisoService permisoService = new RetrofitClient().newInstance(ctx).create(IPermisoService.class);
+        Call<PermisoResponse> call = permisoService.isSuperEnabled("Bearer " + session.getUser().get(7));
+
+        call.enqueue(new Callback<PermisoResponse>() {
+            @Override
+            public void onResponse(Call<PermisoResponse> call, Response<PermisoResponse> response) {
+                PermisoResponse permisoResponse;
+
+                switch (response.code()) {
+                    case 200:
+                        permisoResponse = response.body();
+                        loadingDesbloqueo.dismiss();
+                        if (permisoResponse.getData() != null) {
+                            modoSuperUsuario = true;
+                            TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_open_24_white));
+                            TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+
+                            if (habilitarSolicitud()) {
+                                habilitarCampos();
+                                Toast.makeText(ctx, "Modo super usuario activado", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ctx, "¡La solicitud no pudo habilitarse en modo super usuario!", Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Toast.makeText(ctx, permisoResponse.getMensaje(), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    default:
+                        loadingDesbloqueo.dismiss();
+                        Toast.makeText(ctx, response.message(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PermisoResponse> call, Throwable t) {
+                loadingDesbloqueo.dismiss();
+                Log.e("AQUI ERROR", t.getMessage());
+                Toast.makeText(ctx, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void desactivarModoSuper()
+    {
+        modoSuperUsuario = false;
+        deshabilitarCampos();
+        TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_24_white));
+        TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+    }
+
+    private void habilitarCampos()
+    {
+        TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(true);
+        TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+    }
+
+    private void deshabilitarCampos()
+    {
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
+            if (TBmain.getMenu().size() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+        }
+        else {
+            if (TBmain.getMenu().size() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+        }
+
+        if (!is_edit) {
+            if(TBmain.getMenu().size() > 0) TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
+            fabAgregar.hide();
+        }
+    }
+
+    private boolean habilitarSolicitud()
+    {
+        boolean solicitudActivada = false;
+
+        if (id_solicitud <= 0) return solicitudActivada;
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null) {
+            CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+            CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+            if(creditoGpoRen != null)
+            {
+                IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                if(integranteGpoRenList.size() > 0)
+                {
+                    for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                    {
+                        iGpoRen.setEstatusCompletado(0);
+                        iGpoRen.setEstatusRechazo(0);
+                        integranteGpoRenDao.updateEstatus(iGpoRen);
+                        integranteGpoRenDao.saveEstatus(iGpoRen);
+                    }
+                }
+
+                solicitudRen.setEstatus(0);
+                solicitudRenDao.updateEstatus(solicitudRen);
+                solicitudActivada = true;
+            }
+        }
+
+        return solicitudActivada;
+    }
+
+    private boolean deshabilitarSolicitud()
+    {
+        TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
+        boolean solicitudBloqueada = false;
+
+        if (id_solicitud <= 0) return solicitudBloqueada;
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null) {
+            CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+            CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+            if(creditoGpoRen != null)
+            {
+                IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                if(integranteGpoRenList.size() > 0)
+                {
+                    for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                    {
+                        iGpoRen.setEstatusCompletado(2);
+                        iGpoRen.setEstatusRechazo(0);
+                        integranteGpoRenDao.updateEstatus(iGpoRen);
+                        integranteGpoRenDao.saveEstatus(iGpoRen);
+                    }
+                }
+
+                solicitudRen.setEstatus(2);
+                solicitudRenDao.updateEstatus(solicitudRen);
+                solicitudBloqueada = true;
+            }
+        }
+
+        return solicitudBloqueada;
+    }
+
+    private void enviarJSONObjects()
+    {
+        JSONObject json_solicitud = new JSONObject();
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if(solicitudRen != null)
+        {
+            try {
+                json_solicitud.put(SolicitudRen.TBL, solicitudRen);
+
+                CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
+                CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+                if(creditoGpoRen != null)
+                {
+                    json_solicitud.put(CreditoGpoRen.TBL, creditoGpoRen);
+
+                    IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                    List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
+
+                    JSONArray json_integrantes = new JSONArray();
+
+                    if(integranteGpoRenList.size() > 0)
+                    {
+                        for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
+                        {
+                            JSONObject json_integrante = new JSONObject();
+                            json_integrante.put(IntegranteGpoRen.TBL, iGpoRen);
+
+                            TelefonoIntegranteRenDao telefonoIntegranteRenDao = new TelefonoIntegranteRenDao(ctx);
+                            TelefonoIntegranteRen telefonoIntegranteRen = telefonoIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(telefonoIntegranteRen != null) json_integrante.put(TelefonoIntegranteRen.TBL, telefonoIntegranteRen);
+
+                            DomicilioIntegranteRenDao domicilioIntegranteRenDao = new DomicilioIntegranteRenDao(ctx);
+                            DomicilioIntegranteRen domicilioIntegranteRen = domicilioIntegranteRenDao.findByIdIntegrante(Long.valueOf(iGpoRen.getId()));
+                            if(domicilioIntegranteRen != null) json_integrante.put(DomicilioIntegranteRen.TBL, domicilioIntegranteRen);
+
+                            NegocioIntegranteRenDao negocioIntegranteRenDao = new NegocioIntegranteRenDao(ctx);
+                            NegocioIntegranteRen negocioIntegranteRen = negocioIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(negocioIntegranteRen != null) json_integrante.put(NegocioIntegranteRen.TBL, negocioIntegranteRen);
+
+                            ConyugueIntegranteRenDao conyugueIntegranteRenDao = new ConyugueIntegranteRenDao(ctx);
+                            ConyugueIntegranteRen conyugueIntegranteRen = conyugueIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(conyugueIntegranteRen != null) json_integrante.put(ConyugueIntegranteRen.TBL, conyugueIntegranteRenDao);
+
+                            OtrosDatosIntegranteRenDao otrosDatosIntegranteRenDao = new OtrosDatosIntegranteRenDao(ctx);
+                            OtrosDatosIntegranteRen otrosDatosIntegranteRen = otrosDatosIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(otrosDatosIntegranteRen != null) json_integrante.put(OtrosDatosIntegranteRen.TBL, otrosDatosIntegranteRen);
+
+                            CroquisIntegranteRenDao croquisDao = new CroquisIntegranteRenDao(ctx);
+                            CroquisIntegranteRen croquis = croquisDao.findByIdIntegrante(iGpoRen.getId());
+                            if(croquis != null) json_integrante.put(CroquisIntegranteRen.TBL, croquis);
+
+                            PoliticaPldIntegranteRenDao politicaPldIntegranteRenDao = new PoliticaPldIntegranteRenDao(ctx);
+                            PoliticaPldIntegranteRen politicaPldIntegranteRen = politicaPldIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(politicaPldIntegranteRen != null) json_integrante.put(politicaPldIntegranteRen.TBL, politicaPldIntegranteRen);
+
+                            DocumentoIntegranteRenDao documentoIntegranteRenDao = new DocumentoIntegranteRenDao(ctx);
+                            DocumentoIntegranteRen documentoIntegranteRen = documentoIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
+                            if(documentoIntegranteRen != null) json_integrante.put(DocumentoIntegranteRen.TBL, documentoIntegranteRen);
+
+                            json_integrantes.put(json_integrante);
+                        }
+
+                        json_solicitud.put("integrantes", json_integrantes);
+                    }
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            SessionManager session = new SessionManager(ctx);
+
+            Log.e("AQUI", new Gson().toJson(json_solicitud));
+
+            final AlertDialog loadingSendData = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+            loadingSendData.show();
+
+            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+            Call<ApiResponse> call = solicitudGpoService.jsonRenovacionGpo("Bearer " + session.getUser().get(7), new Gson().toJson(json_solicitud));
+
+            call.enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    ApiResponse apiResponse;
+                    Log.e("AQUI OTRO", "code: " + response.code());
+                    switch (response.code()) {
+                        case 200:
+                            apiResponse = response.body();
+                            loadingSendData.dismiss();
+
+                            if (apiResponse.getError() == null) {
+                                Toast.makeText(ctx, "¡Solicitud compartida!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ctx, apiResponse.getMensaje(), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        default:
+                            loadingSendData.dismiss();
+                            Toast.makeText(ctx, response.toString(), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    loadingSendData.dismiss();
+                    t.printStackTrace();
+                    Log.e("AQUI ERROR", t.getMessage());
+                    Toast.makeText(ctx, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void enviarJSONRequest()
+    {
+
+    }
+
+    private void sendSolicitud()
+    {
+        if(esSolicitudValida())
+        {
+            ContentValues cv = new ContentValues();
+            cv.put("estatus_completado", 1);
+
+            db.update(TBL_CREDITO_GPO_REN, cv, "id = ?", new String[]{String.valueOf(id_credito)});
+
+            ContentValues cv_solicitud = new ContentValues();
+            cv_solicitud.put("estatus", 1);
+            cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+
+            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+
+            dialog_sending_solicitud_grupal dialogSendSI = new dialog_sending_solicitud_grupal();
+            Bundle b = new Bundle();
+            b.putLong(ID_SOLICITUD, id_solicitud);
+            b.putBoolean(ES_RENOVACION, true);
+            dialogSendSI.setArguments(b);
+            dialogSendSI.setCancelable(false);
+            dialogSendSI.show(getSupportFragmentManager(), NameFragments.DIALOGSENDINGSOLICITUDGRUPAL);
+        }
+    }
+
+    private boolean esSolicitudValida()
+    {
+        boolean flag = false;
+
+        Cursor row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
+
+        if (row_credito.getCount() > 3){
+            Cursor row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
+
+            if (row_cargo.getCount() == 3){
+                Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO_REN + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
+                Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
+                row_total.moveToFirst();
+
+                if (row_total.getInt(1) == 0){
+                    flag = true;
+                }
+                else
+                    Mensaje("Existen integrantes pedientes por guardar");
+            }
+            else
+                Mensaje("Falta elegir al comité del grupo");
+        }
+        else
+            Mensaje("No cuenta con la cantidad de integrantes para formar un grupo");
+
+        return flag;
+    }
+
+    private void obtenerEstatusSolicitud()
+    {
+        final AlertDialog loadingEstatus = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loadingEstatus.show();
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
+
+        if(solicitudRen != null && solicitudRen.getEstatus() > 1)
+        {
+            SessionManager session = new SessionManager(ctx);
+            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+            Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
+
+            call.enqueue(new Callback<List<SolicitudDetalleEstatusGpo>>() {
+                @Override
+                public void onResponse(Call<List<SolicitudDetalleEstatusGpo>> call, Response<List<SolicitudDetalleEstatusGpo>> response) {
+                    switch (response.code()) {
+                        case 200:
+                            List<SolicitudDetalleEstatusGpo> solicitudes = response.body();
+
+                            for (SolicitudDetalleEstatusGpo se : solicitudes) {
+                                if (se.getTipoSolicitud() != 1) {
+                                    CreditoGpoRenDao creditoDao = new CreditoGpoRenDao(ctx);
+                                    IntegranteGpoRenDao integranteDao = new IntegranteGpoRenDao(ctx);
+
+                                    CreditoGpoRen credito = null;
+                                    IntegranteGpoRen integrante = null;
+                                    SolicitudRen solicitudTemp = null;
+
+                                    integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
+
+                                    if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
+                                    if(credito != null) solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
+
+                                    if(solicitudTemp != null ){
+                                        solicitudTemp.setIdOriginacion(se.getId());
+                                        solicitudRenDao.updateEstatus(solicitudTemp);
+                                    }
+
+                                    if(solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitudRen.getIdSolicitud()) == 0) {
+                                        String comentario = "";
+
+                                        if (se.getSolicitudEstadoIdIntegrante() == 1) {
+                                            comentario = "EN REVISIÓN";
+                                        } else if (se.getSolicitudEstadoIdIntegrante() == 3) {
+                                            comentario = "VALIDADO";
+                                        } else {
+                                            //comentario = se.getComentarioAdmin();
+                                        }
+
+                                        Log.e("AQUI REN", String.valueOf(se.getId()));
+
+                                        if(se.getSolicitudEstadoIdSolicitud() == 2) solicitudRen.setEstatus(5);
+                                        if(se.getSolicitudEstadoIdSolicitud() == 3) solicitudRen.setEstatus(3);
+
+                                        integrante.setComentarioRechazo(comentario);
+                                        integranteDao.updateEstatus(integrante);
+
+                                        solicitudRen.setIdOriginacion(se.getId());
+                                        solicitudRenDao.updateEstatus(solicitudRen);
+                                    }
+                                }
+                            }
+                            obtenerRechazo(loadingEstatus, solicitudRen);
+                            break;
+                        default:
+                            Log.e("AQUI ", response.message());
+                            obtenerRechazo(loadingEstatus, solicitudRen);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<SolicitudDetalleEstatusGpo>> call, Throwable t) {
+                    obtenerRechazo(loadingEstatus, solicitudRen);
+                    Log.e("Error", "failAGF" + t.getMessage());
+                }
+            });
+        }
+    }
+
+    private void obtenerRechazo(AlertDialog alert, SolicitudRen solicitud)
+    {
+        SessionManager session = new SessionManager(ctx);
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer "+ session.getUser().get(7));
+
+        call.enqueue(new Callback<List<MSolicitudRechazoGpo>>() {
+            @Override
+            public void onResponse(Call<List<MSolicitudRechazoGpo>> call, Response<List<MSolicitudRechazoGpo>> response) {
+
+                switch (response.code()) {
+                    case 200:
+                        Log.e("AQUI RECHAZADO", response.body().toString());
+                        List<MSolicitudRechazoGpo> solicitudes = response.body();
+                        if (solicitudes.size() > 0) {
+                            CreditoGpoRenDao creditoDao = new CreditoGpoRenDao(ctx);
+                            IntegranteGpoRenDao integranteDao = new IntegranteGpoRenDao(ctx);
+
+                            for (MSolicitudRechazoGpo item : solicitudes) {
+                                ContentValues cv;
+                                String sql = "";
+                                Cursor row = null;
+                                CreditoGpoRen credito = null;
+                                IntegranteGpoRen integrante = null;
+                                SolicitudRen solicitudTemp = null;
+
+                                integrante = integranteDao.findByIdSolicitudIntegrante(item.getIdSolicitudIntegrante());
+
+                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
+                                if(credito != null) solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
+
+                                if (item.getTipoSolicitud() != 1 && solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitud.getIdSolicitud()) == 0) {
+                                    sql = "SELECT " +
+                                            "i.id AS id_integrante, " +
+                                            "tel.id_telefonico, " +
+                                            "dom.id_domicilio, " +
+                                            "neg.id_negocio, " +
+                                            "con.id_conyuge, " +
+                                            "otr.id_otro, " +
+                                            "cro.id AS id_croquis, " +
+                                            "pol.id_politica, " +
+                                            "doc.id_documento, " +
+                                            "sol.id_solicitud " +
+                                            "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
+                                            "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
+                                            "JOIN " + TBL_SOLICITUDES_REN + " AS sol ON cre.id_solicitud = sol.id_solicitud " +
+                                            "JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS tel ON i.id = tel.id_integrante " +
+                                            "JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS dom ON i.id = doc.id_integrante " +
+                                            "JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS neg ON i.id = neg.id_integrante " +
+                                            "JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS con ON i.id = con.id_integrante " +
+                                            "JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS otr ON i.id = otr.id_integrante " +
+                                            "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
+                                            "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
+                                            "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
+                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado >= 2";
+
+                                    row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
+
+                                    if (row.getCount() > 0) { //Existe algun registro de renovacion
+                                        row.moveToFirst();
+                                        if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_TELEFONOS_INTEGRANTE_REN, cv, "id_telefonico = ?", new String[]{row.getString(1)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOMICILIO_INTEGRANTE_REN, cv, "id_domicilio = ?", new String[]{row.getString(2)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_NEGOCIO_INTEGRANTE_REN, cv, "id_negocio = ?", new String[]{row.getString(3)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_conyuge = ?", new String[]{row.getString(4)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_OTROS_DATOS_INTEGRANTE_REN, cv, "id_otro = ?", new String[]{row.getString(5)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_CROQUIS_GPO_REN, cv, "id = ?", new String[]{row.getString(6)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_POLITICAS_PLD_INTEGRANTE_REN, cv, "id_politica = ?", new String[]{row.getString(7)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus_completado", 0);
+                                            db.update(TBL_DOCUMENTOS_INTEGRANTE_REN, cv, "id_documento = ?", new String[]{row.getString(8)});
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 0);
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            cv.put("fecha_termino", "");
+                                            cv.put("fecha_envio", "");
+                                            cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                        } else {//Es rechazo de solcitud completo
+                                            cv = new ContentValues();
+                                            //cv.put("estatus_completado", 0);
+                                            cv.put("comentario_rechazo", item.getComentarioAdmin());
+                                            db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();//cv.put("estatus", 0);
+
+                                            if (item.getSolicitudEstadoIdSolicitud() == 2)
+                                                cv.put("estatus", 5);
+
+                                            cv.put("id_originacion", String.valueOf(item.getId()));
+                                            //cv.put("fecha_termino", "");
+                                            //cv.put("fecha_envio", "");
+                                            //cv.put("fecha_guardado", "");
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        alert.dismiss();
+                        finish();
+                        break;
+                    default:
+                        try {
+                            Log.e("ERROR " + response.code(), response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("ERROR " + response.code(), response.message());
+                        alert.dismiss();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t)
+            {
+                Log.e("ERROR ", t.getMessage());
+                alert.dismiss();
+            }
+        });
+    }
+
 
 }

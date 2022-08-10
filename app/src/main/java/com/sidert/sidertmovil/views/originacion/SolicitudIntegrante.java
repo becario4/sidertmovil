@@ -914,7 +914,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
             llDatosNegocio.setVisibility(View.GONE);
 
             if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-                    tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")) {
+                    tvEstadoCivilCli.getText().toString().equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -1049,7 +1049,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
             llOtrosDatos.setVisibility(View.GONE);
 
             if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-                    tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")) {
+                    tvEstadoCivilCli.getText().toString().equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
                 ivUp5.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -1218,7 +1218,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
                 row.getInt(3) == 1 &&
                 row.getInt(4) == 1 &&
                 ((row.getString(1).equals("CASADO(A)") ||
-                        row.getString(1).equals("UNIÓN LIBRE") &&
+                        row.getString(1).equals("UNION LIBRE") &&
                                 row.getInt(5) == 1) ||
                         (row.getString(1).equals("SOLTERO(A)") ||
                                 row.getString(1).equals("VIUDO(A)") ||
@@ -1310,7 +1310,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -1427,7 +1427,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
         row.close(); //Cierra datos del negocio
 
         //Datos Conyuge
-        if (tvEstadoCivilCli.getText().equals("CASADO(A)") || tvEstadoCivilCli.getText().equals("UNIÓN LIBRE")) {
+        if (tvEstadoCivilCli.getText().equals("CASADO(A)") || tvEstadoCivilCli.getText().equals("UNION LIBRE")) {
             row = dBhelper.getRecords(TBL_CONYUGE_INTEGRANTE_AUTO, " WHERE id_integrante = ?", "", new String[]{id_integrante});
             row.moveToFirst();
             etNombreCony.setText(row.getString(2));
@@ -1769,7 +1769,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
                 if (tvEstadoCivilCli.getText().toString().equals("CASADO(A)") ||
-                        tvEstadoCivilCli.getText().toString().equals("UNIÓN LIBRE")){
+                        tvEstadoCivilCli.getText().toString().equals("UNION LIBRE")){
                     datos_conyuge = saveConyuge();
                 }
                 else

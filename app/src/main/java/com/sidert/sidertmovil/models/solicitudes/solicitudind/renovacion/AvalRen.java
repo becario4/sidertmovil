@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion;
 
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+
 import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;
@@ -7,7 +9,12 @@ import com.google.gson.annotations.SerializedName;
 import com.sidert.sidertmovil.models.BaseModel;
 import com.sidert.sidertmovil.models.IFillModel;
 
+import java.io.File;
 import java.io.Serializable;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class AvalRen extends BaseModel implements Serializable, IFillModel {
     public static final String TBL                              = "tbl_aval_ren";
@@ -725,6 +732,38 @@ public class AvalRen extends BaseModel implements Serializable, IFillModel {
 
     public void setLocatedAt(String locatedAt) {
         this.locatedAt = locatedAt;
+    }
+
+    public MultipartBody.Part getFachadaMBPart()
+    {
+        MultipartBody.Part fachada_aval = null;
+        File image_fachada_aval = null;
+
+        if(fotoFachada != null && !fotoFachada.equals(""))
+            image_fachada_aval = new File(ROOT_PATH + "Fachada/" + fotoFachada);
+
+        if (image_fachada_aval != null) {
+            RequestBody imageBodyFachadaAval = RequestBody.create(MediaType.parse("image/*"), image_fachada_aval);
+            fachada_aval = MultipartBody.Part.createFormData("fachada_aval", image_fachada_aval.getName(), imageBodyFachadaAval);
+        }
+
+        return fachada_aval;
+    }
+
+    public MultipartBody.Part getFirmaMBPart()
+    {
+        MultipartBody.Part firma_aval = null;
+        File image_firma_aval = null;
+
+        if(firma != null && !firma.equals(""))
+            image_firma_aval = new File(ROOT_PATH + "Firma/" + firma);
+
+        if (image_firma_aval != null) {
+            RequestBody imageBodyFirmaAval = RequestBody.create(MediaType.parse("image/*"), image_firma_aval);
+            firma_aval = MultipartBody.Part.createFormData("firma_aval", image_firma_aval.getName(), imageBodyFirmaAval);
+        }
+
+        return firma_aval;
     }
 
     @Override

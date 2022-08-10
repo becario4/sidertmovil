@@ -1,11 +1,20 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion;
 
+import static com.sidert.sidertmovil.utils.Constants.ROOT_PATH;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.File;
 import java.io.Serializable;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 public class DomicilioIntegranteRen implements Serializable {
+    public final static String TBL                         = "tbl_domicilio_integrante_ren";
+
     @SerializedName("id_domicilio")
     @Expose
     private Integer idDomicilio;
@@ -292,5 +301,20 @@ public class DomicilioIntegranteRen implements Serializable {
 
     public void setLocatedAt(String locatedAt) {
         this.locatedAt = locatedAt;
+    }
+
+    public MultipartBody.Part getFachadaMBPart() {
+        MultipartBody.Part fachada_cliente = null;
+        File image_fachada_cliente = null;
+
+        if (fotoFachada != null && !fotoFachada.equals(""))
+            image_fachada_cliente = new File(ROOT_PATH + "Fachada/" + fotoFachada);
+
+        if (image_fachada_cliente != null) {
+            RequestBody imageBodyFachadaCli = RequestBody.create(MediaType.parse("image/*"), image_fachada_cliente);
+            fachada_cliente = MultipartBody.Part.createFormData("fachada_cliente", image_fachada_cliente.getName(), imageBodyFachadaCli);
+        }
+
+        return fachada_cliente;
     }
 }

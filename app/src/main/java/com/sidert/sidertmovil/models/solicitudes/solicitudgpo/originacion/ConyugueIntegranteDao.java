@@ -17,4 +17,11 @@ public class ConyugueIntegranteDao extends BaseDao {
         return conyugueIntegrante;
     }
 
+    public ConyugueIntegrante findByIdIntegrante(Integer idIntegrante)
+    {
+        ConyugueIntegrante conyugueIntegrante = new ConyugueIntegrante();
+        find( findByIdIntegrante(ConyugueIntegrante.TBL, idIntegrante), conyugueIntegrante );
+        return conyugueIntegrante;
+    }
+
 }

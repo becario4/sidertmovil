@@ -142,4 +142,13 @@ public class IntegranteGpoDao {
         cv.put("estatus_completado", integrante.getEstatusCompletado());
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integrante.getId())});
     }
+
+    public void setCompletado(IntegranteGpo integranteGpo, Integer idSolicitud)
+    {
+        ContentValues cv = new ContentValues();
+        cv.put("id_solicitud_integrante", idSolicitud);
+        cv.put("estatus_completado",2);
+        db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integranteGpo.getId())});
+    }
+
 }
