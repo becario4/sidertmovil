@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.CapturarFirma;
@@ -64,18 +65,47 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_plazo_ind;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_individual;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
+import com.sidert.sidertmovil.models.ApiResponse;
+import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
+import com.sidert.sidertmovil.models.permiso.PermisoResponse;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ConyugueRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ConyugueRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.CreditoIndRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.CreditoIndRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DireccionRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DireccionRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DocumentoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.DocumentoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.EconomicoRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.EconomicoRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.NegocioRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.NegocioRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.PoliticaPldRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.PoliticaPldRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRen;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRenDao;
+import com.sidert.sidertmovil.services.permiso.IPermisoService;
+import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
+import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
+import com.sidert.sidertmovil.utils.RetrofitClient;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -98,20 +128,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.CALLE;
 import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.COLONIA;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.DATE_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.DAY_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
+import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
 import static com.sidert.sidertmovil.utils.Constants.EXTRA;
 import static com.sidert.sidertmovil.utils.Constants.FECHAS_POST;
 import static com.sidert.sidertmovil.utils.Constants.FIRMA_IMAGE;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_DATE_GNRAL;
 import static com.sidert.sidertmovil.utils.Constants.IDENTIFIER;
+import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
 import static com.sidert.sidertmovil.utils.Constants.IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
@@ -178,6 +214,8 @@ import static com.sidert.sidertmovil.utils.Constants.firma;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
+
+import org.json.JSONObject;
 
 /**Clase para guardar los datos de la solicitud de renovacion individual*/
 public class RenovacionCreditoInd extends AppCompatActivity implements dialog_plazo_ind.OnCompleteListener {
@@ -661,6 +699,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     boolean pushMapButtonCli = false;
     boolean pushMapButtonAval = false;
     boolean pushMapButtonNeg = false;
+
+    private final int MENU_INDEX_DEVMODE = 3;
+    private final int MENU_INDEX_DESBLOQUEAR = 2;
+    private final int MENU_INDEX_UPDATE_ESTATUS = 1;
+    private final int MENU_INDEX_ENVIAR = 0;
+    private boolean modoSuperUsuario = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -7280,7 +7324,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 etNombreCony.requestFocus();
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
@@ -7438,7 +7482,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         @Override
         public void onClick(View v) {
             if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                    m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                    m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown3.setVisibility(View.GONE);
                 ivUp3.setVisibility(View.VISIBLE);
                 llDatosConyuge.setVisibility(View.VISIBLE);
@@ -7466,7 +7510,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etPropiedadesEco.requestFocus();
             } else {
                 if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE")) {
+                        m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                     ivDown3.setVisibility(View.GONE);
                     ivUp3.setVisibility(View.VISIBLE);
                     llDatosConyuge.setVisibility(View.VISIBLE);
@@ -7660,7 +7704,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                                         case "CASA RENTADA":
                                             if (!validatorTV.validate(tvCasaFamiliar, new String[]{validatorTV.REQUIRED})) {
                                                 flag_tipo_casa = true;
-                                                cv.put("parentesco", m.GetStr(tvTipoCasaCli));
+                                                cv.put("parentesco", m.GetStr(tvCasaFamiliar));
                                                 cv.put("otro_tipo_vivienda", "");
                                             } else
                                                 ivError2.setVisibility(View.VISIBLE);
@@ -8557,10 +8601,23 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_enviar_datos, menu);
+
         if (!is_edit) {
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).setVisible(is_edit);
+            menu.getItem(MENU_INDEX_ENVIAR).setVisible(is_edit);
         }
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (TBmain.getMenu().size() > 1) {
+            if (solicitudRen != null && solicitudRen.getEstatus() > 1)
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+            else
+                TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+        }
+
+        menu.getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+
         return true;
     }
 
@@ -8568,84 +8625,24 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:/**Al seleccionar el menu de retroceso del toolbar <- */
+            case android.R.id.home:
                 finish();
                 break;
-            case R.id.enviar: /**Al seleccionar el menu de guardar datos*/
-                final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-                loading.show();
-                /**Se crean las banderas para definir si esta fueron guardadas las secciones*/
-                boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
-                credito = saveDatosCredito();
-                croquis = saveCroquis();
-                cliente = saveDatosPersonales();
-                if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
-                        m.GetStr(tvEstadoCivilCli).equals("UNIÓN LIBRE"))
-                    conyuge = saveConyuge();
-                else
-                    conyuge = true;
-                if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() && Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) >= 30000)
-                    economicos = saveDatosEconomicos();
-                else
-                    economicos = true;
-                negocio = saveDatosNegocio();
-                aval = saveDatosAval();
-                referencia = saveReferencia();
-                politicas = savePoliticas();
-                documentacion = saveDocumentacion();
-
-                /**Se valida que todas las banderas del guardado son verdaderas y procede para actualizar el estatus de las secciones a completado*/
-                if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
-
-                    /**Actualiza los estatus a completado de las tablas a completado*/
-                    Update("estatus_completado", TBL_CREDITO_IND_REN, "1");
-                    Update("estatus_completado", TBL_CLIENTE_IND_REN, "1");
-                    Update("estatus_completado", TBL_CONYUGE_IND_REN, "1");
-                    Update("estatus_completado", TBL_ECONOMICOS_IND_REN, "1");
-                    Update("estatus_completado", TBL_NEGOCIO_IND_REN, "1");
-                    Update("estatus_completado", TBL_AVAL_IND_REN, "1");
-                    Update("estatus_completado", TBL_REFERENCIA_IND_REN, "1");
-                    Update("estatus_completado", TBL_CROQUIS_IND_REN, "1");
-                    Update("estatus_completado", TBL_POLITICAS_PLD_IND_REN, "1");
-                    Update("estatus_completado", TBL_DOCUMENTOS_REN, "1");
-
-                    Update("comentario_rechazo", TBL_CLIENTE_IND_REN, "");
-                    Update("comentario_rechazo", TBL_NEGOCIO_IND_REN, "");
-                    Update("comentario_rechazo", TBL_AVAL_IND_REN, "");
-                    Update("comentario_rechazo", TBL_REFERENCIA_IND_REN, "");
-                    Update("comentario_rechazo", TBL_CROQUIS_IND_REN, "");
-
-                    /**Actualiza el estatus a completado y de fecha de termino a la solicitud de renovacion*/
-                    ContentValues cv = new ContentValues();
-                    cv.put("estatus", 1);
-                    cv.put("fecha_termino", m.ObtenerFecha("timestamp"));
-
-                    db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-
-                    /**Funcion para enviar la solicitud a guardar al servidor*/
-                    loading.dismiss();
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SendRenovacionInd(ctx, true);
-                    Toast.makeText(ctx, "Termina guardado de solicitud", Toast.LENGTH_SHORT).show();
-
-                    finish();
-
-                } else {
-                    /**En caso de que no este completo todo el formulario muestra un mensaje*/
-                    loading.dismiss();
-                    final AlertDialog solicitud;
-                    solicitud = Popups.showDialogMessage(this, warning,
-                            "Faltan por llenar campos de la solicitud", R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    solicitud.show();
-
+            case R.id.devmode:
+                enviarJSONObjects();
+                break;
+            case R.id.desbloquear:
+                if (modoSuperUsuario) {
+                    desactivarModoSuper();
+                    deshabilitarSolicitud();
                 }
+                else activarModoSuper();
+                break;
+            case R.id.updateEstatus:
+                obtenerEstatusSolicitud();
+                break;
+            case R.id.enviar:
+                sendSolicitud();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -10079,7 +10076,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         row.moveToFirst();
 
         Log.e("Rows", row.getColumnCount() + "count");
-        is_edit = row.getInt(11) == 0;/**Valida si el estatus esta parcial*/
+        is_edit = row.getInt(11) <= 1;/**Valida si el estatus esta parcial*/
 
         row.close();
 
@@ -10225,7 +10222,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                         break;
                 }
                 break;
-            case "UNIÓN LIBRE":
+            case "UNION LIBRE":
                 llConyuge.setVisibility(View.VISIBLE);
                 break;
         }
@@ -10911,6 +10908,405 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
         row.close(); //Cierra datos de los documentos
 
+        deshabilitarCampos();
+
+    }
+
+    private boolean getGastoMen() {
+
+        double sum = Double.parseDouble(m.GetStr(etGastosMenNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosAguaNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosLuzNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosTelNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosRentaNeg).replace(",", ""))
+                + Double.parseDouble(m.GetStr(etGastosOtrosNeg).replace(",", ""));
+
+        return (sum > 0);
+    }
+
+    private void activarModoSuper() {
+        final AlertDialog loadingDesbloqueo = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loadingDesbloqueo.show();
+
+        SessionManager session = new SessionManager(ctx);
+        IPermisoService permisoService = new RetrofitClient().newInstance(ctx).create(IPermisoService.class);
+        Call<PermisoResponse> call = permisoService.isSuperEnabled("Bearer " + session.getUser().get(7));
+
+        call.enqueue(new Callback<PermisoResponse>() {
+            @Override
+            public void onResponse(Call<PermisoResponse> call, Response<PermisoResponse> response) {
+                PermisoResponse permisoResponse;
+
+                switch (response.code()) {
+                    case 200:
+                        permisoResponse = response.body();
+                        loadingDesbloqueo.dismiss();
+                        if (permisoResponse.getData() != null) {
+                            modoSuperUsuario = true;
+                            TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_open_24_white));
+                            TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+
+                            if (habilitarSolicitud()) {
+                                habilitarCampos();
+                                Toast.makeText(ctx, "Modo super usuario activado", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ctx, "¡La solicitud no pudo habilitarse en modo super usuario!", Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Toast.makeText(ctx, permisoResponse.getMensaje(), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    default:
+                        loadingDesbloqueo.dismiss();
+                        Toast.makeText(ctx, response.message(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PermisoResponse> call, Throwable t) {
+                loadingDesbloqueo.dismiss();
+                Log.e("AQUI ERROR", t.getMessage());
+                Toast.makeText(ctx, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    private void desactivarModoSuper() {
+        modoSuperUsuario = false;
+        deshabilitarCampos();
+        TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_24_white));
+        TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
+    }
+    
+    private void habilitarCampos()
+    {
+        TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(true);
+        TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+
+        tvPlazo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_left));
+        tvFrecuencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_right));
+        tvFechaDesembolso.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        tvHoraVisita.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        etMontoPrestamo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        tvDestino.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        tvRiesgo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        tvComportamiento.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        etObservaciones.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+        isEditCli = true;
+        isEditCon = true;
+        isEditEco = true;
+        isEditNeg = true;
+        isEditAva = true;
+        isEditRef = true;
+        isEditPol = true;
+        isEditCro = true;
+
+        if(isEditCli)
+        {
+            etObservaciones.setEnabled(isEditCli);
+            etObservaciones.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+        }
+
+        if (isEditCli) {
+            etNombreCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApPaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApMaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            for (int i = 0; i < rgGeneroCli.getChildCount(); i++) {
+                ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(true);
+            }
+
+            //etCurpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvOcupacionCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvTipoIdentificacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNumIdentifCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstudiosCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoCivilCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            for (int i = 0; i < rgBienes.getChildCount(); i++) {
+                ((RadioButton) rgBienes.getChildAt(i)).setEnabled(true);
+            }
+            tvTipoCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvCasaFamiliar.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOTroTipoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaCli.getText().toString().trim().isEmpty())
+            {
+                tvColoniaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadCli.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            etTelCasaCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCelularCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelMensCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelTrabajoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTiempoSitio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvDependientes.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEnteroNosotros.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvEstadoCuenta.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etEmail.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferenciCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibFotoFachCli.setEnabled(true);
+            ibFotoFachCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapCli.setVisibility(View.VISIBLE);
+        }
+
+        /**Valida si la seccion del conyuge ya fue guardada para bloquear los campos*/
+        if (isEditCon) {
+            etNombreCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApPaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApMaternoCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNacionalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvOcupacionCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ///etCpCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaCony.getText().toString().trim().isEmpty())
+            {
+                tvColoniaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            //etCiudadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvLocalidadCony.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            etIngMenCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastoMenCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        /**Valida si la seccion de datos economicos ya fue guardada para bloquear los campos*/
+        if (isEditEco) {
+            etPropiedadesEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etValorAproxEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etUbicacionEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvIngresoEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        /**Valida si la seccion del negocio ya fue guardada para bloquear los campos*/
+        if (isEditNeg) {
+            cbNegEnDomCli.setEnabled(true);
+            etNombreNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaNeg.getText().toString().trim().isEmpty())
+            {
+                tvColoniaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadNeg.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            tvActEcoEspNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvActEconomicaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvDestinoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOtroDestinoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etAntiguedadNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etIngMenNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOtrosIngNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosMenNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosAguaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosLuzNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosTelNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosRentaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosOtrosNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvMediosPagoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOtroMedioPagoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvMontoMaxNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCapacidadPagoNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvNumOperacionNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNumOperacionEfectNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvDiasVentaNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferenciNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibFotoFachNeg.setEnabled(true);
+            ibFotoFachNeg.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapNeg.setVisibility(View.VISIBLE);
+        }
+
+        /**Valida si la seccion del aval ya fue guardada para bloquear los campos*/
+        if (isEditAva) {
+            etNombreAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApPaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApMaternoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNombreAval.setEnabled(true);
+            etApPaternoAval.setEnabled(true);
+            etApMaternoAval.setEnabled(true);
+
+            for (int i = 0; i < rgGeneroAval.getChildCount(); i++) {
+                ((RadioButton) rgGeneroAval.getChildAt(i)).setEnabled(true);
+            }
+
+            HashMap<Integer, String> paramsCurpAvalConfirm = new HashMap<>();
+
+            paramsCurpAvalConfirm.put(0, m.GetStr(etNombreAval));
+            paramsCurpAvalConfirm.put(1, m.GetStr(etApPaternoAval));
+            paramsCurpAvalConfirm.put(2, m.GetStr(etApMaternoAval));
+            paramsCurpAvalConfirm.put(3, m.GetStr(tvFechaNacAval));
+
+            if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre) {
+                paramsCurpAvalConfirm.put(4, "Hombre");
+            }
+            else
+            {
+                paramsCurpAvalConfirm.put(4, "Mujer");
+            }
+            paramsCurpAvalConfirm.put(5, m.GetStr(tvEstadoNacAval));
+
+            String curpAvalConfirm = m.GenerarCurp(paramsCurpAvalConfirm);
+            Log.e("AQUI CURP", curpAvalConfirm);
+
+            if(
+                    etCurpAval.getText().toString().trim().length() == 18
+                            && etCurpAval.getText().toString().trim().substring(1, 16).equals(curpAvalConfirm)
+            )
+            {
+                etCurpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+                etCurpAval.setEnabled(true);
+                tvFechaNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+                tvEstadoNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+            else
+            {
+                tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+                tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+            }
+
+            tvParentescoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvTipoIdentificacionAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNumIdentifAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvOcupacionAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //tvColoniaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvColoniaAval.getText().toString().trim().isEmpty())
+            {
+                tvColoniaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            if(!tvLocalidadAval.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            tvTipoCasaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvFamiliarAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNombreTitularAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCaracteristicasAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            for (int i = 0; i < rgNegocioAval.getChildCount(); i++) {
+                ((RadioButton) rgNegocioAval.getChildAt(i)).setEnabled(true);
+            }
+            etNombreNegocioAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etIngMenAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etIngOtrosAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosSemAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosAguaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosLuzAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosTelAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosRentaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etGastosOtrosAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvMediosPagoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etOtroMedioPagoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCapacidadPagoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvHoraLocAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvActivosObservables.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etAntiguedadAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelCasaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCelularAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelMensAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etTelTrabajoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etEmailAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferenciaAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibFotoFachAval.setEnabled(true);
+            ibFotoFachAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            ibMapAval.setVisibility(View.VISIBLE);
+            tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+            tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+        }
+
+        /**Valida si la seccion de la referencia ya fue guardada para bloquear los campos*/
+        if (isEditRef) {
+            etNombreRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApPaternoRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etApMaternoRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            tvFechaNacRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCalleRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoExtRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etNoIntRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etLoteRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etManzanaRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            //etCpRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            if(!tvLocalidadRef.getText().toString().trim().isEmpty())
+            {
+                tvLocalidadRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            }
+
+            etTelCelRef.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+        }
+
+        /**Valida si la seccion del croquis ya fue guardada para bloquear los campos*/
+        if (isEditCro) {
+            etReferencia.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etCaracteristicasDomicilio.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+            etReferencia.setEnabled(true);
+            etCaracteristicasDomicilio.setEnabled(true);
+        }
+
+        /**Valida si la seccion de politicas PLD ya fue guardada para bloquear los campos*/
+        if (isEditPol) {
+            for (int i = 0; i < rgPropietarioReal.getChildCount(); i++) {
+                ((RadioButton) rgPropietarioReal.getChildAt(i)).setEnabled(true);
+            }
+            for (int i = 0; i < rgProveedor.getChildCount(); i++) {
+                ((RadioButton) rgProveedor.getChildAt(i)).setEnabled(true);
+            }
+            for (int i = 0; i < rgPoliticamenteExp.getChildCount(); i++) {
+                ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(true);
+            }
+        }
+    }
+    
+    private void deshabilitarCampos()
+    {
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+        if (solicitudRen != null && solicitudRen.getEstatus() > 1)
+            if(TBmain.getMenu().size() > 1) TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
+        else
+            if(TBmain.getMenu().size() > 1) TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
+
         /**Valida si la seccion del credito ya fue guardada para bloquear los campos*/
         if (!isEditCre) {
             tvPlazo.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked_left));
@@ -10936,6 +11332,10 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             etNombreCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApPaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etApMaternoCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
+
+            etNombreAval.setEnabled(false);
+            etApPaternoAval.setEnabled(false);
+            etApMaternoAval.setEnabled(false);
 
             for (int i = 0; i < rgGeneroCli.getChildCount(); i++) {
                 ((RadioButton) rgGeneroCli.getChildAt(i)).setEnabled(false);
@@ -11102,8 +11502,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             Log.e("AQUI CURP", curpAvalConfirm);
 
             if(
-                etCurpAval.getText().toString().trim().length() == 18
-                && etCurpAval.getText().toString().trim().substring(1, 16).equals(curpAvalConfirm)
+                    etCurpAval.getText().toString().trim().length() == 18
+                            && etCurpAval.getText().toString().trim().substring(1, 16).equals(curpAvalConfirm)
             )
             {
                 etCurpAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -11216,19 +11616,472 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 ((RadioButton) rgPoliticamenteExp.getChildAt(i)).setEnabled(false);
             }
         }
+    }
+
+    private boolean habilitarSolicitud() {
+        boolean solicitudActivada = false;
+
+        if (id_solicitud <= 0) return solicitudActivada;
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null) {
+            CreditoIndRenDao creditoIndRenDao = new CreditoIndRenDao(ctx);
+            CreditoIndRen creditoIndRen = creditoIndRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+            if (creditoIndRen != null) {
+                solicitudRen.setEstatus(0);
+                solicitudRenDao.updateEstatus(solicitudRen);
+                solicitudActivada = true;
+            }
+        }
+
+        return solicitudActivada;
+    }
+
+    private boolean deshabilitarSolicitud() {
+        TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
+
+        boolean solicitudBloqueada = false;
+
+        if (id_solicitud <= 0) return solicitudBloqueada;
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null) {
+            CreditoIndRenDao creditoIndRenDao = new CreditoIndRenDao(ctx);
+            CreditoIndRen creditoIndRen = creditoIndRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+
+            if (creditoIndRen != null) {
+                solicitudRen.setEstatus(2);
+                solicitudRenDao.updateEstatus(solicitudRen);
+                solicitudBloqueada = true;
+            }
+        }
+
+        return solicitudBloqueada;
+    }
+
+    private void enviarJSONObjects() {
+        JSONObject json_solicitud = new JSONObject();
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null) {
+            try {
+                json_solicitud.put(SolicitudRen.TBL, solicitudRen);
+
+                CreditoIndRenDao creditoIndRenDao = new CreditoIndRenDao(ctx);
+                CreditoIndRen creditoIndRen = creditoIndRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (creditoIndRen != null) json_solicitud.put(CreditoIndRen.TBL, creditoIndRen);
+
+                ClienteRenDao clienteRenDao = new ClienteRenDao(ctx);
+                ClienteRen clienteRen = clienteRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (clienteRen != null) json_solicitud.put(ClienteRen.TBL, clienteRen);
+
+                DireccionRenDao direccionRenDao = new DireccionRenDao(ctx);
+                DireccionRen direccionClienteRen = direccionRenDao.findByIdDireccion(Long.parseLong(clienteRen.getDireccionId()));
+                if (direccionClienteRen != null)
+                    json_solicitud.put(DireccionRen.TBL + "_cliente", direccionClienteRen);
+
+                ConyugueRenDao conyugueRenDao = new ConyugueRenDao(ctx);
+                ConyugueRen conyugueRen = conyugueRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (conyugueRen != null) {
+                    json_solicitud.put(ConyugueRen.TBL, conyugueRen);
+                    DireccionRen direccionConyugueRen = direccionRenDao.findByIdDireccion(Long.parseLong(conyugueRen.getDireccionId()));
+                    if (direccionConyugueRen != null)
+                        json_solicitud.put(DireccionRen.TBL + "_conyugue", direccionConyugueRen);
+                }
+
+                AvalRenDao avalRenDao = new AvalRenDao(ctx);
+                AvalRen avalRen = avalRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (avalRen != null) {
+                    json_solicitud.put(AvalRen.TBL, avalRen);
+                    DireccionRen direccionAvalRen = direccionRenDao.findByIdDireccion(Long.parseLong(avalRen.getDireccionId()));
+                    if (direccionAvalRen != null)
+                        json_solicitud.put(DireccionRen.TBL + "_aval", direccionAvalRen);
+                }
+
+                DocumentoRenDao documentoRenDao = new DocumentoRenDao(ctx);
+                DocumentoRen documentoRen = documentoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (documentoRen != null) json_solicitud.put(DocumentoRen.TBL, documentoRen);
+
+                EconomicoRenDao economicoRenDao = new EconomicoRenDao(ctx);
+                EconomicoRen economicoRen = economicoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (economicoRen != null) json_solicitud.put(EconomicoRen.TBL, economicoRen);
+
+                NegocioRenDao negocioRenDao = new NegocioRenDao(ctx);
+                NegocioRen negocioRen = negocioRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (negocioRen != null) {
+                    json_solicitud.put(NegocioRen.TBL, negocioRen);
+
+                    DireccionRen direccionNegocioRen = direccionRenDao.findByIdDireccion(Long.parseLong(negocioRen.getDireccionId()));
+                    if (direccionNegocioRen != null)
+                        json_solicitud.put(DireccionRen.TBL + "_negocio", direccionNegocioRen);
+                }
+
+                PoliticaPldRenDao politicaPldRenDao = new PoliticaPldRenDao(ctx);
+                PoliticaPldRen politicaPldRen = politicaPldRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (politicaPldRen != null) json_solicitud.put(PoliticaPldRen.TBL, politicaPldRen);
+
+                ReferenciaRenDao referenciaRenDao = new ReferenciaRenDao(ctx);
+                ReferenciaRen referenciaRen = referenciaRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
+                if (referenciaRen != null) {
+                    json_solicitud.put(ReferenciaRen.TBL, referenciaRen);
+
+                    DireccionRen direccionReferenciaRen = direccionRenDao.findByIdDireccion(Long.parseLong(referenciaRen.getDireccionId()));
+                    if (direccionReferenciaRen != null)
+                        json_solicitud.put(DireccionRen.TBL + "_referencia", direccionReferenciaRen);
+                }
+
+
+            } catch (Exception e) {
+                Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            final AlertDialog loadingSendData = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+            loadingSendData.show();
+
+            SessionManager session = new SessionManager(ctx);
+            SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+            Call<ApiResponse> call = solicitudIndService.jsonOriginacionInd("Bearer " + session.getUser().get(7), new Gson().toJson(json_solicitud));
+
+            call.enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    ApiResponse apiResponse;
+
+                    switch (response.code()) {
+                        case 200:
+                            apiResponse = response.body();
+                            loadingSendData.dismiss();
+
+                            if (apiResponse.getError() == null) {
+                                Toast.makeText(ctx, "¡Solicitud compartida!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ctx, apiResponse.getMensaje(), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        default:
+                            loadingSendData.dismiss();
+                            Toast.makeText(ctx, response.message(), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    loadingSendData.dismiss();
+                    Log.e("AQUI ERROR", t.getMessage());
+                    Toast.makeText(ctx, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void enviarJSONRequest() { }
+
+    private void sendSolicitud()
+    {
+        if(esSolicitudValida())
+        {
+            /**Actualiza los estatus a completado de las tablas a completado*/
+            Update("estatus_completado", TBL_CREDITO_IND_REN, "1");
+            Update("estatus_completado", TBL_CLIENTE_IND_REN, "1");
+            Update("estatus_completado", TBL_CONYUGE_IND_REN, "1");
+            Update("estatus_completado", TBL_ECONOMICOS_IND_REN, "1");
+            Update("estatus_completado", TBL_NEGOCIO_IND_REN, "1");
+            Update("estatus_completado", TBL_AVAL_IND_REN, "1");
+            Update("estatus_completado", TBL_REFERENCIA_IND_REN, "1");
+            Update("estatus_completado", TBL_CROQUIS_IND_REN, "1");
+            Update("estatus_completado", TBL_POLITICAS_PLD_IND_REN, "1");
+            Update("estatus_completado", TBL_DOCUMENTOS_REN, "1");
+
+            Update("comentario_rechazo", TBL_CLIENTE_IND_REN, "");
+            Update("comentario_rechazo", TBL_NEGOCIO_IND_REN, "");
+            Update("comentario_rechazo", TBL_AVAL_IND_REN, "");
+            Update("comentario_rechazo", TBL_REFERENCIA_IND_REN, "");
+            Update("comentario_rechazo", TBL_CROQUIS_IND_REN, "");
+
+            ContentValues cv = new ContentValues();
+            cv.put("estatus", 1);
+            cv.put("fecha_termino", m.ObtenerFecha("timestamp"));
+
+            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+
+            //PRUEBAS PARA NUEVA VERSION
+            dialog_sending_solicitud_individual dialogSendSI = new dialog_sending_solicitud_individual();
+            Bundle b = new Bundle();
+            b.putLong(ID_SOLICITUD, id_solicitud);
+            b.putBoolean(ES_RENOVACION, true);
+            dialogSendSI.setArguments(b);
+            dialogSendSI.setCancelable(false);
+            dialogSendSI.show(getSupportFragmentManager(), NameFragments.DIALOGSENDINGSOLICITUDINDIVIDUAL);
+        }
+    }
+
+    private boolean esSolicitudValida()
+    {
+        boolean flag = false;
+
+        boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
+        credito = saveDatosCredito();
+        croquis = saveCroquis();
+        cliente = saveDatosPersonales();
+        if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
+                m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE"))
+            conyuge = saveConyuge();
+        else
+            conyuge = true;
+        if (!m.GetStr(etMontoPrestamo).replace(",", "").isEmpty() && Integer.parseInt(m.GetStr(etMontoPrestamo).replace(",", "")) >= 30000)
+            economicos = saveDatosEconomicos();
+        else
+            economicos = true;
+
+        negocio = saveDatosNegocio();
+        aval = saveDatosAval();
+        referencia = saveReferencia();
+        politicas = savePoliticas();
+        documentacion = saveDocumentacion();
+
+        if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
+            flag = true;
+        }
+        else {
+            final AlertDialog solicitud;
+            solicitud = Popups.showDialogMessage(this, warning,
+                    "Faltan por llenar campos de la solicitud", R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+            solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            solicitud.show();
+
+        }
+
+        return flag;
+    }
+
+    private void obtenerEstatusSolicitud()
+    {
+        final AlertDialog loadingEstatus = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+        loadingEstatus.show();
+
+        SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
+
+        if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
+            SessionManager session = new SessionManager(ctx);
+            SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+            Call<List<SolicitudDetalleEstatusInd>> call = solicitudIndService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
+
+            call.enqueue(new Callback<List<SolicitudDetalleEstatusInd>>() {
+                @Override
+                public void onResponse(Call<List<SolicitudDetalleEstatusInd>> call, Response<List<SolicitudDetalleEstatusInd>> response) {
+                    switch (response.code()) {
+                        case 200:
+                            List<SolicitudDetalleEstatusInd> solicitudes = response.body();
+
+                            for (SolicitudDetalleEstatusInd se : solicitudes) {
+                                if (se.getTipoSolicitud() != 1 && Integer.compare(se.getId(), solicitudRen.getIdOriginacion()) == 0) {
+                                    ClienteRenDao clienteDao = new ClienteRenDao(ctx);
+                                    SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
+
+                                    ClienteRen cliente = null;
+                                    SolicitudRen solicitudTemp = solicitudDao.findByIdOriginacion(se.getId());
+
+                                    if (solicitudTemp != null)
+                                        cliente = clienteDao.findByIdSolicitud(solicitudTemp.getIdSolicitud());
+
+                                    if (cliente != null) {
+                                        String comentario = "";
+
+                                        if (se.getSolicitudEstadoId() == 1) {
+                                            comentario = "EN REVISIÓN";
+                                            solicitudTemp.setEstatus(2);
+                                        } else if (se.getSolicitudEstadoId() == 3) {
+                                            comentario = "VALIDADO";
+                                            solicitudTemp.setEstatus(3);
+                                        } else {
+                                            //comentario = cliente.getComentarioRechazo();
+                                            //solicitud.setEstatus(3);
+                                        }
+
+                                        if (se.getSolicitudEstadoId() == 2) solicitudTemp.setEstatus(5);
+
+                                        cliente.setComentarioRechazo(comentario);
+                                        clienteDao.updateEstatus(cliente);
+
+                                        solicitudDao.updateEstatus(solicitudTemp);
+                                    }
+                                }
+                            }
+                            obtenerRechazo(loadingEstatus, solicitudRen);
+                            break;
+                        default:
+                            obtenerRechazo(loadingEstatus, solicitudRen);
+                            Log.e("AQUI ", response.message());
+                            break;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<SolicitudDetalleEstatusInd>> call, Throwable t) {
+                    obtenerRechazo(loadingEstatus, solicitudRen);
+                    Log.e("Error", "failAGF" + t.getMessage());
+                }
+            });
+        }
+    }
+
+    private void obtenerRechazo(AlertDialog alert, SolicitudRen solicitudRen)
+    {
+        SessionManager session = new SessionManager(ctx);
+        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        Call<List<MSolicitudRechazoInd>> call = api.getSolicitudRechazoInd("Bearer "+ session.getUser().get(7));
+        call.enqueue(new Callback<List<MSolicitudRechazoInd>>() {
+            @Override
+            public void onResponse(Call<List<MSolicitudRechazoInd>> call, Response<List<MSolicitudRechazoInd>> response) {
+                switch (response.code()){
+                    case 200:
+                        List<MSolicitudRechazoInd> solicitudes = response.body();
+                        if (solicitudes.size() > 0){
+                            for (MSolicitudRechazoInd item : solicitudes){
+                                ContentValues cv;
+                                String sql = "";
+                                Cursor row = null;
+
+                                if (item.getTipoSolicitud() != 1 && Integer.compare(item.getId(), solicitudRen.getIdOriginacion()) == 0) {
+                                    sql = "SELECT s.id_solicitud, cre.id_credito, cli.id_cliente, con.id_conyuge, eco.id_economico, neg.id_negocio, ava.id_aval, ref.id_referencia, cro.id FROM " + TBL_SOLICITUDES_REN + " AS s " +
+                                            "JOIN " + TBL_CREDITO_IND_REN + " AS cre ON s.id_solicitud = cre.id_solicitud " +
+                                            "JOIN " + TBL_CLIENTE_IND_REN + " AS cli ON s.id_solicitud = cli.id_solicitud " +
+                                            "JOIN " + TBL_CONYUGE_IND_REN + " AS con ON s.id_solicitud = con.id_solicitud " +
+                                            "JOIN " + TBL_ECONOMICOS_IND_REN + " AS eco ON s.id_solicitud = eco.id_solicitud " +
+                                            "JOIN " + TBL_NEGOCIO_IND_REN + " AS neg ON s.id_solicitud = neg.id_solicitud " +
+                                            "JOIN " + TBL_AVAL_IND_REN + " AS ava ON s.id_solicitud = ava.id_solicitud " +
+                                            "JOIN " + TBL_REFERENCIA_IND_REN + " AS ref ON s.id_solicitud = ref.id_solicitud " +
+                                            "JOIN " + TBL_CROQUIS_IND_REN + " AS cro ON s.id_solicitud = cro.id_solicitud " +
+                                            "WHERE s.id_originacion = ? AND s.estatus >= 2";
+                                    row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
+
+                                    if (row.getCount() > 0) {
+                                        row.moveToFirst();
+                                        if (item.getSolicitudEstadoId() == 4) {//Actualiza solicitud de originacion que rechazo la adminitradora para correccion de datos
+
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", "");
+                                            db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+
+                                            if (item.getEstatusCliente() != null && !(Boolean) item.getEstatusCliente()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCliente()));
+                                                int i_update = db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(2)});
+                                                Log.e("Update", "Update: " + i_update);
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                db.update(TBL_CONYUGE_IND_REN, cv, "id_solicitud = ? AND id_conyuge = ?", new String[]{row.getString(0), row.getString(3)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                db.update(TBL_DOCUMENTOS_REN, cv, "id_solicitud = ? ", new String[]{row.getString(0)});
+                                            }
+
+                                            if (item.getEstatusNegocio() != null && !(Boolean) item.getEstatusNegocio()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminNegocio()));
+                                                db.update(TBL_NEGOCIO_IND_REN, cv, "id_solicitud = ? AND id_negocio = ?", new String[]{row.getString(0), row.getString(5)});
+                                            }
+
+                                            if (item.getEstatusAval() != null && !(Boolean) item.getEstatusAval()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminAval()));
+                                                db.update(TBL_AVAL_IND_REN, cv, "id_solicitud = ? AND id_aval = ?", new String[]{row.getString(0), row.getString(6)});
+                                            }
+
+                                            if (item.getEstatusReferencia() != null && !(Boolean) item.getEstatusReferencia()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminReferencia()));
+                                                db.update(TBL_REFERENCIA_IND_REN, cv, "id_solicitud = ? AND id_referencia = ?", new String[]{row.getString(0), row.getString(7)});
+                                            }
+
+                                            if (item.getEstatusCroquis() != null && !(Boolean) item.getEstatusCroquis()) {
+                                                cv = new ContentValues();
+                                                cv.put("estatus", 0);
+                                                cv.put("fecha_guardado", "");
+                                                cv.put("fecha_termino", "");
+                                                db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                                cv = new ContentValues();
+                                                cv.put("estatus_completado", 0);
+                                                cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
+                                                db.update(TBL_CROQUIS_IND_REN, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
+                                            }
+                                        } else if (item.getSolicitudEstadoId() == 2) { //Solicitud de renovacion rechazada
+                                            Log.e("AQUI RECHAZI IND idsol", row.getString(0));
+                                            Log.e("AQUI RECHAZI IND idcli", row.getString(8));
+
+                                            cv = new ContentValues();
+                                            cv.put("estatus", 5);
+                                            db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(0)});
+
+                                            cv = new ContentValues();
+                                            cv.put("comentario_rechazo", Miscellaneous.validStr("NO AUTORIZADO - " + item.getComentarioAdminCliente()));
+                                            db.update(TBL_CLIENTE_IND_REN, cv, "id_solicitud = ? AND id_cliente = ?", new String[]{row.getString(0), row.getString(8)});
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        alert.dismiss();
+                        finish();
+                        break;
+                    default:
+                        alert.dismiss();
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MSolicitudRechazoInd>> call, Throwable t) {
+                alert.dismiss();
+            }
+        });
 
     }
 
 
-    private boolean getGastoMen() {
-
-        double sum = Double.parseDouble(m.GetStr(etGastosMenNeg).replace(",", ""))
-                + Double.parseDouble(m.GetStr(etGastosAguaNeg).replace(",", ""))
-                + Double.parseDouble(m.GetStr(etGastosLuzNeg).replace(",", ""))
-                + Double.parseDouble(m.GetStr(etGastosTelNeg).replace(",", ""))
-                + Double.parseDouble(m.GetStr(etGastosRentaNeg).replace(",", ""))
-                + Double.parseDouble(m.GetStr(etGastosOtrosNeg).replace(",", ""));
-
-        return (sum > 0);
-    }
 }

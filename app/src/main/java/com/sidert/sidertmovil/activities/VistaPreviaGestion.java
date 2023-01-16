@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -99,6 +100,7 @@ import static com.sidert.sidertmovil.utils.Constants.warning;
 public class VistaPreviaGestion extends AppCompatActivity {
 
     private Context ctx;
+    private SessionManager session;
 
     private Toolbar tbMain;
     private TextView tvtitulo;
@@ -168,6 +170,7 @@ public class VistaPreviaGestion extends AppCompatActivity {
         setContentView(R.layout.activity_vista_previa_gestion);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx = this;
+        session = new SessionManager(ctx);
 
         m = new Miscellaneous();
 
@@ -485,6 +488,13 @@ public class VistaPreviaGestion extends AppCompatActivity {
 
         btnCancelar.setOnClickListener(btnCancelar_OnClick);
         btnConfirmar.setOnClickListener(btnConfirmar_OnClick);
+
+        if (session.getUser().get(5).contains("ROLE_GESTOR")) {
+            etSaldoActual.setVisibility(View.GONE);
+            SaldoActual.setVisibility(View.GONE);
+            etSaldoCorte.setVisibility(View.GONE);
+            SaldoCorte.setVisibility(View.GONE);
+        }
 
     }
 

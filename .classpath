@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="app/build/generated/source/buildConfig/debug"/>
+	<classpathentry kind="src" path="app/src/androidTest/java"/>
+	<classpathentry kind="src" path="app/src/main/java"/>
+	<classpathentry kind="src" path="app/src/test/java"/>
+	<classpathentry kind="lib" path="app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/compressed_assets/debug/out/assets/line.png.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/compressed_assets/debug/out/assets/linea2.png.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/compressed_assets/debug/out/assets/logo_impresion.png.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/external_file_lib_dex_archives/debug/0_jetified-Sewoo_Android_1092.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/external_file_lib_dex_archives/debug/1_jetified-printerlibs.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/merged_java_res/debug/base.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/project_dex_archive/debug/out/edc13576783ebf1af99a509c000103f6b1d9c5e1d2757d62eca4d0f3ab5b2553_0.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/project_dex_archive/debug/out/edc13576783ebf1af99a509c000103f6b1d9c5e1d2757d62eca4d0f3ab5b2553_1.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/project_dex_archive/debug/out/edc13576783ebf1af99a509c000103f6b1d9c5e1d2757d62eca4d0f3ab5b2553_2.jar"/>
+	<classpathentry kind="lib" path="app/build/intermediates/project_dex_archive/debug/out/edc13576783ebf1af99a509c000103f6b1d9c5e1d2757d62eca4d0f3ab5b2553_3.jar"/>
+	<classpathentry kind="lib" path="app/libs/printerlibs.jar"/>
+	<classpathentry kind="lib" path="app/libs/Sewoo_Android_1092.jar"/>
+	<classpathentry kind="lib" path="gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="output" path="app/build/intermediates/javac/debug/classes"/>
+</classpath>

@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!--<item
-        android:id="@+id/devmode"
-        android:title="DEV MODE"
-        android:icon="@drawable/ic_baseline_code_24_white"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/desbloquear"
-        android:title="DESBLOQUEAR"
-        android:visible="false"
-        android:icon="@drawable/ic_baseline_lock_24_white"
-        app:showAsAction="ifRoom"/>-->
     <item
         android:id="@+id/enviar"
         android:title="@string/sent"
         android:icon="@drawable/ic_send"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/updateEstatus"
+        android:title="OBTENER ESTATUS"
+        android:icon="@drawable/ic_sync_white"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/desbloquear"
+        android:title="DESBLOQUEAR"
+        android:icon="@drawable/ic_baseline_lock_24_white"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/devmode"
+        android:title="DEV MODE"
+        android:icon="@drawable/ic_baseline_code_24_white"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
 </menu>

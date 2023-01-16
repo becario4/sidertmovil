@@ -151,4 +151,6 @@ public class Solicitud implements Serializable {
     public void setEstatus(Integer estatus) {
         this.estatus = estatus;
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.models.catalogos;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -56,12 +57,13 @@ public class MedioPago extends BaseModel implements Serializable, IFillModel {
     public static String getIdMediosPago(String mediosPago)
     {
         String aux = "";
-
-        if (mediosPago.trim().isEmpty()){
+        Log.e("AQUI MEDIOS PAGO getIdMediosPago", mediosPago);
+        if (!mediosPago.trim().isEmpty()){
             String[] medios = mediosPago.split(",");
-
+            Log.e("AQUI MEDIOS PAGO getIdMediosPago", "" + medios.length);
             if (medios.length > 0){
                 for (int m = 0; m < medios.length; m++){
+                    Log.e("AQUI MEDIOS PAGO getIdMediosPago", medios[m]);
                     if (m == 0)
                         aux = "'"+medios[m].trim()+"'";
                     else

@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class DireccionRen implements Serializable {
+    public final static String TBL = "tbl_direccion_ren";
+
     @SerializedName("id_direccion")
     @Expose
     private Integer idDireccion;

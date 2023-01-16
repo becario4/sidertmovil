@@ -1,11 +1,40 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion;
 
+import android.database.Cursor;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.sidert.sidertmovil.models.BaseModel;
+import com.sidert.sidertmovil.models.IFillModel;
 
 import java.io.Serializable;
 
-public class IntegranteGpo implements Serializable {
+public class IntegranteGpo extends BaseModel implements Serializable, IFillModel {
+    public final static String TBL                            = "tbl_integrantes_gpo";
+    protected static final String COL_ID                      = "id";
+    protected static final String COL_ID_CREDITO              = "id_credito";
+    protected static final String COL_CARGO                   = "cargo";
+    protected static final String COL_NOMBRE                  = "nombre";
+    protected static final String COL_PATERNO                 = "paterno";
+    protected static final String COL_MATERNO                 = "materno";
+    protected static final String COL_FECHA_NACIMIENTO        = "fecha_nacimiento";
+    protected static final String COL_EDAD                    = "edad";
+    protected static final String COL_GENERO                  = "genero";
+    protected static final String COL_ESTADO_NACIMIENTO       = "estado_nacimiento";
+    protected static final String COL_RFC                     = "rfc";
+    protected static final String COL_CURP                    = "curp";
+    protected static final String COL_CURP_DIGITO_VERI        = "curp_digito_veri";
+    protected static final String COL_TIPO_IDENTIFICACION     = "tipo_identificacion";
+    protected static final String COL_NO_IDENTIFICACION       = "no_identificacion";
+    protected static final String COL_NIVEL_ESTUDIO           = "nivel_estudio";
+    protected static final String COL_OCUPACION               = "ocupacion";
+    protected static final String COL_ESTADO_CIVIL            = "estado_civil";
+    protected static final String COL_BIENES                  = "bienes";
+    protected static final String COL_ESTATUS_RECHAZO         = "estatus_rechazo";
+    protected static final String COL_COMENTARIO_RECHAZO      = "comentario_rechazo";
+    protected static final String COL_ESTATUS_COMPLETADO      = "estatus_completado";
+    protected static final String COL_ID_SOLICITUD_INTEGRANTE = "id_solicitud_integrante";
+
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -280,5 +309,45 @@ public class IntegranteGpo implements Serializable {
 
     public void setIdSolicitudIntegrante(Integer idSolicitudIntegrante) {
         this.idSolicitudIntegrante = idSolicitudIntegrante;
+    }
+
+    public String getNombreCompleto()
+    {
+        String nombreCompleto = "";
+
+        if(nombre != null) nombreCompleto += nombre;
+        if(paterno != null) nombreCompleto += " " + paterno;
+        if(materno != null) nombreCompleto += " " + materno;
+
+        return nombreCompleto.trim();
+    }
+
+    @Override
+    public void fill(Cursor row) {
+        this.row = row;
+
+        id        = getInt(COL_ID);
+        idCredito = getInt(COL_ID_CREDITO);
+        cargo     = getInt(COL_CARGO);
+        nombre    = getString(COL_NOMBRE);
+        paterno   = getString(COL_PATERNO);
+        materno   = getString(COL_MATERNO);
+        fechaNacimiento    = getString(COL_FECHA_NACIMIENTO);
+        edad               = getString(COL_EDAD);
+        genero             = getInt(COL_GENERO);
+        estadoNacimiento   = getString(COL_ESTADO_NACIMIENTO);
+        rfc                = getString(COL_RFC);
+        curp               = getString(COL_CURP);
+        curpDigitoVeri     = getString(COL_CURP_DIGITO_VERI);
+        tipoIdentificacion = getString(COL_TIPO_IDENTIFICACION);
+        noIdentificacion   = getString(COL_NO_IDENTIFICACION);
+        nivelEstudio       = getString(COL_NIVEL_ESTUDIO);
+        ocupacion          = getString(COL_OCUPACION);
+        estadoCivil        = getString(COL_ESTADO_CIVIL);
+        bienes             = getInt(COL_BIENES);
+        estatusRechazo     = getInt(COL_ESTATUS_RECHAZO);
+        comentarioRechazo  = getString(COL_COMENTARIO_RECHAZO);
+        estatusCompletado  = getInt(COL_ESTATUS_COMPLETADO);
+        idSolicitudIntegrante = getInt(COL_ID_SOLICITUD_INTEGRANTE);
     }
 }

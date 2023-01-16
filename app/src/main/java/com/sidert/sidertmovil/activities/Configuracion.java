@@ -867,9 +867,9 @@ public class Configuracion extends AppCompatActivity {
                         /**Procesos a enviar que esten en pendiente de envio*/
                         Servicios_Sincronizado ss = new Servicios_Sincronizado();
 
-                        ReactivarRenovacionGpo("436", "LAS HIJAS DE LAS COMADRITAS 2435", "2022-07-29");
+                        //ReactivarRenovacionGpo("436", "LAS HIJAS DE LAS COMADRITAS 2435", "2022-07-29");
                         //ReactivarRenovacionGpo("402", "LA ESPERANZA 4075", "2022-07-21");
-
+                        //ReactivarRenovacionGpo("134", "LOMAS VERDES 3821", "2022-07-26");
                         //ReactivarRenovacionGpo("082", "LAS DESALMADAS 3549", "2022-07-21");
 
                         ///ReactivarRenovacionGpo("310", "FE 3602", "2022-07-28");
@@ -1661,41 +1661,6 @@ public class Configuracion extends AppCompatActivity {
                     }
                 }
             }
-
-                            /*
-                            PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
-                            PrestamoToRenovar prestamoToRenovar = prestamoToRenovarDao.findLikeClienteNombreAndFechaVencimiento("2 DE NOVIEMBRE 2398", "2022-07-20");
-
-                            if(prestamoToRenovar != null) {
-                                SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
-                                SolicitudRen solicitudRen = solicitudRenDao.findLikeNombreAndPrestamoId("2 DE NOVIEMBRE 2398", prestamoToRenovar.getPrestamoId());
-
-                                if (solicitudRen != null) {
-                                    CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
-                                    CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
-
-                                    if(creditoGpoRen != null)
-                                    {
-                                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
-                                        List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
-
-                                        if(integranteGpoRenList.size() > 0)
-                                        {
-                                            for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
-                                            {
-                                                iGpoRen.setEstatusCompletado(0);
-                                                iGpoRen.setEstatusRechazo(0);
-                                                integranteGpoRenDao.updateEstatus(iGpoRen);
-                                                integranteGpoRenDao.saveEstatus(iGpoRen);
-                                            }
-                                        }
-
-                                        solicitudRen.setEstatus(0);
-                                        solicitudRenDao.updateEstatus(solicitudRen);
-                                    }
-                                }
-                            }
-                             */
         }
     }
 

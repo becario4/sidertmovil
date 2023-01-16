@@ -11,7 +11,6 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_TO_RENOVAR;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
@@ -191,6 +190,16 @@ public class SolicitudDao {
     }
 
 
+    public void updateIdOriginacion(Solicitud solicitud)
+    {
+        ContentValues cv = new ContentValues();
+
+        if(solicitud.getIdOriginacion() > 0) {
+            cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+            db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        }
+    }
+
     public void updateEstatus(Solicitud solicitud)
     {
         ContentValues cv = new ContentValues();
@@ -212,6 +221,14 @@ public class SolicitudDao {
         if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
         cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
 
+        db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+    }
+
+    public void setCompletado(Solicitud solicitud)
+    {
+        ContentValues cv = new ContentValues();
+        cv.put("estatus", "2");
+        cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 

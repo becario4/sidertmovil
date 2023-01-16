@@ -316,7 +316,7 @@ public class ConyugueIntegranteRen extends BaseModel implements Serializable, IF
         this.row = row;
 
         idConyugue        = getInt(COL_ID_CONYUGUE);
-        idIntegrante       = getInt(COL_ID_INTEGRANTE);
+        idIntegrante      = getInt(COL_ID_INTEGRANTE);
         nombre            = getString(COL_NOMBRE);
         paterno           = getString(COL_PATERNO);
         materno           = getString(COL_MATERNO);

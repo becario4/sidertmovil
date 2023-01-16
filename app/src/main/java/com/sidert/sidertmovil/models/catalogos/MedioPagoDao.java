@@ -2,6 +2,7 @@ package com.sidert.sidertmovil.models.catalogos;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.sidert.sidertmovil.models.BaseDao;
 
@@ -19,6 +20,7 @@ public class MedioPagoDao extends BaseDao {
     public String findIdsByNombres(String nombresMediosPago)
     {
         String nombres = MedioPago.getIdMediosPago(nombresMediosPago);
+        Log.e("AQUI MEDIOS PAGO", nombres);
         String mediosPagosIds = "";
 
         String sql = "" +
@@ -29,10 +31,11 @@ public class MedioPagoDao extends BaseDao {
 
         Cursor row  = db.rawQuery(sql, null);
 
+        Log.e("AQUI MEDIOS PAGO", "" + row.getCount());
         List<MedioPago> mediosPago = new ArrayList<>();
         for(int i = 0; i < row.getCount(); i++) mediosPago.add(new MedioPago());
         findAll(row, mediosPago );
-
+        Log.e("AQUI MEDIOS PAGO", "" + mediosPago.size());
         for(int i = 0; i < mediosPago.size(); i++)
         {
             if (i == 0)
@@ -41,6 +44,7 @@ public class MedioPagoDao extends BaseDao {
                 mediosPagosIds += "," + mediosPago.get(i).getId();
         }
 
+        Log.e("AQUI MEDIOS PAGO", mediosPagosIds);
         return mediosPagosIds;
     }
 }

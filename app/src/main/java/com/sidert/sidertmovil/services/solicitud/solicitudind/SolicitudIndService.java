@@ -58,4 +58,30 @@ public interface SolicitudIndService {
         @Part MultipartBody.Part curp_aval,
         @Part MultipartBody.Part comprobante_aval
     );
+
+    @Multipart
+    @POST("/api/solicitudes/creditos/individuales")
+    Call<MResSaveSolicitud> saveRenovacion(
+            @Header("Authorization") String token,
+            @Part("solicitud") RequestBody solicitud,
+            @Part MultipartBody.Part fachada_cliente,
+            @Part MultipartBody.Part firma_cliente,
+            @Part MultipartBody.Part fachada_negocio,
+            @Part MultipartBody.Part fachada_aval,
+            @Part MultipartBody.Part firma_aval,
+            @Part MultipartBody.Part identificacion_frontal,
+            @Part MultipartBody.Part identificacion_reverso,
+            @Part MultipartBody.Part curp,
+            @Part MultipartBody.Part comprobante_domicilio,
+            @Part MultipartBody.Part firma_asesor,
+            @Part("solicitud_id") RequestBody solicitudId,
+            @Part MultipartBody.Part ine_selfie,
+            @Part MultipartBody.Part comprobante_garantia,
+            @Part MultipartBody.Part ine_frontal_aval,
+            @Part MultipartBody.Part ine_reverso_aval,
+            @Part MultipartBody.Part curp_aval,
+            @Part MultipartBody.Part comprobante_aval
+    );
+
+
 }

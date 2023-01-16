@@ -41,7 +41,7 @@ public class CreditoGpoRenDao {
             credito.setPlazo(row.getString(3));
             credito.setPeriodicidad(row.getString(4));
             credito.setFechaDesembolso(row.getString(5));
-            credito.setDisDesembolso(row.getString(6));
+            credito.setDiaDesembolso(row.getString(6));
             credito.setHoraVisita(row.getString(7));
             credito.setEstatusCompletado(row.getInt(8));
             credito.setObservaciones(row.getString(9));
@@ -78,7 +78,7 @@ public class CreditoGpoRenDao {
             credito.setPlazo(row.getString(3));
             credito.setPeriodicidad(row.getString(4));
             credito.setFechaDesembolso(row.getString(5));
-            credito.setDisDesembolso(row.getString(6));
+            credito.setDiaDesembolso(row.getString(6));
             credito.setHoraVisita(row.getString(7));
             credito.setEstatusCompletado(row.getInt(8));
             credito.setObservaciones(row.getString(9));

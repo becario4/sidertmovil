@@ -1232,7 +1232,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                             Update("pagara_requerido", _confirmacion[position]);
                             switch (position) {
                                 case 0:
-                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                    /*if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
                                     else
                                         etPagoRealizado.setText(monto_requerido);
@@ -1243,14 +1243,14 @@ public class VencidaIntegrante extends AppCompatActivity {
                                         tvPagaraRequerido.setText("");
                                         tvPagaraRequerido.setError("");
                                         SelectPagoRequerido(-1);
-                                    }
+                                    }*/
                                     break;
                                 case 1:
-                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                    /*if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
                                     else
                                         etPagoRealizado.setText(monto_requerido);
-                                    SelectPagoRequerido(1);
+                                    SelectPagoRequerido(1);*/
                                     break;
                                 default:
                                     tvPagaraRequerido.setError("");
@@ -1617,7 +1617,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 SelectMotivoNoPago(-1);
                 llComentario.setVisibility(View.GONE);
                 llMedioPago.setVisibility(View.VISIBLE);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llMotivoNoPago.setVisibility(View.GONE);
                 llFachada.setVisibility(View.GONE);
                 llGerente.setVisibility(View.GONE);
@@ -1664,6 +1664,7 @@ public class VencidaIntegrante extends AppCompatActivity {
             case -1: // Opción "Seleccione una opción"
                 tvMedioPago.setError("");
                 tvPagaraRequerido.setText("");
+                tvPagaraRequerido.setText(_confirmacion[1]);
                 SelectPagoRequerido(-1);
                 llPagaraRequerido.setVisibility(View.GONE);
                 llFechaDeposito.setVisibility(View.GONE);
@@ -1671,6 +1672,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFolioRecibo.setVisibility(View.GONE);
                 llGerente.setVisibility(View.GONE);
+                llMontoPagoRealizado.setVisibility(View.GONE);
                 break;
             case 8: // Banamex722
                 if (byteEvidencia != null)
@@ -1683,13 +1685,15 @@ public class VencidaIntegrante extends AppCompatActivity {
                 ibGaleria.setEnabled(true);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
                 tvPagaraRequerido.setEnabled(true);
-                llPagaraRequerido.setVisibility(View.VISIBLE);
+                tvPagaraRequerido.setText(_confirmacion[1]);
+                //llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.VISIBLE);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llFolioRecibo.setVisibility(View.GONE);
                 llGerente.setVisibility(View.VISIBLE);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 break;
             case 6: // Efectivo
                 if (byteEvidencia != null)
@@ -1702,16 +1706,18 @@ public class VencidaIntegrante extends AppCompatActivity {
                     tvImprimirRecibo.setError(null);
                 else
                     tvImprimirRecibo.setError("");
-                llPagaraRequerido.setVisibility(View.VISIBLE);
+                //llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.GONE);
                 tvPagaraRequerido.setEnabled(true);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 tvImprimirRecibo.setText("");
                 tvImprimirRecibo.setEnabled(true);
                 SelectImprimirRecibos(-1);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                tvPagaraRequerido.setText(_confirmacion[1]);
                 break;
             default: //Sin seleccionar una opción o cualquier otro valor
                 tvMedioPago.setError("");
@@ -1721,6 +1727,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 SelectPagoRequerido(-1);
                 ivEvidencia.setVisibility(View.GONE);
                 tvPagaraRequerido.setEnabled(true);
+                llMontoPagoRealizado.setVisibility(View.GONE);
                 llPagaraRequerido.setVisibility(View.GONE);
                 llFechaDeposito.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.GONE);
@@ -1734,20 +1741,20 @@ public class VencidaIntegrante extends AppCompatActivity {
     private void SelectPagoRequerido (int pos){
         switch (pos){
             case 0: // Si pagará requerido
-                etPagoRealizado.setText(monto_requerido);
+                /*etPagoRealizado.setText(monto_requerido);
                 etPagoRealizado.setEnabled(false);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);*/
                 break;
             case 1: // No pagará requerido
-                etPagoRealizado.setEnabled(true);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                /*etPagoRealizado.setEnabled(true);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);*/
                 break;
             default:
-                etPagoRealizado.setText(monto_requerido);
+                /*etPagoRealizado.setText(monto_requerido);
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);
-                llFolioRecibo.setVisibility(View.GONE);
+                llFolioRecibo.setVisibility(View.GONE);*/
                 break;
         }
     }
