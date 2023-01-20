@@ -234,7 +234,7 @@ public class Home extends AppCompatActivity {
     }
 
     /**Listener el menu lateral... Si se agrega otro menu tendrá que colocarse aqui
-     * para que funcione el eventro de la transicion de una vista a otra
+     * para que funcione el evento de la transicion de una vista a otra
      * */
     private NavigationView.OnNavigationItemSelectedListener NVmenu_onClick = new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -252,7 +252,7 @@ public class Home extends AppCompatActivity {
                     Intent i_renovacion = new Intent(getApplicationContext(), RenovacionCredito.class);
                     startActivity(i_renovacion);
                     break;
-                case R.id.nvSolicitudes:/**Cuando seleccioan el menu Solicitudes son las que ve el gerentes que ya fueron autorizadas por la admin y solo falta que el autorice*/
+                case R.id.nvSolicitudes:/**Cuando seleccionan el menu Solicitudes son las que ve el gerentes que ya fueron autorizadas por la admin y solo falta que el autorice*/
                     Intent i_solicitudes = new Intent(getApplicationContext(), Solicitudes.class);
                     startActivity(i_solicitudes);
                     break;

@@ -252,6 +252,7 @@ public class CierreDeDia extends AppCompatActivity {
             isEdit = false;
             invalidateOptionsMenu();
 
+
             Toast.makeText(ctx, "Cierre Guardado con éxito", Toast.LENGTH_SHORT).show();
 
             /**Proceso para enviar los datos de cierre de dia de la gestion guardada*/

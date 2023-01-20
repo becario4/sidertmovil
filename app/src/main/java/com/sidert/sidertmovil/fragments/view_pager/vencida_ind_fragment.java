@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -370,7 +372,7 @@ public class vencida_ind_fragment extends Fragment {
         tvResultadoGestion.setOnClickListener(tvResultadoGestion_OnClick);
         tvMedioPago.setOnClickListener(tvMedioPago_OnClick);
         tvFechaDeposito.setOnClickListener(tvFechaDeposito_OnClick);
-        tvPagaraRequerido.setOnClickListener(tvPagaraRequerido_OnClick);
+        tvPagaraRequerido.setOnClickListener(tvPagaraRequerido_OnClick); //lA VARIABLE A RESOLVER
         tvImprimirRecibo.setOnClickListener(tvImprimirRecibo_OnClick);
         tvMotivoNoPago.setOnClickListener(tvMotivoNoPago_OnClick);
         tvFechaPromesaPago.setOnClickListener(tvFechaPromesaPago_OnClick);
@@ -590,84 +592,36 @@ public class vencida_ind_fragment extends Fragment {
     private View.OnClickListener ibMap_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            pbLoading.setVisibility(View.VISIBLE);
-            ibMap.setEnabled(false);
-            locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
-            final Handler myHandler = new Handler();
-            locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
-                @Override
-                public void onComplete(String latitud, String longitud) {
+            try {
 
-                    ibMap.setEnabled(true);
-                    if (!latitud.isEmpty() && !longitud.isEmpty()){
+                pbLoading.setVisibility(View.VISIBLE);
+                ibMap.setEnabled(false);
+                locationManager = (LocationManager) parent.getSystemService(Context.LOCATION_SERVICE);
+                final Handler myHandler = new Handler();
+                locationListener = new MyCurrentListener(new MyCurrentListener.evento() {
+                    @Override
+                    public void onComplete(String latitud, String longitud) {
 
-                        tvmapa.setError(null);
-                        mapView.setVisibility(View.VISIBLE);
-                        ColocarUbicacionGestion(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                    }
-                    else{
-                        pbLoading.setVisibility(View.GONE);
-                        tvmapa.setError("");
-                        Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
-                    }
-                    myHandler.removeCallbacksAndMessages(null);
+                        ibMap.setEnabled(true);
+                        if (!latitud.isEmpty() && !longitud.isEmpty()){
 
-                    Cursor row;
-                    row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
-                    row.moveToLast();
-                    if (row.getCount() == 0){
-                        String fechaInicio = m.ObtenerFecha(TIMESTAMP);
-                        fechaIni = fechaInicio;
-                        HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0,parent.id_prestamo);
-                        if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
-                            parent.latitud = "0";
-                            parent.longitud = "0";
-                            params.put(1, "0");
-                            params.put(2, "0");
+                            tvmapa.setError(null);
+                            mapView.setVisibility(View.VISIBLE);
+                            ColocarUbicacionGestion(Double.parseDouble(latitud), Double.parseDouble(longitud));
                         }
                         else{
-                            params.put(1, latitud);
-                            params.put(2, longitud);
+                            pbLoading.setVisibility(View.GONE);
+                            tvmapa.setError("");
+                            Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                         }
-                        params.put(3, "");
-                        params.put(4, "");
-                        params.put(5, "");
-                        params.put(6, "");
-                        params.put(7, "");
-                        params.put(8, "");
-                        params.put(9, "");
-                        params.put(10, "");
-                        params.put(11, "");
-                        params.put(12, "");
-                        params.put(13, "");
-                        params.put(14, "");
-                        params.put(15, "");
-                        params.put(16, "");
-                        params.put(17, "");
-                        params.put(18, "");
-                        params.put(19, "");
-                        params.put(20, "");
-                        params.put(21, "");
-                        params.put(22, fechaInicio);
-                        params.put(23, "");
-                        params.put(24, "");
-                        params.put(25, "0");
-                        params.put(26, "0");
-                        params.put(27, "");
-                        params.put(28, "");
-                        params.put(29, "");
-                        params.put(30, "0");
-                        params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
+                        myHandler.removeCallbacksAndMessages(null);
 
-                        long id;
-                        id = dBhelper.saveRespuestasVencidasInd(db, params);
-
-                        parent.id_respuesta = String.valueOf(id);
-                    }
-                    else{
-                        if (row.getInt(26) > 0){
+                        Cursor row;
+                        row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                        row.moveToLast();
+                        if (row.getCount() == 0){
                             String fechaInicio = m.ObtenerFecha(TIMESTAMP);
+                            fechaIni = fechaInicio;
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
                             if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
@@ -709,92 +663,97 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(29, "");
                             params.put(30, "0");
                             params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
-                            long id;
 
+                            long id;
                             id = dBhelper.saveRespuestasVencidasInd(db, params);
 
                             parent.id_respuesta = String.valueOf(id);
                         }
                         else{
-                            Update("latitud", latitud);
-                            Update("longitud", longitud);
+                            if (row.getInt(26) > 0){
+                                String fechaInicio = m.ObtenerFecha(TIMESTAMP);
+                                HashMap<Integer, String> params = new HashMap<>();
+                                params.put(0,parent.id_prestamo);
+                                if (latitud.trim().isEmpty() && longitud.trim().isEmpty()) {
+                                    parent.latitud = "0";
+                                    parent.longitud = "0";
+                                    params.put(1, "0");
+                                    params.put(2, "0");
+                                }
+                                else{
+                                    params.put(1, latitud);
+                                    params.put(2, longitud);
+                                }
+                                params.put(3, "");
+                                params.put(4, "");
+                                params.put(5, "");
+                                params.put(6, "");
+                                params.put(7, "");
+                                params.put(8, "");
+                                params.put(9, "");
+                                params.put(10, "");
+                                params.put(11, "");
+                                params.put(12, "");
+                                params.put(13, "");
+                                params.put(14, "");
+                                params.put(15, "");
+                                params.put(16, "");
+                                params.put(17, "");
+                                params.put(18, "");
+                                params.put(19, "");
+                                params.put(20, "");
+                                params.put(21, "");
+                                params.put(22, fechaInicio);
+                                params.put(23, "");
+                                params.put(24, "");
+                                params.put(25, "0");
+                                params.put(26, "0");
+                                params.put(27, "");
+                                params.put(28, "");
+                                params.put(29, "");
+                                params.put(30, "0");
+                                params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
+                                long id;
+
+                                id = dBhelper.saveRespuestasVencidasInd(db, params);
+
+                                parent.id_respuesta = String.valueOf(id);
+                            }
+                            else{
+                                Update("latitud", latitud);
+                                Update("longitud", longitud);
+                            }
+                        }
+
+                        flagUbicacion = true;
+                        if (flagUbicacion){
+                            CancelUbicacion();
                         }
                     }
-
-                    flagUbicacion = true;
-                    if (flagUbicacion){
-                        CancelUbicacion();
-                    }
+                });
+                if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 }
-            });
-            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            }
 
-            String provider;
+                String provider;
 
-            if (NetworkStatus.haveNetworkConnection(ctx)) {
-                Log.e("Proveedor", "RED");
-                provider = LocationManager.NETWORK_PROVIDER;
-            } else {
-                Log.e("Proveedor", "GPS");
-                provider = LocationManager.GPS_PROVIDER;
-            }
+                if (NetworkStatus.haveNetworkConnection(ctx)) {
+                    Log.e("Proveedor", "RED");
+                    provider = LocationManager.NETWORK_PROVIDER;
+                } else {
+                    Log.e("Proveedor", "GPS");
+                    provider = LocationManager.GPS_PROVIDER;
+                }
 
-            locationManager.requestSingleUpdate(provider, locationListener, null);
+                locationManager.requestSingleUpdate(provider, locationListener, null);
 
-            myHandler.postDelayed(new Runnable() {
-                public void run() {
-                    parent.latitud = "0";
-                    parent.longitud = "0";
-                    Cursor row;
-                    row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
-                    row.moveToLast();
-                    if (row.getCount() == 0){
-                        String fechaInicio = m.ObtenerFecha(TIMESTAMP);
-                        HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0,parent.id_prestamo);
+                myHandler.postDelayed(new Runnable() {
+                    public void run() {
                         parent.latitud = "0";
                         parent.longitud = "0";
-                        params.put(1, "0");
-                        params.put(2, "0");
-                        params.put(3, "");
-                        params.put(4, "");
-                        params.put(5, "");
-                        params.put(6, "");
-                        params.put(7, "");
-                        params.put(8, "");
-                        params.put(9, "");
-                        params.put(10, "");
-                        params.put(11, "");
-                        params.put(12, "");
-                        params.put(13, "");
-                        params.put(14, "");
-                        params.put(15, "");
-                        params.put(16, "");
-                        params.put(17, "");
-                        params.put(18, "");
-                        params.put(19, "");
-                        params.put(20, "");
-                        params.put(21, "");
-                        params.put(22, fechaInicio);
-                        params.put(23, "");
-                        params.put(24, "");
-                        params.put(25, "0");
-                        params.put(26, "0");
-                        params.put(27, "");
-                        params.put(28, "");
-                        params.put(29, "");
-                        params.put(30, "0");
-                        params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
-
-                        long id;
-
-                        id = dBhelper.saveRespuestasVencidasInd(db, params);
-
-                        parent.id_respuesta = String.valueOf(id);
-                    }
-                    else{
-                        if (row.getInt(26) > 0){
+                        Cursor row;
+                        row = dBhelper.getRecords(TBL_RESPUESTAS_IND_V_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC",new String[]{parent.id_prestamo});
+                        row.moveToLast();
+                        if (row.getCount() == 0){
                             String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0,parent.id_prestamo);
@@ -831,6 +790,7 @@ public class vencida_ind_fragment extends Fragment {
                             params.put(29, "");
                             params.put(30, "0");
                             params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
+
                             long id;
 
                             id = dBhelper.saveRespuestasVencidasInd(db, params);
@@ -838,17 +798,63 @@ public class vencida_ind_fragment extends Fragment {
                             parent.id_respuesta = String.valueOf(id);
                         }
                         else{
-                            Update("latitud", "0");
-                            Update("longitud", "0");
-                        }
-                    }
-                    locationManager.removeUpdates(locationListener);
-                    pbLoading.setVisibility(View.GONE);
-                    ibMap.setEnabled(true);
-                    Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
-                }
-            }, 60000);
+                            if (row.getInt(26) > 0){
+                                String fechaInicio = m.ObtenerFecha(TIMESTAMP);
+                                HashMap<Integer, String> params = new HashMap<>();
+                                params.put(0,parent.id_prestamo);
+                                parent.latitud = "0";
+                                parent.longitud = "0";
+                                params.put(1, "0");
+                                params.put(2, "0");
+                                params.put(3, "");
+                                params.put(4, "");
+                                params.put(5, "");
+                                params.put(6, "");
+                                params.put(7, "");
+                                params.put(8, "");
+                                params.put(9, "");
+                                params.put(10, "");
+                                params.put(11, "");
+                                params.put(12, "");
+                                params.put(13, "");
+                                params.put(14, "");
+                                params.put(15, "");
+                                params.put(16, "");
+                                params.put(17, "");
+                                params.put(18, "");
+                                params.put(19, "");
+                                params.put(20, "");
+                                params.put(21, "");
+                                params.put(22, fechaInicio);
+                                params.put(23, "");
+                                params.put(24, "");
+                                params.put(25, "0");
+                                params.put(26, "0");
+                                params.put(27, "");
+                                params.put(28, "");
+                                params.put(29, "");
+                                params.put(30, "0");
+                                params.put(31, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+parent.num_prestamo+"-"+parent.clave_cliente);
+                                long id;
 
+                                id = dBhelper.saveRespuestasVencidasInd(db, params);
+
+                                parent.id_respuesta = String.valueOf(id);
+                            }
+                            else{
+                                Update("latitud", "0");
+                                Update("longitud", "0");
+                            }
+                        }
+                        locationManager.removeUpdates(locationListener);
+                        pbLoading.setVisibility(View.GONE);
+                        ibMap.setEnabled(true);
+                        Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
+                    }
+                }, 60000);
+            }catch (Exception e){
+               Log.e(TAG, "Error: " + e);
+            }
         }
     };
 

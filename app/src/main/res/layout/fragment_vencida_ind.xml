@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,28 +24,31 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/tvMapa"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/payment_recovery_location"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/payment_recovery_location"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
                     android:id="@+id/ibMap"
-                    android:src="@drawable/ic_pin"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/round_corner_blue"
                     android:paddingTop="3dp"
-                    android:paddingBottom="3dp"/>
+                    android:paddingBottom="3dp"
+                    android:src="@drawable/ic_pin"
+                    tools:ignore="SpeakableTextPresentCheck" />
                 <ProgressBar
                     android:id="@+id/pbLoading"
                     android:visibility="gone"
@@ -65,18 +69,20 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/contacted_client"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/contacted_client"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
                     android:id="@+id/tvContacto"
@@ -94,113 +100,120 @@
             <!-- Actualizar telefono -->
             <LinearLayout
                 android:id="@+id/llActualizarTelefono"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/actualizar_telefono"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/actualizar_telefono"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvActualizarTelefono"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
                 <EditText
                     android:id="@+id/etActualizarTelefono"
-                    android:hint="@string/nuevo_telefono"
-                    android:visibility="gone"
-                    android:paddingLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
                     android:layout_marginTop="8dp"
-                    android:textColor="@drawable/edit_text_selector"
+                    android:background="@drawable/et_rounded_edges"
+                    android:hint="@string/nuevo_telefono"
                     android:inputType="phone"
                     android:maxLength="10"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:paddingLeft="10dp"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
             <!-- Resultado de la gestión -->
             <LinearLayout
                 android:id="@+id/llResultadoGestion"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/management_result"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/management_result"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvResultadoGestion"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!-- Medio de pago -->
             <LinearLayout
                 android:id="@+id/llMedioPago"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/payment_method"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/payment_method"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvMedioPago"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
                 <!--<Spinner
                     android:id="@+id/spMedioPago"
                     android:entries="@array/method_pay"
@@ -239,17 +252,18 @@
             <!--  Monto del pago requerido  -->
             <LinearLayout
                 android:id="@+id/llMontoPagoRequerido"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_payment_required"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_payment_required"
+                    android:textColor="@color/blue_sidert"
+                    android:textStyle="bold" />
                 <!--<EditText
                     android:enabled="false"
                     android:paddingLeft="10dp"
@@ -261,72 +275,76 @@
 
                 <TextView
                     android:id="@+id/tvMontoPagoRequerido"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:drawableStart="@drawable/ic_money"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
-                    android:drawableStart="@drawable/ic_money"
-                    android:background="@drawable/bkg_rounded_edges_blocked"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!--  Se pagara el monto requerido  -->
             <LinearLayout
                 android:id="@+id/llPagaraRequerido"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_required_paid"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/amount_required_paid"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvPagaraRequerido"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!--  Monto del pago realizado  -->
             <LinearLayout
                 android:id="@+id/llMontoPagoRealizado"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_payment_made"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_payment_made"
+                    android:textColor="@color/blue_sidert"
+                    android:textStyle="bold" />
+
                 <EditText
                     android:id="@+id/etPagoRealizado"
-                    android:drawableStart="@drawable/ic_money"
-                    android:paddingLeft="10dp"
-                    android:inputType="numberDecimal"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableStart="@drawable/ic_money"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:textColor="@drawable/edit_text_selector" />
             </LinearLayout>
 
             <!-- ¿Imprimir recibos?-->
@@ -669,34 +687,36 @@
             <!-- Esta el gerente con usted -->
             <LinearLayout
                 android:id="@+id/llGerente"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/is_manager"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/is_manager"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvGerente"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!-- Firma gerente-->

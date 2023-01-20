@@ -84,6 +84,11 @@
         android:title="Guía Rápida"
         android:icon="@drawable/ic_help_outline" />
     <!-- 14 -->
+    <item
+        android:id="@+id/nvCalculadora"
+        android:title="Calcular Prestamo"
+        android:icon="@drawable/calculadora"
+        />
    <!-- <item
         android:id="@+id/nvConsultaCC"
         android:title="Consulta CC"

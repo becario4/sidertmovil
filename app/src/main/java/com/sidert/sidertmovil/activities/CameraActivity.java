@@ -1,7 +1,10 @@
 package com.sidert.sidertmovil.activities;
 
+import static com.sidert.sidertmovil.utils.Constants.PICTURE;
+
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -217,6 +220,7 @@ public class CameraActivity extends AppCompatActivity {
 
         manager.openCamera(cameraId, stateCallback, null);
 
+
     }
 
     private void takePicture () throws CameraAccessException {
@@ -272,7 +276,7 @@ public class CameraActivity extends AppCompatActivity {
                 buffer.get(bytes);
                 foto_byte = bytes;
                 Log.e("size", foto_byte.length+" tamañoo");
-                /*try {
+               /* try {
                     save(bytes);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -283,7 +287,6 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }*/
 
-
             }
         };
 
@@ -293,12 +296,13 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                 super.onCaptureCompleted(session, request, result);
-                /*Intent i_result = new Intent();
+                /**envia la captura tomada al almacenamiento del dispositivo*/
+              /*  Intent i_result = new Intent();
                 i_result.putExtra(PICTURE, foto_byte);
-                //setResult(RESULT_OK, i_result);
+                setResult(RESULT_OK, i_result);*/
 
-                cameraDevice.close();*/
-                //finish();
+                cameraDevice.close();
+                finish();
                 Toast.makeText(getApplicationContext(), "Save", Toast.LENGTH_SHORT).show();
                 try {
                     createCameraPreview();

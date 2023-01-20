@@ -84,6 +84,27 @@
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_enviar_datos.xml" value="0.32592592592592595" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_nav_recuperacion_ind.xml" value="0.1" />
         <entry key="..\:/Users/MARKETING/Documents/proyectos/Movil/sidertmovil/app/src/main/res/menu/menu_prestamos.xml" value="0.1259259259259259" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/drawable/btn_rounded_blue.xml" value="0.24270833333333333" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/drawable/et_rounded_edges.xml" value="0.24635416666666668" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_acerca_de.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_camera.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_camera_vertical.xml" value="0.17346014492753623" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_cierre_de_dia.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_configuracion.xml" value="0.4" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_home.xml" value="0.2" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_login.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_resumen_cartera.xml" value="0.4" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/activity_vencida_individual.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/fragment_mesa_ayuda.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/fragment_rg_detalle.xml" value="0.14175724637681159" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/fragment_vencida_ind.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/header_menu.xml" value="0.176" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/item_autorizar_cc.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/item_cartera.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/item_general.xml" value="0.11775362318840579" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/item_geo_miembro.xml" value="0.264" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/layout/popup_imprimir_recibos.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/PROGRAMADOR/Documents/SidertMovilApp/sidertmovil/app/src/main/res/menu/menu_general.xml" value="0.264" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.17350557244174267" />
         <entry key="app/src/main/res/layout/activity_solicitud_integrante.xml" value="0.1" />
         <entry key="app/src/main/res/layout/popup_registro_integrante.xml" value="0.1" />
