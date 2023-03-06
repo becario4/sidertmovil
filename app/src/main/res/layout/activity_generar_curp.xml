@@ -43,7 +43,7 @@
                         android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:id="@+id/llPlazo"
+                            android:id="@+id/llPlazoCatorcenalRenovado"
                             android:layout_marginTop="10dp"
                             android:orientation="vertical"
                             android:layout_width="match_parent"

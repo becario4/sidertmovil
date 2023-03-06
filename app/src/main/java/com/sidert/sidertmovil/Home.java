@@ -33,6 +33,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -48,6 +49,8 @@ import com.crashlytics.android.Crashlytics;*/
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
+import com.google.gson.JsonArray;
+import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
 import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
@@ -76,10 +79,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
+import static com.sidert.sidertmovil.utils.NameFragments.CALCULADORA;
 import static com.sidert.sidertmovil.utils.NameFragments.GEOLOCALIZACION;
 import static com.sidert.sidertmovil.utils.NameFragments.MESA_AYUDA;
 import static com.sidert.sidertmovil.utils.NameFragments.ORDERS;
@@ -97,11 +103,13 @@ public class Home extends AppCompatActivity {
     private CoordinatorLayout CLcontainer;
     private TextView tvUltimaSincro;
     private TextView tvNameUser;
+    public TextView txtRole;
     private LinearLayout llProfile;
     private ImageView ivLogout;
     private boolean canExitApp = false;
     private SessionManager session;
     private Menu menuGeneral;
+    private String datos,datasss;
 
     public interface Sidert {
         void initTabLayout(TabLayout Tabs);
@@ -130,8 +138,16 @@ public class Home extends AppCompatActivity {
         tvUltimaSincro  = view.findViewById(R.id.tvultimaSincro);
         llProfile       = view.findViewById(R.id.llProfile);
         ivLogout        = view.findViewById(R.id.ivLogout);
-
+        txtRole         = view.findViewById(R.id.txtRolUser);
         Log.e("MAC", session.getMacAddress());
+
+       SessionManager sen = new SessionManager(ctx);
+        try {
+           getTipoRolB(sen);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         /**Se valida si el dominio y el puerto guardado es diferente al de produccion
          * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
@@ -141,6 +157,8 @@ public class Home extends AppCompatActivity {
         }
 
         final Bundle data = getIntent().getExtras();
+
+
         if (true){/** Siempre entra a esta condición , es el menu general de sidert movil */
             initNavigationDrawer();
             setSupportActionBar(TBmain);
@@ -151,13 +169,16 @@ public class Home extends AppCompatActivity {
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, NVmenu);
                 mDrawerLayout.setScrimColor(Color.TRANSPARENT);
             }
+
             if(!mDrawerLayout.isLocked()) {
                 mToggled = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
                     @Override
                     public void onDrawerOpened(View drawerView) {
+
                         super.onDrawerOpened(drawerView);
                         DBhelper dBhelper = new DBhelper(ctx);
                         SQLiteDatabase db = dBhelper.getWritableDatabase();
+                        MenuItem itemCalcu = menuGeneral.findItem(R.id.nvCalculadora);
 
                         /**Se obtiene el log de sincronnizaciones para colocar la fecha y hora de la ultima sincronizacion*/
                         Cursor row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
@@ -172,7 +193,11 @@ public class Home extends AppCompatActivity {
                             }
 
                         }
-
+                        MenuItem xd = menuGeneral.findItem(R.id.nvCalculadora);
+                        if(txtRole.getText().toString().contains("ROLE_ASESOR")){
+                            xd.setVisible(true);
+                        }else
+                            xd.setVisible(false);
                         /*row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
 
                         if (row.getCount() > 0){
@@ -187,6 +212,7 @@ public class Home extends AppCompatActivity {
                             }
 
                         }*/
+
 
                     }
 
@@ -205,8 +231,12 @@ public class Home extends AppCompatActivity {
                     }
                 });
             }
-
             menuGeneral = NVmenu.getMenu();
+
+
+
+
+
 
             /**Funcion para validar que secciones del menu tiene permitido ver el usuario*/
             ShowMenuItems();
@@ -264,6 +294,11 @@ public class Home extends AppCompatActivity {
                     setFragment(NameFragments.IMPRESSION_HISTORY, null);
                     //setFragment(NameFragments.AUTORIZAR_CC, null);
                     break;
+
+                case R.id.nvCalculadora:
+                    setFragment(CALCULADORA,null);
+                    break;
+
                 /*case R.id.nvCC:
                     //Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
                     //Intent i_cc = new Intent(getApplicationContext(), RecuperacionCC.class);
@@ -322,6 +357,7 @@ public class Home extends AppCompatActivity {
                     Intent verDom = new Intent(ctx, VerificacionDomiciliariaActivity.class);
                     startActivity(verDom);
                     break;
+
                 default:/**Manda directo a la validacion de inicio de sesion o cartera*/
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
@@ -351,6 +387,17 @@ public class Home extends AppCompatActivity {
                 } else
                     return;
                 break;
+
+            case CALCULADORA:/**Fragmento calculadora*/
+                if(!(current instanceof calculadoraPrestamo)){
+                    calculadoraPrestamo calcul = new calculadoraPrestamo();
+                    calcul.setArguments(extras);
+                    transaction.replace(R.id.FLmain, calcul,CALCULADORA);
+                    tokenFragment = CALCULADORA;
+                }else
+                    return;
+                break;
+
             case NameFragments.IMPRESSION_HISTORY:/**Fragmento de Impresiones*/
                 if (!(current instanceof impression_history_fragment)){
                     impression_history_fragment impression_history = new impression_history_fragment();
@@ -388,6 +435,7 @@ public class Home extends AppCompatActivity {
                 } else
                     return;
                 break;
+
             default:/**Fragmento de Cartera por default*/
                 if (!(current instanceof orders_fragment)){
                     transaction.replace(R.id.FLmain, new orders_fragment(), ORDERS);
@@ -456,6 +504,73 @@ public class Home extends AppCompatActivity {
             }
         }
     }
+
+    //SI EL PROBLEMA PERSISTE UTILIZA HAST MAPS - ERGO - ARRAYLIST - UTILIZA FOR AND FORECH
+    //PARA RECORRER EL ARREGLO Y OBTENER EL DATO ESPECIFICO
+    public void getTipoRol(SessionManager sen) throws JSONException {
+
+        txtRole = findViewById(R.id.txtRolUser);
+
+        JSONArray array = sen.getAutorizacionAAA();
+
+        String datosAux;
+
+        for (int i = 0; i < array.length(); i++) {
+
+            JSONObject ide = array.getJSONObject(i);
+            datosAux = ide.getString("authorities");
+
+            if (datosAux != null) {
+                txtRole.setText("dato: " + datosAux);
+            } else
+                txtRole.setText("NEL PERRO");
+        }
+    }
+
+    public void getTipoRolB(SessionManager sen){
+       txtRole = findViewById(R.id.txtRolUser);
+
+        List<String> rol = new ArrayList<>();
+
+        rol = sen.getAutorizacionList();
+
+        for(int i=0;i<rol.size();i++){
+            String objeto;
+            objeto = rol.get(0).trim();
+
+
+            if (objeto != null && objeto.contains("ROLE_ASESOR")) {
+                String a = objeto; //.substring(25);
+                a = a.replace("ROL_GERENTESUCURSAL","");
+            String b = a.replace("[ ]", "");
+                b = b.replace(" \" ", " ");
+
+                txtRole.setText("dato: " + b);
+            } else
+                txtRole.setText("NEL PERRO");
+        }
+
+
+    }
+
+
+
+
+       /* String data;
+
+        JSONArray array = sen.getAutorizacionAAA();
+
+        for (int i = 0; i < array.length(); i++) {
+
+            JSONArray ide = array.getJSONArray(i);
+
+            data = ide.getString(Integer.parseInt("authorities"));
+
+            if(data!=null){
+                txtRole.setText("dato: " +data);
+            }else
+                txtRole.setText("NEL PERRO");
+        }*/
 
     /**Inicializacion de variables del menu lateral como el nombre d usuario*/
     private void initNavigationDrawer() {
@@ -554,12 +669,18 @@ public class Home extends AppCompatActivity {
                         case "sesiones":/**Si tiene permiso de sesiones*/
                             menuGeneral.getItem(10).setVisible(true);
                             break;
+                       /* case "calculadoramovil":
+                            menuGeneral.getItem(11).setVisible(false);
+                            break;*/
                     }
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
+   /* public void getAutorizacionRole(SessionManager sen)throws JSONException {
+
+
+    }*/
 }

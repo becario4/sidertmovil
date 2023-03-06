@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.utils;
 
+import static com.sidert.sidertmovil.utils.Constants.AUTHORITIES;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +13,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SessionManager {
+public class SessionManager extends JSONObject {
 
     private final String APP_PREF       = "com.sidert.sidertmovil";
     private final String MAILBOX        = "mailbox";
@@ -167,6 +169,34 @@ public class SessionManager {
 
         return sucursales;
     }
+
+    public void setAutorizacionAA(String autorizacion){
+        preferences = ctx.getSharedPreferences(APP_PREF,Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(AUTHORITIES,autorizacion);
+        editor.commit();
+    }
+
+    public JSONArray getAutorizacionAAA(){
+        JSONArray autorizacion = null;
+        try{
+            preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+            autorizacion = new JSONArray(preferences.getString(AUTHORITIES,"[]"));
+        }catch (JSONException e){
+            e.printStackTrace();
+            autorizacion = new JSONArray();
+        }
+
+        return autorizacion;
+    }
+
+    public ArrayList<String> getAutorizacionList(){
+        ArrayList<String> autorizacion = new ArrayList<>();
+        preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+        autorizacion.add(preferences.getString(AUTHORITIES, ""));
+        return autorizacion;
+    }
+
 
     // =================== Filtros de Geolocalizacion ==============================================
     public void setFiltrosGeoPend (HashMap<String, String> filtros){

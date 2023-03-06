@@ -21,6 +21,7 @@ import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_RECIBOS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOPORTE;
+import static com.sidert.sidertmovil.utils.WebServicesRoutes.CONTROLLER_CALCULADORA;
 
 public class RetrofitClient {
 
@@ -84,7 +85,8 @@ public class RetrofitClient {
             case CONTROLLER_DENUNCIAS:
                 base_url = "http://sidert.ddns.net:81/serviciosidert/Api.svc/";
                 break;
-
+            case CONTROLLER_CALCULADORA:
+                base_url = "http://localhost:8083/api/movil/calcularPresupuesto";
         }
 
         Log.e("URL", base_url);

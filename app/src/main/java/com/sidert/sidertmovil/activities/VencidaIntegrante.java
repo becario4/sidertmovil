@@ -22,6 +22,10 @@ import android.os.Environment;
 import android.os.Handler;
 /*import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;*/
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 //import androidx.appcompat.app.AppCompatActivity;
@@ -63,7 +67,9 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.view_pager.vencida_ind_fragment;
+import com.sidert.sidertmovil.models.ImagenRender;
 import com.sidert.sidertmovil.models.MImpresion;
+import com.sidert.sidertmovil.services.Render.RenderImagen;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -90,6 +96,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
@@ -152,7 +159,16 @@ import static com.sidert.sidertmovil.utils.Constants.camara;
 import static com.sidert.sidertmovil.utils.Constants.firma;
 import static com.sidert.sidertmovil.utils.Constants.question;
 
-public class VencidaIntegrante extends AppCompatActivity {
+import org.w3c.dom.Text;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity {
 
     private Toolbar tbMain;
 
@@ -264,6 +280,9 @@ public class VencidaIntegrante extends AppCompatActivity {
     private String clave_cliente = "";
     private String num_prestamo =  "";
     private String nombreGrupo = "";
+
+    private String auxMontoRequerido = " ";
+    private String auxMontoPagado = " ";
 
     private Calendar myCalendar = Calendar.getInstance();
 
@@ -633,6 +652,9 @@ public class VencidaIntegrante extends AppCompatActivity {
         ivEvidencia.setOnClickListener(ivEvidencia_OnClick);
         ivFachada.setOnClickListener(ivFotoFachada_OnClick);
 
+        auxMontoRequerido = tvMontoPagoRequerido.getText().toString().trim();
+        auxMontoPagado = etPagoRealizado.getText().toString().trim();
+
         init();
     }
 
@@ -913,34 +935,54 @@ public class VencidaIntegrante extends AppCompatActivity {
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")) > 0){
-                Intent i = new Intent(ctx, PrintSeewoo.class);
-                MImpresion mImpresion = new MImpresion();
-                mImpresion.setIdPrestamo(id_prestamo);
-                mImpresion.setIdGestion(id_respuesta);
-                mImpresion.setMonto(String.valueOf(Math.ceil(Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")))));
-                mImpresion.setMontoPrestamo(monto_prestamo);
-                mImpresion.setNumeroPrestamo(num_prestamo);
-                mImpresion.setNumeroCliente(clave_cliente);
-                mImpresion.setNombre(nombre);
-                mImpresion.setNombreGrupo(nombreGrupo);
-                mImpresion.setPagoRequerido(monto_requerido);
-                mImpresion.setNombreAsesor(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
-                mImpresion.setAsesorId(session.getUser().get(0));
-                mImpresion.setTipoPrestamo("VENCIDA");
-                mImpresion.setTipoGestion("GRUPAL");
-                mImpresion.setNombreFirma(nombre);
-                mImpresion.setResultPrint(res_impresion);
-                mImpresion.setClaveCliente(clave_cliente);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle("¡AVISO!")
+                        .setMessage("VERIFICA QUE LOS DATOS SEAN CORRECTOS")
+                        . setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(ctx,"NO SEA REALIZADO NINGUN MOVIMIENTO",Toast.LENGTH_SHORT).show();
+                            }
+                        }).setPositiveButton("SI, SON CORRECTOS", new DialogInterface.OnClickListener(){
 
-                i.putExtra("order", mImpresion);
-                i.putExtra("tag",true);
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                startActivityForResult(i,REQUEST_CODE_IMPRESORA);
-            }
-            else
-                Toast.makeText(ctx, "No ha capturado el pago realizado del cliente", Toast.LENGTH_SHORT).show();
+                        if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")) > 0){
+                            Intent i = new Intent(ctx, PrintSeewoo.class);
+                            MImpresion mImpresion = new MImpresion();
+                            mImpresion.setIdPrestamo(id_prestamo);
+                            mImpresion.setIdGestion(id_respuesta);
+                            mImpresion.setMonto(String.valueOf(Math.ceil(Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")))));
+                            mImpresion.setMontoPrestamo(monto_prestamo);
+                            mImpresion.setNumeroPrestamo(num_prestamo);
+                            mImpresion.setNumeroCliente(clave_cliente);
+                            mImpresion.setNombre(nombre);
+                            mImpresion.setNombreGrupo(nombreGrupo);
+                            mImpresion.setPagoRequerido(monto_requerido);
+                            mImpresion.setNombreAsesor(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
+                            mImpresion.setAsesorId(session.getUser().get(0));
+                            mImpresion.setTipoPrestamo("VENCIDA");
+                            mImpresion.setTipoGestion("GRUPAL");
+                            mImpresion.setNombreFirma(nombre);
+                            mImpresion.setResultPrint(res_impresion);
+                            mImpresion.setClaveCliente(clave_cliente);
+
+                            i.putExtra("order", mImpresion);
+                            i.putExtra("tag",true);
+
+                            startActivityForResult(i,REQUEST_CODE_IMPRESORA);
+                        }
+                        else if(etPagoRealizado.getText().toString().trim().equals(tvMontoPagoRequerido.getText().toString().trim())){
+                            Toast.makeText(ctx, "Los montos son iguales", Toast.LENGTH_SHORT).show();
+                        }else
+                            Toast.makeText(ctx, "No ha capturado el pago realizado del cliente", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.create();
+                builder.show();
         }
+
     };
 
     private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
@@ -955,7 +997,7 @@ public class VencidaIntegrante extends AppCompatActivity {
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            /*if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                     || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
             } else {
@@ -966,11 +1008,18 @@ public class VencidaIntegrante extends AppCompatActivity {
                         .setAutoZoomEnabled(true)
                         .setMinCropWindowSize(3000,4000)
                         .setOutputCompressQuality(compress)
-                        .start(VencidaIntegrante.this);
+                        .start(VencidaIntegrante.this);*/
+               /* Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                gallery.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
+            //}
+            try{
+                galeriaLaucher.launch(new Intent(String.valueOf(MediaStore.Images.Media.INTERNAL_CONTENT_URI)));
+            }catch (Exception e){
+                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
+                Log.e("Error: ", e.getMessage());
+                e.printStackTrace();
             }
-            /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-            gallery.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
         }
     };
 
@@ -1232,25 +1281,26 @@ public class VencidaIntegrante extends AppCompatActivity {
                             Update("pagara_requerido", _confirmacion[position]);
                             switch (position) {
                                 case 0:
-                                    /*if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
                                     else
                                         etPagoRealizado.setText(monto_requerido);
                                     if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")) > 0) {
                                         SelectPagoRequerido(0);
+
                                     } else {
                                         Toast.makeText(ctx, "No se pueden capturar pagos iguales a cero", Toast.LENGTH_SHORT).show();
                                         tvPagaraRequerido.setText("");
                                         tvPagaraRequerido.setError("");
                                         SelectPagoRequerido(-1);
-                                    }*/
+                                    }
                                     break;
                                 case 1:
-                                    /*if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
                                         etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
                                     else
                                         etPagoRealizado.setText(monto_requerido);
-                                    SelectPagoRequerido(1);*/
+                                    SelectPagoRequerido(1);
                                     break;
                                 default:
                                     tvPagaraRequerido.setError("");
@@ -1429,9 +1479,9 @@ public class VencidaIntegrante extends AppCompatActivity {
                                         .setMinCropWindowSize(3000,4000)
                                         .setOutputCompressQuality(compress)
                                         .start(VencidaIntegrante.this);
-                                /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
+                                //Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                //gallery.setAction(Intent.ACTION_GET_CONTENT);
+                                //startActivityForResult(Intent.createChooser(gallery, "SELECCIONA UNA IMAGEN"), REQUEST_CODE_GALERIA);
                                 dialog.dismiss();
                             }
                         }, R.string.cancel, new Popups.DialogMessage() {
@@ -1686,9 +1736,9 @@ public class VencidaIntegrante extends AppCompatActivity {
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
                 tvPagaraRequerido.setEnabled(true);
                 tvPagaraRequerido.setText(_confirmacion[1]);
-                //llPagaraRequerido.setVisibility(View.VISIBLE);
+                llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.VISIBLE);
-                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.GONE);
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llFolioRecibo.setVisibility(View.GONE);
@@ -1706,10 +1756,10 @@ public class VencidaIntegrante extends AppCompatActivity {
                     tvImprimirRecibo.setError(null);
                 else
                     tvImprimirRecibo.setError("");
-                //llPagaraRequerido.setVisibility(View.VISIBLE);
+                llPagaraRequerido.setVisibility(View.VISIBLE);
                 llFechaDeposito.setVisibility(View.GONE);
                 tvPagaraRequerido.setEnabled(true);
-                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                llMontoPagoRequerido.setVisibility(View.VISIBLE);
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 tvImprimirRecibo.setText("");
                 tvImprimirRecibo.setEnabled(true);
@@ -1739,22 +1789,41 @@ public class VencidaIntegrante extends AppCompatActivity {
     }
 
     private void SelectPagoRequerido (int pos){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
         switch (pos){
             case 0: // Si pagará requerido
-                /*etPagoRealizado.setText(monto_requerido);
-                etPagoRealizado.setEnabled(false);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);*/
+
+                builder.setTitle("¡AVISO!")
+                            .setMessage("SE LIQUIDARA LA CUENTA PIENDIENTE, ¿ES CORRECTO?")
+                        . setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(ctx,"NO SEA REALIZADO NINGUN MOVIMIENTO",Toast.LENGTH_SHORT).show();
+                            }
+                        }).setPositiveButton("SI, SON CORRECTOS", new DialogInterface.OnClickListener(){
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        etPagoRealizado.setText(monto_requerido);
+                        etPagoRealizado.setEnabled(false);
+                        llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                builder.create();
+                builder.show();
                 break;
             case 1: // No pagará requerido
-                /*etPagoRealizado.setEnabled(true);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);*/
+                etPagoRealizado.setEnabled(true);
+                llMontoPagoRealizado.setVisibility(View.VISIBLE);
                 break;
             default:
-                /*etPagoRealizado.setText(monto_requerido);
+                etPagoRealizado.setText(monto_requerido);
                 etPagoRealizado.setEnabled(false);
                 llMontoPagoRealizado.setVisibility(View.GONE);
                 llImprimirRecibo.setVisibility(View.GONE);
-                llFolioRecibo.setVisibility(View.GONE);*/
+                llFolioRecibo.setVisibility(View.GONE);
                 break;
         }
     }
@@ -1858,9 +1927,25 @@ public class VencidaIntegrante extends AppCompatActivity {
         }
     }
 
+    private void recuperarPagoRealizado(){
+        if(etPagoRealizado.getText().toString().isEmpty()){
+
+            //Cursor a = dBhelper.getPagoRealizadoA(id_prestamo,id_integrante,etFolioRecibo.getText().toString());
+
+            Cursor a = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_INTEGRANTE_T,"pago_realizado","id_prestamo=? AND id_integrante=? AND folio=?",new String[]{id_prestamo,id_integrante,etFolioRecibo.getText().toString()});
+            if(a.getCount() > 0){
+                a.moveToFirst();
+                String valor = a.getString(0);
+                etPagoRealizado.setText(valor);
+                Toast.makeText(ctx,"Monto recuperado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void init() {
         getSupportActionBar().show();
         tvMontoPagoRequerido.setText(String.valueOf(df.format(Double.parseDouble(monto_requerido))));
+
         if (!id_respuesta.isEmpty()){
             Cursor row;
 
@@ -1993,6 +2078,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                                                             etFolioRecibo.setText(row.getString(19));
                                                             etFolioRecibo.setError(null);
                                                             folio_impreso = row.getString(19);
+                                                            recuperarPagoRealizado();
                                                         }
                                                         else {
                                                             ibImprimir.setVisibility(View.VISIBLE);
@@ -2112,6 +2198,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                 }
 
             }
+
         }
     }
 
@@ -2122,8 +2209,8 @@ public class VencidaIntegrante extends AppCompatActivity {
         db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+   /*@Override
+     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_FIRMA:
@@ -2192,6 +2279,9 @@ public class VencidaIntegrante extends AppCompatActivity {
                         ibGaleria.setVisibility(View.GONE);
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
+                        //ivEvidencia.setImageURI(imageUri);
+
+                        ServicioWebRenderizar(ivEvidencia.getDrawable().toString());
 
                         View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
 
@@ -2246,6 +2336,8 @@ public class VencidaIntegrante extends AppCompatActivity {
                         tvFotoGaleria.setError(null);
                         ivEvidencia.setVisibility(View.VISIBLE);
 
+
+
                         View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
 
                         Bitmap newBitMap = null;
@@ -2260,7 +2352,7 @@ public class VencidaIntegrante extends AppCompatActivity {
                         vCanvas.draw(canvas);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 1000, baos);
 
                         byteEvidencia = baos.toByteArray();
 
@@ -2486,7 +2578,390 @@ public class VencidaIntegrante extends AppCompatActivity {
                 }
                 break;
         }
-    }
+    }*/
+
+    ActivityResultLauncher<Intent> galeriaLaucher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new androidx.activity.result.ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            try{
+                int resultCode = result.getResultCode();
+                Intent data = result.getData();
+                switch (result.getResultCode()){
+                    case REQUEST_CODE_FIRMA:
+                        if (resultCode == Activity.RESULT_OK){
+                            if (data != null){
+                                ibFirma.setVisibility(View.GONE);
+                                ivFirma.setVisibility(View.VISIBLE);
+                                tvFirma.setError(null);
+                                Glide.with(ctx)
+                                        .load(data.getByteArrayExtra(FIRMA_IMAGE))
+                                        .into(ivFirma);
+                                byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
+
+                                try {
+                                    Update("firma", m.save(byteFirma, 3));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        break;
+                    case REQUEST_CODE_CAMARA_FACHADA:
+                        if (resultCode == Activity.RESULT_OK){
+                            if (data != null){
+                                ibFachada.setVisibility(View.GONE);
+                                tvFachada.setError(null);
+                                ivFachada.setVisibility(View.VISIBLE);
+                                byteEvidencia = data.getByteArrayExtra(PICTURE);
+                                Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
+
+                                try {
+                                    Update("evidencia", m.save(byteEvidencia, 1));
+                                    Update("tipo_imagen", "FACHADA");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        break;
+                    case REQUEST_CODE_IMPRESORA:
+                        if (resultCode == Activity.RESULT_OK){
+                            if (data != null){
+                                Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
+                                if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
+                                    res_impresion = data.getIntExtra(RES_PRINT, 0);
+                                    folio_impreso = "CV"+session.getUser().get(0) + "-" + String.valueOf(data.getIntExtra(FOLIO,0));
+                                    etFolioRecibo.setText(folio_impreso);
+                                    etPagoRealizado.setEnabled(false);
+                                    tvImprimirRecibo.setError(null);
+                                    llFolioRecibo.setVisibility(View.VISIBLE);
+
+                                    DisableFields();
+                                    Update("folio", folio_impreso);
+                                }
+                            }
+                        }
+                        break;
+                    case REQUEST_CODE_GALERIA:
+                        if (data != null){
+                            try {
+                                imageUri = data.getData();
+
+                                byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
+
+                                ibFoto.setVisibility(View.GONE);
+                                ibGaleria.setVisibility(View.GONE);
+                                tvFotoGaleria.setError(null);
+                                ivEvidencia.setVisibility(View.VISIBLE);
+                                //ivEvidencia.setImageURI(imageUri);
+
+                                ServicioWebRenderizar(ivEvidencia.getDrawable().toString());
+
+                                View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                                Bitmap newBitMap = null;
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                                Bitmap.Config config = bitmap.getConfig();
+
+                                newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                                Canvas canvas = new Canvas(newBitMap);
+                                canvas.drawBitmap(bitmap, 0, 0, null);
+
+                                vCanvas.draw(canvas);
+
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                                byteEvidencia = baos.toByteArray();
+
+                                Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                                try {
+                                    Update("evidencia", m.save(byteEvidencia, 2));
+                                    Update("tipo_imagen", "GALERIA");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }catch (Exception e){
+                                AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                        R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                            @Override
+                                            public void OnClickListener(AlertDialog dialog) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                success.show();
+                            }
+
+                        }
+                        break;
+                    case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                        if (data != null) {
+                            try {
+                                CropImage.ActivityResult resultA = CropImage.getActivityResult(data);
+                                imageUri = resultA.getUri();
+                                byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
+
+                                ibFoto.setVisibility(View.GONE);
+                                ibGaleria.setVisibility(View.GONE);
+                                tvFotoGaleria.setError(null);
+                                ivEvidencia.setVisibility(View.VISIBLE);
+
+
+
+                                View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                                Bitmap newBitMap = null;
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                                Bitmap.Config config = bitmap.getConfig();
+
+                                newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                                Canvas canvas = new Canvas(newBitMap);
+                                canvas.drawBitmap(bitmap, 0, 0, null);
+
+                                vCanvas.draw(canvas);
+
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                newBitMap.compress(Bitmap.CompressFormat.JPEG, 1000, baos);
+
+                                byteEvidencia = baos.toByteArray();
+
+                                Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                                try {
+                                    Update("evidencia", m.save(byteEvidencia, 2));
+                                    Update("tipo_imagen", "GALERIA");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }catch (Exception e){
+                                AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                        R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                            @Override
+                                            public void OnClickListener(AlertDialog dialog) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                success.show();
+                            }
+                        }
+                        break;
+                    case REQUEST_CODE_CAMARA_TICKET:
+                        if (resultCode == Activity.RESULT_OK){
+                            if (data != null){
+                                ibFoto.setVisibility(View.GONE);
+                                ibGaleria.setVisibility(View.GONE);
+                                tvFotoGaleria.setError(null);
+                                ivEvidencia.setVisibility(View.VISIBLE);
+                                byteEvidencia = data.getByteArrayExtra(PICTURE);
+                                Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
+                                try {
+                                    Update("evidencia", m.save(byteEvidencia, 2));
+                                    Update("tipo_imagen", "FOTOGRAFIA");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        break;
+                    case 123: //Fecha defuncion
+                        if (resultCode == 321){
+                            if (data != null){
+                                tvFechaDefuncion.setError(null);
+                                tvFechaDefuncion.setText(data.getStringExtra(DATE));
+                                Update("fecha_fallecimiento", tvFechaDefuncion.getText().toString());
+                            }
+                        }
+                        break;
+                    case 812: //Fecha Deposito
+                        if (resultCode == 321){
+                            if (data != null){
+                                tvFechaDeposito.setError(null);
+                                tvFechaDeposito.setText(data.getStringExtra(DATE));
+                                Update("fecha_pago", tvFechaDeposito.getText().toString());
+
+                            }
+                        }
+                        break;
+                    case 213: //Fecha de promesa de pago
+                        if (resultCode == 312){
+                            if (data != null){
+                                tvFechaPromesaPago.setError(null);
+                                tvFechaPromesaPago.setText(data.getStringExtra(DATE));
+                                Update("fecha_monto_promesa", tvFechaPromesaPago.getText().toString());
+
+                            }
+                        }
+                        break;
+                    case REQUEST_CODE_PREVIEW:
+                        if (resultCode == Activity.RESULT_OK){
+                            if (data != null){
+
+                                if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
+                                    String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
+                                    Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
+                                    if (rowTraker.getCount() > 0) {
+                                        rowTraker.moveToFirst();
+                                        ContentValues cv = new ContentValues();
+                                        cv.put("latitud", rowTraker.getString(0));
+                                        cv.put("longitud", rowTraker.getString(1));
+                                        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{id_respuesta});
+                                    }
+                                }
+
+                                ContentValues cv = new ContentValues();
+                                if (data.hasExtra(ESTATUS)) {
+                                    cv.put("estatus_pago", data.getStringExtra(ESTATUS));
+                                    cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
+                                    cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
+                                }
+                                //cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
+                                cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
+                                cv.put("estatus", "1");
+
+                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
+
+                                Cursor row;
+                                String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
+                                row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO","1","2"});
+
+                                if (row.getCount() > 0){
+                                    row.moveToFirst();
+
+                                    String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                                    Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+                                    if (row_amortiz.getCount() > 0){
+                                        row_amortiz.moveToFirst();
+                                        Double abono = 0.0;
+                                        if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
+                                            abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                        for (int i = 0; i < row_amortiz.getCount(); i++){
+
+                                            Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
+
+                                            if (abono > pendiente){
+                                                ContentValues cv_amortiz = new ContentValues();
+                                                cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                                cv_amortiz.put("pagado", "PAGADO");
+                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                                abono = abono - pendiente;
+                                            }
+                                            else if (abono == pendiente){
+                                                ContentValues cv_amortiz = new ContentValues();
+                                                cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                                cv_amortiz.put("pagado", "PAGADO");
+                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                                abono = 0.0;
+                                            }
+                                            else if (abono > 0 && abono < pendiente){
+                                                ContentValues cv_amortiz = new ContentValues();
+                                                cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
+                                                cv_amortiz.put("pagado", "PARCIAL");
+                                                abono = 0.0;
+                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                            }
+                                            else
+                                                break;
+
+                                            row_amortiz.moveToNext();
+                                        }
+
+                                    }
+                                    row_amortiz.close();
+
+                                    sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                                    row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+
+                                    if (row_amortiz.getCount() > 0){
+                                        row_amortiz.moveToFirst();
+                                        if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                            ContentValues c = new ContentValues();
+                                            c.put("pagada", 1);
+                                            db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{id_prestamo});
+                                        }
+
+                                    }
+                                    row_amortiz.close();
+                                }
+                                row.close();
+
+                                HashMap<Integer, String> values = new HashMap();
+                                values.put(0, id_respuesta);
+                                values.put(1, data.getStringExtra(NOMBRE));
+                                values.put(2, nombre);
+                                values.put(3, "2");
+                                dBhelper.saveResumenGestion(db, values);
+
+                                Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
+
+                                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                                ss.SaveRespuestaGestion(ctx, false);
+
+                                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
+                                    String selection = "_display_name = ?";
+                                    String[] selectionArgs = new String[] {data.getStringExtra(NOMBRE)};
+
+                                    Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
+
+                                    Uri contentUri = null;
+
+                                    while (cursor.moveToNext()) {
+                                        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                                        long id = cursor.getLong(idColumn);
+                                        contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                                    }
+
+                                    whatsappIntent.setType("text/plain");
+                                    whatsappIntent.setPackage("com.whatsapp");
+                                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                                    whatsappIntent.setType("image/jpeg");
+                                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                }
+                                else
+                                {
+                                    Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
+                                    whatsappIntent.setType("text/plain");
+                                    whatsappIntent.setPackage("com.whatsapp");
+                                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                                    whatsappIntent.setType("image/jpeg");
+                                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                }
+
+                                try {
+                                    ctx.startActivity(Intent.createChooser(whatsappIntent, null));
+                                } catch (android.content.ActivityNotFoundException ex) {
+                                    Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+                                }
+
+                                finish();
+                            }
+                        }
+                        break;
+                }
+            }catch (Exception e){
+                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
+                Log.e("Error", e.getMessage());
+                e.getStackTrace();
+            }
+
+        }
+    });
+
+
 
     private void GuardarGestion(){
         Validator validator = new Validator();
@@ -2853,4 +3328,55 @@ public class VencidaIntegrante extends AppCompatActivity {
         tvImprimirRecibo.setEnabled(false);
 
     }
+
+    private void ServicioWebRenderizar(String img){
+        String base_url = "http://192.168.3.180:8083/api/movil/";
+
+        String imagen = ivEvidencia.getDrawable().toString();
+
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .build();
+
+        Retrofit retrofit = null;
+
+        retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(base_url)
+                .client(okHttpClient)
+                .build();
+
+        RenderImagen api = retrofit.create(RenderImagen.class);
+
+        Call<ImagenRender> call = api.getImagenRender(ivEvidencia.getDrawable().toString());
+        call.enqueue(new Callback<ImagenRender>() {
+            @Override
+            public void onResponse(Call<ImagenRender> call, Response<ImagenRender> response) {
+                try{
+
+                    if(response.isSuccessful()){
+                        ImagenRender m = response.body();
+                        String URL_IMG = "https://192.168.3.180:8083/api/movil/renderImg?imagenTest="+m.getImgResult()+".jpg";
+                        ivEvidencia.setImageURI(Uri.parse(m.getImgResult().toString()));
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        byteEvidencia = baos.toByteArray();
+                        //Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+                        Glide.with(getApplicationContext()).load(URL_IMG).into(ivEvidencia);
+                    }
+                }catch (Exception e){
+                    Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ImagenRender> call, Throwable t) {
+                Toast.makeText(ctx, "Error, vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
+
+
 }

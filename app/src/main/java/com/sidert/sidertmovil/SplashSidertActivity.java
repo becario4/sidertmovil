@@ -62,6 +62,7 @@ public class SplashSidertActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         dBhelper = new DBhelper(this);
         db = dBhelper.getWritableDatabase();
@@ -135,9 +136,15 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
 
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
+
         session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        //session.setDominio("http://192.168.1.90:", "8083");//LOCALHOST
+
+        //session.setDominio("http://192.168.3.180:", "8083");//LOCALHOST
+
         //session.setDominio("http://192.168.0.135:", "8083");//LOCALHOST
+
+        //session.setDominio("http://187.188.168.167:", "8081"); //API - SERVIDOR PRODUCCIÓN - TEST - VIA LOCALHOST
+
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/

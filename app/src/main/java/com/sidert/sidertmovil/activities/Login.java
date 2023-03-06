@@ -46,9 +46,11 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
+import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
+import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_contrasena_root;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.models.LoginResponse;
@@ -324,7 +326,11 @@ public class Login extends AppCompatActivity {
                                 /**Se convierte a JSON el token*/
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
 
+
                                 Log.e("JsonInfo", json_info.toString());
+
+                                calculadoraPrestamo xd = new calculadoraPrestamo();
+                                //xd.getSucursalIdA(json_info);
 
                                 /**Guarda un registro para el log de inicio de sesion*/
                                 HashMap<Integer, String> params = new HashMap<>();
@@ -358,9 +364,12 @@ public class Login extends AppCompatActivity {
                                 /**Se guarda en variables de sesion las sucursales que tiene asginada*/
                                 session.setSucursales(json_info.getString(SUCURSALES));
 
-
+                                session.setAutorizacionAA(json_info.getString(AUTHORITIES));
+                                session.getAutorizacionAAA();
 
                                 Log.e("SUCURSALES","--------->"+session.getSucursales());
+                                //calculadoraPrestamo xd = new calculadoraPrestamo();
+                                //xd.getSucursalIdA(session.getSucursales());
 
                                 /**Se crea una alarma que para cada 15 minutos este
                                  * realizando peticiones para envio o descarga de informacion*/

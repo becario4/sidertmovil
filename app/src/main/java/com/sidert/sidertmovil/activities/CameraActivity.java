@@ -230,7 +230,7 @@ public class CameraActivity extends AppCompatActivity {
 
         ImageReader reader = ImageReader.newInstance(640,480, ImageFormat.JPEG,1);
 
-        /*CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
         Size[] jpegSizes = null;
         jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
@@ -241,7 +241,7 @@ public class CameraActivity extends AppCompatActivity {
         if (jpegSizes != null && jpegSizes.length > 0){
             width = jpegSizes[0].getWidth();
             height = jpegSizes[0].getHeight();
-        }*/
+        }
 
 
         List<Surface> outputSurface = new ArrayList<>(2);

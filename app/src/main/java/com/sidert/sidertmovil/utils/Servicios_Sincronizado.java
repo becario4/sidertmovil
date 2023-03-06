@@ -4946,7 +4946,7 @@ public class Servicios_Sincronizado {
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, "2");                                      //TIPO SOLICITUD
                                 params.put(1, item.getPrestamoGpo().getAsesor());        //ASESOR
-                                params.put(2, ((item.getPrestamoGpo().getTipoSolicitud() == 1) ? "ORIGINACION" : "RENOVACION")); //TIPO SOLICITUD
+                                params.put(2, ((item.getPrestamoGpo().getTipoSolicitud() == 1) ? "ORIGINACION" : "RENOVACION"));//TIPO SOLICITUD
                                 params.put(3, String.valueOf(item.getPrestamoGpo().getSolicitudId()));    //SOLICITUD ID
                                 params.put(4, item.getPrestamoGpo().getNombreGrupo());  //NOMBRE grupo
                                 params.put(5, "");                                      //FECHA ENVIO
@@ -9265,8 +9265,9 @@ public class Servicios_Sincronizado {
             {
                 MultipartBody.Part.createFormData("evidencia", "");
             }
+            Miscellaneous m = new Miscellaneous();
 
-            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, (gestionCC.getTipoCredito().equals("1"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
+            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, m.getipoClienteCreditoA(gestionCC.getTipoCredito().toString()));//(gestionCC.getTipoCredito().equals("0"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
             RequestBody clienteGpoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreUno());
             RequestBody avalRepresentanteBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreDos());
             RequestBody curpBody = RequestBody.create(MultipartBody.FORM, gestionCC.getCurp());

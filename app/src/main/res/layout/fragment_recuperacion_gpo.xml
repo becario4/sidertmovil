@@ -240,61 +240,64 @@
             <!--  Monto del pago requerido  -->
             <LinearLayout
                 android:id="@+id/llMontoPagoRequerido"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_payment_required"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_payment_required"
+                    android:textColor="@color/blue_sidert"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvMontoPagoRequerido"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/bkg_rounded_edges_blocked"
+                    android:drawableStart="@drawable/ic_money"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
-                    android:drawableStart="@drawable/ic_money"
-                    android:background="@drawable/bkg_rounded_edges_blocked"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!--  ¿Cuenta con el detalle de la ficha?  -->
             <LinearLayout
                 android:id="@+id/llDetalleFicha"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/detalle_ficha"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:textSize="@dimen/labelsize"
-                    android:focusableInTouchMode="false"
-                    android:background="@android:color/white"
                     style="@android:style/Widget.EditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="@string/detalle_ficha"
+                    android:textColor="@color/blue_sidert"
+                    android:textSize="@dimen/labelsize"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/tvDetalleFicha"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:hint="SELECCIONE UN OPCIÓN"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:drawableRight="@drawable/ic_drop_down"
-                    android:background="@drawable/et_rounded_edges"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableRight="@drawable/ic_drop_down"
+                    android:gravity="center_vertical"
+                    android:hint="SELECCIONE UN OPCIÓN"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <!--  Integrantes del grupo  -->
@@ -329,26 +332,29 @@
             <!--  Monto del pago realizado  -->
             <LinearLayout
                 android:id="@+id/llMontoPagoRealizado"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/amount_payment_made"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_payment_made"
+                    android:textColor="@color/blue_sidert"
+                    android:textStyle="bold" />
+
                 <EditText
                     android:id="@+id/etPagoRealizado"
-                    android:paddingLeft="10dp"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:drawableStart="@drawable/ic_money"
-                    android:background="@drawable/et_rounded_edges"
-                    android:inputType="numberDecimal"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
+                    android:drawableStart="@drawable/ic_money"
+                    android:hint="text"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:textColor="@drawable/edit_text_selector" />
             </LinearLayout>
 
             <!--  Arqueo de Caja  -->
@@ -433,27 +439,29 @@
             <!-- Folio de reciboCirculoCredito -->
             <LinearLayout
                 android:id="@+id/llFolioRecibo"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:visibility="gone">
+
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_sidert"
-                    android:text="@string/folio_recibo"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/folio_recibo"
+                    android:textColor="@color/blue_sidert"
+                    android:textStyle="bold" />
+
                 <EditText
                     android:id="@+id/etFolioRecibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/et_height"
+                    android:background="@drawable/et_rounded_edges"
                     android:enabled="false"
                     android:hint="obtener el folio del reciboCirculoCredito impreso"
-                    android:textColor="@drawable/edit_text_selector"
-                    android:paddingEnd="5dp"
                     android:paddingStart="10dp"
-                    android:background="@drawable/et_rounded_edges"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/et_height" />
+                    android:paddingEnd="5dp"
+                    android:textColor="@drawable/edit_text_selector" />
             </LinearLayout>
 
             <!-- Tomara fotografia o adjuntara desde galeria-->

@@ -1,6 +1,8 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -158,6 +160,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TERMINADO;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
@@ -273,6 +276,8 @@ public class recuperacion_ind_fragment extends Fragment {
     
     private  Miscellaneous m;
 
+    private static final int PICK_IMAGE = 100;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_recuperacion_ind, container, false);
@@ -310,7 +315,7 @@ public class recuperacion_ind_fragment extends Fragment {
         tvMedioPago             = v.findViewById(R.id.tvMedioPago);
         tvFechaDeposito         = v.findViewById(R.id.tvFechaDeposito);
         tvMontoPagoRequerido    = v.findViewById(R.id.tvMontoPagoRequerido);
-        tvPagaraRequerido       = v.findViewById(R.id.tvPagaraRequerido);
+        tvPagaraRequerido       = v.findViewById(R.id.tvPagaraRequerido);//variable a resolver
         tvImprimirRecibo        = v.findViewById(R.id.tvImprimirRecibo);
         tvFotoGaleria           = v.findViewById(R.id.tvFotoGaleria);
         tvMotivoAclaracion      = v.findViewById(R.id.tvMotivoAclaracion);
@@ -321,7 +326,7 @@ public class recuperacion_ind_fragment extends Fragment {
         tvFirma                 = v.findViewById(R.id.tvFirma);
 
         etActualizarTelefono    = v.findViewById(R.id.etActualizarTelefono);
-        etPagoRealizado         = v.findViewById(R.id.etPagoRealizado);
+        etPagoRealizado         = v.findViewById(R.id.etPagoRealizado);//variable a resolver
         etFolioRecibo           = v.findViewById(R.id.etFolioRecibo);
         etComentario            = v.findViewById(R.id.etComentario);
 
@@ -331,6 +336,7 @@ public class recuperacion_ind_fragment extends Fragment {
         ibGaleria   = v.findViewById(R.id.ibGaleria);
         ibFachada   = v.findViewById(R.id.ibFachada);
         ibFirma     = v.findViewById(R.id.ibFirma);
+
 
         ivEvidencia = v.findViewById(R.id.ivEvidencia);
         ivFachada = v.findViewById(R.id.ivFachada);
@@ -345,7 +351,7 @@ public class recuperacion_ind_fragment extends Fragment {
         llMedioPago = v.findViewById(R.id.llMedioPago);
         llFechaDeposito = v.findViewById(R.id.llFechaDeposito);
         llMontoPagoRequerido = v.findViewById(R.id.llMontoPagoRequerido);
-        llPagaraRequerido = v.findViewById(R.id.llPagaraRequerido);
+        llPagaraRequerido = v.findViewById(R.id.llPagaraRequerido);//Variable a resolver
         llMontoPagoRealizado = v.findViewById(R.id.llMontoPagoRealizado);
         llImprimirRecibo = v.findViewById(R.id.llImprimirRecibo);
         llFolioRecibo = v.findViewById(R.id.llFolioRecibo);
@@ -385,7 +391,7 @@ public class recuperacion_ind_fragment extends Fragment {
         tvResultadoGestion.setOnClickListener(tvResultadoGestion_OnClick);
         tvMedioPago.setOnClickListener(tvMedioPago_OnClick);
         tvFechaDeposito.setOnClickListener(tvFechaDeposito_OnClick);
-        tvPagaraRequerido.setOnClickListener(tvPagaraRequerido_OnClick);
+        tvPagaraRequerido.setOnClickListener(tvPagaraRequerido_OnClick);//variable a resolver
         tvImprimirRecibo.setOnClickListener(tvImprimirRecibo_OnClick);
         tvMotivoAclaracion.setOnClickListener(tvMotivoAclaracion_OnClick);
         tvMotivoNoPago.setOnClickListener(tvMotivoNoPago_OnClick);
@@ -836,24 +842,34 @@ public class recuperacion_ind_fragment extends Fragment {
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
-                    compress = 40;
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(ctx,recuperacion_ind_fragment.this);
+            try{
+                if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+                } else {
+                    int compress = 10;
+                    if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                        compress = 40;
+                    CropImage.activity()
+                            .setAutoZoomEnabled(true)
+                            .setMinCropWindowSize(3000,3000)
+                            .setOutputCompressQuality(compress)
+                            .start(ctx,recuperacion_ind_fragment.this);
+                }
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                gallery.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(gallery, PICK_IMAGE);
+            }catch (Exception e){
+                Toast.makeText(ctx,"Ocurrio un error: " + e, Toast.LENGTH_SHORT).show();
+                Log.e("Error:", e.getMessage());
             }
-            //Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            //startActivityForResult(Intent.createChooser(gallery, "selecciona una opción"), REQUEST_CODE_GALERIA);
             //gallery.setAction(Intent.ACTION_GET_CONTENT);
-            //startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+           // startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
         }
     };
+
+
 
     private View.OnClickListener ibFachada_OnClick = new View.OnClickListener() {
         @Override
@@ -1258,63 +1274,69 @@ public class recuperacion_ind_fragment extends Fragment {
     private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (m.GetStr(tvMedioPago).equals("EFECTIVO")){
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
-                        R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(ORDER_ID, parent.id_prestamo);
-                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
-                                dialog.dismiss();
+            try{
+                if (m.GetStr(tvMedioPago).equals("EFECTIVO")){
+                    final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
+                            R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    Intent i = new Intent(parent, CameraVertical.class);
+                                    i.putExtra(ORDER_ID, parent.id_prestamo);
+                                    startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                    dialog.dismiss();
 
-                            }
-                        }, R.string.cancel, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                evidencia_dlg.show();
-            }
-            else{
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
-                        R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                Intent i = new Intent(parent, CameraVertical.class);
-                                i.putExtra(ORDER_ID, parent.id_prestamo);
-                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
-                                dialog.dismiss();
+                                }
+                            }, R.string.cancel, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    evidencia_dlg.show();
+                }
+                else{
+                    final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
+                            R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    Intent i = new Intent(parent, CameraVertical.class);
+                                    i.putExtra(ORDER_ID, parent.id_prestamo);
+                                    startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                    dialog.dismiss();
 
-                            }
-                        }, R.string.galeria, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                int compress = 10;
-                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
-                                    compress = 40;
-                                CropImage.activity()
-                                        .setAutoZoomEnabled(true)
-                                        .setMinCropWindowSize(3000,4000)
-                                        .setOutputCompressQuality(compress)
-                                        .start(ctx,recuperacion_ind_fragment.this);
-                                /*Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
-                                dialog.dismiss();
-                            }
-                        }, R.string.cancel, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                evidencia_dlg.show();
+                                }
+                            }, R.string.galeria, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    int compress = 10;
+                                    if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                        compress = 40;
+                                    CropImage.activity()
+                                            .setAutoZoomEnabled(true)
+                                            .setMinCropWindowSize(3000,4000)
+                                            .setOutputCompressQuality(compress)
+                                            .start(ctx,recuperacion_ind_fragment.this);
+                                   // Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                    //gallery.setAction(Intent.ACTION_GET_CONTENT);
+                                    //startActivityForResult(Intent.createChooser(gallery, "Selecciona una opción"), REQUEST_CODE_GALERIA);
+
+                                    dialog.dismiss();
+                                }
+                            }, R.string.cancel, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    evidencia_dlg.show();
+                }
+            }catch (Exception e){
+                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
+                Log.d("Error: ", e.getMessage());
             }
         }
     };
@@ -1751,6 +1773,19 @@ public class recuperacion_ind_fragment extends Fragment {
         }
     }
 
+    private void recuperarMontosA(){
+        if(etPagoRealizado.getText().toString().isEmpty()){
+            //Cursor a = dBhelper.getPagoRealizadoC(parent.id_prestamo,folio_impreso);
+            Cursor a  = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_IND_V_T,"pago_realizado","id_prestamo = ? AND folio = ?",new String[]{parent.id_prestamo,etFolioRecibo.getText().toString()});
+            if(a.getCount() > 0){
+                a.moveToFirst();
+                String valor = a.getString(0);
+                etPagoRealizado.setText(valor);
+                Toast.makeText(ctx,"Monto recuperado" + etPagoRealizado.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void init() {
         setHasOptionsMenu(true);
         parent.getSupportActionBar().show();
@@ -1866,7 +1901,6 @@ public class recuperacion_ind_fragment extends Fragment {
                                                         if (!row.getString(17).isEmpty()){//FOLIO
                                                             etPagoRealizado.setEnabled(false);
                                                             etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-
                                                             tvContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                                                             tvContacto.setEnabled(false);
                                                             tvResultadoGestion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -1884,6 +1918,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                                             etFolioRecibo.setText(row.getString(17));
                                                             etFolioRecibo.setError(null);
                                                             folio_impreso = row.getString(17);
+                                                            recuperarMontosA();
                                                         }
                                                         else {
                                                             ibImprimir.setVisibility(View.VISIBLE);
@@ -2023,7 +2058,7 @@ public class recuperacion_ind_fragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_FIRMA:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == RESULT_OK){
                     if (data != null){
                         ibFirma.setVisibility(View.GONE);
                         ivFirma.setVisibility(View.VISIBLE);
@@ -2042,7 +2077,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == RESULT_OK){
                     if (data != null){
                         ibFachada.setVisibility(View.GONE);
                         tvFachada.setError(null);
@@ -2060,7 +2095,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_IMPRESORA:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == RESULT_OK){
                     if (data != null){
                         Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
                         if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
@@ -2078,7 +2113,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_GALERIA:
-                if (data != null){
+                if (data != null && resultCode == RESULT_OK && requestCode == PICK_IMAGE){
                     try {
                         imageUri = data.getData();
 
@@ -2102,8 +2137,10 @@ public class recuperacion_ind_fragment extends Fragment {
 
                         vCanvas.draw(canvas);
 
+                       // Bitmap resize = getResizedBitmap(bitmap,500,500);
+
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
                         byteEvidencia = baos.toByteArray();
 
@@ -2119,8 +2156,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         AlertDialog success = Popups.showDialogMessage(ctx, "",
                                 R.string.error_image, R.string.accept, new Popups.DialogMessage() {
                                     @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        dialog.dismiss();
+                                    public void OnClickListener(AlertDialog dialog) { dialog.dismiss();
                                     }
                                 });
                         success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -2131,7 +2167,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_CAMARA_TICKET:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == RESULT_OK){
                     if (data != null){
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -2222,7 +2258,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_PREVIEW:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == RESULT_OK){
                     if (data != null){
 
                         if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
@@ -2424,6 +2460,25 @@ public class recuperacion_ind_fragment extends Fragment {
                 break;
         }
     }
+
+
+    public static int calculateSize(Bitmap bm, int newWidth, int newHeigth){
+        final int height = bm.getWidth();
+        final int width = bm.getHeight();
+        int simpleSize = 1;
+
+        if(height > newHeigth || width > newWidth){
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while((halfWidth / simpleSize) >= newWidth){
+                simpleSize *= 2;
+            }
+        }
+        return simpleSize;
+    }
+
+
 
     private void GuardarGestion(){
         Validator validator = new Validator();

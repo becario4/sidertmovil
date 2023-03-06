@@ -153,6 +153,8 @@ import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
+import org.w3c.dom.Text;
+
 /**Clase para agregar integrantes para solicitudes de originacion/renovacion grupal*/
 public class AgregarIntegrante extends AppCompatActivity implements dialog_registro_integrante.OnCompleteListener
 {
@@ -5553,7 +5555,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             }
                             else{
                                 ivError1.setVisibility(View.VISIBLE);
-                                tvBienes.setError("");
+                                showError(tvBienes,"CAMPO REQUERIDO");
+                                //tvBienes.setError("");
                             }
                         }
                         else
@@ -5561,7 +5564,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     }
                     else{
                         ivError1.setVisibility(View.VISIBLE);
-                        etCurpCli.setError("Curp no válida");
+                        showError(etCurpCli,"Curp no valida");
+                        //etCurpCli.setError("Curp no válida");
                     }
                 }
                 else {
@@ -5570,7 +5574,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             }
             else{
                 ivError1.setVisibility(View.VISIBLE);
-                tvGeneroCli.setError("");
+                showError(tvGeneroCli,"CAMPO REQUERIDO");
+                //tvGeneroCli.setError("");
             }
         }
         else {
@@ -5713,7 +5718,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         else{
             ivError1.setVisibility(View.VISIBLE);
             //ivError3.setVisibility(View.VISIBLE);
-            tvMapaCli.setError("");
+            showError(tvMapaCli,"CAMPO REQUERIDO");
+            //tvMapaCli.setError("");
         }
 
         if(
@@ -6037,7 +6043,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                     }
                     else{
-                        tvFirmaCli.setError("");
+                        showError(tvFirmaCli,"CAMPO REQUERIDO");
+                        //tvFirmaCli.setError("");
                         ivError6.setVisibility(View.VISIBLE);
                     }
                 }
@@ -6045,7 +6052,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     ivError6.setVisibility(View.VISIBLE);
             }
             else {
-                tvEstatus.setError("");
+                showError(tvEstatus,"CAMPO REQUERIDO");
+                //tvEstatus.setError("");
                 ivError6.setVisibility(View.VISIBLE);
             }
         }
@@ -6134,17 +6142,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
                 else{
                     ivError8.setVisibility(View.VISIBLE);
-                    tvPoliticamenteExp.setError("");
+                    showError(tvPoliticamenteExp,"CAMPO REQUERIDO");
+                    //tvPoliticamenteExp.setError("");
                 }
             }
             else{
                 ivError8.setVisibility(View.VISIBLE);
-                tvProvedor.setError("");
+                showError(tvProvedor,"CAMPO REQUERIDO");
+                //tvProvedor.setError("");
             }
         }
         else{
             ivError8.setVisibility(View.VISIBLE);
-            tvPropietarioReal.setError("");
+            showError(tvPropietarioReal,"CAMPO REQUERIDO");
+            //tvPropietarioReal.setError("");
         }
         return save_politicas;
     }
@@ -6165,28 +6176,29 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             save_documentos = true;
                         }
                         else{
-                             tvComprobante.setError("");
+                             showError(tvComprobante,"CAMPO REQUERIDO");
                              ivError9.setVisibility(View.VISIBLE);
                         }
                     }
                     else{
-                        tvCurp.setError("");
+                        showError(tvCurp,"CAMPO REQUERIDO");
                         ivError9.setVisibility(View.VISIBLE);
                     }
                 }
                 else{
-                    tvIneReverso.setError("");
+                    showError(tvIneReverso,"CAMPO REQUERIDO");
                     ivError9.setVisibility(View.VISIBLE);
                 }
             }
             else {
-                tvIneFrontal.setError(null);
+                //tvIneFrontal.setError(null);
+                showError(tvIneFrontal," ");
                 ivError9.setVisibility(View.VISIBLE);
             }
         }
         else{
+            showError(tvIneSelfie,"CAMPO REQUERIDO");
             ivError9.setVisibility(View.VISIBLE);
-            tvIneSelfie.setError("");
         }
 
         return save_documentos;
@@ -6282,6 +6294,12 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void showError(TextView var, String n){
+        var.setError(n);
+        var.requestFocus();
+    }
+
     /**Funcion de respuesta a la peticion de registro de nombre y cargo del integrante*/
     @Override
     public void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo) {
@@ -6347,6 +6365,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         etCurpCli.setText(m.GenerarCurp(params));
                     }
                 }
+                else{
+                    showError(tvEstadoNacCli,"CAMPO REQUERIDO");
+                   // Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case Constants.REQUEST_CODE_CAMARA_FACHADA_CLI:/**codigo de respuesta a la peticion  de fotografia de fachada del cliente*/
                 if (resultCode == Activity.RESULT_OK){/**valida el codigo de respuesta*/
@@ -6365,6 +6387,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    showError(tvFachadaCli,"CAMPO REQUERIDO");
+                    //tvFachadaCli.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_COLONIA_CLIE:/**codigo de respuesta a la peticion de colonia del cliente*/
@@ -6377,6 +6403,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         Update("colonia", TBL_DOMICILIO_INTEGRANTE, m.GetStr(tvColoniaCli), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    showError(tvColoniaCli,"CAMPO REQUERIDO");
+                   // tvColoniaCli.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:/**codigo de respuesta a la peticion de localidad del cliente*/
@@ -6388,6 +6418,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**Actualiza la columna con la respuesta*/
                         Update("localidad", TBL_DOMICILIO_INTEGRANTE, m.GetStr(tvLocalidadCli), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvLocalidadCli,"CAMPO REQUERIDO");
+                   // tvLocalidadCli.setError("CAMPO REQUERIDO");
+                   // Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CONY:/**codigo de respuesta a la peticion de colonia del conyuge*/
@@ -6399,6 +6433,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**Actualiza la columna con la respuesta*/
                         Update("colonia", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvColoniaCony), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvColoniaCony,"CAMPO REQUERIDO");
+                    //tvColoniaCony.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CONY:/**codigo de respuesta a la peticion de localidad del conyuge*/
@@ -6410,6 +6448,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**Actualiza la columna con la respuesta*/
                         Update("localidad", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvLocalidadCony).toUpperCase(), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvLocalidadCony,"CAMPO REQUERIDO");
+                    //tvLocalidadCony.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_ACTIVIDAD_NEG:/**codigo de respuesta a la peticion de actividad del negocio*/
@@ -6422,6 +6464,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEconomicaNeg).toUpperCase(), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    showError(tvActEconomicaNeg,"CAMPOREQUERIDO");
+                   // tvActEconomicaNeg.setError("CAMPO REQUERIDO");
+                   // Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_COLONIA_NEG:/**codigo de respuesta a la peticion de colonia del negocio*/
@@ -6433,6 +6479,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**Actualiza la columna con la respuesta*/
                         Update("colonia", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvColoniaNeg), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvColoniaNeg,"CAMPO REQUERIDO");
+                   // tvColoniaNeg.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_NEG:/**codigo de respuesta a la peticion de localidad del negocio*/
@@ -6444,6 +6494,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**Actualiza la columna con la respuesta*/
                         Update("localidad", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvLocalidadNeg), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvLocalidadNeg,"CAMPO REQUERIDO");
+                    //tvLocalidadNeg.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_NEG:/**codigo de respuesta a la peticion de ocupacion del negocio*/
@@ -6463,6 +6517,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         Update("ocupacion", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEcoEspNeg), "id_integrante", id_integrante);
                         Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE, m.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
                     }
+                }else{
+                    showError(tvActEcoEspNeg,"CAMPO REQUERIDO");
+                   // tvActEcoEspNeg.setError("CAMPO REQUERIDO");
+                   // Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_CAMARA_FACHADA_NEG:/**codigo de respuesta a la peticion de fachada del negocio*/
@@ -6483,6 +6541,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         }
 
                     }
+                }else{
+                    showError(tvFachadaNeg,"CAMPO REQUERIDO");
+                    ///tvFachadaNeg.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_OCUPACION_CONY:/**codigo de respuesta a la peticion de ocupacion del conyuge*/
@@ -6495,6 +6557,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         Update("ocupacion", TBL_CONYUGE_INTEGRANTE, m.GetStr(tvOcupacionCony), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    showError(tvOcupacionCony,"CAMPO REQUERIDO");
+                    //tvOcupacionCony.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_OCUPACION_CLIE:/**codigo de respuesta a la peticion de ocupacion del cliente*/
@@ -6506,6 +6572,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         /**actualiza la columna con la respuesta*/
                         Update("ocupacion", TBL_INTEGRANTES_GPO, m.GetStr(tvOcupacionCli), "id", id_integrante);
                     }
+                }else{
+                    showError(tvOcupacionCli,"CAMPO REQUERIDO");
+                    //tvOcupacionCli.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_CLI:/**codigo de respuesta a la peticion de firma del cliente*/
@@ -6529,6 +6599,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    showError(tvFirmaCli,"CAMPO REQUERIDO");
+                    //tvFirmaCli.setError("CAMPO REQUERIDO");
+                    //sToast.makeText(ctx,"LA FIRMA DEL CLIENTE/INTEGRANTE ES OBLIGATORIO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_SELFIE:
@@ -6545,6 +6619,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    showError(tvIneSelfie,"CAMPO REQUERIDO");
+                    //tvIneSelfie.setError("CAMPO REQUERIDO");
+                    //sToast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:/**codigo de respuesta a la peticion de la fotografia del ine/ife frontal*/
@@ -6568,6 +6646,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         }
 
                     }
+                }else{
+                    showError(tvIneFrontal,"CAMPO REQUERIDO");
+                    //tvIneFrontal.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO:/**codigo de respuesta a la peticion de la fotografia del ine/ife reverso*/
@@ -6591,6 +6673,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         }
 
                     }
+                }else{
+                    showError(tvIneReverso,"CAMPO REQUERIDO");
+                    //tvIneReverso.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP:/**codigo de respuesta a la peticion de la fotografia del curp*/
@@ -6611,6 +6697,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         }
 
                     }
+                }else{
+                    showError(tvCurp,"CAMPO REQUERIDO");
+                    //tvCurp.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"LA FOTO DEL CURP ES OBLIGATORIA",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE:/**codigo de respuesta a la peticion de la fotografia del comprobante*/
@@ -6630,6 +6720,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    showError(tvComprobante,"CAMPO REQUERIDO");
+                    //tvComprobante.setError("CAMPO REQUERIDO");
+                    //Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }

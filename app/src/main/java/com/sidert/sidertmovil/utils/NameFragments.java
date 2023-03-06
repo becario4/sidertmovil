@@ -12,6 +12,7 @@ public class NameFragments {
     public final static String ABOUT                 = "about_fragment";
     public final static String SOLICITUD_CREDITO     = "solicitud_credito_fragment";
     public final static String MESA_AYUDA            = "mesa_ayuda_fragment";
+    public final static String CALCULADORA           = "fragment_calculadora_prestamo";
 
     public final static String COMPLAINT_TEMP         = "fragment_complaint_temp";
 

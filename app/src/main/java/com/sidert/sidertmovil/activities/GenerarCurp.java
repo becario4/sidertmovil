@@ -110,7 +110,7 @@ public class GenerarCurp extends AppCompatActivity {
 
         _sexo = getResources().getStringArray(R.array.sexo);
 
-        llPlazo = findViewById(R.id.llPlazo);
+        llPlazo = findViewById(R.id.llPlazoCatorcenalRenovado);
 
         spPlazo = findViewById(R.id.spPlazo);
 

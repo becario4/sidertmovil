@@ -184,6 +184,7 @@ import static com.sidert.sidertmovil.utils.Constants.question;
 public class recuperacion_gpo_fragment extends Fragment {
 
     private Context ctx;
+    RecuperacionGrupal parent;
 
     private String[] _contacto;
     private String[] _motivo_aclaracion;
@@ -273,7 +274,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private MyCurrentListener locationListener;
     public LatLng latLngGestion;
 
-    RecuperacionGrupal parent;
+   // RecuperacionGrupal parent;
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -482,7 +483,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                 try {
                     int inilen, endlen;
                     inilen = m.GetStr(etPagoRealizado).length();
-
+                    Log.e("symbols", String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()) + " Symbols");
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
                     int cp = etPagoRealizado.getSelectionStart();
@@ -515,10 +516,9 @@ public class recuperacion_gpo_fragment extends Fragment {
                                 else
                                     llArqueoCaja.setVisibility(View.GONE);
 
-
                             }
                         } catch (NumberFormatException e){
-                            etPagoRealizado.setText("");
+                            etPagoRealizado.setText("HOLA");
                             Update("pago_realizado", "");
                         }
 
@@ -539,7 +539,7 @@ public class recuperacion_gpo_fragment extends Fragment {
             {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
                 {
-                    hasFractionalPart = true;
+                    hasFractionalPart = false;
                 } else {
                     hasFractionalPart = false;
                 }
@@ -1023,11 +1023,9 @@ public class recuperacion_gpo_fragment extends Fragment {
                     startActivityForResult(i,REQUEST_CODE_IMPRESORA);
                 }
             }
-
             else {
                 Toast.makeText(ctx, "No ha capturado el pago realizado del cliente", Toast.LENGTH_SHORT).show();
             }
-
         }
     };
 
@@ -1530,6 +1528,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         }
     };
 
+
     //===================== Comportamientos  ===============================================
     private void SelectContactoCliente (int pos){
         if (!m.GetStr(tvGerente).isEmpty()) tvGerente.setError(null);
@@ -1810,6 +1809,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private void SelectDetalleFicha (int pos){
         switch (pos){
             case 0: // Si cuenta con detalle
+                //etPagoRealizado.setText(tvMontoPagoRequerido.getText());
                 etPagoRealizado.setEnabled(false);
                 llIntegrantes.setVisibility(View.VISIBLE);
                 llMontoPagoRealizado.setVisibility(View.VISIBLE);
@@ -1836,7 +1836,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                     tvImprimirRecibo.setError(null);
                     llFolioRecibo.setVisibility(View.VISIBLE);
                     etFolioRecibo.setText(folio_impreso);
-                    etFolioRecibo.setEnabled(false);
+                    etFolioRecibo.setEnabled(true);
                     etFolioRecibo.setError(null);
                 }
                 else {
@@ -1878,6 +1878,19 @@ public class recuperacion_gpo_fragment extends Fragment {
             default: // Sin seleccionar alguna opción o cualquier valor diferente
                 llFirma.setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    private void recuperarMontoGpo(){
+        if(etPagoRealizado.getText().toString().isEmpty()){
+            //Cursor a = dBhelper.getPagoRealizadoD(parent.id_prestamo, folio_impreso);
+            Cursor a = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_GPO_T, "pago_realizado","id_prestamo=? AND folio=?", new String[]{parent.id_prestamo,etFolioRecibo.getText().toString()});
+            if(a.getCount()>0){
+                a.moveToFirst();
+                String valor = a.getString(0);
+                etPagoRealizado.setText(valor);
+                Toast.makeText(ctx,"Monto recuperado", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -2075,6 +2088,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                                                             etFolioRecibo.setText(row.getString(17));
                                                             etFolioRecibo.setError(null);
                                                             folio_impreso = row.getString(17);
+                                                            recuperarMontoGpo();
                                                         }
                                                         else {
                                                             ibImprimir.setVisibility(View.VISIBLE);
@@ -2835,7 +2849,7 @@ public class recuperacion_gpo_fragment extends Fragment {
                                         } else //No ha seleccionado si imprimirá recibos
                                             Toast.makeText(ctx, "No ha confirmado si va imprimir recibos", Toast.LENGTH_SHORT).show();
                                     } else //El monto ingresado es igual a cero
-                                        Toast.makeText(ctx, "No se pueden capturar montos iguales a cero", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ctx, "No se pueden capturar montos iguales a cero jaja", Toast.LENGTH_SHORT).show();
                                 } else // No ha seleccionado si tiene el detalle de la ficha
                                     Toast.makeText(ctx, "No se seleccionado si cuenta con el detalle de la ficha", Toast.LENGTH_SHORT).show();
                             } else //No ha seleccionado algun medio de pago

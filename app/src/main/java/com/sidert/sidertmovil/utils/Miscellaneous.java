@@ -466,6 +466,16 @@ public class Miscellaneous {
         return compressedByteArray;
     }
 
+    public static String getipoClienteCreditoA(String tipoCliente){
+        String tipo = " ";
+        if(tipoCliente.equals("1")){
+            tipo = "CREDITO INDIVIDUAL";
+        }else if(tipoCliente.equals("2")){
+            tipo ="CREDITO GRUPAL";
+        }
+        return tipo;
+    }
+
     public static String Rango(int dias){
         String rango = "";
         if (dias <= 0)
@@ -1529,6 +1539,9 @@ public class Miscellaneous {
             //tv.setFocusableInTouchMode(true);*/
             flag = true;
         }
+
+
+
         return flag;
     }
 

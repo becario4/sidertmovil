@@ -167,6 +167,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         rgTipo          = findViewById(R.id.rgTipo);
 
 
+
         //   button =findViewById(R.id.button);
         //   button.setVisibility(View.GONE);
         //   button.setOnClickListener(fbAgregarCC_OnClick);
@@ -658,6 +659,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             }
 
             rgTipo.check((gestionCC.getTipoCredito() == 1) ? R.id.rbInd : R.id.rbGpo);
+            Toast.makeText(ctx,"Text" + gestionCC.getTipoCredito().toString().trim(),Toast.LENGTH_SHORT).show();
 
             tvCostoConsulta.setText(gestionCC.getCostoConsulta());
             tvCostoConsulta.setEnabled(false);

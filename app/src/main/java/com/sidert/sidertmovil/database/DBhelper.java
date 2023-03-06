@@ -4008,4 +4008,9 @@ public class DBhelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public Cursor getPagoRealizadoABC(String tableA,String select, String where, String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT " + select + " FROM " +  tableA +  where, args);
+        return res;
+    }
 }

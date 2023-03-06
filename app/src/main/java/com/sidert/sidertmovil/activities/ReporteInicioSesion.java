@@ -32,6 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_inicio_sesion;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.models.MLogLogin;
 import com.sidert.sidertmovil.models.MSucursal;
@@ -46,6 +47,7 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -143,7 +145,8 @@ public class ReporteInicioSesion extends AppCompatActivity {
     }
 
     /**Funcion que realiza la peticion para obtener a las sucursales que tiene acceso el usuario*/
-    private void GetMisSucursales(){
+    public void GetMisSucursales(){
+
         /**se crea un dialogo de loading en lo que se espera la respuesta*/
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
@@ -163,6 +166,11 @@ public class ReporteInicioSesion extends AppCompatActivity {
                     case 200:/**success*/
                         /**coloca la respuesta en una variable*/
                         List<MSucursal> data = response.body();
+
+                        //calculadoraPrestamo n = new calculadoraPrestamo();
+
+                        //n.getSucursalIdA(data);
+
                         /**se crea un array para colocar las sucursales*/
                         sucursales = new String[data.size() + 1];
                         /**se crea un array para saber cuales sucursales fueron marcadas para los filtros*/
@@ -190,6 +198,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
 
                             sucursales[i+1] = data.get(i).getNombre();
                             checkSucursales[i+1] = false;
+
                             if (i == 0)
                                 ids = String.valueOf(data.get(i).getId());
                             else
@@ -199,6 +208,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                         Log.e("Paramas", params.toString());
                         /**Despues comenzará a obtener el log de inicio de sesion de los asesores*/
                         GetReporteLogin(params);
+
                         break;
                     default:
                         Log.e("Error", response.code()+" xxx");
@@ -264,7 +274,6 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                         params_sesion.put(11, Miscellaneous.validStr(item.getTotalgestiones()));
 
                                         dBhelper.saveReporteSesiones(db, params_sesion);
-
                                     }
                                 }/**Fin ciclo for*/
 
@@ -298,6 +307,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
                                     item.setTotalgestiones(row.getString(12));
                                     data.add(item);
                                     row.moveToNext();
+
                                 }
 
                                 /**coloca el listado en el adaptador*/

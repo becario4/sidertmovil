@@ -7383,6 +7383,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCurpCli.setText(m.GenerarCurp(params));
                         Update("estado_nacimiento", TBL_CLIENTE_IND, m.GetStr(tvEstadoNacCli));
                     }
+                }else{
+                    tvEstadoNacCli.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CLIE:
@@ -7399,6 +7402,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Update("ocupacion", TBL_CLIENTE_IND, m.GetStr(tvOcupacionCli));
                         Update("actividad_economica", TBL_CLIENTE_IND, m.GetStr(tvActividadEcoCli));
                     }
+                }else{
+                    tvOcupacionCli.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_NEG:
@@ -7415,6 +7421,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Update("ocupacion", TBL_NEGOCIO_IND, m.GetStr(tvActEcoEspNeg));
                         Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
+                }else{
+                    tvActEcoEspNeg.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CONY:
@@ -7424,6 +7433,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvOcupacionCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         Update("ocupacion", TBL_CONYUGE_IND, m.GetStr(tvOcupacionCony));
                     }
+                }else{
+                    tvOcupacionCony.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_ACTIVIDAD_NEG:
@@ -7433,6 +7445,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
+                }else{
+                    tvActEconomicaNeg.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_ESTADO_NAC_AVAL:
@@ -7461,6 +7476,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCurpAval.setText(m.GenerarCurp(params));
                         Update("estado_nacimiento", TBL_AVAL_IND, m.GetStr(tvEstadoNacAval));
                     }
+                }else{
+                    tvEstadoNacAval.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_AVAL:
@@ -7478,6 +7496,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         }
                         row.close();
                     }
+                }else{
+                    tvOcupacionAval.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CLIE:
@@ -7487,6 +7508,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCli), direccionIdCli, "CLIENTE");
                     }
+                }else{
+                    tvColoniaCli.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:
@@ -7496,6 +7520,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCli), direccionIdCli, "CLIENTE");
                     }
+                }else{
+                    tvLocalidadCli.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CONY:
@@ -7505,6 +7532,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCony), direccionIdCony, "CONYUGE");
                     }
+                }else{
+                    tvLocalidadCony.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_NEG:
@@ -7514,6 +7544,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadNeg), direccionIdNeg, "NEGOCIO");
                     }
+                }else{
+                    tvLocalidadNeg.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_AVAL:
@@ -7523,6 +7556,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadAval), direccionIdAval, "AVAL");
                     }
+                }else{
+                    tvLocalidadAval.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_REF:
@@ -7532,6 +7568,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadRef), direccionIdRef, "REFERENCIA");
                     }
+                }else{
+                    tvLocalidadRef.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CONY:
@@ -7541,6 +7580,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCony), direccionIdCony, "CONYUGE");
                     }
+                }else{
+                    tvColoniaCony.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_AVAL:
@@ -7549,6 +7591,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaAval), direccionIdAval, "AVAL");
                     }
+                }else{
+                    tvColoniaAval.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_NEG:
@@ -7558,6 +7603,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaNeg), direccionIdNeg, "NEGOCIO");
                     }
+                }else{
+                    tvColoniaNeg.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_REF:
@@ -7567,6 +7615,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaRef), direccionIdRef, "REFERENCIA");
                     }
+                }else{
+                    tvColoniaRef.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_CLI:
@@ -7583,6 +7634,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFachadaCli.setError(" ");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_NEG:
@@ -7599,6 +7653,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFachadaNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_AVAL:
@@ -7615,6 +7672,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFachadaAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_AVAL:
@@ -7636,6 +7696,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFirmaAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_CLI:
@@ -7658,6 +7721,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFirmaCli.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_ASESOR:
@@ -7676,6 +7742,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFirmaAsesor.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_SELFIE:
@@ -7692,6 +7761,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneSelfie.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:
@@ -7711,6 +7783,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneSelfie.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"CAMPO REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO:
@@ -7730,6 +7805,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneReverso.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP:
@@ -7746,6 +7824,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvCurp.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE:
@@ -7762,6 +7843,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvComprobante.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE_GARANTIA:
@@ -7778,6 +7862,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvComprobanteGarantia.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL_AVAL:
@@ -7797,6 +7884,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneFrontalAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO_AVAL:
@@ -7816,6 +7906,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneReversoAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP_AVAL:
@@ -7832,6 +7925,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvCurpAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBANTE_AVAL:
@@ -7848,6 +7944,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvComprobanteAval.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -8258,7 +8357,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                 ivError2.setVisibility(View.VISIBLE);
                                         } else {
                                             ivError2.setVisibility(View.VISIBLE);
-                                            tvMapaCli.setError("");
+                                            tvMapaCli.setError("CAMPO REQUERIDO");
+                                            Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 } else
@@ -9007,31 +9107,38 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                 save_documentacion = true;
                             } else {
                                 ivError10.setVisibility(View.VISIBLE);
-                                tvFirmaAsesor.setError("");
+                                showError(tvFirmaAsesor,"FOTOGRAFIA REQUERIDA");
                             }
                         } else {
                             ivError10.setVisibility(View.VISIBLE);
-                            tvComprobante.setError("");
+                            showError(tvComprobante,"FOTOGRAFIA REQUERIDA");
                         }
                     } else {
                         ivError10.setVisibility(View.VISIBLE);
-                        tvCurp.setError("");
+                        showError(tvCurp,"FOTOGRAFIA REQUERIDA");
                     }
                 } else {
                     ivError10.setVisibility(View.VISIBLE);
-                    tvIneReverso.setError("");
+                    showError(tvIneReverso,"FOTOGRAFIA REQUERIDA");
                 }
             } else {
                 ivError10.setVisibility(View.VISIBLE);
-                tvIneFrontal.setError("");
+                showError(tvIneFrontal,"FOTOGRAFIA REQUERIDA");
             }
         } else {
             ivError10.setVisibility(View.VISIBLE);
-            tvIneSelfie.setError("");
+            showError(tvIneSelfie,"FOTOGRAFIA REQUERIDA");
         }
 
         return save_documentacion;
     }
+
+    private void showError(TextView texto,String n){
+        texto.setError(n);
+        texto.requestFocus();
+        Toast.makeText(ctx,"FOTOGRAFIA REQUERIDA",Toast.LENGTH_SHORT).show();
+    }
+
 
     //===================== Listener GPS  =======================================================
     private void ObtenerUbicacion() {
@@ -9438,6 +9545,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         pbLoadCli.setVisibility(View.GONE);
         //ibMapCli.setVisibility(View.GONE);
+        if(ubication == null){
+            tvMapaCli.setError("CAMPO REQUERIDO");
+            Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addMarkerNeg(double lat, double lng) {
@@ -11591,7 +11702,4 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         });
 
     }
-
-
-
 }

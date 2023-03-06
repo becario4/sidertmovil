@@ -6527,6 +6527,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFachadaCli.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_COLONIA_CLIE:/**obtiene respuesta a la peticion de colonia del cliente*/
@@ -6539,6 +6542,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         Update("colonia", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCli), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    tvColoniaCli.setError("Campo requerido");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:/**obtiene respuesta a la peticion de localidad del cliente*/
@@ -6550,6 +6556,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_DOMICILIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCli), "id_integrante", id_integrante);
                     }
+                }else{
+                    tvLocalidadCli.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CONY:/**obtiene respuesta a la peticion de colonia del conyuge*/
@@ -6561,6 +6570,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         /**actualiza la columna con la respuesta*/
                         Update("colonia", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaCony), "id_integrante", id_integrante);
                     }
+                }else{
+                    tvColoniaCony.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CONY:/**obtiene respuesta a la peticion de localidad del conyuge*/
@@ -6572,6 +6584,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_CONYUGE_INTEGRANTE_REN, Miscellaneous.GetStr(tvLocalidadCony), "id_integrante", id_integrante);
                     }
+                }else{
+                    tvLocalidadCony.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_ACTIVIDAD_NEG:/**obtiene respuesta a la peticion de actividad de negocio*/
@@ -6584,6 +6599,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    tvActEconomicaNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_COLONIA_NEG:/**obtiene respuesta a la peticion de colonia del negocio*/
@@ -6596,6 +6614,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         Update("colonia", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvColoniaNeg), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    tvColoniaNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_NEG:/**obtiene respuesta a la peticion de localidad del negocio*/
@@ -6607,6 +6628,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         /**actualiza la columna con la respuesta*/
                         Update("localidad", TBL_NEGOCIO_INTEGRANTE_REN,tvLocalidadNeg.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
                     }
+                }else{
+                    tvLocalidadNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_NEG:/**obtiene respuesta a la peticion de ocupacion del negocio*/
@@ -6626,6 +6650,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         Update("ocupacion", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEcoEspNeg), "id_integrante", id_integrante);
                         Update("actividad_economica", TBL_NEGOCIO_INTEGRANTE_REN, Miscellaneous.GetStr(tvActEconomicaNeg), "id_integrante", id_integrante);
                     }
+                }else{
+                    tvActEcoEspNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_CAMARA_FACHADA_NEG:/**Obtiene respuesta a la peticion de fotografia de fachada del negocio*/
@@ -6646,6 +6673,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         }
 
                     }
+                }else{
+                    tvFachadaNeg.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_OCUPACION_CONY:/**Obtiene respuesta a la peticion de ocupacion del conyuge*/
@@ -6658,6 +6688,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         Update("ocupacion", TBL_CONYUGE_INTEGRANTE_REN, tvOcupacionCony.getText().toString().trim().toUpperCase(), "id_integrante", id_integrante);
 
                     }
+                }else{
+                    tvOcupacionCony.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_CODE_OCUPACION_CLIE:/**Obtiene respuesta a la peticion de ocupacion del cliente*/
@@ -6669,6 +6702,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         /**actualiza la columna con la respuesta*/
                         Update("ocupacion", TBL_INTEGRANTES_GPO_REN, tvOcupacionCli.getText().toString().trim().toUpperCase(), "id", id_integrante);
                     }
+                }else{
+                    tvOcupacionCli.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_CLI:/**obtiene la respuesta a la peticion de firma del cliente*/
@@ -6692,6 +6728,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvFirmaCli.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_SELFIE:
@@ -6708,6 +6747,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvIneSelfie.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:/**obtiene la respuesta a la peticion de fotografia del ine frontal*/
@@ -6732,6 +6774,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         }
 
                     }
+                }else{
+                    tvIneFrontal.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO:/**obtiene la respuesta a la peticion de fotografia del ine reverso*/
@@ -6756,6 +6801,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         }
 
                     }
+                }else{
+                    tvIneReverso.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP:/**obtiene respuesta a la peticion de captura de fotografia de la curp*/
@@ -6776,6 +6824,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                         }
 
                     }
+                }else{
+                    tvCurp.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE:/**obtiene respuesta a la peticion de captura de fotografia de la curp*/
@@ -6795,6 +6846,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    tvComprobante.setError("CAMPO REQUERIDO");
+                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }

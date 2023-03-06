@@ -41,6 +41,8 @@
 
     <color name="gray">#78797B</color>
 
+    <color name="gray_ligth">#c8c8c8</color>
+
 
     <color name="env_rojo">#CEF74C4C</color>
     <color name="env_anar">#E4E97547</color>
