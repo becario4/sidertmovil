@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.common.util.Strings;
 
-public class BackendThreat {
+public class BackendThreat extends Thread {
     public Context ctx;
 
     public BackendThreat(Context paramContext, bitmapRequest parambitmapRequest, Strings paramStrings) {

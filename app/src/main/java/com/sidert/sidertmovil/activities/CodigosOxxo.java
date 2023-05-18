@@ -113,7 +113,7 @@ public class CodigosOxxo extends AppCompatActivity {
         tipo = getIntent().getIntExtra(TIPO,0);
         numPrestamo = getIntent().getStringExtra(NUMERO_DE_PRESTAMO);
         fechaAmortiz = getIntent().getStringExtra(FECHA_AMORTIZACION);
-        montoAmortiz = getIntent().getStringExtra(MONTO_AMORTIZACION);
+        montoAmortiz = getIntent().getStringExtra(MONTO_AMORTIZACION); //modificar si deseas agregar un monto personalizado
         clave = getIntent().getStringExtra(CLAVE);
         nombre = getIntent().getStringExtra(NOMBRE);
 
@@ -133,7 +133,7 @@ public class CodigosOxxo extends AppCompatActivity {
             Bundle b = new Bundle();
             b.putString(NOMBRE, nombre);
             b.putString(FECHA_AMORTIZACION, fechaAmortiz);
-            b.putString(MONTO_AMORTIZACION, montoAmortiz);
+            b.putString(MONTO_AMORTIZACION,montoAmortiz);
             dlg_oxxo.setArguments(b);
 
             dlg_oxxo.show(getSupportFragmentManager(), DIALOGCODIGOOXXO);

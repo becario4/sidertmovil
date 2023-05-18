@@ -64,9 +64,12 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.PoliticaPldIntegranteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
@@ -81,6 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
@@ -88,6 +92,7 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
@@ -168,6 +173,8 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         tvInfoCredito.setOnClickListener(tvInfoCredito_OnClick);
         fabAgregar.setOnClickListener(fabAgregar_OnClick);
 
+        //Intent intent = new Intent(ctx, RenovarIntegrante.class);
+
         /**Validacion para saber si tendra que abrir el dialog de datos del credito*/
         if (getIntent().getBooleanExtra("is_new",true)) {
             is_edit = true;
@@ -191,10 +198,17 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             TBmain.setSubtitle(row.getString(2));
             row.close();
             /**Funcion para obtener los integrantes*/
-            initComponents(sdato1);
 
+            initComponents(sdato1);
         }
+        DatosCompartidos.getInstance().setId_solicitud(id_solicitud);
+        DatosCompartidos.getInstance().setCredito_id(id_credito);
+       // Intent intent = new Intent(ctx, RenovarIntegrante.class);
+       // intent.putExtra("id_solicitud", String.valueOf(id_solicitud));
+       // startActivity(intent);
+
     }
+
 
     /**Evento para abrir un dialogFragment para mostrar los datos del credito */
     private View.OnClickListener tvInfoCredito_OnClick = new View.OnClickListener() {
@@ -352,6 +366,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 break;
             case R.id.devmode:
                 enviarJSONObjects();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
             case R.id.desbloquear:
                 if (modoSuperUsuario) {
@@ -365,6 +380,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 break;
             case R.id.enviar:
                 sendSolicitud();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -784,11 +800,6 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 }
             });
         }
-    }
-
-    private void enviarJSONRequest()
-    {
-
     }
 
     private void sendSolicitud()

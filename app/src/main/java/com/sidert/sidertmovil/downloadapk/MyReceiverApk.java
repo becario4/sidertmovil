@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.downloadapk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -62,7 +63,7 @@ public class MyReceiverApk extends BroadcastReceiver {
             if (cursor.moveToFirst()){
                 int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 if (DownloadManager.STATUS_SUCCESSFUL ==cursor.getInt(columnIndex)){
-                    String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
                     if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.M) {
                         String[] apkName = uriString.split("/");

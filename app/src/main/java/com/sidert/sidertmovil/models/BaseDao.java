@@ -49,6 +49,16 @@ public class BaseDao<T>{
         return row;
     }
 
+    protected Cursor beneficiarioIntegrante(String table, Integer id_integrante){
+        String sql = " " +
+                " SELECT *  " +
+                " FROM " + table + " AS b " +
+                " WHERE b.cliente_id  = ?";
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_integrante)});
+        return row;
+    }
+
     public static <T extends IFillModel> void find(Cursor row, T t)
     {
         if(row.getCount() > 0)

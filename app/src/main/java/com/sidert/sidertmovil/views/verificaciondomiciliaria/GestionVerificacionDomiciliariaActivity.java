@@ -363,6 +363,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         }
 
         disabledForm();
+
     }
 
     private void Ubicacion(final double latitud, final double longitud)

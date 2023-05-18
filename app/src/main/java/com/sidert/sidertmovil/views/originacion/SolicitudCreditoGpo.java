@@ -65,9 +65,12 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.Politi
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.PoliticaPldIntegranteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.TelefonoIntegrante;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.TelefonoIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
@@ -80,7 +83,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
@@ -88,6 +94,8 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
@@ -102,9 +110,13 @@ import static com.sidert.sidertmovil.utils.Constants.warning;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_originacion_gpo.OnCompleteListener {
 
@@ -179,6 +191,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             id_credito = Long.parseLong(row.getString(0));
             initComponents(row.getString(1));
         }
+        DatosCompartidos.getInstance().setId_solicitud(id_solicitud);
+        DatosCompartidos.getInstance().setCredito_id(id_credito);
     }
 
     private View.OnClickListener tvInfoCredito_OnClick = new View.OnClickListener() {
@@ -359,6 +373,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                                         db.delete(TBL_CROQUIS_GPO, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_POLITICAS_PLD_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DATOS_BENEFICIARIO_GPO, "id_integrante = ?", new String[]{id_integrante});
 
                                         adapter.removeItem(position);
                                         dialog.dismiss();
@@ -424,6 +439,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                 break;
             case R.id.devmode:
                 enviarJSONObjects();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
             case R.id.desbloquear:
                 if (modoSuperUsuario) {
@@ -437,6 +453,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                 break;
             case R.id.enviar:
                 sendSolicitud();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -761,11 +778,6 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
     }
 
-    private void enviarJSONRequest()
-    {
-
-    }
-
     private void sendSolicitud()
     {
         if(esSolicitudValida())
@@ -790,6 +802,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             dialogSendSI.show(getSupportFragmentManager(), NameFragments.DIALOGSENDINGSOLICITUDGRUPAL);
         }
     }
+
+
 
     private boolean esSolicitudValida()
     {

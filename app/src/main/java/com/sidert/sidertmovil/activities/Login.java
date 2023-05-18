@@ -326,11 +326,7 @@ public class Login extends AppCompatActivity {
                                 /**Se convierte a JSON el token*/
                                 JSONObject json_info = new JSONObject(new String(data, StandardCharsets.UTF_8));
 
-
                                 Log.e("JsonInfo", json_info.toString());
-
-                                calculadoraPrestamo xd = new calculadoraPrestamo();
-                                //xd.getSucursalIdA(json_info);
 
                                 /**Guarda un registro para el log de inicio de sesion*/
                                 HashMap<Integer, String> params = new HashMap<>();
@@ -366,6 +362,9 @@ public class Login extends AppCompatActivity {
 
                                 session.setAutorizacionAA(json_info.getString(AUTHORITIES));
                                 session.getAutorizacionAAA();
+
+                                session.setSerieId(json_info.getString(SERIE_ID));
+                                session.getSerieId();
 
                                 Log.e("SUCURSALES","--------->"+session.getSucursales());
                                 //calculadoraPrestamo xd = new calculadoraPrestamo();

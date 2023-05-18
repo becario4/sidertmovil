@@ -842,27 +842,30 @@ public class recuperacion_ind_fragment extends Fragment {
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            try{
-                if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-                } else {
-                    int compress = 10;
-                    if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
-                        compress = 40;
-                    CropImage.activity()
-                            .setAutoZoomEnabled(true)
-                            .setMinCropWindowSize(3000,3000)
-                            .setOutputCompressQuality(compress)
-                            .start(ctx,recuperacion_ind_fragment.this);
-                }
-                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(gallery, PICK_IMAGE);
+
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+            } else {
+                int compress = 10;
+                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                    compress = 40;
+                CropImage.activity()
+                        .setAutoZoomEnabled(true)
+                        .setMinCropWindowSize(3000,4000)
+                        .setOutputCompressQuality(compress)
+                        .start(ctx,recuperacion_ind_fragment.this);
+            }
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            gallery.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(gallery, PICK_IMAGE);
+
+           /* try{
+
             }catch (Exception e){
                 Toast.makeText(ctx,"Ocurrio un error: " + e, Toast.LENGTH_SHORT).show();
                 Log.e("Error:", e.getMessage());
-            }
+            }*/
             //startActivityForResult(Intent.createChooser(gallery, "selecciona una opción"), REQUEST_CODE_GALERIA);
             //gallery.setAction(Intent.ACTION_GET_CONTENT);
            // startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);

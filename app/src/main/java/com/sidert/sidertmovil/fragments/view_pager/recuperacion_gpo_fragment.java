@@ -199,7 +199,7 @@ public class recuperacion_gpo_fragment extends Fragment {
     private TextView tvResultadoGestion;
     private TextView tvMedioPago;
     private TextView tvFechaDeposito;
-    private TextView tvMontoPagoRequerido;
+    private EditText tvMontoPagoRequerido;
     private TextView tvDetalleFicha;
     private TextView tvArqueoCaja;
     private TextView tvMotivoAclaracion;
@@ -576,6 +576,9 @@ public class recuperacion_gpo_fragment extends Fragment {
         ivFachada.setOnClickListener(ivFotoFachada_OnClick);
 
         init();
+
+
+        tvMontoPagoRequerido.setEnabled(true);
 
         return v;
     }
@@ -1946,6 +1949,7 @@ public class recuperacion_gpo_fragment extends Fragment {
         setHasOptionsMenu(true);
         parent.getSupportActionBar().show();
         tvMontoPagoRequerido.setText(String.valueOf(nFormat.format(parent.monto_requerido)));
+        tvMontoPagoRequerido.setEnabled(true);
 
         if (!parent.id_respuesta.isEmpty()){
             Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE _id = ? AND id_prestamo = ?", "", new String[]{parent.id_respuesta, parent.id_prestamo});

@@ -20,8 +20,6 @@ public class Constants {
     public final static String CONTROLLER_RECIBOS     = "recibos";
     public final static String CONTROLLER_SOPORTE     = "soporte";
     public final static String CONTROLLER_APK         = "apk";
-   
-
 
     // ACTION BAR CONSTANTS
     public final static String TBtitle   = "title";
@@ -95,7 +93,6 @@ public class Constants {
     public final static String warning                  = "warning";
     public final static String login                    = "login";
     public final static String camara                   = "camara";
-
 
     // Keys para servicios
 
@@ -402,6 +399,8 @@ public class Constants {
     public final static String TBL_CONYUGE_INTEGRANTE       = "tbl_conyuge_integrante";
     public final static String TBL_OTROS_DATOS_INTEGRANTE   = "tbl_otros_datos_integrante";
     public final static String TBL_CROQUIS_GPO              = "tbl_croquis_gpo";
+    public final static String TBL_DATOS_BENEFICIARIO       = "tbl_datos_beneficiario_ind";
+    public final static String TBL_DATOS_BENEFICIARIO_GPO   = "tbl_datos_beneficiario_gpo";
     public final static String TBL_POLITICAS_PLD_INTEGRANTE = "tbl_politicas_pld_integrante";
     public final static String TBL_DOCUMENTOS_INTEGRANTE    = "documentos_integrante";
 
@@ -593,8 +592,6 @@ public class Constants {
     public final static String FECHA_FIN_GEO            = "fecha_fin_geo";
     public final static String FECHA_ENVIO              = "fecha_envio";
 
-
-
     public final static String TITULO                   = "titulo";
     public final static String CATALOGO                 = "catalogo";
     public final static String ITEM                     = "item";
@@ -754,5 +751,17 @@ public class Constants {
     public final static String K_CURP_AVAL                             = "curp_aval";
     public final static String K_COMPROBANTE_DOMICILIO_AVAL            = "comprobante_domicilio_aval";
 
+    //================================== KEYS FOR BENEFICIARIO ====================================//
+
+
+    public final static String K_SOLICITANTE_BENEFICIARIO                = "solicitante_beneficiario";
+    public final static String K_ID_ORIGINACION                          = "id_originacion";
+    public final static String K_ID_CLIENTE                              = "id_cliente";
+    public final static String K_ID_GRUPO                                = "id_grupo";
+    public final static String K_NOMBRE_BENEFICIARIO                     = "nombre";
+    public final static String K_PATERNO_BENEFICIARIO                    = "paterno";
+    public final static String K_MATERNO_BENEFICIARIO                    = "materno";
+    public final static String K_PARENTESCO_BENEFICIARIO                 = "parentesco";
+    public final static String K_SERIE_ID_BENEFICIARIO                   = "serieid";
 
 }

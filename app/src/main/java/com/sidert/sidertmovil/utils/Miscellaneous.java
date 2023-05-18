@@ -84,10 +84,15 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NIVELES_ESTUDIOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PARENTESCOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS_CC;
+import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_VIVIENDA_TIPOS;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
+
 public class Miscellaneous {
+    private DBhelper dBhelper;
 
     /*Validación de que no sea null ni vacio y colocar primera leta mayúscula*/
     public static String ucFirst(String str) {
@@ -2644,4 +2649,117 @@ public class Miscellaneous {
 
         return passDecodificada;
     }
+
+    public static int validarEstatus(String tabla, Context ctx){
+        int respuesta=0;
+        String tablaCheck = tabla;
+        int status = 1;
+        Cursor dato;
+        DBhelper dBhelper = new DBhelper(ctx);
+
+        /*if(tablaCheck.contains("tb_tabla_test")){
+            dato = dBhelper.validarEstatus("tb_tabla_test", "estatus=?",new String[]{String.valueOf(status)});
+
+            if(dato.getCount()>0){
+                respuesta = 1; //SE RETORNA 1 SI EXISTE UN VALOR
+            }else
+                respuesta = 0; //SE RETORNA 0 SI NO EXISTE EL VALOR
+
+        }*/
+        if(tablaCheck.contains(TBL_RECUPERACION_RECIBOS_CC)){
+            dato = dBhelper.validarEstatus(TBL_RECUPERACION_RECIBOS_CC, "estatus=?",new String[]{String.valueOf(status)});
+            if(dato.getCount()>0){
+                respuesta = 1;
+            }else{
+                respuesta = 0;
+            }
+
+        }
+
+        if(tablaCheck.contains(TBL_RECIBOS_AGF_CC)){
+           Cursor datoA = dBhelper.validarEstatus(TBL_RECIBOS_AGF_CC,"estatus=?",new String[]{String.valueOf(status)});
+            if(datoA.getCount()>0){
+                respuesta = 1;
+            }else{
+                respuesta = 0;
+            }
+        }
+
+        respuesta += respuesta;
+
+        return respuesta;
+    }
+
+    public ArrayList<String> arrayList;
+
+    /*public static int obtenerSerieAsesor(Context ctx){
+        int serieId = 0;
+        Cursor datos;
+        DBhelper dBhelper = new DBhelper(ctx);
+        datos = dBhelper.simpleSelect();
+
+        if(datos != null && datos.moveToFirst() == true){
+
+            do{
+                for(int i=0;i<datos.getCount();i++){
+                    serieId = datos.getInt(0);
+                }
+
+            }while (datos.moveToNext());
+        }
+        return  serieId;
+    }*/
+
+  /*  public static String obtenerGrupoId(Long id_solicitud,Context ctx){
+        String grupo_id = " ";
+        Cursor datos;
+        DBhelper dBhelper = new DBhelper(ctx);
+        datos = dBhelper.obtenerIdGrupal(id_solicitud,null);
+
+        if (datos != null && datos.getCount() > 0) {
+            datos.moveToFirst();
+            grupo_id = datos.getString(0);
+            datos.close();
+        }
+        return grupo_id;
+    }*/
+
+   /* public static int obtenerClienteId(Integer id_integrante, Context ctx){
+        int id_cliente = 0;
+        Cursor n;
+        DBhelper dBhelper = new DBhelper(ctx);
+
+        n = dBhelper.obtenerIdCliente(id_integrante,null);
+
+        if(n != null && n.getCount()>0){
+            n.moveToFirst();
+            id_cliente = n.getInt(0);
+            n.close();
+        }
+
+        return  id_cliente;
+    }*/
+
+   /* public static boolean validarBeneficiario(Integer id_integrante, Context ctx){
+        boolean status = false;
+        Cursor datos;
+        DBhelper dBhelper = new DBhelper(ctx);
+        int dato=0;
+
+        datos = dBhelper.validarBeneficairioGPO(String.valueOf(id_integrante),null);
+
+        if(datos.getCount()>0){
+            datos.moveToFirst();
+            dato = datos.getInt(0);
+        }
+
+        if(dato >= 1){
+            status = true;
+        }else{
+            status = false;
+        }
+
+        return status;
+    }*/
+
 }

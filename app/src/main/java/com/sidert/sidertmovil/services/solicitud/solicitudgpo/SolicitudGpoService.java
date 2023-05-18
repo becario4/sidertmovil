@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.services.solicitud.solicitudgpo;
 import com.sidert.sidertmovil.models.ApiResponse;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.SolicitudDetalleEstatusGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
 
 import java.util.List;
 
@@ -55,5 +56,17 @@ public interface SolicitudGpoService {
         @Part("solicitud_id") RequestBody solicitud_grupal_id,
         @Part("solicitud_integrante_id") RequestBody solicitud_integrante_id,
         @Part MultipartBody.Part ine_selfie
+    );
+
+    @Multipart
+    @POST("/api/solicitudes/credito/beneficiario")
+    Call<Beneficiario>sendDataBeneficiarioGpo(
+            @Part("id_solicitiud") RequestBody id_solicitud,
+            @Part("id_grupo") RequestBody id_grupo,
+            @Part("nombreBeneficiario")RequestBody nombreBeneficiario,
+            @Part("apellidoPaterno")RequestBody apellidoPaterno,
+            @Part("apellidoMaterno ")RequestBody apellidoMaterno,
+            @Part("parentesco") RequestBody parentesco,
+            @Part("serieid") RequestBody serieid
     );
 }

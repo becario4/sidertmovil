@@ -6167,7 +6167,7 @@ public class Servicios_Sincronizado {
                                         params.put(1, String.valueOf(item.getPrestamoId()));
                                         params.put(2, String.valueOf(item.getClienteId()));
                                         params.put(3, item.getNombre());
-                                        params.put(4, item.getNoPrestamo().trim());
+                                        params.put(4, item.getNoPrestamo().trim()); //recive dato null, pendiente a soporte
                                         params.put(5, item.getFechaVencimiento());
                                         params.put(6, String.valueOf(item.getNumPagos()));
                                         params.put(7, "0");
@@ -8254,6 +8254,8 @@ public class Servicios_Sincronizado {
             ContentValues cv = new ContentValues();
             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
 
+            ContentValues cv1 = new ContentValues();
+
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
                 public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
@@ -8267,6 +8269,10 @@ public class Servicios_Sincronizado {
                             cv.put("id_originacion",res.getIdSolicitud());
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
+                            
+                            cv1.put("id_originacion",res.getIdSolicitud());
+                            db.update(TBL_DATOS_BENEFICIARIO,cv1,"id_solicitud=?",new String[]{id});
+                            
                             break;
                         default:
                             try {
@@ -8536,6 +8542,7 @@ public class Servicios_Sincronizado {
                 );
 
             ContentValues cv = new ContentValues();
+            ContentValues cv1 = new ContentValues();
             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
 
             call.enqueue(new Callback<MResSaveSolicitud>() {
@@ -8550,6 +8557,9 @@ public class Servicios_Sincronizado {
                             cv.put("id_originacion",res.getIdSolicitud());
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id});
+
+                            cv1.put("id_originacion",res.getIdSolicitud());
+                            db.update(TBL_DATOS_BENEFICIARIO,cv1,"id_solicitud=?",new String[]{id});
                             break;
                         default:
                             try {
@@ -8969,6 +8979,11 @@ public class Servicios_Sincronizado {
                             cv.put("id_solicitud_integrante",res.getIdSolicitud());
                             cv.put("estatus_completado",2);
                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{id});
+
+                            ContentValues cv1 = new ContentValues();
+                            cv.put("id_solicitud_integrante",res.getIdSolicitud());
+                            db.update(TBL_DATOS_BENEFICIARIO_GPO, cv1, "id_integrante = ?", new String[]{id});
+
 
                             String sql = "SELECT id_solicitud_integrante FROM " + TBL_INTEGRANTES_GPO_REN + " WHERE id_credito = ? AND id_solicitud_integrante = ?";
                             Cursor r = db.rawQuery(sql, new String[]{credito, "0"});
@@ -11217,7 +11232,6 @@ public class Servicios_Sincronizado {
                 "WHERE s.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
-
 
         if (row.getCount() > 0){
             row.moveToFirst();

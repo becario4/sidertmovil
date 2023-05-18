@@ -27,7 +27,10 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_SOPORTE       = "/api/movil/soporte/"; //Controlador para soporte
     public final static String CONTROLLER_APK           = "/api/movil/apk/"; //Controlador para apk
     public final static String CONTROLLER_CIRCULO       = "/api/circulo/"; //Controlador para soporte
-    public final static String CONTROLLER_CALCULADORA   = "/calcularPresupuesto";
+    public final static String CONTROLLER_CALCULADORA   = "/api/movil/calcularPresupuesto";
+    public final static String CONTROLLER_DESCARGARGUIA = "/api/movil/descargarFile/";
+    public final static String CONTROLLER_BENEFICIARIO  = "/api/movil/beneficiario";
+    public final static String CONTROLLER_BENEFICIARIO_GPO = "/api/movil/beneficiario_gpo";
 
 
     //public final static String BASE_URL = DOMAIN + PORT;
@@ -78,6 +81,8 @@ public class WebServicesRoutes {
     public final static String WS_GET_SOLIC_RECHAZO_GPO     = "grupales_rechazos"; //Obtiene un listado de las solicitudes de los integrantes del grupo que fueron rechazados
     public final static String WS_CONSULTA_CC               = "circulo"; //Servicio para consultar datos para circulo de crédito
     public final static String WS_AUTORIZAR_CC              = "v_circulo?";
+    public final static String WS_CALCULADORA               = "calcularPresupuesto?";//Servicio para calcular un prestamo
+
 
     //Catálogos
     public final static String WS_GET_ESTADOS               = "GetEstados"; //Obtiene el catálogo de estados de México

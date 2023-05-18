@@ -33,7 +33,6 @@ public class SolicitudDao {
                 "FROM " + TBL_SOLICITUDES + " AS s " +
                 "WHERE s.id_solicitud = ? "
                 ;
-
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idSolicitud)});
 
         if(row.getCount() > 0)

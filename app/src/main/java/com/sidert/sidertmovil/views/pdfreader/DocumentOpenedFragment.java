@@ -19,18 +19,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
+import com.sidert.sidertmovil.utils.SessionManager;
 
 import org.apache.commons.collections4.KeyValue;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class DocumentOpenedFragment extends Fragment {
     private Context ctx;
@@ -53,6 +59,9 @@ public class DocumentOpenedFragment extends Fragment {
     public List<Indice> indice;
     public String[] _titulosDelindice;
 
+    public String tipoUsuario;
+    private Home tipoRol = new Home();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_document_opened, container, false);
@@ -65,12 +74,33 @@ public class DocumentOpenedFragment extends Fragment {
         btnIndex      = view.findViewById(R.id.btnIndex);
         btnIndex      = view.findViewById(R.id.btnIndex);
 
-        llenaIndice();
 
-        File guiaRapida = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp/guia_rapida.pdf");
-        documentUri = Uri.fromFile(guiaRapida);
+
+
+        //Code...
+        SessionManager sen  = new SessionManager(ctx);
+        try {
+            tipoUsuario = tipoRol.getTipoRolA(sen);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(tipoUsuario != null && tipoUsuario.contains("ROLE_ASESOR") || tipoUsuario.contains("ROLE_GERENTE")){
+            File guiaAsesor = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/guia_asesor.pdf");
+            documentUri = Uri.fromFile(guiaAsesor);
+            llenaIndiceA();
+        }else if(tipoUsuario != null && tipoUsuario.contains("ROLE_GESTOR")){
+            File guiaRapida = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/guia_rapida.pdf");
+            documentUri = Uri.fromFile(guiaRapida);
+            llenaIndice();
+        }else{
+            Toast.makeText(ctx,"NEL PRRO",Toast.LENGTH_SHORT).show();
+        }
+
+        PhotoViewAttacher photo = new PhotoViewAttacher(ivPdfPageView);
+        photo.update();
 
         return view;
+
     }
 
     @Override
@@ -101,6 +131,7 @@ public class DocumentOpenedFragment extends Fragment {
         super.onStart();
 
         try {
+
             openRenderer(ctx, documentUri);
             showPage(currentPageNumber);
         }catch (IOException ioException)
@@ -129,6 +160,7 @@ public class DocumentOpenedFragment extends Fragment {
 
         pdfRenderer = new PdfRenderer(fileDescriptor);
         currentPage = pdfRenderer.openPage(currentPageNumber);
+
     }
 
     private void closeRenderer() {
@@ -166,18 +198,22 @@ public class DocumentOpenedFragment extends Fragment {
         builder.show();
     };
 
-    private void llenaIndice(){
+    private void llenaIndiceA(){
         int posicion = 0;
-
         indice = new ArrayList<>();
-        indice.add(new Indice(0, "Inicio"));
-        indice.add(new Indice(6, "Secciones de Sidert Móvil"));
-        indice.add(new Indice(15, "Contenido de una ficha"));
-        indice.add(new Indice(19, "Sincronización de información"));
-        indice.add(new Indice(23, "Referencias bancarias"));
-        indice.add(new Indice(32, "Mesa de ayuda"));
-        indice.add(new Indice(36, "Apoyo de gastos funarios"));
-        indice.add(new Indice(40, "Círculo de crédito"));
+
+            indice.add(new Indice(0,"Inicio"));
+            indice.add(new Indice(2,"Funciones y Responsabilidades del Asesor de Crédito"));
+            indice.add(new Indice(4,"Características y Requisitos del Producto"));
+            indice.add(new Indice(5,"Proceso de Otorgamiento de credito"));
+            indice.add(new Indice(5,"Etapa de promoción"));
+            indice.add(new Indice(9,"Etapa de Comercialización"));
+            indice.add(new Indice(34,"Etapa de Evaluación"));
+            indice.add(new Indice(35,"Etapa de Desembolso"));
+            indice.add(new Indice(37,"Etapa de Recuperación"));
+            indice.add(new Indice(46,"Etapa de Cobranza"));
+            indice.add(new Indice(47,"Etapa de renovación"));
+            indice.add(new Indice(48,"Tips y recomendaciones a aplicar en el proceso de otorgamiento del credito"));
 
         _titulosDelindice = new String[indice.size()];
 
@@ -188,4 +224,29 @@ public class DocumentOpenedFragment extends Fragment {
             posicion++;
         }
     }
+
+    private void llenaIndice(){
+        int posicion = 0;
+
+        indice = new ArrayList<>();
+        indice.add(new Indice(0, "Inicio"));
+        indice.add(new Indice(6, "Secciones de Sidert Móvil"));
+        indice.add(new Indice(15, "Contenido de una ficha"));
+        indice.add(new Indice(19, "Sincronización de información"));
+        indice.add(new Indice(23, "Referencias bancarias"));
+        indice.add(new Indice(32, "Apoyo de gastos funarios"));
+        indice.add(new Indice(37, "Círculo de crédito"));
+        indice.add(new Indice(41, "Mesa de ayuda"));
+
+
+        _titulosDelindice = new String[indice.size()];
+
+        for(Indice i : indice)
+        {
+            _titulosDelindice[posicion] = i.getTitulo();
+
+            posicion++;
+        }
+    }
+
 }

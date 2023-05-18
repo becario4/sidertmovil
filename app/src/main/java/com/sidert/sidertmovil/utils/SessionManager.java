@@ -197,6 +197,25 @@ public class SessionManager extends JSONObject {
         return autorizacion;
     }
 
+    public void setSerieId(String serieId){
+        preferences = ctx.getSharedPreferences(APP_PREF,Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putString(SERIE_ID,serieId);
+        editor.commit();
+    }
+
+    public JSONArray getSerieId(){
+        JSONArray serieId = null;
+        try{
+            preferences = ctx.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+            serieId = new JSONArray(preferences.getString(SERIE_ID,null));
+        }catch(JSONException e){
+            e.printStackTrace();
+            serieId = new JSONArray();
+        }
+        return serieId;
+    }
+
 
     // =================== Filtros de Geolocalizacion ==============================================
     public void setFiltrosGeoPend (HashMap<String, String> filtros){

@@ -26,7 +26,7 @@ public interface CalculadoraApiService {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET("calcularPresupuesto?")
+    @GET(WebServicesRoutes.CONTROLLER_CALCULADORA)
     Call<Calculadora> setCalcularPresupuesto(@Query("idSucursal") Integer idSucursal,
                                                    @Query("idProducto") String idProducto,
                                                    @Query("tipoProducto") String tipoProducto,

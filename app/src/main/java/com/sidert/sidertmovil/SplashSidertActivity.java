@@ -52,6 +52,8 @@ import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class SplashSidertActivity extends AppCompatActivity {
 
+    /**  nunca renuncies a un sueño sólo por el tiempo que te llevará realizarlo. el tiempo pasará de todos modos */
+
     private Context ctx;
     DBhelper dBhelper;
     SQLiteDatabase db;
@@ -129,28 +131,22 @@ public class SplashSidertActivity extends AppCompatActivity {
                 {
                     session.setAddress(newMacAddress.toUpperCase());
                 }
-
             }
         } catch (Exception ex) {
             //handle exception
         }
-
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
-
-        session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-
-        //session.setDominio("http://192.168.3.180:", "8083");//LOCALHOST
-
-        //session.setDominio("http://192.168.0.135:", "8083");//LOCALHOST
-
-        //session.setDominio("http://187.188.168.167:", "8081"); //API - SERVIDOR PRODUCCIÓN - TEST - VIA LOCALHOST
-
+        //session.setDominio("http://192.168.100.104:","8083"); /** LOCALHOST - HOME  */
+        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
+        session.setDominio("http://192.168.3.141:", "8083");//LOCALHOST
+        //session.setDominio("http://192.168.3.118:", "8083"); //API - SERVIDOR PRODUCCIÓN - TEST - VIA LOCALHOST
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
 
         /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);
         /**Encontraron registros de login*/
+
         if (row.getCount() > 0){
             row.moveToFirst();
 

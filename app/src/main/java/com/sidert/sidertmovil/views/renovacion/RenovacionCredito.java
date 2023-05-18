@@ -326,6 +326,9 @@ public class RenovacionCredito extends AppCompatActivity {
                     i_renovacion.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i_renovacion);
                     dialog.dismiss();
+                    //Intent intel = new Intent(ctx,RenovarIntegrante.class);
+                    //intel.putExtra("id_solicitud", item.get(0));
+                    //startActivity(intel);
                     row.close();
                     break;
             }

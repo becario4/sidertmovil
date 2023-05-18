@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,7 +32,7 @@ public class dialog_generar_codigo_oxxo extends DialogFragment {
 
     private TextView tvNombre;
     private TextView tvFechaAmortiz;
-    private TextView tvMontoAmortiz;
+    private EditText tvMontoAmortiz;
 
     private Button btnGenerar;
 

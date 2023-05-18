@@ -34,6 +34,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -69,7 +70,9 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_cli;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_individual;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ApiResponse;
+import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
+import com.sidert.sidertmovil.models.MTracker;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
@@ -78,9 +81,12 @@ import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.BeneficiarioDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Conyugue;
@@ -101,6 +107,7 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Refere
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ReferenciaDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 import com.sidert.sidertmovil.utils.Constants;
@@ -132,13 +139,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.*;
@@ -148,6 +161,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
     private Context ctx;
     private Context context;
+
+    private String id_individual = " ";
 
     private Miscellaneous m;
 
@@ -177,6 +192,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
+    private MCarteraGnral mcar = new MCarteraGnral();
+
     private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
     private Calendar myCalendar;
 
@@ -191,8 +208,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private FloatingActionButton btnContinuar4;
     private FloatingActionButton btnContinuar5;
     private FloatingActionButton btnContinuar6;
-    //private FloatingActionButton btnContinuar7;
+    private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
+    private FloatingActionButton btnContinuarBeni;
 
     private FloatingActionButton btnRegresar1;
     private FloatingActionButton btnRegresar2;
@@ -200,10 +218,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private FloatingActionButton btnRegresar4;
     private FloatingActionButton btnRegresar5;
     private FloatingActionButton btnRegresar6;
-    //private FloatingActionButton btnRegresar7;
+    private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar9;
-
+    private FloatingActionButton btnRegresarBeni;
 
     //======== DATOS CRÉDITO  ==================
     private TextView tvPlazo;
@@ -280,6 +298,19 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageView ivFirmaCli;
     public byte[] byteFirmaCli;
     //=========================================
+
+    //========================================
+    //========== BENEFICIARIO ================
+
+    private LinearLayout llBeneficiario;
+    private LinearLayout llDatosBeneficiario;
+    private EditText txtNomBeneficiario;
+    private EditText txtApellidoPaternoBeneficiario;
+    private EditText txtApellidoMaternoBeneficiario;
+    private TextView txtParentescoBeneficiario;
+    Beneficiario beneficiario;
+    private Button btnRegistrar;
+
     //========== CONYUGE ======================
     private EditText etNombreCony;
     private EditText etApPaternoCony;
@@ -532,6 +563,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageView ivDown8;
     private ImageView ivDown9;
     private ImageView ivDown10;
+    private ImageView ivDownBeni;
 
     private ImageView ivUp1;
     private ImageView ivUp2;
@@ -543,6 +575,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageView ivUp8;
     private ImageView ivUp9;
     private ImageView ivUp10;
+    private ImageView ivUpBeni;
     //========================================
     //================= Image View ERROR  =====================
     private ImageView ivError1;
@@ -555,6 +588,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private ImageView ivError8;
     private ImageView ivError9;
     private ImageView ivError10;
+    private ImageView ivError11;
     //===================================================
     //===============  LINEAR LAYOUT  ====================
     private LinearLayout llDatosCredito;
@@ -602,6 +636,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     boolean isEditCre = true;
     boolean isEditCli = true;
     boolean isEditCon = true;
+    boolean isEditBen = true;
     boolean isEditEco = true;
     boolean isEditNeg = true;
     boolean isEditAva = true;
@@ -620,6 +655,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private final int MENU_INDEX_ENVIAR = 0;
     private boolean modoSuperUsuario = false;
 
+
+    //======================================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -635,8 +673,17 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         m = new Miscellaneous();
 
+
+
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
+
+        SessionManager sen = new SessionManager(ctx);
+
+        //PASAR ESTE MÉTODO AL DAO BENEFICIARIO
+        int serieA = BeneficiarioRenDao.obtenerSerieAsesor(ctx); //m.obtenerSerieAsesor(ctx);
+
+        Log.e("AQUI:", String.valueOf(serieA));
 
         _dias_semana = getResources().getStringArray(R.array.dias_semana);
 
@@ -740,6 +787,18 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvFirmaCli = findViewById(R.id.tvFirmaCli);
         ibFirmaCli = findViewById(R.id.ibFirmaCli);
         ivFirmaCli = findViewById(R.id.ivFirmaCli);
+
+        //==========================================================================================
+        //==================================  DATOS BENEFICIARIO  ==================================
+
+        llBeneficiario = findViewById(R.id.llBeneficiario);
+        llDatosBeneficiario = findViewById(R.id.llDatosBeneficiario);
+        txtNomBeneficiario = findViewById(R.id.txtNombreBeneficiario);
+        txtApellidoPaternoBeneficiario = findViewById(R.id.txtApellidoPaternoBeneficiario);
+        txtApellidoMaternoBeneficiario = findViewById(R.id.txtApellidoMaternoBeneficiario);
+        txtParentescoBeneficiario = findViewById(R.id.txtParentezcoBeneficiario);
+        //btnRegistrar = findViewById(R.id.btnRegistrar);
+
         //==========================================================================================
         //===================================  DATOS CONYUGE  ======================================
         etNombreCony = findViewById(R.id.etNombreCony);
@@ -1018,8 +1077,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         btnContinuar4 = findViewById(R.id.btnContinuar4);
         btnContinuar5 = findViewById(R.id.btnContinuar5);
         btnContinuar6 = findViewById(R.id.btnContinuar6);
-        //btnContinuar7 = findViewById(R.id.btnContinuar7);
+        btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
+        btnContinuarBeni = findViewById(R.id.btnContinuarBeni);
 
         btnRegresar1 = findViewById(R.id.btnRegresar1);
         btnRegresar2 = findViewById(R.id.btnRegresar2);
@@ -1027,9 +1087,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         btnRegresar4 = findViewById(R.id.btnRegresar4);
         btnRegresar5 = findViewById(R.id.btnRegresar5);
         btnRegresar6 = findViewById(R.id.btnRegresar6);
-        //btnRegresar7 = findViewById(R.id.btnRegresar7);
+        btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar9 = findViewById(R.id.btnRegresar9);
+        btnRegresarBeni = findViewById(R.id.btnRegresarBeni);
         //==========================================================================================
         //============================ IMAGE VIEW UP|DOWN  =========================================
         ivDown1 = findViewById(R.id.ivDown1);
@@ -1042,6 +1103,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivDown8 = findViewById(R.id.ivDown8);
         ivDown9 = findViewById(R.id.ivDown9);
         ivDown10 = findViewById(R.id.ivDown10);
+        ivDownBeni = findViewById(R.id.ivDownBeni);
+
 
         ivUp1 = findViewById(R.id.ivUp1);
         ivUp2 = findViewById(R.id.ivUp2);
@@ -1053,6 +1116,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivUp8 = findViewById(R.id.ivUp8);
         ivUp9 = findViewById(R.id.ivUp9);
         ivUp10 = findViewById(R.id.ivUp10);
+        ivUpBeni = findViewById(R.id.ivUpBeni);
+
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
@@ -1062,9 +1127,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivError5 = findViewById(R.id.ivError5);
         ivError6 = findViewById(R.id.ivError6);
         ivError7 = findViewById(R.id.ivError7);
-        //ivError8 = findViewById(R.id.ivError8);
+        ivError8 = findViewById(R.id.ivError8);
         ivError9 = findViewById(R.id.ivError9);
         ivError10 = findViewById(R.id.ivError10);
+        ivError11 = findViewById(R.id.ivError11);
         //=========================================================
 
         if (getIntent().getBooleanExtra("is_new", true)) {
@@ -1092,6 +1158,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         btnContinuar6.setOnClickListener(btnContinuar6_OnClick);
         //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
+        btnContinuarBeni.setOnClickListener(btnContinuarBeni_OnClick);
 
         btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
         btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
@@ -1102,6 +1169,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar9.setOnClickListener(btnRegresar9_OnClick);
+        btnRegresarBeni.setOnClickListener(btnRegresarBeni_OnClick);
 
         dialog.dismiss();
         //================================  CREDITO LISTENER =======================================
@@ -1835,6 +1903,91 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         });
         ibFotoFachCli.setOnClickListener(ibFotoFachCli_OnClick);
         ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
+
+        //============== BENEFICIARIO ================================
+
+        llBeneficiario.setOnClickListener(llBeneficiario_OnClik);
+        llDatosBeneficiario.setOnClickListener(llDatosBeneficiario_OnClick);
+        txtParentescoBeneficiario.setOnClickListener(parentescoBeneficiario_OnClik);
+        txtNomBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0) {
+                    Update("nombre", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                } else
+                    Update("nombre", TBL_DATOS_BENEFICIARIO, "");
+            }
+        });
+        txtApellidoPaternoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0) {
+                    Update("paterno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                } else
+                    Update("paterno", TBL_DATOS_BENEFICIARIO, "");
+            }
+        });
+        txtApellidoMaternoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0) {
+                    Update("materno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+
+                } else
+                    Update("materno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+            }
+        });
+        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0) {
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                } else
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO, " ");
+            }
+        });
+
         //==================================  CONYUGE LISTENER  ====================================
         etNombreCony.addTextChangedListener(new TextWatcher() {
             @Override
@@ -4785,8 +4938,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         ivIneFrontalAval.setOnClickListener(ivIneFrontalAval_OnClik);
         ivIneReversoAval.setOnClickListener(ivIneReversoAval_OnClick);
         ivCurpAval.setOnClickListener(ivCurpAval_OnClick);
-        ;
         ivComprobanteAval.setOnClickListener(ivComprobanteAval_OnClick);
+        //sendBeneficiarioOrininacionInd();
+
+       /* Log.e("EVENTO", "AGREGANDO EVENTO AL BUTTON DE REGISTRO EN BENEFICIARIO");
+        btnRegistrar.setOnClickListener((View view) -> {
+            Log.e("AQUI", "TOUCH BUTTON");
+            enviarBeneficiario(id_solicitud);
+        });*/
+
+
     }
 
     private View.OnClickListener ibFirmaAsesor_OnClick = new View.OnClickListener() {
@@ -5768,6 +5929,45 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 Update("ubicado_en_dom_cli", TBL_NEGOCIO_IND, "NO");
                 LimpiarDatosNegocio();
             }
+        }
+    };
+
+    //============================  BENEFICIARIO  ================================================
+    private View.OnClickListener llDatosBeneficiario_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.e("AQUI", "DESPELGAR BENEFICIARIO");
+            //llDatosBeneficiario.setVisibility(View.VISIBLE);
+/*
+            btnRegistrar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ///sendBeneficiarioOrininacionInd();
+                    //dialog_sending_solicitud_individual dia = new dialog_sending_solicitud_individual();
+
+                    enviarBeneficiario(id_solicitud);
+
+                    Log.e("AQUI", "TOUCH BUTTON");
+                }
+            });
+*/
+        }
+    };
+
+    private View.OnClickListener parentescoBeneficiario_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(R.string.selected_option)
+                    .setItems(_parentesco, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int position) {
+                            txtParentescoBeneficiario.setError(null);
+                            txtParentescoBeneficiario.setText(_parentesco[position]);
+                        }
+                    });
+            builder.create();
+            builder.show();
         }
     };
 
@@ -6996,6 +7196,22 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     };
 
+    private View.OnClickListener llBeneficiario_OnClik = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (ivDownBeni.getVisibility() == View.VISIBLE && ivUpBeni.getVisibility() == View.GONE) {
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                txtNomBeneficiario.requestFocus();
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+            } else if (ivDownBeni.getVisibility() == View.GONE && ivUpBeni.getVisibility() == View.VISIBLE) {
+                ivDownBeni.setVisibility(View.VISIBLE);
+                ivUpBeni.setVisibility(View.GONE);
+                llDatosBeneficiario.setVisibility(View.GONE);
+            }
+        }
+    };
+
     private View.OnClickListener llCroquis_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7079,10 +7295,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     ivUp4.setVisibility(View.VISIBLE);
                     llDatosEconomicos.setVisibility(View.VISIBLE);
                 } else {
-                    etNombreNeg.requestFocus();
-                    ivDown5.setVisibility(View.GONE);
-                    ivUp5.setVisibility(View.VISIBLE);
-                    llDatosNegocio.setVisibility(View.VISIBLE);
+                    ivDownBeni.setVisibility(View.GONE);
+                    ivUpBeni.setVisibility(View.VISIBLE);
+                    llDatosBeneficiario.setVisibility(View.VISIBLE);
+                    txtNomBeneficiario.requestFocus();
                 }
             }
 
@@ -7091,6 +7307,20 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             llDatosPersonales.setVisibility(View.GONE);
 
 
+        }
+    };
+    private View.OnClickListener btnContinuarBeni_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            etNombreNeg.requestFocus();
+            ivDown5.setVisibility(View.GONE);
+            ivUp5.setVisibility(View.VISIBLE);
+            llDatosNegocio.setVisibility(View.VISIBLE);
+
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivUpBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
         }
     };
     private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
@@ -7103,10 +7333,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
             } else {
-                ivDown5.setVisibility(View.GONE);
-                ivUp5.setVisibility(View.VISIBLE);
-                llDatosNegocio.setVisibility(View.VISIBLE);
-                etNombreNeg.requestFocus();
+                //ivDown5.setVisibility(View.GONE);
+                //ivUp5.setVisibility(View.VISIBLE);
+                //llDatosNegocio.setVisibility(View.VISIBLE);
+                //etNombreNeg.requestFocus();
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+                txtNomBeneficiario.requestFocus();
             }
             ivDown3.setVisibility(View.VISIBLE);
             ivUp3.setVisibility(View.GONE);
@@ -7116,10 +7350,14 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private View.OnClickListener btnContinuar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown5.setVisibility(View.GONE);
-            ivUp5.setVisibility(View.VISIBLE);
-            llDatosNegocio.setVisibility(View.VISIBLE);
-            etNombreNeg.requestFocus();
+            //ivDown5.setVisibility(View.GONE);
+            //ivUp5.setVisibility(View.VISIBLE);
+            //llDatosNegocio.setVisibility(View.VISIBLE);
+            //etNombreNeg.requestFocus();
+            ivDownBeni.setVisibility(View.GONE);
+            ivUpBeni.setVisibility(View.VISIBLE);
+            llDatosBeneficiario.setVisibility(View.VISIBLE);
+            txtNomBeneficiario.requestFocus();
 
             ivDown4.setVisibility(View.VISIBLE);
             ivUp4.setVisibility(View.GONE);
@@ -7192,6 +7430,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     };
 
+
     //Regresar
     private View.OnClickListener btnRegresar1_OnClick = new View.OnClickListener() {
         @Override
@@ -7203,6 +7442,20 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             ivDown2.setVisibility(View.VISIBLE);
             ivUp2.setVisibility(View.GONE);
             llDatosPersonales.setVisibility(View.GONE);
+        }
+    };
+
+    private View.OnClickListener btnRegresarBeni_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ivDown2.setVisibility(View.GONE);
+            ivUp2.setVisibility(View.VISIBLE);
+            llDatosPersonales.setVisibility(View.VISIBLE);
+
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivUpBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+
         }
     };
     private View.OnClickListener btnRegresar2_OnClick = new View.OnClickListener() {
@@ -7228,7 +7481,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 llDatosConyuge.setVisibility(View.VISIBLE);
                 etNombreCony.requestFocus();
             } else {
-                ivDown2.setVisibility(View.GONE);
+                llPersonales.setVisibility(View.GONE);
                 ivUp2.setVisibility(View.VISIBLE);
                 llDatosPersonales.setVisibility(View.VISIBLE);
                 etNombreCli.requestFocus();
@@ -7256,10 +7509,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     llDatosConyuge.setVisibility(View.VISIBLE);
                     etNombreCony.requestFocus();
                 } else {
-                    ivDown2.setVisibility(View.GONE);
-                    ivUp2.setVisibility(View.VISIBLE);
-                    llDatosPersonales.setVisibility(View.VISIBLE);
-                    etNombreCli.requestFocus();
+                    ivDownBeni.setVisibility(View.GONE);
+                    ivUpBeni.setVisibility(View.VISIBLE);
+                    llDatosBeneficiario.setVisibility(View.VISIBLE);
+                    txtNomBeneficiario.requestFocus();
                 }
             }
             ivDown5.setVisibility(View.VISIBLE);
@@ -7337,6 +7590,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     };
 
+
     private View.OnClickListener tvHoraVisita_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7383,9 +7637,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCurpCli.setText(m.GenerarCurp(params));
                         Update("estado_nacimiento", TBL_CLIENTE_IND, m.GetStr(tvEstadoNacCli));
                     }
-                }else{
+                } else {
                     tvEstadoNacCli.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CLIE:
@@ -7402,9 +7656,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Update("ocupacion", TBL_CLIENTE_IND, m.GetStr(tvOcupacionCli));
                         Update("actividad_economica", TBL_CLIENTE_IND, m.GetStr(tvActividadEcoCli));
                     }
-                }else{
+                } else {
                     tvOcupacionCli.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_NEG:
@@ -7421,9 +7675,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         Update("ocupacion", TBL_NEGOCIO_IND, m.GetStr(tvActEcoEspNeg));
                         Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
-                }else{
+                } else {
                     tvActEcoEspNeg.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_CONY:
@@ -7433,9 +7687,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvOcupacionCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         Update("ocupacion", TBL_CONYUGE_IND, m.GetStr(tvOcupacionCony));
                     }
-                }else{
+                } else {
                     tvOcupacionCony.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_ACTIVIDAD_NEG:
@@ -7445,9 +7699,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvActEconomicaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         Update("actividad_economica", TBL_NEGOCIO_IND, m.GetStr(tvActEconomicaNeg));
                     }
-                }else{
+                } else {
                     tvActEconomicaNeg.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_ESTADO_NAC_AVAL:
@@ -7476,9 +7730,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         etCurpAval.setText(m.GenerarCurp(params));
                         Update("estado_nacimiento", TBL_AVAL_IND, m.GetStr(tvEstadoNacAval));
                     }
-                }else{
+                } else {
                     tvEstadoNacAval.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_OCUPACION_AVAL:
@@ -7496,9 +7750,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         }
                         row.close();
                     }
-                }else{
+                } else {
                     tvOcupacionAval.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CLIE:
@@ -7508,9 +7762,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCli), direccionIdCli, "CLIENTE");
                     }
-                }else{
+                } else {
                     tvColoniaCli.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:
@@ -7520,9 +7774,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadCli.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCli), direccionIdCli, "CLIENTE");
                     }
-                }else{
+                } else {
                     tvLocalidadCli.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CONY:
@@ -7532,9 +7786,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadCony), direccionIdCony, "CONYUGE");
                     }
-                }else{
+                } else {
                     tvLocalidadCony.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_NEG:
@@ -7544,9 +7798,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadNeg), direccionIdNeg, "NEGOCIO");
                     }
-                }else{
+                } else {
                     tvLocalidadNeg.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_AVAL:
@@ -7556,9 +7810,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadAval), direccionIdAval, "AVAL");
                     }
-                }else{
+                } else {
                     tvLocalidadAval.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_REF:
@@ -7568,9 +7822,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvLocalidadRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("localidad", m.GetStr(tvLocalidadRef), direccionIdRef, "REFERENCIA");
                     }
-                }else{
+                } else {
                     tvLocalidadRef.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_CONY:
@@ -7580,9 +7834,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaCony.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaCony), direccionIdCony, "CONYUGE");
                     }
-                }else{
+                } else {
                     tvColoniaCony.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_AVAL:
@@ -7591,9 +7845,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaAval.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaAval), direccionIdAval, "AVAL");
                     }
-                }else{
+                } else {
                     tvColoniaAval.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_NEG:
@@ -7603,9 +7857,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaNeg.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaNeg), direccionIdNeg, "NEGOCIO");
                     }
-                }else{
+                } else {
                     tvColoniaNeg.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_COLONIA_REF:
@@ -7615,9 +7869,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         tvColoniaRef.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
                         UpdateDireccion("colonia", m.GetStr(tvColoniaRef), direccionIdRef, "REFERENCIA");
                     }
-                }else{
+                } else {
                     tvColoniaRef.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_CLI:
@@ -7634,9 +7888,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFachadaCli.setError(" ");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_NEG:
@@ -7653,9 +7907,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFachadaNeg.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_CAMARA_FACHADA_AVAL:
@@ -7672,9 +7926,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFachadaAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_AVAL:
@@ -7696,9 +7950,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFirmaAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_CLI:
@@ -7721,9 +7975,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFirmaCli.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FIRMA_ASESOR:
@@ -7742,9 +7996,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvFirmaAsesor.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_SELFIE:
@@ -7761,9 +8015,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvIneSelfie.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL:
@@ -7783,9 +8037,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvIneSelfie.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"CAMPO REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "CAMPO REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO:
@@ -7805,9 +8059,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvIneReverso.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP:
@@ -7824,9 +8078,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvCurp.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE:
@@ -7843,9 +8097,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvComprobante.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBATE_GARANTIA:
@@ -7862,9 +8116,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvComprobanteGarantia.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_FRONTAL_AVAL:
@@ -7884,9 +8138,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvIneFrontalAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_INE_REVERSO_AVAL:
@@ -7906,9 +8160,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvIneReversoAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_CURP_AVAL:
@@ -7925,9 +8179,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvCurpAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_FOTO_COMPROBANTE_AVAL:
@@ -7944,9 +8198,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                             e.printStackTrace();
                         }
                     }
-                }else{
+                } else {
                     tvComprobanteAval.setError("CAMPO REQUERIDO");
-                    Toast.makeText(ctx,"ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -8397,6 +8651,68 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         return save_cliente;
     }
 
+    private boolean saveBeneficiario(){
+
+        ContentValues cv = new ContentValues();
+        
+        int grupo_id = 1;
+
+        int id_cliente = BeneficiarioDao.obtenerClienteInd(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        boolean estatus = BeneficiarioDao.validarBeneficiarioInd(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        int serieIdA = BeneficiarioDao.obtenerSerieAsesor(ctx);//m.obtenerSerieAsesor(ctx);
+
+        int id_originacion = BeneficiarioDao.obtenerIdOriginacion(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        boolean save_beneficiario = false;
+
+
+        if(!validator.validate(txtNomBeneficiario, new String[]{validator.REQUIRED})){
+            if(!validator.validate(txtApellidoPaternoBeneficiario,new String[]{validator.ONLY_TEXT})){
+                if(!validator.validate(txtApellidoMaternoBeneficiario,new String[]{validator.ONLY_TEXT})){
+                        if(!validatorTV.validate(txtParentescoBeneficiario,new String[]{validatorTV.REQUIRED})) {
+
+                                cv.put("id_solicitud", id_solicitud);
+                                cv.put("id_originacion",id_originacion);
+                                cv.put("id_cliente", id_cliente);
+                                cv.put("id_grupo",grupo_id);
+                                cv.put("nombre", m.GetStr(txtNomBeneficiario));
+                                cv.put("paterno", m.GetStr(txtApellidoPaternoBeneficiario));
+                                cv.put("materno", m.GetStr(txtApellidoMaternoBeneficiario));
+                                cv.put("parentesco", m.GetStr(txtParentescoBeneficiario));
+                                cv.put("serieid", serieIdA);
+                                
+                                if(!estatus){
+                                    db.insert(TBL_DATOS_BENEFICIARIO, null, cv);
+                                }
+                                
+                                if(estatus){
+                                    db.update(TBL_DATOS_BENEFICIARIO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                                }
+
+                            save_beneficiario = true;
+                        }else{
+                        ivError11.setVisibility(View.VISIBLE);
+                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                        showError(txtParentescoBeneficiario, "CAMPO REQUERIDO");
+                    }
+                }else{
+                    ivError11.setVisibility(View.VISIBLE);
+                    txtApellidoPaternoBeneficiario.setError("CAMPO REQUERIDO");
+                    showError(txtApellidoMaternoBeneficiario, "CAMPO REQUERIDO");
+                }
+            }else{
+                ivError11.setVisibility(View.VISIBLE);
+                showError(txtApellidoPaternoBeneficiario, "CAMPO REQUERIDO");
+            }
+        }else{
+            ivError11.setVisibility(View.VISIBLE);
+            showError(txtNomBeneficiario, "CAMPO REQUERIDO");
+        }
+        return save_beneficiario;
+    }
+
     private boolean saveConyuge() {
         boolean save_conyuge = false;
         if (!validator.validate(etNombreCony, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
@@ -8469,7 +8785,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         return save_conyuge;
     }
-
+    
     private boolean saveDatosEconomicos() {
         boolean save_economicos = false;
         if (!validator.validate(etPropiedadesEco, new String[]{validator.REQUIRED}) &&
@@ -9679,6 +9995,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             case android.R.id.home:
                 break;
             case R.id.devmode:
+                //senDataBeneficiario(id_solicitud);
                 enviarJSONObjects();
                 break;
             case R.id.desbloquear:
@@ -9691,7 +10008,9 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 obtenerEstatusSolicitud();
                 break;
             case R.id.enviar:
+                //senDataBeneficiario(id_solicitud);
                 sendSolicitud();
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -9719,6 +10038,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             solicitud.show();
         } else
             finish();
+        saveBeneficiario();
     }
 
     private void openRegistroCliente() {
@@ -9944,6 +10264,26 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etCelularCony.setText(row.getString(11));
 
         row.close(); //Cierra datos del conyuge
+
+        //llenando de datos beneficiario
+
+        //=============================================DATOS DEL BENEFICIARIO==============================================\\
+
+        row  = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO, " WHERE id_solicitud = ?", " ", new String[]{idSolicitud});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+
+            txtNomBeneficiario.setText(row.getString(5).trim().toUpperCase());
+            txtApellidoPaternoBeneficiario.setText(row.getString(6).trim().toUpperCase());
+            txtApellidoMaternoBeneficiario.setText(row.getString(7).trim().toUpperCase());
+            txtParentescoBeneficiario.setText(row.getString(8).trim().toUpperCase());
+
+            row.close();
+        }else
+            Toast.makeText(ctx,"NO HAY DATOS EN LA BASE",Toast.LENGTH_SHORT).show();
+
+        //==================================================================================================
 
         //Llenado de datos economicos
         row = dBhelper.getRecords(TBL_ECONOMICOS_IND, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
@@ -10569,6 +10909,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etCasaCony.setEnabled(true);
         etCelularCony.setEnabled(true);
 
+        txtNomBeneficiario.setEnabled(true);
+        txtApellidoPaternoBeneficiario.setEnabled(true);
+        txtApellidoMaternoBeneficiario.setEnabled(true);
+        txtParentescoBeneficiario.setEnabled(true);
+
         etPropiedadesEco.setEnabled(true);
         etValorAproxEco.setEnabled(true);
         etUbicacionEco.setEnabled(true);
@@ -10727,6 +11072,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etGastoMenCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+
+        txtNomBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtApellidoPaternoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtApellidoMaternoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtParentescoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
 
         etPropiedadesEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etValorAproxEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
@@ -10910,6 +11260,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etValorAproxEco.setEnabled(isEditEco);
         etUbicacionEco.setEnabled(isEditEco);
 
+        txtNomBeneficiario.setEnabled(false);
+        txtApellidoPaternoBeneficiario.setEnabled(false);
+        txtApellidoMaternoBeneficiario.setEnabled(false);
+        txtParentescoBeneficiario.setEnabled(false);
+
         etNombreNeg.setEnabled(isEditNeg);
         etCalleNeg.setEnabled(isEditNeg);
         etNoExtNeg.setEnabled(isEditNeg);
@@ -11061,6 +11416,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         } else
             ivError3.setVisibility(View.VISIBLE);
+
+        txtNomBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtApellidoPaternoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtApellidoMaternoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtParentescoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
 
         if (!isEditEco) {
             etPropiedadesEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -11367,10 +11727,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     }
 
-    private void enviarJSONRequest() {
-
-    }
-
     private void sendSolicitud()
     {
         if(esSolicitudValida())
@@ -11415,6 +11771,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             dialogSendSI.setArguments(b);
             dialogSendSI.setCancelable(false);
             dialogSendSI.show(getSupportFragmentManager(), NameFragments.DIALOGSENDINGSOLICITUDINDIVIDUAL);
+            //dialogSendSI.enviarBeneficiario(id_solicitud);
         }
     }
 
@@ -11422,10 +11779,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     {
         boolean flag = false;
 
-        boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
+        boolean credito, cliente, conyuge, beneficiario, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
         credito = saveDatosCredito();
         croquis = saveCroquis();
         cliente = saveDatosPersonales();
+        beneficiario = saveBeneficiario(); //AGREGAR DETALLES FINALES EN EL FORMULARIO - FLAG IN FALSE
 
         if (!croquis || !cliente) {
             ivError2.setVisibility(View.VISIBLE);
@@ -11448,7 +11806,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         politicas = savePoliticas();
         documentacion = saveDocumentacion();
 
-        if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
+        if (credito && cliente && beneficiario && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
             flag = true;
         }
         else {
@@ -11702,4 +12060,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         });
 
     }
+
+
 }

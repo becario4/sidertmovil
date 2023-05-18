@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import android.view.WindowInsets;
 
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.utils.Constants;
@@ -167,6 +168,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES);
 
+        /** TABLA PARA TESTEAR LOS DATOS DE UN BENEFICIARIO*/
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO);
+
+
         Log.v("CreacionTablas", "se crearon tablas");
     }
 
@@ -296,13 +301,19 @@ public class DBhelper extends SQLiteOpenHelper {
         try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS); }
         catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TBL_SERVICIOS_SINCRONIZADOS"); }
 
+        /** TABLA PARA TESTEAR LOS DATOS DE UN BENEFICIARIO*/
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO);}
+        catch (Exception e) {Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIO");}
+
+        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIOS_GPO);}
+        catch (Exception e){ Log.e("Tablas","Catch tabla CREATE_TBL_DATOS_BENEFICIARIOS_GPO"); }
 
 
-
-
+        /** **************************************************************************************************** **/
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION); }
         catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
+
 
         try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_T); }
         catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
@@ -3946,10 +3957,152 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public void saveBeneficiario(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS + " ( " +
+                " id_solicitud, " +
+                " cliente_id, " +
+                " grupo_id, " +
+                " nombre, " +
+                " paterno, " +
+                " materno, " +
+                " parentesco, " +
+                " serieid) " +
+                " VALUES (?, ?, ? , ?, ?, ?, ?, ?) ";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1,params.get(1));
+        pInsert.bindString(2,params.get(2));
+        pInsert.bindString(3,params.get(3));
+        pInsert.bindString(4,params.get(4));
+        pInsert.bindString(5,params.get(5));
+        pInsert.bindString(6,params.get(6));
+        pInsert.bindString(7,params.get(7));
+        pInsert.bindString(8, params.get(8));
+
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+    public void updateDatosBeneficiario(SQLiteDatabase db, HashMap<Integer,String> params){
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO + " ( " +
+                " id_solicitud_integrante," +
+                " id_cliente ) " +
+                " VALUES ( ?, ?)";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(1));
+        pInsert.bindString(2, params.get(2));
+
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void updateBeneficiario(SQLiteDatabase db, HashMap<Integer, String> params){
+        db.beginTransaction();
+
+        String sql = " UPDATE " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO  +
+                " SET " +
+                " id_solicitud=?, " +
+                " id_solicitud_integrante=?, " +
+                " cliente_id=?, " +
+                " grupo_id=?, " +
+                " nombre=?, " +
+                " paterno=?, " +
+                " materno=?, " +
+                " parentesco=?, " +
+                " serieid=? " +
+                " where cliente_id = ? "
+                ;
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(1));
+        pInsert.bindString(2,params.get(2));
+        pInsert.bindString(3,params.get(3));
+        pInsert.bindString(4,params.get(4));
+        pInsert.bindString(5,params.get(5));
+        pInsert.bindString(6,params.get(6));
+        pInsert.bindString(7,params.get(7));
+        pInsert.bindString(8,params.get(8));
+        pInsert.bindString(9,params.get(9));
+
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+
+    public void saveBeneficiarioRenGpo(SQLiteDatabase db, HashMap<Integer,String> params){
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO + " ( " +
+                " id_solicitud, " +
+                " id_solicitud_integrante, " +
+                " cliente_id, " +
+                " grupo_id, " +
+                " nombre, " +
+                " materno, " +
+                " paterno, " +
+                " parentesco, " +
+                " serieid)" +
+                " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(1));
+        pInsert.bindString(2,params.get(2));
+        pInsert.bindString(3,params.get(3));
+        pInsert.bindString(4,params.get(4));
+        pInsert.bindString(5,params.get(5));
+        pInsert.bindString(6,params.get(6));
+        pInsert.bindString(7,params.get(7));
+        pInsert.bindString(8,params.get(8));
+        pInsert.bindString(9,params.get(9));
+
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     public Cursor getRecords(String table, String where, String order, String[] args){
         SQLiteDatabase db = this.getReadableDatabase();
         Log.v("SQL", "SELECT * FROM " + table + where + order);
         Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
+        return res;
+    }
+
+    public Cursor getBeneficiario(String table, String id_solicitud, String id_cliente){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud="+id_solicitud + " AND id_cliente="+id_cliente  + " order by nombre asc ",null);
+        return res;
+    }
+
+    public Cursor getBeneficiarioInd(String table, int id_solicitud, int id_originacion){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM  " + table + " WHERE id_solicitud="+id_solicitud + " AND id_originacion="+id_originacion + " order by nombre asc ", null);
+        return  res;
+    }
+
+
+    public Cursor getBeneficiarioInd(String table, String id_solicitud){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery( " SELECT * FROM " + table + " WHERE id_solicitud="+id_solicitud,null);
+        return res;
+    }
+
+    /** METODO DECREPETED */
+    public Cursor getBeneficiarioGpo(String table, String id_solicitud, String cliente_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud=" + id_solicitud + " AND cliente_id=" + cliente_id,null);
         return res;
     }
 
@@ -4013,4 +4166,50 @@ public class DBhelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(" SELECT " + select + " FROM " +  tableA +  where, args);
         return res;
     }
+
+    public Cursor deleteData(String tableA,String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" DELETE FROM " + tableA,args);
+        return res;
+    }
+
+    public Cursor validarEstatus(String table, String columna,String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + table + " WHERE " + columna, args);
+        return res;
+    }
+
+    public Cursor validarBeneficiario(String table,String where, String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + table + " WHERE " + where, args);
+        return res;
+    }
+
+  /*  public Cursor validarBeneficairioGPO(String id_integrante, String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + " tbl_datos_beneficiario_gpo " + " WHERE id_integrante="+id_integrante,args);
+        return res;
+    }*/
+
+   /* public Cursor simpleSelect(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String serie_id = "serie_id", tabla = "tbl_tracker_asesor_t";
+        Cursor res = db.rawQuery(" SELECT " + serie_id + " FROM " + tabla  + " WHERE _id = 1",null);
+        return res;
+    }*/
+
+
+  /*  public Cursor obtenerIdGrupal(Long id_solicitud, String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" select grupo_id " + " from tbl_credito_gpo_ren"  + " WHERE id_solicitud = " + id_solicitud, args);
+        return res;
+    }*/
+
+    /*public Cursor obtenerIdCliente(Integer id_integrante,String args[]){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery(" SELECT cliente_id " + " FROM  tbl_integrantes_gpo_ren " + " WHERE  id="+id_integrante,args );
+        return  res;
+    }*/
+
+
 }

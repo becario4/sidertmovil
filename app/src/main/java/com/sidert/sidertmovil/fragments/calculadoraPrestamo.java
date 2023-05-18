@@ -1,5 +1,7 @@
 package com.sidert.sidertmovil.fragments;
 
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOPORTE;
 import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
 
 import android.annotation.SuppressLint;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 import com.google.gson.JsonArray;
 import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.funCalculadora;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.Calculadora;
@@ -621,9 +624,7 @@ public class calculadoraPrestamo extends Fragment {
         }
 
         public void ServicioWebCalculos(int idSucursal, String idProducto, String tipoCliente, String monto, int plazo, int periodo) {
-           String base_url = "http://sidert.ddns.net:83/api/movil/";
-           //String base_url = "http://187.188.168.167:83/api/movil";
-            //String base_url = "http://192.168.3.180:8083/api/movil/";
+           /*String base_url = "http://sidert.ddns.net:83/api/movil/";
 
             final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     .connectTimeout(120, TimeUnit.SECONDS)
@@ -636,9 +637,9 @@ public class calculadoraPrestamo extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .baseUrl(base_url)
                     .client(okHttpClient)
-                    .build();
+                    .build();*/
 
-            CalculadoraApiService api = retrofit.create(CalculadoraApiService.class);
+            CalculadoraApiService api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(CalculadoraApiService.class);
             //"Bearer "+ session.getUser().get(7)
             Call<Calculadora> call = api.setCalcularPresupuesto(idSucursal, idProducto, tipoCliente, monto, plazo, periodo);
             call.enqueue(new Callback<Calculadora>() {

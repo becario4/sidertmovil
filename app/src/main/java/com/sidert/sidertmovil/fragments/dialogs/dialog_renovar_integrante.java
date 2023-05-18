@@ -124,8 +124,6 @@ public class dialog_renovar_integrante extends DialogFragment {
 
         }
 
-
-
         tvCargo.setOnClickListener(tvCargo_OnClick);
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
         btnCancelar.setOnClickListener(btnCancelar_OnClick);

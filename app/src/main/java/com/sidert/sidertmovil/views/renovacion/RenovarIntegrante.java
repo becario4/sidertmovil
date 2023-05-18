@@ -34,6 +34,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -67,19 +68,49 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_renovar_integrante;
+import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_grupal;
+import com.sidert.sidertmovil.models.MRenovacionGrupal;
+import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
+import com.sidert.sidertmovil.models.solicitudes.Solicitud;
+import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.ConyugueIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.ConyugueIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CroquisIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.CroquisIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.DocumentoIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.DocumentoIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.DomicilioIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.DomicilioIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpo;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.IntegranteGpoDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.NegocioIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.NegocioIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.OtrosDatosIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.OtrosDatosIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.PoliticaPldIntegrante;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.PoliticaPldIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenGPO;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.IntegranteGpoRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.RetrofitClient;
+import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
+import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -102,7 +133,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO;
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.CALLE;
 import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
@@ -131,6 +168,8 @@ import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
@@ -150,6 +189,8 @@ import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 
+import org.json.JSONObject;
+
 /**Clase del formulario de integrantes para renovacion grupal*/
 public class RenovarIntegrante extends AppCompatActivity implements dialog_renovar_integrante.OnCompleteListener {
 
@@ -161,7 +202,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private Validator validator = new Validator();
     private ValidatorTextView validatorTV = new ValidatorTextView();
 
+    private Miscellaneous m;
+
     private boolean is_edit = true;
+    
+    RenovacionCreditoGpo gpo = new RenovacionCreditoGpo();
+
+    private long id_solicitud = 0;
 
     private String[] _estudios;
     private String[] _tipo_identificacion;
@@ -302,6 +349,18 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private EditText etGastoCony;
     private EditText etCasaCony;
     private EditText etCelularCony;
+
+    //=========================================================================
+    //===================  DATOS BENEFICIARIO  ================================
+
+    private LinearLayout llBeneficiario;
+    private LinearLayout llDatosBeneficiario;
+    private EditText txtNombreBeneficiario;
+    private EditText txtApellidoPaterno;
+    private EditText txtApellidoMaterno;
+    private TextView txtParentescoBeneficiario;
+    Beneficiario beneficiario = new Beneficiario();
+
     //=========================================================================
     //===================  OTROS DATOS  =======================================
     private TextView tvRiesgo;
@@ -384,7 +443,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private LinearLayout llPoliticas;
     private LinearLayout llDocumentos;
 
-
     private LinearLayout llDatosPersonales;
     //private LinearLayout llDatosTelefonicos;
     //private LinearLayout llDatosDomicilio;
@@ -405,6 +463,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     //private ImageView ivError7;
     private ImageView ivError8;
     private ImageView ivError9;
+    private ImageView ivError10;
     //===================================================
     //===================  IMAGE VIEW  ========================================
     private ImageView ivDown1;
@@ -416,6 +475,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     //private ImageView ivDown7;
     private ImageView ivDown8;
     private ImageView ivDown9;
+    private ImageView ivDownBeni;
 
     private ImageView ivUp1;
     private ImageView ivUp2;
@@ -426,6 +486,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     //private ImageView ivUp7;
     private ImageView ivUp8;
     private ImageView ivUp9;
+    private ImageView ivUpBeni;
     //=========================================================================
 
     private FloatingActionButton btnContinuar0;
@@ -436,6 +497,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     //private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
     private FloatingActionButton btnContinuar5;
+    private FloatingActionButton btnContinuar6;
+
 
     private FloatingActionButton btnRegresar0;
     //private FloatingActionButton btnRegresar1;
@@ -446,14 +509,21 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     //private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar6;
+    private FloatingActionButton btnRegresar7;
+
+    private Button btnForzarEnvio;
+
 
     private LocationManager locationManager;
     private MyCurrentListener locationListener;
     private GoogleMap mMapCli;
     private GoogleMap mMapNeg;
+    private BeneficiarioRenGPO renGpo = new BeneficiarioRenGPO();
 
     private String id_credito = "";
     private String id_integrante = "";
+    private int id_solicitud_integrante = 0;
+    private String cliente_id = " ";
 
     private ArrayList<Integer> selectedItemsMediosPago;
 
@@ -469,13 +539,15 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
     boolean pushMapButtonCli = false;
     boolean pushMapButtonNeg = false;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_renovar_integrante);
 
         myCalendar = Calendar.getInstance();
+
+        //obtenerDatosBeneficiario();
 
         ctx = this;
         dBhelper = new DBhelper(ctx);
@@ -496,6 +568,9 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
         Toolbar TBmain = findViewById(R.id.TBmain);
         setSupportActionBar(TBmain);
+
+        //btnForzarEnvio = findViewById(R.id.btn_forzarEnvio);
+
         //=================================  DATOS PERSONALES  =====================================
         llComentCli         = findViewById(R.id.llComentCli);
         tvComentAdminCli    = findViewById(R.id.tvComentAdminCli);
@@ -623,6 +698,17 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etCelularCony       = findViewById(R.id.etCelularCony);
 
         //==========================================================================================
+        //===================================  DATOS BENEFICIARIO  =================================
+
+        llDatosBeneficiario       = findViewById(R.id.llDatosBeneficiario);
+        txtNombreBeneficiario     = findViewById(R.id.txtNombreBeneficiario);
+        txtApellidoPaterno        = findViewById(R.id.txtApellidoPaternoBeneficiario);
+        txtApellidoMaterno        = findViewById(R.id.txtApellidoMaternoBeneficiario);
+        txtParentescoBeneficiario = findViewById(R.id.txtParentezcoBeneficiario);
+
+        txtParentescoBeneficiario.setOnClickListener(txtBeneficiario_OnClick);
+
+        //==========================================================================================
         //===================================  DATOS OTROS  ========================================
         tvRiesgo            = findViewById(R.id.tvRiesgo);
         tvMedioContacto     = findViewById(R.id.tvMedioContacto);
@@ -705,6 +791,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //ivDown7 = findViewById(R.id.ivDown7);
         ivDown8 = findViewById(R.id.ivDown8);
         ivDown9 = findViewById(R.id.ivDown9);
+        ivDownBeni = findViewById(R.id.ivDownBeni);
 
         ivUp1 = findViewById(R.id.ivUp1);
         //ivUp2 = findViewById(R.id.ivUp2);
@@ -715,11 +802,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //ivUp7 = findViewById(R.id.ivUp7);
         ivUp8 = findViewById(R.id.ivUp8);
         ivUp9 = findViewById(R.id.ivUp9);
+        ivUpBeni = findViewById(R.id.ivUpBeni);
         //=========================================================
         //================ LINEAR LAYOUT  =========================
         llDatosPersonales   = findViewById(R.id.llDatosPersonales);
         //llDatosTelefonicos  = findViewById(R.id.llDatosTelefonicos);
         //llDatosDomicilio    = findViewById(R.id.llDatosDomicilio);
+        llDatosBeneficiario = findViewById(R.id.llDatosBeneficiario);
         llDatosNegocio      = findViewById(R.id.llDatosNegocio);
         llDatosConyuge      = findViewById(R.id.llDatosConyuge);
         llOtrosDatos        = findViewById(R.id.llOtrosDatos);
@@ -730,6 +819,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         llPersonales    = findViewById(R.id.llPersonales);
         //llTelefonicos   = findViewById(R.id.llTelefonicos);
         //llDomicilio     = findViewById(R.id.llDomicilio);
+        llBeneficiario  = findViewById(R.id.llBeneficiario);
         llNegocio       = findViewById(R.id.llNegocio);
         llConyuge       = findViewById(R.id.llConyuge);
         llOtros         = findViewById(R.id.llOtros);
@@ -746,6 +836,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
         btnContinuar5 = findViewById(R.id.btnContinuar5);
+        btnContinuar6 = findViewById(R.id.btnContinuarBeni);
 
         btnRegresar0 = findViewById(R.id.btnRegresar0);
         //btnRegresar1 = findViewById(R.id.btnRegresar1);
@@ -756,6 +847,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         //btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar6 = findViewById(R.id.btnRegresar6);
+        btnRegresar7 = findViewById(R.id.btnRegresarBeni);
 
         mapCli.onCreate(savedInstanceState);
         mapNeg.onCreate(savedInstanceState);
@@ -780,6 +872,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             id_integrante = getIntent().getStringExtra("id_integrante");
             /**Funcion para precargar la informacion que ha sido guardada del integrante*/
             initComponents(getIntent().getStringExtra("id_credito"), getIntent().getStringExtra("id_integrante"));
+            cliente_id = id_integrante;
 
         }
 
@@ -788,6 +881,8 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         tvDestinoNeg.setText("RE-INVERSION");
         tvDestinoNeg.setEnabled(false);
         Update("destino_credito", TBL_NEGOCIO_INTEGRANTE, _destino_credito[0], "id_integrante", id_integrante);
+
+        //obtenerDatosBeneficiario(id_credito);
 
         /**Valida la periodicidad del credito para establecer el numero de operaciones en efectivo
          * y actualiza la columna*/
@@ -2297,6 +2392,91 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 }
             }
         });
+        //==========================================================================================
+        //==================================  NEGOCIO BENEFICIARIO  ================================
+
+        txtNombreBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("nombre", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
+                }else
+                    Update("nombre", TBL_DATOS_BENEFICIARIO_GPO, " ", "id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtApellidoPaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("paterno", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("paterno",TBL_DATOS_BENEFICIARIO_GPO," ","id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtApellidoMaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO,editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO," ","id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("parentesco",TBL_DATOS_BENEFICIARIO_GPO, " ", "id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        llBeneficiario.setOnClickListener(llBeneficiario_OnClick);
+
         //===========================================================================
         //==================================  OTROS LISTENER  ======================================
         /**Evento de click o ingreso de datos en seccion de otros datos del integrante con guardado en automatico*/
@@ -2713,6 +2893,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 openRegistroIntegrante(id_credito, id_integrante);
             });
         }
+        //obtenerDatosBeneficiario();
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -2762,6 +2943,22 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 ivUp3.setVisibility(View.GONE);
                 llDatosDomicilio.setVisibility(View.GONE);
             }*/
+        }
+    };
+
+    private View.OnClickListener llBeneficiario_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(ivDownBeni.getVisibility() == View.VISIBLE && ivUpBeni.getVisibility() == View.GONE){
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                txtNombreBeneficiario.requestFocus();
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+            }else if(ivDownBeni.getVisibility() == View.GONE && ivUpBeni.getVisibility() == View.VISIBLE){
+                ivDownBeni.setVisibility(View.VISIBLE);
+                ivUpBeni.setVisibility(View.GONE);
+                llDatosBeneficiario.setVisibility(View.GONE);
+            }
         }
     };
 
@@ -2845,6 +3042,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         }
     };
 
+    private SessionManager session;
     private View.OnClickListener llDocumentos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -2858,9 +3056,20 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 ivUp9.setVisibility(View.GONE);
                 llDatosDocumentos.setVisibility(View.GONE);
             }
+
+          /*  Servicios_Sincronizado ss = new Servicios_Sincronizado();
+            id_solicitud = DatosCompartidos.getInstance().getId_solicitud();
+
+            btnForzarEnvio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ss.SendRenovacionGpo(ctx,true,id_solicitud);
+                }
+            });*/
+
+
         }
     };
-
     //==============================================================================================
     //============================ ACTION PERSONALES  ==============================================
     /**Evento para capturar la fecha de nacimiento del cliente*/
@@ -3429,6 +3638,25 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             }
         }
     };
+
+    private View.OnClickListener txtBeneficiario_OnClick = new View.OnClickListener(){
+       @Override
+       public void onClick(View v){
+           AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+           builder.setTitle(R.string.selected_option)
+                   .setItems(_parentesco, new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialogInterface, int position) {
+                           txtParentescoBeneficiario.setError(null);
+                           txtParentescoBeneficiario.setText(_parentesco[position]);
+                       }
+                   });
+           builder.create();
+           builder.show();
+       }
+
+    };
+
     //==============================================================================================
     //============================ ACTION OTROS  ===================================================
     /**Evento de click para seleccionar el nivel del riesgo*/
@@ -4065,10 +4293,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 etNombreCony.requestFocus();
             }
             else{
-                ivDown4.setVisibility(View.GONE);
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+               /* ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosNegocio.setVisibility(View.VISIBLE);
-                etNombreNeg.requestFocus();
+                etNombreNeg.requestFocus();*/
             }
         }
     };
@@ -4102,9 +4333,12 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener btnContinuar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown4.setVisibility(View.VISIBLE);
-            ivUp4.setVisibility(View.GONE);
-            llDatosNegocio.setVisibility(View.GONE);
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivDownBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+            //ivDown4.setVisibility(View.VISIBLE);
+            //ivUp4.setVisibility(View.GONE);
+            //llDatosNegocio.setVisibility(View.GONE);
 
             ivDown8.setVisibility(View.GONE);
             ivUp8.setVisibility(View.VISIBLE);
@@ -4216,9 +4450,14 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown4.setVisibility(View.VISIBLE);
-            ivUp4.setVisibility(View.GONE);
-            llDatosNegocio.setVisibility(View.GONE);
+
+            ivDownBeni.setVisibility(View.GONE);
+            ivUpBeni.setVisibility(View.VISIBLE);
+            llDatosBeneficiario.setVisibility(View.VISIBLE);
+
+            //ivDown4.setVisibility(View.VISIBLE);
+            //ivUp4.setVisibility(View.GONE);
+            //llDatosNegocio.setVisibility(View.GONE);
 
             if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || Miscellaneous.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
@@ -5341,6 +5580,19 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         etCasaCony.setText(row.getString(21)); etCasaCony.setEnabled(is_edit);
         row.close(); // Cierra datos del conyuge
 
+        row  = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO_GPO, " WHERE id_integrante = ?", " ", new String[]{id_integrante});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            txtNombreBeneficiario.setText(row.getString(6).trim().toUpperCase());
+            txtApellidoPaterno.setText(row.getString(7).trim().toUpperCase());
+            txtApellidoMaterno.setText(row.getString(8).trim().toUpperCase());
+            txtParentescoBeneficiario.setText(row.getString(9).trim().toUpperCase());
+            row.close();
+        }else
+            Toast.makeText(ctx,"NO HAY DATOS EN LA BASE",Toast.LENGTH_SHORT).show();
+
+
         /**Obtiene los datos generales*/
         //Datos Otros
         row = dBhelper.getRecords(TBL_OTROS_DATOS_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
@@ -6104,31 +6356,31 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 !validator.validate(etGastoCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER}) &&
                 !validator.validate(etCasaCony, new String[]{validator.ONLY_NUMBER}) &&
                 !validator.validate(etCelularCony, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.PHONE})){
-                    ivError5.setVisibility(View.GONE);
-                    ContentValues cv = new ContentValues();
-                    cv.put("nombre", Miscellaneous.GetStr(etNombreCony));
-                    cv.put("paterno", Miscellaneous.GetStr(etApPaternoCony));
-                    cv.put("materno", Miscellaneous.GetStr(etApMaternoCli));
-                    cv.put("nacionalidad", Miscellaneous.GetStr(etNacionalidad));
-                    cv.put("ocupacion", Miscellaneous.GetStr(tvOcupacionCony));
-                    cv.put("calle", Miscellaneous.GetStr(etCalleCony));
-                    cv.put("no_exterior", Miscellaneous.GetStr(etNoExtCony));
-                    cv.put("no_interior", Miscellaneous.GetStr(etNoIntCony));
-                    cv.put("manzana", Miscellaneous.GetStr(etManzanaCony));
-                    cv.put("lote", Miscellaneous.GetStr(etLoteCony));
-                    cv.put("cp", Miscellaneous.GetStr(etCpCony));
-                    cv.put("colonia", Miscellaneous.GetStr(tvColoniaCony));
-                    cv.put("ciudad", Miscellaneous.GetStr(etCiudadCony));
-                    cv.put("localidad", Miscellaneous.GetStr(tvLocalidadCony));
-                    cv.put("municipio", Miscellaneous.GetStr(tvMunicipioCony));
-                    cv.put("estado", Miscellaneous.GetStr(tvEstadoCony));
-                    cv.put("ingresos_mensual", Miscellaneous.GetStr(etIngresoCony).replace(",",""));
-                    cv.put("gasto_mensual", Miscellaneous.GetStr(etGastoCony).replace(",",""));
-                    cv.put("tel_trabajo", Miscellaneous.GetStr(etCasaCony));
-                    cv.put("tel_celular", Miscellaneous.GetStr(etCelularCony));
-                    cv.put("estatus_completado", 1);
+            ivError5.setVisibility(View.GONE);
+            ContentValues cv = new ContentValues();
+            cv.put("nombre", Miscellaneous.GetStr(etNombreCony));
+            cv.put("paterno", Miscellaneous.GetStr(etApPaternoCony));
+            cv.put("materno", Miscellaneous.GetStr(etApMaternoCli));
+            cv.put("nacionalidad", Miscellaneous.GetStr(etNacionalidad));
+            cv.put("ocupacion", Miscellaneous.GetStr(tvOcupacionCony));
+            cv.put("calle", Miscellaneous.GetStr(etCalleCony));
+            cv.put("no_exterior", Miscellaneous.GetStr(etNoExtCony));
+            cv.put("no_interior", Miscellaneous.GetStr(etNoIntCony));
+            cv.put("manzana", Miscellaneous.GetStr(etManzanaCony));
+            cv.put("lote", Miscellaneous.GetStr(etLoteCony));
+            cv.put("cp", Miscellaneous.GetStr(etCpCony));
+            cv.put("colonia", Miscellaneous.GetStr(tvColoniaCony));
+            cv.put("ciudad", Miscellaneous.GetStr(etCiudadCony));
+            cv.put("localidad", Miscellaneous.GetStr(tvLocalidadCony));
+            cv.put("municipio", Miscellaneous.GetStr(tvMunicipioCony));
+            cv.put("estado", Miscellaneous.GetStr(tvEstadoCony));
+            cv.put("ingresos_mensual", Miscellaneous.GetStr(etIngresoCony).replace(",",""));
+            cv.put("gasto_mensual", Miscellaneous.GetStr(etGastoCony).replace(",",""));
+            cv.put("tel_trabajo", Miscellaneous.GetStr(etCasaCony));
+            cv.put("tel_celular", Miscellaneous.GetStr(etCelularCony));
+            cv.put("estatus_completado", 1);
 
-                    db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
+            db.update(TBL_CONYUGE_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{id_integrante});
 
             save_conyuge = true;
         }
@@ -6344,6 +6596,71 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         return save_documentos;
     }
 
+    private boolean saveBeneficiario(){
+
+        id_solicitud = DatosCompartidos.getInstance().getId_solicitud();
+
+        boolean save_beneficiario = false;
+
+        ContentValues cv = new ContentValues();
+
+        int grupo_id = BeneficiarioRenDao.obtenerGrupoId(id_solicitud,ctx); //m.obtenerGrupoId(id_solicitud,ctx);
+
+        int id_cliente = BeneficiarioRenDao.obtenerClienteId(Integer.parseInt(id_integrante),ctx);//m.obtenerClienteId(Integer.valueOf(id_integrante),ctx);
+
+        boolean estatus = BeneficiarioRenDao.validarBeneficiarioGPO(Integer.parseInt(id_integrante),ctx);
+
+        int serieIdA = BeneficiarioRenDao.obtenerSerieAsesor(ctx);//m.obtenerSerieAsesor(ctx);
+
+        int id_solicitud_integrante = BeneficiarioRenDao.obtenerIdSolicitud(id_cliente,ctx);
+
+        if(serieIdA == 0){
+            serieIdA = 000;
+        }
+
+        if(!validator.validate(txtNombreBeneficiario, new String[]{validator.REQUIRED})){
+            if(!validator.validate(txtApellidoPaterno,new String[]{validator.ONLY_TEXT})){
+                if(!validator.validate(txtApellidoMaterno,new String[]{validator.ONLY_TEXT})){
+                    if(!validatorTV.validate(txtParentescoBeneficiario, new String[]{validatorTV.REQUIRED})){
+                        //boolean estatus = m.validarBeneficiario(Integer.parseInt(id_integrante),ctx);
+
+                        cv.put("id_solicitud",id_solicitud);
+                        cv.put("id_solicitud_integrante",id_solicitud_integrante);
+                        cv.put("id_cliente",id_cliente);
+                        cv.put("id_integrante",id_integrante);
+                        cv.put("id_grupo",grupo_id );
+                        cv.put("nombre",m.GetStr(txtNombreBeneficiario));
+                        cv.put("paterno",m.GetStr(txtApellidoPaterno));
+                        cv.put("materno",m.GetStr(txtApellidoMaterno));
+                        cv.put("parentesco",m.GetStr(txtParentescoBeneficiario));
+                        cv.put("serieid",serieIdA);
+
+                        if(!estatus){
+                            db.insert(TBL_DATOS_BENEFICIARIO_GPO, null, cv);
+                        }
+                        if(estatus){
+                            db.update(TBL_DATOS_BENEFICIARIO_GPO, cv, "id_integrante = ?",new String[]{String.valueOf(id_integrante)});
+                        }
+                        save_beneficiario = true;
+                    }else{
+                        ivError1.setVisibility(View.VISIBLE);
+                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                    }
+                }else{
+                    ivError1.setVisibility(View.VISIBLE);
+                    txtApellidoMaterno.setError("CAMPO REQUERIDO");
+                }
+            }else{
+                ivError1.setVisibility(View.VISIBLE);
+                txtApellidoPaterno.setError("CAMPO REQUERIDO");
+            }
+        }else{
+            ivError1.setVisibility(View.VISIBLE);
+            txtNombreBeneficiario.setError("CAMPO REQUERIDO");
+        }
+        return save_beneficiario;
+    }
+
     /**funcion para mostrar u ocultar el menu cuando ya fue guardada la solicitud*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -6370,6 +6687,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 boolean datos_personales = saveDatosIntegrante();
                 boolean datos_telefonicos = saveDatosTelefonicos();
                 boolean datos_domiclio = saveDatosDomicilio();
+                boolean datos_beneficiario = saveBeneficiario();
                 boolean datos_negocio = saveDatosNegocio();
                 boolean datos_conyuge = false;
                 boolean datos_croquis = true;
@@ -6408,7 +6726,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
 
                 /**Se valida si todos los estatus de las secciones que fueron guardados*/
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
-                        datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos){
+                        datos_conyuge && datos_beneficiario  && datos_otros && datos_croquis && datos_politicas && datos_documentos){
                     /**se actualizan los estatus a completado para que despues no pueda hacer modificaciones*/
                     Update("estatus_completado", TBL_INTEGRANTES_GPO_REN, "1", "id", id_integrante);
                     /**limpa la columna de comentario de rechazo para saber que ya completo la solicitud
@@ -6860,7 +7178,6 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
         ContentValues cv = new ContentValues();
         cv.put(key, value);
         db.update(tabla, cv, param+" = ?", new String[]{String.valueOf(id)});
-
     }
 
     /**funcion del evento click del boton de retroceso del dispositivo*/
@@ -6885,6 +7202,7 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
             solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             solicitud.setCancelable(true);
             solicitud.show();
+            //saveBeneficiario();
         }
         else
             finish();
@@ -6934,5 +7252,13 @@ public class RenovarIntegrante extends AppCompatActivity implements dialog_renov
                 break;
         }
     }
+    
+    public void forzarEnvio(){
+
+
+
+
+    }
+    
 
 }

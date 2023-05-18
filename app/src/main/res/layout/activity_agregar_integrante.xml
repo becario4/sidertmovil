@@ -219,6 +219,75 @@
 
                 </LinearLayout>
 
+                <!-- Datos beneficiario -->
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/llBeneficiario"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/ivError11"
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_info_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="15dp"
+                            android:textSize="16sp"
+                            android:text = "Datos del Beneficiario"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:gravity="center_vertical"
+                            android:textColor="@color/black"
+                            />
+
+                        <ImageView
+                            android:id="@+id/ivDownBeni"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_down"/>
+
+                        <ImageView
+                            android:id="@+id/ivUpBeni"
+                            android:visibility="gone"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_up"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llDatosBeneficiario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:visibility="gone">
+
+                        <include
+                            layout="@layout/view_step_datos_beneficiario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
                 <!--  Datos Negocio -->
                 <LinearLayout
                     android:orientation="vertical"

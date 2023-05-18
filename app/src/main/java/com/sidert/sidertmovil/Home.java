@@ -233,11 +233,6 @@ public class Home extends AppCompatActivity {
             }
             menuGeneral = NVmenu.getMenu();
 
-
-
-
-
-
             /**Funcion para validar que secciones del menu tiene permitido ver el usuario*/
             ShowMenuItems();
 
@@ -505,30 +500,12 @@ public class Home extends AppCompatActivity {
         }
     }
 
+
+
     //SI EL PROBLEMA PERSISTE UTILIZA HAST MAPS - ERGO - ARRAYLIST - UTILIZA FOR AND FORECH
     //PARA RECORRER EL ARREGLO Y OBTENER EL DATO ESPECIFICO
-    public void getTipoRol(SessionManager sen) throws JSONException {
-
-        txtRole = findViewById(R.id.txtRolUser);
-
-        JSONArray array = sen.getAutorizacionAAA();
-
-        String datosAux;
-
-        for (int i = 0; i < array.length(); i++) {
-
-            JSONObject ide = array.getJSONObject(i);
-            datosAux = ide.getString("authorities");
-
-            if (datosAux != null) {
-                txtRole.setText("dato: " + datosAux);
-            } else
-                txtRole.setText("NEL PERRO");
-        }
-    }
-
     public void getTipoRolB(SessionManager sen){
-       txtRole = findViewById(R.id.txtRolUser);
+        txtRole = findViewById(R.id.txtRolUser);
 
         List<String> rol = new ArrayList<>();
 
@@ -537,40 +514,36 @@ public class Home extends AppCompatActivity {
         for(int i=0;i<rol.size();i++){
             String objeto;
             objeto = rol.get(0).trim();
-
-
             if (objeto != null && objeto.contains("ROLE_ASESOR")) {
                 String a = objeto; //.substring(25);
                 a = a.replace("ROL_GERENTESUCURSAL","");
-            String b = a.replace("[ ]", "");
+                String b = a.replace("[ ]", "");
                 b = b.replace(" \" ", " ");
 
                 txtRole.setText("dato: " + b);
             } else
                 txtRole.setText("NEL PERRO");
         }
-
-
     }
 
+    public static String getTipoRolA(SessionManager sen) throws JSONException {
+        String dato = " ";
 
+        List<String> rol = new ArrayList<>();
 
+        rol = sen.getAutorizacionList();
 
-       /* String data;
+        for(int i=0;i<rol.size();i++) {
+            String objeto;
+            objeto = rol.get(0).trim();
 
-        JSONArray array = sen.getAutorizacionAAA();
-
-        for (int i = 0; i < array.length(); i++) {
-
-            JSONArray ide = array.getJSONArray(i);
-
-            data = ide.getString(Integer.parseInt("authorities"));
-
-            if(data!=null){
-                txtRole.setText("dato: " +data);
-            }else
-                txtRole.setText("NEL PERRO");
-        }*/
+            if (objeto != null) {
+               dato = objeto;
+            } else
+               dato = "NEL PERRO";
+        }
+        return dato;
+    }
 
     /**Inicializacion de variables del menu lateral como el nombre d usuario*/
     private void initNavigationDrawer() {

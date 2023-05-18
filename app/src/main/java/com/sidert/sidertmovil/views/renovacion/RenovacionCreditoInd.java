@@ -75,7 +75,10 @@ import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
 import com.sidert.sidertmovil.models.permiso.PermisoResponse;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.BeneficiarioDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
@@ -96,6 +99,7 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.PoliticaPldRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRenDao;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 import com.sidert.sidertmovil.utils.ManagerInterface;
@@ -137,6 +141,7 @@ import static com.sidert.sidertmovil.utils.Constants.CALLE;
 import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.COLONIA;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.DATE_CURRENT;
 import static com.sidert.sidertmovil.utils.Constants.DAY_CURRENT;
@@ -197,6 +202,8 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
@@ -214,6 +221,7 @@ import static com.sidert.sidertmovil.utils.Constants.firma;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 
 import org.json.JSONObject;
 
@@ -253,6 +261,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private Calendar myCalendar;
 
     private long id_solicitud = 0;
+    private Integer cliente_id = 0;
     private String direccionIdCli, direccionIdCony, direccionIdNeg, direccionIdAval, direccionIdRef;
     private boolean is_edit = true;
 
@@ -266,6 +275,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private FloatingActionButton btnContinuar6;
     //private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
+    private FloatingActionButton btnContinuar9;
 
     private FloatingActionButton btnRegresar1;
     private FloatingActionButton btnRegresar2;
@@ -276,6 +286,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     //private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar9;
+    private FloatingActionButton btnRegresar10;
 
 
     //======== DATOS CRÉDITO  ==================
@@ -356,6 +367,18 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private ImageButton ibFirmaCli;
     private ImageView ivFirmaCli;
     public byte[] byteFirmaCli;
+
+    //=========================================
+    //========== BENEFICIARIO =================
+
+
+    private EditText txtNombreBeneficiario;
+    private EditText txtApellidoPaterno;
+    private EditText txtApellidoMaterno;
+    private TextView txtParentescoBeneficiario;
+    private LinearLayout llBeneficiario;
+    private LinearLayout llDatosBeneficiario;
+
     //=========================================
     //========== CONYUGE ======================
     private EditText etNombreCony;
@@ -610,6 +633,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private ImageView ivDown8;
     private ImageView ivDown9;
     private ImageView ivDown10;
+    private ImageView ivDown11;
 
     private ImageView ivUp1;
     private ImageView ivUp2;
@@ -621,6 +645,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private ImageView ivUp8;
     private ImageView ivUp9;
     private ImageView ivUp10;
+    private ImageView ivUp11;
+
     //========================================
     /**ImageView para saber si en la seccion hay un datos faltante*/
     //================= Image View ERROR  =====================
@@ -634,6 +660,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private ImageView ivError8;
     private ImageView ivError9;
     private ImageView ivError10;
+    private ImageView ivError11;
     //===================================================
     /**Contenedores para mostrar u ocultar las secciones*/
     //===============  LINEAR LAYOUT  ====================
@@ -690,6 +717,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     boolean isEditCro = true;
     boolean isEditPol = true;
     boolean isEditDoc = true;
+    boolean isEditBen = true;
 
     boolean hasFractionalPart = false;
     
@@ -731,6 +759,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         validatorTV = new ValidatorTextView();
 
         TBmain = findViewById(R.id.TBmain);
+
+        ClienteRen ren = new ClienteRen();
+
+        cliente_id = ren.getIdCliente();
+
 
         /**Se cargan catalogos de tipo dialog*/
         _plazo = getResources().getStringArray(R.array.intervalo);
@@ -859,6 +892,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         etValorAproxEco = findViewById(R.id.etValorAproxEco);
         etUbicacionEco = findViewById(R.id.etUbicacionEco);
         tvIngresoEco = findViewById(R.id.tvIngresoEco);
+        //==========================================================================================
+        //=================================  DATOS BENEFICIARIO  ===================================
+
+        txtNombreBeneficiario          = findViewById(R.id.txtNombreBeneficiario);
+        txtApellidoPaterno             = findViewById(R.id.txtApellidoPaternoBeneficiario);
+        txtApellidoMaterno             = findViewById(R.id.txtApellidoMaternoBeneficiario);
+        txtParentescoBeneficiario      = findViewById(R.id.txtParentezcoBeneficiario);
+
         //==========================================================================================
         //===================================  DATOS NEGOCIO  ======================================
         llComentNeg = findViewById(R.id.llComentNeg);
@@ -1069,6 +1110,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         llDatosCroquis = findViewById(R.id.llDatosCroquis);
         llDatosPoliticas = findViewById(R.id.llDatosPoliticas);
         llDatosDocumentos = findViewById(R.id.llDatosDocumentos);
+        llDatosBeneficiario = findViewById(R.id.llDatosBeneficiario);
 
         llCredito = findViewById(R.id.llCredito);
         llPersonales = findViewById(R.id.llPersonales);
@@ -1081,6 +1123,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //llCroquis = findViewById(R.id.llCroquis);
         llPoliticas = findViewById(R.id.llPoliticas);
         llDocumentos = findViewById(R.id.llDocumentos);
+        llBeneficiario = findViewById(R.id.llBeneficiario);
         //==========================================================================================
 
         //============================== LINEAR LAYOUT  ============================================
@@ -1094,6 +1137,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //llCroquis.setOnClickListener(llCroquis_OnClick);
         llPoliticas.setOnClickListener(llPoliticas_OnClick);
         llDocumentos.setOnClickListener(llDocumentos_OnClick);
+        llBeneficiario.setOnClickListener(llBeneficiario_OnClick);
 
         mapCli.onCreate(savedInstanceState);
         mapNeg.onCreate(savedInstanceState);
@@ -1116,6 +1160,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
 
+        btnContinuar9 = findViewById(R.id.btnContinuarBeni);
+
         btnRegresar1 = findViewById(R.id.btnRegresar1);
         btnRegresar2 = findViewById(R.id.btnRegresar2);
         btnRegresar3 = findViewById(R.id.btnRegresar3);
@@ -1125,6 +1171,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar9 = findViewById(R.id.btnRegresar9);
+
+        btnRegresar10 = findViewById(R.id.btnRegresarBeni);
         //==========================================================================================
         //============================ IMAGE VIEW UP|DOWN  =========================================
         ivDown1 = findViewById(R.id.ivDown1);
@@ -1136,7 +1184,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         ivDown7 = findViewById(R.id.ivDown7);
         ivDown8 = findViewById(R.id.ivDown8);
         ivDown9 = findViewById(R.id.ivDown9);
+
         ivDown10 = findViewById(R.id.ivDown10);
+
+        ivDown11 = findViewById(R.id.ivDownBeni);
+
 
         ivUp1 = findViewById(R.id.ivUp1);
         ivUp2 = findViewById(R.id.ivUp2);
@@ -1148,6 +1200,10 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         ivUp8 = findViewById(R.id.ivUp8);
         ivUp9 = findViewById(R.id.ivUp9);
         ivUp10 = findViewById(R.id.ivUp10);
+
+        ivUp11 = findViewById(R.id.ivUpBeni);
+
+
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
         ivError1 = findViewById(R.id.ivError1);
@@ -1173,6 +1229,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         btnContinuar6.setOnClickListener(btnContinuar6_OnClick);
         //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
+        btnContinuar9.setOnClickListener(btnContinuar9_OnClick);
 
         btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
         btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
@@ -1183,6 +1240,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar9.setOnClickListener(btnRegresar9_OnClick);
+        btnRegresar10.setOnClickListener(btnRegresar10_OnClick);
+
 
         dialog.dismiss();
         //==========================================================================================
@@ -2415,6 +2474,93 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     Update("ubicacion", TBL_ECONOMICOS_IND_REN, "");
             }
         });
+        //==============================  BENEFICIARIO LISTENER ======================================
+
+        txtNombreBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("nombre", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                }else
+                    Update("nombre", TBL_DATOS_BENEFICIARIO," ");
+            }
+        });
+
+        txtApellidoPaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("paterno", TBL_DATOS_BENEFICIARIO,editable.toString().trim().toUpperCase());
+                }else
+                    Update("paterno", TBL_DATOS_BENEFICIARIO," ");
+            }
+        });
+
+        txtApellidoMaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("materno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                }else
+                    Update("materno", TBL_DATOS_BENEFICIARIO, " ");
+            }
+        });
+
+
+        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO,editable.toString().trim().toUpperCase());
+                }else
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO," ");
+            }
+        });
+
+        txtParentescoBeneficiario.setOnClickListener(txtParentescoBen_OnClick);
+
+
         //==================================  NEGOCIO LISTENER  ====================================
         /**Evento click y escuchadores(editText o textView) en la seccion del negocio para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
@@ -5884,7 +6030,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         }
     };
 
-
     /**Evento para seleccioanr el destino del negocio*/
     private View.OnClickListener tvDestinoNeg_OnClick = new View.OnClickListener() {
         @Override
@@ -7303,6 +7448,46 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         }
     };
 
+    private View.OnClickListener llBeneficiario_OnClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            if (ivDown10.getVisibility() == View.VISIBLE && ivUp10.getVisibility() == View.GONE) {
+                ivDown10.setVisibility(View.GONE);
+                ivUp10.setVisibility(View.VISIBLE);
+                txtNombreBeneficiario.requestFocus();
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+            } else if (ivDown10.getVisibility() == View.GONE && ivUp10.getVisibility() == View.VISIBLE) {
+                ivDown10.setVisibility(View.VISIBLE);
+                ivUp10.setVisibility(View.GONE);
+                llDatosBeneficiario.setVisibility(View.GONE);
+            }
+        }
+    };
+
+
+    //=============================================================================================
+
+    private View.OnClickListener txtParentescoBen_OnClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle("Seleccione una opción")
+                    .setItems(_parentesco, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int position) {
+                            txtParentescoBeneficiario.setError(null);
+                            txtParentescoBeneficiario.setText(_parentesco[position]);
+                        }
+                    });
+            builder.create();
+            builder.show();
+
+        }
+    };
+
+
     //==================================================================
     /**Eventos solo para avanzar de secciones del formulario*/
     //Continuar
@@ -7338,10 +7523,15 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     ivUp4.setVisibility(View.VISIBLE);
                     llDatosEconomicos.setVisibility(View.VISIBLE);
                 } else {
-                    etNombreNeg.requestFocus();
-                    ivDown5.setVisibility(View.GONE);
-                    ivUp5.setVisibility(View.VISIBLE);
-                    llDatosNegocio.setVisibility(View.VISIBLE);
+                    //etNombreNeg.requestFocus();
+                    //ivDown5.setVisibility(View.GONE);
+                    //ivUp5.setVisibility(View.VISIBLE);
+                    //llDatosNegocio.setVisibility(View.VISIBLE);
+
+                    ivDown11.setVisibility(View.GONE);
+                    ivUp11.setVisibility(View.VISIBLE);
+                    llDatosBeneficiario.setVisibility(View.VISIBLE);
+                    txtNombreBeneficiario.requestFocus();
                 }
             }
 
@@ -7352,6 +7542,22 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
         }
     };
+    private View.OnClickListener btnContinuar9_OnClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            etNombreNeg.requestFocus();
+            ivDown5.setVisibility(View.GONE);
+            ivUp5.setVisibility(View.VISIBLE);
+            llDatosNegocio.setVisibility(View.VISIBLE);
+
+            ivDown11.setVisibility(View.VISIBLE);
+            ivUp11.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+        }
+    };
+
+
     private View.OnClickListener btnContinuar2_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7362,10 +7568,15 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 llDatosEconomicos.setVisibility(View.VISIBLE);
                 etPropiedadesEco.requestFocus();
             } else {
-                ivDown5.setVisibility(View.GONE);
-                ivUp5.setVisibility(View.VISIBLE);
-                llDatosNegocio.setVisibility(View.VISIBLE);
-                etNombreNeg.requestFocus();
+                //ivDown5.setVisibility(View.GONE);
+                //ivUp5.setVisibility(View.VISIBLE);
+                //llDatosNegocio.setVisibility(View.VISIBLE);
+                //etNombreNeg.requestFocus();
+                ivDown11.setVisibility(View.GONE);
+                ivUp11.setVisibility(View.VISIBLE);
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+                txtNombreBeneficiario.requestFocus();
+
             }
             ivDown3.setVisibility(View.VISIBLE);
             ivUp3.setVisibility(View.GONE);
@@ -7375,10 +7586,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private View.OnClickListener btnContinuar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown5.setVisibility(View.GONE);
-            ivUp5.setVisibility(View.VISIBLE);
-            llDatosNegocio.setVisibility(View.VISIBLE);
-            etNombreNeg.requestFocus();
+            //ivDown5.setVisibility(View.GONE);
+            //ivUp5.setVisibility(View.VISIBLE);
+            //llDatosNegocio.setVisibility(View.VISIBLE);
+            //etNombreNeg.requestFocus();
+            ivDown11.setVisibility(View.GONE);
+            ivUp11.setVisibility(View.VISIBLE);
+            llDatosBeneficiario.setVisibility(View.VISIBLE);
+            txtNombreBeneficiario.requestFocus();
 
             ivDown4.setVisibility(View.VISIBLE);
             ivUp4.setVisibility(View.GONE);
@@ -7478,6 +7693,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             llDatosConyuge.setVisibility(View.GONE);
         }
     };
+
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7499,6 +7715,20 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             llDatosEconomicos.setVisibility(View.GONE);
         }
     };
+
+    private View.OnClickListener btnRegresar10_OnClick= new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            ivDown2.setVisibility(View.GONE);
+            ivUp2.setVisibility(View.VISIBLE);
+            llDatosPersonales.setVisibility(View.VISIBLE);
+
+            ivDown11.setVisibility(View.VISIBLE);
+            ivUp11.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+        }
+    };
+
     private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7516,10 +7746,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     llDatosConyuge.setVisibility(View.VISIBLE);
                     etNombreCony.requestFocus();
                 } else {
-                    ivDown2.setVisibility(View.GONE);
-                    ivUp2.setVisibility(View.VISIBLE);
-                    llDatosPersonales.setVisibility(View.VISIBLE);
-                    etNombreCli.requestFocus();
+                    //ivDown2.setVisibility(View.GONE);
+                    //ivUp2.setVisibility(View.VISIBLE);
+                    //llDatosPersonales.setVisibility(View.VISIBLE);
+                    //etNombreCli.requestFocus();
+                    ivDown11.setVisibility(View.GONE);
+                    ivUp11.setVisibility(View.VISIBLE);
+                    llDatosBeneficiario.setVisibility(View.VISIBLE);
+                    txtNombreBeneficiario.requestFocus();
                 }
             }
             ivDown5.setVisibility(View.VISIBLE);
@@ -7597,7 +7831,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             llDatosDocumentos.setVisibility(View.GONE);
         }
     };
-
 
     /**Evento para seleccionar la hora de visita del cliente*/
     private View.OnClickListener tvHoraVisita_OnClick = new View.OnClickListener() {
@@ -8596,6 +8829,68 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         return save_documentacion;
     }
 
+    private boolean saveBeneficiario(){
+
+        ContentValues cv = new ContentValues();
+
+        int grupo_id = 1;
+
+        int id_cliente = BeneficiarioDao.obtenerClienteInd(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        boolean estatus = BeneficiarioDao.validarBeneficiarioInd(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        int serieIdA = BeneficiarioDao.obtenerSerieAsesor(ctx);//m.obtenerSerieAsesor(ctx);
+
+        int id_originacion = BeneficiarioDao.obtenerIdOriginacion(Integer.parseInt(String.valueOf(id_solicitud)),ctx);
+
+        boolean save_beneficiario = false;
+
+
+        if(!validator.validate(txtNombreBeneficiario, new String[]{validator.REQUIRED})){
+            if(!validator.validate(txtApellidoPaterno,new String[]{validator.ONLY_TEXT})){
+                if(!validator.validate(txtApellidoMaterno,new String[]{validator.ONLY_TEXT})){
+                    if(!validatorTV.validate(txtParentescoBeneficiario,new String[]{validatorTV.REQUIRED})){
+
+                        cv.put("id_solicitud", id_solicitud);
+                        cv.put("id_originacion",id_originacion);
+                        cv.put("id_cliente", id_cliente);
+                        cv.put("id_grupo",grupo_id);
+                        cv.put("nombre", m.GetStr(txtNombreBeneficiario));
+                        cv.put("paterno", m.GetStr(txtApellidoPaterno));
+                        cv.put("materno", m.GetStr(txtApellidoMaterno));
+                        cv.put("parentesco", m.GetStr(txtParentescoBeneficiario));
+                        cv.put("serieid", serieIdA);
+
+                        if(!estatus){
+                            db.insert(TBL_DATOS_BENEFICIARIO, null, cv);
+                        }
+
+                        if(estatus){
+                            db.update(TBL_DATOS_BENEFICIARIO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                        }
+
+                        save_beneficiario = true;
+                    }else{
+                        ivError11.setVisibility(View.VISIBLE);
+                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                        
+                    }
+                }else{
+                    ivError11.setVisibility(View.VISIBLE);
+                    txtApellidoMaterno.setError("CAMPO REQUERIDO");
+                }
+            }else{
+                ivError11.setVisibility(View.VISIBLE);
+                txtApellidoPaterno.setError("CAMPO REQUERIDO");
+            }
+        }else{
+            ivError11.setVisibility(View.VISIBLE);
+            txtNombreBeneficiario.setError("CAMPO REQUERIDO");
+        }
+        return save_beneficiario;
+    }
+
+
     /**Funcion para mostrar u ocultar el menu*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -8630,6 +8925,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 break;
             case R.id.devmode:
                 enviarJSONObjects();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
             case R.id.desbloquear:
                 if (modoSuperUsuario) {
@@ -8643,6 +8939,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 break;
             case R.id.enviar:
                 sendSolicitud();
+                //senDataBeneficiarioRen(id_solicitud);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -10372,6 +10669,24 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         etCelularCony.setEnabled(isEditCon);
         row.close(); //Cierra datos del conyuge
 
+        /** LLENADO DE LOS DATOS BENEFICIARIO */
+
+        //=============================================DATOS DEL BENEFICIARIO==============================================\\
+
+        row = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO, " where id_solicitud = ?", " ", new String[]{idSolicitud});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+
+            txtNombreBeneficiario.setText(row.getString(5).trim().toUpperCase());
+            txtApellidoPaterno.setText(row.getString(6).trim().toUpperCase());
+            txtApellidoMaterno.setText(row.getString(7).trim().toUpperCase());
+            txtParentescoBeneficiario.setText(row.getString(8).trim().toUpperCase());
+
+            row.close();
+        }else
+            Toast.makeText(ctx, "NO HAY DATOS EN LA BASE", Toast.LENGTH_SHORT).show();
+
         /**Obtiene los datos economicos para precargarlos, solo cuando el credito es mayor a $29,000
          * de lo contrario esta seccion se oculta*/
         //Llenado de datos economicos
@@ -11003,6 +11318,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         isEditRef = true;
         isEditPol = true;
         isEditCro = true;
+        isEditBen = true;
+
+        txtNombreBeneficiario.setEnabled(true);
+        txtApellidoPaterno.setEnabled(true);
+        txtApellidoMaterno.setEnabled(true);
+        txtParentescoBeneficiario.setEnabled(true);
 
         if(isEditCli)
         {
@@ -11094,6 +11415,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             etCasaCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             etCelularCony.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
+
+        txtNombreBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtApellidoPaterno.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtApellidoMaterno.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+        txtParentescoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.et_rounded_edges));
+
 
         /**Valida si la seccion de datos economicos ya fue guardada para bloquear los campos*/
         if (isEditEco) {
@@ -11425,6 +11752,16 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             tvIngresoEco.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         }
 
+        txtNombreBeneficiario.setEnabled(false);
+        txtApellidoPaterno.setEnabled(false);
+        txtApellidoMaterno.setEnabled(false);
+        txtParentescoBeneficiario.setEnabled(false);
+
+        txtNombreBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtApellidoPaterno.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtApellidoMaterno.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+        txtParentescoBeneficiario.setBackground(ContextCompat.getDrawable(ctx,R.drawable.bkg_rounded_edges_blocked));
+
         /**Valida si la seccion del negocio ya fue guardada para bloquear los campos*/
         if (!isEditNeg) {
             cbNegEnDomCli.setEnabled(false);
@@ -11636,7 +11973,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 solicitudActivada = true;
             }
         }
-
         return solicitudActivada;
     }
 
@@ -11660,7 +11996,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 solicitudBloqueada = true;
             }
         }
-
         return solicitudBloqueada;
     }
 
@@ -11781,7 +12116,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         }
     }
 
-    private void enviarJSONRequest() { }
 
     private void sendSolicitud()
     {
@@ -11826,7 +12160,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     {
         boolean flag = false;
 
-        boolean credito, cliente, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
+        boolean credito, cliente, beneficiario, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
         credito = saveDatosCredito();
         croquis = saveCroquis();
         cliente = saveDatosPersonales();
@@ -11840,13 +12174,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         else
             economicos = true;
 
+        beneficiario = saveBeneficiario();
         negocio = saveDatosNegocio();
         aval = saveDatosAval();
         referencia = saveReferencia();
         politicas = savePoliticas();
         documentacion = saveDocumentacion();
 
-        if (credito && cliente && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
+        if (credito && cliente && beneficiario && conyuge && economicos && negocio && aval && referencia && croquis && politicas && documentacion) {
             flag = true;
         }
         else {
@@ -12082,6 +12417,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         });
 
     }
+
+
 
 
 }

@@ -68,8 +68,6 @@ public class Sincronizar_Catalogos {
                         break;
                 }
                 pDialog.dismiss();
-
-
             }
             @Override
             public void onFailure(Call<List<ModeloEstados>> call, Throwable t) {

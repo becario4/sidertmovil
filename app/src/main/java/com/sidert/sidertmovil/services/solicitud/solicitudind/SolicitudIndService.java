@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.services.solicitud.solicitudind;
 import com.sidert.sidertmovil.models.ApiResponse;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
 import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
 import org.json.JSONObject;
@@ -82,6 +83,5 @@ public interface SolicitudIndService {
             @Part MultipartBody.Part curp_aval,
             @Part MultipartBody.Part comprobante_aval
     );
-
 
 }

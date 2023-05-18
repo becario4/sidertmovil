@@ -79,12 +79,17 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.Domici
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.DomicilioIntegranteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.NegocioIntegrante;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.NegocioIntegranteDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.utils.Constants;
+import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -107,11 +112,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.card.payment.CardIOActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.CALLE;
 import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
 import static com.sidert.sidertmovil.utils.Constants.EXTRA;
 import static com.sidert.sidertmovil.utils.Constants.IMAGEN;
 import static com.sidert.sidertmovil.utils.Constants.ITEM;
@@ -136,6 +145,8 @@ import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
@@ -162,7 +173,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private Calendar myCalendar;
-    
+
     private Miscellaneous m;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -243,6 +254,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private ImageView ivFotoFachCli;
     public byte[] byteFotoFachCli;
     private MultiAutoCompleteTextView etReferenciaCli;
+
+    //=========================================================================
+    //===================  DATOS BENEFICIARIO  ================================
+
+    private LinearLayout llBeneficiario;
+    private LinearLayout llDatosBeneficiario;
+    private EditText txtNombreBeneficiario;
+    private EditText txtApellidoPaterno;
+    private EditText txtApellidoMaterno;
+    private TextView txtParentescoBeneficiario;
+    Beneficiario beneficiario = new Beneficiario();
+
+    private Integer cliente_id = 0;
+
     //=========================================================================
     //===================  DATOS NEGOCIO  =====================================
     private EditText etNombreNeg;
@@ -401,35 +426,38 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     //=========================================================================
     //================= Image View ERROR  =====================
     private ImageView ivError1;
-    //private ImageView ivError2;
-    //private ImageView ivError3;
+    private ImageView ivError2;
+    private ImageView ivError3;
     private ImageView ivError4;
     private ImageView ivError5;
     private ImageView ivError6;
-    //private ImageView ivError7;
+    private ImageView ivError7;
     private ImageView ivError8;
     private ImageView ivError9;
+    private ImageView ivError10;
     //===================================================
     //===================  IMAGE VIEW  ========================================
     private ImageView ivDown1;
-    //private ImageView ivDown2;
-    //private ImageView ivDown3;
+    private ImageView ivDown2;
+    private ImageView ivDown3;
     private ImageView ivDown4;
     private ImageView ivDown5;
     private ImageView ivDown6;
-    //private ImageView ivDown7;
+    private ImageView ivDown7;
     private ImageView ivDown8;
     private ImageView ivDown9;
+    private ImageView ivDownBeni;
 
     private ImageView ivUp1;
-    //private ImageView ivUp2;
-    //private ImageView ivUp3;
+    private ImageView ivUp2;
+    private ImageView ivUp3;
     private ImageView ivUp4;
     private ImageView ivUp5;
     private ImageView ivUp6;
-    //private ImageView ivUp7;
+    private ImageView ivUp7;
     private ImageView ivUp8;
     private ImageView ivUp9;
+    private ImageView ivUpBeni;
     //=========================================================================
 
     private FloatingActionButton btnContinuar0;
@@ -440,6 +468,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     //private FloatingActionButton btnContinuar7;
     private FloatingActionButton btnContinuar8;
     private FloatingActionButton btnContinuar5;
+    private FloatingActionButton btnContinuarBeni;
+
+
+    //=========================================================================
 
     private FloatingActionButton btnRegresar0;
     //private FloatingActionButton btnRegresar1;
@@ -450,6 +482,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     //private FloatingActionButton btnRegresar7;
     private FloatingActionButton btnRegresar8;
     private FloatingActionButton btnRegresar6;
+    private FloatingActionButton btnRegresarBeni;
 
     private LocationManager locationManager;
     private MyCurrentListener locationListener;
@@ -458,7 +491,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
     private String id_credito = "";
     private String id_integrante = "";
-
+    private String id_Cliente = " ";
     private ArrayList<Integer> selectedItemsMediosPago;
 
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -470,6 +503,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     boolean pushMapButtonCli = false;
     boolean pushMapButtonNeg = false;
 
+    SolicitudCreditoGpo soli = new SolicitudCreditoGpo();
+
+    long id_solicitud = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -479,7 +516,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         dBhelper = new DBhelper(ctx);
         db = dBhelper.getWritableDatabase();
         myCalendar = Calendar.getInstance();
-        
+        //id_Cliente = id_integrante;
+
         m = new Miscellaneous();
 
         /**Se cargan los catalogos de los selectores*/
@@ -558,6 +596,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         rgFirmaRuegoEncargo = findViewById(R.id.rgFirmaRuegoEncargo);
         llNombreFirmaRuegoEncargo = findViewById(R.id.llNombreFirmaRuegoEncargo);
         etNombreFirmaRuegoEncargo = findViewById(R.id.etNombreFirmaRuegoEncargo);
+
+        //==========================================================================================
+        //===================================  DATOS BENEFICIARIO  =================================
+
+
+        llDatosBeneficiario       = findViewById(R.id.llDatosBeneficiario);
+        txtNombreBeneficiario     = findViewById(R.id.txtNombreBeneficiario);
+        txtApellidoPaterno        = findViewById(R.id.txtApellidoPaternoBeneficiario);
+        txtApellidoMaterno        = findViewById(R.id.txtApellidoMaternoBeneficiario);
+        txtParentescoBeneficiario = findViewById(R.id.txtParentezcoBeneficiario);
+
+        txtParentescoBeneficiario.setOnClickListener(txtBeneficiario_OnClick);
+
+
         //==========================================================================================
         //===================================  DATOS NEGOCIO  ======================================
         etNombreNeg             = findViewById(R.id.etNombreNeg);
@@ -693,6 +745,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //ivError7 = findViewById(R.id.ivError7);
         ivError8 = findViewById(R.id.ivError8);
         ivError9 = findViewById(R.id.ivError9);
+        ivError10 = findViewById(R.id.ivError10);
+
         //=========================================================
         //============================ IMAGE VIEW UP|DOWN  =========================================
         ivDown1 = findViewById(R.id.ivDown1);
@@ -704,6 +758,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //ivDown7 = findViewById(R.id.ivDown7);
         ivDown8 = findViewById(R.id.ivDown8);
         ivDown9 = findViewById(R.id.ivDown9);
+        ivDownBeni = findViewById(R.id.ivDownBeni);
 
         ivUp1 = findViewById(R.id.ivUp1);
         //ivUp2 = findViewById(R.id.ivUp2);
@@ -714,11 +769,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //ivUp7 = findViewById(R.id.ivUp7);
         ivUp8 = findViewById(R.id.ivUp8);
         ivUp9 = findViewById(R.id.ivUp9);
+        ivUpBeni = findViewById(R.id.ivUpBeni);
         //=========================================================
         //================ LINEAR LAYOUT  =========================
         llDatosPersonales   = findViewById(R.id.llDatosPersonales);
         llDatosTelefonicos  = findViewById(R.id.llDatosTelefonicos);
         llDatosDomicilio    = findViewById(R.id.llDatosDomicilio);
+
         llDatosNegocio      = findViewById(R.id.llDatosNegocio);
         llDatosConyuge      = findViewById(R.id.llDatosConyuge);
         llOtrosDatos        = findViewById(R.id.llOtrosDatos);
@@ -727,6 +784,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llDatosDocumentos   = findViewById(R.id.llDatosDocumentos);
 
         llPersonales    = findViewById(R.id.llPersonales);
+        llBeneficiario  = findViewById(R.id.llBeneficiario);
         //llTelefonicos   = findViewById(R.id.llTelefonicos);
         //llDomicilio     = findViewById(R.id.llDomicilio);
         llNegocio       = findViewById(R.id.llNegocio);
@@ -745,6 +803,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
         btnContinuar5 = findViewById(R.id.btnContinuar5);
+        btnContinuarBeni = findViewById(R.id.btnContinuarBeni);
 
         btnRegresar0 = findViewById(R.id.btnRegresar0);
         //btnRegresar1 = findViewById(R.id.btnRegresar1);
@@ -755,6 +814,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
         btnRegresar6 = findViewById(R.id.btnRegresar6);
+        btnRegresarBeni = findViewById(R.id.btnRegresarBeni);
 
         mapCli.onCreate(savedInstanceState);
         mapNeg.onCreate(savedInstanceState);
@@ -812,6 +872,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         llPersonales.setOnClickListener(llPersonales_OnClick);
         //llTelefonicos.setOnClickListener(llTelefonicos_OnClick);
         //llDomicilio.setOnClickListener(llDomicilio_OnClick);
+        llBeneficiario.setOnClickListener(llBeneficiario_OnClick);
         llNegocio.setOnClickListener(llNegocio_OnClick);
         llConyuge.setOnClickListener(llConyuge_OnClick);
         llOtros.setOnClickListener(llOtros_OnClick);
@@ -1267,6 +1328,89 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 }
             }
         });
+        //==========================================================================================
+        //==================================  NEGOCIO BENEFICIARIO  ================================
+
+        txtNombreBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("nombre", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
+                }else
+                    Update("nombre", TBL_DATOS_BENEFICIARIO_GPO, " ", "id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtApellidoPaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("paterno", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("paterno",TBL_DATOS_BENEFICIARIO_GPO," ","id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtApellidoMaterno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO,editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO," ","id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
+        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()>0){
+                    Update("parentesco", TBL_DATOS_BENEFICIARIO_GPO, editable.toString().trim().toUpperCase(),"id_integrante",String.valueOf(id_integrante));
+                }else
+                    Update("parentesco",TBL_DATOS_BENEFICIARIO_GPO, " ", "id_integrante",String.valueOf(id_integrante));
+            }
+        });
+
         //===========================================================================
         //==================================  NEGOCIO LISTENER  ====================================
         /**Evento de click e ingreso de datos en la seccion del negocio asi como el actualizado
@@ -2508,6 +2652,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         btnContinuar5.setOnClickListener(btnContinuar5_OnClick);
         //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
+        btnContinuarBeni.setOnClickListener(btnContinuarBeni_OnClick);
 
         btnRegresar0.setOnClickListener(btnRegresar0_OnClick);
         //btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
@@ -2518,6 +2663,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
+        btnRegresarBeni.setOnClickListener(btnRegresarBeni_OnClick);
 
         //================================  CLIENTE GENERO LISTENER  ===============================
         /**Evento de click a radiogroup en las secciones asi como el actualizado
@@ -2695,6 +2841,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         tvCargo.setOnClickListener(v -> {
             openRegistroIntegrante(id_credito, id_integrante);
         });
+
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -2744,6 +2891,22 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivUp3.setVisibility(View.GONE);
                 llDatosDomicilio.setVisibility(View.GONE);
             }*/
+        }
+    };
+
+    private View.OnClickListener llBeneficiario_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(ivDownBeni.getVisibility() == View.VISIBLE && ivUpBeni.getVisibility() == View.GONE){
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                txtNombreBeneficiario.requestFocus();
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+            }else if(ivDownBeni.getVisibility() == View.GONE && ivUpBeni.getVisibility() == View.VISIBLE){
+                ivDownBeni.setVisibility(View.VISIBLE);
+                ivUpBeni.setVisibility(View.GONE);
+                llDatosBeneficiario.setVisibility(View.GONE);
+            }
         }
     };
 
@@ -2844,9 +3007,24 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
     };
 
-    private void ClickDefault(){
+    private View.OnClickListener txtBeneficiario_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle(R.string.selected_option)
+                    .setItems(_parentesco, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int position) {
+                            txtParentescoBeneficiario.setError(null);
+                            txtParentescoBeneficiario.setText(_parentesco[position]);
+                        }
+                    });
+            builder.create();
+            builder.show();
+        }
+    };
+    
 
-    }
     //==============================================================================================
     //============================ ACTION PERSONALES  ==============================================
     /**Evento de click para abrir un calendario para seleccionar la fecha de nacimiento del cliente*/
@@ -4044,22 +4222,25 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 etNombreCony.requestFocus();
             }
             else{
-                ivDown4.setVisibility(View.GONE);
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+               /* ivDown4.setVisibility(View.GONE);
                 ivUp4.setVisibility(View.VISIBLE);
                 llDatosNegocio.setVisibility(View.VISIBLE);
-                etNombreNeg.requestFocus();
+                etNombreNeg.requestFocus();*/
             }
         }
     };
     private View.OnClickListener btnContinuar1_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //ivDown3.setVisibility(View.GONE);
-            //ivUp3.setVisibility(View.VISIBLE);
+            ivDown3.setVisibility(View.GONE);
+            ivUp3.setVisibility(View.VISIBLE);
             llDatosDomicilio.setVisibility(View.VISIBLE);
 
-            //ivDown2.setVisibility(View.VISIBLE);
-            //ivUp2.setVisibility(View.GONE);
+            ivDown2.setVisibility(View.VISIBLE);
+            ivUp2.setVisibility(View.GONE);
             llDatosTelefonicos.setVisibility(View.GONE);
 
             etCalleCli.requestFocus();
@@ -4073,17 +4254,32 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             llDatosNegocio.setVisibility(View.VISIBLE);
             etNombreNeg.requestFocus();
 
-            //ivDown3.setVisibility(View.VISIBLE);
-            //ivUp3.setVisibility(View.GONE);
+            ivDown3.setVisibility(View.VISIBLE);
+            ivUp3.setVisibility(View.GONE);
             llDatosDomicilio.setVisibility(View.GONE);
         }
     };
+
+    private View.OnClickListener btnContinuarBeni_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivUpBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+
+            ivDown4.setVisibility(View.GONE);
+            ivUp4.setVisibility(View.VISIBLE);
+            llDatosNegocio.setVisibility(View.VISIBLE);
+
+        }
+    };
+
     private View.OnClickListener btnContinuar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown4.setVisibility(View.VISIBLE);
-            ivUp4.setVisibility(View.GONE);
-            llDatosNegocio.setVisibility(View.GONE);
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivUpBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
 
             ivDown8.setVisibility(View.GONE);
             ivUp8.setVisibility(View.VISIBLE);
@@ -4091,6 +4287,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             etEmail.requestFocus();
         }
     };
+
+
     private View.OnClickListener btnContinuar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4174,17 +4372,17 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp1.setVisibility(View.VISIBLE);
             llDatosPersonales.setVisibility(View.VISIBLE);
 
-            //ivDown2.setVisibility(View.VISIBLE);
-            //ivUp2.setVisibility(View.GONE);
+            ivDown2.setVisibility(View.VISIBLE);
+            ivUp2.setVisibility(View.GONE);
             llDatosTelefonicos.setVisibility(View.GONE);
-            //etNombreCli.requestFocus();
+            etNombreCli.requestFocus();
         }
     };
     private View.OnClickListener btnRegresar2_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //ivDown2.setVisibility(View.GONE);
-            //ivUp2.setVisibility(View.VISIBLE);
+            ivDown2.setVisibility(View.GONE);
+            ivUp2.setVisibility(View.VISIBLE);
             llDatosTelefonicos.setVisibility(View.VISIBLE);
 
             //ivDown3.setVisibility(View.VISIBLE);
@@ -4196,9 +4394,13 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     private View.OnClickListener btnRegresar3_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ivDown4.setVisibility(View.VISIBLE);
+            ivDownBeni.setVisibility(View.GONE);
+            ivUpBeni.setVisibility(View.VISIBLE);
+            llDatosBeneficiario.setVisibility(View.VISIBLE);
+
+           /* ivDown4.setVisibility(View.VISIBLE);
             ivUp4.setVisibility(View.GONE);
-            llDatosNegocio.setVisibility(View.GONE);
+            llDatosNegocio.setVisibility(View.GONE);*/
 
             if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
                 ivDown5.setVisibility(View.GONE);
@@ -4211,9 +4413,14 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 ivUp1.setVisibility(View.VISIBLE);
                 llDatosPersonales.setVisibility(View.VISIBLE);
                 etNombreCli.requestFocus();
+                //ivDownBeni.setVisibility(View.GONE);
+                //ivUpBeni.setVisibility(View.VISIBLE);
+                //llDatosBeneficiario.setVisibility(View.VISIBLE);
+                //txtNombreBeneficiario.requestFocus();
             }
         }
     };
+
     private View.OnClickListener btnRegresar4_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4221,13 +4428,40 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp1.setVisibility(View.VISIBLE);
             llDatosPersonales.setVisibility(View.VISIBLE);
 
-            ivDown5.setVisibility(View.VISIBLE);
-            ivUp5.setVisibility(View.GONE);
-            llDatosConyuge.setVisibility(View.GONE);
+            if(m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")){
+                ivDown5.setVisibility(View.VISIBLE);
+                ivUp5.setVisibility(View.GONE);
+                llDatosConyuge.setVisibility(View.GONE);
 
-            etNombreCli.requestFocus();
+                etNombreCli.requestFocus();
+            }else{
+                ivDownBeni.setVisibility(View.GONE);
+                ivUpBeni.setVisibility(View.VISIBLE);
+                llDatosBeneficiario.setVisibility(View.VISIBLE);
+            }
         }
     };
+
+    private View.OnClickListener btnRegresarBeni_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ivDown1.setVisibility(View.GONE);
+            ivUp1.setVisibility(View.VISIBLE);
+            llDatosPersonales.setVisibility(View.VISIBLE);
+
+            if (m.GetStr(tvEstadoCivilCli).equals("CASADO(A)") || m.GetStr(tvEstadoCivilCli).equals("UNION LIBRE")) {
+                ivDown5.setVisibility(View.GONE);
+                ivUp5.setVisibility(View.VISIBLE);
+                llDatosConyuge.setVisibility(View.VISIBLE);
+                etNombreCony.requestFocus();
+            }
+
+            ivDownBeni.setVisibility(View.VISIBLE);
+            ivUpBeni.setVisibility(View.GONE);
+            llDatosBeneficiario.setVisibility(View.GONE);
+        }
+    };
+
     private View.OnClickListener btnRegresar5_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -4257,8 +4491,8 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             ivUp6.setVisibility(View.VISIBLE);
             llOtrosDatos.setVisibility(View.VISIBLE);
 
-            //ivDown7.setVisibility(View.VISIBLE);
-            //ivUp7.setVisibility(View.GONE);
+            ivDown7.setVisibility(View.VISIBLE);
+            ivUp7.setVisibility(View.GONE);
             llDatosCroquis.setVisibility(View.GONE);
         }
     };
@@ -4288,6 +4522,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
             llDatosPoliticas.setVisibility(View.VISIBLE);
         }
     };
+
 
     /**Evento para recibir como respuesta la fecha y de donde fue la peticion*/
     public void setDate (String date, String campo){
@@ -5226,6 +5461,20 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         if (row.getString(16) != null && !row.getString(16).trim().isEmpty()) etMontoRefinanciar.setText(dfnd.format(row.getInt(16)));
         etMontoRefinanciar.setEnabled(is_edit);
 
+        Cursor row1  = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO_GPO, " WHERE id_integrante = ?", " ", new String[]{id_integrante});
+
+        if(row1.getCount()>0){
+            row1.moveToFirst();
+            txtNombreBeneficiario.setText(row1.getString(6).trim().toUpperCase());
+            txtApellidoPaterno.setText(row1.getString(7).trim().toUpperCase());
+            txtApellidoMaterno.setText(row1.getString(8).trim().toUpperCase());
+            txtParentescoBeneficiario.setText(row1.getString(9).trim().toUpperCase());
+            row1.close();
+        }else
+            Toast.makeText(ctx,"NO HAY DATOS EN LA BASE",Toast.LENGTH_SHORT).show();
+
+
+
         /**Consulta para obtener si algun integrante ya establecio su casa para las reuniones,
          * se deshabilitará la opcion para los demas integrantes*/
         Cursor row_casa = dBhelper.customSelect(TBL_INTEGRANTES_GPO + " AS i INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS od ON od.id_integrante = i.id", "i.id", " WHERE i.id_credito = " + id_credito + " AND od.casa_reunion = 1 AND i.estatus_completado IN (0,1,2)", "", null);
@@ -5739,6 +5988,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
     }
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del negocio*/
     private boolean saveDatosNegocio(){
+
         boolean save_negocio = false;
         if (
             !validator.validate(etNombreNeg, new String[]{validator.REQUIRED, validator.GENERAL})
@@ -5885,8 +6135,6 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                         {
                             ivError4.setVisibility(View.VISIBLE);
                         }
-
-
                     }
                     else
                         ivError4.setVisibility(View.VISIBLE);
@@ -5922,6 +6170,71 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
         }
 
         return save_negocio;
+    }
+
+    /**Funcion para validar los campos y actualizas la columnas del registro de los datos del beneficiario */
+    private boolean saveBeneficiario(){
+
+        id_solicitud = DatosCompartidos.getInstance().getId_solicitud();
+
+        boolean save_beneficiario = false;
+
+        ContentValues cv = new ContentValues();
+
+        int grupo_id = BeneficiarioRenDao.obtenerGrupoId(id_solicitud,ctx); //m.obtenerGrupoId(id_solicitud,ctx);
+
+        int id_cliente = BeneficiarioRenDao.obtenerClienteId(Integer.parseInt(id_integrante),ctx);//m.obtenerClienteId(Integer.valueOf(id_integrante),ctx);
+
+        boolean estatus = BeneficiarioRenDao.validarBeneficiarioGPO(Integer.parseInt(id_integrante),ctx);
+
+        int serieIdA = BeneficiarioRenDao.obtenerSerieAsesor(ctx);//m.obtenerSerieAsesor(ctx);
+
+        int id_solicitud_integrante = BeneficiarioRenDao.obtenerIdSolicitud(id_cliente,ctx);
+
+        if(serieIdA == 0){
+            serieIdA = 000;
+        }
+
+        if(!validator.validate(txtNombreBeneficiario, new String[]{validator.REQUIRED})){
+            if(!validator.validate(txtApellidoPaterno,new String[]{validator.ONLY_TEXT})){
+                if(!validator.validate(txtApellidoMaterno,new String[]{validator.ONLY_TEXT})){
+                    if(!validatorTV.validate(txtParentescoBeneficiario, new String[]{validatorTV.REQUIRED})){
+                        //boolean estatus = m.validarBeneficiario(Integer.parseInt(id_integrante),ctx);
+
+                        cv.put("id_solicitud",id_solicitud);
+                        cv.put("id_solicitud_integrante",id_solicitud_integrante);
+                        cv.put("id_cliente",id_cliente);
+                        cv.put("id_integrante",id_integrante);
+                        cv.put("id_grupo",grupo_id );
+                        cv.put("nombre",m.GetStr(txtNombreBeneficiario));
+                        cv.put("paterno",m.GetStr(txtApellidoPaterno));
+                        cv.put("materno",m.GetStr(txtApellidoMaterno));
+                        cv.put("parentesco",m.GetStr(txtParentescoBeneficiario));
+                        cv.put("serieid",serieIdA);
+                        if(!estatus){
+                            db.insert(TBL_DATOS_BENEFICIARIO_GPO, null, cv);
+                        }
+                        if(estatus){
+                            db.update(TBL_DATOS_BENEFICIARIO_GPO, cv, "id_integrante = ?",new String[]{String.valueOf(id_integrante)});
+                        }
+                        save_beneficiario = true;
+                    }else{
+                        ivError1.setVisibility(View.VISIBLE);
+                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                    }
+                }else{
+                    ivError1.setVisibility(View.VISIBLE);
+                    txtApellidoMaterno.setError("CAMPO REQUERIDO");
+                }
+            }else{
+                ivError1.setVisibility(View.VISIBLE);
+                txtApellidoPaterno.setError("CAMPO REQUERIDO");
+            }
+        }else{
+            ivError1.setVisibility(View.VISIBLE);
+            txtNombreBeneficiario.setError("CAMPO REQUERIDO");
+        }
+        return save_beneficiario;
     }
 
     /**Funcion para validar los campos y actualizar la columnas del registro de los datos del conyuge*/
@@ -6228,6 +6541,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                 /**Funcion para guardar los datos de las secciones y obtener un estatus
                  * para saber si guardo o no los datos*/
                 boolean datos_personales = saveDatosIntegrante();
+                boolean datos_beneficiario = saveBeneficiario();
                 boolean datos_telefonicos = saveDatosTelefonicos();
                 boolean datos_domiclio = saveDatosDomicilio();
                 boolean datos_negocio = saveDatosNegocio();
@@ -6266,7 +6580,7 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
 
                 /**Se valida si todos los estatus de las secciones que fueron guardados*/
                 if (datos_personales && datos_telefonicos && datos_domiclio && datos_negocio &&
-                datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos){
+                datos_conyuge && datos_otros && datos_croquis && datos_politicas && datos_documentos && datos_beneficiario){
                     /**se actualizan los estatus a completado para que despues no pueda hacer modificaciones*/
                     Update("estatus_completado", TBL_INTEGRANTES_GPO, "1", "id", id_integrante);
                     /**limpa la columna de comentario de rechazo para saber que ya completo la solicitud
@@ -6759,8 +7073,10 @@ public class AgregarIntegrante extends AppCompatActivity implements dialog_regis
                     });
             Objects.requireNonNull(solicitud.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
             solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            saveBeneficiario();
             solicitud.setCancelable(true);
             solicitud.show();
+            saveBeneficiario();
         }
         else
             finish();

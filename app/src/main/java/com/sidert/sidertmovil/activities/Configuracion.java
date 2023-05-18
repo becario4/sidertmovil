@@ -1,9 +1,14 @@
 package com.sidert.sidertmovil.activities;
 
+import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 /*import androidx.appcompat.app.AlertDialog;
@@ -15,6 +20,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.CookieManager;
+import android.webkit.URLUtil;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -22,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.downloadapk.MyReceiverApk;
@@ -64,10 +73,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -76,6 +88,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
+import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS_CC;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
@@ -98,8 +112,18 @@ public class Configuracion extends AppCompatActivity {
     private CardView cvSincronizarIntegrantesRen;
     private CardView cvCompletarIntegrantesRen;
     private CardView cvCatSolicitud;
+    private CardView cvDescargarGuia;
+    private CardView cvBorrarCache;
+
+    private LinearLayout llBorrarCache;
+
+
+    private String[] _tablas;
+
+    private ArrayList<Integer> selectItemsDelete;
 
     private SessionManager session;
+    private Miscellaneous m = new Miscellaneous();
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -131,11 +155,15 @@ public class Configuracion extends AppCompatActivity {
         sincronizarMunicipios                    = findViewById(R.id.sincronizarMunicipios);
         cvCompletarIntegrantesRen                = findViewById(R.id.cvCompletarIntegrantesRen);
         cvCatSolicitud                           = findViewById(R.id.cvCatSolicitud);
+        cvDescargarGuia                          = findViewById(R.id.cvDownloadGuia);
+        cvBorrarCache                            = findViewById(R.id.cvBorrarCache);
 
         CardView cvFichasGestionadas = findViewById(R.id.cvFichasGestionadas);
         CardView cvCatalogos = findViewById(R.id.cvCatalogos);
         CardView cvDownloadApk = findViewById(R.id.cvDownloadApk);
         CardView cvFechaHora = findViewById(R.id.cvFechaHora);
+
+        _tablas = getResources().getStringArray(R.array.tablas_cache);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -173,6 +201,20 @@ public class Configuracion extends AppCompatActivity {
         cvDownloadApk.setOnClickListener(cvDownloadApk_OnClick);
         /**Evento para abrir la configuracion de fecha y hora se encuentra oculto este boton*/
         cvFechaHora.setOnClickListener(cvFechaHora_OnClick);
+        /**Evento para descargar la guia de usuarios para asesores y gestores*/
+        cvDescargarGuia.setOnClickListener(cvDescargarGuia_OnClick);
+        /** Evento para borrar la cache del dispotisivo*/
+
+        llBorrarCache = findViewById(R.id.llBorrarCache);
+
+        String dato = tipoUsuarioRol(session);
+
+        if(dato.contains("ROLE_SUPER") || dato.contains("ROLE_ASESOR")){
+            cvBorrarCache.setOnClickListener(cvBorrarCache_OnClick);
+            llBorrarCache.setVisibility(View.VISIBLE);
+        }else{
+            llBorrarCache.setVisibility(View.GONE);
+        }
 
         try {
             if (session.getUser().get(8) != null)
@@ -265,6 +307,161 @@ public class Configuracion extends AppCompatActivity {
             }
         }
     };
+
+    private View.OnClickListener cvDescargarGuia_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            String valor = "guia_rapida.pdf";
+
+            String result = tipoUsuarioRol(session);
+            if(result.contains("ROLE_ASESOR") || result.contains("ROLE_GERENTEREGIONAL") || result.contains("ROLE_GERENTESUCURSAL") || result.contains("ROLE_GERENTECARTERAVENCIDA")){
+                valor = "guia_asesor.pdf";
+
+            }else if(result.contains("ROLE_GESTOR")){
+                valor = "guia_rapida.pdf";
+            }
+            File guiaAsesor = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/guia_asesor.pdf");
+            File guiaRapida = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/guia_rapida.pdf");
+
+            if(guiaAsesor.exists() || guiaRapida.exists() ){
+                Toast.makeText(ctx, "EL ARCHIVO YA EXISTE", Toast.LENGTH_SHORT).show();
+            }else{
+
+                try{
+                    String base_url = "http://187.188.168.167:83/api/movil/descargarFile/" + valor + "/";
+                    // session.getDominio().get(0) + session.getDominio().get(1) + WebServicesRoutes.CONTROLLER_DESCARGARGUIA+"/"+ valor+"/";
+
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(base_url));
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+
+                    String texto = URLUtil.guessFileName(base_url,null,null);
+
+
+                    request.setTitle(valor);
+                    request.setDescription("Descargando el archivo por favor espera...");
+
+                    String cookie = CookieManager.getInstance().getCookie(base_url);
+
+                    request.allowScanningByMediaScanner();
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOCUMENTS,valor);
+
+                    DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+                    downloadManager.enqueue(request);
+
+                    if(downloadManager != null){
+                        Toast.makeText(ctx,"Guía descargada",Toast.LENGTH_SHORT).show();
+                    }
+
+                }catch (Exception e){
+                    Toast.makeText(ctx, "Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
+
+    private String tipoUsuarioRol(SessionManager sen){
+        String tipoUser = " ";
+        Home tipoRol = new Home();
+        try {
+            tipoUser = tipoRol.getTipoRolA(sen);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tipoUser;
+    }
+
+    private View.OnClickListener cvBorrarCache_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try{
+                selectItemsDelete = new ArrayList<>();
+                new AlertDialog.Builder(Configuracion.this)
+                        .setTitle("Selecciona la cache a borrar")
+                        .setMultiChoiceItems(_tablas, null, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+                                if(isChecked){
+                                    selectItemsDelete.add(i);
+                                }else if(selectItemsDelete.contains(i)){
+                                    selectItemsDelete.remove(Integer.valueOf(i));
+                                }
+                            }
+                        })
+                        .setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int id) {
+                                String tablas = " ";
+                                Collections.sort(selectItemsDelete);
+                                for (int i = 0; i < selectItemsDelete.size(); i++) {
+                                    if (i == 0)
+                                        tablas += _tablas[selectItemsDelete.get(i)];
+                                    else
+                                        tablas += ", " + _tablas[selectItemsDelete.get(i)];
+                                }
+                                int dato = deleteTable(tablas);
+                                if(dato != 0){
+                                    Toast.makeText(ctx, "SE HA BORRADO LA CACHE", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(ctx,"NO SE HA BORRADO LA CACHE", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int id) {
+                        Toast.makeText(ctx,"NO SE HA BORRADO LA CACHE", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
+            }catch (Exception e){
+                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private Miscellaneous misce = new Miscellaneous();
+    private int deleteTable(String tablas){
+        String tablaDelete=tablas;
+        Cursor eliminarTablet = null;
+        int idTest = 1;//SIEMPRE SE ENVIA 1, DADO QUE 1, ES EL VALOR DE UN ESTATUS NO EVIADO
+        int dato = 0;
+        int validacion = 0;
+        validacion = misce.validarEstatus(tablas,ctx);
+
+        if(validacion > 0){
+            dato = 0;
+        }else {
+           /* if(tablas.contains("tb_tabla_test")){
+                eliminarTablet = dBhelper.deleteData(tablaDelete,"_id=?",new String[]{String.valueOf(idTest)});
+                if(eliminarTablet.getCount()==0){
+                    dato = 1; //EL DATO HA SIDO BORRADO
+                }else{
+                    dato = 0;//EL DATO NO FUE BORRADO
+                }
+            }else */
+            if(tablas.contains(TBL_RECUPERACION_RECIBOS_CC)){
+                eliminarTablet = dBhelper.deleteData(tablaDelete,new String[]{String.valueOf(idTest)});
+
+                if(eliminarTablet.getCount()==0){
+                    dato = 1;
+                }else{
+                    dato = 0;
+                }
+            }
+            if(tablas.contains(TBL_RECIBOS_AGF_CC)){
+                eliminarTablet = dBhelper.deleteData(tablaDelete,new String[]{String.valueOf(idTest)});
+                if(eliminarTablet.getCount()==0){
+                    dato = 1;
+                }else{
+                    dato = 0;
+                }
+            }
+        }
+        dato += dato;
+
+        return dato;
+    }
+
 
     /**Evento para sincronizar lo que esta pendiente de envio*/
     private View.OnClickListener cvSincronizarFichas_OnClick = new View.OnClickListener() {

@@ -69,7 +69,6 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.view_pager.vencida_ind_fragment;
 import com.sidert.sidertmovil.models.ImagenRender;
 import com.sidert.sidertmovil.models.MImpresion;
-import com.sidert.sidertmovil.services.Render.RenderImagen;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -81,6 +80,7 @@ import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
@@ -168,7 +168,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity {
+public class VencidaIntegrante extends AppCompatActivity {
+
+    //<ActivityResultCallback>
 
     private Toolbar tbMain;
 
@@ -988,120 +990,81 @@ public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity
     private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i = new Intent(ctx, CameraVertical.class);
+            Intent i = new Intent(VencidaIntegrante.this, CameraVertical.class);
             i.putExtra(ORDER_ID, id_prestamo);
             startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+            //i.putExtra(ORDER_ID,id_prestamo);
+            //setResult(10, i);
+            //galeriaLaucher.launch(i);
         }
     };
 
     private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            /*if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
             } else {
                 int compress = 10;
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                if (Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
                     compress = 40;
+
                 CropImage.activity()
                         .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
+                        .setMinCropWindowSize(3000, 4000)
                         .setOutputCompressQuality(compress)
-                        .start(VencidaIntegrante.this);*/
+                        .start(VencidaIntegrante.this);
+
                /* Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 gallery.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);*/
-            //}
-            try{
-                galeriaLaucher.launch(new Intent(String.valueOf(MediaStore.Images.Media.INTERNAL_CONTENT_URI)));
-            }catch (Exception e){
-                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
-                Log.e("Error: ", e.getMessage());
-                e.printStackTrace();
+
+                //Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                //setResult(REQUEST_CODE_GALERIA, gallery);
+                //galeriaLaucher.launch(gallery);
+
+
             }
         }
     };
 
     private View.OnClickListener ibFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i = new Intent(ctx, CameraVertical.class);
-            i.putExtra(ORDER_ID, id_prestamo);
-            startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
-        }
-    };
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ctx, CameraVertical.class);
+                i.putExtra(ORDER_ID, id_prestamo);
+                startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
+            }
+        };
 
     private View.OnClickListener ibFirma_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent sig = new Intent(ctx, CapturarFirma.class);
-            sig.putExtra(TIPO,"");
-            startActivityForResult(sig, REQUEST_CODE_FIRMA);
-        }
-    };
+            @Override
+            public void onClick(View v) {
+                Intent sig = new Intent(ctx, CapturarFirma.class);
+                sig.putExtra(TIPO, "");
+                startActivityForResult(sig, REQUEST_CODE_FIRMA);
+            }
+        };
 
     private View.OnClickListener tvContacto_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.contacto_cliente, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvContacto.setError(null);
-                            etComentario.setText("");
-                            tvContacto.setText(_contacto[position]);
-                            tvActualizarTelefono.setError(null);
-                            tvFachada.setError(null);
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.contacto_cliente, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvContacto.setError(null);
+                                etComentario.setText("");
+                                tvContacto.setText(_contacto[position]);
+                                tvActualizarTelefono.setError(null);
+                                tvFachada.setError(null);
 
-                            Cursor row;
-                            row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
-                            row.moveToLast();
-                            Log.e("TotasResp", "asd"+row.getCount());
-                            if (row.getCount() == 0) {
-                                String fechaInicio = m.ObtenerFecha(TIMESTAMP);
-                                fechaIni = fechaInicio;
-                                HashMap<Integer, String> params = new HashMap<>();
-                                params.put(0, id_prestamo);
-                                params.put(1, id_integrante);
-                                params.put(2, "");
-                                params.put(3, "");
-                                params.put(4, _contacto[position]);
-                                params.put(5, "");
-                                params.put(6, "");
-                                params.put(7, "");
-                                params.put(8, "");
-                                params.put(9, "");
-                                params.put(10, "");
-                                params.put(11, "");
-                                params.put(12, "");
-                                params.put(13, "");
-                                params.put(14, "");
-                                params.put(15, "");
-                                params.put(16, "");
-                                params.put(17, "");
-                                params.put(18, "");
-                                params.put(19, "");
-                                params.put(20, "");
-                                params.put(21, "");
-                                params.put(22, "");
-                                params.put(23, fechaInicio);
-                                params.put(24, "");
-                                params.put(25, "");
-                                params.put(26, "0");
-                                params.put(27, "0");
-                                params.put(28, "");
-                                params.put(29, "");
-                                params.put(30, "");
-                                params.put(31, "0");
-                                params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
-                                long id = 0;
-
-                                id = dBhelper.saveRespuestasVencidasInt(db, params);
-
-                                id_respuesta = String.valueOf(id);
-                            } else {
-                                if (row.getInt(27) > 0) {
+                                Cursor row;
+                                row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE id_prestamo = ? AND id_integrante = ?", " ORDER BY _id ASC", new String[]{id_prestamo, id_integrante});
+                                row.moveToLast();
+                                Log.e("TotasResp", "asd" + row.getCount());
+                                if (row.getCount() == 0) {
                                     String fechaInicio = m.ObtenerFecha(TIMESTAMP);
                                     fechaIni = fechaInicio;
                                     HashMap<Integer, String> params = new HashMap<>();
@@ -1137,986 +1100,951 @@ public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity
                                     params.put(29, "");
                                     params.put(30, "");
                                     params.put(31, "0");
-                                    params.put(32, fechaInicio.replace("-","").replace(" ", "").replace(":","")+"-"+session.getUser().get(0)+"-"+num_prestamo+"-"+clave_cliente);
+                                    params.put(32, fechaInicio.replace("-", "").replace(" ", "").replace(":", "") + "-" + session.getUser().get(0) + "-" + num_prestamo + "-" + clave_cliente);
                                     long id = 0;
 
                                     id = dBhelper.saveRespuestasVencidasInt(db, params);
 
                                     id_respuesta = String.valueOf(id);
                                 } else {
-                                    Log.e("idRespuesta", row.getString(0));
-                                    id_respuesta = row.getString(0);
-                                    Update("contacto", _contacto[position]);
+                                    if (row.getInt(27) > 0) {
+                                        String fechaInicio = m.ObtenerFecha(TIMESTAMP);
+                                        fechaIni = fechaInicio;
+                                        HashMap<Integer, String> params = new HashMap<>();
+                                        params.put(0, id_prestamo);
+                                        params.put(1, id_integrante);
+                                        params.put(2, "");
+                                        params.put(3, "");
+                                        params.put(4, _contacto[position]);
+                                        params.put(5, "");
+                                        params.put(6, "");
+                                        params.put(7, "");
+                                        params.put(8, "");
+                                        params.put(9, "");
+                                        params.put(10, "");
+                                        params.put(11, "");
+                                        params.put(12, "");
+                                        params.put(13, "");
+                                        params.put(14, "");
+                                        params.put(15, "");
+                                        params.put(16, "");
+                                        params.put(17, "");
+                                        params.put(18, "");
+                                        params.put(19, "");
+                                        params.put(20, "");
+                                        params.put(21, "");
+                                        params.put(22, "");
+                                        params.put(23, fechaInicio);
+                                        params.put(24, "");
+                                        params.put(25, "");
+                                        params.put(26, "0");
+                                        params.put(27, "0");
+                                        params.put(28, "");
+                                        params.put(29, "");
+                                        params.put(30, "");
+                                        params.put(31, "0");
+                                        params.put(32, fechaInicio.replace("-", "").replace(" ", "").replace(":", "") + "-" + session.getUser().get(0) + "-" + num_prestamo + "-" + clave_cliente);
+                                        long id = 0;
 
-                                    Update("gerente", "");
-                                    Update("firma", "");
-                                    Update("evidencia", "");
-                                    Update("tipo_imagen", "");
+                                        id = dBhelper.saveRespuestasVencidasInt(db, params);
+
+                                        id_respuesta = String.valueOf(id);
+                                    } else {
+                                        Log.e("idRespuesta", row.getString(0));
+                                        id_respuesta = row.getString(0);
+                                        Update("contacto", _contacto[position]);
+
+                                        Update("gerente", "");
+                                        Update("firma", "");
+                                        Update("evidencia", "");
+                                        Update("tipo_imagen", "");
+                                    }
                                 }
-                            }
-                            SelectContactoCliente(position);
+                                SelectContactoCliente(position);
 
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener tvActualizarTelefono_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvActualizarTelefono.setError(null);
-                            tvActualizarTelefono.setText(_confirmacion[position]);
-                            Update("actualizar_telefono", _confirmacion[position]);
-                            SelectActualizarTelefono(position);
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvActualizarTelefono.setError(null);
+                                tvActualizarTelefono.setText(_confirmacion[position]);
+                                Update("actualizar_telefono", _confirmacion[position]);
+                                SelectActualizarTelefono(position);
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener tvResultadoGestion_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.resultado_gestion, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            byteEvidencia = null;
-                            ibFachada.setVisibility(View.VISIBLE);
-                            ivFachada.setVisibility(View.GONE);
-                            tvResultadoGestion.setError(null);
-                            tvResultadoGestion.setText(_resultado_gestion[position]);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.resultado_gestion, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                byteEvidencia = null;
+                                ibFachada.setVisibility(View.VISIBLE);
+                                ivFachada.setVisibility(View.GONE);
+                                tvResultadoGestion.setError(null);
+                                tvResultadoGestion.setText(_resultado_gestion[position]);
 
-                            Update("resultado_gestion", _resultado_gestion[position]);
+                                Update("resultado_gestion", _resultado_gestion[position]);
 
-                            SelectResultadoGestion(position);
-                        }
-                    });
-            builder.create();
-            builder.show();
+                                SelectResultadoGestion(position);
+                            }
+                        });
+                builder.create();
+                builder.show();
 
-        }
-    };
+            }
+        };
 
     private View.OnClickListener tvMedioPago_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(_mediosPago, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(_mediosPago, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
 
-                            tvMedioPago.setError(null);
-                            tvMedioPago.setText(_medio_pago[position]);
-                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6 && medio_pago_anterio >= 0) {
-                                Update("evidencia", "");
-                                Update("tipo_imagen", "");
-                                byteEvidencia = null;
+                                tvMedioPago.setError(null);
+                                tvMedioPago.setText(_medio_pago[position]);
+                                if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6 && medio_pago_anterio >= 0) {
+                                    Update("evidencia", "");
+                                    Update("tipo_imagen", "");
+                                    byteEvidencia = null;
 
-                                ibGaleria.setEnabled(false);
-                                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                                ibFoto.setVisibility(View.VISIBLE);
-                                ibGaleria.setVisibility(View.VISIBLE);
-                                llFotoGaleria.setVisibility(View.VISIBLE);
-                                ivEvidencia.setVisibility(View.GONE);
+                                    ibGaleria.setEnabled(false);
+                                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                                    ibFoto.setVisibility(View.VISIBLE);
+                                    ibGaleria.setVisibility(View.VISIBLE);
+                                    llFotoGaleria.setVisibility(View.VISIBLE);
+                                    ivEvidencia.setVisibility(View.GONE);
+                                } else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && medio_pago_anterio == 6) {
+                                    byteEvidencia = null;
+                                    Update("evidencia", "");
+                                    Update("tipo_imagen", "");
+                                    ibGaleria.setEnabled(true);
+                                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                                    ibFoto.setVisibility(View.VISIBLE);
+                                    ibGaleria.setVisibility(View.VISIBLE);
+                                    llFotoGaleria.setVisibility(View.VISIBLE);
+                                    ivEvidencia.setVisibility(View.GONE);
+                                }
+                                medio_pago_anterio = position;
+                                Update("medio_pago", _medio_pago[position]);
+                                SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
                             }
-                            else if(m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && medio_pago_anterio == 6){
-                                byteEvidencia = null;
-                                Update("evidencia", "");
-                                Update("tipo_imagen", "");
-                                ibGaleria.setEnabled(true);
-                                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
-                                ibFoto.setVisibility(View.VISIBLE);
-                                ibGaleria.setVisibility(View.VISIBLE);
-                                llFotoGaleria.setVisibility(View.VISIBLE);
-                                ivEvidencia.setVisibility(View.GONE);
-                            }
-                            medio_pago_anterio = position;
-                            Update("medio_pago", _medio_pago[position]);
-                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener tvFechaDeposito_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dialog_date_picker dialogDatePicker = new dialog_date_picker();
-            Bundle b = new Bundle();
+            @Override
+            public void onClick(View v) {
+                dialog_date_picker dialogDatePicker = new dialog_date_picker();
+                Bundle b = new Bundle();
 
-            b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
-            b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
-            b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
-            b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
-            b.putInt(Constants.IDENTIFIER, 10);
-            b.putBoolean(Constants.FECHAS_POST, false);
-            dialogDatePicker.setArguments(b);
-            dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
+                b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
+                b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
+                b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
+                b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
+                b.putInt(Constants.IDENTIFIER, 10);
+                b.putBoolean(Constants.FECHAS_POST, false);
+                dialogDatePicker.setArguments(b);
+                dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
 
-        }
-    };
+            }
+        };
 
     private View.OnClickListener tvPagaraRequerido_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvPagaraRequerido.setError(null);
-                            tvPagaraRequerido.setText(_confirmacion[position]);
-                            Update("pagara_requerido", _confirmacion[position]);
-                            switch (position) {
-                                case 0:
-                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
-                                        etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
-                                    else
-                                        etPagoRealizado.setText(monto_requerido);
-                                    if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",","")) > 0) {
-                                        SelectPagoRequerido(0);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvPagaraRequerido.setError(null);
+                                tvPagaraRequerido.setText(_confirmacion[position]);
+                                Update("pagara_requerido", _confirmacion[position]);
+                                switch (position) {
+                                    case 0:
+                                        if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                            etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
+                                        else
+                                            etPagoRealizado.setText(monto_requerido);
+                                        if (!etPagoRealizado.getText().toString().trim().isEmpty() && Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", "")) > 0) {
+                                            SelectPagoRequerido(0);
 
-                                    } else {
-                                        Toast.makeText(ctx, "No se pueden capturar pagos iguales a cero", Toast.LENGTH_SHORT).show();
-                                        tvPagaraRequerido.setText("");
+                                        } else {
+                                            Toast.makeText(ctx, "No se pueden capturar pagos iguales a cero", Toast.LENGTH_SHORT).show();
+                                            tvPagaraRequerido.setText("");
+                                            tvPagaraRequerido.setError("");
+                                            SelectPagoRequerido(-1);
+                                        }
+                                        break;
+                                    case 1:
+                                        if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                            etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
+                                        else
+                                            etPagoRealizado.setText(monto_requerido);
+                                        SelectPagoRequerido(1);
+                                        break;
+                                    default:
                                         tvPagaraRequerido.setError("");
                                         SelectPagoRequerido(-1);
-                                    }
-                                    break;
-                                case 1:
-                                    if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
-                                        etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(monto_requerido))));
-                                    else
-                                        etPagoRealizado.setText(monto_requerido);
-                                    SelectPagoRequerido(1);
-                                    break;
-                                default:
-                                    tvPagaraRequerido.setError("");
-                                    SelectPagoRequerido(-1);
-                                    break;
+                                        break;
+                                }
+
                             }
+                        });
+                builder.create();
+                builder.show();
 
-                        }
-                    });
-            builder.create();
-            builder.show();
-
-        }
-    };
+            }
+        };
 
     private View.OnClickListener tvImprimirRecibo_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.imprimir, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvImprimirRecibo.setError(null);
-                            tvImprimirRecibo.setText(_imprimir[position]);
-                            Update("imprimir_recibo", _imprimir[position]);
-                            SelectImprimirRecibos(position);
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.imprimir, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvImprimirRecibo.setError(null);
+                                tvImprimirRecibo.setText(_imprimir[position]);
+                                Update("imprimir_recibo", _imprimir[position]);
+                                SelectImprimirRecibos(position);
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener tvMotivoNoPago_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.motivo_no_pago_cv, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvMotivoNoPago.setError(null);
-                            tvMotivoNoPago.setText(_motivo_no_pago[position]);
-                            Update("motivo_no_pago", _motivo_no_pago[position]);
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.motivo_no_pago_cv, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvMotivoNoPago.setError(null);
+                                tvMotivoNoPago.setText(_motivo_no_pago[position]);
+                                Update("motivo_no_pago", _motivo_no_pago[position]);
 
-                            SelectMotivoNoPago(position);
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+                                SelectMotivoNoPago(position);
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener tvFechaPromesaPago_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dialog_date_picker dialogDatePicker = new dialog_date_picker();
-            Bundle b = new Bundle();
+            @Override
+            public void onClick(View v) {
+                dialog_date_picker dialogDatePicker = new dialog_date_picker();
+                Bundle b = new Bundle();
 
-            b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
-            b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
-            b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
-            b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
-            b.putInt(Constants.IDENTIFIER, 12);
-            b.putBoolean(Constants.FECHAS_POST, true);
-            dialogDatePicker.setArguments(b);
-            dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
-        }
-    };
+                b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
+                b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
+                b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
+                b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
+                b.putInt(Constants.IDENTIFIER, 12);
+                b.putBoolean(Constants.FECHAS_POST, true);
+                dialogDatePicker.setArguments(b);
+                dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
+            }
+        };
 
     private View.OnClickListener tvFechaDefuncion_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dialog_date_picker dialogDatePicker = new dialog_date_picker();
-            Bundle b = new Bundle();
+            @Override
+            public void onClick(View v) {
+                dialog_date_picker dialogDatePicker = new dialog_date_picker();
+                Bundle b = new Bundle();
 
-            b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
-            b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
-            b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
-            b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
-            b.putInt(Constants.IDENTIFIER, 11);
-            b.putBoolean(Constants.FECHAS_POST, false);
-            dialogDatePicker.setArguments(b);
-            dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
-        }
-    };
+                b.putInt(Constants.YEAR_CURRENT, myCalendar.get(Calendar.YEAR));
+                b.putInt(Constants.MONTH_CURRENT, myCalendar.get(Calendar.MONTH));
+                b.putInt(Constants.DAY_CURRENT, myCalendar.get(Calendar.DAY_OF_MONTH));
+                b.putString(Constants.DATE_CURRENT, sdf.format(myCalendar.getTime()));
+                b.putInt(Constants.IDENTIFIER, 11);
+                b.putBoolean(Constants.FECHAS_POST, false);
+                dialogDatePicker.setArguments(b);
+                dialogDatePicker.show(getSupportFragmentManager(), NameFragments.DIALOGDATEPICKER);
+            }
+        };
 
     private View.OnClickListener tvGerente_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            builder.setTitle(R.string.selected_option)
-                    .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int position) {
-                            tvGerente.setError(null);
-                            tvGerente.setText(_confirmacion[position]);
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setTitle(R.string.selected_option)
+                        .setItems(R.array.confirmacion, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int position) {
+                                tvGerente.setError(null);
+                                tvGerente.setText(_confirmacion[position]);
 
-                            Update("gerente", _confirmacion[position]);
+                                Update("gerente", _confirmacion[position]);
 
-                            SelectEstaGerente(position);
+                                SelectEstaGerente(position);
 
-                        }
-                    });
-            builder.create();
-            builder.show();
-        }
-    };
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        };
 
     private View.OnClickListener ivFirma_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
-                    R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            Intent sig = new Intent(ctx, CapturarFirma.class);
-                            sig.putExtra(TIPO,"");
-                            startActivityForResult(sig, REQUEST_CODE_FIRMA);
-                            dialog.dismiss();
+            @Override
+            public void onClick(View v) {
+                final AlertDialog firma_dlg = Popups.showDialogConfirm(ctx, firma,
+                        R.string.capturar_nueva_firma, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent sig = new Intent(ctx, CapturarFirma.class);
+                                sig.putExtra(TIPO, "");
+                                startActivityForResult(sig, REQUEST_CODE_FIRMA);
+                                dialog.dismiss();
 
-                        }
-                    }, R.string.cancel, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            dialog.dismiss();
-                        }
-                    });
-            Objects.requireNonNull(firma_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-            firma_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            firma_dlg.show();
-        }
-    };
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(firma_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                firma_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                firma_dlg.show();
+            }
+        };
 
     private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (tvMedioPago.getText().toString().trim().toUpperCase().equals("EFECTIVO")){
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
-                        R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                Intent i = new Intent(ctx, CameraVertical.class);
-                                i.putExtra(ORDER_ID, id_prestamo);
-                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
-                                dialog.dismiss();
+            @Override
+            public void onClick(View v) {
+                if (tvMedioPago.getText().toString().trim().toUpperCase().equals("EFECTIVO")) {
+                    final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
+                            R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    Intent i = new Intent(ctx, CameraVertical.class);
+                                    i.putExtra(ORDER_ID, id_prestamo);
+                                    startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                    dialog.dismiss();
 
-                            }
-                        }, R.string.cancel, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                evidencia_dlg.show();
-            }
-            else{
-                final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
-                        R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                Intent i = new Intent(ctx, CameraVertical.class);
-                                i.putExtra(ORDER_ID, id_prestamo);
-                                startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
-                                dialog.dismiss();
+                                }
+                            }, R.string.cancel, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    evidencia_dlg.show();
+                } else {
+                    final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
+                            R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    Intent i = new Intent(ctx, CameraVertical.class);
+                                    i.putExtra(ORDER_ID, id_prestamo);
+                                    startActivityForResult(i, REQUEST_CODE_CAMARA_TICKET);
+                                    dialog.dismiss();
 
-                            }
-                        }, R.string.galeria, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                int compress = 10;
-                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
-                                    compress = 40;
-                                CropImage.activity()
-                                        .setAutoZoomEnabled(true)
-                                        .setMinCropWindowSize(3000,4000)
-                                        .setOutputCompressQuality(compress)
-                                        .start(VencidaIntegrante.this);
-                                //Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                                //gallery.setAction(Intent.ACTION_GET_CONTENT);
-                                //startActivityForResult(Intent.createChooser(gallery, "SELECCIONA UNA IMAGEN"), REQUEST_CODE_GALERIA);
-                                dialog.dismiss();
-                            }
-                        }, R.string.cancel, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                evidencia_dlg.show();
+                                }
+                            }, R.string.galeria, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    int compress = 10;
+                                    if (Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                        compress = 40;
+                                    CropImage.activity()
+                                            .setAutoZoomEnabled(true)
+                                            .setMinCropWindowSize(3000, 4000)
+                                            .setOutputCompressQuality(compress)
+                                            .start(VencidaIntegrante.this);
+                                    //Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                                    //gallery.setAction(Intent.ACTION_GET_CONTENT);
+                                    //startActivityForResult(Intent.createChooser(gallery, "SELECCIONA UNA IMAGEN"), REQUEST_CODE_GALERIA);
+                                    dialog.dismiss();
+                                }
+                            }, R.string.cancel, new Popups.DialogMessage() {
+                                @Override
+                                public void OnClickListener(AlertDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                    evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    evidencia_dlg.show();
+                }
             }
-        }
-    };
+        };
 
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            final AlertDialog fachada_cam_dlg = Popups.showDialogConfirm(ctx, camara,
-                    R.string.capturar_nueva_fotografia, R.string.accept, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            Intent i = new Intent(ctx, CameraVertical.class);
-                            i.putExtra(ORDER_ID, id_prestamo);
-                            startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
-                            dialog.dismiss();
+            @Override
+            public void onClick(View v) {
+                final AlertDialog fachada_cam_dlg = Popups.showDialogConfirm(ctx, camara,
+                        R.string.capturar_nueva_fotografia, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                Intent i = new Intent(ctx, CameraVertical.class);
+                                i.putExtra(ORDER_ID, id_prestamo);
+                                startActivityForResult(i, REQUEST_CODE_CAMARA_FACHADA);
+                                dialog.dismiss();
 
-                        }
-                    }, R.string.cancel, new Popups.DialogMessage() {
-                        @Override
-                        public void OnClickListener(AlertDialog dialog) {
-                            dialog.dismiss();
-                        }
-                    });
-            Objects.requireNonNull(fachada_cam_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-            fachada_cam_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            fachada_cam_dlg.show();
-        }
-    };
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_cam_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_cam_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                fachada_cam_dlg.show();
+            }
+        };
 
 
     //===================== Listener GPS  =======================================================
-    private void ColocarUbicacionGestion (final double lat, final double lon){
-        mapView.onResume();
-        try {
-            MapsInitializer.initialize(ctx.getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void ColocarUbicacionGestion(final double lat, final double lon) {
+            mapView.onResume();
+            try {
+                MapsInitializer.initialize(ctx.getApplicationContext());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap mGooglemap) {
+                    mMap = mGooglemap;
+                    if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        return;
+                    }
+                    mMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    ctx, R.raw.style_json));
+                    mMap.getUiSettings().setAllGesturesEnabled(false);
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
+
+                    addMarker(lat, lon);
+
+                }
+            });
         }
 
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap mGooglemap) {
-                mMap = mGooglemap;
-                if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    private void addMarker(double lat, double lng) {
+            LatLng coordenadas = new LatLng(lat, lng);
+            latLngGestion = coordenadas;
+            CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 15);
 
-                    return;
-                }
-                mMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                ctx, R.raw.style_json));
-                mMap.getUiSettings().setAllGesturesEnabled(false);
-                mMap.getUiSettings().setMapToolbarEnabled(false);
+            mMap.addMarker(new MarkerOptions()
+                    .position(coordenadas)
+                    .title(""));
 
-                addMarker(lat,lon);
+            mMap.animateCamera(ubication);
 
-            }
-        });
-    }
+            pbLoading.setVisibility(View.GONE);
+            ibMap.setVisibility(View.GONE);
+        }
 
-    private void addMarker (double lat, double lng){
-        LatLng coordenadas = new LatLng(lat,lng);
-        latLngGestion = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,15);
-
-        mMap.addMarker(new MarkerOptions()
-                .position(coordenadas)
-                .title(""));
-
-        mMap.animateCamera(ubication);
-
-        pbLoading.setVisibility(View.GONE);
-        ibMap.setVisibility(View.GONE);
-    }
-
-    private void CancelUbicacion (){
-        if (flagUbicacion)
-            locationManager.removeUpdates(locationListener);
-    }
+    private void CancelUbicacion() {
+            if (flagUbicacion)
+                locationManager.removeUpdates(locationListener);
+        }
 
     //=========================  Comportamientos  ================================================
-    private void SelectContactoCliente (int pos){
-        if (!tvGerente.getText().toString().trim().isEmpty()) tvGerente.setError(null);
-        else tvGerente.setError("");
-        switch (pos){
-            case 0: // Si contacto cliente
-                tvActualizarTelefono.setError("");
-                tvResultadoGestion.setError("");
 
-                tvResultadoGestion.setText("");
+    private void SelectContactoCliente(int pos) {
+            if (!tvGerente.getText().toString().trim().isEmpty()) tvGerente.setError(null);
+            else tvGerente.setError("");
+            switch (pos) {
+                case 0: // Si contacto cliente
+                    tvActualizarTelefono.setError("");
+                    tvResultadoGestion.setError("");
 
-                SelectResultadoGestion(-1);
-                tvGerente.setText("");
-                SelectEstaGerente(-1);
-                llResultadoGestion.setVisibility(View.VISIBLE);
-                llActualizarTelefono.setVisibility(View.VISIBLE);
-                llComentario.setVisibility(View.GONE);
-                llFachada.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                llFirma.setVisibility(View.GONE);
-                break;
-            case 1: // No contacto cliente
-                tvFachada.setError("");
-                tvResultadoGestion.setText("");
-                SelectResultadoGestion(-1);
-                tvActualizarTelefono.setText("");
-                SelectActualizarTelefono(-1);
-                llActualizarTelefono.setVisibility(View.GONE);
-                tvGerente.setText("");
-                SelectEstaGerente(-1);
-                byteEvidencia = null;
-                ivFachada.setVisibility(View.GONE);
-                ibFachada.setVisibility(View.VISIBLE);
-                llResultadoGestion.setVisibility(View.GONE);
-                llComentario.setVisibility(View.VISIBLE);
-                etComentario.setError(getResources().getString(R.string.campo_requerido));
-                llFachada.setVisibility(View.VISIBLE);
-                llGerente.setVisibility(View.VISIBLE);
-                break;
-            case 2: // Aclaración
-                etComentario.setError(getResources().getString(R.string.campo_requerido));
-                etComentario.setText("");
-                tvResultadoGestion.setText("");
-                SelectResultadoGestion(-1);
-                tvGerente.setText("");
-                SelectEstaGerente(-1);
-                byteEvidencia = null;
-                ivFachada.setVisibility(View.GONE);
-                ibFachada.setVisibility(View.VISIBLE);
-                tvActualizarTelefono.setText("");
-                SelectActualizarTelefono(-1);
-                llActualizarTelefono.setVisibility(View.GONE);
-                llResultadoGestion.setVisibility(View.GONE);
-                llComentario.setVisibility(View.VISIBLE);
-                llFachada.setVisibility(View.GONE);
-                llGerente.setVisibility(View.VISIBLE);
-                break;
-            default: //Sin seleccionar una opción o cualquier otro valor
-                tvResultadoGestion.setText("");
-                tvActualizarTelefono.setText("");
-                SelectActualizarTelefono(-1);
-                llActualizarTelefono.setVisibility(View.GONE);
-                llResultadoGestion.setVisibility(View.GONE);
-                llComentario.setVisibility(View.GONE);
-                llFachada.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                break;
-        }
-    }
+                    tvResultadoGestion.setText("");
 
-    private void SelectActualizarTelefono(int pos){
-        switch (pos){
-            case 0:
-                etActualizarTelefono.setVisibility(View.VISIBLE);
-                etActualizarTelefono.setError(getResources().getString(R.string.campo_requerido));
-                break;
-            case 1:
-                etActualizarTelefono.setText("");
-                etActualizarTelefono.setVisibility(View.GONE);
-                break;
-            default:
-                tvActualizarTelefono.setError("");
-                etActualizarTelefono.setText("");
-                etActualizarTelefono.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void SelectResultadoGestion(int pos){
-        switch (pos){
-            case 0: //Si Pago
-                tvMotivoNoPago.setText("");
-                SelectMotivoNoPago(-1);
-                llComentario.setVisibility(View.GONE);
-                llMedioPago.setVisibility(View.VISIBLE);
-                //llMontoPagoRequerido.setVisibility(View.VISIBLE);
-                llMotivoNoPago.setVisibility(View.GONE);
-                llFachada.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                break;
-            case 1: //No Pago
-                tvMotivoNoPago.setError("");
-                tvFachada.setError("");
-                tvMedioPago.setText("");
-                SelectMedioPago(-1);
-                tvPagaraRequerido.setText("");
-                SelectPagoRequerido(-1);
-                llMedioPago.setVisibility(View.GONE);
-                llMontoPagoRequerido.setVisibility(View.GONE);
-                llComentario.setVisibility(View.VISIBLE);
-                etComentario.setError(getResources().getString(R.string.campo_requerido));
-                llMotivoNoPago.setVisibility(View.VISIBLE);
-                llFachada.setVisibility(View.VISIBLE);
-                llGerente.setVisibility(View.VISIBLE);
-                break;
-            default: //Sin seleccionar una opción o cualquier otro valor
-                tvResultadoGestion.setError("");
-                tvMedioPago.setText("");
-                SelectMedioPago(-1);
-                tvMotivoNoPago.setText("");
-                SelectMotivoNoPago(-1);
-                tvPagaraRequerido.setText("");
-                SelectPagoRequerido(-1);
-                llMedioPago.setVisibility(View.GONE);
-                llMontoPagoRequerido.setVisibility(View.GONE);
-                llComentario.setVisibility(View.GONE);
-                llMotivoNoPago.setVisibility(View.GONE);
-                llFachada.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void SelectMedioPago (int pos){
-        if (!tvPagaraRequerido.getText().toString().trim().isEmpty()) tvPagaraRequerido.setError(null);
-        else tvPagaraRequerido.setError("");
-
-        tvMedioPago.setError(null);
-        switch (pos){
-            case -1: // Opción "Seleccione una opción"
-                tvMedioPago.setError("");
-                tvPagaraRequerido.setText("");
-                tvPagaraRequerido.setText(_confirmacion[1]);
-                SelectPagoRequerido(-1);
-                llPagaraRequerido.setVisibility(View.GONE);
-                llFechaDeposito.setVisibility(View.GONE);
-                llFotoGaleria.setVisibility(View.GONE);
-                llImprimirRecibo.setVisibility(View.GONE);
-                llFolioRecibo.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                llMontoPagoRealizado.setVisibility(View.GONE);
-                break;
-            case 8: // Banamex722
-                if (byteEvidencia != null)
-                    tvFotoGaleria.setError(null);
-                else
-                    tvFotoGaleria.setError("");
-
-                if (tvFechaDeposito.getText().toString().isEmpty())
-                    tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
-                ibGaleria.setEnabled(true);
-                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
-                tvPagaraRequerido.setEnabled(true);
-                tvPagaraRequerido.setText(_confirmacion[1]);
-                llPagaraRequerido.setVisibility(View.VISIBLE);
-                llFechaDeposito.setVisibility(View.VISIBLE);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
-                llImprimirRecibo.setVisibility(View.GONE);
-                llFotoGaleria.setVisibility(View.VISIBLE);
-                llFolioRecibo.setVisibility(View.GONE);
-                llGerente.setVisibility(View.VISIBLE);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);
-                break;
-            case 6: // Efectivo
-                if (byteEvidencia != null)
-                    tvFotoGaleria.setError(null);
-                else
-                    tvFotoGaleria.setError("");
-                ibGaleria.setEnabled(false);
-                ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                if (!etFolioRecibo.getText().toString().trim().isEmpty())
-                    tvImprimirRecibo.setError(null);
-                else
-                    tvImprimirRecibo.setError("");
-                llPagaraRequerido.setVisibility(View.VISIBLE);
-                llFechaDeposito.setVisibility(View.GONE);
-                tvPagaraRequerido.setEnabled(true);
-                llMontoPagoRequerido.setVisibility(View.VISIBLE);
-                llImprimirRecibo.setVisibility(View.VISIBLE);
-                tvImprimirRecibo.setText("");
-                tvImprimirRecibo.setEnabled(true);
-                SelectImprimirRecibos(-1);
-                llFotoGaleria.setVisibility(View.VISIBLE);
-                llGerente.setVisibility(View.VISIBLE);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);
-                tvPagaraRequerido.setText(_confirmacion[1]);
-                break;
-            default: //Sin seleccionar una opción o cualquier otro valor
-                tvMedioPago.setError("");
-                tvPagaraRequerido.setText("");
-                tvImprimirRecibo.setText("");
-                SelectImprimirRecibos(-1);
-                SelectPagoRequerido(-1);
-                ivEvidencia.setVisibility(View.GONE);
-                tvPagaraRequerido.setEnabled(true);
-                llMontoPagoRealizado.setVisibility(View.GONE);
-                llPagaraRequerido.setVisibility(View.GONE);
-                llFechaDeposito.setVisibility(View.GONE);
-                llFotoGaleria.setVisibility(View.GONE);
-                llImprimirRecibo.setVisibility(View.GONE);
-                llFolioRecibo.setVisibility(View.GONE);
-                llGerente.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void SelectPagoRequerido (int pos){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-
-        switch (pos){
-            case 0: // Si pagará requerido
-
-                builder.setTitle("¡AVISO!")
-                            .setMessage("SE LIQUIDARA LA CUENTA PIENDIENTE, ¿ES CORRECTO?")
-                        . setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(ctx,"NO SEA REALIZADO NINGUN MOVIMIENTO",Toast.LENGTH_SHORT).show();
-                            }
-                        }).setPositiveButton("SI, SON CORRECTOS", new DialogInterface.OnClickListener(){
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        etPagoRealizado.setText(monto_requerido);
-                        etPagoRealizado.setEnabled(false);
-                        llMontoPagoRealizado.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
-                    }
-                });
-                builder.create();
-                builder.show();
-                break;
-            case 1: // No pagará requerido
-                etPagoRealizado.setEnabled(true);
-                llMontoPagoRealizado.setVisibility(View.VISIBLE);
-                break;
-            default:
-                etPagoRealizado.setText(monto_requerido);
-                etPagoRealizado.setEnabled(false);
-                llMontoPagoRealizado.setVisibility(View.GONE);
-                llImprimirRecibo.setVisibility(View.GONE);
-                llFolioRecibo.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void SelectImprimirRecibos(int pos){
-        switch (pos){
-            case 0: // Imprimir Recibos
-                ibImprimir.setVisibility(View.VISIBLE);
-                if (!folio_impreso.trim().isEmpty()) {
-                    tvImprimirRecibo.setError(null);
-                    etFolioRecibo.setText(folio_impreso);
-                    etFolioRecibo.setEnabled(false);
-                    etFolioRecibo.setError(null);
-                    llFolioRecibo.setVisibility(View.VISIBLE);
-                }
-                else {
-                    tvImprimirRecibo.setError("");
-                    llFolioRecibo.setVisibility(View.GONE);
-                }
-                break;
-            case 1: //No cuenta con bateria la impresora
-                etFolioRecibo.setError(getResources().getString(R.string.campo_requerido));
-                tvImprimirRecibo.setError(null);
-                llFolioRecibo.setVisibility(View.VISIBLE);
-                etFolioRecibo.setText("");
-                etFolioRecibo.setEnabled(true);
-                etFolioRecibo.setHint(R.string.folio_sidert);
-                etFolioRecibo.setInputType(InputType.TYPE_CLASS_NUMBER);
-                ibImprimir.setVisibility(View.GONE);
-                break;
-            default: // Sin seleccionar alguna opción o cualquier valor diferente
-                tvImprimirRecibo.setError("");
-                llFolioRecibo.setVisibility(View.GONE);
-                ibImprimir.setVisibility(View.GONE);
-                break;
-        }
-
-    }
-
-    private void SelectMotivoNoPago (int pos){
-        tvMotivoNoPago.setError(null);
-        switch (pos){
-            case 0: // Negación de pago
-            case 2: // Otro
-                llDefuncion.setVisibility(View.GONE);
-                llPromesaPago.setVisibility(View.GONE);
-                break;
-            case 1: //Fallecimiento
-                tvFechaDefuncion.setError("");
-                if (!tvFechaDefuncion.getText().toString().trim().isEmpty())
-                    tvFechaDefuncion.setError(null);
-                llDefuncion.setVisibility(View.VISIBLE);
-
-                tvFechaPromesaPago.setText("");
-                Update("fecha_monto_promesa", "");
-                etMontoPromesa.setText("");
-                Update("monto_promesa", "");
-                llPromesaPago.setVisibility(View.GONE);
-                break;
-            case 3: //Monto promesa
-                tvFechaDefuncion.setText("");
-                Update("fecha_fallecimiento", "");
-
-                tvFechaPromesaPago.setError("");
-                if (!tvFechaPromesaPago.getText().toString().trim().isEmpty())
-                    tvFechaPromesaPago.setError(null);
-
-                etMontoPromesa.setError("Este campo es requerido");
-                if (!etMontoPromesa.getText().toString().trim().isEmpty())
-                    etMontoPromesa.setError(null);
-
-                llDefuncion.setVisibility(View.GONE);
-                llPromesaPago.setVisibility(View.VISIBLE);
-                break;
-            default: //Sin seleccionar una opción o cualquier otro valor
-                tvMotivoNoPago.setError("");
-                llDefuncion.setVisibility(View.GONE);
-                llPromesaPago.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void SelectEstaGerente (int pos){
-        switch (pos){
-            case 0: // Si está el gerente
-                if (ivFirma.getVisibility() == View.VISIBLE && byteFirma != null)
-                    tvFirma.setError(null);
-                else
-                    tvFirma.setError("");
-                llFirma.setVisibility(View.VISIBLE);
-                break;
-            case 1: // No está el gerente
-                llFirma.setVisibility(View.GONE);
-                break;
-            default: // Sin seleccionar alguna opción o cualquier valor diferente
-                byteFirma = null;
-                ivFirma.setVisibility(View.GONE);
-                ibFirma.setVisibility(View.VISIBLE);
-                llFirma.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void recuperarPagoRealizado(){
-        if(etPagoRealizado.getText().toString().isEmpty()){
-
-            //Cursor a = dBhelper.getPagoRealizadoA(id_prestamo,id_integrante,etFolioRecibo.getText().toString());
-
-            Cursor a = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_INTEGRANTE_T,"pago_realizado","id_prestamo=? AND id_integrante=? AND folio=?",new String[]{id_prestamo,id_integrante,etFolioRecibo.getText().toString()});
-            if(a.getCount() > 0){
-                a.moveToFirst();
-                String valor = a.getString(0);
-                etPagoRealizado.setText(valor);
-                Toast.makeText(ctx,"Monto recuperado", Toast.LENGTH_SHORT).show();
+                    SelectResultadoGestion(-1);
+                    tvGerente.setText("");
+                    SelectEstaGerente(-1);
+                    llResultadoGestion.setVisibility(View.VISIBLE);
+                    llActualizarTelefono.setVisibility(View.VISIBLE);
+                    llComentario.setVisibility(View.GONE);
+                    llFachada.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    llFirma.setVisibility(View.GONE);
+                    break;
+                case 1: // No contacto cliente
+                    tvFachada.setError("");
+                    tvResultadoGestion.setText("");
+                    SelectResultadoGestion(-1);
+                    tvActualizarTelefono.setText("");
+                    SelectActualizarTelefono(-1);
+                    llActualizarTelefono.setVisibility(View.GONE);
+                    tvGerente.setText("");
+                    SelectEstaGerente(-1);
+                    byteEvidencia = null;
+                    ivFachada.setVisibility(View.GONE);
+                    ibFachada.setVisibility(View.VISIBLE);
+                    llResultadoGestion.setVisibility(View.GONE);
+                    llComentario.setVisibility(View.VISIBLE);
+                    etComentario.setError(getResources().getString(R.string.campo_requerido));
+                    llFachada.setVisibility(View.VISIBLE);
+                    llGerente.setVisibility(View.VISIBLE);
+                    break;
+                case 2: // Aclaración
+                    etComentario.setError(getResources().getString(R.string.campo_requerido));
+                    etComentario.setText("");
+                    tvResultadoGestion.setText("");
+                    SelectResultadoGestion(-1);
+                    tvGerente.setText("");
+                    SelectEstaGerente(-1);
+                    byteEvidencia = null;
+                    ivFachada.setVisibility(View.GONE);
+                    ibFachada.setVisibility(View.VISIBLE);
+                    tvActualizarTelefono.setText("");
+                    SelectActualizarTelefono(-1);
+                    llActualizarTelefono.setVisibility(View.GONE);
+                    llResultadoGestion.setVisibility(View.GONE);
+                    llComentario.setVisibility(View.VISIBLE);
+                    llFachada.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.VISIBLE);
+                    break;
+                default: //Sin seleccionar una opción o cualquier otro valor
+                    tvResultadoGestion.setText("");
+                    tvActualizarTelefono.setText("");
+                    SelectActualizarTelefono(-1);
+                    llActualizarTelefono.setVisibility(View.GONE);
+                    llResultadoGestion.setVisibility(View.GONE);
+                    llComentario.setVisibility(View.GONE);
+                    llFachada.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    break;
             }
         }
-    }
+
+    private void SelectActualizarTelefono(int pos) {
+            switch (pos) {
+                case 0:
+                    etActualizarTelefono.setVisibility(View.VISIBLE);
+                    etActualizarTelefono.setError(getResources().getString(R.string.campo_requerido));
+                    break;
+                case 1:
+                    etActualizarTelefono.setText("");
+                    etActualizarTelefono.setVisibility(View.GONE);
+                    break;
+                default:
+                    tvActualizarTelefono.setError("");
+                    etActualizarTelefono.setText("");
+                    etActualizarTelefono.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+    private void SelectResultadoGestion(int pos) {
+            switch (pos) {
+                case 0: //Si Pago
+                    tvMotivoNoPago.setText("");
+                    SelectMotivoNoPago(-1);
+                    llComentario.setVisibility(View.GONE);
+                    llMedioPago.setVisibility(View.VISIBLE);
+                    //llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                    llMotivoNoPago.setVisibility(View.GONE);
+                    llFachada.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    break;
+                case 1: //No Pago
+                    tvMotivoNoPago.setError("");
+                    tvFachada.setError("");
+                    tvMedioPago.setText("");
+                    SelectMedioPago(-1);
+                    tvPagaraRequerido.setText("");
+                    SelectPagoRequerido(-1);
+                    llMedioPago.setVisibility(View.GONE);
+                    llMontoPagoRequerido.setVisibility(View.GONE);
+                    llComentario.setVisibility(View.VISIBLE);
+                    etComentario.setError(getResources().getString(R.string.campo_requerido));
+                    llMotivoNoPago.setVisibility(View.VISIBLE);
+                    llFachada.setVisibility(View.VISIBLE);
+                    llGerente.setVisibility(View.VISIBLE);
+                    break;
+                default: //Sin seleccionar una opción o cualquier otro valor
+                    tvResultadoGestion.setError("");
+                    tvMedioPago.setText("");
+                    SelectMedioPago(-1);
+                    tvMotivoNoPago.setText("");
+                    SelectMotivoNoPago(-1);
+                    tvPagaraRequerido.setText("");
+                    SelectPagoRequerido(-1);
+                    llMedioPago.setVisibility(View.GONE);
+                    llMontoPagoRequerido.setVisibility(View.GONE);
+                    llComentario.setVisibility(View.GONE);
+                    llMotivoNoPago.setVisibility(View.GONE);
+                    llFachada.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+    private void SelectMedioPago(int pos) {
+            if (!tvPagaraRequerido.getText().toString().trim().isEmpty())
+                tvPagaraRequerido.setError(null);
+            else tvPagaraRequerido.setError("");
+
+            tvMedioPago.setError(null);
+            switch (pos) {
+                case -1: // Opción "Seleccione una opción"
+                    tvMedioPago.setError("");
+                    tvPagaraRequerido.setText("");
+                    tvPagaraRequerido.setText(_confirmacion[1]);
+                    SelectPagoRequerido(-1);
+                    llPagaraRequerido.setVisibility(View.GONE);
+                    llFechaDeposito.setVisibility(View.GONE);
+                    llFotoGaleria.setVisibility(View.GONE);
+                    llImprimirRecibo.setVisibility(View.GONE);
+                    llFolioRecibo.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    llMontoPagoRealizado.setVisibility(View.GONE);
+                    break;
+                case 8: // Banamex722
+                    if (byteEvidencia != null)
+                        tvFotoGaleria.setError(null);
+                    else
+                        tvFotoGaleria.setError("");
+
+                    if (tvFechaDeposito.getText().toString().isEmpty())
+                        tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
+                    ibGaleria.setEnabled(true);
+                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
+                    tvPagaraRequerido.setEnabled(true);
+                    tvPagaraRequerido.setText(_confirmacion[1]);
+                    llPagaraRequerido.setVisibility(View.VISIBLE);
+                    llFechaDeposito.setVisibility(View.VISIBLE);
+                    llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                    llImprimirRecibo.setVisibility(View.GONE);
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    llFolioRecibo.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.VISIBLE);
+                    llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                    break;
+                case 6: // Efectivo
+                    if (byteEvidencia != null)
+                        tvFotoGaleria.setError(null);
+                    else
+                        tvFotoGaleria.setError("");
+                    ibGaleria.setEnabled(false);
+                    ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
+                    if (!etFolioRecibo.getText().toString().trim().isEmpty())
+                        tvImprimirRecibo.setError(null);
+                    else
+                        tvImprimirRecibo.setError("");
+                    llPagaraRequerido.setVisibility(View.VISIBLE);
+                    llFechaDeposito.setVisibility(View.GONE);
+                    tvPagaraRequerido.setEnabled(true);
+                    llMontoPagoRequerido.setVisibility(View.VISIBLE);
+                    llImprimirRecibo.setVisibility(View.VISIBLE);
+                    tvImprimirRecibo.setText("");
+                    tvImprimirRecibo.setEnabled(true);
+                    SelectImprimirRecibos(-1);
+                    llFotoGaleria.setVisibility(View.VISIBLE);
+                    llGerente.setVisibility(View.VISIBLE);
+                    llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                    tvPagaraRequerido.setText(_confirmacion[1]);
+                    break;
+                default: //Sin seleccionar una opción o cualquier otro valor
+                    tvMedioPago.setError("");
+                    tvPagaraRequerido.setText("");
+                    tvImprimirRecibo.setText("");
+                    SelectImprimirRecibos(-1);
+                    SelectPagoRequerido(-1);
+                    ivEvidencia.setVisibility(View.GONE);
+                    tvPagaraRequerido.setEnabled(true);
+                    llMontoPagoRealizado.setVisibility(View.GONE);
+                    llPagaraRequerido.setVisibility(View.GONE);
+                    llFechaDeposito.setVisibility(View.GONE);
+                    llFotoGaleria.setVisibility(View.GONE);
+                    llImprimirRecibo.setVisibility(View.GONE);
+                    llFolioRecibo.setVisibility(View.GONE);
+                    llGerente.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+    private void SelectPagoRequerido(int pos) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
+            switch (pos) {
+                case 0: // Si pagará requerido
+
+                    builder.setTitle("¡AVISO!")
+                            .setMessage("SE LIQUIDARA LA CUENTA PIENDIENTE, ¿ES CORRECTO?")
+                            .setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(ctx, "NO SEA REALIZADO NINGUN MOVIMIENTO", Toast.LENGTH_SHORT).show();
+                                }
+                            }).setPositiveButton("SI, SON CORRECTOS", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            etPagoRealizado.setText(monto_requerido);
+                            etPagoRealizado.setEnabled(false);
+                            llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.create();
+                    builder.show();
+                    break;
+                case 1: // No pagará requerido
+                    etPagoRealizado.setEnabled(true);
+                    llMontoPagoRealizado.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    etPagoRealizado.setText(monto_requerido);
+                    etPagoRealizado.setEnabled(false);
+                    llMontoPagoRealizado.setVisibility(View.GONE);
+                    llImprimirRecibo.setVisibility(View.GONE);
+                    llFolioRecibo.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+    private void SelectImprimirRecibos(int pos) {
+            switch (pos) {
+                case 0: // Imprimir Recibos
+                    ibImprimir.setVisibility(View.VISIBLE);
+                    if (!folio_impreso.trim().isEmpty()) {
+                        tvImprimirRecibo.setError(null);
+                        etFolioRecibo.setText(folio_impreso);
+                        etFolioRecibo.setEnabled(false);
+                        etFolioRecibo.setError(null);
+                        llFolioRecibo.setVisibility(View.VISIBLE);
+                    } else {
+                        tvImprimirRecibo.setError("");
+                        llFolioRecibo.setVisibility(View.GONE);
+                    }
+                    break;
+                case 1: //No cuenta con bateria la impresora
+                    etFolioRecibo.setError(getResources().getString(R.string.campo_requerido));
+                    tvImprimirRecibo.setError(null);
+                    llFolioRecibo.setVisibility(View.VISIBLE);
+                    etFolioRecibo.setText("");
+                    etFolioRecibo.setEnabled(true);
+                    etFolioRecibo.setHint(R.string.folio_sidert);
+                    etFolioRecibo.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    ibImprimir.setVisibility(View.GONE);
+                    break;
+                default: // Sin seleccionar alguna opción o cualquier valor diferente
+                    tvImprimirRecibo.setError("");
+                    llFolioRecibo.setVisibility(View.GONE);
+                    ibImprimir.setVisibility(View.GONE);
+                    break;
+            }
+
+        }
+
+    private void SelectMotivoNoPago(int pos) {
+            tvMotivoNoPago.setError(null);
+            switch (pos) {
+                case 0: // Negación de pago
+                case 2: // Otro
+                    llDefuncion.setVisibility(View.GONE);
+                    llPromesaPago.setVisibility(View.GONE);
+                    break;
+                case 1: //Fallecimiento
+                    tvFechaDefuncion.setError("");
+                    if (!tvFechaDefuncion.getText().toString().trim().isEmpty())
+                        tvFechaDefuncion.setError(null);
+                    llDefuncion.setVisibility(View.VISIBLE);
+
+                    tvFechaPromesaPago.setText("");
+                    Update("fecha_monto_promesa", "");
+                    etMontoPromesa.setText("");
+                    Update("monto_promesa", "");
+                    llPromesaPago.setVisibility(View.GONE);
+                    break;
+                case 3: //Monto promesa
+                    tvFechaDefuncion.setText("");
+                    Update("fecha_fallecimiento", "");
+
+                    tvFechaPromesaPago.setError("");
+                    if (!tvFechaPromesaPago.getText().toString().trim().isEmpty())
+                        tvFechaPromesaPago.setError(null);
+
+                    etMontoPromesa.setError("Este campo es requerido");
+                    if (!etMontoPromesa.getText().toString().trim().isEmpty())
+                        etMontoPromesa.setError(null);
+
+                    llDefuncion.setVisibility(View.GONE);
+                    llPromesaPago.setVisibility(View.VISIBLE);
+                    break;
+                default: //Sin seleccionar una opción o cualquier otro valor
+                    tvMotivoNoPago.setError("");
+                    llDefuncion.setVisibility(View.GONE);
+                    llPromesaPago.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+    private void SelectEstaGerente(int pos) {
+            switch (pos) {
+                case 0: // Si está el gerente
+                    if (ivFirma.getVisibility() == View.VISIBLE && byteFirma != null)
+                        tvFirma.setError(null);
+                    else
+                        tvFirma.setError("");
+                    llFirma.setVisibility(View.VISIBLE);
+                    break;
+                case 1: // No está el gerente
+                    llFirma.setVisibility(View.GONE);
+                    break;
+                default: // Sin seleccionar alguna opción o cualquier valor diferente
+                    byteFirma = null;
+                    ivFirma.setVisibility(View.GONE);
+                    ibFirma.setVisibility(View.VISIBLE);
+                    llFirma.setVisibility(View.GONE);
+                    break;
+            }
+        }
+
+
+    private String obtenerFecha(String id_prestamo, String id_integrante) {
+            String fechaA = "";
+
+            Cursor a = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_INTEGRANTE_T, "fecha_pago", "id_prestamo=? AND id_integrante=?", new String[]{id_prestamo, id_integrante});
+            if (a.getCount() > 0) {
+                a.moveToFirst();
+                fechaA = a.getString(0);
+            }
+            return fechaA;
+        }
+
+
+    private void recuperarPagoRealizado() {
+
+            String fechaPagoA = obtenerFecha(id_prestamo, id_integrante);
+
+            if (fechaPagoA != null) {
+                if (etPagoRealizado.getText().toString().isEmpty() && etPagoRealizado.getText().toString() != tvMontoPagoRequerido.getText().toString()) {
+                    Cursor a = dBhelper.getPagoRealizadoABC(TBL_RESPUESTAS_INTEGRANTE_T, "pago_realizado", "id_prestamo=? AND id_integrante=? AND folio=? AND fecha_pago = ?", new String[]{id_prestamo, id_integrante, etFolioRecibo.getText().toString(), fechaPagoA});
+                    if (a.getCount() > 0) {
+                        a.moveToFirst();
+                        String valor = a.getString(0);
+                        etPagoRealizado.setText(valor);
+                        Toast.makeText(ctx, "Monto recuperado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else {
+                Toast.makeText(ctx, "Aun no se ha registrado ningun monto", Toast.LENGTH_SHORT).show();
+            }
+        }
 
     private void init() {
-        getSupportActionBar().show();
-        tvMontoPagoRequerido.setText(String.valueOf(df.format(Double.parseDouble(monto_requerido))));
+            getSupportActionBar().show();
+            tvMontoPagoRequerido.setText(String.valueOf(df.format(Double.parseDouble(monto_requerido))));
 
-        if (!id_respuesta.isEmpty()){
-            Cursor row;
+            if (!id_respuesta.isEmpty()) {
+                Cursor row;
 
-            row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE _id = ? AND id_prestamo = ? AND id_integrante = ?", "", new String[]{id_respuesta, id_prestamo, id_integrante});
+                row = dBhelper.getRecords(TBL_RESPUESTAS_INTEGRANTE_T, " WHERE _id = ? AND id_prestamo = ? AND id_integrante = ?", "", new String[]{id_respuesta, id_prestamo, id_integrante});
 
-            Log.e("CointVencida", ": "+row.getCount());
-            if (row.getCount() > 0){
-                row.moveToFirst();
+                Log.e("CointVencida", ": " + row.getCount());
+                if (row.getCount() > 0) {
+                    row.moveToFirst();
 
-                fechaIni = row.getString(24);
-                res_impresion = row.getInt(28);
+                    fechaIni = row.getString(24);
+                    res_impresion = row.getInt(28);
 
-                if (!row.getString(3).isEmpty() && !row.getString(4).isEmpty()){
-                    tvmapa.setError(null);
-                    mapView.setVisibility(View.VISIBLE);
-                    ColocarUbicacionGestion(row.getDouble(3), row.getDouble(4));
-                }
+                    if (!row.getString(3).isEmpty() && !row.getString(4).isEmpty()) {
+                        tvmapa.setError(null);
+                        mapView.setVisibility(View.VISIBLE);
+                        ColocarUbicacionGestion(row.getDouble(3), row.getDouble(4));
+                    }
 
-                if (!row.getString(5).isEmpty()){ //CONTACTO
-                    tvContacto.setText(row.getString(5));
-                    switch (m.GetIdContacto(m.GetStr(tvContacto))) {
-                        case 0: //SI CONTACTO
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                    if (!row.getString(5).isEmpty()) { //CONTACTO
+                        tvContacto.setText(row.getString(5));
+                        switch (m.GetIdContacto(m.GetStr(tvContacto))) {
+                            case 0: //SI CONTACTO
+                                SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
 
-                            if (!row.getString(7).isEmpty()){//ACTUALIZAR TELEFONO
-                                tvActualizarTelefono.setText(row.getString(7));
-                                if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0){
-                                    if (!row.getString(8).isEmpty()){//NUEVO TELEFONO
-                                        etActualizarTelefono.setText(row.getString(8));
-                                        etActualizarTelefono.setError(null);
-                                        etActualizarTelefono.setVisibility(View.VISIBLE);
+                                if (!row.getString(7).isEmpty()) {//ACTUALIZAR TELEFONO
+                                    tvActualizarTelefono.setText(row.getString(7));
+                                    if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0) {
+                                        if (!row.getString(8).isEmpty()) {//NUEVO TELEFONO
+                                            etActualizarTelefono.setText(row.getString(8));
+                                            etActualizarTelefono.setError(null);
+                                            etActualizarTelefono.setVisibility(View.VISIBLE);
+                                        }
                                     }
                                 }
-                            }
 
-                            if (!row.getString(9).isEmpty()){//RESULTADO PAGO
-                                tvResultadoGestion.setText(row.getString(9));
-                                SelectResultadoGestion(m.GetIdPago(m.GetStr(tvResultadoGestion)));
-                                switch (m.GetIdPago(m.GetStr(tvResultadoGestion))){
-                                    case 1: //No Pago
-                                        tvMotivoNoPago.setText(row.getString(10));
-                                        SelectMotivoNoPago(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)));
-                                        switch (m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago))){
-                                            case 1:
-                                                tvFechaDefuncion.setText(row.getString(11));
-                                                break;
-                                            case 3:
-                                                tvFechaPromesaPago.setText(row.getString(12));
-                                                etMontoPromesa.setText(row.getString(13));
-                                                break;
-                                        }
-
-                                        if (!row.getString(6).isEmpty()){//COMENTARIO
-                                            etComentario.setText(row.getString(6));
-                                            etComentario.setVisibility(View.VISIBLE);
-                                            etComentario.setError(null);
-                                        }
-
-                                        if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){//FACHADA
-                                            File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(20));
-                                            Uri uriFachada = Uri.fromFile(fachadaFile);
-                                            Glide.with(ctx).load(uriFachada).into(ivFachada);
-                                            ibFachada.setVisibility(View.GONE);
-                                            ivFachada.setVisibility(View.VISIBLE);
-                                            byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
-                                            tvFachada.setError(null);
-                                        }
-
-                                        tvGerente.setVisibility(View.VISIBLE);
-                                        if (!row.getString(22).isEmpty()){//ESTA GERENTE
-                                            tvGerente.setText(row.getString(22));
-                                            SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-
-                                            if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
-
-                                                if (!row.getString(23).isEmpty()){//FIRMA
-                                                    File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
-                                                    Uri uriFirma = Uri.fromFile(firmaFile);
-                                                    Glide.with(ctx).load(uriFirma).into(ivFirma);
-                                                    ibFirma.setVisibility(View.GONE);
-                                                    ivFirma.setVisibility(View.VISIBLE);
-                                                    byteFirma = m.getBytesUri(ctx, uriFirma, 1);
-                                                    tvFirma.setError(null);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    case 0: // Si Pago
-                                        if (!row.getString(14).isEmpty()){//MEDIO PAGO
-                                            tvMedioPago.setText(row.getString(14));
-                                            medio_pago_anterio = m.GetMedioPagoId(m.GetStr(tvMedioPago));
-                                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
-                                            if (!row.getString(16).isEmpty()){//PAGARA REQUERIDO
-                                                tvPagaraRequerido.setText(row.getString(16));
-                                                SelectPagoRequerido(m.PagoRequerido(tvPagaraRequerido));
-                                                etPagoRealizado.setText(row.getString(17));
+                                if (!row.getString(9).isEmpty()) {//RESULTADO PAGO
+                                    tvResultadoGestion.setText(row.getString(9));
+                                    SelectResultadoGestion(m.GetIdPago(m.GetStr(tvResultadoGestion)));
+                                    switch (m.GetIdPago(m.GetStr(tvResultadoGestion))) {
+                                        case 1: //No Pago
+                                            tvMotivoNoPago.setText(row.getString(10));
+                                            SelectMotivoNoPago(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)));
+                                            switch (m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago))) {
+                                                case 1:
+                                                    tvFechaDefuncion.setText(row.getString(11));
+                                                    break;
+                                                case 3:
+                                                    tvFechaPromesaPago.setText(row.getString(12));
+                                                    etMontoPromesa.setText(row.getString(13));
+                                                    break;
                                             }
 
-                                            if (!row.getString(15).isEmpty()){//FECHA DEPOSITO
-                                                tvFechaDeposito.setText(row.getString(15));
-                                                tvFechaDeposito.setError(null);
+                                            if (!row.getString(6).isEmpty()) {//COMENTARIO
+                                                etComentario.setText(row.getString(6));
+                                                etComentario.setVisibility(View.VISIBLE);
+                                                etComentario.setError(null);
                                             }
 
-                                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){ //EFECTIVO
-                                                if (!row.getString(18).isEmpty()){//IMPRIMIRA RECIBOS
-                                                    tvImprimirRecibo.setText(row.getString(18));
-                                                    SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
-                                                    etFolioRecibo.setEnabled(true);
-
-                                                    if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0){ //SI IMPRIMIRA RECIBOS
-
-                                                        if (!row.getString(19).isEmpty()){//FOLIO
-                                                            etPagoRealizado.setEnabled(false);
-                                                            etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-
-                                                            tvContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-                                                            tvContacto.setEnabled(false);
-                                                            tvResultadoGestion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-                                                            tvResultadoGestion.setEnabled(false);
-                                                            tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-                                                            tvMedioPago.setEnabled(false);
-                                                            tvPagaraRequerido.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-                                                            tvPagaraRequerido.setEnabled(false);
-                                                            tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
-                                                            tvImprimirRecibo.setEnabled(false);
-                                                            ibImprimir.setVisibility(View.VISIBLE);
-
-                                                            etFolioRecibo.setEnabled(false);
-                                                            llFolioRecibo.setVisibility(View.VISIBLE);
-                                                            etFolioRecibo.setText(row.getString(19));
-                                                            etFolioRecibo.setError(null);
-                                                            folio_impreso = row.getString(19);
-                                                            recuperarPagoRealizado();
-                                                        }
-                                                        else {
-                                                            ibImprimir.setVisibility(View.VISIBLE);
-                                                        }
-                                                    }
-                                                    else{
-                                                        ibImprimir.setVisibility(View.GONE);
-                                                        llFolioRecibo.setVisibility(View.VISIBLE);
-                                                        etFolioRecibo.setText(row.getString(19));
-                                                        etFolioRecibo.setError(null);
-                                                    }
-                                                }
-                                            }
-                                            else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7){
-                                                ibImprimir.setVisibility(View.GONE);
-                                                llFolioRecibo.setVisibility(View.VISIBLE);
-                                                etFolioRecibo.setText(row.getString(19));
-                                                etFolioRecibo.setError(null);
+                                            if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()) {//FACHADA
+                                                File fachadaFile = new File(ROOT_PATH + "Fachada/" + row.getString(20));
+                                                Uri uriFachada = Uri.fromFile(fachadaFile);
+                                                Glide.with(ctx).load(uriFachada).into(ivFachada);
+                                                ibFachada.setVisibility(View.GONE);
+                                                ivFachada.setVisibility(View.VISIBLE);
+                                                byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
+                                                tvFachada.setError(null);
                                             }
 
-                                            if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){//FOTOGRAFIA O GALERIA
-                                                File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+row.getString(20));
-                                                Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                                                Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
-                                                ibFoto.setVisibility(View.GONE);
-                                                ibGaleria.setVisibility(View.GONE);
-                                                ivEvidencia.setVisibility(View.VISIBLE);
-                                                byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
-                                                tvFotoGaleria.setError(null);
-                                            }
-
-                                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
+                                            tvGerente.setVisibility(View.VISIBLE);
+                                            if (!row.getString(22).isEmpty()) {//ESTA GERENTE
                                                 tvGerente.setText(row.getString(22));
-
                                                 SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){//SI ESTA GERENTE
-                                                    if (!row.getString(23).isEmpty()){//FIRMA
-                                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
+
+                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) {
+
+                                                    if (!row.getString(23).isEmpty()) {//FIRMA
+                                                        File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(23));
                                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                         ibFirma.setVisibility(View.GONE);
@@ -2126,842 +2054,546 @@ public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity
                                                     }
                                                 }
                                             }
+                                            break;
+                                        case 0: // Si Pago
+                                            if (!row.getString(14).isEmpty()) {//MEDIO PAGO
+                                                tvMedioPago.setText(row.getString(14));
+                                                medio_pago_anterio = m.GetMedioPagoId(m.GetStr(tvMedioPago));
+                                                SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
+                                                if (!row.getString(16).isEmpty()) {//PAGARA REQUERIDO
+                                                    tvPagaraRequerido.setText(row.getString(16));
+                                                    SelectPagoRequerido(m.PagoRequerido(tvPagaraRequerido));
+                                                    etPagoRealizado.setText(row.getString(17));
+                                                }
+
+                                                if (!row.getString(15).isEmpty()) {//FECHA DEPOSITO
+                                                    tvFechaDeposito.setText(row.getString(15));
+                                                    tvFechaDeposito.setError(null);
+                                                }
+
+                                                if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6) { //EFECTIVO
+                                                    if (!row.getString(18).isEmpty()) {//IMPRIMIRA RECIBOS
+                                                        tvImprimirRecibo.setText(row.getString(18));
+                                                        SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
+                                                        etFolioRecibo.setEnabled(true);
+
+                                                        if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0) { //SI IMPRIMIRA RECIBOS
+
+                                                            if (!row.getString(19).isEmpty()) {//FOLIO
+                                                                etPagoRealizado.setEnabled(false);
+                                                                etPagoRealizado.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+
+                                                                tvContacto.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                                tvContacto.setEnabled(false);
+                                                                tvResultadoGestion.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                                tvResultadoGestion.setEnabled(false);
+                                                                tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                                tvMedioPago.setEnabled(false);
+                                                                tvPagaraRequerido.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                                tvPagaraRequerido.setEnabled(false);
+                                                                tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+                                                                tvImprimirRecibo.setEnabled(false);
+                                                                ibImprimir.setVisibility(View.VISIBLE);
+
+                                                                etFolioRecibo.setEnabled(false);
+                                                                llFolioRecibo.setVisibility(View.VISIBLE);
+                                                                etFolioRecibo.setText(row.getString(19));
+                                                                etFolioRecibo.setError(null);
+                                                                folio_impreso = row.getString(19);
+                                                                recuperarPagoRealizado();
+                                                            } else {
+                                                                ibImprimir.setVisibility(View.VISIBLE);
+                                                            }
+                                                        } else {
+                                                            ibImprimir.setVisibility(View.GONE);
+                                                            llFolioRecibo.setVisibility(View.VISIBLE);
+                                                            etFolioRecibo.setText(row.getString(19));
+                                                            etFolioRecibo.setError(null);
+                                                        }
+                                                    }
+                                                } else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7) {
+                                                    ibImprimir.setVisibility(View.GONE);
+                                                    llFolioRecibo.setVisibility(View.VISIBLE);
+                                                    etFolioRecibo.setText(row.getString(19));
+                                                    etFolioRecibo.setError(null);
+                                                }
+
+                                                if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()) {//FOTOGRAFIA O GALERIA
+                                                    File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + row.getString(20));
+                                                    Uri uriEvidencia = Uri.fromFile(evidenciaFile);
+                                                    Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
+                                                    ibFoto.setVisibility(View.GONE);
+                                                    ibGaleria.setVisibility(View.GONE);
+                                                    ivEvidencia.setVisibility(View.VISIBLE);
+                                                    byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
+                                                    tvFotoGaleria.setError(null);
+                                                }
+
+                                                if (!row.getString(22).isEmpty()) {//ESTA GERENTE
+                                                    tvGerente.setText(row.getString(22));
+
+                                                    SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) {//SI ESTA GERENTE
+                                                        if (!row.getString(23).isEmpty()) {//FIRMA
+                                                            File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(23));
+                                                            Uri uriFirma = Uri.fromFile(firmaFile);
+                                                            Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                                            ibFirma.setVisibility(View.GONE);
+                                                            ivFirma.setVisibility(View.VISIBLE);
+                                                            byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                                            tvFirma.setError(null);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                    }
+                                }
+                                break;
+                            case 1: //NO CONTACTO
+                                SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                                if (!row.getString(6).isEmpty()) {//COMENTARIO
+                                    etComentario.setText(row.getString(6));
+                                    etComentario.setVisibility(View.VISIBLE);
+                                    etComentario.setError(null);
+                                }
+
+                                if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()) {
+                                    File fachadaFile = new File(ROOT_PATH + "Fachada/" + row.getString(20));
+                                    Uri uriFachada = Uri.fromFile(fachadaFile);
+                                    Glide.with(ctx).load(uriFachada).into(ivFachada);
+                                    ibFachada.setVisibility(View.GONE);
+                                    ivFachada.setVisibility(View.VISIBLE);
+                                    byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
+                                    tvFachada.setError(null);
+                                }
+
+                                tvGerente.setVisibility(View.VISIBLE);
+                                if (!row.getString(22).isEmpty()) {//ESTA GERENTE
+                                    tvGerente.setText(row.getString(22));
+                                    SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+
+                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) {
+                                        if (!row.getString(23).isEmpty()) {
+                                            File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(23));
+                                            Uri uriFirma = Uri.fromFile(firmaFile);
+                                            Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                            ibFirma.setVisibility(View.GONE);
+                                            ivFirma.setVisibility(View.VISIBLE);
+                                            byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                            tvFirma.setError(null);
                                         }
-                                        break;
-                                }
-                            }
-                            break;
-                        case 1: //NO CONTACTO
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
-                            if (!row.getString(6).isEmpty()){//COMENTARIO
-                                etComentario.setText(row.getString(6));
-                                etComentario.setVisibility(View.VISIBLE);
-                                etComentario.setError(null);
-                            }
-
-                            if (!row.getString(20).isEmpty() && !row.getString(21).isEmpty()){
-                                File fachadaFile = new File(ROOT_PATH + "Fachada/"+row.getString(20));
-                                Uri uriFachada = Uri.fromFile(fachadaFile);
-                                Glide.with(ctx).load(uriFachada).into(ivFachada);
-                                ibFachada.setVisibility(View.GONE);
-                                ivFachada.setVisibility(View.VISIBLE);
-                                byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
-                                tvFachada.setError(null);
-                            }
-
-                            tvGerente.setVisibility(View.VISIBLE);
-                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
-                                tvGerente.setText(row.getString(22));
-                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-
-                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
-                                    if (!row.getString(23).isEmpty()){
-                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
-                                        Uri uriFirma = Uri.fromFile(firmaFile);
-                                        Glide.with(ctx).load(uriFirma).into(ivFirma);
-                                        ibFirma.setVisibility(View.GONE);
-                                        ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
-                                        tvFirma.setError(null);
                                     }
                                 }
-                            }
-                            break;
-                        case 2:
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                                break;
+                            case 2:
+                                SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
 
-                            if (!row.getString(6).isEmpty()){//COMENTARIO
-                                etComentario.setText(row.getString(6));
-                                etComentario.setVisibility(View.VISIBLE);
-                                etComentario.setError(null);
-                            }
+                                if (!row.getString(6).isEmpty()) {//COMENTARIO
+                                    etComentario.setText(row.getString(6));
+                                    etComentario.setVisibility(View.VISIBLE);
+                                    etComentario.setError(null);
+                                }
 
-                            tvGerente.setVisibility(View.VISIBLE);
-                            if (!row.getString(22).isEmpty()){//ESTA GERENTE
-                                tvGerente.setText(row.getString(22));
-                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
-                                    if (!row.getString(23).isEmpty()){
-                                        File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(23));
-                                        Uri uriFirma = Uri.fromFile(firmaFile);
-                                        Glide.with(ctx).load(uriFirma).into(ivFirma);
-                                        ibFirma.setVisibility(View.GONE);
-                                        ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
-                                        tvFirma.setError(null);
+                                tvGerente.setVisibility(View.VISIBLE);
+                                if (!row.getString(22).isEmpty()) {//ESTA GERENTE
+                                    tvGerente.setText(row.getString(22));
+                                    SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) {
+                                        if (!row.getString(23).isEmpty()) {
+                                            File firmaFile = new File(ROOT_PATH + "Firma/" + row.getString(23));
+                                            Uri uriFirma = Uri.fromFile(firmaFile);
+                                            Glide.with(ctx).load(uriFirma).into(ivFirma);
+                                            ibFirma.setVisibility(View.GONE);
+                                            ivFirma.setVisibility(View.VISIBLE);
+                                            byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                            tvFirma.setError(null);
+                                        }
                                     }
                                 }
-                            }
-                            break;
+                                break;
 
+                        }
                     }
+
                 }
 
             }
-
         }
-    }
 
     private void Update(String key, String value) {
-        Log.e("update", key+": "+value);
-        ContentValues cv = new ContentValues();
-        cv.put(key, value);
-        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
-    }
-
-   /*@Override
-     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case REQUEST_CODE_FIRMA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        ibFirma.setVisibility(View.GONE);
-                        ivFirma.setVisibility(View.VISIBLE);
-                        tvFirma.setError(null);
-                        Glide.with(ctx)
-                                .load(data.getByteArrayExtra(FIRMA_IMAGE))
-                                .into(ivFirma);
-                        byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
-
-                        try {
-                            Update("firma", m.save(byteFirma, 3));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                break;
-            case REQUEST_CODE_CAMARA_FACHADA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        ibFachada.setVisibility(View.GONE);
-                        tvFachada.setError(null);
-                        ivFachada.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(PICTURE);
-                        Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
-
-                        try {
-                            Update("evidencia", m.save(byteEvidencia, 1));
-                            Update("tipo_imagen", "FACHADA");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                break;
-            case REQUEST_CODE_IMPRESORA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
-                        if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
-                            res_impresion = data.getIntExtra(RES_PRINT, 0);
-                            folio_impreso = "CV"+session.getUser().get(0) + "-" + String.valueOf(data.getIntExtra(FOLIO,0));
-                            etFolioRecibo.setText(folio_impreso);
-                            etPagoRealizado.setEnabled(false);
-                            tvImprimirRecibo.setError(null);
-                            llFolioRecibo.setVisibility(View.VISIBLE);
-
-                            DisableFields();
-                            Update("folio", folio_impreso);
-                        }
-                    }
-                }
-                break;
-            case REQUEST_CODE_GALERIA:
-                if (data != null){
-                    try {
-                        imageUri = data.getData();
-
-                        byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
-
-                        ibFoto.setVisibility(View.GONE);
-                        ibGaleria.setVisibility(View.GONE);
-                        tvFotoGaleria.setError(null);
-                        ivEvidencia.setVisibility(View.VISIBLE);
-                        //ivEvidencia.setImageURI(imageUri);
-
-                        ServicioWebRenderizar(ivEvidencia.getDrawable().toString());
-
-                        View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
-
-                        Bitmap newBitMap = null;
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
-
-                        Bitmap.Config config = bitmap.getConfig();
-
-                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
-                        Canvas canvas = new Canvas(newBitMap);
-                        canvas.drawBitmap(bitmap, 0, 0, null);
-
-                        vCanvas.draw(canvas);
-
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-
-                        byteEvidencia = baos.toByteArray();
-
-                        Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-
-                        try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
-                            Update("tipo_imagen", "GALERIA");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }catch (Exception e){
-                        AlertDialog success = Popups.showDialogMessage(ctx, "",
-                                R.string.error_image, R.string.accept, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        success.show();
-                    }
-
-                }
-                break;
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (data != null) {
-                    try {
-                        CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                        imageUri = result.getUri();
-                        byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
-
-                        ibFoto.setVisibility(View.GONE);
-                        ibGaleria.setVisibility(View.GONE);
-                        tvFotoGaleria.setError(null);
-                        ivEvidencia.setVisibility(View.VISIBLE);
-
-
-
-                        View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
-
-                        Bitmap newBitMap = null;
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
-
-                        Bitmap.Config config = bitmap.getConfig();
-
-                        newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
-                        Canvas canvas = new Canvas(newBitMap);
-                        canvas.drawBitmap(bitmap, 0, 0, null);
-
-                        vCanvas.draw(canvas);
-
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        newBitMap.compress(Bitmap.CompressFormat.JPEG, 1000, baos);
-
-                        byteEvidencia = baos.toByteArray();
-
-                        Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-
-                        try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
-                            Update("tipo_imagen", "GALERIA");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }catch (Exception e){
-                        AlertDialog success = Popups.showDialogMessage(ctx, "",
-                                R.string.error_image, R.string.accept, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        success.show();
-                    }
-                }
-                break;
-            case REQUEST_CODE_CAMARA_TICKET:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-                        ibFoto.setVisibility(View.GONE);
-                        ibGaleria.setVisibility(View.GONE);
-                        tvFotoGaleria.setError(null);
-                        ivEvidencia.setVisibility(View.VISIBLE);
-                        byteEvidencia = data.getByteArrayExtra(PICTURE);
-                        Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
-                        try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
-                            Update("tipo_imagen", "FOTOGRAFIA");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                break;
-            case 123: //Fecha defuncion
-                if (resultCode == 321){
-                    if (data != null){
-                        tvFechaDefuncion.setError(null);
-                        tvFechaDefuncion.setText(data.getStringExtra(DATE));
-                        Update("fecha_fallecimiento", tvFechaDefuncion.getText().toString());
-                    }
-                }
-                break;
-            case 812: //Fecha Deposito
-                if (resultCode == 321){
-                    if (data != null){
-                        tvFechaDeposito.setError(null);
-                        tvFechaDeposito.setText(data.getStringExtra(DATE));
-                        Update("fecha_pago", tvFechaDeposito.getText().toString());
-
-                    }
-                }
-                break;
-            case 213: //Fecha de promesa de pago
-                if (resultCode == 312){
-                    if (data != null){
-                        tvFechaPromesaPago.setError(null);
-                        tvFechaPromesaPago.setText(data.getStringExtra(DATE));
-                        Update("fecha_monto_promesa", tvFechaPromesaPago.getText().toString());
-
-                    }
-                }
-                break;
-            case REQUEST_CODE_PREVIEW:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
-
-                        if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
-                            String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
-                            Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
-                            if (rowTraker.getCount() > 0) {
-                                rowTraker.moveToFirst();
-                                ContentValues cv = new ContentValues();
-                                cv.put("latitud", rowTraker.getString(0));
-                                cv.put("longitud", rowTraker.getString(1));
-                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{id_respuesta});
-                            }
-                        }
-
-                        ContentValues cv = new ContentValues();
-                        if (data.hasExtra(ESTATUS)) {
-                            cv.put("estatus_pago", data.getStringExtra(ESTATUS));
-                            cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
-                            cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
-                        }
-                        //cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
-                        cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
-                        cv.put("estatus", "1");
-
-                        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
-
-                        Cursor row;
-                        String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
-                        row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO","1","2"});
-
-                        if (row.getCount() > 0){
-                            row.moveToFirst();
-
-                            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
-                            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
-                            if (row_amortiz.getCount() > 0){
-                                row_amortiz.moveToFirst();
-                                Double abono = 0.0;
-                                if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
-                                    abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
-                                for (int i = 0; i < row_amortiz.getCount(); i++){
-
-                                    Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
-
-                                    if (abono > pendiente){
-                                        ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
-                                        cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                        abono = abono - pendiente;
-                                    }
-                                    else if (abono == pendiente){
-                                        ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", row_amortiz.getString(1));
-                                        cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                        abono = 0.0;
-                                    }
-                                    else if (abono > 0 && abono < pendiente){
-                                        ContentValues cv_amortiz = new ContentValues();
-                                        cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
-                                        cv_amortiz.put("pagado", "PARCIAL");
-                                        abono = 0.0;
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                    }
-                                    else
-                                        break;
-
-                                    row_amortiz.moveToNext();
-                                }
-
-                            }
-                            row_amortiz.close();
-
-                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
-                            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
-
-                            if (row_amortiz.getCount() > 0){
-                                row_amortiz.moveToFirst();
-                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
-                                    ContentValues c = new ContentValues();
-                                    c.put("pagada", 1);
-                                    db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{id_prestamo});
-                                }
-
-                            }
-                            row_amortiz.close();
-                        }
-                        row.close();
-
-                        HashMap<Integer, String> values = new HashMap();
-                        values.put(0, id_respuesta);
-                        values.put(1, data.getStringExtra(NOMBRE));
-                        values.put(2, nombre);
-                        values.put(3, "2");
-                        dBhelper.saveResumenGestion(db, values);
-
-                        Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
-
-                        Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                        ss.SaveRespuestaGestion(ctx, false);
-
-                        Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
-                            String selection = "_display_name = ?";
-                            String[] selectionArgs = new String[] {data.getStringExtra(NOMBRE)};
-
-                            Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
-
-                            Uri contentUri = null;
-
-                            while (cursor.moveToNext()) {
-                                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-                                long id = cursor.getLong(idColumn);
-                                contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                            }
-
-                            whatsappIntent.setType("text/plain");
-                            whatsappIntent.setPackage("com.whatsapp");
-                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                            whatsappIntent.setType("image/jpeg");
-                            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-                        else
-                        {
-                            Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
-                            whatsappIntent.setType("text/plain");
-                            whatsappIntent.setPackage("com.whatsapp");
-                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-                            whatsappIntent.setType("image/jpeg");
-                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                            whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-
-                        try {
-                            ctx.startActivity(Intent.createChooser(whatsappIntent, null));
-                        } catch (android.content.ActivityNotFoundException ex) {
-                            Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
-                        }
-
-                        finish();
-                    }
-                }
-                break;
+            Log.e("update", key + ": " + value);
+            ContentValues cv = new ContentValues();
+            cv.put(key, value);
+            db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{id_prestamo, id_respuesta});
         }
-    }*/
 
-    ActivityResultLauncher<Intent> galeriaLaucher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new androidx.activity.result.ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-            try{
-                int resultCode = result.getResultCode();
-                Intent data = result.getData();
-                switch (result.getResultCode()){
-                    case REQUEST_CODE_FIRMA:
-                        if (resultCode == Activity.RESULT_OK){
-                            if (data != null){
-                                ibFirma.setVisibility(View.GONE);
-                                ivFirma.setVisibility(View.VISIBLE);
-                                tvFirma.setError(null);
-                                Glide.with(ctx)
-                                        .load(data.getByteArrayExtra(FIRMA_IMAGE))
-                                        .into(ivFirma);
-                                byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
-
-                                try {
-                                    Update("firma", m.save(byteFirma, 3));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        break;
-                    case REQUEST_CODE_CAMARA_FACHADA:
-                        if (resultCode == Activity.RESULT_OK){
-                            if (data != null){
-                                ibFachada.setVisibility(View.GONE);
-                                tvFachada.setError(null);
-                                ivFachada.setVisibility(View.VISIBLE);
-                                byteEvidencia = data.getByteArrayExtra(PICTURE);
-                                Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
-
-                                try {
-                                    Update("evidencia", m.save(byteEvidencia, 1));
-                                    Update("tipo_imagen", "FACHADA");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        break;
-                    case REQUEST_CODE_IMPRESORA:
-                        if (resultCode == Activity.RESULT_OK){
-                            if (data != null){
-                                Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
-                                if(data.getIntExtra(RES_PRINT,0) == 1 || data.getIntExtra(RES_PRINT,0) == 2){
-                                    res_impresion = data.getIntExtra(RES_PRINT, 0);
-                                    folio_impreso = "CV"+session.getUser().get(0) + "-" + String.valueOf(data.getIntExtra(FOLIO,0));
-                                    etFolioRecibo.setText(folio_impreso);
-                                    etPagoRealizado.setEnabled(false);
-                                    tvImprimirRecibo.setError(null);
-                                    llFolioRecibo.setVisibility(View.VISIBLE);
-
-                                    DisableFields();
-                                    Update("folio", folio_impreso);
-                                }
-                            }
-                        }
-                        break;
-                    case REQUEST_CODE_GALERIA:
-                        if (data != null){
-                            try {
-                                imageUri = data.getData();
-
-                                byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
-
-                                ibFoto.setVisibility(View.GONE);
-                                ibGaleria.setVisibility(View.GONE);
-                                tvFotoGaleria.setError(null);
-                                ivEvidencia.setVisibility(View.VISIBLE);
-                                //ivEvidencia.setImageURI(imageUri);
-
-                                ServicioWebRenderizar(ivEvidencia.getDrawable().toString());
-
-                                View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
-
-                                Bitmap newBitMap = null;
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
-
-                                Bitmap.Config config = bitmap.getConfig();
-
-                                newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
-                                Canvas canvas = new Canvas(newBitMap);
-                                canvas.drawBitmap(bitmap, 0, 0, null);
-
-                                vCanvas.draw(canvas);
-
-                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-
-                                byteEvidencia = baos.toByteArray();
-
-                                Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-
-                                try {
-                                    Update("evidencia", m.save(byteEvidencia, 2));
-                                    Update("tipo_imagen", "GALERIA");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }catch (Exception e){
-                                AlertDialog success = Popups.showDialogMessage(ctx, "",
-                                        R.string.error_image, R.string.accept, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                success.show();
-                            }
-
-                        }
-                        break;
-                    case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            switch (requestCode) {
+                case REQUEST_CODE_FIRMA:
+                    if (resultCode == Activity.RESULT_OK) {
                         if (data != null) {
+                            ibFirma.setVisibility(View.GONE);
+                            ivFirma.setVisibility(View.VISIBLE);
+                            tvFirma.setError(null);
+                            Glide.with(ctx)
+                                    .load(data.getByteArrayExtra(FIRMA_IMAGE))
+                                    .into(ivFirma);
+                            byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
+
                             try {
-                                CropImage.ActivityResult resultA = CropImage.getActivityResult(data);
-                                imageUri = resultA.getUri();
-                                byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
-
-                                ibFoto.setVisibility(View.GONE);
-                                ibGaleria.setVisibility(View.GONE);
-                                tvFotoGaleria.setError(null);
-                                ivEvidencia.setVisibility(View.VISIBLE);
-
-
-
-                                View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
-
-                                Bitmap newBitMap = null;
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
-
-                                Bitmap.Config config = bitmap.getConfig();
-
-                                newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
-                                Canvas canvas = new Canvas(newBitMap);
-                                canvas.drawBitmap(bitmap, 0, 0, null);
-
-                                vCanvas.draw(canvas);
-
-                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                newBitMap.compress(Bitmap.CompressFormat.JPEG, 1000, baos);
-
-                                byteEvidencia = baos.toByteArray();
-
-                                Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-
-                                try {
-                                    Update("evidencia", m.save(byteEvidencia, 2));
-                                    Update("tipo_imagen", "GALERIA");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }catch (Exception e){
-                                AlertDialog success = Popups.showDialogMessage(ctx, "",
-                                        R.string.error_image, R.string.accept, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                success.show();
+                                Update("firma", m.save(byteFirma, 3));
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
-                        break;
-                    case REQUEST_CODE_CAMARA_TICKET:
-                        if (resultCode == Activity.RESULT_OK){
-                            if (data != null){
-                                ibFoto.setVisibility(View.GONE);
-                                ibGaleria.setVisibility(View.GONE);
-                                tvFotoGaleria.setError(null);
-                                ivEvidencia.setVisibility(View.VISIBLE);
-                                byteEvidencia = data.getByteArrayExtra(PICTURE);
-                                Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
-                                try {
-                                    Update("evidencia", m.save(byteEvidencia, 2));
-                                    Update("tipo_imagen", "FOTOGRAFIA");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                    }
+                    break;
+                case REQUEST_CODE_CAMARA_FACHADA:
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data != null) {
+                            ibFachada.setVisibility(View.GONE);
+                            tvFachada.setError(null);
+                            ivFachada.setVisibility(View.VISIBLE);
+                            byteEvidencia = data.getByteArrayExtra(PICTURE);
+                            Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
+
+                            try {
+                                Update("evidencia", m.save(byteEvidencia, 1));
+                                Update("tipo_imagen", "FACHADA");
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
-                        break;
-                    case 123: //Fecha defuncion
-                        if (resultCode == 321){
-                            if (data != null){
-                                tvFechaDefuncion.setError(null);
-                                tvFechaDefuncion.setText(data.getStringExtra(DATE));
-                                Update("fecha_fallecimiento", tvFechaDefuncion.getText().toString());
+                    }
+                    break;
+                case REQUEST_CODE_IMPRESORA:
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data != null) {
+                            Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
+                            if (data.getIntExtra(RES_PRINT, 0) == 1 || data.getIntExtra(RES_PRINT, 0) == 2) {
+                                res_impresion = data.getIntExtra(RES_PRINT, 0);
+                                folio_impreso = "CV" + session.getUser().get(0) + "-" + String.valueOf(data.getIntExtra(FOLIO, 0));
+                                etFolioRecibo.setText(folio_impreso);
+                                etPagoRealizado.setEnabled(false);
+                                tvImprimirRecibo.setError(null);
+                                llFolioRecibo.setVisibility(View.VISIBLE);
+
+                                DisableFields();
+                                Update("folio", folio_impreso);
                             }
                         }
-                        break;
-                    case 812: //Fecha Deposito
-                        if (resultCode == 321){
-                            if (data != null){
-                                tvFechaDeposito.setError(null);
-                                tvFechaDeposito.setText(data.getStringExtra(DATE));
-                                Update("fecha_pago", tvFechaDeposito.getText().toString());
+                    }
+                    break;
+                case REQUEST_CODE_GALERIA:
+                    if (data != null) {
+                        try {
+                            imageUri = data.getData();
 
+                            byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
+
+                            ibFoto.setVisibility(View.GONE);
+                            ibGaleria.setVisibility(View.GONE);
+                            tvFotoGaleria.setError(null);
+                            ivEvidencia.setVisibility(View.VISIBLE);
+                            //ivEvidencia.setImageURI(imageUri);
+
+                            View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                            Bitmap newBitMap = null;
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                            Bitmap.Config config = bitmap.getConfig();
+
+                            newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                            Canvas canvas = new Canvas(newBitMap);
+                            canvas.drawBitmap(bitmap, 0, 0, null);
+
+                            vCanvas.draw(canvas);
+
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                            byteEvidencia = baos.toByteArray();
+
+                            Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                            try {
+                                Update("evidencia", m.save(byteEvidencia, 2));
+                                Update("tipo_imagen", "GALERIA");
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        }
-                        break;
-                    case 213: //Fecha de promesa de pago
-                        if (resultCode == 312){
-                            if (data != null){
-                                tvFechaPromesaPago.setError(null);
-                                tvFechaPromesaPago.setText(data.getStringExtra(DATE));
-                                Update("fecha_monto_promesa", tvFechaPromesaPago.getText().toString());
-
-                            }
-                        }
-                        break;
-                    case REQUEST_CODE_PREVIEW:
-                        if (resultCode == Activity.RESULT_OK){
-                            if (data != null){
-
-                                if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
-                                    String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
-                                    Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
-                                    if (rowTraker.getCount() > 0) {
-                                        rowTraker.moveToFirst();
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("latitud", rowTraker.getString(0));
-                                        cv.put("longitud", rowTraker.getString(1));
-                                        db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{id_respuesta});
-                                    }
-                                }
-
-                                ContentValues cv = new ContentValues();
-                                if (data.hasExtra(ESTATUS)) {
-                                    cv.put("estatus_pago", data.getStringExtra(ESTATUS));
-                                    cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
-                                    cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
-                                }
-                                //cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
-                                cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
-                                cv.put("estatus", "1");
-
-                                db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?" ,new String[]{id_prestamo, id_respuesta});
-
-                                Cursor row;
-                                String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
-                                row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO","1","2"});
-
-                                if (row.getCount() > 0){
-                                    row.moveToFirst();
-
-                                    String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
-                                    Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
-                                    if (row_amortiz.getCount() > 0){
-                                        row_amortiz.moveToFirst();
-                                        Double abono = 0.0;
-                                        if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
-                                            abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
-                                        for (int i = 0; i < row_amortiz.getCount(); i++){
-
-                                            Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
-
-                                            if (abono > pendiente){
-                                                ContentValues cv_amortiz = new ContentValues();
-                                                cv_amortiz.put("total_pagado", row_amortiz.getString(1));
-                                                cv_amortiz.put("pagado", "PAGADO");
-                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                                abono = abono - pendiente;
-                                            }
-                                            else if (abono == pendiente){
-                                                ContentValues cv_amortiz = new ContentValues();
-                                                cv_amortiz.put("total_pagado", row_amortiz.getString(1));
-                                                cv_amortiz.put("pagado", "PAGADO");
-                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                                abono = 0.0;
-                                            }
-                                            else if (abono > 0 && abono < pendiente){
-                                                ContentValues cv_amortiz = new ContentValues();
-                                                cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
-                                                cv_amortiz.put("pagado", "PARCIAL");
-                                                abono = 0.0;
-                                                cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
-                                                db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
-                                            }
-                                            else
-                                                break;
-
-                                            row_amortiz.moveToNext();
+                        } catch (Exception e) {
+                            AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                    R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
                                         }
+                                    });
+                            success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            success.show();
+                        }
 
-                                    }
-                                    row_amortiz.close();
+                    }
+                    break;
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    if (data != null) {
+                        try {
+                            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                            imageUri = result.getUri();
+                            byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
 
-                                    sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
-                                    row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+                            ibFoto.setVisibility(View.GONE);
+                            ibGaleria.setVisibility(View.GONE);
+                            tvFotoGaleria.setError(null);
+                            ivEvidencia.setVisibility(View.VISIBLE);
 
-                                    if (row_amortiz.getCount() > 0){
-                                        row_amortiz.moveToFirst();
-                                        if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
-                                            ContentValues c = new ContentValues();
-                                            c.put("pagada", 1);
-                                            db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{id_prestamo});
+                            View vCanvas = new CanvasCustom(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()));
+
+                            Bitmap newBitMap = null;
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(byteEvidencia, 0, byteEvidencia.length);
+
+                            //Bitmap bitmap1_resize = bitmap;
+
+
+                            //bitmap1_resize = Bitmap.createScaledBitmap(bitmap,bitmap.getWidth(),bitmap.getHeight(),false);
+
+                            Bitmap.Config config = bitmap.getConfig();
+
+                            newBitMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+                            Canvas canvas = new Canvas(newBitMap);
+                            canvas.drawBitmap(bitmap, 0, 0, null);
+
+                            vCanvas.draw(canvas);
+
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            newBitMap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                            byteEvidencia = baos.toByteArray();
+
+                            Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
+
+                            try {
+                                Update("evidencia", m.save(byteEvidencia, 2));
+                                Update("tipo_imagen", "GALERIA");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } catch (Exception e) {
+                            AlertDialog success = Popups.showDialogMessage(ctx, "",
+                                    R.string.error_image, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            dialog.dismiss();
                                         }
-
-                                    }
-                                    row_amortiz.close();
-                                }
-                                row.close();
-
-                                HashMap<Integer, String> values = new HashMap();
-                                values.put(0, id_respuesta);
-                                values.put(1, data.getStringExtra(NOMBRE));
-                                values.put(2, nombre);
-                                values.put(3, "2");
-                                dBhelper.saveResumenGestion(db, values);
-
-                                Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
-
-                                Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                                ss.SaveRespuestaGestion(ctx, false);
-
-                                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                    String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
-                                    String selection = "_display_name = ?";
-                                    String[] selectionArgs = new String[] {data.getStringExtra(NOMBRE)};
-
-                                    Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
-
-                                    Uri contentUri = null;
-
-                                    while (cursor.moveToNext()) {
-                                        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-                                        long id = cursor.getLong(idColumn);
-                                        contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                                    }
-
-                                    whatsappIntent.setType("text/plain");
-                                    whatsappIntent.setPackage("com.whatsapp");
-                                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-                                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                                    whatsappIntent.setType("image/jpeg");
-                                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                }
-                                else
-                                {
-                                    Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
-                                    whatsappIntent.setType("text/plain");
-                                    whatsappIntent.setPackage("com.whatsapp");
-                                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
-                                    whatsappIntent.setType("image/jpeg");
-                                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                }
-
-                                try {
-                                    ctx.startActivity(Intent.createChooser(whatsappIntent, null));
-                                } catch (android.content.ActivityNotFoundException ex) {
-                                    Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
-                                }
-
-                                finish();
+                                    });
+                            success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            success.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            success.show();
+                        }
+                    }
+                    break;
+                case REQUEST_CODE_CAMARA_TICKET:
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data != null) {
+                            ibFoto.setVisibility(View.GONE);
+                            ibGaleria.setVisibility(View.GONE);
+                            tvFotoGaleria.setError(null);
+                            ivEvidencia.setVisibility(View.VISIBLE);
+                            byteEvidencia = data.getByteArrayExtra(PICTURE);
+                            Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
+                            try {
+                                Update("evidencia", m.save(byteEvidencia, 2));
+                                Update("tipo_imagen", "FOTOGRAFIA");
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
-                        break;
-                }
-            }catch (Exception e){
-                Toast.makeText(ctx,"Error: " + e.getMessage(),Toast.LENGTH_SHORT).show();
-                Log.e("Error", e.getMessage());
-                e.getStackTrace();
+                    }
+                    break;
+                case 123: //Fecha defuncion
+                    if (resultCode == 321) {
+                        if (data != null) {
+                            tvFechaDefuncion.setError(null);
+                            tvFechaDefuncion.setText(data.getStringExtra(DATE));
+                            Update("fecha_fallecimiento", tvFechaDefuncion.getText().toString());
+                        }
+                    }
+                    break;
+                case 812: //Fecha Deposito
+                    if (resultCode == 321) {
+                        if (data != null) {
+                            tvFechaDeposito.setError(null);
+                            tvFechaDeposito.setText(data.getStringExtra(DATE));
+                            Update("fecha_pago", tvFechaDeposito.getText().toString());
+
+                        }
+                    }
+                    break;
+                case 213: //Fecha de promesa de pago
+                    if (resultCode == 312) {
+                        if (data != null) {
+                            tvFechaPromesaPago.setError(null);
+                            tvFechaPromesaPago.setText(data.getStringExtra(DATE));
+                            Update("fecha_monto_promesa", tvFechaPromesaPago.getText().toString());
+
+                        }
+                    }
+                    break;
+                case REQUEST_CODE_PREVIEW:
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data != null) {
+
+                            if (data.hasExtra(UBICACION) && !data.getBooleanExtra(UBICACION, true)) {
+                                String sqlTraker = "SELECT latitud, longitud FROM " + TBL_TRACKER_ASESOR_T + " WHERE created_at >= Datetime(?) AND created_at <= Datetime(?) ORDER BY created_at DESC";
+                                Cursor rowTraker = db.rawQuery(sqlTraker, new String[]{fechaIni.substring(0, 10) + " 08:00:00", fechaIni});
+                                if (rowTraker.getCount() > 0) {
+                                    rowTraker.moveToFirst();
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("latitud", rowTraker.getString(0));
+                                    cv.put("longitud", rowTraker.getString(1));
+                                    db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{id_respuesta});
+                                }
+                            }
+
+                            ContentValues cv = new ContentValues();
+                            if (data.hasExtra(ESTATUS)) {
+                                cv.put("estatus_pago", data.getStringExtra(ESTATUS));
+                                cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
+                                cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
+                            }
+                            //cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
+                            cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
+                            cv.put("estatus", "1");
+
+                            db.update(TBL_RESPUESTAS_INTEGRANTE_T, cv, "id_prestamo = ? AND _id = ?", new String[]{id_prestamo, id_respuesta});
+
+                            Cursor row;
+                            String sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND contacto = ? AND resultado_gestion = ? AND estatus IN (?,?)";
+                            row = db.rawQuery(sql, new String[]{id_prestamo, "SI", "PAGO", "1", "2"});
+
+                            if (row.getCount() > 0) {
+                                row.moveToFirst();
+
+                                String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
+                                Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+                                if (row_amortiz.getCount() > 0) {
+                                    row_amortiz.moveToFirst();
+                                    Double abono = 0.0;
+                                    if (!etPagoRealizado.getText().toString().trim().isEmpty() && tvResultadoGestion.getText().toString().trim().toUpperCase().equals("PAGO"))
+                                        abono = Double.parseDouble(etPagoRealizado.getText().toString().trim().replace(",", ""));
+                                    for (int i = 0; i < row_amortiz.getCount(); i++) {
+
+                                        Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
+
+                                        if (abono > pendiente) {
+                                            ContentValues cv_amortiz = new ContentValues();
+                                            cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                            cv_amortiz.put("pagado", "PAGADO");
+                                            cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                            abono = abono - pendiente;
+                                        } else if (abono == pendiente) {
+                                            ContentValues cv_amortiz = new ContentValues();
+                                            cv_amortiz.put("total_pagado", row_amortiz.getString(1));
+                                            cv_amortiz.put("pagado", "PAGADO");
+                                            cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                            abono = 0.0;
+                                        } else if (abono > 0 && abono < pendiente) {
+                                            ContentValues cv_amortiz = new ContentValues();
+                                            cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
+                                            cv_amortiz.put("pagado", "PARCIAL");
+                                            abono = 0.0;
+                                            cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                            db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{id_prestamo, row_amortiz.getString(5)});
+                                        } else
+                                            break;
+
+                                        row_amortiz.moveToNext();
+                                    }
+
+                                }
+                                row_amortiz.close();
+
+                                sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                                row_amortiz = db.rawQuery(sqlAmortiz, new String[]{id_prestamo});
+
+                                if (row_amortiz.getCount() > 0) {
+                                    row_amortiz.moveToFirst();
+                                    if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
+                                        ContentValues c = new ContentValues();
+                                        c.put("pagada", 1);
+                                        db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{id_prestamo});
+                                    }
+
+                                }
+                                row_amortiz.close();
+                            }
+                            row.close();
+
+                            HashMap<Integer, String> values = new HashMap();
+                            values.put(0, id_respuesta);
+                            values.put(1, data.getStringExtra(NOMBRE));
+                            values.put(2, nombre);
+                            values.put(3, "2");
+                            dBhelper.saveResumenGestion(db, values);
+
+                            Toast.makeText(ctx, "Ficha Guardada con éxito.", Toast.LENGTH_SHORT).show();
+
+                            Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                            ss.SaveRespuestaGestion(ctx, false);
+
+                            Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                String[] projection = new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME};
+                                String selection = "_display_name = ?";
+                                String[] selectionArgs = new String[]{data.getStringExtra(NOMBRE)};
+
+                                Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
+
+                                Uri contentUri = null;
+
+                                while (cursor.moveToNext()) {
+                                    int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                                    long id = cursor.getLong(idColumn);
+                                    contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                                }
+
+                                whatsappIntent.setType("text/plain");
+                                whatsappIntent.setPackage("com.whatsapp");
+                                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                                whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                                whatsappIntent.setType("image/jpeg");
+                                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            } else {
+                                Uri imgUri = Uri.parse(data.getStringExtra(SCREEN_SHOT));
+                                whatsappIntent.setType("text/plain");
+                                whatsappIntent.setPackage("com.whatsapp");
+                                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + nombre);
+                                whatsappIntent.setType("image/jpeg");
+                                whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            }
+
+                            try {
+                                ctx.startActivity(Intent.createChooser(whatsappIntent, null));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+                            }
+
+                            finish();
+                        }
+                    }
+                    break;
             }
-
         }
-    });
-
-
 
     private void GuardarGestion(){
         Validator validator = new Validator();
@@ -3329,52 +2961,13 @@ public class VencidaIntegrante<ActivityResultCallback> extends AppCompatActivity
 
     }
 
-    private void ServicioWebRenderizar(String img){
-        String base_url = "http://192.168.3.180:8083/api/movil/";
 
-        String imagen = ivEvidencia.getDrawable().toString();
-
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(120, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .build();
-
-        Retrofit retrofit = null;
-
-        retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(base_url)
-                .client(okHttpClient)
-                .build();
-
-        RenderImagen api = retrofit.create(RenderImagen.class);
-
-        Call<ImagenRender> call = api.getImagenRender(ivEvidencia.getDrawable().toString());
-        call.enqueue(new Callback<ImagenRender>() {
-            @Override
-            public void onResponse(Call<ImagenRender> call, Response<ImagenRender> response) {
-                try{
-
-                    if(response.isSuccessful()){
-                        ImagenRender m = response.body();
-                        String URL_IMG = "https://192.168.3.180:8083/api/movil/renderImg?imagenTest="+m.getImgResult()+".jpg";
-                        ivEvidencia.setImageURI(Uri.parse(m.getImgResult().toString()));
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        byteEvidencia = baos.toByteArray();
-                        //Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
-                        Glide.with(getApplicationContext()).load(URL_IMG).into(ivEvidencia);
-                    }
-                }catch (Exception e){
-                    Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<ImagenRender> call, Throwable t) {
-                Toast.makeText(ctx, "Error, vuelve a intentarlo", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
+    private void loadimagenWithResize(){
+        Glide
+                .with(ctx)
+                .load(imageUri)
+                .override(400,400)
+                .into(ivEvidencia);
     }
 
 

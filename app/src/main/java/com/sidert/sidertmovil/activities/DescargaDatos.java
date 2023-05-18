@@ -152,6 +152,7 @@ public class DescargaDatos extends AppCompatActivity {
         Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
         sc.GetCategoriasTickets(ctx);
         sc.GetEstados(ctx);
+        sc.GetMunicipios(ctx);
 
         sc.GetSectores(ctx);
         sc.GetOcupaciones(ctx);

@@ -92,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <TextView
+                <EditText
                     android:id="@+id/tvMontoAmortiz"
                     android:hint="Monto de Amortización"
                     android:gravity="center_vertical"

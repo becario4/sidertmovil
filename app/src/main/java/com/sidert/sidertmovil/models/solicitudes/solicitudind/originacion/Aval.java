@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;
@@ -732,6 +733,7 @@ public class Aval implements Serializable, IFillModel {
     public void setLocatedAt(String locatedAt) {
         this.locatedAt = locatedAt;
     }
+
 
     @Override
     public void fill(Cursor row) {

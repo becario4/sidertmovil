@@ -1,6 +1,8 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ApiResponse;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
@@ -22,6 +25,8 @@ import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
+import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.BeneficiarioDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Conyugue;
@@ -64,24 +69,30 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.PoliticaPldRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRenDao;
+import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import static com.sidert.sidertmovil.utils.Constants.*;
 import static com.sidert.sidertmovil.utils.Constants.K_ACTIVOS_OBSERVABLES;
 import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LATITUD;
@@ -104,6 +115,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
     TextView tvError;
     TextView tvTitle;
     SessionManager session;
+    Beneficiario beneficiario;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,6 +140,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         else
         {
             SendOriginacion(idSolicitud);
+
         }
 
         return v;
@@ -273,6 +286,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                                 solicitudRen.setEstatus(2);
                                 solicitudRen.setIdOriginacion(res.getIdSolicitud());
                                 solicitudRenDao.solicitudEnviada(solicitudRen);
+                                obtenerDatosBeneficiario(solicitudRen.getIdSolicitud(),solicitudRen.getIdOriginacion());
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                                 break;
@@ -340,6 +354,9 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 ReferenciaDao referenciaDao = new ReferenciaDao(ctx);
                 Referencia referencia = referenciaDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
+                //BeneficiarioDao beneficiarioDao = new BeneficiarioDao(ctx);
+                //Beneficiario beneficiario = beneficiarioDao.findByIdSolicitud(solicitud.getIdSolicitud());
+
                 CroquisDao croquisDao = new CroquisDao(ctx);
                 Croquis croquis = croquisDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
@@ -355,6 +372,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 fillNegocioJson(json_solicitud, negocio);
                 fillAvalJson(json_solicitud, aval);
                 fillReferenciaJson(json_solicitud, referencia);
+                //fillBeneficiario(json_solicitud,beneficiario);
                 fillCroquisJson(json_solicitud, croquis);
                 fillDocumentoJson(json_solicitud, documento);
                 fillPoliticaPldJson(json_solicitud, politicaPld);
@@ -378,6 +396,9 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
                 RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
                 RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitud.getIdOriginacion()));
+
+                /** aqui obtenemos el id_originacion*/
+
 
 
                 SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
@@ -411,6 +432,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                                 solicitud.setEstatus(2);
                                 solicitud.setIdOriginacion(res.getIdSolicitud());
                                 solicitudDao.solicitudEnviada(solicitud);
+                                obtenerDatosBeneficiario(solicitud.getIdSolicitud(),solicitud.getIdOriginacion());
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                                 break;
@@ -580,6 +602,26 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_conyuge.put(K_TEL_CELULAR, conyugue.getTelCelular());
 
         json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
+    }
+
+    private void fillBeneficiario(JSONObject json_solicitud, Beneficiario beneficiario)throws  JSONException{
+
+        JSONObject json_beneficiario = new JSONObject();
+
+        BeneficiarioDao beneDao = new BeneficiarioDao(ctx);
+        beneficiario = beneDao.findByIdSolicitud(beneficiario.getIdSolicitud());
+
+        json_beneficiario.put(K_ID_ORIGINACION, beneficiario.getId_originacion());
+        json_beneficiario.put(K_ID_CLIENTE,beneficiario.getCliente_id());
+        json_beneficiario.put(K_ID_GRUPO,beneficiario.getGrupo_id());
+        json_beneficiario.put(K_NOMBRE_BENEFICIARIO,beneficiario.getNombre());
+        json_beneficiario.put(K_PATERNO_BENEFICIARIO,beneficiario.getPaterno());
+        json_beneficiario.put(K_MATERNO_BENEFICIARIO,beneficiario.getMaterno());
+        json_beneficiario.put(K_PARENTESCO_BENEFICIARIO,beneficiario.getParentesco());
+        json_beneficiario.put(K_SERIE_ID_BENEFICIARIO,beneficiario.getSerieId());
+
+        json_solicitud.put(K_SOLICITANTE_BENEFICIARIO,json_beneficiario);
+
     }
 
     private void fillEconomicoJson(JSONObject json_solicitud, Economico economico) throws JSONException
@@ -1201,5 +1243,64 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
         json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
     }
+
+    public void obtenerDatosBeneficiario(int id_solicitud,int id_originacion){
+        DBhelper dBhelper = new DBhelper(ctx);
+
+        Beneficiario ben = new Beneficiario();
+
+        Cursor row = dBhelper.getBeneficiarioInd(TBL_DATOS_BENEFICIARIO, id_solicitud, id_originacion);
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+
+            ben.setIdSolicitud(row.getInt(1));
+            ben.setId_originacion(id_originacion);
+            ben.setCliente_id(row.getInt(3));
+            ben.setGrupo_id(row.getInt(4));
+            ben.setNombre(row.getString(5));
+            ben.setPaterno(row.getString(6));
+            ben.setMaterno(row.getString(7));
+            ben.setParentesco(row.getString(8));
+            ben.setSerieId(row.getInt(9));
+            row.close();
+        }else{
+            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
+        }
+
+        BeneficiarioService sa = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
+
+        Call<Beneficiario> call = sa.senDataBeneficiario(
+
+                ben.getId_originacion(),
+                ben.getCliente_id(),
+                ben.getGrupo_id(),
+                ben.getNombre(),
+                ben.getPaterno(),
+                ben.getMaterno(),
+                ben.getParentesco(),
+                ben.getSerieId()
+        );
+
+
+        call.enqueue(new Callback<Beneficiario>() {
+            @Override
+            public void onResponse(Call<Beneficiario> call, Response<Beneficiario> response) {
+                switch (response.code()){
+                    case 200:
+                        Log.e("AQUI:", "REGISTRO COMPLETO");
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Beneficiario> call, Throwable t) {
+                Log.e("AQUI;", " NO SE REGISTRO NADA");
+            }
+        });
+
+    }
+
+
 
 }

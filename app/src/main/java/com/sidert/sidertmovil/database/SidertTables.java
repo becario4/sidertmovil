@@ -29,6 +29,8 @@ public class SidertTables {
         public static final String TABLE_OCUPACIONES = OCUPACIONES;
         public static final String TABLE_SECTORES = SECTORES;
         public static final String TABLE_IDENTIFICACIONES = IDENTIFICACIONES;
+        public static final String TABLE_BENEFICIARIOS = TBL_DATOS_BENEFICIARIO;
+        public static final String TABLE_BENEFICIARIOS_GPO = TBL_DATOS_BENEFICIARIO_GPO;
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String ASESOR_ID = "asesor_id";
@@ -2318,9 +2320,33 @@ public class SidertTables {
             "archivo_base64 TEXT" +
         ")";
 
+        static final String  CREATE_TBL_DATOS_BENEFICIARIO = "CREATE TABLE " + TBL_DATOS_BENEFICIARIO + " (" +
+                "idBeneficiario INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "id_originacion INTEGER, " +
+                "id_cliente INTEGER," +
+                "id_grupo INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "parentesco TEXT," +
+                "serieid TEXT" +
+                ")";
+        //"curp_cliente TEXT, " +
 
-
-
+        static final String CREATE_TBL_DATOS_BENEFICIARIOS_GPO = " CREATE TABLE " + TBL_DATOS_BENEFICIARIO_GPO + " (" +
+                "idBeneficiario INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "id_solicitud_integrante INTEGER," +
+                "id_cliente INTEGER," +
+                "id_integrante INTEGER, " +
+                "id_grupo INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "parentesco TEXT," +
+                "serieid TEXT" +
+                ")";
 
         static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
                                                 " ADD COLUMN " + SidertEntry.CREATE_AT +
