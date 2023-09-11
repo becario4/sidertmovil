@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Sidert Móvil</string>
-    <string name="app_version">2.7.0b</string>
+    <string name="app_version">2.7.1b</string>
     <string name="vol_solicitud">Vol.2020</string>
 
     <string name="default_asesor">ASESOR389</string>
-    <string name="default_mac">DEE578DAF1537688</string>
+    <string name="default_mac">F8383856A900EDD0</string>
 
     <string name="api_url">http://sidert.ddns.net:91/</string>
     <string name="api_user">androidapp</string>

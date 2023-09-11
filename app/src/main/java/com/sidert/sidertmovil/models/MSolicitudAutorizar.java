@@ -143,7 +143,7 @@ public class MSolicitudAutorizar implements Serializable {
         }
     }
 
-    public class SolicitudGrupal implements Serializable{
+    public class SolicitudGrupal implements Serializable {
         @SerializedName("prestamo_grupal")
         @Expose
         private PrestamoGpo prestamoGpo;
@@ -408,7 +408,7 @@ public class MSolicitudAutorizar implements Serializable {
         }
     }
 
-    public class Integrantes implements Serializable{
+    public class Integrantes implements Serializable {
 
         @SerializedName("id")
         @Expose
@@ -543,7 +543,7 @@ public class MSolicitudAutorizar implements Serializable {
         }
     }
 
-    public class Cliente implements Serializable{
+    public class Cliente implements Serializable {
 
         @SerializedName("nombre")
         @Expose
@@ -1021,7 +1021,7 @@ public class MSolicitudAutorizar implements Serializable {
 
     }
 
-    public class Conyuge implements Serializable{
+    public class Conyuge implements Serializable {
 
         @SerializedName("nombre")
         @Expose
@@ -1330,7 +1330,7 @@ public class MSolicitudAutorizar implements Serializable {
         }
     }
 
-    public class Negocio implements Serializable{
+    public class Negocio implements Serializable {
 
         @SerializedName("referencia")
         @Expose
@@ -1720,7 +1720,7 @@ public class MSolicitudAutorizar implements Serializable {
 
     }
 
-    public class Aval implements Serializable{
+    public class Aval implements Serializable {
 
         @SerializedName("nombre")
         @Expose
@@ -2298,7 +2298,7 @@ public class MSolicitudAutorizar implements Serializable {
         }
 
         public void setMontoMaximo(Double montoMaximo) {
-            if(montoMaximo == null){
+            if (montoMaximo == null) {
                 montoMaximo = 123.00;
             }
             this.montoMaximo = montoMaximo;
@@ -2502,7 +2502,7 @@ public class MSolicitudAutorizar implements Serializable {
 
     }
 
-    public class Croquis implements Serializable{
+    public class Croquis implements Serializable {
 
         @SerializedName("calle_enfrente")
         @Expose
@@ -2562,7 +2562,7 @@ public class MSolicitudAutorizar implements Serializable {
 
     }
 
-    public class Politicas implements Serializable{
+    public class Politicas implements Serializable {
 
         @SerializedName("propietario")
         @Expose

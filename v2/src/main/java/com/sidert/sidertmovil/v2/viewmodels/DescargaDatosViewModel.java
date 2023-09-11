@@ -1,8 +1,5 @@
 package com.sidert.sidertmovil.v2.viewmodels;
 
-
-import android.view.View;
-
 import com.sidert.sidertmovil.v2.bussinesmodel.DescargaDatosBussinesModel;
 
 import javax.inject.Inject;
